@@ -1,3 +1,6 @@
+# Arduino-Mk Build Dirs
+build-*
+
 # Prerequisites
 *.d
 
