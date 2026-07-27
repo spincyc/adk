@@ -3,6 +3,7 @@
 #include "analog_input.h"
 #include "board.h"
 #include "button.h"
+#include "character_display.h"
 #include "climate_sensor.h"
 #include "digital.h"
 #include "digital_input.h"
