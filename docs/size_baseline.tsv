@@ -12,4 +12,4 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	1	Lesson011TimedTraffic	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5404	16384	335	768
 1	1	Lesson012TrafficJunction	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6874	24576	419	1024
 1	1	Lesson013Dht11Climate	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6792	24576	211	1024
-1	1	Lesson014CharacterDisplay	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	7992	24576	826	1536
+1	1	Lesson014CharacterDisplay	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	7966	24576	826	1536
