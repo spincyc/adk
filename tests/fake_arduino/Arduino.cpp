@@ -12,6 +12,7 @@ namespace {
         std::array<int, pinCount>                  analogOutputs;
         std::array<uint8_t, pinCount>              digitalInputs;
         std::array<uint8_t, pinCount>              digitalOutputs;
+        std::array<unsigned int, pinCount>          toneFrequencies;
         uint64_t                                   timeUs;
         std::vector<adk::test::arduino::Operation> operations;
     };
@@ -57,6 +58,21 @@ void digitalWrite (uint8_t pin, uint8_t value)
 {
     state.digitalOutputs[pin] = value;
     record (adk::test::arduino::OperationKind::DigitalWrite, pin, value);
+}
+
+void tone (uint8_t pin, unsigned int frequency)
+{
+    state.toneFrequencies[pin] = frequency;
+    record (
+        adk::test::arduino::OperationKind::Tone,
+        pin,
+        static_cast<int> (frequency));
+}
+
+void noTone (uint8_t pin)
+{
+    state.toneFrequencies[pin] = 0;
+    record (adk::test::arduino::OperationKind::NoTone, pin, 0);
 }
 
 void delay (unsigned long intervalMs)
@@ -130,6 +146,11 @@ namespace adk { namespace test { namespace arduino {
     uint8_t digitalOutput (uint8_t pin)
     {
         return state.digitalOutputs[pin];
+    }
+
+    unsigned int toneFrequency (uint8_t pin)
+    {
+        return state.toneFrequencies[pin];
     }
 
     uint64_t timeUs ()

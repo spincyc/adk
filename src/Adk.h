@@ -6,6 +6,7 @@
 #include "digital_input.h"
 #include "digital_output.h"
 #include "mono_led.h"
+#include "piezo_sounder.h"
 #include "pwm_output.h"
 #include "reaction_timer.h"
 #include "rgb_led.h"

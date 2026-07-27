@@ -18,6 +18,8 @@ int           analogRead         (uint8_t pin);
 void          analogWrite        (uint8_t pin, int value);
 int           digitalRead        (uint8_t pin);
 void          digitalWrite       (uint8_t pin, uint8_t value);
+void          tone               (uint8_t pin, unsigned int frequency);
+void          noTone             (uint8_t pin);
 void          delay              (unsigned long intervalMs);
 void          delayMicroseconds  (unsigned int intervalUs);
 unsigned long millis             ();
@@ -32,6 +34,8 @@ namespace adk { namespace test { namespace arduino {
         AnalogWrite,
         DigitalRead,
         DigitalWrite,
+        Tone,
+        NoTone,
         Delay,
         DelayMicroseconds
     };
@@ -51,10 +55,11 @@ namespace adk { namespace test { namespace arduino {
     void setTimeUs       (uint64_t value);
     void advanceTimeUs   (uint64_t interval);
 
-    uint8_t  mode          (uint8_t pin);
-    int      analogOutput  (uint8_t pin);
-    uint8_t  digitalOutput (uint8_t pin);
-    uint64_t timeUs        ();
+    uint8_t      mode          (uint8_t pin);
+    int          analogOutput  (uint8_t pin);
+    uint8_t      digitalOutput (uint8_t pin);
+    unsigned int toneFrequency (uint8_t pin);
+    uint64_t     timeUs        ();
 
     const std::vector<Operation>& trace ();
 

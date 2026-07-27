@@ -19,6 +19,10 @@ HOST_RGB_SOURCES := \
 	$(HOST_PWM_SOURCES) \
 	src/rgb_led.cpp
 
+HOST_PIEZO_SOURCES := \
+	$(HOST_IO_SOURCES) \
+	src/piezo_sounder.cpp
+
 HOST_TESTS := \
 	$(BUILD_DIR)/host/test_core \
 	$(BUILD_DIR)/host/test_io \
@@ -26,7 +30,8 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_button \
 	$(BUILD_DIR)/host/test_reaction_timer \
 	$(BUILD_DIR)/host/test_pwm_output \
-	$(BUILD_DIR)/host/test_rgb_led
+	$(BUILD_DIR)/host/test_rgb_led \
+	$(BUILD_DIR)/host/test_piezo_sounder
 
 HOST_HEADERS := $(shell find src tests/fake_arduino -type f -name '*.h' | sort)
 
@@ -78,6 +83,12 @@ $(BUILD_DIR)/host/test_rgb_led: $(HOST_RGB_SOURCES) \
 		tests/test_rgb_led.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_RGB_SOURCES) tests/test_rgb_led.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_piezo_sounder: $(HOST_PIEZO_SOURCES) \
+		tests/test_piezo_sounder.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_PIEZO_SOURCES) tests/test_piezo_sounder.cpp \
+		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host: | $(BUILD_MARKER)
 	mkdir -p "$@"
