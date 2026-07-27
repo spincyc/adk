@@ -16,10 +16,8 @@ Every component is developed in the same order:
 
 ADK separates three kinds of object.
 
-The imported compatibility API currently names endpoints `digital::Input` and
-`analog::Output`, and components `led::Mono` and `led::Rgb`. New interfaces will
-adopt the target vocabulary below; imported lessons will migrate only after
-their replacement interfaces and lessons are complete.
+The original preview is frozen under `legacy/`. First-class code uses the
+vocabulary below without forwarding headers or dual-API ambiguity.
 
 | Layer | Purpose | Target examples |
 |---|---|---|
@@ -33,12 +31,10 @@ runtime polymorphism is worth its flash and RAM cost.
 
 ## Lifecycle
 
-The current auto-registration mechanism is retained only as a compatibility
-bridge for the three imported lessons. It is now non-copyable, non-movable,
-and safely unlinks destroyed objects. The target lifecycle is:
+First-class components use this lifecycle:
 
 ```cpp
-Result initialize  ();
+Status initialize  ();
 void   shutdown    () noexcept;
 bool   initialized () const;
 ```
@@ -61,9 +57,9 @@ stack unwinding invokes `noexcept` destructors and releases active claims.
 - Board capabilities come from a board profile, beginning with Mega 2560.
 - No component silently changes another component's pin mode.
 
-## First new component
+## First input component
 
-The planned `Button` owns a `DigitalInput`. It defaults to the internal pull-up
+`Button` owns a `DigitalInput`. It defaults to the internal pull-up
 and a switch to ground, so the electrical signal is active-low while `active()`
 is true when pressed. It exposes both:
 
