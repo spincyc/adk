@@ -1,0 +1,54 @@
+site_name: ADK
+site_description: A deterministic C++ component library and electronics course for Arduino Mega 2560.
+site_url: https://spincyc.github.io/adk/
+repo_url: https://github.com/spincyc/adk
+repo_name: spincyc/adk
+
+docs_dir: build/site-source
+site_dir: build/site
+use_directory_urls: true
+strict: true
+
+theme:
+  name: mkdocs
+  locale: en
+
+nav:
+  - Home: index.md
+  - Start here: start.md
+  - Lessons:
+      - Course map: lessons/index.md
+      - "001 — Built-in LED": lessons/001.md
+      - "002 — Two LEDs": lessons/002.md
+      - "003 — RGB LED": lessons/003.md
+  - Components: components.md
+  - API:
+      - Current compatibility API: api-current.md
+      - Planned RAII API: target-api.md
+  - Design:
+      - Determinism: determinism.md
+      - Architecture: docs/ARCHITECTURE.md
+      - Comparable projects: docs/COMPARABLE_PROJECTS.md
+  - Projects:
+      - Overview: projects/index.md
+      - Deterministic Simon: docs/projects/simon.md
+  - Safety: safety.md
+  - Build locally: build.md
+  - Contributing: contributing.md
+  - Accessibility: accessibility.md
+  - About: about.md
+  - License: license.md
+
+markdown_extensions:
+  - attr_list
+  - fenced_code
+  - sane_lists
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+
+extra_css:
+  - assets/site.css
