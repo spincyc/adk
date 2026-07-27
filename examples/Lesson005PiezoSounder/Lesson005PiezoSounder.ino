@@ -35,14 +35,14 @@ namespace {
 
     bool playWelcomeTone ()
     {
-        if (sounder.initialize () != adk::Status::Ok)
+        if (!sounder.initialize ().ok ())
         {
             return false;
         }
 
         const adk::TimePoint now (millis ());
 
-        if (sounder.play (cueHz, cueLength, now) == adk::Status::Ok)
+        if (sounder.play (cueHz, cueLength, now).ok ())
         {
             return true;
         }

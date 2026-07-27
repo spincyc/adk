@@ -58,7 +58,7 @@ void loop ()
         return;
     }
 
-    if (decision != adk::Status::Ok)
+    if (!decision.ok ())
     {
         ready.off ();
     }
@@ -68,23 +68,23 @@ namespace {
 
     bool initializeCircuit ()
     {
-        if (pedestrianButton.initialize () != adk::Status::Ok ||
-            mainRed.initialize          () != adk::Status::Ok ||
-            mainYellow.initialize       () != adk::Status::Ok ||
-            mainGreen.initialize        () != adk::Status::Ok ||
-            sideRed.initialize          () != adk::Status::Ok ||
-            sideYellow.initialize       () != adk::Status::Ok ||
-            sideGreen.initialize        () != adk::Status::Ok ||
-            walk.initialize             () != adk::Status::Ok ||
-            stop.initialize             () != adk::Status::Ok ||
-            ready.initialize            () != adk::Status::Ok ||
-            traffic.initialize          () != adk::Status::Ok)
+        if (!pedestrianButton.initialize ().ok () ||
+            !mainRed.initialize          ().ok () ||
+            !mainYellow.initialize       ().ok () ||
+            !mainGreen.initialize        ().ok () ||
+            !sideRed.initialize          ().ok () ||
+            !sideYellow.initialize       ().ok () ||
+            !sideGreen.initialize        ().ok () ||
+            !walk.initialize             ().ok () ||
+            !stop.initialize             ().ok () ||
+            !ready.initialize            ().ok () ||
+            !traffic.initialize          ().ok ())
         {
             stopSafely ();
             return false;
         }
 
-        if (ready.on () != adk::Status::Ok)
+        if (!ready.on ().ok ())
         {
             stopSafely ();
             return false;
@@ -108,14 +108,14 @@ namespace {
 
     bool showSignals (const adk::TrafficSignals& signals)
     {
-        return mainRed.set    (signals.mainRed)        == adk::Status::Ok &&
-               mainYellow.set (signals.mainYellow)     == adk::Status::Ok &&
-               mainGreen.set  (signals.mainGreen)      == adk::Status::Ok &&
-               sideRed.set    (signals.sideRed)        == adk::Status::Ok &&
-               sideYellow.set (signals.sideYellow)     == adk::Status::Ok &&
-               sideGreen.set  (signals.sideGreen)      == adk::Status::Ok &&
-               walk.set       (signals.pedestrianWalk) == adk::Status::Ok &&
-               stop.set       (signals.pedestrianStop) == adk::Status::Ok;
+        return mainRed.set    (signals.mainRed).ok        () &&
+               mainYellow.set (signals.mainYellow).ok     () &&
+               mainGreen.set  (signals.mainGreen).ok      () &&
+               sideRed.set    (signals.sideRed).ok        () &&
+               sideYellow.set (signals.sideYellow).ok     () &&
+               sideGreen.set  (signals.sideGreen).ok      () &&
+               walk.set       (signals.pedestrianWalk).ok () &&
+               stop.set       (signals.pedestrianStop).ok ();
     }
 
     void stopSafely ()

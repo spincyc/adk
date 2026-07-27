@@ -273,7 +273,7 @@ config.maximumLength  = 2;
 
 adk::Simon game (config, source);
 
-if (!(game.initialize () == adk::Status::Ok))
+if (!game.initialize ().ok ())
 {
     // Remain electrically inactive; report the status outside the engine.
 }
@@ -461,7 +461,7 @@ shutdown in every phase & tone stopped; PWM zero; pins released & \checkbox{}\\
 whether observed cue is present: \blank{4.5in}.
 
 \textbf{Exercise.} A custom source succeeds once and then returns
-\texttt{Status::HardwareFailure}. Identify the phase that discovers this for a
+\texttt{error() == StatusCode::HardwareFailure}. Identify the phase that discovers this for a
 starting length of one: \blank{2.0in}. Identify the final outcome:
 \blank{1.4in}.
 

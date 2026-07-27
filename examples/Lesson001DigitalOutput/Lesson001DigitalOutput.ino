@@ -14,7 +14,7 @@ namespace {
 
 void setup ()
 {
-    ready = led.initialize () == adk::Status::Ok;
+    ready = led.initialize ().ok ();
 }
 
 void loop ()
@@ -32,7 +32,7 @@ namespace {
             return;
         }
 
-        if (led.write (level) != adk::Status::Ok)
+        if (!led.write (level).ok ())
         {
             led.shutdown ();
             ready = false;

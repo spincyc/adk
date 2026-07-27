@@ -65,7 +65,7 @@ void loop ()
         return;
     }
 
-    if (brightnessLed.write (brightness) != adk::Status::Ok)
+    if (!brightnessLed.write (brightness).ok ())
     {
         stopSafely ();
     }
@@ -80,18 +80,18 @@ namespace {
             return false;
         }
 
-        if (diagnosticLed.initialize () != adk::Status::Ok)
+        if (!diagnosticLed.initialize ().ok ())
         {
             return false;
         }
 
-        if (potentiometer.initialize () != adk::Status::Ok)
+        if (!potentiometer.initialize ().ok ())
         {
             diagnosticLed.shutdown ();
             return false;
         }
 
-        if (brightnessLed.initialize () != adk::Status::Ok)
+        if (!brightnessLed.initialize ().ok ())
         {
             potentiometer.shutdown ();
             diagnosticLed.shutdown ();
@@ -103,7 +103,7 @@ namespace {
 
     bool showReady ()
     {
-        return diagnosticLed.on () == adk::Status::Ok;
+        return diagnosticLed.on ().ok ();
     }
 
     bool observationDue (uint32_t now)

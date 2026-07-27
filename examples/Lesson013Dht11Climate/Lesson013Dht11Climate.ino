@@ -55,7 +55,7 @@ void loop ()
     const adk::Status        status      = observeClimate     (now);
     const adk::ClimateSample observation = decideClimateState (now);
 
-    if ((status != adk::Status::Ok &&
+    if ((!status.ok () &&
          observation.state == adk::ClimateSampleState::Unavailable) ||
         !showClimateState (observation, now))
     {
@@ -67,18 +67,18 @@ namespace {
 
     bool acquireClimateCircuit ()
     {
-        if (climateSensor.initialize () != adk::Status::Ok)
+        if (!climateSensor.initialize ().ok ())
         {
             return false;
         }
 
-        if (statusLed.initialize () != adk::Status::Ok)
+        if (!statusLed.initialize ().ok ())
         {
             climateSensor.shutdown ();
             return false;
         }
 
-        if (statusLed.set (waitingColor) != adk::Status::Ok)
+        if (!statusLed.set (waitingColor).ok ())
         {
             haltClimateCircuit ();
             return false;
@@ -102,14 +102,13 @@ namespace {
         switch (observation.state)
         {
             case adk::ClimateSampleState::Unavailable:
-                return statusLed.set (pulseOn (now, 1) ? waitingColor : offColor) ==
-                       adk::Status::Ok;
+                return statusLed.set (pulseOn (now, 1) ? waitingColor : offColor).ok ();
 
             case adk::ClimateSampleState::Valid:
-                return statusLed.set (validColor) == adk::Status::Ok;
+                return statusLed.set (validColor).ok ();
 
             case adk::ClimateSampleState::Stale:
-                return statusLed.set (staleColor) == adk::Status::Ok;
+                return statusLed.set (staleColor).ok ();
 
             case adk::ClimateSampleState::TransportTimeout:
             case adk::ClimateSampleState::ChecksumFailure:
@@ -117,8 +116,7 @@ namespace {
             case adk::ClimateSampleState::HumidityOutOfRange:
             case adk::ClimateSampleState::InvalidLimits:
             case adk::ClimateSampleState::InvalidTiming:
-                return statusLed.set (faultPattern (observation.state, now)) ==
-                       adk::Status::Ok;
+                return statusLed.set (faultPattern (observation.state, now)).ok ();
         }
 
         return false;

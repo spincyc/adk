@@ -67,7 +67,7 @@ void loop ()
     const adk::Status             decisionStatus = decideLighting      (observation);
     const adk::NightLightSnapshot decision       = nightLight.snapshot ();
 
-    if (decisionStatus != adk::Status::Ok &&
+    if (!decisionStatus.ok () &&
         decision.diagnostic != adk::NightLightDiagnostic::SensorFault)
     {
         stopSafely ();
@@ -84,31 +84,31 @@ namespace {
 
     bool initializeCircuit ()
     {
-        if (lightSensor.initialize () != adk::Status::Ok)
+        if (!lightSensor.initialize ().ok ())
         {
             stopSafely ();
             return false;
         }
 
-        if (lampOutput.initialize () != adk::Status::Ok)
+        if (!lampOutput.initialize ().ok ())
         {
             stopSafely ();
             return false;
         }
 
-        if (statusLed.initialize () != adk::Status::Ok)
+        if (!statusLed.initialize ().ok ())
         {
             stopSafely ();
             return false;
         }
 
-        if (nightLight.initialize () != adk::Status::Ok)
+        if (!nightLight.initialize ().ok ())
         {
             stopSafely ();
             return false;
         }
 
-        if (statusLed.set (readyColor) != adk::Status::Ok)
+        if (!statusLed.set (readyColor).ok ())
         {
             stopSafely ();
             return false;
@@ -156,7 +156,7 @@ namespace {
 
     bool actuateLighting (const adk::NightLightSnapshot& decision)
     {
-        if (lampOutput.write (decision.outputDuty) != adk::Status::Ok)
+        if (!lampOutput.write (decision.outputDuty).ok ())
         {
             return false;
         }
@@ -164,13 +164,13 @@ namespace {
         switch (decision.diagnostic)
         {
             case adk::NightLightDiagnostic::Ready:
-                return statusLed.set (readyColor) == adk::Status::Ok;
+                return statusLed.set (readyColor).ok ();
 
             case adk::NightLightDiagnostic::Active:
-                return statusLed.set (activeColor) == adk::Status::Ok;
+                return statusLed.set (activeColor).ok ();
 
             case adk::NightLightDiagnostic::SensorFault:
-                return statusLed.set (faultColor) == adk::Status::Ok;
+                return statusLed.set (faultColor).ok ();
         }
 
         return false;
