@@ -29,6 +29,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_io \
 	$(BUILD_DIR)/host/test_mono_led \
 	$(BUILD_DIR)/host/test_button \
+	$(BUILD_DIR)/host/test_night_light \
 	$(BUILD_DIR)/host/test_reaction_timer \
 	$(BUILD_DIR)/host/test_pwm_output \
 	$(BUILD_DIR)/host/test_rgb_led \
@@ -79,6 +80,13 @@ $(BUILD_DIR)/host/test_button: $(HOST_IO_SOURCES) src/button.cpp \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_IO_SOURCES) src/button.cpp tests/test_button.cpp \
 		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_night_light: $(HOST_CORE_SOURCES) \
+		src/night_light.cpp tests/test_night_light.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/night_light.cpp \
+		tests/test_night_light.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_reaction_timer: $(HOST_IO_SOURCES) src/button.cpp \
 		src/reaction_timer.cpp tests/test_reaction_timer.cpp \
