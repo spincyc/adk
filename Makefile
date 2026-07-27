@@ -4,6 +4,7 @@ include mk/host.mk
 include mk/arduino.mk
 include mk/hardware.mk
 include mk/package.mk
+include mk/native_package.mk
 include mk/size.mk
 include mk/docs.mk
 include mk/site.mk

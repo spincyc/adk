@@ -135,6 +135,8 @@ make check
 make quality
 make headers-check
 make package-smoke
+make native-package
+make native-package-smoke
 make lessons-check
 make site-check
 make legacy-check
@@ -183,5 +185,7 @@ route-profile tests.
 ## site-serve                Serve the site locally.
 ## quality                   Run the complete supported release gate.
 ## package-smoke             Build every example from an installed clean archive.
+## native-package            Export the C++17 native source archive.
+## native-package-smoke      Build, link, and run a clean archive consumer.
 ## legacy-check              Validate the frozen legacy implementation.
 ## clean                     Remove only the marked ADK build directory.
