@@ -36,11 +36,11 @@ The preceding lessons establish:
 |---|---|---|
 | 001 | `DigitalOutput` | claim, safe state, write, shutdown, visible blink diagnostic |
 | 002 | `DigitalInput` | pull-up input, raw level, explicit sample time, wiring diagnostic |
-| 003 | `Button` and `MonoLed` | stable state, press/release snapshots, active-low semantics |
+| 001 | `MonoLed` | semantic inactive state over owned output |
+| 003 | `Button` | stable state, press/release snapshots, active-low semantics |
 
-If the curriculum assigns different final names, preserve the responsibilities
-and update this document with the implementation. The legacy LED API is not a
-project dependency.
+Lesson 003 introduces `Button` immediately before composing the project. The
+legacy LED API is not a project dependency.
 
 ## Circuit
 
@@ -411,7 +411,7 @@ same documented boundary rules.
 
 ## Completion criteria
 
-Project 003 is complete when:
+Project 003 is host verified. It becomes hardware supported when:
 
 - its four prerequisite interfaces are first-class, not legacy wrappers;
 - all host tests and the Mega compile pass;
