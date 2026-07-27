@@ -13,7 +13,8 @@ quality-fast: quality-tools quality-lint quality-test quality-size
 
 quality-lint: style-check
 
-quality-test: host-test host-test-exceptions host-test-sanitize
+quality-test: host-test host-test-exceptions host-test-sanitize \
+	usb-mesh-check hdmi-mesh-check route-profile-check
 
 quality-size: host-size-check
 
