@@ -5,13 +5,14 @@
 
 namespace adk {
 
-    void setup()
+    void initialize ()
     {
-        object::setup_all();
+        Object::initializeAll ();
     }
 
-    void update()
+    void update ()
     {
+        Object::updateAll ();
     }
 
 }

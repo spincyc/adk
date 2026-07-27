@@ -4,37 +4,29 @@
 
 namespace adk { namespace color {
 
-    struct rgb
+    struct Rgb
     {
-        using raw = uint8_t;
+        using Raw = uint8_t;
         
-        rgb();
-        rgb(raw red_,raw green_,raw blue_);
+        Rgb (Raw red, Raw green, Raw blue);
 
-        bool operator==(const rgb&) const;
+        bool operator== (const Rgb& other) const;
+        bool operator!= (const Rgb& other) const;
 
-        raw red  () const { return _color.red  ; }
-        raw green() const { return _color.green; }
-        raw blue () const { return _color.blue ; }
+        Raw red   () const;
+        Raw green () const;
+        Raw blue  () const;
 
-      protected:
-        struct color
-        {
-            raw red;
-            raw green;
-            raw blue;
-        };
-
-        union
-        {
-            uint32_t _total;
-            color    _color;
-        };
+      private:
+        Raw red_;
+        Raw green_;
+        Raw blue_;
     };
 
-    rgb red   ();
-    rgb green ();
-    rgb blue  ();
-    rgb orange();
+    Rgb off    ();
+    Rgb red    ();
+    Rgb green  ();
+    Rgb blue   ();
+    Rgb orange ();
 
 }}

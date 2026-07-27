@@ -3,46 +3,86 @@
 
 namespace adk {
 
-    static object*& obj_list_head()
+    static Object*& objectListHead ()
     {
-        static object* ret = nullptr;
-        return ret;
+        static Object* head = nullptr;
+        return head;
     }
 
-    static object*& obj_list_tail()
+    static Object*& objectListTail ()
     {
-        static object* ret = nullptr;
-        return ret;
+        static Object* tail = nullptr;
+        return tail;
     }
 
-    void object::setup_all()
+    void Object::initializeAll ()
     {
-        for(auto* obj = obj_list_head(); obj; obj = obj->_next)
+        for (auto* object = objectListHead (); object; object = object->next_)
         {
-            obj->setup();
+            object->initialize ();
         }
     }
 
-    void object::update_all()
+    void Object::updateAll ()
     {
+        for (auto* object = objectListHead (); object; object = object->next_)
+        {
+            object->update ();
+        }
     }
 
-    object::object()
-        : _next(nullptr)
+    Object::Object ()
+        : next_ (nullptr)
     {
-        auto*& head = obj_list_head();
-        auto*& tail = obj_list_tail();
+        auto*& head = objectListHead ();
+        auto*& tail = objectListTail ();
 
-        if(!head)
+        if (!head)
         {
             head = this;
             tail = this;
         }
         else
         {
-            tail->_next = this;
+            tail->next_ = this;
             tail        = this;
         }
     }
 
+    Object::~Object () noexcept
+    {
+        auto*& head = objectListHead ();
+        auto*& tail = objectListTail ();
+
+        Object* previous = nullptr;
+        for (auto* current = head; current; current = current->next_)
+        {
+            if (current != this)
+            {
+                previous = current;
+                continue;
+            }
+
+            if (previous)
+            {
+                previous->next_ = next_;
+            }
+            else
+            {
+                head = next_;
+            }
+
+            if (tail == this)
+            {
+                tail = previous;
+            }
+
+            next_ = nullptr;
+            return;
+        }
+    }
+
+    void Object::update ()
+    {
+    }
 }

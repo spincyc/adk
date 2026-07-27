@@ -3,66 +3,63 @@
 
 namespace adk { namespace color {
 
-    rgb::rgb()
-        : _total(0)
+    Rgb::Rgb (Raw red, Raw green, Raw blue)
+        : red_   (red)
+        , green_ (green)
+        , blue_  (blue)
     {
     }
 
-    rgb::rgb(raw red_,raw green_,raw blue_)
-        : rgb()
+    bool Rgb::operator==(const Rgb& other) const
     {
-        _color.red   = red_  ;
-        _color.green = green_;
-        _color.blue  = blue_ ;
+        return red_   == other.red_
+            && green_ == other.green_
+            && blue_  == other.blue_;
     }
 
-    bool rgb::operator==(const rgb& rhs_) const
+    bool Rgb::operator!=(const Rgb& other) const
     {
-        return _total == rhs_._total;
+        return !(*this == other);
     }
 
-    rgb red()
+    Rgb::Raw Rgb::red () const
     {
-        return rgb(255,0,0);
+        return red_;
     }
 
-    rgb green()
+    Rgb::Raw Rgb::green () const
     {
-        return rgb(0,255,0);
+        return green_;
     }
 
-    rgb blue()
+    Rgb::Raw Rgb::blue () const
     {
-        return rgb(0,0,255);
+        return blue_;
     }
 
-    rgb orange()
+    Rgb off ()
     {
-        return rgb(255,128,0);
+        return Rgb (0, 0, 0);
+    }
+
+    Rgb red ()
+    {
+        return Rgb (255, 0, 0);
+    }
+
+    Rgb green ()
+    {
+        return Rgb (0, 255, 0);
+    }
+
+    Rgb blue ()
+    {
+        return Rgb (0, 0, 255);
+    }
+
+    Rgb orange ()
+    {
+        return Rgb (255, 128, 0);
     }
 
 }}
-
-#if 0
-
-#include <iostream>
-
-std::ostream& operator<<(std::ostream& os_,const arduino::color::rgb& rgb_)
-{
-    return os_ << '(' << rgb_.red()
-               << ',' << rgb_.green()
-               << ',' << rgb_.blue()
-               << ')';
-}
-
-int main()
-{
-    arduino::color::rgb color;
-
-    for(int i = 0; i < 10000; ++i)
-    {
-        std::cout << ++color << std::endl;
-    }
-}
-
-#endif

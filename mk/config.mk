@@ -1,0 +1,20 @@
+ARDUINO_CLI ?= arduino-cli
+CLANG_FORMAT ?= clang-format
+CXX         ?= c++
+PDFLATEX    ?= pdflatex
+
+BUILD_DIR   ?= build
+BUILD_MARKER := $(BUILD_DIR)/.adk-build
+BOARD_FQBN  ?= arduino:avr:mega
+LESSONS     := 001 002 003
+PORT        ?=
+
+HOST_CPPFLAGS += -Isrc -Itests/fake_arduino
+HOST_CXXFLAGS += -std=c++17 -Os -flto
+HOST_CXXFLAGS += -fno-exceptions -fno-rtti -ffunction-sections -fdata-sections
+HOST_CXXFLAGS += -Wall -Wextra -Wpedantic -Wconversion -Werror
+HOST_LDFLAGS  += -flto -Wl,--gc-sections
+
+$(BUILD_MARKER):
+	mkdir -p "$(BUILD_DIR)"
+	touch "$@"

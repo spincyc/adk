@@ -3,33 +3,48 @@
 
 namespace adk { namespace led {
 
-    void mono::on()
+    void Mono::on () const
     {
-        write(true);
+        write (true);
     }
 
-    void mono::off()
+    void Mono::off () const
     {
-        write(false);
+        write (false);
     }
 
-    rgb::rgb(analog::output red_,analog::output green_,analog::output blue_)
-        : _red  (red_)
-        , _green(green_)
-        , _blue (blue_)
+    Rgb::Rgb (pin::Id redPin, pin::Id greenPin, pin::Id bluePin)
+        : red_   (redPin)
+        , green_ (greenPin)
+        , blue_  (bluePin)
     {
     }
 
-    void rgb::on(const color::rgb& color_)
+    const analog::Output& Rgb::red () const
     {
-        _red  .write(color_.red  ());
-        _green.write(color_.green());
-        _blue .write(color_.blue ());
+        return red_;
     }
 
-    void rgb::off()
+    const analog::Output& Rgb::green () const
     {
-        on(color::rgb());
+        return green_;
+    }
+
+    const analog::Output& Rgb::blue () const
+    {
+        return blue_;
+    }
+
+    void Rgb::on (const color::Rgb& color) const
+    {
+        red_  .write (color.red ());
+        green_.write (color.green ());
+        blue_ .write (color.blue ());
+    }
+
+    void Rgb::off () const
+    {
+        on (color::off ());
     }
 
 }}
