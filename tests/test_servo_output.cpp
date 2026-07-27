@@ -69,6 +69,12 @@ namespace {
     {
         adk::Status writeControlA (uint8_t value) noexcept override
         {
+            if (failConnect && value == 10)
+            {
+                failConnect = false;
+                return adk::StatusCode::HardwareFailure;
+            }
+
             controlA = value;
             return status;
         }
@@ -105,6 +111,12 @@ namespace {
 
         adk::Status writeCompareC (uint16_t value) noexcept override
         {
+            if (failCompare && value != 0)
+            {
+                failCompare = false;
+                return adk::StatusCode::HardwareFailure;
+            }
+
             compareC = value;
             return status;
         }
@@ -132,6 +144,8 @@ namespace {
         bool        outputLow     = false;
         bool        outputEnabled = false;
         bool        failTop       = false;
+        bool        failCompare   = false;
+        bool        failConnect   = false;
     };
 
     void testLifecycleAndBounds ()
@@ -273,6 +287,53 @@ namespace {
         require (!registers.outputEnabled && registers.controlB == 0,
                  "partial attach rolls back to safe state");
     }
+
+    void testMegaTimer5WriteFailure (bool compareFailure)
+    {
+        adk::ResourceRegistry          resources;
+        TestRegisters                  registers;
+        adk::MegaTimer5ServoPulseIo    io (registers);
+        TestPower                      power;
+        adk::ServoOutput               servo (
+            resources,
+            io,
+            power,
+            adk::MegaTimer5ServoPulseIo::signalPin,
+            1000,
+            2000,
+            adk::MegaTimer5ServoPulseIo::timer);
+
+        power.available_ = true;
+        require (servo.initialize ().ok (), "failure fixture initializes");
+        require (servo.writePulse (1200).ok (), "failure fixture activates");
+        require (servo.pulseUs () == 1200, "active pulse recorded");
+
+        registers.failCompare = compareFailure;
+        registers.failConnect = !compareFailure;
+
+        require (servo.writePulse (1600).error () ==
+                     adk::StatusCode::HardwareFailure,
+                 "write failure propagated");
+        require (servo.pulseUs () == 0, "write failure clears pulse snapshot");
+        require (registers.controlA == 0 && registers.controlB == 0,
+                 "write failure stops Timer5");
+        require (registers.compareC == 0 && registers.top == 0,
+                 "write failure clears waveform");
+        require (!registers.outputEnabled && registers.outputLow,
+                 "write failure leaves D44 low then high impedance");
+        require (servo.writePulse (1500).error () ==
+                     adk::StatusCode::NotInitialized,
+                 "faulted adapter rejects another pulse");
+
+        servo.shutdown ();
+
+        require (!resources.claimed ({adk::ResourceKind::Pin, 44}),
+                 "fault shutdown releases D44");
+        require (!resources.claimed ({adk::ResourceKind::Timer, 5}),
+                 "fault shutdown releases Timer5");
+        require (servo.initialize ().ok (), "faulted endpoint reinitializes");
+        require (servo.writePulse (1500).ok (), "reinitialized endpoint pulses");
+    }
 }
 
 int main ()
@@ -281,6 +342,8 @@ int main ()
     testValidationAndRollback       ();
     testWriteFailureAndDestruction  ();
     testMegaTimer5Adapter           ();
+    testMegaTimer5WriteFailure      (true);
+    testMegaTimer5WriteFailure      (false);
 
     std::cout << "All ADK servo-output tests passed.\n";
     return EXIT_SUCCESS;
