@@ -106,7 +106,7 @@ A lesson example should be much smaller than its nearest project ceiling.
 Debug text and serial diagnostics count; acceptance measurements use the
 documented release configuration, not a hand-edited quiet variant.
 
-## Required targets through Simon
+## Required targets through the adaptive night light
 
 Size coverage follows the lesson cadence. A missing target is a failed gate,
 not an omitted row.
@@ -119,15 +119,16 @@ not an omitted row.
 | Lesson 004 | `PwmOutput` and `RgbLed` example | Component deltas and global limits |
 | Lesson 005 | `PiezoSounder` example | Component delta and global limits |
 | Lesson 006 | Simon project with four cues | 20 KiB / 1,024 B project limit |
+| Lesson 007 | `AnalogInput` and potentiometer example | Component delta and global limits |
+| Lesson 008 | Calibration, moving-average, and deadband example | Component deltas and global limits |
+| Lesson 009 | Adaptive night-light project | 16 KiB / 768 B project limit |
 
-The light-and-color instrument remains a future project budget until it has a
-dedicated project example. Lesson 004 alone does not claim that project row.
-Simon measurements include one cue source implementation at a time; CI records
-both fixed and seeded sources so dead-code elimination cannot hide either.
+Simon measurements include both fixed and seeded cue sources in the canonical
+project so dead-code elimination cannot hide either.
 
 ## Measurement contract
 
-The build system will provide these stable targets:
+The build system provides these stable targets:
 
 ```text
 make size          # build every supported AVR example and write reports
@@ -139,27 +140,23 @@ make size-update   # refresh baselines; never run implicitly
 
 ```text
 build/size/avr.tsv
-build/size/objects.tsv
-build/size/types.tsv
 ```
 
 `avr.tsv` contains, in order:
 
 ```text
-target  fqbn  compiler  flash_bytes  data_bytes  bss_bytes  static_ram_bytes
+schema  example  fqbn  core  toolchain  flash_bytes  data_bytes  bss_bytes  static_ram_bytes
 ```
 
-`objects.tsv` records section sizes for every ADK AVR object. `types.tsv`
-records `sizeof` and alignment for every public owning type using an AVR-built
-measurement program. Output is sorted, tab-separated, locale-independent, and
-contains byte counts rather than formatted percentages.
+Output is sorted, tab-separated, locale-independent, and contains byte counts
+rather than formatted percentages. The report is derived from the linked ELF,
+not from the human-oriented Arduino CLI summary.
 
-The implementation may locate the ELF through Arduino CLI build properties,
-then uses the AVR tools supplied by the Arch Arduino toolchain:
+The implementation locates the compiler from Arduino CLI's machine-readable
+compilation database, then uses the adjacent AVR size tool:
 
 ```sh
 avr-size -A build/arduino/<target>/<target>.ino.elf
-avr-nm --print-size --size-sort --radix=d build/arduino/<target>/<target>.ino.elf
 ```
 
 Section accounting is:
@@ -169,35 +166,39 @@ flash      = .text + .data
 static RAM = .data + .bss
 ```
 
-Record `arduino-cli version`, the resolved FQBN, AVR compiler version, and core
-version beside each report. Clean and rebuild before an accepted measurement.
-Do not compare Arduino CLI summary strings, host objects, stripped archives, or
-ELFs produced by different toolchains.
+The resolved FQBN, AVR compiler version, and core version are recorded in every
+row. Clean and rebuild before an accepted measurement. Do not compare Arduino
+CLI summary strings, host objects, stripped archives, or ELFs produced by
+different toolchains.
 
 Committed baselines live in `docs/size_baseline.tsv`. Every baseline row names
-the source commit and toolchain. The first implementation of a component adds
-its baseline and must satisfy the ceiling in this document.
+its schema version, per-example baseline version, board, core, and toolchain.
+`make size-update` refreshes measurements and increments only changed example
+versions; it preserves the reviewed ceilings. Review its diff before commit.
 
-Until `docs/size_baseline.tsv`, all three reports, and `make size-check` exist,
-size status is **budget specified, not size verified**. Ordinary Arduino
-compilation does not satisfy this gate.
+Linked flash and static SRAM are size verified when `make size-check` passes.
+Per-object sections, AVR type layouts, forbidden-symbol scanning, and measured
+stack high-water marks remain deferred evidence; linked verification must not
+be described as satisfying those narrower gates.
 
 ## CI policy
 
-`make size-check` fails when:
+`make size-check` currently fails when:
 
-- any global, layer, object, type, or project ceiling is exceeded;
+- any example's linked flash or static-SRAM ceiling is exceeded;
 - flash or static SRAM grows by more than 64 B and more than 2% from baseline;
-- a public owning type grows at all without an updated baseline;
-- a report, supported target, compiler identity, or baseline row is missing;
-- forbidden heap, exception, or RTTI symbols appear;
-- virtual-dispatch symbols appear outside the reviewed `CueSource` hierarchy.
+- a report, supported example, schema, FQBN, core, toolchain, or baseline row
+  is missing or mismatched.
 
 Changes below both the 64-byte and 2% thresholds are reported but do not fail.
 A reduction updates the baseline in the same component or project commit so the
 budget ratchets downward. A justified increase includes the before/after
 reports, cause, alternatives considered, and the narrow budget adjustment.
 Never approve a baseline update whose only explanation is “the build passes.”
+
+The next size-gate increment adds `objects.tsv`, `types.tsv`, and linked-symbol
+reports. Those reports will enforce the component, object-layout, allocation,
+exception, RTTI, and bounded-virtual-dispatch policies below.
 
 CI should scan linked symbols and disassembly for allocation and exception
 runtime entry points, including operator `new`/`delete`, `malloc` family,
