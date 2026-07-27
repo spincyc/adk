@@ -23,6 +23,12 @@ namespace adk {
         uint8_t  count;
     };
 
+    struct InertCueSchedulerConfig
+    {
+        InertCuePlan plan;
+        Duration     confirmationWindow;
+    };
+
     enum struct CueDecision : uint8_t
     {
         Waiting,
@@ -65,12 +71,13 @@ namespace adk {
         Duration          planElapsed;
         Duration          cueElapsed;
         Status            status;
+        bool              hasCue;
     };
 
     struct InertCueScheduler
     {
-        InertCueScheduler (const InertCuePlan& plan, Duration confirmationWindow,
-                           CueAuditBuffer& audit) noexcept;
+        InertCueScheduler (const InertCueSchedulerConfig& config,
+                           CueAuditBuffer&                audit) noexcept;
         ~InertCueScheduler () noexcept;
 
         InertCueScheduler (const InertCueScheduler&)            = delete;
@@ -78,8 +85,10 @@ namespace adk {
         InertCueScheduler (InertCueScheduler&&)                 = delete;
         InertCueScheduler& operator= (InertCueScheduler&&)      = delete;
 
-        Status initialize  () noexcept;
-        void   shutdown    () noexcept;
+        Status initialize () noexcept;
+
+        void   shutdown () noexcept;
+
         bool   initialized () const noexcept;
 
         Status update (TimePoint now, const CueOperatorInput& input) noexcept;
@@ -87,28 +96,43 @@ namespace adk {
         CueSchedulerSnapshot snapshot () const noexcept;
 
       private:
-        bool   validPlan () const noexcept;
-        bool   append    (TimePoint now, CueAuditEvent event,
-                       Status status = StatusCode::Ok) noexcept;
-        void   enterHeld           (TimePoint now, Status status) noexcept;
-        Status enterFault          (TimePoint now, Status status) noexcept;
-        Status process             (TimePoint now, const CueOperatorInput& input) noexcept;
-        Status processIdle         (TimePoint now, const CueOperatorInput& input) noexcept;
-        Status processReview       (TimePoint now, const CueOperatorInput& input) noexcept;
-        Status processWaiting      (TimePoint now, const CueOperatorInput& input) noexcept;
+        bool validPlan () const noexcept;
+
+        bool append (TimePoint now, CueAuditEvent event, Status status = StatusCode::Ok,
+                     bool hasCue = false, uint8_t cueIndex = 0) noexcept;
+        void enterHeld (TimePoint now, Status status) noexcept;
+
+        Status enterFault (TimePoint now, Status status) noexcept;
+
+        Status process (TimePoint now, const CueOperatorInput& input) noexcept;
+
+        Status processIdle (TimePoint now, const CueOperatorInput& input) noexcept;
+
+        Status processReview (TimePoint now, const CueOperatorInput& input) noexcept;
+
+        Status processWaiting (TimePoint now, const CueOperatorInput& input) noexcept;
+
         Status processConfirmation (TimePoint               now,
                                     const CueOperatorInput& input) noexcept;
-        Status processActive  (TimePoint now, const CueOperatorInput& input) noexcept;
+        Status processActive (TimePoint now, const CueOperatorInput& input) noexcept;
+
+        Status finishCue (TimePoint now, CueAuditEvent firstEvent,
+                          Status firstStatus) noexcept;
         void   refreshElapsed (TimePoint now) noexcept;
-        bool   hasChord       (const CueOperatorInput& input) const noexcept;
+
+        bool   hasChord (const CueOperatorInput& input) const noexcept;
+
+        bool   sameInput (const CueOperatorInput& left,
+                          const CueOperatorInput& right) const noexcept;
 
         InertCuePlan         plan_;
         Duration             confirmationWindow_;
         CueAuditBuffer&      audit_;
         CueSchedulerSnapshot snapshot_;
         TimePoint            planStartedAt_;
-        TimePoint            confirmationRequestedAt_;
+        TimePoint            cueShownAt_;
         TimePoint            lastUpdatedAt_;
+        CueOperatorInput     lastInput_;
         bool                 planStarted_;
         bool                 hasLastUpdate_;
         bool                 initialized_;
