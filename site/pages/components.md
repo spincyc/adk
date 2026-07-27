@@ -50,6 +50,10 @@ Status meanings:
 | Endpoint | `PulseCapture`, `MegaPulseCaptureIo` | Hardware experimental | One interrupt-capable pin and interrupt line |
 | Behavior | `InfraredDecoder` | Host verified | Immutable classic NEC pulse evidence |
 | Value codec | `InfraredRecord` | Host verified | Fixed receive-only observation record |
+| Value codec | `TelemetryPacketCodec` | Host verified | Exact 19-byte ADK-owned receive-only packet |
+| Behavior | `ObservationTracker` | Host verified | Local receipt time, sequence, quality, and freshness |
+| Adapter | `PacketReceiver` | Host verified | Fixed-capacity caller-supplied packet queue |
+| Behavior | `TelemetryEvidenceModel` | Host verified | Visible packet and freshness evidence |
 | Later layers | Buses, sensors, actuators | Planned | See catalog |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.
