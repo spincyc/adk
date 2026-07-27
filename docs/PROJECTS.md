@@ -9,6 +9,12 @@ exists. A project is publishable only when its component interfaces, host
 fakes, Mega 2560 sketch, HTML guide, PDF field lesson, and acceptance evidence
 are complete.
 
+## Current status
+
+The Reaction Timer (003) and Simon engine (006) are implemented and host
+verified. Their APIs and lessons are experimental; Mega 2560 bench acceptance
+remains open. Projects 009--030 are briefs, not implemented claims.
+
 ## Common project rules
 
 - Use the first-class ADK interfaces. Imported examples live under `legacy/`.
@@ -21,6 +27,10 @@ are complete.
 - Test nominal behavior, boundaries, timestamp wraparound, initialization
   rollback, repeated shutdown, and injected hardware failures.
 - Leave every endpoint inert after shutdown. Disconnect power before rewiring.
+- Keep a debug LED, test point, or status pattern active beside the primary
+  behavior. Budget its pin, current, timer use, claim conflicts, and safe state.
+- Verify diagnostic and primary traces together. Serial may add detail but is
+  never required to identify startup, ready, activity, and fault states.
 - Use only low-voltage, current-limited kit circuits. Motors, relays, and other
   loads require rated drivers and separate supplies where specified.
 - Keep HTML concise and searchable. Use PDFs for bench procedure, drawings,
@@ -47,8 +57,9 @@ not change the deterministic behavior interface or its tests.
 ## Lesson 001 practice — Diagnostic beacon
 
 **Build:** A button-free status beacon that runs a deterministic startup
-self-test, blinks an LED without blocking, reports resource-claim failures over
-serial, and returns its pin to high impedance on shutdown.
+self-test, blinks an LED without blocking, reports resource-claim failures as
+a status pattern and optionally over Serial, and returns its pin to high
+impedance on shutdown.
 
 **Builds on:** Board context, lifecycle, pin claims, monotonic time,
 `DigitalOutput`, and `MonoLed`.

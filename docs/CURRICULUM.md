@@ -6,6 +6,16 @@ lesson is supported yet. Material moved to `legacy/` is historical context,
 not a prerequisite and not a statement of the current API. Published lessons
 use the first-class RAII interfaces.
 
+## Current status
+
+Lessons 001--006 have implementations, deterministic host tests, and lesson
+sources. They remain experimental. Host verification does not imply that the
+circuits have passed their Mega 2560 bench cards; physical acceptance is open
+until measured results are published. Lessons 007--030 are planned.
+
+The fixed resource registry uses 17 bytes: 11 ownership bytes plus six shared
+timer counters. It uses no heap allocation.
+
 ## Cadence
 
 Two component lessons introduce one small layer at a time. Every third lesson
@@ -101,6 +111,16 @@ the external-power boundary introduced in `017`.
 | Infrared and passive radio observation | 025--026 | 027 | Observation only |
 | Fault injection and cue scheduling | 028--029 | 030 | Capstone evidence |
 
+## Circuit-native debugging thread
+
+Every lesson keeps its primary circuit observable without requiring Serial.
+Reserve a debug LED, logic-level test point, or display status pattern early;
+name its pin or channel, current and timer cost, inactive state, and claim
+conflicts. Its pattern must identify startup, ready, activity, and fault states
+without changing primary timing. Serial may add detail, but remains optional.
+Host traces and the bench card verify the diagnostic signal alongside the
+primary outputs.
+
 ## Lesson package
 
 Every component lesson publishes:
@@ -112,6 +132,8 @@ Every component lesson publishes:
 - flash and static-RAM measurements;
 - an HTML reference page and a printable lesson PDF;
 - source links, datasheets, electrical limits, and a hardware acceptance card;
+- a debug LED, test point, or status-pattern table with resource and safe-state
+  costs;
 - explicit prerequisites, cleanup behavior, and next uses.
 
 Every project additionally publishes its dependency map, state graph, timing
@@ -144,7 +166,8 @@ A lesson is first-class only when all applicable gates pass:
 4. **Host verification:** strict-warning, no-exception, no-RTTI builds pass;
    tests cover success, boundary, conflict, rollback, and destruction paths.
 5. **Hardware verification:** the Mega 2560 sketch compiles, stays within its
-   size budget, names the tested board and supply, and passes its bench card.
+   size budget, names the tested board and supply, and passes its primary and
+   circuit-native diagnostic traces. Serial is optional.
 6. **Electrical safety:** current, voltage, power, isolation, inactive state,
    and external-power rules cite authoritative sources.
 7. **Documentation:** HTML, PDF, links, diagrams, metadata, and downloadable

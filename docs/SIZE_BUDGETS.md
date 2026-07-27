@@ -24,10 +24,14 @@ No supported library path may allocate dynamically. `new`, `delete`, `malloc`,
 function-local static state are prohibited. A non-owning view may refer to
 caller storage. Fixed-capacity storage must expose exhaustion as a `Result`.
 
-Virtual dispatch is prohibited in endpoints, components, and deterministic
-engines. Platform seams use compile-time binding or an explicit table of
-non-owning function pointers. A virtual interface requires measurements against
-the alternative, a lifetime proof, and an approved change to this document.
+Virtual dispatch is prohibited in hardware-owning endpoints and components.
+The bounded `CueSource` seam is permitted because fixed and seeded generators
+are genuinely substitutable, `Simon` holds a non-owning pointer whose source
+must outlive it, and the hierarchy uses no RTTI, allocation, or ownership
+transfer. Its flash, SRAM, object layout, vtable, and call cost remain part of
+the Simon budget. Any other virtual interface requires measurements against
+composition or an operation table, a lifetime proof, and an approved change to
+this document.
 
 ## Incremental library budgets
 
@@ -39,21 +43,41 @@ does not count as delivered firmware.
 | Layer or component | Flash delta | Static SRAM delta | `sizeof` ceiling |
 |---|---:|---:|---:|
 | Core values: `Status`, `Result`, time | 768 B | 8 B | 8 B each |
-| Mega profile and resource registry | 1,536 B | 192 B | 64 B registry |
+| Mega profile and resource registry | 1,536 B | 17 B | 17 B registry |
 | `DigitalOutput` | 768 B | 8 B | 16 B |
 | `MonoLed` | 512 B | 4 B | 24 B |
 | `DigitalInput` | 896 B | 8 B | 16 B |
 | `Button` | 1,536 B | 16 B | 48 B |
+| `ReactionTimer` engine | 2,048 B | 8 B | 48 B |
+| `PwmOutput` | 1,024 B | 8 B | 24 B |
+| `RgbLed` | 1,280 B | 8 B | 64 B |
+| `PiezoSounder` | 2,048 B | 16 B | 48 B |
+| `Simon` engine and cue sources | 4,096 B | 16 B | 96 B |
 | Scheduler and blink behavior | 1,280 B | 32 B | 64 B |
-| `PwmOutput` and `RgbLed` | 1,792 B | 16 B | 64 B |
 | `AnalogInput` and scalar sensors | 1,280 B | 16 B | 40 B |
-| Tone endpoint and piezo component | 2,048 B | 32 B | 48 B |
 | Bus owner plus one device adapter | 2,560 B | 64 B | 96 B |
-| Deterministic engine, excluding buffers | 4,096 B | 96 B | 128 B |
 
 One instance is measured unless the component contract says otherwise. Also
 measure two instances: the second instance may add state, but should not add a
 second copy of code or constant tables.
+
+`ResourceRegistry` is exactly 17 bytes on AVR: 11 bytes of exclusive-resource
+bits and six shared-timer counters. Its ceiling is its current representation,
+not spare capacity. Changing it requires a board-capability and SRAM review.
+
+The first `types.tsv` baseline through Simon must contain at least:
+
+```text
+ResourceRegistry  ResourceClaim  SharedResourceClaim
+DigitalOutput     MonoLed        DigitalInput
+Button            ReactionTimer PwmOutput
+Rgb               RgbLed         PiezoSounder
+FixedCueSource    XorShift32CueSource
+Simon
+```
+
+The type report is authoritative for AVR layout. Host `sizeof` results are not
+accepted because pointer width, alignment, and virtual-dispatch layout differ.
 
 Object-file size is a diagnostic, not a substitute for linked size. For each
 layer, the sum of `.text`, `.rodata`, `.data`, and `.bss` in its AVR objects
@@ -81,6 +105,25 @@ separately from maximum call depth and local storage.
 A lesson example should be much smaller than its nearest project ceiling.
 Debug text and serial diagnostics count; acceptance measurements use the
 documented release configuration, not a hand-edited quiet variant.
+
+## Required targets through Simon
+
+Size coverage follows the lesson cadence. A missing target is a failed gate,
+not an omitted row.
+
+| Boundary | Required linked measurement | Budget applied |
+|---|---|---|
+| Lesson 001 | Minimal `DigitalOutput` example | Component delta and global limits |
+| Lesson 002 | Minimal `DigitalInput` and `Button` example | Component deltas and global limits |
+| Lesson 003 | Reaction timer project | 12 KiB / 512 B project limit |
+| Lesson 004 | `PwmOutput` and `RgbLed` example | Component deltas and global limits |
+| Lesson 005 | `PiezoSounder` example | Component delta and global limits |
+| Lesson 006 | Simon project with four cues | 20 KiB / 1,024 B project limit |
+
+The light-and-color instrument remains a future project budget until it has a
+dedicated project example. Lesson 004 alone does not claim that project row.
+Simon measurements include one cue source implementation at a time; CI records
+both fixed and seeded sources so dead-code elimination cannot hide either.
 
 ## Measurement contract
 
@@ -135,6 +178,10 @@ Committed baselines live in `docs/size_baseline.tsv`. Every baseline row names
 the source commit and toolchain. The first implementation of a component adds
 its baseline and must satisfy the ceiling in this document.
 
+Until `docs/size_baseline.tsv`, all three reports, and `make size-check` exist,
+size status is **budget specified, not size verified**. Ordinary Arduino
+compilation does not satisfy this gate.
+
 ## CI policy
 
 `make size-check` fails when:
@@ -143,7 +190,8 @@ its baseline and must satisfy the ceiling in this document.
 - flash or static SRAM grows by more than 64 B and more than 2% from baseline;
 - a public owning type grows at all without an updated baseline;
 - a report, supported target, compiler identity, or baseline row is missing;
-- forbidden heap, exception, RTTI, or virtual-dispatch symbols appear.
+- forbidden heap, exception, or RTTI symbols appear;
+- virtual-dispatch symbols appear outside the reviewed `CueSource` hierarchy.
 
 Changes below both the 64-byte and 2% thresholds are reported but do not fail.
 A reduction updates the baseline in the same component or project commit so the
@@ -153,13 +201,18 @@ Never approve a baseline update whose only explanation is â€œthe build passes.â€
 
 CI should scan linked symbols and disassembly for allocation and exception
 runtime entry points, including operator `new`/`delete`, `malloc` family,
-`__cxa_throw`, `__cxa_allocate_exception`, `__cxa_pure_virtual`, and type-info
-symbols. The compile flags remain `-fno-exceptions -fno-rtti`; symbol scanning
-guards prebuilt dependencies and accidental platform calls.
+`__cxa_throw`, `__cxa_allocate_exception`, unexpected `__cxa_pure_virtual`,
+and type-info symbols. The compile flags remain `-fno-exceptions -fno-rtti`;
+symbol scanning guards prebuilt dependencies and accidental platform calls.
+
+The Simon report records the `CueSource`, `FixedCueSource`, and
+`XorShift32CueSource` vtables and virtual thunks explicitly. The gate rejects
+type-info, virtual inheritance, VTTs, or any additional virtual hierarchy.
+Growth beyond the existing bounded seam requires before-and-after evidence; it
+is not waived by raising Simon's budget.
 
 Stack estimates are review evidence until AVR stack instrumentation is added.
 Projects using interrupts must include interrupt frames, nested-call policy,
 and every automatic buffer in that estimate. Hardware acceptance should fill
 unused SRAM with a sentinel and record the observed high-water mark before a
 project is called size-verified.
-

@@ -3,9 +3,10 @@
 ADK is a deterministic, no-exception C++ component library and electronics
 course for the Arduino Mega 2560.
 
-The first-class API is host verified and experimental. Physical acceptance is
-tracked separately; no page claims bench verification without a recorded
-result. The original preview is frozen under `legacy/`.
+The first-class API through lesson 006 is host verified and experimental.
+Physical Mega 2560 acceptance is still open and tracked separately; a
+successful firmware build is not a bench result. The original preview is
+frozen under `legacy/`.
 
 ## First circuit
 
@@ -39,6 +40,9 @@ use heap allocation, exceptions, RTTI, or a hidden global dispatcher.
 - 001 — `DigitalOutput` and visible diagnostics
 - 002 — `DigitalInput` and pull-up wiring
 - 003 — `Button` plus deterministic Reaction Timer
+- 004 — `PwmOutput` and `RgbLed`
+- 005 — nonblocking `PiezoSounder`
+- 006 — deterministic Simon engine
 - Every third lesson is a multi-component project
 
 See the [live course](https://spincyc.github.io/adk/),
@@ -66,6 +70,7 @@ make upload EXAMPLE=Lesson001DigitalOutput PORT=/dev/ttyACM0
 - [Development hierarchy](docs/DEVELOPMENT.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Components](docs/COMPONENTS.md)
+- [Projects](docs/PROJECTS.md)
 - [Testing](docs/TESTING.md)
 - [Safety](docs/SAFETY_MODEL.md)
 - [Style](docs/STYLE.md)

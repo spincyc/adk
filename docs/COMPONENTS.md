@@ -2,8 +2,10 @@
 
 This is the planning map for first-class ADK interfaces. It complements
 `CURRICULUM.md`: that file defines teaching order; this file defines ownership,
-composition, resources, and test seams. Names are targets until their public
-headers land. Legacy interfaces are not dependencies.
+composition, resources, and test seams. Interfaces through lesson 006 are
+implemented, host verified, and experimental. Later names are targets until
+their public headers land. Mega 2560 bench acceptance is still open. Legacy
+interfaces are not dependencies.
 
 ## Design rule
 
@@ -54,6 +56,10 @@ still lack PWM, interrupt, or analog-input capability.
 | `ResourceClaim` | One active lease | Move-only RAII release | Scope exit and stack unwinding | 001 |
 | `UpdateGroup` | Borrowed updatable objects | Stable deterministic order | Recorded call order and mutation attempts | 003 |
 
+`ResourceRegistry` has a fixed 17-byte payload: 11 bytes track exclusive
+resources and six counters track shared Mega timer claims. It does not
+allocate.
+
 ### Endpoints
 
 Endpoints own electrical or peripheral configuration. Components translate
@@ -61,42 +67,42 @@ that configuration into domain meaning.
 
 | Interface | Resources | Key policy | Test seam | Lesson |
 |---|---|---|---|---:|
-| `DigitalOutput` | `Pin` | Named active/inactive levels; high-impedance generic shutdown | `DigitalIoBackend` write/mode trace | 002 |
-| `DigitalInput` | `Pin` | Floating, pull-up, or supported pull-down; exposes electrical level | Scripted sample backend | 004 |
-| `PwmOutput` | `Pin`, compatible `Timer` channel | Bounded duty cycle and explicit frequency | PWM configuration trace | 007 |
-| `AnalogInput` | `Pin`, borrowed `Adc` | Raw sample and explicit reference; no hidden filtering | Supplied sample sequence | 010 |
-| `PulseInput` | `Pin`, optional `Interrupt`/`Timer` | Timeout differs from zero-width pulse | Timestamped edge trace | 022 |
-| `ToneOutput` | `Pin`, `Timer` | Frequency/duration without blocking | Timer and pin event trace | 008 |
-| `ServoOutput` | `Pin`, `Timer`, `PowerDomain` | Bounded pulse width; inactive on shutdown | Pulse trace and external-power fake | 020 |
+| `DigitalOutput` | `Pin` | Named active/inactive levels; high-impedance generic shutdown | `DigitalIoBackend` write/mode trace | 001 |
+| `DigitalInput` | `Pin` | Floating or pull-up input; exposes electrical level | Scripted sample backend | 002 |
+| `PwmOutput` | `Pin`, shared compatible `Timer` | Bounded duty cycle at board default frequency | PWM configuration trace | 004 |
+| `AnalogInput` | `Pin`, borrowed `Adc` | Raw sample and explicit reference; no hidden filtering | Supplied sample sequence | 007 |
+| `PulseInput` | `Pin`, optional `Interrupt`/`Timer` | Timeout differs from zero-width pulse | Timestamped edge trace | 019 |
+| `ToneOutput` | `Pin`, `Timer` | Frequency/duration without blocking | Timer and pin event trace | 005 |
+| `ServoOutput` | `Pin`, `Timer`, `PowerDomain` | Bounded pulse width; inactive on shutdown | Pulse trace and external-power fake | 017 |
 | `SerialBus` | `SerialPort` | Explicit framing, baud, and timeout | Byte-stream fake | 025 |
-| `I2cBus` / `I2cDevice` | `I2cBus`, address lease | One transaction owner; bounded transfers | Register-device fake and NACK injection | 016 |
-| `SpiBus` / `SpiDevice` | `SpiBus`, chip-select `Pin` | Per-device mode/clock restored each transaction | Transfer trace and bus-state assertions | 017 |
-| `Storage` | `StorageRegion` | Bounded reads; explicit sync and partial-write result | In-memory media with failure offsets | 017 |
+| `I2cBus` / `I2cDevice` | `I2cBus`, address lease | One transaction owner; bounded transfers | Register-device fake and NACK injection | 022 |
+| `SpiBus` / `SpiDevice` | `SpiBus`, chip-select `Pin` | Per-device mode/clock restored each transaction | Transfer trace and bus-state assertions | 022 |
+| `Storage` | `StorageRegion` | Bounded reads; explicit sync and partial-write result | In-memory media with failure offsets | 022 |
 
 ### Circuit components
 
 | Component | Composes | Semantic contract | First project |
 |---|---|---|---:|
 | `MonoLed` | `DigitalOutput` | `on()`, `off()`, inactive destruction | 003 |
-| `Button` | `DigitalInput`, clocked debounce state | Raw/stable state; one-cycle press/release/hold snapshots | 006 |
-| `ButtonGroup` | Borrowed `Button` objects | Chords and simultaneous-input policy; no event consumption | 006 |
-| `RgbLed` | Three `PwmOutput` objects | Color and brightness within current budget | 009 |
-| `PiezoSounder` | `ToneOutput` | Named cues; silence is safe state | 009 |
-| `Potentiometer` | `AnalogInput`, calibration | Position with explicit range and uncertainty | 012 |
-| `Photoresistor` | `AnalogInput`, divider model | Relative illumination; saturation is distinct | 012 |
-| `Thermistor` | `AnalogInput`, calibration model | Temperature result or open/short fault | 012 |
-| `ShiftRegister` | Data/clock/latch `DigitalOutput` objects | Atomic presented value | 015 |
-| `SevenSegmentDisplay` | `ShiftRegister` or direct outputs | Glyph model separated from scanning | 015 |
+| `Button` | `DigitalInput`, clocked debounce state | Raw/stable state; one-cycle press/release/hold snapshots | 003 |
+| `ButtonGroup` | Borrowed `Button` objects | Chords and simultaneous-input policy; no event consumption | 003 |
+| `RgbLed` | Three `PwmOutput` objects | Color and brightness within current budget | 006 |
+| `PiezoSounder` | Pin and timer claims | Named timed cues; silence is safe state | 006 |
+| `Potentiometer` | `AnalogInput`, calibration | Position with explicit range and uncertainty | 009 |
+| `Photoresistor` | `AnalogInput`, divider model | Relative illumination; saturation is distinct | 009 |
+| `Thermistor` | `AnalogInput`, calibration model | Temperature result or open/short fault | 009 |
+| `ShiftRegister` | Data/clock/latch `DigitalOutput` objects | Atomic presented value | 012 |
+| `SevenSegmentDisplay` | `ShiftRegister` or direct outputs | Glyph model separated from scanning | 012 |
 | `CharacterDisplay` | Parallel endpoints or `I2cDevice` | Presentation buffer separated from application state | 015 |
-| `Rtc` | `I2cDevice` | Validated civil time plus oscillator/power-loss status | 018 |
-| `SdCard` | `SpiDevice`, `Storage` | Append/sync outcomes preserve audit state | 018 |
-| `Keypad` | Row outputs, column inputs | Debounced key/chord snapshots | 021 |
-| `Joystick` | Two `AnalogInput`, optional `Button` | Calibrated axes and dead zone | 021 |
+| `Rtc` | `I2cDevice` | Validated civil time plus oscillator/power-loss status | 024 |
+| `SdCard` | `SpiDevice`, `Storage` | Append/sync outcomes preserve audit state | 024 |
+| `Keypad` | Row outputs, column inputs | Debounced key/chord snapshots | 018 |
+| `Joystick` | Two `AnalogInput`, optional `Button` | Calibrated axes and dead zone | 018 |
 | `RotaryEncoder` | Two inputs, optional interrupt claims | Direction/steps from supplied edge timestamps | 021 |
-| `Servo` | `ServoOutput` | Calibrated bounded position, never implied load safety | 021 |
-| `UltrasonicRanger` | Trigger output, `PulseInput` | Distance, timeout, and out-of-range are distinct | 024 |
-| `PirSensor` | `DigitalInput` | Warm-up and motion state are explicit | 024 |
-| `MotorDriver` | Direction outputs, PWM enable, `PowerDomain` | Coast, brake, direction, and interlock are named | 024 |
+| `Servo` | `ServoOutput` | Calibrated bounded position, never implied load safety | 018 |
+| `UltrasonicRanger` | Trigger output, `PulseInput` | Distance, timeout, and out-of-range are distinct | 021 |
+| `PirSensor` | `DigitalInput` | Warm-up and motion state are explicit | 021 |
+| `MotorDriver` | Direction outputs, PWM enable, `PowerDomain` | Coast, brake, direction, and interlock are named | 021 |
 | `Relay` | `DigitalOutput`, `PowerDomain` | Inert load only in lessons; inactive default | 024 |
 | `InfraredReceiver` | `PulseInput` or serial endpoint | Raw timing evidence separated from decoder | 027 |
 | `RadioObserver` | Receive-only bus/serial device | Passive timestamped observations; no transmit API | 027 |
@@ -109,29 +115,29 @@ architectural layers.
 
 | Kit part | Adapter composition | Placement |
 |---|---|---:|
-| Active buzzer | `DigitalOutput` + `ActiveBuzzer` | 008 |
-| Passive buzzer | `ToneOutput` + `PiezoSounder` | 008 |
-| 74HC595 | `ShiftRegister` | 013 |
-| 4-digit seven-segment | `ShiftRegister`/multiplex outputs + display model | 013 |
-| 8x8 LED matrix | Shift-register or SPI transport + matrix model | 014--015 |
+| Active buzzer | `DigitalOutput` + `ActiveBuzzer` | 005 |
+| Passive buzzer | Timer and pin claims + `PiezoSounder` | 005 |
+| 74HC595 | `ShiftRegister` | 010 |
+| 4-digit seven-segment | `ShiftRegister`/multiplex outputs + display model | 010 |
+| 8x8 LED matrix | Shift-register or SPI transport + matrix model | 010--012 |
 | HD44780 / I2C LCD | Parallel endpoints or `I2cDevice` + display model | 014 |
-| DHT11/DHT22 | Timed digital endpoint + validated sample | 011 or extension |
-| TMP36 / LM35 | `AnalogInput` + linear calibration | 011 |
-| LDR module | `AnalogInput`, optional threshold `DigitalInput` | 011 |
-| Soil moisture / water level | `AnalogInput` + corrosion-aware sampling policy | 011/018 |
-| Sound sensor | Analog envelope and optional threshold input | 011 |
-| HC-SR04 | `UltrasonicRanger` | 022 |
-| PIR module | `PirSensor` | 022 |
-| MPU6050 | `I2cDevice` + inertial sample model | 016/018 extension |
-| DS1307/DS3231 | `Rtc` | 017--018 |
-| MicroSD module | `SpiDevice` + `SdCard` | 017--018 |
-| Membrane keypad | `Keypad` | 019 |
-| Analog joystick | `Joystick` | 019 |
-| KY-040 encoder | `RotaryEncoder` | 019 |
-| SG90 servo | `ServoOutput` + `Servo` + external supply boundary | 020--021 |
-| 28BYJ-48 + ULN2003 | Four outputs + bounded stepper sequencer | 023--024 extension |
-| L293D/L298N driver | `MotorDriver` + external supply boundary | 023--024 |
-| DC motor/fan | Load behind `MotorDriver`; never direct from a pin | 023--024 |
+| DHT11/DHT22 | Timed digital endpoint + validated sample | 013 |
+| TMP36 / LM35 | `AnalogInput` + linear calibration | 008 |
+| LDR module | `AnalogInput`, optional threshold `DigitalInput` | 008 |
+| Soil moisture / water level | `AnalogInput` + corrosion-aware sampling policy | 008/024 |
+| Sound sensor | Analog envelope and optional threshold input | 008 |
+| HC-SR04 | `UltrasonicRanger` | 019 |
+| PIR module | `PirSensor` | 019 |
+| MPU6050 | `I2cDevice` + inertial sample model | 022 extension |
+| DS1307/DS3231 | `Rtc` | 022--024 |
+| MicroSD module | `SpiDevice` + `SdCard` | 022--024 |
+| Membrane keypad | `Keypad` | 016 |
+| Analog joystick | `Joystick` | 016 extension |
+| KY-040 encoder | `RotaryEncoder` | 020 |
+| SG90 servo | `ServoOutput` + `Servo` + external supply boundary | 017--018 |
+| 28BYJ-48 + ULN2003 | Four outputs + bounded stepper sequencer | 020--021 extension |
+| L293D/L298N driver | `MotorDriver` + external supply boundary | 020--021 |
+| DC motor/fan | Load behind `MotorDriver`; never direct from a pin | 020--021 |
 | Relay module | `Relay` + inert test load and isolation review | 023--024 |
 | IR receiver/remote | `InfraredReceiver` + decoder | 025--027 |
 | RFID module | SPI/UART device + identity record | 025/027 extension |
@@ -148,9 +154,9 @@ pins behind a component's back.
 | Behavior | Inputs | Outputs | Deterministic seam | Project |
 |---|---|---|---|---:|
 | `Blink` / heartbeat | `TimePoint`, health state | `MonoLed` intent | Supplied clock and output trace | 003 |
-| Reaction state machine | Button snapshots, seed/config | LED and cue intents | Fixed delay source and input trace | 006 |
-| Simon engine | Button/cue IDs, seed/config, time | Cue/phase model | Versioned PRNG, manual clock, replay trace | 009 |
-| Threshold controller | Calibrated samples, hysteresis config | Color/brightness intent | Sample trace | 012 |
+| Reaction state machine | Button snapshots, seed/config | LED and cue intents | Fixed delay source and input trace | 003 |
+| Simon engine | Button/cue IDs, seed/config, time | Cue/phase model | Versioned PRNG, manual clock, replay trace | 006 |
+| Threshold controller | Calibrated samples, hysteresis config | Color/brightness intent | Sample trace | 009 |
 | Instrument model | Controls and channel samples | Presentation model | Input/output snapshots | 015 |
 | Logger | Sample records and timestamps | Append/sync requests | Memory storage and failure offsets | 018 |
 | Lock model | Key events, timeout, attempt policy | Latch/display/log intents | Manual clock and replay trace | 021 |
@@ -214,22 +220,22 @@ Projects remain every third lesson so each pair of component lessons is
 immediately exercised:
 
 ```text
-001 foundation
-002 output + LED        -> 003 heartbeat/output exerciser
-004 input
-005 button              -> 006 reaction timer
-007 PWM + RGB
-008 sound               -> 009 Simon
-010 analog + calibration
-011 sampled sensors     -> 012 adaptive night-light
-013 shift/display
-014 character display   -> 015 bench instrument
-016 I2C
-017 SPI + storage       -> 018 environmental logger
-019 rich input
-020 servo boundary      -> 021 lock simulator
-022 proximity
-023 motor/relay intent  -> 024 tabletop rover
+001 output + LED
+002 input               -> 003 button + reaction timer
+004 PWM + RGB
+005 sound               -> 006 Simon
+007 analog + calibration
+008 sampled sensors     -> 009 adaptive night-light
+010 shift/display
+011 timed junction      -> 012 traffic junction
+013 environmental sensor
+014 display + records   -> 015 environmental station
+016 keypad
+017 servo + storage     -> 018 access-control trainer
+019 proximity
+020 motor + encoder     -> 021 bench rover
+022 buses + storage
+023 relay simulation    -> 024 greenhouse controller
 025 infrared receive
 026 passive radio       -> 027 telemetry console
 028 fault simulation
