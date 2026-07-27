@@ -22,6 +22,7 @@
 #include "pwm_output.h"
 #include "reaction_timer.h"
 #include "rgb_led.h"
+#include "rover_controller.h"
 #include "resource.h"
 #include "runtime.h"
 #include "sampled_signal.h"
