@@ -1,0 +1,115 @@
+name: Quality
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+    workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+    group: quality-${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    software:
+        name: Host, style, site, and lessons
+        runs-on: ubuntu-24.04
+        timeout-minutes: 20
+        permissions:
+            contents: read
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+              with:
+                  persist-credentials: false
+
+            - name: Set up Python
+              uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+              with:
+                  python-version: "3.13"
+
+            - name: Install documentation tools
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install --no-install-recommends \
+                      ghostscript \
+                      poppler-utils \
+                      texlive-latex-base \
+                      texlive-latex-extra \
+                      texlive-latex-recommended \
+                      texlive-pictures
+                  python -m pip install --disable-pip-version-check mkdocs==1.6.1
+
+            - name: Run host and style checks
+              run: make check
+
+            - name: Build and check lessons
+              run: make lessons-check
+
+    firmware:
+        name: Mega 2560 firmware
+        runs-on: ubuntu-24.04
+        timeout-minutes: 20
+        permissions:
+            contents: read
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+              with:
+                  persist-credentials: false
+
+            - name: Install Arduino CLI
+              env:
+                  ARDUINO_CLI_ARCHIVE_SHA256: f4e49fb6f5d6a043f7df792ef057143c542140508081aaa52d214a9ab33141c8
+                  ARDUINO_CLI_VERSION: 1.5.0
+              run: |
+                  archive="arduino-cli_${ARDUINO_CLI_VERSION}_Linux_64bit.tar.gz"
+                  url="https://github.com/arduino/arduino-cli/releases/download/v${ARDUINO_CLI_VERSION}/${archive}"
+                  curl --fail --location --silent --show-error --output "${RUNNER_TEMP}/${archive}" "${url}"
+                  echo "${ARDUINO_CLI_ARCHIVE_SHA256}  ${RUNNER_TEMP}/${archive}" | sha256sum --check
+                  tar -xzf "${RUNNER_TEMP}/${archive}" -C "${RUNNER_TEMP}" arduino-cli
+                  mkdir -p "${RUNNER_TEMP}/bin"
+                  install "${RUNNER_TEMP}/arduino-cli" "${RUNNER_TEMP}/bin/arduino-cli"
+                  echo "${RUNNER_TEMP}/bin" >> "${GITHUB_PATH}"
+
+            - name: Install AVR core
+              run: |
+                  arduino-cli core update-index
+                  arduino-cli core install arduino:avr
+
+            - name: Compile and report sizes
+              shell: bash
+              run: |
+                  set -o pipefail
+                  make arduino 2>&1 | tee "${RUNNER_TEMP}/arduino-build.log"
+                  {
+                      echo "## Mega 2560 firmware sizes"
+                      echo
+                      echo '```text'
+                      grep -E '^(Sketch uses|Global variables use)' "${RUNNER_TEMP}/arduino-build.log"
+                      echo '```'
+                  } >> "${GITHUB_STEP_SUMMARY}"
+
+    arduino-lint:
+        name: Arduino library lint
+        runs-on: ubuntu-24.04
+        timeout-minutes: 10
+        permissions:
+            contents: read
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+              with:
+                  persist-credentials: false
+
+            - name: Lint library
+              uses: arduino/arduino-lint-action@9a3603836c75e41753e531167395edeb90ba5dae # v3.0.0
+              with:
+                  compliance: strict
+                  library-manager: true
+                  project-type: library
+                  recursive: true
+                  verbose: true
