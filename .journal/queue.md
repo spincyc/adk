@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-07-27T22:29:50Z"
+generated_at: "2026-07-27T22:30:30Z"
 task_count: 18
 ---
 
@@ -10,12 +10,11 @@ This file is a rebuildable view. Task `state.md` files are authoritative.
 
 ## Active
 
-None.
+- `d6a8e538-7ae1-4522-9b37-ffa79055b36b` — complete and promote lesson 029 [active, high] (depends on d79a95ee-e892-427e-9c6b-7fc151608dc5)
 
 ## Queued
 
 - `32f5c784-de10-4f37-ae31-0f611697c8e3` — execute the full clean release-readiness gate [queued, high] (depends on efdb8701-d7fe-490e-9a85-d0116f37e4fc, 3cbaec90-9c9d-421e-b129-34bbdb477340, cb197bb3-b7e1-4054-8bfe-92f7f27963f2, 957366fa-d370-4060-89a3-40ec5c4a1722, 73b4e704-b483-424e-ab0c-6ffcac540ef3)
-- `d6a8e538-7ae1-4522-9b37-ffa79055b36b` — complete and promote lesson 029 [queued, high] (depends on d79a95ee-e892-427e-9c6b-7fc151608dc5)
 - `efdb8701-d7fe-490e-9a85-d0116f37e4fc` — implement lesson 030 capstone [queued, high] (depends on d6a8e538-7ae1-4522-9b37-ffa79055b36b)
 - `3cbaec90-9c9d-421e-b129-34bbdb477340` — repair bootstrap and serial tooling [queued, normal]
 - `73b4e704-b483-424e-ab0c-6ffcac540ef3` — reconcile release and lint policy [queued, normal] (depends on efdb8701-d7fe-490e-9a85-d0116f37e4fc, 3cbaec90-9c9d-421e-b129-34bbdb477340, cb197bb3-b7e1-4054-8bfe-92f7f27963f2, 957366fa-d370-4060-89a3-40ec5c4a1722)
