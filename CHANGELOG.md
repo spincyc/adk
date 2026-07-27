@@ -10,15 +10,17 @@
 - Replaced enum-style success comparisons with the compact `Status` value API:
   `ok()`, `error()`, and centrally classified `transient()`.
 - Added narrative Mega examples and complementary monochrome HTML/PDF lessons
-  through lesson 017.
+  through lesson 018.
 - Added bounded servo intent, versioned configuration records, direct
   Timer5/D44 pulse ownership, and explicit external-power admission.
+- Added the deterministic inert access trainer with keypad policy, visible
+  lockout evidence, soft-latch intent, and bounded audit presentation.
 - Added executable USB route-controller and USB/IP research gates, plus the
   transparent USB and HDMI mesh architecture and safety boundaries.
 - Added complete-kit inventory, component-family, safety, pacing, and project
   plans extending the curriculum without renumbering existing lessons.
 
-Interfaces through lesson 017 are host verified and experimental. Physical
+Interfaces through lesson 018 are host verified and experimental. Physical
 Mega 2560 acceptance, USB/HDMI endpoint hardware, interoperability, and
 performance evidence remain open and are not implied by this version.
 

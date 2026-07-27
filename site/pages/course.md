@@ -13,7 +13,7 @@ lesson number divisible by three is project-bearing.
 | 014–015 | Character display and stable records | Environmental station | Host verified; bench open |
 | 016 | Matrix keypad | — | Host verified; bench open |
 | 017 | Bounded servo | — | Host verified; E2 bench open |
-| 018 | Keypad policy and audit intent | Inert access trainer | Active |
+| 018 | Keypad policy and audit intent | Inert access trainer | Host verified; E1 bench open |
 | 019–021 | Range sensor, motor driver, encoder | Bench rover | Planned |
 | 022–024 | RTC, storage, bus and relay simulation | Greenhouse controller | Planned |
 | 025–027 | Infrared and receive-only radio | Telemetry console | Planned |
