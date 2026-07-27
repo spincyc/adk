@@ -5,6 +5,7 @@
 #include "digital_input.h"
 #include "digital_output.h"
 #include "mono_led.h"
+#include "reaction_timer.h"
 #include "resource.h"
 #include "runtime.h"
 #include "status.h"
