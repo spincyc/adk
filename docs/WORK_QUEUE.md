@@ -20,8 +20,8 @@ briefs come from [the project catalog](PROJECTS.md).
 
 | Boundary | State | Required next result |
 |---|---|---|
-| [001--018](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [019--021](design/LESSONS_019_021_ROVER.md) | Active integration | Valid range, safe motor intent, and wheels-raised rover in dependency order; stop dominance and separate power evidence are mandatory |
+| [001--019](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
+| [020--021](design/LESSONS_019_021_ROVER.md) | Active integration | Safe motor intent and wheels-raised rover in dependency order; stop dominance and separate power evidence are mandatory |
 | [022--024](design/LESSONS_022_024.md) | Queued | Owned bus/storage transaction boundary, inert load policy, and greenhouse project |
 | [025--027](design/LESSONS_025_027_TELEMETRY.md) | Queued | Decoded owned IR, lawful receive-only observations, and telemetry console |
 | [028--030](design/LESSONS_028_030.md) | Queued | Fault/continuity models, deterministic cue scheduling, and physically inert show-cue simulator |

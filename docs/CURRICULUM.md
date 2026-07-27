@@ -8,9 +8,9 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--018 have first-class implementation work, deterministic host
+Lessons 001--019 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
-bench cards remain open. Lessons 019--021 are active integration boundaries;
+bench cards remain open. Lessons 020--021 are active integration boundaries;
 lessons 022--030 remain the
 ordered delivery queue. The [work queue](WORK_QUEUE.md) records later
 expansion, research, physical, and publication work.
@@ -58,7 +58,8 @@ For every lesson, the queued implementation order is:
 | 016 | Host verified; bench open | Keypad events and matrix scanning | Key echo/status pattern and row scan test point |
 | 017 | Host verified; bench open | Bounded servo intent and versioned configuration | Command-position marker and independent power evidence |
 | 018 | Host verified; bench open | Inert access trainer | Soft-latch state indicator and bounded event-audit presentation |
-| 019--021 | Active integration | Range validity, motor intent, supervisory stop, and bench rover | Echo timing point, direction/enable indicators, and independent stop state |
+| 019 | Host verified; bench open | Range validity and explicit echo timing | Echo timing point and distinct timeout/range evidence |
+| 020--021 | Active integration | Motor intent, supervisory stop, and bench rover | Direction/enable indicators and independent stop state |
 | 022--024 | Queued | Owned `I2cBus`/`SpiBus`, RTC, SD records, constrained simulated loads, and greenhouse controller | Bus activity points, record acknowledgement, load-state LEDs, and a fault pattern |
 | 025--027 | Queued | Decoded infrared input, lawful receive-only radio records, scheduling, and telemetry console | Capture indicator, timestamp/age display, stale-data alarm, and stored replay record |
 | 028--030 | Queued capstone | Injectable continuity/fault models, deterministic cue scheduling, operator confirmation, and inert show-cue simulator | Redundant state indicators, inert channel lamps, stop dominance, and a complete audit log |
