@@ -7,6 +7,39 @@ come from [the development contract](DEVELOPMENT.md), and detailed project
 briefs come from [the project catalog](PROJECTS.md) and the
 [extended cadence](projects/component_project_cadence.md).
 
+## Restart checkpoint
+
+Last reconciled: 2026-07-27 on `main`.
+
+- Lessons 001--028 are promoted and host verified; physical cards remain open.
+- Lesson 029 has a committed implementation brief and first-class scheduler and
+  audit core. Next: independent audit, normal build registration, narrative
+  example, measured size, HTML/PDF package, and boundary promotion.
+- Lesson 030 has a committed implementation contract. Implementation follows
+  Lesson 029 promotion.
+- The USB research track has a deterministic product-native `Cau`/`Pau`
+  `ColdMove` model. It performs no USB action and makes no transparency claim.
+- The exact kit inventory template and honest planned-versus-supported coverage
+  language are committed. Physical inventory records remain open.
+
+Do not lose these release blockers:
+
+1. refresh the stale but reproducibly rebuilt lesson 012 PDF;
+2. add `git` to the Arch bootstrap package set, pin the local AVR core to the CI
+   version, preserve monitor failures through the logging pipeline, and correct
+   the stale `make serial-monitor` lesson command;
+3. add native archive/export and consumer-smoke targets before claiming
+   general non-Arduino C++ installation;
+4. finish the landing/navigation audit and add post-deploy checks for the
+   newest lesson and PDF;
+5. run the full clean quality gate, release, push, and verify GitHub Pages only
+   after the active lesson boundary is clean.
+
+The canonical post-030 order remains lessons 031--081, one implementation-depth
+three-lesson brief at a time. HDMI and USB product work remain research tracks;
+physical endpoints, interoperability, performance, compliance, and shared-LAN
+qualification are not yet supported.
+
 ## Status meanings
 
 | State | Meaning |
