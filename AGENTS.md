@@ -16,6 +16,11 @@ project integration, and before any release or publication audit. Update it in
 the same boundary whenever work is added, completed, split, deferred, or
 removed for a documented reason.
 
+Continue through all safe, discoverable queued work without routine approval.
+Commit coherent dependency boundaries, record blockers with their next action,
+and keep unrelated work moving. Ask only one consequential question at a time
+when the canonical documents and prior decisions cannot resolve it.
+
 `legacy/` is frozen and unsupported. Do not include it from first-class code,
 examples, tests, or release metadata.
 
