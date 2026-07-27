@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-27T23:23:34Z"
+updated_at: "2026-07-27T23:25:29Z"
 ---
 
 # Goal

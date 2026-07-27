@@ -15,7 +15,7 @@ cleanup()
     rm -rf -- "${temporaryRoot}"
 }
 
-trap cleanup EXIT HUP INT TERM
+trap cleanup 0 HUP INT TERM
 
 git archive \
     --format=tar \
@@ -39,7 +39,7 @@ do
         }
 done
 
-for excludedPath in build legacy mk scripts site tests
+for excludedPath in build doc docs legacy mk research scripts site tests
 do
     test ! -e "${libraryRoot}/${excludedPath}" || \
         {
@@ -48,7 +48,8 @@ do
         }
 done
 
-if find "${libraryRoot}" -type l -o -type f -perm /111 | grep -q .
+unsafePath=$(find "${libraryRoot}" \( -type l -o \( -type f -perm /111 \) \) -print -quit)
+if test -n "${unsafePath}"
 then
     echo "Package contains a symlink or executable file." >&2
     exit 1

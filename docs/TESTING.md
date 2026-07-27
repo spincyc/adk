@@ -214,6 +214,10 @@ wraparound tests when timed, example, hardware checklist, HTML reference, and
 lesson PDF are present. Projects add composition traces and deterministic
 replay fixtures.
 
+These are component-boundary gates. The complete non-publishing release gate
+is `make release-check`; it additionally checks committed metadata, both clean
+archive consumers, and the registry-phase Arduino Lint policy.
+
 CI runs the same commands from a clean checkout. Local bootstrap uses stock
 Arch Linux package names, while both local bootstrap and CI install Arduino AVR
 core 1.8.8. GitHub Actions are pinned remotely. Tests must not require network
