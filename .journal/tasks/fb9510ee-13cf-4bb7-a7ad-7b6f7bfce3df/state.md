@@ -2,7 +2,7 @@
 schema_version: 1
 task_uuid: "fb9510ee-13cf-4bb7-a7ad-7b6f7bfce3df"
 title: "complete exact kit inventory"
-status: "queued"
+status: "active"
 priority: "normal"
 priority_reason: "Recovered audit prompt 12; ordered by the repository recovery audit."
 parent: null
@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-27T22:00:43Z"
+updated_at: "2026-07-27T23:37:13Z"
 ---
 
 # Goal
