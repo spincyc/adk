@@ -8,10 +8,11 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--006 have implementations, deterministic host tests, and lesson
-sources. They remain experimental. Host verification does not imply that the
-circuits have passed their Mega 2560 bench cards; physical acceptance is open
-until measured results are published. Lessons 007--030 are planned.
+Lessons 001--009 have first-class implementation work, deterministic host
+tests, canonical Mega 2560 examples, and lesson sources. They remain
+experimental. Host verification and firmware compilation do not imply that
+the circuits have passed their Mega 2560 bench cards; physical acceptance is
+open until measured results are published. Lessons 010--030 are planned.
 
 The fixed resource registry uses 17 bytes: 11 ownership bytes plus six shared
 timer counters. It uses no heap allocation.
@@ -33,7 +34,7 @@ supplies the shortest planned path through the library.
 | 005 | Component | Piezo sounder, tone, and timer ownership | Audible cues coexist with PWM or fail with a useful resource error |
 | 006 | Project-bearing | Deterministic Simon | Four buttons, four cues, sound, and a seeded sequence replay exactly |
 | 007 | Component | `AnalogInput`, potentiometer, and calibration | Raw samples map to explicit engineering ranges without hidden filtering |
-| 008 | Component | Photoresistor, thermistor, and sampled filtering | Filter state advances only from supplied samples and time |
+| 008 | Component | Calibration and sampled filtering | Filter state advances only from supplied samples; raw and filtered evidence remain visible |
 | 009 | Project-bearing | Adaptive night light | Calibrated sensing controls color, brightness, hysteresis, and diagnostics |
 | 010 | Component | Shift register and seven-segment display | Serialized output drives a readable display without blocking |
 | 011 | Component | Finite-state timing and pedestrian requests | Timed transitions remain explicit, nonblocking, and testable |
@@ -114,12 +115,30 @@ the external-power boundary introduced in `017`.
 ## Circuit-native debugging thread
 
 Every lesson keeps its primary circuit observable without requiring Serial.
-Reserve a debug LED, logic-level test point, or display status pattern early;
-name its pin or channel, current and timer cost, inactive state, and claim
-conflicts. Its pattern must identify startup, ready, activity, and fault states
-without changing primary timing. Serial may add detail, but remains optional.
-Host traces and the bench card verify the diagnostic signal alongside the
-primary outputs.
+Prefer the circuit's primary behavior when it proves the claim unambiguously.
+Compose an existing indicator when internal state needs another channel, and
+reserve a dedicated debug LED or test point when the primary behavior cannot
+separate likely causes. Name its pin or channel, current and timer cost,
+inactive state, and claim conflicts. Its pattern must identify startup, ready,
+activity, and fault states without changing primary timing. Serial may add
+detail, but remains optional. Host traces and the bench card verify the
+diagnostic signal alongside the primary outputs.
+
+Lessons 007--009 make the evidence chain explicit:
+
+```text
+shaft or light level
+    -> voltage at the named analog test point
+        -> raw ADC count
+            -> calibrated and filtered value
+                -> PWM duty and visible lamp state
+```
+
+Lesson 007 uses a potentiometer because it gives a controlled, repeatable
+voltage before environmental variability is introduced. Lesson 008 preserves
+raw and processed values side by side. Lesson 009 then applies the same method
+to a photoresistor, where open, short, saturation, noise, and threshold
+hysteresis become project evidence.
 
 ## Lesson package
 

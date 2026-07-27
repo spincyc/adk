@@ -2,9 +2,11 @@
 
 This is the planning map for first-class ADK interfaces. It complements
 `CURRICULUM.md`: that file defines teaching order; this file defines ownership,
-composition, resources, and test seams. Interfaces through lesson 006 are
-implemented, host verified, and experimental. Later names are targets until
-their public headers land. Mega 2560 bench acceptance is still open. Legacy
+composition, resources, and test seams. The lesson 009 slice is implemented,
+host verified, and experimental. A catalog name is still a target unless a
+matching public header has landed; in particular, lesson 009 models its
+photoresistor through `AnalogInput` and does not yet publish a
+`Photoresistor` adapter. Mega 2560 bench acceptance is still open. Legacy
 interfaces are not dependencies.
 
 ## Design rule
@@ -70,7 +72,7 @@ that configuration into domain meaning.
 | `DigitalOutput` | `Pin` | Named active/inactive levels; high-impedance generic shutdown | `DigitalIoBackend` write/mode trace | 001 |
 | `DigitalInput` | `Pin` | Floating or pull-up input; exposes electrical level | Scripted sample backend | 002 |
 | `PwmOutput` | `Pin`, shared compatible `Timer` | Bounded duty cycle at board default frequency | PWM configuration trace | 004 |
-| `AnalogInput` | `Pin`, borrowed `Adc` | Raw sample and explicit reference; no hidden filtering | Supplied sample sequence | 007 |
+| `AnalogInput` | `Pin` | Explicit raw sample; no hidden calibration or filtering | Supplied ADC sequence | 007 |
 | `PulseInput` | `Pin`, optional `Interrupt`/`Timer` | Timeout differs from zero-width pulse | Timestamped edge trace | 019 |
 | `ToneOutput` | `Pin`, `Timer` | Frequency/duration without blocking | Timer and pin event trace | 005 |
 | `ServoOutput` | `Pin`, `Timer`, `PowerDomain` | Bounded pulse width; inactive on shutdown | Pulse trace and external-power fake | 017 |
@@ -88,9 +90,10 @@ that configuration into domain meaning.
 | `ButtonGroup` | Borrowed `Button` objects | Chords and simultaneous-input policy; no event consumption | 003 |
 | `RgbLed` | Three `PwmOutput` objects | Color and brightness within current budget | 006 |
 | `PiezoSounder` | Pin and timer claims | Named timed cues; silence is safe state | 006 |
-| `Potentiometer` | `AnalogInput`, calibration | Position with explicit range and uncertainty | 009 |
+| `LinearCalibration` | Raw sample and two calibration points | Bounded integer mapping with explicit invalid configuration | 009 |
+| `MovingAverage` / `Deadband` | Supplied scalar samples | Fixed-capacity deterministic smoothing; raw value remains available | 009 |
 | `Photoresistor` | `AnalogInput`, divider model | Relative illumination; saturation is distinct | 009 |
-| `Thermistor` | `AnalogInput`, calibration model | Temperature result or open/short fault | 009 |
+| `Thermistor` | `AnalogInput`, calibration model | Temperature result or open/short fault | Later sensor work |
 | `ShiftRegister` | Data/clock/latch `DigitalOutput` objects | Atomic presented value | 012 |
 | `SevenSegmentDisplay` | `ShiftRegister` or direct outputs | Glyph model separated from scanning | 012 |
 | `CharacterDisplay` | Parallel endpoints or `I2cDevice` | Presentation buffer separated from application state | 015 |
@@ -156,7 +159,7 @@ pins behind a component's back.
 | `Blink` / heartbeat | `TimePoint`, health state | `MonoLed` intent | Supplied clock and output trace | 003 |
 | Reaction state machine | Button snapshots, seed/config | LED and cue intents | Fixed delay source and input trace | 003 |
 | Simon engine | Button/cue IDs, seed/config, time | Cue/phase model | Versioned PRNG, manual clock, replay trace | 006 |
-| Threshold controller | Calibrated samples, hysteresis config | Color/brightness intent | Sample trace | 009 |
+| `NightLight` | Calibrated light samples and validity | Bounded duty, hysteresis, diagnostic intent | Sample trace | 009 |
 | Instrument model | Controls and channel samples | Presentation model | Input/output snapshots | 015 |
 | Logger | Sample records and timestamps | Append/sync requests | Memory storage and failure offsets | 018 |
 | Lock model | Key events, timeout, attempt policy | Latch/display/log intents | Manual clock and replay trace | 021 |
@@ -246,6 +249,17 @@ Digital output stays first because it supplies visible diagnostics for every
 later circuit. A project must use only interfaces introduced earlier. Each
 component names at least one later project that proves reuse, and every project
 publishes a dependency map showing that composition.
+
+The analog slice deliberately separates evidence:
+
+```text
+AnalogInput -> raw ADC count -> calibration -> filtering -> NightLight intent
+```
+
+The endpoint never silently filters. The behavior never reads Arduino globals.
+An example may present both raw and processed values over optional Serial, but
+the named analog test point and PWM lamp remain the required circuit-native
+proof.
 
 ## Addition checklist
 

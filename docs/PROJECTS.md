@@ -11,9 +11,10 @@ are complete.
 
 ## Current status
 
-The Reaction Timer (003) and Simon engine (006) are implemented and host
-verified. Their APIs and lessons are experimental; Mega 2560 bench acceptance
-remains open. Projects 009--030 are briefs, not implemented claims.
+The Reaction Timer (003), Simon engine (006), and adaptive Night Light (009)
+are implemented and host verified. Their APIs and lessons are experimental;
+Mega 2560 bench acceptance remains open. Projects 012--030 are briefs, not
+implemented claims.
 
 ## Common project rules
 
@@ -134,9 +135,10 @@ unrepeatable randomness with an independently tested engine.
 
 ## Lesson 009 — Adaptive night light
 
-**Build:** A potentiometer calibrates a photoresistor threshold. The RGB lamp
-fades on with hysteresis, exposes raw and filtered readings, and supports a
-button-selected diagnostic mode.
+**Build:** A potentiometer first establishes a known analog evidence chain.
+The project then applies explicit calibration and filtering to a photoresistor.
+The PWM lamp fades on with hysteresis and enters a distinct fault state for an
+invalid sample.
 
 **Builds on:** Simon's operator controls plus `AnalogInput`, sampled values,
 calibration, filtering, PWM, and configuration snapshots.
@@ -144,17 +146,143 @@ calibration, filtering, PWM, and configuration snapshots.
 **Kit:** Photoresistor, 10 kΩ resistor, potentiometer, RGB LED, button, current
 limiting resistors.
 
-**Evidence:** Recorded sample streams prove filter, hysteresis, mapping,
-saturation, calibration bounds, and mode changes. Host tests inject noisy,
-stuck, and out-of-range samples.
+**Circuit-native evidence:** Predict and measure the divider voltage at the
+named analog test point, then observe the PWM lamp. Steady off, variable
+brightness, and the documented fault indication distinguish normal and invalid
+paths without Serial. Optional serial logging places the raw ADC count,
+calibrated value, filtered value, controller mode, and duty beside those
+physical observations.
 
-**Safety:** Confirm divider wiring before power. Each LED channel needs its own
-resistor; remain within per-pin and aggregate board current limits.
+**Host evidence:** Recorded sample streams prove filter, hysteresis, mapping,
+saturation, calibration bounds, and mode changes. Tests inject noisy, stuck,
+stale, and out-of-range samples and prove an invalid input requests zero lamp
+duty.
+
+**Safety:** Use one photoresistor and one 10 kΩ fixed resistor in the divider;
+the fixed resistor limits current to 0.5 mA at 5 V even if the photoresistor
+shorts. Confirm divider wiring with USB power removed. Each LED channel needs
+its own 220 Ω or larger resistor, a calculated and measured current no greater
+than 15 mA, and inclusion in the simultaneous-output current total. Rail
+samples force the lamp off, but a floating A0 lead can look plausible and is
+not claimed as reliably detectable. Remove USB power on heat, resets, an
+out-of-rail TP1 reading, or an uncommanded output.
 
 **Comparable exemplars:** Arduino's
 [Analog Input](https://docs.arduino.cc/built-in-examples/analog/AnalogInput/) and
 [Smoothing Readings](https://docs.arduino.cc/built-in-examples/analog/Smoothing/)
 provide the physical experiments that ADK turns into testable components.
+
+## Research runway — switched high-speed media and peripherals
+
+These are architecture investigations, not Arduino lesson promises. Neither
+interface is implemented or supported. An Arduino Mega 2560 cannot terminate,
+switch, or transport HDMI 2.1-class video or USB 3.x data. Its useful role is a
+low-speed management controller: buttons, status indicators, environmental
+telemetry, reset sequencing, and deterministic control-plane tests around
+dedicated high-speed hardware.
+
+### 8K HDMI over a switched network
+
+**Research question:** Can a modular endpoint carry full-quality 8K HDMI
+through a packet-switched fabric while preserving display discovery, content
+protection, audio, timing, and bounded switching behavior?
+
+**Likely system boundary:** Dedicated HDMI receiver/transmitter silicon,
+FPGA/adaptive-SoC video pipelines, JPEG XS or another justified codec, and
+25/100 GbE-class network interfaces perform the data plane. A Linux-class
+processor manages routing, NMOS discovery/connection, and standards
+integration. ADK may provide a deterministic, electrically isolated operator
+panel and health display; it does not touch protected media keys or high-speed
+lanes.
+
+**First proof:** Begin with synthetic, unprotected video and recorded control
+traffic. Measure bandwidth, end-to-end latency, frame integrity, clock recovery,
+multicast behavior, link loss, and route changes. Do not claim 8K, lossless
+transport, HDMI compliance, or interoperability until instruments and licensed
+test equipment establish them.
+
+Active 8K60 RGB 8-bit pixels alone require about 47.776 Gb/s before blanking,
+packet, audio, and resilience overhead. Use 100 GbE as the uncompressed
+correctness baseline. Active 10-bit 4:4:4 pixels require about 59.72 Gb/s,
+already beyond HDMI 2.1's 48 Gb/s link rate; an HDMI 2.1 endpoint must accept
+a permitted reduced-chroma/depth or compressed mode instead of promising that
+input format. A more practical first product would evaluate JPEG XS carried as
+ST 2110-22 over 25 GbE, with measured image quality and latency.
+
+**Stages:** Build a command-line packet model; prototype a 4K FPGA link; prove
+unprotected generated 8K media; add matrix routing and NMOS; exercise link
+loss, failover, and recovery; only then assess a licensed interoperable
+product. Treat HDCP licensing, HDMI adopter requirements, EDID, CEC, audio,
+PTP timing, electromagnetic compatibility, and patent/licensing review as
+first-order work.
+
+**Primary references:** [HDMI 2.1 overview][hdmi21],
+[SMPTE standards catalog][smpte], [AMWA IS-04 discovery][is04],
+[AMWA IS-05 connection management][is05], [JPEG XS 8K FPGA evaluation
+brief][jpeg-xs], and an [AMD 100G-capable adaptive-SoC platform][amd-vek385].
+The detailed [feasibility study](research/HDMI_8K_NETWORK.md) and
+[phased architecture](research/hdmi_8k_switched_network.md) keep the
+assumptions, calculations, and deferred compliance work reviewable.
+
+[hdmi21]: https://www.hdmi.org/spec/hdmi2_1/index.aspx
+[smpte]: https://www.smpte.org/standards/recently-updated-documents
+[is04]: https://specs.amwa.tv/is-04/releases/v1.3.3/docs/Overview.html
+[is05]: https://specs.amwa.tv/is-05/v1.1/docs/Overview.html
+[jpeg-xs]: https://www.intopix.com/Ressources/Solution%20Brief/jpeg-xs-8k-fpga-evaluation-kit-solution-brief.pdf
+[amd-vek385]: https://docs.amd.com/r/en-US/ug1712-vek385-eval-bd/Transceivers
+
+### Full USB 3 matrix over a switched network
+
+**Research question:** Can any authorized host connect through a controlled
+fabric to any selected USB 3 peripheral while retaining SuperSpeed throughput,
+hot-plug behavior, isolation, and understandable failure semantics?
+
+**Likely system boundary:** Terminate USB at each edge; never packet-switch
+USB physical-layer symbols. A peripheral edge uses a real xHCI host to
+enumerate devices. The first host edge uses Linux virtual host-controller
+support; a later PCIe virtual xHCI endpoint could serve an unmodified host. A
+matrix controller grants one host an exclusive, generation-fenced device
+lease. A 25/50/100 GbE fabric carries request/completion streams with separate
+periodic and bulk traffic classes. The Mega may operate buttons, port-status
+LEDs, power telemetry, and a deterministic control-plane simulator; it cannot
+proxy the SuperSpeed physical or protocol layers.
+
+**First proof:** Use owned, non-sensitive loopback and mass-storage test
+devices on an isolated lab network. Measure enumeration, sustained and burst
+throughput, latency, reset, disconnect, endpoint recovery, and route changes.
+Expose physical port power, local ownership, network assignment, and fault
+state without depending on Serial.
+
+**Stages:** Start with USB/IP command-line trace/replay. Build a Linux
+two-host/two-device exclusive matrix over 25 GbE. Add bandwidth admission and
+long-running audio/camera tests. Then investigate a PCIe virtual xHCI endpoint,
+FPGA queue/timestamp offload, a four-port 100 GbE fabric, Gen 2x2, and multiple
+switches. Attachment reserves bandwidth, resets, and re-enumerates; migration
+is a disconnect/reconnect unless a device-specific quiesce mechanism is proven.
+Keep authorization, confidentiality, DMA-capable devices, firmware trust,
+USB-IF compliance, signal integrity, and per-port power switching inside the
+architecture from the start.
+
+The initial matrix is exclusive, not simultaneous multi-host sharing. It uses
+mutual TLS, default-deny device authorization, lease generations, audit logs,
+and quarantine on ambiguous recovery. It is not exposed directly to the
+Internet. Each edge supplies protected local VBUS; the network never bridges
+VBUS, and Type-C Power Delivery remains behind compliant controllers.
+
+The decoded payload ceiling is roughly 4.0 Gb/s for USB 3 Gen 1, 9.697 Gb/s
+for Gen 2, and 19.394 Gb/s for Gen 2x2 before tunneling overhead and
+headroom. That points to 10, 25, and 50 GbE respectively for one saturated
+direction; four simultaneous Gen 2 ports justify a 100 GbE investigation.
+
+**Primary references:** [USB 3.2 specification][usb32],
+[Linux USB/IP protocol][usbip], [Linux USB host-side API][linux-usb], and the
+[Mega 2560 Rev3 datasheet][mega-datasheet]. The detailed working note is
+[USB 3 over a switched network](research/USB3_NETWORK_MATRIX.md).
+
+[usb32]: https://www.usb.org/usb-32-0
+[usbip]: https://docs.kernel.org/usb/usbip_protocol.html
+[linux-usb]: https://docs.kernel.org/driver-api/usb/usb.html
+[mega-datasheet]: https://docs.arduino.cc/resources/datasheets/A000067-datasheet.pdf
 
 ## Lesson 012 — Traffic junction
 
