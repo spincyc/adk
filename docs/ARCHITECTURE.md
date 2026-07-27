@@ -70,5 +70,6 @@ is true when pressed. It exposes both:
 - diagnostic raw state, which may bounce; and
 - debounced state plus pressed/released events.
 
-The interface will be implemented only after its timing, event-consumption, and
-reconfiguration semantics are agreed and captured in its lesson.
+`update(TimePoint now)` advances it deterministically. Events are non-consuming
+snapshots that remain stable for one update cycle. Each accepted press must be
+released before another is accepted; simultaneous presses are invalid input.
