@@ -40,6 +40,7 @@ nav:
       - "018 — Inert access trainer": lessons/018.md
       - "019 — Ultrasonic range": lessons/019.md
       - "020 — Motor intent": lessons/020.md
+      - "021 — Bench rover": lessons/021.md
   - Components: components.md
   - Supported API: api-supported.md
   - Design:
