@@ -48,6 +48,8 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_greenhouse_controller \
 	$(BUILD_DIR)/host/test_greenhouse_health_pattern \
 	$(BUILD_DIR)/host/test_night_light \
+	$(BUILD_DIR)/host/test_observation_tracker \
+	$(BUILD_DIR)/host/test_packet_receiver \
 	$(BUILD_DIR)/host/test_reaction_timer \
 	$(BUILD_DIR)/host/test_record_sink \
 	$(BUILD_DIR)/host/test_pwm_output \
@@ -64,6 +66,8 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_simon \
 	$(BUILD_DIR)/host/test_threshold_input \
 	$(BUILD_DIR)/host/test_traffic_junction \
+	$(BUILD_DIR)/host/test_telemetry_packet \
+	$(BUILD_DIR)/host/test_telemetry_evidence \
 	$(BUILD_DIR)/host/test_ultrasonic_ranger \
 	$(BUILD_DIR)/host/test_watering_controller
 
@@ -272,6 +276,21 @@ $(BUILD_DIR)/host/test_night_light: $(HOST_CORE_SOURCES) \
 		$(HOST_CORE_SOURCES) src/night_light.cpp \
 		tests/test_night_light.cpp $(HOST_LDFLAGS) -o "$@"
 
+$(BUILD_DIR)/host/test_observation_tracker: $(HOST_CORE_SOURCES) \
+		src/observation_tracker.cpp src/telemetry_packet.cpp \
+		tests/test_observation_tracker.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/observation_tracker.cpp \
+		src/telemetry_packet.cpp tests/test_observation_tracker.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_packet_receiver: $(HOST_CORE_SOURCES) \
+		src/packet_receiver.cpp tests/test_packet_receiver.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/packet_receiver.cpp \
+		tests/test_packet_receiver.cpp $(HOST_LDFLAGS) -o "$@"
+
 $(BUILD_DIR)/host/test_reaction_timer: $(HOST_IO_SOURCES) src/button.cpp \
 		src/reaction_timer.cpp tests/test_reaction_timer.cpp \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
@@ -385,6 +404,22 @@ $(BUILD_DIR)/host/test_traffic_junction: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/traffic_junction.cpp \
 		tests/test_traffic_junction.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_telemetry_packet: $(HOST_CORE_SOURCES) \
+		src/telemetry_packet.cpp tests/test_telemetry_packet.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/telemetry_packet.cpp \
+		tests/test_telemetry_packet.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_telemetry_evidence: $(HOST_CORE_SOURCES) \
+		src/observation_tracker.cpp src/telemetry_evidence.cpp \
+		src/telemetry_packet.cpp tests/test_telemetry_evidence.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/observation_tracker.cpp \
+		src/telemetry_evidence.cpp src/telemetry_packet.cpp \
+		tests/test_telemetry_evidence.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_ultrasonic_ranger: $(HOST_CORE_SOURCES) \
 		src/pulse_input.cpp src/ultrasonic_ranger.cpp \

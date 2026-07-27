@@ -41,7 +41,9 @@ publication ledger.
 23. coherent greenhouse stages, visible health patterns, and durable record
     retry in lesson 024; and
 24. owned bounded infrared capture, classic NEC validity, and stable
-    receive-only records in lesson 025.
+    receive-only records in lesson 025; and
+25. exact receive-only telemetry packets, freshness tracking, bounded packet
+    reception, and visible evidence in lesson 026.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
@@ -49,7 +51,7 @@ is experimental rather than hardware supported.
 
 ## Next slice
 
-1. lawful receive-only radio observations in lesson 026.
+1. the deterministic telemetry-console project in lesson 027.
 
 Later slices follow the canonical three-lesson cadence through analog sensing,
 displays, environmental records, bounded actuators, buses and storage,

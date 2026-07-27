@@ -30,6 +30,7 @@ third lesson for a deterministic integration project.
 | [023](023.md) | Inert load interlock | Mutually exclusive LED loads and safe watering policy |
 | [024](024.md) | Observable greenhouse trainer | Coherent stages, health evidence, and durable replay |
 | [025](025.md) | Infrared frame evidence | Owned capture, classic NEC validity, and stable records |
+| [026](026.md) | Receive-only telemetry | Exact packets, freshness, and visible evidence |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance

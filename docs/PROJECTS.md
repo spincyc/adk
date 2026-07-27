@@ -16,8 +16,8 @@ are implemented and host verified. Traffic Junction (012) has also landed with
 deterministic host evidence, a Mega 2560 example, lesson material, and size
 evidence. Its physical bench card remains open. The Environmental Station
 (015) has also landed with deterministic evidence and an open bench card.
-Lessons 017--025 are host verified with their bench cards open. Projects
-026--030 remain ordered briefs, not implementation claims. See the
+Lessons 017--026 are host verified with their bench cards open. Projects
+027--030 remain ordered briefs, not implementation claims. See the
 [authoritative work queue](WORK_QUEUE.md) for the complete ledger.
 
 Every API and lesson remains experimental. Mega 2560 bench acceptance is open

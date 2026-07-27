@@ -8,10 +8,10 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--025 have first-class implementation work, deterministic host
+Lessons 001--026 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
-bench cards remain open. Lesson 026 is the active implementation boundary;
-lessons 027--030 remain the
+bench cards remain open. Lesson 027 is the active implementation boundary;
+lessons 028--030 remain the
 ordered delivery queue. The [work queue](WORK_QUEUE.md) records later
 expansion, research, physical, and publication work.
 
@@ -65,8 +65,8 @@ For every lesson, the queued implementation order is:
 | 023 | Host verified; bench open | Constrained simulated loads and watering policy | Mutually exclusive load-state LEDs and a fault pattern |
 | 024 | Host verified; bench open | Greenhouse controller; physical RTC/media adapters remain deferred | Deterministic decision and record replay |
 | 025 | Host verified; bench open | Owned infrared capture and classic NEC-only evidence | Capture indicator and stable receive-only record |
-| 026 | Active integration | Lawful receive-only radio records and freshness tracking | Timestamp/age evidence without transmit support |
-| 027 | Queued | Scheduling and deterministic telemetry console | Stale-data alarm and stored replay record |
+| 026 | Host verified; bench open | Lawful receive-only radio records and freshness tracking | Timestamp/age evidence without transmit support |
+| 027 | Active integration | Scheduling and deterministic telemetry console | Stale-data alarm and stored replay record |
 | 028--030 | Queued capstone | Injectable continuity/fault models, deterministic cue scheduling, operator confirmation, and inert show-cue simulator | Redundant state indicators, inert channel lamps, stop dominance, and a complete audit log |
 
 The coordinator promotes a row from queued to active only after its public
