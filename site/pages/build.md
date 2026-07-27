@@ -28,6 +28,10 @@ devices. Ordinary build targets never install packages or use `sudo`.
 | `make format` | Format C++ sources, lessons, and tests |
 | `make arduino` | Compile every supported example for the Mega 2560 |
 | `make arduino-Lesson001DigitalOutput` | Compile one named example |
+| `make boards` | List connected boards and their exact ports |
+| `make upload EXAMPLE=... PORT=...` | Compile and upload one explicit example |
+| `make monitor PORT=...` | Watch timestamped serial output interactively |
+| `make serial-log PORT=...` | Watch and save timestamped serial output |
 | `make lessons` | Build every lesson PDF |
 | `make lessons-check` | Build PDFs and validate their basic structure and size |
 | `make clean` | Remove the marked local build directory |
@@ -47,6 +51,17 @@ make upload EXAMPLE=Lesson001DigitalOutput PORT=/dev/ttyACM0
 
 Inspect the board, wiring, lesson safety gate, selected example, and serial port
 before uploading. No developer-specific port or installation path is committed.
+
+Serial is an optional second view:
+
+```sh
+make monitor PORT=/dev/ttyACM0 BAUD=115200
+make serial-log PORT=/dev/ttyACM0 \
+    SERIAL_LOG=build/serial/lesson001.log
+```
+
+Stop monitoring with Ctrl-C. Every lesson still requires a circuit-native
+signal or test point; a serial message alone is not acceptance evidence.
 
 ## Use ADK from another project
 
