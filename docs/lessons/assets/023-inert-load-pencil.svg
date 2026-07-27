@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <defs>
+    <filter id="rough">
+      <feTurbulence baseFrequency="0.008" numOctaves="2" seed="23" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="2"/>
+    </filter>
+    <style>
+      .line { fill: none; stroke: #222; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+      .thin { fill: none; stroke: #555; stroke-width: 3; stroke-linecap: round; }
+      .label { fill: #222; font-family: serif; font-size: 29px; font-style: italic; }
+      .small { fill: #333; font-family: serif; font-size: 22px; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" fill="#fafafa"/>
+  <g filter="url(#rough)">
+    <rect x="70" y="115" width="280" height="440" rx="18" class="line"/>
+    <text x="122" y="170" class="label">Mega 2560</text>
+    <path d="M350 215 H470 M350 290 H470 M350 365 H470 M350 440 H470 M350 515 H470" class="line"/>
+    <text x="270" y="224" class="small">D13</text>
+    <text x="270" y="299" class="small">D40</text>
+    <text x="270" y="374" class="small">D38</text>
+    <text x="270" y="449" class="small">D41</text>
+    <text x="270" y="524" class="small">D12</text>
+    <path d="M470 215 l40 -18 v36 z M510 215 h45" class="line"/>
+    <path d="M470 290 l40 -18 v36 z M510 290 h45" class="line"/>
+    <path d="M470 365 l40 -18 v36 z M510 365 h45" class="line"/>
+    <path d="M470 440 l40 -18 v36 z M510 440 h45" class="line"/>
+    <path d="M470 515 l40 -18 v36 z M510 515 h45" class="line"/>
+    <path d="M555 195 v40 M565 198 v34 M555 270 v40 M565 273 v34
+             M555 345 v40 M565 348 v34 M555 420 v40 M565 423 v34
+             M555 495 v40 M565 498 v34" class="thin"/>
+    <path d="M565 215 h58 l15 -16 l26 32 l26 -32 l26 32 l15 -16 h55
+             M565 290 h58 l15 -16 l26 32 l26 -32 l26 32 l15 -16 h55
+             M565 365 h58 l15 -16 l26 32 l26 -32 l26 32 l15 -16 h55
+             M565 440 h58 l15 -16 l26 32 l26 -32 l26 32 l15 -16 h55
+             M565 515 h58 l15 -16 l26 32 l26 -32 l26 32 l15 -16 h55" class="line"/>
+    <path d="M786 215 v365 M786 580 H190 M190 580 V555" class="line"/>
+    <text x="805" y="222" class="small">request pulse</text>
+    <text x="805" y="297" class="small">applied fan</text>
+    <text x="805" y="372" class="small">applied pump</text>
+    <text x="805" y="447" class="small">applied heater</text>
+    <text x="805" y="522" class="small">latched fault</text>
+    <text x="520" y="640" class="label">five independent observations — zero powered loads</text>
+    <path d="M930 95 q45 -30 90 0 q45 30 90 0" class="thin"/>
+    <text x="920" y="65" class="small">snapshot evidence only</text>
+  </g>
+</svg>

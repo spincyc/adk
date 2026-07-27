@@ -20,8 +20,7 @@ briefs come from [the project catalog](PROJECTS.md).
 
 | Boundary | State | Required next result |
 |---|---|---|
-| [001--022](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [023](design/LESSONS_022_024.md) | Active integration | Inert load policy, transactional output evidence, tests, example, and lesson package |
+| [001--023](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
 | [024](design/LESSONS_022_024.md) | Active integration | Deterministic greenhouse project with coherent stages, health evidence, and durable records |
 | [025](design/LESSONS_025_027_TELEMETRY.md) | Active integration | Owned atomic pulse capture, decoded IR evidence, tests, example, and lesson package |
 | [026--027](design/LESSONS_025_027_TELEMETRY.md) | Queued | Lawful receive-only observations and telemetry console |
