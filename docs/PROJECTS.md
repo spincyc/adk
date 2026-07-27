@@ -16,8 +16,8 @@ are implemented and host verified. Traffic Junction (012) has also landed with
 deterministic host evidence, a Mega 2560 example, lesson material, and size
 evidence. Its physical bench card remains open. The Environmental Station
 (015) has also landed with deterministic evidence and an open bench card.
-Lessons 017--021 are host verified with their bench cards open. Projects
-022--030 remain ordered briefs, not implementation claims. See the
+Lessons 017--022 are host verified with their bench cards open. Projects
+023--030 remain ordered briefs, not implementation claims. See the
 [authoritative work queue](WORK_QUEUE.md) for the complete ledger.
 
 Every API and lesson remains experimental. Mega 2560 bench acceptance is open
@@ -57,7 +57,7 @@ may claim hardware verification until its measured record is published.
 | 013--015 | Temperature/humidity sensor, LCD, serial records | Environmental station |
 | 016--018 | Keypad, bounded servo, supplied configuration | Inert access-control trainer |
 | 019--021 | Distance sensor and motor driver | Bench rover |
-| 022--024 | RTC, SD logging, buses, relay simulation | Greenhouse controller |
+| 022--024 | Owned buses, deterministic records, inert-load simulation | Greenhouse controller |
 | 025--027 | Infrared and receive-only radio observation | Telemetry console |
 | 028--030 | Operator panel, continuity simulation, event log | Inert show-cue simulator |
 

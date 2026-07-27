@@ -20,16 +20,24 @@ briefs come from [the project catalog](PROJECTS.md).
 
 | Boundary | State | Required next result |
 |---|---|---|
-| [001--021](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [022](design/LESSONS_022_024.md) | Active integration | Moisture observations plus owned fixed-capacity I2C/SPI transactions, tests, example, and lesson package |
-| [023--024](design/LESSONS_022_024.md) | Queued | Inert load policy and greenhouse project |
-| [025--027](design/LESSONS_025_027_TELEMETRY.md) | Queued | Decoded owned IR, lawful receive-only observations, and telemetry console |
+| [001--022](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
+| [023](design/LESSONS_022_024.md) | Active integration | Inert load policy, transactional output evidence, tests, example, and lesson package |
+| [024](design/LESSONS_022_024.md) | Active integration | Deterministic greenhouse project with coherent stages, health evidence, and durable records |
+| [025](design/LESSONS_025_027_TELEMETRY.md) | Active integration | Owned atomic pulse capture, decoded IR evidence, tests, example, and lesson package |
+| [026--027](design/LESSONS_025_027_TELEMETRY.md) | Queued | Lawful receive-only observations and telemetry console |
 | [028--030](design/LESSONS_028_030.md) | Queued | Fault/continuity models, deterministic cue scheduling, and physically inert show-cue simulator |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
 project. Open physical cards do not pause later host work. A failed software,
 safety, packaging, or publication gate does.
+
+Deferred but retained: physical RTC and removable-media adapters require exact
+specimen selection, primary datasheets, electrical qualification, and their
+own failure and bench evidence. Lesson 022 supports deterministic RTC state and
+fixed-storage durability models, not physical RTC or SD hardware. Lesson 017's
+configuration codec also needs exhaustive every-byte corruption, erased,
+oversized, generation-wrap, and replay tests before that evidence is exhaustive.
 
 ## Kit expansion
 
