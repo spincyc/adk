@@ -103,12 +103,13 @@ one-digit countdown. The project composes:
 \]
 
 The D13 board LED turns on only after every first-class object initializes, so
-it is the acquisition indicator. The heads are the primary diagnostic channel.
-All-red plus pedestrian stop is the visible safe state. The countdown is
-independent supporting evidence: it shows the remaining whole seconds until
-the next transition. Serial is not required. Named electrical test points are
-D30 (main red), D32 (main green), D33 (side red), and D35 (side green), each
-measured relative to GND.
+it is the acquisition indicator. Initialization is transactional: a failed
+step shuts down every earlier object in reverse dependency order. The heads are
+the primary diagnostic channel. All-red plus pedestrian stop is the requested
+running safe state. The countdown is independent supporting evidence: it shows
+the remaining whole seconds until the next transition. Serial is not required.
+Named electrical test points are D30 (main red), D32 (main green), D33 (side
+red), and D35 (side green), each measured relative to GND.
 
 By the end, you can:
 
@@ -165,9 +166,12 @@ Phase & Vehicle indication & Pedestrian indication\\
 \end{tabularx}
 
 A request is an event, not a held electrical level. The engine latches an
-accepted request and serves it after the side phase. A circuit-health failure
-latches \texttt{Fault}; only a new, explicit \texttt{initialize()} starts a new
-run. No call blocks while a phase elapses.
+accepted request and serves it after the side phase. Each observation also
+checks that every owned endpoint remains initialized. That check detects lost
+software ownership; it is not electrical feedback from an LED. A reported
+circuit-health failure latches \texttt{Fault}. The sketch then requests
+all-red best-effort and performs canonical shutdown. No call blocks while a
+phase elapses.
 
 \section{Orientation drawing}
 
@@ -190,7 +194,7 @@ Quantity & Part & Requirement\\
 1 & 74HC595 & identified pinout; 0.1\,\(\mu\)F local decoupling\\
 1 & one-digit display & common cathode, identified segment pinout\\
 8 & signal LEDs & two red/yellow/green heads plus red/green pedestrian pair\\
-15 & resistors & 330\,\(\Omega\) per signal LED; 1\,k\(\Omega\) per display segment\\
+16 & resistors & eight 330\,\(\Omega\) signal; eight 1\,k\(\Omega\) display\\
 1 & momentary button & normally open\\
 1 & multimeter & unpowered continuity and powered DC voltage\\
 \bottomrule
@@ -219,7 +223,7 @@ Function & Connection & Required interpretation\\
 \midrule
 serial data/clock/latch & D22 to DS, D23 to SHCP, D24 to STCP &
   \texttt{ShiftRegisterPins\{22,23,24\}}\\
-control & MR to 5\,V; OE to GND & never leave either floating\\
+control & MR to 5\,V; OE to GND & never leave either floating; see startup limit below\\
 power & VCC to 5\,V; GND to GND; 0.1\,\(\mu\)F across them &
   place capacitor at the IC\\
 segments & Q0--Q6 to a--g, Q7 to decimal point &
@@ -233,6 +237,13 @@ check continuity unpowered. With a conservative 3\,mA per lit display segment
 and 10\,mA per signal LED, the worst expected visible state is under 55\,mA;
 record actual resistor values, forward voltages, and measured current before
 claiming that budget.
+
+\warningbox{With \texttt{OE} tied low, the 74HC595 storage register can present
+an unspecified pattern before the first software latch. The three-wire lesson
+circuit therefore cannot promise a blank display at power-up or reset. Its
+atomic-update claim begins only after initialization. A later hardened adapter
+must own \texttt{OE} and hold it disabled with a pull-up until a known blank
+value has been latched.}
 
 \section{Build and run from the CLI}
 
@@ -260,8 +271,10 @@ path; no IDE-specific step is part of the lesson.
 The engine's \texttt{TrafficSignals} is the sole actuator model. The
 \texttt{showSignals()} adapter first removes green, walk, and yellow permission;
 then it establishes all-red; only then does it present the requested state.
-This sequencing prevents a valid semantic snapshot from becoming a transient
-conflicting-green electrical command.
+This ordering reduces transition hazards when writes succeed. It cannot
+guarantee an electrical state after a driver, wire, LED, or supply failure.
+The fault path attempts every all-red write even if an earlier write fails,
+blanks the display, and releases every endpoint to high impedance.
 
 \section{Predict, observe, interpret}
 
@@ -281,8 +294,9 @@ One request is remembered & press and release D25 once during main green; wait
 without holding it & a later pedestrian walk proves event capture and latching\\
 The display changes atomically & watch the countdown at a phase boundary &
 mixed or torn segments indicate wiring, resistor, or latch trouble\\
-Failure is all-red & use the host fault fixture; do not create shorts on the
-powered circuit & fault snapshots command two reds and pedestrian stop\\
+Engine fault requests all-red & use the host fault fixture; do not create
+shorts on the powered circuit & the snapshot commands two reds and pedestrian
+stop; adapter failure only makes a best-effort request before shutdown\\
 Shutdown is electrically inactive & upload a dedicated acceptance sketch that
 calls endpoint shutdown; measure each named pin & high impedance is distinct
 from the running model's commanded all-red state\\
@@ -292,7 +306,8 @@ from the running model's commanded all-red state\\
 \evidencebox{\textbf{Do not merge three claims.} D13 proves completed
 acquisition. D30/D32/D33/D35 measurements establish the commanded electrical
 levels. A separate shutdown measurement establishes endpoint high impedance.
-Record all three independently.}
+Record all three independently. Software cannot prove that a lamp or wire
+actually followed its command; only observation can.}
 
 \section{Deterministic desk experiment}
 
@@ -387,7 +402,10 @@ Meter & \blank{1.2in} & Firmware commit & \blank{1.3in}\\
   \item[\checkbox] The digit changes without a visible intermediate pattern.
   \item[\checkbox] Maximum measured signal current is \blank{0.6in} mA;
         display current is \blank{0.6in} mA; total is \blank{0.6in} mA.
-  \item[\checkbox] Running fault indication is all-red plus pedestrian stop.
+  \item[\checkbox] A healthy output path presents the requested running fault
+        indication: all-red plus pedestrian stop.
+  \item[\checkbox] Injected adapter failure attempts every safe-state write,
+        then performs canonical reverse-order shutdown.
   \item[\checkbox] Separate shutdown firmware leaves output pins measured
         high impedance.\par Method/result: \blank{2.2in}.
   \item[\checkbox] Reset and USB removal produce no observed conflicting green.
