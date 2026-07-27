@@ -3,7 +3,7 @@
 ADK is a deterministic, no-exception C++ component library and electronics
 course for the Arduino Mega 2560.
 
-The first-class API through lesson 029 is host verified and experimental.
+The first-class API through lesson 030 is host verified and experimental.
 Physical Mega 2560 acceptance is still open and tracked separately; a
 successful firmware build is not a bench result. The original preview is
 frozen under `legacy/`.
@@ -67,6 +67,7 @@ use heap allocation, exceptions, RTTI, or a hidden global dispatcher.
 - 027 — deterministic telemetry health, selection, acknowledgement, and records
 - 028 — inert channel observations with explicit fault and freshness evidence
 - 029 — deterministic inert cue scheduling and bounded replayable audit records
+- 030 — physically inert show-cue simulation with continuity-gated audit replay
 - Every third lesson is a multi-component project
 
 See the [live course](https://spincyc.github.io/adk/),

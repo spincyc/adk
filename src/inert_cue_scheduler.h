@@ -49,6 +49,19 @@ namespace adk {
         bool cancelPressed;
     };
 
+    enum struct CueEvidenceDisposition : uint8_t
+    {
+        Permit,
+        Hold,
+        Fault
+    };
+
+    struct CueEvidenceGate
+    {
+        CueEvidenceDisposition disposition;
+        Status                 status;
+    };
+
     enum struct CueSchedulerPhase : uint8_t
     {
         Idle,
@@ -93,7 +106,14 @@ namespace adk {
 
         Status update (TimePoint now, const CueOperatorInput& input) noexcept;
 
+        Status update (TimePoint now, const CueOperatorInput& input,
+                       const CueEvidenceGate& gate) noexcept;
+
         CueSchedulerSnapshot snapshot () const noexcept;
+
+        uint8_t          cueCount () const noexcept;
+
+        Result<InertCue> cue (uint8_t index) const noexcept;
 
       private:
         bool validPlan () const noexcept;
@@ -125,6 +145,9 @@ namespace adk {
         bool   sameInput (const CueOperatorInput& left,
                           const CueOperatorInput& right) const noexcept;
 
+        bool   sameGate (const CueEvidenceGate& left,
+                         const CueEvidenceGate& right) const noexcept;
+
         InertCuePlan         plan_;
         Duration             confirmationWindow_;
         CueAuditBuffer&      audit_;
@@ -133,6 +156,7 @@ namespace adk {
         TimePoint            cueShownAt_;
         TimePoint            lastUpdatedAt_;
         CueOperatorInput     lastInput_;
+        CueEvidenceGate      lastGate_;
         bool                 planStarted_;
         bool                 hasLastUpdate_;
         bool                 initialized_;

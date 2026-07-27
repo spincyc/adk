@@ -103,8 +103,8 @@ also used nested agents where an independent mechanical audit was useful.
 | Lessons 010--030 delivery plan | Complete | Fixed uninterrupted dependency order, observability evidence, and explicitly deferred bench acceptance |
 | Shift-register and display slice | Complete | Landed deterministic serialized output, presentation, tests, example, lesson, size evidence, and open bench card |
 | Traffic timing and project slice | Complete | Landed explicit timing, `TrafficJunction`, replay tests, lessons 011--012, size evidence, and open bench cards |
-| Lesson 013 implementation | In progress | Building the validated climate-sample boundary; lesson 014 and later work remain queued |
-| Lessons 014--030 queue | Queued | Preserving the canonical dependency order and a project at every third lesson |
+| Lesson 013 implementation | Complete | Landed validated climate samples, host tests, example, lesson, and open bench card |
+| Lessons 014--030 delivery | Complete | Landed each dependency-ordered boundary and project with host evidence and open bench cards |
 | USB mesh control models | Complete | Landed deterministic routing, fencing, durable action planning, and build gates |
 | Transparent USB product contract | Active reconciliation | Native Windows/Linux, CAU/PAU topology, electrical baseline, displays, profiles, and failure behavior |
 | HDMI mesh control model | Complete | Landed deterministic route control and profile/failure-policy gates |
@@ -122,9 +122,9 @@ full integration gates, and publication remain coordinator responsibilities.
 
 ## Current checkpoint
 
-Lessons 001--029 are host verified with their physical cards open. Lesson 030
-is the next queued lesson integration boundary. Lessons 031--081 remain the
-queued three-lesson expansion.
+Lessons 001--030 are host verified with their physical cards open. Lesson 031
+is the next queued lesson implementation boundary. Lessons 031--081 remain
+the queued three-lesson expansion.
 
 Transparent USB, HDMI mesh, and shared-fabric material remains research and
 host-model evidence only. Bounded next USB and HDMI/shared-fabric research
@@ -158,9 +158,8 @@ The historical integration sequence was:
 13. land site, packaging, CI, release metadata, and publication at each
     coherent release boundary.
 
-That sequence is complete through lesson 029. Current dependency order is
-project 030, then lessons 031--081 one implementation-depth three-lesson arc
-at a time.
+That sequence is complete through lesson 030. Current dependency order is
+lessons 031--081, one implementation-depth three-lesson arc at a time.
 
 Each boundary must build and pass its applicable checks before the next
 consumer is committed. Review findings that cannot be closed at that boundary

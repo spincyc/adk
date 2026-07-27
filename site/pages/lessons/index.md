@@ -34,6 +34,7 @@ third lesson for a deterministic integration project.
 | [027](027.md) | Telemetry console | Deterministic selection, health, acknowledgement, and bounded records |
 | [028](028.md) | Inert channel assessment | Recorded open, short, stale, and contradictory evidence |
 | [029](029.md) | Inert cue scheduling and audit | Confirmation windows, inert intervals, and bounded replayable records |
+| [030](030.md) | Inert show-cue simulator | Continuity-gated cues, stop dominance, and deterministic audit replay |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance

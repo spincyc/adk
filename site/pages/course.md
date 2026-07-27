@@ -25,7 +25,7 @@ lesson number divisible by three is project-bearing.
 | 027 | Deterministic scheduling and presentation | Telemetry console | Host verified; E1 bench open |
 | 028 | Inert channel assessment | — | Host verified; E1 bench open |
 | 029 | Cue scheduling and logs | — | Host verified; E1 bench open |
-| 030 | Inert composition | Inert show-cue simulator | Queued |
+| 030 | Inert composition | Inert show-cue simulator | Host verified; E1 bench open |
 
 Lessons 031–033 are queued first. Lessons 034–081 are retained canonical work;
 each later three-lesson arc requires an implementation-depth brief before code
