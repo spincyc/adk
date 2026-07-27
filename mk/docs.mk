@@ -44,3 +44,7 @@ lessons-check: lessons
 		pdfinfo "$$pdf" | grep -q '^Pages:' || exit 1; \
 	done
 	@echo "ADK lesson PDF checks passed."
+
+include mk/pdf_monochrome.mk
+
+lessons-check: pdf-monochrome-check
