@@ -43,11 +43,11 @@ jobs:
                       texlive-pictures
                   python -m pip install --disable-pip-version-check mkdocs==1.6.1
 
-            - name: Run host and style checks
-              run: make check
+            - name: Run host, style, and size checks
+              run: make quality-fast
 
-            - name: Build and check lessons
-              run: make lessons-check
+            - name: Build and check documentation
+              run: make lessons-check site-check
 
     firmware:
         name: Mega 2560 firmware
@@ -84,7 +84,7 @@ jobs:
               shell: bash
               run: |
                   set -o pipefail
-                  make arduino 2>&1 | tee "${RUNNER_TEMP}/arduino-build.log"
+                  make firmware-size-check 2>&1 | tee "${RUNNER_TEMP}/arduino-build.log"
                   {
                       echo "## Mega 2560 firmware sizes"
                       echo
@@ -109,7 +109,7 @@ jobs:
               uses: arduino/arduino-lint-action@9a3603836c75e41753e531167395edeb90ba5dae # v3.0.0
               with:
                   compliance: strict
-                  library-manager: true
+                  library-manager: submit
                   project-type: library
                   recursive: true
                   verbose: true

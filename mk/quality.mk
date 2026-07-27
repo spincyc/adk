@@ -13,7 +13,7 @@ quality-fast: quality-tools quality-lint quality-test quality-size
 
 quality-lint: style-check
 
-quality-test: host-test
+quality-test: host-test host-test-exceptions
 
 quality-size: host-size-check
 
