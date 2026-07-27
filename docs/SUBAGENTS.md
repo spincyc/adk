@@ -102,10 +102,14 @@ also used nested agents where an independent mechanical audit was useful.
 | Lesson 013 implementation | In progress | Building the validated climate-sample boundary; lesson 014 and later work remain queued |
 | Lessons 014--030 queue | Queued | Preserving the canonical dependency order and a project at every third lesson |
 | USB mesh control models | Complete | Landed deterministic routing, fencing, durable action planning, and build gates |
-| Transparent USB product contract | Complete | Fixed native Windows/Linux operation, CAU/PAU topology, PoE power, profiles, and failure behavior |
+| Transparent USB product contract | Active reconciliation | Native Windows/Linux, CAU/PAU topology, electrical baseline, displays, profiles, and failure behavior |
 | HDMI mesh control model | Complete | Landed deterministic route control and profile/failure-policy gates |
 | HDMI mesh research | Complete | Documented interpreted media transport, reconstruction, dynamic routes, endpoint evidence, and compliance limits |
-| Shared USB/HDMI fabric | Complete | Documented one household network, capacity admission, named profiles, QoS, and ordinary-LAN headroom |
+| Shared USB/HDMI fabric | Active reconciliation | Household coexistence, admission, profiles, QoS, congestion, and ordinary-LAN headroom |
+| USB electrical baseline | Documented; qualification queued | Type-B/Type-A roles, Cat6A 10GBASE-T PoE++, auxiliary DC, VBUS isolation, ESD, thermal, and signal-integrity gates |
+| USB topology vocabulary | Documented; implementation queued | One-port Cau, four-root Pau, atomic real hubs, no synthesis, and prototype-term isolation |
+| USB ColdMove evidence | Documented; bench queued | Disconnect, discharge, epoch, repower, rediscovery, enumeration, and externally powered reset |
+| USB display modes | Documented; implementation queued | Startup, normal, night, attention, fault, test, controller-lost, maintenance, and deterministic self-test |
 | High-speed endpoint hardware | Queued research | No transparent USB or HDMI appliance, interoperability, compliance, or measured performance claim |
 
 “Complete” means the assigned slice was delivered and locally checked; it does

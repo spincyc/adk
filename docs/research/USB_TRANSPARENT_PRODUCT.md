@@ -62,16 +62,25 @@ infer new ownership. Protocol boundaries must not prevent later HA work.
 Each Cau has:
 
 - exactly one fixed-role USB 3 Type-B `ComputerPort`;
-- one 10GBASE-T connection carrying mesh data and PoE++;
+- exactly one 10GBASE-T RJ45 connection carrying mesh data and PoE++;
 - auxiliary DC input for development and qualified fallback;
-- no dependency on power from the computer's USB port;
+- an isolated power and fault domain;
+- no operating-power draw from the computer's USB port;
+- computer VBUS sense only for standards-required attach/session behavior;
 - protection against back-powering the computer;
+- ESD protection and a qualified SuperSpeed layout at the Type-B connector;
 - a local visual status display.
 
 Certified Type-A-to-Type-B or Type-C-to-Type-B cables connect the Cau to a
 computer. A Cau consumes exactly one physical computer USB port. Scale by
 adding independent Caus; a multi-port chassis may package them later without
 changing the route model.
+
+The Cau uses a qualified Cat6A channel. PoE++ is primary. Auxiliary DC has
+documented priority, switchover, reverse-current, fault, and telemetry behavior;
+it is not silently paralleled with PoE. Computer VBUS is never a fallback
+supply. Type-B signal integrity, ESD, cable, and compliance evidence are
+physical release gates.
 
 The Cau must not create a hidden USB hub, flatten a topology, or expose a
 mesh-specific tunnel device. It reconstructs the exact topology rooted at the
@@ -82,7 +91,7 @@ selected Pau port.
 The baseline Pau has:
 
 - four independently routable USB 3 Type-A `PeripheralPort` roots;
-- one 10GBASE-T connection carrying mesh data and PoE++;
+- exactly one 10GBASE-T RJ45 connection carrying mesh data and PoE++;
 - auxiliary DC input for development and qualified overload fallback;
 - protected 5 V VBUS power on every port;
 - aggregate PoE power admission;
@@ -98,6 +107,11 @@ PoE++ operation is a target subject to measured electrical and thermal
 qualification. The contract does not imply that an unqualified 10GBASE-T
 PoE++ implementation can deliver every peripheral's maximum load. A
 self-powered user hub remains appropriate for high aggregate loads.
+
+The Pau's Cat6A channel, 10GBASE-T PHY/magnetics, PoE++ interface, enclosure,
+and converter must pass negotiated-power, cable-loss, connector-temperature,
+component-temperature, and four-port aggregate-load gates. Auxiliary DC uses
+an explicit priority/fallback policy and cannot hide insufficient PoE budget.
 
 ## Transparent topology
 
@@ -219,6 +233,24 @@ indicator reports at least:
 - unmistakable `TEST` state during authorized fault injection.
 
 Color may reinforce state but cannot be the sole indication.
+
+Every appliance implements the same deterministic display modes:
+
+| Mode | Required behavior |
+|---|---|
+| `Startup` | Identify Cau or Pau, sweep indicators, then show acquired resources |
+| `Normal` | Show route, profile, topology, link, and power state |
+| `Night` | Reduce emitted light while retaining text/symbol fault evidence |
+| `Attention` | Show pending operator action without claiming an active route |
+| `Fault` | Name the dominant real fault and clear every active-route claim |
+| `Test` | Show authorized injection unmistakably; real faults dominate |
+| `ControllerLost` | Show stale authority and prohibit route mutation |
+| `Maintenance` | Show the unit is unavailable for new routes |
+
+Mode, route state, and brightness are separate fields. Dimming may select
+`Night`; it cannot suppress a fault or alter a route. Buttons and CLI use the
+same names. A deterministic local self-test exercises every indicator and
+brightness level without touching USB data or protected VBUS.
 
 ## Deterministic fault injection
 

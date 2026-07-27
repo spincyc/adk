@@ -300,8 +300,11 @@ deferred; controller loss fails route changes closed.
 edges; never packet-switch USB physical-layer symbols. The PAU performs USB
 host duties and observes the real topology. The CAU behaves as USB device-side
 hardware and reconstructs equivalent descriptors, endpoints, topology changes,
-and transactions. Both baseline appliances use 10GBASE-T PoE++ with auxiliary
-DC fallback; every PAU port has protected, measured, controllable VBUS. The
+and transactions. Both baseline appliances use one Cat6A-qualified 10GBASE-T
+RJ45 carrying data and primary PoE++, with explicit auxiliary-DC fallback. The
+one-port CAU is an isolated fault domain, senses but never draws operating
+power from or backfeeds computer VBUS, and qualifies Type-B ESD and SuperSpeed
+signal integrity. Every PAU port has protected, measured, controllable VBUS. The
 Mega may operate buttons, displays, power telemetry, and deterministic
 control-plane tests; it cannot proxy the SuperSpeed protocol or physical
 layers.

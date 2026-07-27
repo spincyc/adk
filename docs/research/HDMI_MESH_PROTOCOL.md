@@ -350,7 +350,7 @@ a stale receiver cannot assert HPD.
    administrator-approved capability intersection?
 3. Which receiver-to-transmitter data-plane transport meets the required
    latency, clock, bandwidth, and packet-loss behavior?
-4. What safe presentation should a sink show while muted: no signal, a fixed
-   locally generated diagnostic frame, or both as a policy?
+4. Which explicitly authorized maintenance profiles may replace the production
+   no-signal failure default with a labelled diagnostic frame?
 5. Which hardware exposes deterministic EDID-bank switching and HPD control
    through a supported Linux interface?

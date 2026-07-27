@@ -263,6 +263,17 @@ implementation supports operator-directed routes only.
 
 ## Circuit-native observation
 
+Product inspection always reports one display mode:
+
+```text
+Startup Normal Night Attention Fault Test ControllerLost Maintenance
+```
+
+CLI names and local labels match. A mode change never implies a route change.
+Plans also report shared-LAN reservation, ordinary-LAN headroom, active
+profile, negotiated PoE budget, auxiliary-power state, and the limiting
+constraint.
+
 Every physical endpoint shows state without relying on logs:
 
 - blue: enrolled and unassigned;

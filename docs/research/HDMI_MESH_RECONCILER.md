@@ -162,11 +162,12 @@ Presenting
 FaultBlank
 ```
 
-`SafeBlank` means video is a documented neutral frame, audio is muted, stale
-metadata is suppressed, and no old-source frame can escape. Disabling an HDMI
-transmitter is not always the best safe state because it may cause slow display
-reacquisition. Policy chooses transmitter-disabled or stable-timing blank, but
-never an unlabelled freeze of previous content.
+`SafeBlank` is a maintenance-only neutral frame: audio is muted, stale metadata
+is suppressed, and no old-source frame can escape. The production failure
+default disables the transmitter and presents HDMI no-signal even when display
+reacquisition is slow. A stable-timing blank or labelled test pattern requires
+an explicit maintenance profile and is never an unlabelled freeze of previous
+content.
 
 ## Admission and reservations
 
@@ -227,7 +228,7 @@ When source-facing EDID must change, ordering is:
 
 1. advance and persist the source epoch and desired EDID digest;
 2. reserve capacity for every surviving desired route;
-3. command affected sinks to mute and enter safe blank or local test pattern;
+3. command affected sinks to mute and present HDMI no-signal;
 4. stop publishing the old presentation as active;
 5. update the source endpoint's EDID memory and verify its readback digest;
 6. issue the policy-defined HPD low pulse, then restore HPD;
@@ -251,7 +252,7 @@ For a new sink assignment:
 
 1. validate identity, authorization, health, capabilities, and desired epoch;
 2. allocate and commit reservations;
-3. place the sink in mute plus safe blank or local test pattern;
+3. place the sink in mute plus HDMI no-signal;
 4. configure network flow reception and timing;
 5. configure the HDMI transmitter for the admitted format;
 6. train the sink link while media output remains blank and audio muted;

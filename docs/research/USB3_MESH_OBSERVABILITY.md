@@ -15,6 +15,11 @@ appliances on the shared switched network
 
 ## Evidence contract
 
+Product evidence names a one-port Cau, its `ComputerPort`, a four-root Pau,
+one `PeripheralPort`, the complete real `TopologyRoot`, and its
+`TopologyEpoch`. Source/destination and virtual-host terms below apply only to
+the USB/IP prototype.
+
 Every source-side physical USB device and every destination-side virtual host
 is a separately named endpoint. Either may join, leave, fail, or be reassigned
 without renumbering the other. A route is identified by immutable endpoint
@@ -45,6 +50,13 @@ integrity. VBUS does not prove assignment. A controller record does not prove
 that a cable, device, network path, or destination driver is healthy.
 
 ## Endpoint panel
+
+The canonical display modes are `Startup`, `Normal`, `Night`, `Attention`,
+`Fault`, `Test`, `ControllerLost`, and `Maintenance`. Route state, mode, and
+brightness remain independent. `Night` cannot hide a fault; `Test` cannot
+override a real fault; `ControllerLost` cannot remain green or mutate a route.
+A deterministic self-test exercises every indicator without changing USB or
+VBUS state.
 
 Each endpoint appliance reserves a locally driven panel that remains useful
 when its network service or Serial link is unavailable. Labels use the same

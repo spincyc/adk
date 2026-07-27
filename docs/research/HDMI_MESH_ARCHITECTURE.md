@@ -55,6 +55,23 @@ product requirements and are not experimental shortcuts.
 receiver and transmitter endpoints. Hardware roles do not change merely because
 software changes a route.
 
+### Connector transparency
+
+The product uses ordinary HDMI connectors and requires no driver, service,
+application, or configuration on the attached source or display. The source
+observes a standards-conforming sink attachment through the receiver endpoint.
+The display observes a standards-conforming source attachment through the
+transmitter endpoint.
+
+This is connector transparency, not electrical-waveform transparency. Each
+endpoint terminates its local TMDS or FRL link. The mesh interprets and carries
+admitted video, audio, timing, and metadata, then constructs a fresh HDMI link
+at the display. EDID, HPD, DDC, InfoFrames, audio, and link training are
+explicitly reconstructed endpoint behavior. CEC, ARC/eARC, VRR, DSC, and HDCP
+are supported only when named by an admitted profile and separately
+implemented; silence about a sideband feature means unsupported, not
+transparent pass-through.
+
 ## Stable identity and inventory
 
 Names must survive IP changes, cable order, reboots, and discovery order:
@@ -158,7 +175,7 @@ scales with active flow bandwidth:
 
 ```text
 R1 -----------\
-R2 ------------+---- switched media fabric ---- T1
+R2 ------------+---- shared switched LAN ------ T1
 R3 ------------+---- authorized direct flows -- T2
                 \--- multicast fan-out -------- T3
 ```
@@ -235,14 +252,14 @@ Dynamic reconfiguration is staged and idempotent:
    changing the visible output.
 6. Train the destination HDMI link against the real sink. If policy requires a
    new source format, stage the new EDID and deliberately sequence source HPD.
-7. At the declared activation time, mute or test-pattern the old output, fence
+7. At the declared activation time, mute and disable the old output, fence
    the old epoch and reservation, activate the new media flow, and wait for valid video,
    audio, metadata, buffer, and clock observations.
 8. Publish `Active` only after both endpoints report the same route, term,
    source epoch, and sink reservation and the transmitter reports stable output.
-9. On failure, hold a documented safe presentation: muted audio plus a local
-   test pattern or black output with a visible fault. Never revive an older
-   generation automatically.
+9. On failure, mute audio and present HDMI no-signal with a separate visible
+   endpoint fault. A labelled local test pattern requires an explicit
+   maintenance command. Never revive an older generation automatically.
 
 A source can remain trained while several transmitters independently change
 routes. A failed destination preparation must not disturb other fan-out
@@ -352,12 +369,19 @@ Correctness must be visible beside execution. Every endpoint supplies:
 
 Circuit-native evidence remains available without Serial:
 
-- green: output locked and frame signature advancing;
-- amber: endpoint controlled but route or media not locked;
-- red: persistent format, timing, thermal, resource, or authority fault;
-- locate indicator distinct from health;
+- `Link`: source RX or sink TX link trained;
+- `Media`: authenticated packets and frame signature advancing;
+- `Clock`: media clock and output scheduler within the profile bound;
+- `Route`: endpoint and controller agree on the active route and epoch;
+- `Fault`: persistent format, timing, congestion, thermal, resource, or
+  authority fault;
+- `Locate`: physically identifies this endpoint and is distinct from health;
 - local test-pattern button and generated border/overlay;
 - named frame-start, clock/PPS, buffer-alarm, HPD, and DDC test points.
+
+Every lamp has a text label or symbol; color is redundant. `Fault` plus the
+local display distinguishes HDMI RX/TX loss from shared-network admission,
+congestion, clock, power, and thermal failures.
 
 The controller offers a CLI for inventory, compatibility explanation, route
 prepare/activate/release, EDID inspection, observed-state watch, counter
@@ -369,6 +393,13 @@ latency class, link rate, and failure state on a local display. Color may
 reinforce status but never carries the only meaning. A pinned-profile contract
 failure blanks video, mutes audio, retains the pin, and reports the failed
 constraint until the exact profile can be admitted and retrained.
+
+The production default for an absent, failed, unauthorized, incompatible, or
+unadmitted route is HDMI no-signal with audio muted. A generated test pattern
+or diagnostic overlay is a separately requested and unmistakably labelled
+maintenance mode; it is never an automatic fallback that could be mistaken for
+source content. Ordered quality fallback occurs only through profiles selected
+by the operator.
 
 Production failure policy is versioned route configuration. Deterministic
 software fault injection is a separate, disabled-by-default laboratory mode

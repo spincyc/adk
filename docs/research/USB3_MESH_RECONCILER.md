@@ -162,6 +162,14 @@ destination.
 
 ## Why switching is break-before-make
 
+For product `ColdMove`, confirmed old-computer disconnect precedes Pau VBUS
+removal. Measured discharge precedes the durable epoch advance. Protected
+repower and a new exact-topology observation precede the new Cau plug event.
+No timeout substitutes for voltage evidence. Externally powered topology is
+reset and re-enumerated from discarded prior observation. Any ambiguous step
+converges to powered-off/fenced fault, never rollback to an implicit live
+session.
+
 General USB migration cannot be make-before-break. The old host schedules the
 device and owns its topology and software state. Allowing a second host to
 enumerate before the first host is detached creates concurrent control requests,
@@ -341,11 +349,12 @@ mesh authority and must not independently allocate ownership epochs.
 These choices do not block the deterministic host model:
 
 - the maximum source, destination, route, and queue capacities;
-- the first permitted USB device classes and whether hubs are always rejected;
+- the first permitted USB device classes and prototype hub limitations;
 - per-class detach deadlines and storage drain policy;
 - the bandwidth-reservation policy for interrupt and isochronous traffic;
 - the authenticated endpoint protocol and durable audit backend.
 
-The first implementation should use one authoritative controller, reject hubs,
-represent destination ports explicitly, and begin with non-sensitive bulk test
-devices. Those defaults preserve the model while leaving the mesh expandable.
+The first USB/IP adapter may reject hubs while its subtree handling is
+incomplete. The product reconciler must accept a user-provided real hub only as
+one indivisible `TopologyRoot`; it never rejects hubs as product policy,
+flattens them, or routes descendants independently.
