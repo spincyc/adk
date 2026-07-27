@@ -2,7 +2,7 @@
 schema_version: 1
 task_uuid: "73b4e704-b483-424e-ab0c-6ffcac540ef3"
 title: "reconcile release and lint policy"
-status: "queued"
+status: "active"
 priority: "normal"
 priority_reason: "Recovered audit prompt 9; ordered by the repository recovery audit."
 parent: null
@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-27T22:00:43Z"
+updated_at: "2026-07-27T23:23:34Z"
 ---
 
 # Goal
