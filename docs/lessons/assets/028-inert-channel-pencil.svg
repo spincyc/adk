@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820">
+  <rect width="1400" height="820" fill="#fff"/>
+  <g fill="none" stroke="#111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M45 65 Q315 45 590 70 L582 750 Q310 770 52 742 Z"/>
+    <path d="M82 112 H550 M84 682 H548"/>
+    <circle cx="126" cy="168" r="18"/><circle cx="512" cy="168" r="18"/>
+    <circle cx="126" cy="632" r="18"/><circle cx="512" cy="632" r="18"/>
+    <path d="M660 82 Q1000 62 1330 88 L1320 290 Q990 310 665 286 Z"/>
+    <circle cx="744" cy="182" r="40"/><circle cx="918" cy="182" r="40"/>
+    <circle cx="1092" cy="182" r="40"/><circle cx="1260" cy="182" r="40"/>
+    <path d="M660 390 Q1000 370 1330 396 L1322 672 Q990 692 666 668 Z"/>
+    <circle cx="728" cy="482" r="25"/><circle cx="812" cy="482" r="25"/>
+    <circle cx="896" cy="482" r="25"/><circle cx="980" cy="482" r="25"/>
+    <circle cx="1064" cy="482" r="25"/><circle cx="1148" cy="482" r="25"/>
+    <circle cx="1232" cy="482" r="25"/><circle cx="1310" cy="482" r="25"/>
+    <path d="M590 182 C625 182 625 182 704 182"/>
+    <path d="M590 490 C625 490 625 482 697 482"/>
+    <path d="M580 560 C625 560 625 600 670 600"/>
+  </g>
+  <g fill="#111" font-family="DejaVu Sans, sans-serif">
+    <text x="210" y="105" font-size="34" font-weight="700">MEGA 2560</text>
+    <text x="96" y="226" font-size="25">USB POWER ONLY</text>
+    <text x="96" y="286" font-size="25">D30–D33 pull-up buttons</text>
+    <text x="96" y="338" font-size="25">D22–D29 → 1 kΩ → LED</text>
+    <text x="96" y="390" font-size="25">each LED cathode → GND</text>
+    <text x="96" y="466" font-size="25">TP28: selected button pin</text>
+    <text x="96" y="518" font-size="25">TP29: indicator output</text>
+    <text x="676" y="132" font-size="27" font-weight="700">LEARNER-OPERATED SYNTHETIC INPUTS</text>
+    <text x="700" y="254" font-size="21">CHANNEL</text>
+    <text x="858" y="254" font-size="21">PRIMARY</text>
+    <text x="1019" y="254" font-size="21">REDUNDANT</text>
+    <text x="1224" y="254" font-size="21">APPLY</text>
+    <text x="790" y="436" font-size="27" font-weight="700">EIGHT INERT CHANNEL INDICATORS</text>
+    <text x="692" y="548" font-size="22">0</text><text x="776" y="548" font-size="22">1</text>
+    <text x="860" y="548" font-size="22">2</text><text x="944" y="548" font-size="22">3</text>
+    <text x="1028" y="548" font-size="22">4</text><text x="1112" y="548" font-size="22">5</text>
+    <text x="1196" y="548" font-size="22">6</text><text x="1280" y="548" font-size="22">7</text>
+    <text x="716" y="618" font-size="22">assessment → cadence; no external-load connection</text>
+    <text x="55" y="800" font-size="22">Orientation plate: verify exact pins unpowered against the canonical sketch.</text>
+  </g>
+</svg>

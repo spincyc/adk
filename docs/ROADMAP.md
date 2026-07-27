@@ -51,7 +51,7 @@ is experimental rather than hardware supported.
 
 ## Next slice
 
-1. inert channel assessment in lesson 028.
+1. deterministic inert cue scheduling in lesson 029.
 
 Later slices follow the canonical three-lesson cadence through analog sensing,
 displays, environmental records, bounded actuators, buses and storage,
