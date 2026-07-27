@@ -60,6 +60,23 @@ may claim hardware verification until its measured record is published.
 | 022--024 | Owned buses, deterministic records, inert-load simulation | Greenhouse controller |
 | 025--027 | Infrared and receive-only radio observation | Telemetry console |
 | 028--030 | Operator panel, continuity simulation, event log | Inert show-cue simulator |
+| 031--033 | Joystick, encoder, calibration policy | Calibration console |
+| 034--036 | Magnetic/contact sensing and passage policy | Magnetic passage logger |
+| 037--039 | Contact dynamics and acoustic envelopes | Percussion sequencer |
+| 040--042 | Optical observations and presence policy | Tabletop course marshal |
+| 043--045 | Resistive, thermal, and radiant observations | Museum-case monitor |
+| 046--048 | Touch/pulse observations and bounded stepper motion | Kinetic light sculpture |
+| 049--051 | Local identity records and bounded homing | Tabletop parts carousel |
+| 052--054 | Owned IR capture and known-code transmission | IR command translator |
+| 055--057 | Identified threshold descriptors and sweeps | Module characterization bench |
+| 058--060 | Constraint model and fault-aware panel | Inert escape-room console |
+| 061--063 | Revision-neutral inertial samples and orientation | Balance-table instrument |
+| 064--066 | Inertial records and source qualification | Interchangeable motion recorder |
+| 067--069 | Single-wire transport and qualified probes | Thermal gradient mapper |
+| 070--072 | Multiplexed digits and MAX7219 presentation | Dual-display timing desk |
+| 073--075 | Three-wire clock, pressure, and external ADC | Pressure and analog station |
+| 076--078 | Identified color observations and calibration | Color sorting trainer |
+| 079--081 | Low-side driver and indicator semantics | Component qualification bench |
 
 The exact sensor model may follow the kit inventory, but changing a part must
 not change the deterministic behavior interface or its tests.
@@ -79,6 +96,23 @@ explicit open item.
 | 024 | Queued | Schedule, sensor-fault, RTC/storage-fault, hysteresis, exclusion, restart, and golden-log traces | Inert load LEDs, bus/storage activity, and unmistakable safe/fault combinations |
 | 027 | Queued | Timestamped wired/infrared/receive-only fixtures, stale-data handling, scheduler order, and record replay | Capture, age, stale, alarm, and storage states visible without Serial |
 | 030 | Queued capstone | Immutable cue schedule, arming order, simulated continuity, simultaneous-event policy, stop dominance, restart lockout, and audit replay | Inert channel lamps, redundant armed/fault/stop states, and no energizing output path |
+| 033 | Queued; detailed plan exists | Input and commit/cancel traces | Preview, committed, and fault indications |
+| 036 | Queued; detailed plan required | Passage, bounce, direction, and record traces | Raw contacts, accepted passage, and count |
+| 039 | Queued; detailed plan required | Contact, envelope, quantization, and playback traces | Accepted-hit LEDs, step display, and silent shutdown |
+| 042 | Queued; detailed plan required | Calibration, checkpoint-order, range, and timeout traces | Local checkpoints and invalid-run state |
+| 045 | Queued; detailed plan required | Probe, thermal, radiant, latch, and record traces | Health/fault display and inert alarm lamp |
+| 048 | Queued; detailed plan required | Gesture, coil-frame, stop, and power-loss traces | Shift-register intent mirror and independent stop |
+| 051 | Queued; detailed plan required | Identity, homing, confirmation, and interruption traces | Position, home, gate-intent, and stop evidence |
+| 054 | Queued; detailed plan required | Encode/decode, malformed-frame, policy, and cancellation traces | Separate transmit/receive/fault indications |
+| 057 | Queued; detailed plan required | Descriptor, sweep, disagreement, and record traces | Raw, comparator, validity, and switched-power evidence |
+| 060 | Queued; detailed plan required | Clue, permutation, fault, reset, and stop traces | Raw/accepted/fault clue states and inert intent |
+| 063 | Queued; detailed plan required | Revision-specific inertial, orientation, and freeze traces | Existing LED/tone health and bus test points |
+| 066 | Queued; detailed plan required | Normalization, provenance, qualification, and replay traces | Display self-test, orientation, and dominant fault |
+| 069 | Queued; detailed plan required | Single-wire, CRC, conversion, identity, and record traces | Data/rail/activity test points and explicit invalid state |
+| 072 | Queued; detailed plan required | Digit refresh, SPI failure, disagreement, and shutdown traces | Independent display self-tests and transport points |
+| 075 | Queued; detailed plan required | Clock, compensation, ADC/DAC, trend, and record traces | Three-wire/I2C/analog points and health LEDs |
+| 078 | Queued; detailed plan required | Calibration, boundary, confidence, confirmation, and replay traces | Raw/classified state and inert pointer intent |
+| 081 | Queued; detailed plan required | Descriptor, current budget, endpoint fault, and record traces | Separate power, raw, accepted, intent, and fault evidence |
 
 Each project package still includes the public component interfaces, host
 tests, narrative Mega example, HTML reference, rich PDF, size evidence, and

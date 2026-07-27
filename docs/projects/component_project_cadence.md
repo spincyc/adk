@@ -80,7 +80,7 @@ Circuit-native observation:
 - binary LEDs retain a preview if LCD presentation fails; and
 - shutdown evidence is separate from input-interpretation evidence.
 
-Primary kit coverage: joystick, rotary encoder, buttons, LCD, RGB LED, binary
+Planned specimen coverage: joystick, rotary encoder, buttons, LCD, RGB LED, binary
 LEDs, and optional passive buzzer.
 
 ## Lessons 034--036: magnetic passage logger
@@ -99,22 +99,22 @@ as optional position evidence; do not redefine quadrature decoding.
 
 ### 036 — Project: magnetic passage logger
 
-A tabletop gate counts tagged carriers moving through a channel. Hall and reed
+A tabletop gate counts carriers moving through a channel. Hall and reed
 observations indicate entry; the encoder represents conveyor position; RTC and
-SD produce stable records. An RFID reader may identify a carrier without
-changing passage detection.
+SD produce stable records. Local buttons may assign one of a few fixed
+learner-defined labels without introducing an identity-device driver.
 
 ```text
 Hall/reed edges --> passage model --> count --> seven-segment display
 encoder edges ----^        |                    status LED
-RFID identity -------------+------------------> RTC-stamped SD record
+button label --------------+------------------> RTC-stamped SD record
 ```
 
 Deterministic evidence:
 
 - timestamped approach/departure traces for both magnet polarities;
 - bounce, chatter, missing encoder edge, reversal, and impossible transition;
-- duplicate RFID scans inside one passage window;
+- duplicate label events inside one passage window;
 - RTC power-loss and SD full/partial-write faults; and
 - restart from a committed fixed-size checkpoint.
 
@@ -126,8 +126,8 @@ Circuit-native observation:
 - the encoder A/B pins are named logic-analyzer points; and
 - storage success/fault has a persistent LED pattern.
 
-Primary kit coverage: analog Hall, digital Hall, linear Hall, reed switch,
-magnet, rotary encoder, RTC, RFID RC522, SD module, seven-segment display.
+Planned specimen coverage: analog Hall, digital Hall, linear Hall, reed switch,
+magnet, rotary encoder, RTC, buttons, SD module, and seven-segment display.
 
 ## Lessons 037--039: vibration and sound laboratory
 
@@ -167,13 +167,14 @@ Deterministic evidence:
 Circuit-native observation:
 
 - one LED per surface reports accepted rather than merely raw hits;
-- the matrix or four-digit display shows the active step;
+- four discrete LEDs or the existing one-digit display show the active step;
 - a heartbeat LED separates a quiet system from a stalled scheduler;
 - the microphone analog output is a named oscilloscope point; and
 - silence is the safe buzzer state.
 
-Primary kit coverage: knock, vibration, shock, tap, sound/microphone, tilt,
-active buzzer, passive buzzer, potentiometer, LEDs, display.
+Planned specimen coverage: knock, vibration, shock, tap, sound/microphone,
+tilt, active buzzer, passive buzzer, potentiometer, LEDs, and one-digit
+display.
 
 ## Lessons 040--042: optical course marshal
 
@@ -219,7 +220,7 @@ Circuit-native observation:
 - trigger, echo, and sensor digital outputs are named test points; and
 - the project functions without a serial terminal.
 
-Primary kit coverage: line tracker, obstacle detector, photo-interrupter,
+Planned specimen coverage: line tracker, obstacle detector, photo-interrupter,
 light-cup/light-blocking module, PIR, HC-SR04, LDR, displays.
 
 ## Lessons 043--045: leak and thermal alarm trainer
@@ -266,7 +267,7 @@ Circuit-native observation:
 - the inert relay drives a current-limited lamp only; and
 - the alarm output is inactive after shutdown.
 
-Primary kit coverage: water sensor, rain sensor, soil probe, thermistor, analog
+Planned specimen coverage: water sensor, rain sensor, soil probe, thermistor, analog
 temperature, digital temperature, flame/radiant sensor, reed, relay, LCD, RTC,
 SD, RGB LED.
 
@@ -288,11 +289,11 @@ de-energized shutdown are explicit.
 
 Touch selects a pattern, a noisy pulse sensor modulates it, the joystick or
 tilt sensor changes direction, and a stepper rotates a lightweight paper
-element while RGB and matrix output mirror the commanded phase.
+element while RGB and shift-register LEDs mirror the commanded phase.
 
 ```text
 touch/pulse/tilt --> gesture model --> bounded motion intent --> stepper
-explicit time ---------------------^          |             --> RGB/matrix
+explicit time ---------------------^          |             --> RGB/LEDs
 stop button ----------------------------------+
 ```
 
@@ -307,14 +308,15 @@ Deterministic evidence:
 
 Circuit-native observation:
 
-- matrix frame mirrors commanded coil phase before the motor is powered;
+- shift-register LEDs mirror commanded coil phase before motor power is used;
 - independent stop LED is active whenever motion is inhibited;
 - each ULN2003 channel LED exposes coil intent;
 - external motor power is physically separable from logic power; and
 - the motor is de-energized on shutdown.
 
-Primary kit coverage: capacitive touch, metal touch, pulse/heartbeat,
-tilt/ball switch, joystick, stepper, ULN2003, RGB LED, matrix, stop button.
+Planned specimen coverage: capacitive touch, metal touch, pulse/heartbeat,
+tilt/ball switch, joystick, stepper, ULN2003, RGB LED, shift-register LEDs,
+and stop button.
 
 ## Lessons 049--051: identity-controlled parts carousel
 
@@ -352,7 +354,7 @@ Circuit-native observation:
 - stop removes actuator intent independently of UI state; and
 - audit records survive a simulated interrupted write.
 
-Primary kit coverage: RFID, keypad, stepper, Hall/reed, servo, LCD, EEPROM/SD,
+Planned specimen coverage: RFID, keypad, stepper, Hall/reed, servo, LCD, EEPROM/SD,
 buttons, status LEDs.
 
 ## Lessons 052--054: infrared protocol workbench
@@ -392,7 +394,7 @@ Circuit-native observation:
 - timer conflict produces a distinct fault pattern; and
 - all emitters are inactive after cancellation and shutdown.
 
-Primary kit coverage: IR receiver, IR emitter, remote, keypad, LCD, timers,
+Planned specimen coverage: IR receiver, IR emitter, remote, keypad, LCD, timers,
 buttons, LEDs.
 
 ## Lessons 055--057: modular sensor test bench
@@ -413,8 +415,9 @@ hysteresis, chatter, stuck output, and analog/digital disagreement.
 
 The bench accepts one low-voltage sensor module at a time, guides a safe test,
 shows raw and threshold state, and emits a stable characterization record.
-This is where vendor substitutions and remaining 37-kit variants are handled
-honestly rather than forced into unrelated applications.
+This is where identified low-voltage analog/comparator variants are handled
+honestly rather than forced into unrelated applications. Register devices,
+emitters, gas exposure, and physiological claims require their own boundaries.
 
 Deterministic evidence:
 
@@ -432,8 +435,8 @@ Circuit-native observation:
 - switched sensor power with an inactive default; and
 - no module is connected before its voltage and pinout are identified.
 
-Primary coverage: remaining analog/digital light, sound, Hall, temperature,
-flame/radiant, touch, vibration, and obstacle board variants.
+Planned specimen coverage: identified low-voltage analog/digital light, sound,
+Hall, temperature, flame/radiant, touch, vibration, and obstacle variants.
 
 ## Lessons 058--060: cooperative escape-room console
 
@@ -472,7 +475,7 @@ Circuit-native observation:
 - stop state is electrically independent and visually dominant; and
 - an append-only audit summary can be inspected after restart.
 
-Primary coverage: deliberate reuse of all earlier endpoint families and a
+Planned composition coverage: deliberate reuse of all earlier endpoint families and a
 meaningful integration test for the common kit.
 
 ## Lessons 061--063: balance-table instrument
@@ -480,46 +483,49 @@ meaningful integration test for the common kit.
 This block begins the expansion beyond lesson 060. Its numbers are reserved so
 motion-device work cannot collide with the input-first block.
 
-### 061 — MPU6050 inertial samples
+### 061 — Revision-neutral inertial samples
 
-Add an owned I2C accelerometer/gyroscope adapter, validated sample units, bias
-calibration, and deterministic complementary filtering. Transport failure,
-stale data, and physical saturation remain distinct.
+Add separately identified MPU6050 and QMI8658 I2C adapters behind one
+revision-neutral accelerometer/gyroscope sample value. Validated units, device
+identity, range, transport failure, stale data, and physical saturation remain
+distinct. Only the adapter matching the inventoried specimen is built.
 
 ### 062 — Orientation presentation
 
-Map supplied inertial samples into bounded pitch/roll intent and an 8x8 matrix
-cursor. Board orientation is explicit configuration. Matrix frames and tone
-intent depend only on samples, calibration, and supplied time.
+Map supplied inertial samples into bounded pitch/roll intent and an RGB/LED
+direction presentation. Board orientation is explicit configuration.
+Presentation and tone intent depend only on samples, calibration, and supplied
+time.
 
 ### 063 — Project: balance-table instrument
 
-A handheld instrument maps tilt to a matrix cursor, uses the joystick to adjust
-sensitivity, and freezes one measurement for comparison.
+A handheld instrument maps tilt to an RGB/LED direction display, uses the
+joystick to adjust sensitivity, and freezes one measurement for comparison.
 
 ```text
 joystick events ----+
-                    +--> calibration --> orientation --> matrix frame
+                    +--> calibration --> orientation --> LED frame
 inertial samples ---+                         |       --> tone intent
 explicit time --------------------------------+
 ```
 
 Evidence includes stationary, tilt, rotation, saturation, dropout, I2C NACK,
 stale-sample, axis-permutation, timestamp-wrap, and byte-identical replay
-fixtures. Matrix self-test, RGB health, SDA/SCL test points, and joystick-axis
+fixtures. LED self-test, RGB health, SDA/SCL test points, and joystick-axis
 test points provide the non-Serial path.
 
-Primary kit coverage: MPU6050, joystick, 8x8 matrix, RGB LED, passive buzzer,
-button, potentiometer, I2C bus, and shift/display transport.
+Planned specimen coverage: revision-dependent MPU6050 or QMI8658, joystick,
+RGB LED, passive buzzer, button, potentiometer, I2C bus, and shift-register
+LEDs.
 
 ## Lessons 064--066: interchangeable motion recorder
 
-### 064 — Revision-specific inertial adapters
+### 064 — Inertial record normalization
 
-Add a QMI8658 adapter beside the MPU6050 adapter. Both produce the same
-device-neutral inertial sample, but retain device identity, configured range,
-data-ready state, saturation, and transport status. No runtime probe may write
-configuration to an unidentified address.
+Normalize recorded output from the lesson 061 adapters while retaining device
+identity, configured range, data-ready state, saturation, calibration version,
+and transport status. No runtime probe writes configuration to an unidentified
+address.
 
 ### 065 — Inertial source qualification
 
@@ -532,20 +538,20 @@ device driver.
 
 The learner records the same hand-motion script with the kit's identified
 motion module, compares normalized traces on the host, and presents live
-orientation and health on the matrix and RGB LED.
+orientation and health on LEDs and the character display.
 
 Deterministic evidence includes golden traces for each adapter, register
 identity mismatch, NACK, stale/data-ready disagreement, range saturation,
 axis permutations, and byte-identical normalized records. SDA, SCL, interrupt,
-and sensor-rail test points expose acquisition; a matrix self-test is separate
-from a moving cursor; RGB fault dominates valid orientation.
+and sensor-rail test points expose acquisition; a display self-test is
+separate from changing orientation; RGB fault dominates valid orientation.
 
 Before power is applied, the inventory must name MPU6050 or QMI8658, PCB
 markings, address strap, regulator and level-shifter population, logic voltage,
 and primary register-map revision. An unidentified revision remains unpowered.
 
-Primary kit coverage: revision-dependent MPU6050 or QMI8658, I2C, matrix, RGB
-LED, button, RTC, and SD.
+Planned specimen coverage: revision-dependent MPU6050 or QMI8658, I2C,
+character display, RGB LED, button, RTC, and SD.
 
 ## Lessons 067--069: multi-probe thermal mapper
 
@@ -580,7 +586,7 @@ waterproof-probe construction if present, supply mode, and datasheet. No
 immersion, hot surface, parasite-power, or unknown three-pin module is used
 until its electrical and material construction is established.
 
-Primary kit coverage: DS18B20 variants, LCD, RTC, SD, buttons, and LEDs.
+Planned specimen coverage: DS18B20 variants, LCD, RTC, SD, buttons, and LEDs.
 
 ## Lessons 070--072: display transport laboratory
 
@@ -596,10 +602,7 @@ The endpoint owns every digit-select and segment resource it drives.
 Add a MAX7219 adapter over the existing owned SPI transaction boundary.
 Configuration, intensity, scan limit, decode mode, row writes, chip-select,
 transport faults, and blank-on-shutdown policy remain explicit. Frame
-generation stays independent of this adapter. An identified PCF8574 LCD
-backpack may adapt the existing `CharacterDisplay` transport over owned I2C;
-its address, bit mapping, backlight polarity, and pull-up voltage are explicit
-specimen configuration, never guessed from a marketplace name.
+generation stays independent of this adapter.
 
 ### 072 — Project: dual-display timing desk
 
@@ -614,13 +617,14 @@ presentation disagreement, and shutdown. Digit-select, segment, clock, data,
 and chip-select test points expose transport; both displays run a distinct
 self-test before either presents time.
 
-The specimen gate records display polarity and resistor network, MAX7219 or
-PCF8574 marking/module schematic, supply and logic levels, matrix orientation,
-backpack bit mapping, maximum segment/backlight current, and measured current
-budget. Unknown modules remain blank and unpowered.
+The specimen gate records display polarity and resistor network, MAX7219
+marking/module schematic, supply and logic levels, matrix orientation, maximum
+segment current, and measured current budget. Unknown modules remain blank and
+unpowered.
 
-Primary kit coverage: four-digit seven-segment display, MAX7219 matrix,
-PCF8574 LCD backpack variants, buttons, SPI, I2C, and status LEDs.
+Planned specimen coverage: four-digit seven-segment display, MAX7219 matrix,
+buttons, SPI, and status LEDs. PCF8574 LCD backpacks remain inventory-gated
+planning work and are not claimed by this arc.
 
 ## Lessons 073--075: pressure and analog acquisition station
 
@@ -659,7 +663,7 @@ identity rather than a look-alike pressure sensor, board regulators and
 pull-ups, PCF8591 marking, supply/reference, analog-source range, and DAC load.
 No unknown register device is probed by trial writes.
 
-Primary kit coverage: DS1302 variants, BMP180, PCF8591, potentiometer, LCD, SD,
+Planned specimen coverage: DS1302 variants, BMP180, PCF8591, potentiometer, LCD, SD,
 and LEDs.
 
 ## Lessons 076--078: color classification trainer
@@ -698,7 +702,7 @@ package, interface type, supply and logic levels, and cited integration limits.
 Illumination is current limited; no unidentified laser is used as a light
 source.
 
-Primary kit coverage: identified color-sensor variants, LCD or matrix, RGB
+Planned specimen coverage: identified color-sensor variants, LCD or matrix, RGB
 LED, buttons, servo pointer, and pulse or I2C transport.
 
 ## Lessons 079--081: low-energy component qualification bench
@@ -740,21 +744,22 @@ energy class, and primary source. Missing identity assigns PX and prohibits
 power. Relay contacts, mains, lasers, gas exposure, physiological claims, and
 motor/fan blades are outside this bench.
 
-Primary kit coverage: PN2222 and S8050 variants, 1N4007, active buzzer,
+Planned specimen coverage: PN2222 and S8050 variants, 1N4007, active buzzer,
 traffic-light and dual-color LED modules, auto-flash LED, voltage detector,
 breadboard supply evidence, resistors, capacitors, buttons, and status display.
 
 ## Coverage ledger
 
-This ledger prevents quiet omissions. “Primary” means a project depends on the
-module's distinctive behavior; “variant” means the characterization bench
-compares electrically similar retail boards.
+This planning ledger prevents quiet omissions. A listed lesson is the intended
+first project dependency, not a support or physical-verification claim.
+“Variant” means the characterization bench may compare electrically similar,
+individually identified retail boards.
 
 | Module family | Primary project | Later reuse |
 |---|---:|---:|
 | LEDs, RGB, buttons, buzzers | 003/006 | all diagnostic paths |
 | Potentiometer, photoresistor | 009 | 039, 042, 063 |
-| Shift register, 7-segment, matrix | 012 | 036, 039, 063 |
+| Shift register and one-digit 7-segment | 012 | 036, 039, 048, 063 |
 | DHT, LCD | 015 | 045 |
 | Keypad, servo | 018 | 051, 054, 060 |
 | Ultrasonic, PIR, DC motor/driver | 021 | 042 |
@@ -763,7 +768,7 @@ compares electrically similar retail boards.
 | Receive-capable RF | 027 passive only | no transmit project |
 | Continuity and cue panel | 030 inert only | 060 fault model |
 | Joystick, rotary encoder | 033 | 036, 048, 060, 063 |
-| MPU6050 or QMI8658 revision | 063 | 066 cross-device records |
+| MPU6050 or QMI8658 revision | 063 | 066 normalized records |
 | Hall variants, reed | 036 | 051, 060 |
 | Tilt, knock, vibration, shock, sound | 039 | 048, 060 |
 | Line, obstacle, interrupter, light cup | 042 | 057, 060 |
@@ -772,12 +777,11 @@ compares electrically similar retail boards.
 | Flame/radiant detector | 045, controlled IR only | 057 |
 | Touch, metal touch, pulse demonstration | 048 | 060 |
 | Stepper and ULN2003 | 048 | 051 |
-| RFID | 036 | 051, 060 |
+| RFID | 051 | 060 |
 | IR emitter | 054, known local codes only | none required |
 | Analog/comparator module variants | 057 | inventory acceptance |
 | DS18B20 and single-wire variants | 069 | thermal records |
 | Four-digit display, MAX7219 matrix | 072 | timing presentation |
-| PCF8574 LCD backpack | 072 | timing presentation |
 | DS1302, BMP180, PCF8591 | 075 | clock/pressure/analog records |
 | Identified color-sensor variants | 078 | classification records |
 | PN2222/S8050, diode, indicator variants | 081 inert loads only | inventory acceptance |
