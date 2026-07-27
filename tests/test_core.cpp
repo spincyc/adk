@@ -106,6 +106,27 @@ namespace {
         require (
             failure.status () == adk::Status::HardwareFailure,
             "failed status");
+        require (
+            failure.error () == adk::StatusCode::HardwareFailure,
+            "result exposes error code");
+        require (failure.transient (), "result exposes transient failure");
+        require (adk::Status ().ok (), "default status succeeds");
+        require (!adk::Status::InvalidPin.ok (), "error status fails");
+        require (
+            adk::Status::InvalidPin.error () == adk::StatusCode::InvalidPin,
+            "status exposes error code");
+        require (
+            adk::Status::ResourceBusy.transient (),
+            "resource contention is transient");
+        require (
+            adk::Status::HardwareFailure.transient (),
+            "hardware failure is transient");
+        require (
+            !adk::Status::InvalidArgument.transient (),
+            "invalid argument is permanent");
+        require (
+            !adk::Status::CapacityExceeded.transient (),
+            "capacity failure is permanent");
 
         const adk::Status statuses[] = {
             adk::Status::Ok,
@@ -518,6 +539,10 @@ namespace {
 
 int main ()
 {
+    static_assert (sizeof (adk::Status) == 1, "status remains one byte");
+    static_assert (
+        std::is_trivially_copyable<adk::Status>::value,
+        "status is a value object");
     static_assert (
         !std::is_copy_constructible<adk::ResourceRegistry>::value,
         "registries own unique state");

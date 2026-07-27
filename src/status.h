@@ -4,7 +4,7 @@
 
 namespace adk {
 
-    enum struct Status : uint8_t
+    enum struct StatusCode : uint8_t
     {
         Ok,
         InvalidArgument,
@@ -16,12 +16,63 @@ namespace adk {
         HardwareFailure
     };
 
+    struct Status
+    {
+        constexpr Status () noexcept
+            : code_ (StatusCode::Ok)
+        {
+        }
+
+        constexpr Status (StatusCode code) noexcept
+            : code_ (code)
+        {
+        }
+
+        constexpr bool ok () const noexcept
+        {
+            return code_ == StatusCode::Ok;
+        }
+
+        constexpr StatusCode error () const noexcept
+        {
+            return code_;
+        }
+
+        constexpr bool transient () const noexcept
+        {
+            return code_ == StatusCode::ResourceBusy ||
+                   code_ == StatusCode::HardwareFailure;
+        }
+
+        static const Status Ok;
+        static const Status InvalidArgument;
+        static const Status InvalidPin;
+        static const Status Unsupported;
+        static const Status ResourceBusy;
+        static const Status NotInitialized;
+        static const Status CapacityExceeded;
+        static const Status HardwareFailure;
+
+      private:
+        StatusCode code_;
+    };
+
+    constexpr bool operator== (Status left, Status right) noexcept
+    {
+        return left.error () == right.error ();
+    }
+
+    constexpr bool operator!= (Status left, Status right) noexcept
+    {
+        return !(left == right);
+    }
+
     const char* statusName (Status status) noexcept;
 
     template<typename Value>
     struct Result
     {
-        Result (Status status, const Value& value)
+        Result (Status status, const Value& value) noexcept
             : status_ (status)
             , value_  (value)
         {
@@ -29,12 +80,22 @@ namespace adk {
 
         bool ok () const noexcept
         {
-            return status_ == Status::Ok;
+            return status_.ok ();
         }
 
         Status status () const noexcept
         {
             return status_;
+        }
+
+        StatusCode error () const noexcept
+        {
+            return status_.error ();
+        }
+
+        bool transient () const noexcept
+        {
+            return status_.transient ();
         }
 
         const Value& value () const noexcept
