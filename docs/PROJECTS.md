@@ -14,8 +14,10 @@ are complete.
 The Reaction Timer (003), Simon engine (006), and adaptive Night Light (009)
 are implemented and host verified. Traffic Junction (012) has also landed with
 deterministic host evidence, a Mega 2560 example, lesson material, and size
-evidence. Its physical bench card remains open. Lesson 013 is active; projects
-015--030 are ordered briefs, not implemented claims.
+evidence. Its physical bench card remains open. The Environmental Station
+(015) has also landed with deterministic evidence and an open bench card.
+Lesson 017 is active; projects 018--030 are ordered briefs, not implemented
+claims.
 
 Every API and lesson remains experimental. Mega 2560 bench acceptance is open
 for every project. Development continues through the full project sequence
@@ -264,7 +266,7 @@ The detailed [feasibility study](research/HDMI_8K_NETWORK.md) and
 [shared-fabric contract](research/SHARED_USB_HDMI_FABRIC.md), keep the
 assumptions, calculations, and deferred compliance work reviewable.
 
-[hdmi21]: https://www.hdmi.org/spec/hdmi2_1/index.aspx
+[hdmi21]: https://www.hdmi.org/spec2sub/res-bandwidth
 [smpte]: https://www.smpte.org/standards/recently-updated-documents
 [is04]: https://specs.amwa.tv/is-04/releases/v1.3.3/docs/Overview.html
 [is05]: https://specs.amwa.tv/is-05/v1.1/docs/Overview.html
@@ -477,7 +479,7 @@ mutual exclusion, and safe restart. Golden logs reproduce every decision.
 loads. A relay's contact rating does not make breadboard wiring safe.
 
 **Comparable exemplars:** Arduino's
-[Datalogger](https://docs.arduino.cc/built-in-examples/communication/Datalogger/)
+Arduino's data-logging example pattern
 introduces SD records; the
 [Arduino MKR ENV Shield guide](https://docs.arduino.cc/tutorials/mkr-env-shield/mkr-env-shield-basic/)
 is a useful example of composing several environmental measurements.
@@ -522,7 +524,7 @@ control. Any real display must remain behind a certified commercial controller
 and applicable law, training, site procedure, and manufacturer documentation.
 
 **Comparable exemplars:** The
-[NIST finite-state-machine guidance](https://www.nist.gov/publications/finite-state-machine-approach-digital-event-systems)
+formal finite-state-machine guidance
 motivates explicit auditable state. The
 [Open Lighting Architecture](https://docs.openlighting.org/doc/latest/index.html)
 provides a mature event-driven show-control comparison, while the Arduino
