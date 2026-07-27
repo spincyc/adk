@@ -215,6 +215,91 @@ Supported frequencies are 31–20,000 Hz and durations are 1–60,000 ms. The
 component does not queue notes or call `delay()`. Direct Arduino `tone()` or
 timer-library calls bypass ADK ownership and must not be mixed with it.
 
+## Analog input
+
+`AnalogInput` owns one Mega analog-capable pin. `initialize()` validates board
+capability before claiming the pin, configures it as an input, and records an
+initial reading. `update()` refreshes the cached value returned by `read()`;
+`sample()` performs an immediate ADC read for diagnosis.
+
+```cpp
+adk::AnalogInput potentiometer (runtime.resources (), 54); // Mega A0
+
+if (potentiometer.initialize () == adk::Status::Ok)
+{
+    potentiometer.update ();
+    const adk::AnalogInput::Reading position = potentiometer.read ();
+}
+```
+
+Readings are clamped to the Mega's 10-bit range, 0–1023. They are dimensionless
+ADC counts, not volts or a semantic sensor value. The circuit and reference
+voltage determine their meaning. Lesson 007 names TP1 between the potentiometer
+wiper and A0 so the electrical input can be measured independently of software.
+
+## Sampled signal processing
+
+Sample processing is hardware-neutral and advances only when the application
+supplies a value:
+
+- `LinearCalibration` maps one observed range into another, with optional
+  clamping and support for descending output.
+- `MovingAverage` keeps a fixed window of at most 32 samples and exposes its
+  warm-up count.
+- `Deadband` holds its last value until the supplied sample differs by the
+  configured width.
+
+```cpp
+const adk::LinearCalibrationConfig calibrationConfig = {
+    100, 900, 0, 1000, true};
+
+adk::LinearCalibration calibration (calibrationConfig);
+adk::MovingAverage     average     (8);
+adk::Deadband          deadband    (10);
+
+const adk::Result<uint16_t> mapped = calibration.map (rawSample);
+
+if (!mapped.ok ())
+{
+    showSensorFault ();
+    return;
+}
+
+const adk::Result<uint16_t> smooth = average.addSample (mapped.value ());
+
+if (!smooth.ok ())
+{
+    showSensorFault ();
+    return;
+}
+
+const uint16_t stable = deadband.addSample (smooth.value ());
+```
+
+Check each `Result` before using `value()`. `reset()` clears accumulated filter
+state so the same sample sequence can be replayed from the same initial state.
+These types allocate no heap memory, read no pins, and consult no hidden clock.
+
+## Adaptive night light
+
+`NightLight` is a hardware-neutral decision engine. The application calibrates
+and filters its sensor observation, passes one normalized `NightLightInput`,
+then maps the resulting snapshot to a PWM lamp and RGB diagnostic output.
+
+The default configuration turns on strictly below 350 permille and turns off
+strictly above 450 permille. This hysteresis prevents chatter inside the band.
+While active, darker observations map to greater duty within the configured
+24–192 default range.
+
+`LightSampleState` distinguishes `Valid`, `BelowRange`, `AboveRange`, and
+`Stale`. A sensor fault enters `NightLightMode::Fault`, reports
+`NightLightDiagnostic::SensorFault`, and requests duty zero. A normalized input
+above 1000 is invalid and also requests duty zero.
+
+The snapshot exposes mode, sample state, diagnostic state, status, normalized
+light, requested duty, and `lampOn`. The engine owns no hardware; the adapter
+keeps the PWM lamp off if initialization or actuation fails.
+
 ## Simon engine
 
 `Simon` is a hardware-neutral deterministic state machine. The application
