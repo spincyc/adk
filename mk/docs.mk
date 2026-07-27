@@ -39,6 +39,8 @@ doc/lessons/017.pdf: docs/lessons/017/main.tex \
 		docs/lessons/assets/017-bounded-servo-pencil.png
 doc/lessons/018.pdf: docs/lessons/018/main.tex \
 		docs/lessons/assets/018-access-trainer-pencil.png
+doc/lessons/019.pdf: docs/lessons/019/main.tex \
+		docs/lessons/assets/019-ultrasonic-range-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons
