@@ -23,6 +23,7 @@
 #include "sampled_signal.h"
 #include "servo_calibration.h"
 #include "servo_configuration.h"
+#include "servo_output.h"
 #include "seven_segment_display.h"
 #include "shift_register.h"
 #include "simon.h"
