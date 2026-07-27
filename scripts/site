@@ -163,6 +163,12 @@ def stage() -> None:
         required=False,
     )
     copy_tree(ROOT / "site/pages", SOURCE_ROOT, required=False)
+    published_lessons = {
+        source.stem for source in (ROOT / "doc/lessons").glob("*.pdf")
+    }
+    for page in (SOURCE_ROOT / "lessons").glob("[0-9][0-9][0-9].md"):
+        if page.stem not in published_lessons:
+            page.unlink()
     copy_tree(ROOT / "site/assets", SOURCE_ROOT / "assets")
     copy_lesson_materials()
 

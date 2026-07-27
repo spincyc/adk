@@ -21,12 +21,14 @@
   stop-dominant fault behavior.
 - Added deterministic rover supervision with range freshness, motion evidence,
   route replay, and an inert LED-only Mega stage.
+- Added owned I2C/SPI devices, direct Mega AVR bus backends, calibrated moisture
+  samples, explicit RTC state, and deterministic durable-record recovery.
 - Added executable USB route-controller and USB/IP research gates, plus the
   transparent USB and HDMI mesh architecture and safety boundaries.
 - Added complete-kit inventory, component-family, safety, pacing, and project
   plans extending the curriculum without renumbering existing lessons.
 
-Interfaces through lesson 021 are host verified and experimental. Physical
+Interfaces through lesson 022 are host verified and experimental. Physical
 Mega 2560 acceptance, USB/HDMI endpoint hardware, interoperability, and
 performance evidence remain open and are not implied by this version.
 

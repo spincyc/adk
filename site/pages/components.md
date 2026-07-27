@@ -37,6 +37,11 @@ Status meanings:
 | Component | `UltrasonicRanger` | Hardware experimental | Trigger output plus pulse input |
 | Behavior | `MotorIntent` | Host verified | No hardware; observes requests, faults, and time |
 | Behavior | `RoverController` | Host verified | No hardware; observes range, route, and time |
+| Endpoint | `I2cBus`, `I2cDevice` | Hardware experimental | Mega TWI pins and one fixed address |
+| Endpoint | `SpiBus`, `SpiDevice` | Hardware experimental | Mega SPI pins and one chip-select |
+| Component | `MoistureSensor` | Hardware experimental | One analog input and explicit calibration |
+| Contract | `Rtc`, `Storage` | Host verified | Borrowed clock/media adapters |
+| Component | `FixedStorage` | Host verified | Fixed staged and durable record prefixes |
 | Later layers | Buses, sensors, actuators | Planned | See catalog |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.
@@ -64,6 +69,12 @@ soft-latch and audit intent without driving a servo or storing credentials.
 `MotorIntent` and `RoverController` remain hardware-neutral policy engines;
 the lesson 021 Mega stage presents requested and applied motion on LEDs, not
 motors.
+
+Lesson 022 owns I2C addresses and SPI chip-selects for each device. Transactions
+are bounded and restore controller state. `MoistureSensor` keeps calibration
+and sample validity explicit; `Rtc` and `FixedStorage` model clock state,
+append, sync, failure, and restart without claiming a physical RTC or SD-card
+adapter.
 
 - [Exact API](api-supported.md)
 - [Full component catalog](docs/COMPONENTS.md)
