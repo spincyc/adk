@@ -2,7 +2,7 @@
 schema_version: 1
 task_uuid: "d6a8e538-7ae1-4522-9b37-ffa79055b36b"
 title: "complete and promote lesson 029"
-status: "active"
+status: "done"
 priority: "high"
 priority_reason: "Recovered audit prompt 4; ordered by the repository recovery audit."
 parent: null
@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-27T22:30:16Z"
+updated_at: "2026-07-27T22:41:29Z"
 ---
 
 # Goal
