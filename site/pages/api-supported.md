@@ -32,12 +32,15 @@ Operations report a complete `adk::Status` value, never exceptions:
 |---|---|
 | `Ok` | Operation completed |
 | `InvalidArgument` | Configuration is internally invalid |
+| `InvalidConfiguration` | A complete component configuration is invalid |
 | `InvalidPin` | Pin is outside the supported board profile |
 | `Unsupported` | Hardware cannot provide the requested capability |
 | `ResourceBusy` | Another live object owns the resource |
 | `NotInitialized` | An operation requires successful initialization |
 | `CapacityExceeded` | Fixed-capacity storage is full |
 | `HardwareFailure` | The hardware operation failed |
+| `Timeout` | A bounded operation or confirmation window expired |
+| `InternalInvariant` | A state-machine invariant was not preserved |
 
 Use `status.ok()` for normal control flow. `error()` exposes the
 `StatusCode` when diagnostics or a specific recovery path needs it.
@@ -482,6 +485,25 @@ the same states and outcomes.
 The engine uses fixed-capacity storage and owns no hardware. Its cue source must
 outlive it. Simultaneous presses are invalid independent of button scan order,
 and a correct press is not complete until release.
+
+## Inert cue scheduler and audit
+
+`InertCueScheduler` copies a fixed plan and consumes only caller-supplied time
+and `CueOperatorInput` values. Review is a level; Run, Confirm, Skip, and Cancel
+are edges. Cancel dominates, releasing Review enters Held, and no cue becomes
+Active without explicit confirmation. A delayed update coalesces completed
+intervals while preserving their audit evidence.
+
+`CueSchedulerSnapshot::phase` is authoritative. `hasCue` names a current or
+next cue in Waiting, Confirmation, and Active; applications present a cue only
+for Active. Cue IDs are opaque labels and never hardware addresses.
+
+`CueAuditBuffer` uses bounded caller-owned append storage. It never overwrites
+records. `CueAuditEncoder` atomically emits the versioned `adk-cue,1` text
+grammar into caller storage without allocation. The scheduler owns no pins,
+clock, stream, callback, or generic output adapter. See
+[Lesson 029](lessons/029.md) for the exact lifecycle, timing, circuit, and open
+bench procedure.
 
 ## Error and electrical safety
 

@@ -48,6 +48,7 @@ nav:
       - "026 — Receive-only telemetry": lessons/026.md
       - "027 — Telemetry console": lessons/027.md
       - "028 — Inert channel assessment": lessons/028.md
+      - "029 — Inert cue scheduling and audit": lessons/029.md
   - Components: components.md
   - Supported API: api-supported.md
   - Design:

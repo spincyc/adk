@@ -33,6 +33,7 @@ third lesson for a deterministic integration project.
 | [026](026.md) | Receive-only telemetry | Exact packets, freshness, and visible evidence |
 | [027](027.md) | Telemetry console | Deterministic selection, health, acknowledgement, and bounded records |
 | [028](028.md) | Inert channel assessment | Recorded open, short, stale, and contradictory evidence |
+| [029](029.md) | Inert cue scheduling and audit | Confirmation windows, inert intervals, and bounded replayable records |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance

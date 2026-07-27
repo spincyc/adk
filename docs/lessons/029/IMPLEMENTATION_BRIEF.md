@@ -1,7 +1,12 @@
 # Lesson 029 implementation brief: inert cue schedule and audit
 
-Status: implementation-ready design; host implementation and physical
-acceptance remain open.
+Status: host verified; physical acceptance remains open.
+
+The reviewed public headers and focused tests are authoritative where the
+earlier pseudocode below differs. In particular, configuration supplies the
+copied plan and confirmation window, the snapshot and audit entry carry
+`hasCue`, the audit includes `Completed`, Run establishes the plan epoch, and
+only a byte-identical input frame is idempotent at a repeated timestamp.
 
 ## Scope
 

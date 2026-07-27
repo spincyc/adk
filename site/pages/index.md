@@ -6,15 +6,14 @@ a resource-owning library and an evidence-centered course for the Arduino Mega
 
 <nav class="landing-actions" aria-label="Primary">
   <a class="landing-primary" href="start/">Build from the command line</a>
-  <a href="lessons/">Follow lessons 001–028</a>
+  <a href="lessons/">Follow lessons 001–029</a>
   <a href="components/">Browse components</a>
 </nav>
 
-> **Current boundary:** lessons 001–028 are published and host verified, and
+> **Current boundary:** lessons 001–029 are published and host verified, and
 > their canonical examples compile for the Mega 2560. Physical acceptance
-> remains open until each lesson has a recorded bench result. Lesson 029 is
-> active implementation work, not a supported release. Lesson 030 is queued
-> behind it; lessons 031–081 remain the retained kit expansion.
+> remains open until each lesson has a recorded bench result. Lesson 030 is the
+> next queued capstone; lessons 031–081 remain the retained kit expansion.
 
 ## One method, three ways in
 

@@ -46,20 +46,18 @@ publication ledger.
 26. deterministic multi-source telemetry scheduling, attention, presentation,
     and stable record replay in lesson 027; and
 27. synthetic inert-channel continuity assessment with explicit open, short,
-    stale, and contradictory evidence in lesson 028.
+    stale, and contradictory evidence in lesson 028; and
+28. deterministic inert cue scheduling, confirmation, stable snapshots, and
+    bounded audit replay in lesson 029.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
 is experimental rather than hardware supported.
 
-## Active slice
+## Next slice
 
-Lesson 029 has tracked cue-scheduler and bounded-audit core sources with focused
-tests. Its remaining boundary is independent review, normal host and umbrella
-registration, a narrative Mega example, size evidence, HTML/PDF publication,
-and promotion.
-
-Lesson 030's inert show-cue simulator is queued behind that promotion. After
+Lesson 029 is host verified and published with its E1 bench card open. Lesson
+030's inert show-cue simulator is the next queued integration boundary. After
 030, development follows the canonical lessons 031--081 kit expansion, one
 implementation-depth three-lesson brief at a time.
 

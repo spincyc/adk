@@ -11,9 +11,8 @@ are complete.
 
 ## Current status
 
-Lessons 001--028 are host verified with their bench cards open. Lesson 029 is
-in active integration with tracked scheduler and audit core sources; lesson
-030 remains a queued capstone. See the [authoritative work
+Lessons 001--029 are host verified with their bench cards open. Lesson 030
+remains the next queued capstone. See the [authoritative work
 queue](WORK_QUEUE.md) for the complete ledger.
 
 Every API and lesson remains experimental. Mega 2560 bench acceptance is open

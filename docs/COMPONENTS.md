@@ -2,7 +2,7 @@
 
 This is the planning map for first-class ADK interfaces. It complements
 `CURRICULUM.md`: that file defines teaching order; this file defines ownership,
-composition, resources, and test seams. The lesson 028 slice is implemented,
+composition, resources, and test seams. The lesson 029 slice is implemented,
 host verified, and experimental. A catalog name is still a target unless a
 matching public header has landed; in particular, lesson 009 models its
 photoresistor through `AnalogInput` and does not yet publish a
@@ -115,6 +115,8 @@ that configuration into domain meaning.
 | `InfraredReceiver` | `PulseInput` or serial endpoint | Raw timing evidence separated from decoder | 027 |
 | `RadioObserver` | Receive-only bus/serial device | Passive timestamped observations; no transmit API | 027 |
 | `ContinuityModel` | Injected samples, no energetic load | Open/closed/short/stale simulation | 030 |
+| `CueAuditBuffer` / `CueAuditEncoder` | Caller-owned fixed storage | Append-only decisions and byte-stable records | 029 |
+| `InertCueScheduler` | Supplied time and operator values | Confirmation-gated inert visual intervals | 029 |
 
 ### Kit module adapters
 
