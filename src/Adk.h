@@ -21,6 +21,8 @@
 #include "resource.h"
 #include "runtime.h"
 #include "sampled_signal.h"
+#include "servo_calibration.h"
+#include "servo_configuration.h"
 #include "seven_segment_display.h"
 #include "shift_register.h"
 #include "simon.h"

@@ -41,6 +41,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_rgb_led \
 	$(BUILD_DIR)/host/test_piezo_sounder \
 	$(BUILD_DIR)/host/test_sampled_signal \
+	$(BUILD_DIR)/host/test_servo_calibration \
 	$(BUILD_DIR)/host/test_seven_segment_display \
 	$(BUILD_DIR)/host/test_shift_register \
 	$(BUILD_DIR)/host/test_simon \
@@ -174,6 +175,14 @@ $(BUILD_DIR)/host/test_sampled_signal: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/sampled_signal.cpp \
 		tests/test_sampled_signal.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_servo_calibration: $(HOST_CORE_SOURCES) \
+		src/servo_calibration.cpp src/servo_configuration.cpp \
+		tests/test_servo_calibration.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/servo_calibration.cpp \
+		src/servo_configuration.cpp tests/test_servo_calibration.cpp \
+		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_seven_segment_display: $(HOST_IO_SOURCES) \
 		src/shift_register.cpp src/seven_segment_display.cpp \
