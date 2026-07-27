@@ -68,6 +68,9 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_traffic_junction \
 	$(BUILD_DIR)/host/test_telemetry_packet \
 	$(BUILD_DIR)/host/test_telemetry_evidence \
+	$(BUILD_DIR)/host/test_telemetry_console \
+	$(BUILD_DIR)/host/test_telemetry_console_project \
+	$(BUILD_DIR)/host/test_telemetry_record \
 	$(BUILD_DIR)/host/test_ultrasonic_ranger \
 	$(BUILD_DIR)/host/test_watering_controller
 
@@ -420,6 +423,31 @@ $(BUILD_DIR)/host/test_telemetry_evidence: $(HOST_CORE_SOURCES) \
 		$(HOST_CORE_SOURCES) src/observation_tracker.cpp \
 		src/telemetry_evidence.cpp src/telemetry_packet.cpp \
 		tests/test_telemetry_evidence.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_telemetry_console: $(HOST_CORE_SOURCES) \
+		src/telemetry_console.cpp tests/test_telemetry_console.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/telemetry_console.cpp \
+		tests/test_telemetry_console.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_telemetry_record: $(HOST_CORE_SOURCES) \
+		src/telemetry_console.cpp src/telemetry_record.cpp \
+		tests/test_telemetry_record.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/telemetry_console.cpp \
+		src/telemetry_record.cpp tests/test_telemetry_record.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_telemetry_console_project: $(HOST_CORE_SOURCES) \
+		src/record_sink.cpp src/telemetry_console.cpp \
+		src/telemetry_console_project.cpp src/telemetry_record.cpp \
+		tests/test_telemetry_console_project.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/record_sink.cpp \
+		src/telemetry_console.cpp src/telemetry_console_project.cpp \
+		src/telemetry_record.cpp tests/test_telemetry_console_project.cpp \
+		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_ultrasonic_ranger: $(HOST_CORE_SOURCES) \
 		src/pulse_input.cpp src/ultrasonic_ranger.cpp \
