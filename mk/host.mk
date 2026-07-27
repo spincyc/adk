@@ -46,6 +46,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_pwm_output \
 	$(BUILD_DIR)/host/test_rgb_led \
 	$(BUILD_DIR)/host/test_rover_controller \
+	$(BUILD_DIR)/host/test_rtc_storage \
 	$(BUILD_DIR)/host/test_piezo_sounder \
 	$(BUILD_DIR)/host/test_sampled_signal \
 	$(BUILD_DIR)/host/test_servo_calibration \
@@ -229,6 +230,13 @@ $(BUILD_DIR)/host/test_rover_controller: $(HOST_CORE_SOURCES) \
 		src/pulse_input.cpp src/rover_controller.cpp \
 		src/ultrasonic_ranger.cpp tests/test_rover_controller.cpp \
 		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_rtc_storage: $(HOST_CORE_SOURCES) \
+		src/fixed_storage.cpp src/rtc.cpp src/storage.cpp \
+		tests/test_rtc_storage.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/fixed_storage.cpp src/rtc.cpp \
+		src/storage.cpp tests/test_rtc_storage.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_piezo_sounder: $(HOST_PIEZO_SOURCES) \
 		tests/test_piezo_sounder.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
