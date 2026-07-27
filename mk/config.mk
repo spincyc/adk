@@ -6,6 +6,10 @@ BUILD_DIR   ?= build
 BUILD_MARKER := $(BUILD_DIR)/.adk-build
 BOARD_FQBN  ?= arduino:avr:mega
 LESSONS     := 001 002 003
+EXAMPLES    := \
+	Lesson001DigitalOutput \
+	Lesson002DigitalInput \
+	Lesson003ReactionTimer
 PORT        ?=
 
 HOST_CPPFLAGS += -Isrc -Itests/fake_arduino

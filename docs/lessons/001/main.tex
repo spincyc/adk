@@ -1,0 +1,383 @@
+\documentclass[11pt]{article}
+
+\usepackage[letterpaper,margin=0.72in,headheight=15pt]{geometry}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\hypersetup
+{
+    pdftitle={ADK Lesson 001: DigitalOutput},
+    pdfauthor={Kevin Shanahan},
+    pdfsubject={Safe deterministic digital output on the Arduino Mega 2560}
+}
+
+\usetikzlibrary{arrows.meta,positioning}
+\graphicspath{{docs/lessons/assets/}{../assets/}}
+
+\definecolor{ink}{HTML}{20252A}
+\definecolor{soft}{HTML}{F3F2EE}
+\definecolor{mid}{HTML}{6F777B}
+\definecolor{accent}{HTML}{3E5964}
+\definecolor{codebg}{HTML}{F7F7F4}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textsc{ADK field lesson 001}}
+\rhead{DigitalOutput}
+\cfoot{\thepage}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\renewcommand{\arraystretch}{1.2}
+
+\lstdefinestyle{adkcpp}
+{
+    language=C++,
+    basicstyle=\ttfamily\small,
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{mid},
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    keywordstyle=\bfseries\color{accent},
+    commentstyle=\itshape\color{mid},
+    breaklines=true,
+    tabsize=4
+}
+
+\newcommand{\blankline}{\rule{0.96\linewidth}{0.35pt}}
+\newcommand{\checkbox}{\(\square\)}
+
+\newenvironment{checkpoint}[1]
+{\begin{center}\begin{minipage}{0.94\linewidth}\textbf{Check --- #1}\par}
+{\end{minipage}\end{center}}
+
+\begin{document}
+
+\begin{center}
+    {\Huge\bfseries Make state visible}\\[3pt]
+    {\Large Lesson 001: safe digital output}\\[7pt]
+    \textit{Predict $\rightarrow$ claim $\rightarrow$ command $\rightarrow$ release}
+\end{center}
+
+\begin{center}
+\includegraphics[width=\linewidth,height=0.31\textheight,keepaspectratio]
+    {001-digital-output-pencil.png}
+\end{center}
+
+\textbf{Orientation plate.}
+This graphite view helps you find the Mega 2560, USB connector, and built-in
+indicator. It is not a pin map. The exact electrical path appears below.
+
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}lX@{}}
+Question & Can an owning C++ object make one hardware state visible, then
+return its pin to a safe high-impedance state?\\
+Time & 50--70 minutes\\
+You need & Arduino Mega 2560, known-good USB data cable, Arch Linux host,
+\texttt{arduino-cli}, and this ADK checkout\\
+Proof & A recorded output trace, three visible cycles, and a measured or
+inspected high-impedance shutdown\\
+New words & digital level, output driver, high impedance, ownership, RAII\\
+\end{tabularx}
+
+\section*{Safety boundary}
+
+Use only the board's factory-installed LED and USB power. Work dry, on a
+nonconductive surface. Disconnect USB, barrel power, \texttt{VIN}, batteries,
+shields, and every lead before inspection. Proceed only when the board and
+cable are undamaged and no header pins touch.
+
+\textbf{Stop immediately} for heat, smoke, odor, unexpected power flicker,
+repeated USB disconnects, or a loose connector. Disconnect upstream power.
+Do not touch a hot board or retry a damaged one. Label it \textsc{do not use}.
+
+\begin{checkpoint}{all power removed before inspection}
+\checkbox\ dry board \quad \checkbox\ clear headers \quad
+\checkbox\ sound cable \quad \checkbox\ no other power source
+\end{checkpoint}
+
+\section*{1. Separate a command from an electrical state}
+
+A digital output actively drives a pin near ground for \texttt{Low} or near
+the board supply for \texttt{High}. High impedance, written \texttt{HiZ},
+means the output driver is disconnected. It is not another voltage level.
+An unconnected high-impedance pin may float.
+
+\begin{center}
+\begin{tikzpicture}[>=Latex,node distance=9mm and 14mm,
+    box/.style={draw,rounded corners,fill=soft,minimum width=28mm,
+                minimum height=10mm,align=center}]
+    \node[box] (object) {\texttt{DigitalOutput}\\owns pin claim};
+    \node[box,right=of object] (driver) {Mega output\\driver};
+    \node[box,right=of driver] (led) {board LED\\and resistor};
+    \node[above=5mm of driver] (supply) {\(V_{\rm CC}\)};
+    \node[below=5mm of driver] (ground) {GND};
+    \draw[->,thick] (object)--node[above]{\texttt{write()}}(driver);
+    \draw[->,thick] (driver)--node[above]{pin level}(led);
+    \draw[->] (supply)--(driver);
+    \draw[->] (ground)--(driver);
+    \node[below=12mm of object,text width=11.5cm,align=center] {
+        Exact lesson path: software object \(\rightarrow\)
+        \texttt{LED\_BUILTIN} output driver \(\rightarrow\)
+        factory LED circuit. No external wire is added.};
+\end{tikzpicture}
+\end{center}
+
+\textbf{Predict.} Which state actively sources or sinks current?
+\rule{3cm}{0.35pt}\quad Which state releases the pin?
+\rule{3cm}{0.35pt}
+
+\section*{2. Read the ownership contract}
+
+ADK treats the pin as a resource, not a global integer. Construction produces
+an inert object. \texttt{initialize()} claims the pin and configures it
+transactionally. \texttt{write()} changes only an initialized, owned output.
+\texttt{shutdown()} is idempotent, selects input mode, and releases the pin as
+high impedance.
+Destruction calls shutdown, so stack unwinding in an exception-enabled host
+still cleans up even though ADK does not throw internally.
+
+\begin{center}
+\begin{tikzpicture}[>=Latex,node distance=11mm,
+    state/.style={draw,rounded corners,fill=soft,minimum width=37mm,
+                  minimum height=11mm,align=center}]
+    \node[state] (inert) {inert\\unclaimed, \texttt{HiZ}};
+    \node[state,right=of inert] (active) {active\\claimed, driving};
+    \draw[->,thick] (inert) to[bend left=16]
+        node[above]{successful \texttt{initialize()}} (active);
+    \draw[->,thick] (active) to[bend left=16]
+        node[below]{\texttt{shutdown()} or destructor} (inert);
+    \draw[->] (inert) edge[loop left] node[left]{failed initialize} (inert);
+    \draw[->] (active) edge[loop right] node[right]{\texttt{write()}} (active);
+\end{tikzpicture}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}lXX@{}}
+\toprule
+Operation & Success & Failure or repetition\\
+\midrule
+construct & inert; no hardware access & not applicable\\
+\texttt{initialize()} & claim, initial level, output mode & invalid or busy; remain inert\\
+\texttt{write(level)} & drive requested level & report status; preserve contract\\
+\texttt{shutdown()} & input mode, \texttt{HiZ}, release & repeated call is harmless\\
+destruct & performs shutdown & never throws\\
+\bottomrule
+\end{tabularx}
+
+\section*{3. Inspect the experimental first-class interface}
+
+This interface is host-verified but still experimental; it is not yet a
+stable supported release. \texttt{Runtime} owns the resource registry shared
+by components. The canonical complete example is
+\texttt{Lesson001DigitalOutput.ino} in its matching \texttt{examples}
+directory.
+
+\begin{lstlisting}[style=adkcpp]
+adk::Runtime       runtime;
+adk::DigitalOutput output (runtime.resources (), LED_BUILTIN,
+                           adk::Level::Low);
+
+adk::Status status = output.initialize ();
+if (status != adk::Status::Ok)
+{
+    // Stay inert. Report the explicit status.
+}
+
+status = output.write (adk::Level::High);
+status = output.write (adk::Level::Low);
+output.shutdown ();
+\end{lstlisting}
+
+\textbf{Why no implicit setup?} A constructor cannot return a status without
+exceptions. Explicit initialization makes an invalid pin or resource conflict
+observable. RAII still guarantees cleanup after successful acquisition.
+
+\textbf{Why an explicit initial level?} Setting the output latch before enabling
+the output driver avoids a brief unintended pulse. For the board LED, inactive
+is low. A generic output's safe electrical endpoint is high impedance.
+
+\section*{4. Build evidence on the host first}
+
+The repository's fake Arduino functions record hardware calls as an ordered
+trace. Host tests are fast, deterministic, and require no connected board.
+This excerpt follows the assertions in \texttt{tests/test\_io.cpp}.
+
+\begin{lstlisting}[style=adkcpp]
+fake::reset ();
+adk::ResourceRegistry resources;
+{
+    adk::DigitalOutput output (resources, 13);
+
+    require (output.initialize () == adk::Status::Ok,
+             "output initialization");
+    require (output.write (adk::Level::High) == adk::Status::Ok,
+             "output high write");
+}
+\end{lstlisting}
+
+The test then checks this exact operation order: write \texttt{LOW}, select
+\texttt{OUTPUT}, write \texttt{HIGH}, and finally select \texttt{INPUT} during
+destruction. The claim is then available to a replacement object.
+
+\begin{checkpoint}{test the boundaries, not only the happy path}
+\checkbox\ initialize success \quad
+\checkbox\ duplicate pin claim \quad
+\checkbox\ invalid pin \quad
+\checkbox\ write before initialize \quad
+\checkbox\ repeated shutdown \quad
+\checkbox\ destructor while active
+\end{checkpoint}
+
+\textbf{Trace exercise.} Write the expected operations when a second output
+tries to claim an already-owned pin:
+
+\blankline\\[5pt]\blankline
+
+\section*{5. Compile for the Mega 2560}
+
+From the repository root, run the documented checks and the lesson's Arduino
+compile target. Read the command before executing it. Confirm the fully
+qualified board name is \texttt{arduino:avr:mega}; never infer a connected
+board or port.
+
+\begin{lstlisting}[style=adkcpp]
+make check
+make arduino
+arduino-cli board list
+\end{lstlisting}
+
+Record the compiler result and reported flash/RAM use:
+
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+Host tests & \rule{0pt}{0.7cm}\\
+Mega compile & \rule{0pt}{0.7cm}\\
+Flash bytes & \rule{0pt}{0.7cm}\\
+Static RAM bytes & \rule{0pt}{0.7cm}\\
+\end{tabularx}
+
+\section*{6. Run the board acceptance procedure}
+
+\begin{enumerate}
+    \item With all power removed, repeat the visual inspection.
+    \item Connect only the USB data cable.
+    \item Run \texttt{arduino-cli board list}. Copy the Mega's exact port.
+    \item Upload the lesson sketch using the repository's documented target.
+          Do not paste a port belonging to another device.
+    \item Observe at least three complete cycles without touching conductors.
+    \item Invoke or wait for the sketch's documented shutdown phase.
+    \item Verify the LED becomes inactive. If instrumentation is available,
+          measure pin mode safely; otherwise inspect the recorded host trace.
+    \item Disconnect USB at the computer end.
+\end{enumerate}
+
+\begin{checkpoint}{hardware record}
+Port: \rule{4cm}{0.35pt}\quad Board ID: \rule{3cm}{0.35pt}
+
+Three cycles: \checkbox\quad inactive at shutdown: \checkbox\quad
+unexpected behavior: \checkbox
+\end{checkpoint}
+
+\textbf{Observation, not interpretation:}
+\par\blankline\\[5pt]\blankline
+
+\textbf{Claim supported by the observation and trace:}
+\par\blankline\\[5pt]\blankline
+
+\section*{7. Debug with the smallest useful signal}
+
+Digital output comes first because one spare pin can expose control flow
+without a debugger. Assign meanings before running:
+
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+Pattern & Meaning\\
+\midrule
+steady inactive & waiting or safely stopped\\
+one short pulse & update loop reached\\
+two short pulses & input event accepted\\
+slow repeated pulse & recoverable status\\
+fast repeated pulse & stop and inspect\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Patterns are protocol, not decoration. Keep them deterministic, document the
+time base, and test the trace. Never use delay-based debug output in code whose
+timing contract forbids blocking.
+
+\section*{8. Deliberately test misuse}
+
+Run these on the host fake. Do not create shorts or faults on hardware.
+
+\begin{enumerate}
+    \item Construct two outputs for one pin. The second initialization must
+          report a conflict without disturbing the first.
+    \item Call \texttt{write()} before initialization. Record its status and
+          confirm no platform operation occurred.
+    \item Initialize with \texttt{NUM\_DIGITAL\_PINS}. Confirm
+          \texttt{Status::InvalidPin}, an empty trace, and no resource claim.
+    \item Call \texttt{shutdown()} twice. Confirm the second call is harmless.
+    \item Leave scope while active. Confirm destructor cleanup matches explicit
+          shutdown.
+\end{enumerate}
+
+\textbf{Explain.} Why is ``the LED went dark'' weaker evidence than ``the pin
+became high impedance''?
+\par\blankline\\[5pt]\blankline
+
+\section*{9. Extension: polarity belongs above the endpoint}
+
+\texttt{DigitalOutput} owns an electrical endpoint and speaks
+\texttt{High}/\texttt{Low}. A later \texttt{MonoLed} composes it and speaks
+\texttt{on}/\texttt{off}, accounting for active-high or active-low wiring.
+Do not teach a generic pin that \texttt{High} always means ``on.''
+
+\begin{center}
+\begin{tikzpicture}[>=Latex,node distance=13mm,
+    box/.style={draw,rounded corners,fill=soft,minimum width=34mm,
+                minimum height=11mm,align=center}]
+    \node[box] (app) {project\\semantic intent};
+    \node[box,right=of app] (led) {\texttt{MonoLed}\\polarity};
+    \node[box,right=of led] (out) {\texttt{DigitalOutput}\\electrical level};
+    \draw[->,thick] (app)--node[above]{on/off}(led);
+    \draw[->,thick] (led)--node[above]{High/Low}(out);
+\end{tikzpicture}
+\end{center}
+
+\section*{Exit ticket}
+
+\begin{enumerate}
+    \item What does the object own after successful initialization?
+    \item Why is \texttt{HiZ} not equivalent to \texttt{Low}?
+    \item Which operation must be safe to repeat?
+    \item How does explicit status reporting coexist with RAII?
+    \item Name one host-only fault test and its required final state.
+\end{enumerate}
+
+\textbf{Ready for lesson 002 when you can:}
+\checkbox\ predict the trace \quad
+\checkbox\ explain safe shutdown \quad
+\checkbox\ identify pin conflict \quad
+\checkbox\ compile for Mega \quad
+\checkbox\ separate electrical and semantic state
+
+\vfill
+\small
+\textbf{Further reading.}
+Use the companion HTML API page for exact signatures, source links, current
+limitations, and searchable test names. Use this PDF as the bench worksheet.
+Arduino's Mega 2560 documentation supplies authoritative board limits; the ADK
+safety page supplies the project-wide stop conditions. Links are maintained in
+the HTML lesson to avoid stale printed URLs.
+
+\end{document}

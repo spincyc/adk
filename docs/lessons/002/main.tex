@@ -1,0 +1,460 @@
+\documentclass[11pt]{article}
+
+\usepackage{amssymb}
+\usepackage[margin=0.72in]{geometry}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{circuitikz}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{titlesec}
+\graphicspath{{docs/lessons/assets/}{../assets/}}
+
+\definecolor{AdkBlue}{HTML}{24577A}
+\definecolor{AdkRed}{HTML}{A23B32}
+\definecolor{AdkGreen}{HTML}{39734C}
+\definecolor{AdkGray}{HTML}{F0F2F3}
+\definecolor{CodeGray}{HTML}{F7F7F7}
+
+\hypersetup
+{
+    colorlinks=true,
+    linkcolor=AdkBlue,
+    urlcolor=AdkBlue,
+    pdftitle={ADK Lesson 002: Digital Input},
+    pdfauthor={Kevin Shanahan},
+    pdfsubject={Safe pull-up inputs, raw diagnostics, and deterministic testing on Arduino Mega 2560}
+}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textsc{ADK Lesson 002}}
+\rhead{Digital input}
+\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries\color{AdkBlue}}{\thesection}{0.5em}{}
+\titleformat{\subsection}{\large\bfseries\color{AdkBlue}}{\thesubsection}{0.5em}{}
+
+\lstdefinestyle{adkcpp}
+{
+    language=C++,
+    backgroundcolor=\color{CodeGray},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{AdkBlue}\bfseries,
+    commentstyle=\color{AdkGreen},
+    stringstyle=\color{AdkRed},
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    frame=single,
+    rulecolor=\color{black!20},
+    breaklines=true,
+    tabsize=4
+}
+
+\newcommand{\checkbox}{\(\square\)}
+\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
+\newcommand{\warningbox}[1]{%
+    \begin{center}
+    \fcolorbox{AdkRed}{AdkRed!6}{\parbox{0.91\linewidth}
+    {\textbf{\color{AdkRed}Safety checkpoint.} #1}}
+    \end{center}}
+\newcommand{\evidencebox}[1]{%
+    \begin{center}
+    \fcolorbox{AdkBlue}{AdkBlue!5}{\parbox{0.91\linewidth}{#1}}
+    \end{center}}
+
+\begin{document}
+
+\begin{center}
+    {\Huge\bfseries Digital Input}\\[4pt]
+    {\Large A safe pull-up switch on Arduino Mega 2560}\\[8pt]
+    \textit{Observe the pin first; interpret human intent second.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 002 & Time & 70--95 minutes\\
+Requires & Lesson 001: Digital Output & Board & Arduino Mega 2560\\
+Outcome & Read and diagnose one grounded switch & Evidence & Truth table, serial trace, host test, three trials\\
+\end{tabularx}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth,height=0.29\textheight,keepaspectratio]
+        {002-digital-input-pencil.png}
+    \caption*{\textbf{Orientation only.} The exact schematic and connection
+    table below govern wiring; verify D22 and GND before applying power.}
+\end{figure}
+
+\section{Why input comes this early}
+
+An output lets firmware report what it thinks. An input lets a person change what
+firmware does. Together they form the smallest useful debugging panel. This lesson
+keeps the two ideas separate: the new component reports the \emph{electrical} pin
+level without debouncing or inventing button events. Lesson 003 will build those
+policies on top.
+
+\subsection*{Learning targets}
+
+By the end, you can:
+
+\begin{itemize}
+    \item wire a normally-open switch from a Mega input to ground;
+    \item explain why an internal pull-up gives an unpressed pin a known level;
+    \item distinguish a sampled electrical level from an application's meaning;
+    \item diagnose open, stuck-low, and noisy input evidence;
+    \item drive the same input sequence through a deterministic host fake;
+    \item explain how ownership and RAII leave the pin passive at shutdown.
+\end{itemize}
+
+\section{Safety and equipment}
+
+\warningbox{Disconnect USB, barrel power, batteries, programmers, and powered
+modules before changing wiring. The switch must connect D22 to GND---never to an
+output. Do not connect 5\,V directly to GND. Use only a dry-contact switch in this
+lesson. Do not use mains-powered, automotive, pyrotechnic, or unknown equipment.}
+
+\textbf{Required:} Arduino Mega 2560, USB data cable, breadboard, normally-open
+momentary pushbutton, two jumper wires, and the Lesson 001 diagnostic LED.
+A multimeter is useful but optional.
+
+\textbf{Before power:}
+\checkbox\ switch straddles the breadboard center gap;
+\checkbox\ one selected switch terminal reaches D22;
+\checkbox\ its opposite terminal reaches Mega GND;
+\checkbox\ there is no 5\,V jumper;
+\checkbox\ continuity is open when released and closed when pressed.
+
+\section{Predict the electrical behavior}
+
+The Mega's internal pull-up is a weak resistor from the input to the board supply.
+It establishes HIGH when the switch is open. Pressing the switch provides a much
+lower-resistance path to ground, so the pin reads LOW. No external resistor is
+required for this exercise.
+
+\begin{center}
+\begin{tabularx}{0.88\linewidth}{@{}lllX@{}}
+\toprule
+Switch & D22 path & Raw level & Human interpretation\\
+\midrule
+Released & through pull-up to supply & HIGH & switch open\\
+Pressed  & through switch to GND     & LOW  & switch closed\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{Prediction:} If the ground wire falls out, the input will probably remain
+\blank{0.7in}. Why?\\[8pt]
+\blank{6.8in}
+
+\textbf{Prediction:} If D22 is shorted to ground, what will the raw trace show?\\[8pt]
+\blank{6.8in}
+
+\evidencebox{\textbf{Vocabulary boundary.} DigitalInput reports
+\texttt{Level::High} or \texttt{Level::Low}. \emph{Pressed}, \emph{released},
+\emph{pressed edge}, and \emph{debounced} belong to a Button component.
+The application may compare a level with LOW, but DigitalInput does not attach
+human meaning to it.}
+
+\section{Build from the exact schematic}
+
+\begin{center}
+\begin{circuitikz}[american voltages]
+    \draw
+        (0,3.2) node[left]{Mega 5\,V}
+        to[R,l={$R_{\mathrm{pullup}}$ (internal)},o-*] (4.0,3.2)
+        -- (5.2,3.2) node[right]{Mega D22};
+    \draw
+        (4.0,3.2)
+        to[normal open switch,l={momentary switch}] (4.0,0.7)
+        node[ground]{};
+    \node[align=left,anchor=west] at (6.1,2.2)
+        {Released: D22 reads HIGH\\Pressed: D22 reads LOW\\
+         Configure \texttt{PullUp}; do not\\add a 5\,V jumper.};
+\end{circuitikz}
+\end{center}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+From & To & Check with power disconnected\\
+\midrule
+Mega D22 & one side of switch & continuous to the chosen leg\\
+opposite switch side & Mega GND & continuous to a GND pin\\
+D22 & GND & open released; near zero ohms pressed\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Four-leg tactile switches connect the two legs on each side internally. Rotating
+one by \(90^\circ\) can make the input permanently grounded. Use continuity mode
+or the switch datasheet; do not trust physical symmetry.
+
+\section{Read state deliberately}
+
+The canonical \texttt{Lesson002DigitalInput.ino} composes the input with Lesson
+001's output:
+
+\begin{lstlisting}[style=adkcpp]
+adk::Runtime      runtime;
+adk::DigitalInput button (runtime.resources (), 22, adk::Pull::Up);
+adk::MonoLed      led    (runtime.resources (), LED_BUILTIN);
+
+void setup ()
+{
+    button.initialize ();
+    led.initialize    ();
+}
+
+void loop ()
+{
+    button.update ();
+    led.set       (button.read () == adk::Level::Low);
+}
+\end{lstlisting}
+
+The variable is named \texttt{button} because of its circuit role; its type remains
+DigitalInput. \texttt{update()} samples hardware and stores the level.
+\texttt{read()} returns that stored level without a surprise hardware access.
+\texttt{sample()} performs an immediate hardware read without changing the stored
+level. Prefer \texttt{update()} plus \texttt{read()} for coherent application
+frames; reserve \texttt{sample()} for deliberate diagnostics.
+
+The compact example omits error reporting to expose the central composition. In
+an application, compare every initialization result explicitly:
+
+\begin{lstlisting}[style=adkcpp]
+const adk::Status buttonStatus = button.initialize ();
+const adk::Status ledStatus    = led.initialize    ();
+
+if (buttonStatus != adk::Status::Ok || ledStatus != adk::Status::Ok)
+{
+    button.shutdown ();
+    led.shutdown    ();
+    return;
+}
+\end{lstlisting}
+
+\textbf{RAII contract:} construction stores configuration without touching
+hardware; successful \texttt{initialize()} claims and configures D22; repeated
+\texttt{shutdown()} is harmless; destruction releases the claim and restores a
+passive input state. Internal code reports failure with \texttt{Status}, not
+exceptions, while cleanup remains correct if surrounding application code throws.
+
+\section{Observe before interpreting}
+
+Upload with the switch released. Open the serial monitor at 115200 baud. Collect
+at least ten samples for each state rather than reporting one favorable line.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}c c c c X@{}}
+\toprule
+Trial & Switch & Expected raw & Observed raw & Diagnostic LED / notes\\
+\midrule
+1 & released & HIGH & \blank{0.7in} & \blank{2.2in}\\[8pt]
+1 & pressed  & LOW  & \blank{0.7in} & \blank{2.2in}\\[8pt]
+2 & released & HIGH & \blank{0.7in} & \blank{2.2in}\\[8pt]
+2 & pressed  & LOW  & \blank{0.7in} & \blank{2.2in}\\[8pt]
+3 & released & HIGH & \blank{0.7in} & \blank{2.2in}\\[8pt]
+3 & pressed  & LOW  & \blank{0.7in} & \blank{2.2in}\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{Diagnostic mapping:} the canonical sketch turns the Lesson 001 LED on
+when \texttt{button.read () == adk::Level::Low}. The LED is a view of the stored
+sample, not a second input read. If a serial view says LOW and the LED is off,
+investigate the output path; if both are wrong, investigate input wiring.
+
+\section{Contact bounce is evidence, not yet a bug}
+
+A mechanical contact may alternate HIGH--LOW several times while closing. At a
+100\,ms reporting interval you may miss this; at a faster diagnostic interval you
+may see it. DigitalInput must preserve raw evidence. It must not silently delay,
+filter, or synthesize events.
+
+\begin{center}
+\begin{tikzpicture}[x=0.78cm,y=0.7cm]
+    \draw[->] (0,0) -- (13,0) node[right]{time};
+    \draw (0,0.5) node[left]{LOW} -- (13,0.5);
+    \draw (0,2.0) node[left]{HIGH} -- (13,2.0);
+    \draw[very thick,AdkBlue]
+        (0,2.0) -- (3.0,2.0) -- (3.0,0.5) -- (3.35,0.5)
+        -- (3.35,2.0) -- (3.7,2.0) -- (3.7,0.5)
+        -- (4.0,0.5) -- (4.0,2.0) -- (4.25,2.0)
+        -- (4.25,0.5) -- (12.5,0.5);
+    \node[AdkRed] at (3.65,2.65) {possible closing bounce};
+\end{tikzpicture}
+\end{center}
+
+Lesson 003 will consume raw samples at explicit times, require stability for a
+configured interval, and expose button events. Keeping that policy in a separate
+component allows other users---limit switches, jumpers, and digital sensors---to
+observe unfiltered levels.
+
+\section{Deterministic host test}
+
+The API and lifecycle below are \textbf{host-verified}. The physical circuit
+remains \textbf{experimental} until you complete and record the Mega acceptance
+checks. Host tests prove component rules without USB, wall-clock delays, or
+nondeterministic contact timing.
+
+\begin{lstlisting}[style=adkcpp]
+fake::reset ();
+adk::ResourceRegistry resources;
+fake::setDigitalInput   (22, HIGH);
+adk::DigitalInput input (resources, 22, adk::Pull::Up);
+
+require (input.initialize () == adk::Status::Ok);
+require (input.read () == adk::Level::High);
+
+fake::setDigitalInput (22, LOW);
+require               (input.sample () == adk::Level::Low);
+require               (input.read () == adk::Level::High);
+
+input.update ();
+require       (input.read () == adk::Level::Low);
+
+input.shutdown ();
+input.shutdown ();
+\end{lstlisting}
+
+This mirrors the repository's fake-Arduino tests: \texttt{sample()} observes LOW
+without mutating the cached HIGH; \texttt{update()} then stores LOW. Separate
+tests verify the exact \texttt{pinMode}, \texttt{digitalRead}, claim-conflict,
+invalid-pin, repeated-initialization, repeated-shutdown, and destructor traces.
+A conflict is reported as a status:
+
+\begin{lstlisting}[style=adkcpp]
+adk::DigitalInput owner   (resources, 22, adk::Pull::Up);
+adk::DigitalInput blocked (resources, 22, adk::Pull::Up);
+
+require (owner.initialize () == adk::Status::Ok);
+require (blocked.initialize () == adk::Status::ResourceBusy);
+\end{lstlisting}
+
+Preserve these assertions when extending the tests:
+
+\begin{enumerate}
+    \item construction alone produces no hardware call;
+    \item initialization claims D22, selects \texttt{INPUT\_PULLUP}, and samples;
+    \item repeated successful initialization produces no hardware call;
+    \item \texttt{sample()} reads hardware without changing \texttt{read()};
+    \item \texttt{update()} reads hardware and changes \texttt{read()};
+    \item shutdown is idempotent and restores \texttt{INPUT};
+    \item destruction releases the claim;
+    \item a second owner receives \texttt{Status::ResourceBusy};
+    \item an invalid pin receives \texttt{Status::InvalidPin} without touching hardware.
+\end{enumerate}
+
+\textbf{Extend the test:} script HIGH, LOW, HIGH, LOW without elapsed time. Record
+the four results. Why must DigitalInput preserve all four?\\[8pt]
+\blank{6.8in}
+
+\section{Fault laboratory}
+
+Change one condition at a time, with power removed before each wiring change.
+Restore and recheck the exact schematic after every trial.
+
+\begin{tabularx}{\linewidth}{@{}p{0.23\linewidth}p{0.25\linewidth}X@{}}
+\toprule
+Safe fault & Expected evidence & What the evidence distinguishes\\
+\midrule
+Disconnect switch-to-GND wire
+& always \texttt{Level::High}
+& open return path versus a working press\\
+Move input configuration from pull-up to floating input
+& unstable or environment-dependent level
+& defined bias versus a floating conductor; restore immediately\\
+Hold switch pressed during reset
+& \texttt{Level::Low} after initialization
+& startup state is sampled, not assumed\\
+Temporarily slow reporting to 500\,ms
+& fewer observations, same mapping
+& sampling/display rate versus electrical meaning\\
+\bottomrule
+\end{tabularx}
+
+\warningbox{Do not create faults by shorting an output, supply, or external signal.
+The only wiring fault used here is an open connection. A floating-input
+demonstration is brief, uses only D22 and the switch, and is restored to pull-up
+configuration before continuing.}
+
+\section{Mega 2560 acceptance checklist}
+
+Board model: \blank{1.5in}\quad port: \blank{1.5in}\\
+Toolchain version: \blank{2.0in}
+
+\begin{itemize}
+    \item[\checkbox] Clean build succeeds with warnings treated according to project policy.
+    \item[\checkbox] Sketch size is recorded: flash \blank{0.8in} bytes; SRAM \blank{0.8in} bytes.
+    \item[\checkbox] Initialization succeeds with only one owner of D22.
+    \item[\checkbox] Released reports \texttt{Level::High} for ten samples.
+    \item[\checkbox] Pressed reports \texttt{Level::Low} for ten samples.
+    \item[\checkbox] Diagnostic LED agrees with the same stored sample.
+    \item[\checkbox] Three press/release trials match the prediction table.
+    \item[\checkbox] Ground-wire-open fault is detected from evidence and restored.
+    \item[\checkbox] Reset while pressed reports the actual pressed state.
+    \item[\checkbox] USB is disconnected before the circuit is dismantled.
+\end{itemize}
+
+\section{Explain the result}
+
+\textbf{Claim:} In one sentence, state whether the pull-up input distinguishes the
+two switch states.\\[8pt]
+\blank{6.8in}
+
+\textbf{Evidence:} Cite at least three observations, including raw level and the
+diagnostic output.\\[8pt]
+\blank{6.8in}
+
+\textbf{Reasoning:} Use the pull-up and ground paths to explain why LOW means
+the switch is pressed in this circuit.\\[8pt]
+\blank{6.8in}
+
+\textbf{Limit:} Why do these trials not prove that every brief raw transition is a
+deliberate human press? \blank{5.4in}
+
+\section{Further work and references}
+
+Try one extension at a time:
+
+\begin{itemize}
+    \item record a high-rate raw trace and mark possible bounce;
+    \item use a suitable external pull-down and redraw the
+          exact circuit before building;
+    \item test claim conflicts by attempting two DigitalInput owners for D22;
+    \item replace the switch with a documented, 5\,V-compatible digital sensor;
+    \item pass raw snapshots to the Button lesson without changing DigitalInput.
+\end{itemize}
+
+Use the HTML lesson for current repository commands, source links, API signatures,
+and errata. This printable field guide emphasizes wiring, predictions, evidence,
+and acceptance. Useful primary references:
+
+\begin{itemize}
+    \item Arduino Mega 2560 Rev3 documentation and pinout:
+          \href{https://docs.arduino.cc/hardware/mega-2560}{Arduino Mega 2560}
+    \item Arduino digital pin and pull-up tutorial:
+          \href{https://docs.arduino.cc/tutorials/generic/digital-input-pullup}
+          {Digital Input Pull-Up}
+    \item ATmega2560 datasheet, I/O ports and pull-up behavior:
+          \href{https://www.microchip.com/en-us/product/ATmega2560}{Microchip ATmega2560}
+    \item ADK repository documentation:
+          \url{https://spincyc.github.io/adk/}
+\end{itemize}
+
+\textbf{Next:} Lesson 003 composes DigitalInput with explicit time to create a
+debounced Button. After that lesson, the first interval project combines digital
+output, digital input, and button events in a deterministic reaction timer.
+
+\end{document}
