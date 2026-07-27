@@ -136,7 +136,7 @@ architectural layers.
 | MicroSD module | `SpiDevice` + `SdCard` | 022--024 |
 | Membrane keypad | `Keypad` | 016 |
 | Analog joystick | `Joystick` | 016 extension |
-| KY-040 encoder | `RotaryEncoder` | 020 |
+| Rotary encoder | `QuadratureEncoder` | 032 |
 | SG90 servo | `ServoOutput` + `Servo` + external supply boundary | 017--018 |
 | 28BYJ-48 + ULN2003 | Four outputs + bounded stepper sequencer | 020--021 extension |
 | L293D/L298N driver | `MotorDriver` + external supply boundary | 020--021 |

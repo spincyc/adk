@@ -8,10 +8,12 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--017 have first-class implementation work, deterministic host
+Lessons 001--018 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
-bench cards remain open. Lesson 018 is the active implementation boundary.
-Lessons 019--030 remain the ordered delivery queue.
+bench cards remain open. Lessons 019--021 are active integration boundaries;
+lessons 022--030 remain the
+ordered delivery queue. The [work queue](WORK_QUEUE.md) records later
+expansion, research, physical, and publication work.
 
 All lessons remain experimental. Host verification, firmware compilation,
 documentation publication, and size evidence do not imply that a circuit has
@@ -55,8 +57,8 @@ For every lesson, the queued implementation order is:
 | 015 | Host verified; bench open | Environmental-station composition | Display age/status field and sensor-health evidence |
 | 016 | Host verified; bench open | Keypad events and matrix scanning | Key echo/status pattern and row scan test point |
 | 017 | Host verified; bench open | Bounded servo intent and versioned configuration | Command-position marker and independent power evidence |
-| 018 | Active implementation | Inert access trainer | Soft-latch state indicator and complete event audit |
-| 019--021 | Queued | Range validity, motor/encoder intent, supervisory stop, and bench rover | Echo timing point, direction/enable indicators, encoder evidence, and independent stop state |
+| 018 | Host verified; bench open | Inert access trainer | Soft-latch state indicator and bounded event-audit presentation |
+| 019--021 | Active integration | Range validity, motor intent, supervisory stop, and bench rover | Echo timing point, direction/enable indicators, and independent stop state |
 | 022--024 | Queued | Owned `I2cBus`/`SpiBus`, RTC, SD records, constrained simulated loads, and greenhouse controller | Bus activity points, record acknowledgement, load-state LEDs, and a fault pattern |
 | 025--027 | Queued | Decoded infrared input, lawful receive-only radio records, scheduling, and telemetry console | Capture indicator, timestamp/age display, stale-data alarm, and stored replay record |
 | 028--030 | Queued capstone | Injectable continuity/fault models, deterministic cue scheduling, operator confirmation, and inert show-cue simulator | Redundant state indicators, inert channel lamps, stop dominance, and a complete audit log |
@@ -94,7 +96,7 @@ supplies the shortest planned path through the library.
 | 017 | Component | Servo, persistent configuration, and external power | Motion is bounded and corrupt configuration fails safely |
 | 018 | Project-bearing | Inert access-control trainer | A soft latch, lockout, prompts, and audit state compose deterministically |
 | 019 | Component | Distance sensing and explicit validity | Timeout and out-of-range remain distinct from valid measurements |
-| 020 | Component | Motor driver, encoder, and emergency-stop policy | Direction, enable, dead time, and shutdown are explicit and fail safe |
+| 020 | Component | Motor driver and emergency-stop policy | Direction, enable, dead time, and shutdown are explicit and fail safe |
 | 021 | Project-bearing | Bench rover | Sensing, motion, scripted routes, and emergency stop pass first with wheels raised |
 | 022 | Component | RTC, SD records, `I2cBus`, and `SpiBus` | Leased transactions restore bus state and records survive restart |
 | 023 | Component | Relay-module simulation and constrained outputs | Inert fan, pump, and heater states enforce mutual exclusion |
@@ -155,7 +157,7 @@ the external-power boundary introduced in `017`.
 | Displays and serialized output | 010, 014 | 012, 015 | 018, 027 |
 | Rich operator input | 016 | 018 | 024, 030 |
 | Servo and external-power boundaries | 017 | 018 | 021 |
-| Range, motor, and encoder interfaces | 019--020 | 021 | 030, inert only |
+| Range and motor interfaces | 019--020 | 021 | 030, inert only |
 | I2C, SPI, storage, RTC, and relay simulation | 022--023 | 024 | 027, 030 |
 | Infrared and passive radio observation | 025--026 | 027 | Observation only |
 | Fault injection and cue scheduling | 028--029 | 030 | Capstone evidence |

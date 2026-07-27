@@ -236,6 +236,11 @@ measured sizes in the change or lesson acceptance record.
 
 ## Agent handoff
 
+`WORK_QUEUE.md` is the durable scope authority. Re-read it before assigning an
+agent, after integrating a lesson or project, and before release or
+publication. Update it in the same boundary when work changes state; a chat
+message or agent mailbox is not a durable queue.
+
 An agent claims one bounded deliverable and lists the files it may edit before
 working. Parallel agents must not edit the same file. Shared indexes, build
 fragments, navigation, generated artifacts, and status tables have one named
