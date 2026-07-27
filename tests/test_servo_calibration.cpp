@@ -336,6 +336,149 @@ namespace {
             "semantic corruption rejected");
     }
 
+    void testEveryEncodedByteCorruption ()
+    {
+        adk::ServoConfigurationRecord source;
+        uint8_t golden[adk::ServoConfigurationRecord::EncodedSize] = {};
+
+        requireStatus (
+            source.save (configuration ()),
+            adk::StatusCode::Ok,
+            "byte corruption fixture save");
+        requireStatus (
+            source.exportTo (golden, sizeof (golden)),
+            adk::StatusCode::Ok,
+            "byte corruption fixture export");
+
+        for (size_t index = 0; index < sizeof (golden); ++index)
+        {
+            adk::ServoConfigurationRecord record;
+            uint8_t corrupted[sizeof (golden)];
+
+            std::memcpy (corrupted, golden, sizeof (corrupted));
+            corrupted[index] ^= 1;
+
+            requireStatus (
+                record.import (corrupted, sizeof (corrupted)),
+                adk::StatusCode::Ok,
+                "corrupt bytes staged");
+
+            const adk::StatusCode expected =
+                index == 2
+                    ? adk::StatusCode::Unsupported
+                    : adk::StatusCode::HardwareFailure;
+
+            require (
+                record.load ().error () == expected,
+                "every byte corruption diagnosed");
+        }
+    }
+
+    void testErasedAndOversizedRecords ()
+    {
+        uint8_t erasedLow[adk::ServoConfigurationRecord::EncodedSize] = {};
+        uint8_t erasedHigh[adk::ServoConfigurationRecord::EncodedSize];
+        uint8_t oversized[adk::ServoConfigurationRecord::EncodedSize + 1] = {};
+        adk::ServoConfigurationRecord record;
+
+        std::memset (erasedHigh, 0xff, sizeof (erasedHigh));
+
+        requireStatus (
+            record.import (erasedLow, sizeof (erasedLow)),
+            adk::StatusCode::Ok,
+            "zero-erased bytes staged");
+        require (
+            record.load ().error () == adk::StatusCode::HardwareFailure,
+            "zero-erased record rejected");
+        requireStatus (
+            record.import (erasedHigh, sizeof (erasedHigh)),
+            adk::StatusCode::Ok,
+            "one-erased bytes staged");
+        require (
+            record.load ().error () == adk::StatusCode::HardwareFailure,
+            "one-erased record rejected");
+        requireStatus (
+            record.import (oversized, sizeof (oversized)),
+            adk::StatusCode::CapacityExceeded,
+            "oversized record rejected");
+    }
+
+    void testGenerationEndpoints ()
+    {
+        adk::ServoConfigurationRecord record;
+        adk::ServoConfiguration       config = configuration ();
+
+        config.generation = UINT32_MAX;
+        requireStatus (
+            record.save (config),
+            adk::StatusCode::Ok,
+            "maximum generation save");
+        require (
+            record.load ().value ().generation == UINT32_MAX,
+            "maximum generation round trip");
+
+        config.generation = 0;
+        requireStatus (
+            record.save (config),
+            adk::StatusCode::Ok,
+            "wrapped generation save");
+        require (
+            record.load ().value ().generation == 0,
+            "wrapped generation round trip");
+    }
+
+    void testCorruptImportReplay ()
+    {
+        adk::ServoConfigurationRecord source;
+        adk::ServoConfigurationRecord first;
+        adk::ServoConfigurationRecord second;
+        uint8_t corrupted[adk::ServoConfigurationRecord::EncodedSize] = {};
+        uint8_t exported[adk::ServoConfigurationRecord::EncodedSize] = {};
+
+        requireStatus (
+            source.save (configuration ()),
+            adk::StatusCode::Ok,
+            "corrupt replay fixture save");
+        requireStatus (
+            source.exportTo (corrupted, sizeof (corrupted)),
+            adk::StatusCode::Ok,
+            "corrupt replay fixture export");
+        corrupted[12] ^= 1;
+
+        requireStatus (
+            first.save (configuration ()),
+            adk::StatusCode::Ok,
+            "prior valid record");
+        requireStatus (
+            first.import (corrupted, sizeof (corrupted)),
+            adk::StatusCode::Ok,
+            "corrupt import replaces prior bytes");
+        requireStatus (
+            second.import (corrupted, sizeof (corrupted)),
+            adk::StatusCode::Ok,
+            "corrupt replay import");
+
+        const adk::Result<adk::ServoConfiguration> firstLoad  = first.load  ();
+        const adk::Result<adk::ServoConfiguration> secondLoad = second.load ();
+
+        require (
+            firstLoad.error () == adk::StatusCode::HardwareFailure,
+            "replaced record fails validation");
+        require (
+            secondLoad.error () == firstLoad.error (),
+            "corrupt replay status deterministic");
+        require (
+            secondLoad.value ().generation == firstLoad.value ().generation,
+            "corrupt replay fallback deterministic");
+        requireStatus (
+            first.exportTo (exported, sizeof (exported)),
+            adk::StatusCode::Ok,
+            "staged corrupt bytes export");
+        require (
+            std::memcmp (exported, corrupted, sizeof (exported)) == 0,
+            "import stages before validation");
+    }
+
     void testInvalidSavePreservesRecord ()
     {
         adk::ServoConfigurationRecord record;
@@ -367,6 +510,10 @@ int main ()
     testPersistenceReplay          ();
     testPersistenceFailures        ();
     testSemanticCorruption         ();
+    testEveryEncodedByteCorruption ();
+    testErasedAndOversizedRecords  ();
+    testGenerationEndpoints        ();
+    testCorruptImportReplay        ();
     testInvalidSavePreservesRecord ();
 
     std::cout << "All ADK servo calibration tests passed.\n";
