@@ -8,6 +8,7 @@
 #include "digital_input.h"
 #include "digital_output.h"
 #include "keypad.h"
+#include "matrix_keypad.h"
 #include "mono_led.h"
 #include "night_light.h"
 #include "piezo_sounder.h"
