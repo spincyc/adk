@@ -1,40 +1,31 @@
 # ADK
 
-ADK is a small C++ library and a progressive electronics course for the
-Arduino Mega 2560. It treats circuit parts as objects so that wiring, resource
-ownership, object lifetime, testing, and composition can be learned together.
+Deterministic, resource-owning C++ circuit components and an evidence-centered
+Arduino Mega 2560 course.
 
-The project is in active development. Lessons 001–003 use the current
-compatibility API: `adk::initialize()`, `adk::led::Mono`, and
-`adk::led::Rgb`. The newer RAII component hierarchy begins with inputs and
-buttons and will replace the compatibility layer in documented stages.
+The first-class API is **host verified and experimental**. It compiles for the
+Mega 2560; physical acceptance is still recorded lesson by lesson. The original
+preview is frozen under [Legacy](legacy/index.md).
 
-## Choose a path
+## Start visibly
 
-- [Set up ADK and build it locally](start.md)
-- [Follow the course in order](lessons/index.md)
-- Use ADK as an Arduino library by including `<adk.h>` and linking or installing
-  this repository in an Arduino library search path
+Lesson 001 begins with `DigitalOutput`, because a known diagnostic signal makes
+later input, debounce, and reconfiguration work observable.
 
-The Mega 2560 is the reference board. Host-native tests run on Arch Linux, and
-the Arduino sketches are compiled with `arduino-cli`.
+```cpp
+adk::Runtime       runtime;
+adk::DigitalOutput led (runtime.resources (), LED_BUILTIN);
 
-## What every lesson provides
+led.initialize ();
+led.write      (adk::Level::High);
+```
 
-Each complete lesson pairs a compilable sketch with a printable field lesson.
-The field lesson includes predictions, an exact schematic where external
-wiring is required, a pencil-style orientation drawing, diagnostic checks,
-evidence tables, and an extension.
+- [Install and build](start.md)
+- [Lessons 001–003](lessons/index.md)
+- [Supported API](api-supported.md)
+- [Course map](course.md)
+- [Safety](safety.md)
+- [GitHub repository](https://github.com/spincyc/adk)
 
-The drawings communicate orientation and intent. They are not substitutes for
-the exact schematic, connection table, component datasheet, or board
-documentation.
-
-## Safety scope
-
-ADK begins with low-voltage, USB-powered learning circuits. Disconnect every
-power source before changing wiring. Stop immediately for heat, smoke, odor,
-unexpected resets, or a host over-current warning.
-
-Later projects may simulate operator panels and show cues using inert loads.
-ADK does not provide pyrotechnic firing circuits or cloned launch protocols.
+Every third lesson builds a multi-component project. The first is a deterministic
+reaction timer; lesson 006 is Simon.

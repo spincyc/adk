@@ -47,6 +47,16 @@ Updated: 2026-07-27
 | Release workflow audit | Complete | Verified pinned Actions, permissions, artifact scope, and publication sequence |
 | Release Git audit | Complete | Verified a linear fast-forward path from remote `main` |
 | Live Pages audit | Complete | Confirmed Pages must be enabled after the first `main` publication |
+| RAII architecture | Complete | Added fixed claims, explicit time, status, and runtime |
+| Digital endpoints | Complete | Added output-first GPIO ownership and deterministic tests |
+| Semantic components | Complete | Added `MonoLed` and debounced `Button` with lifecycle tests |
+| Reaction Timer | Complete | Added deterministic engine, replay tests, example, and project plan |
+| Curriculum v1 | Complete | Canonicalized projects at every third lesson through 030 |
+| Lessons 001–003 | Complete | Added exact examples, rich PDFs, and pencil orientation plates |
+| Packaging v1 | Complete | Added Arduino examples, `Adk.h`, metadata, and release contract |
+| Quality CI | Complete | Added host, style, PDF, site, Mega, size, and lint gates |
+| Accessibility policy | Complete | Recorded honest HTML/PDF complement and tagged-PDF roadmap |
+| Final independent audit | In progress | Rechecking clean archives, links, API claims, and publication |
 
 No subagent is authorized to push. Editing assignments use disjoint file sets;
 the primary agent integrates, tests, reviews, and commits the results.

@@ -16,24 +16,40 @@ theme:
 nav:
   - Home: index.md
   - Start here: start.md
+  - Course map: course.md
   - Lessons:
       - Course map: lessons/index.md
       - "001 — Built-in LED": lessons/001.md
       - "002 — Two LEDs": lessons/002.md
       - "003 — RGB LED": lessons/003.md
   - Components: components.md
-  - API:
-      - Current compatibility API: api-current.md
-      - Planned RAII API: target-api.md
+  - Supported API: api-supported.md
   - Design:
       - Determinism: determinism.md
       - Architecture: docs/ARCHITECTURE.md
+      - Component catalog: docs/COMPONENTS.md
+      - Curriculum: docs/CURRICULUM.md
+      - Projects: docs/PROJECTS.md
       - Roadmap: docs/ROADMAP.md
       - Style: docs/STYLE.md
       - Comparable projects: docs/COMPARABLE_PROJECTS.md
   - Projects:
-      - Overview: projects/index.md
+      - Cadence: projects/cadence.md
+      - Reaction timer: docs/projects/reaction_timer.md
       - Deterministic Simon: docs/projects/simon.md
+  - Agent and release contracts:
+      - Development: docs/DEVELOPMENT.md
+      - Testing: docs/TESTING.md
+      - Safety model: docs/SAFETY_MODEL.md
+      - Packaging: docs/PACKAGING.md
+      - PDF policy: docs/PDF_POLICY.md
+      - Size budgets: docs/SIZE_BUDGETS.md
+  - Legacy:
+      - Overview: legacy/index.md
+      - Preview API: legacy/api.md
+      - Lesson 001: legacy/lessons/001.md
+      - Lesson 002: legacy/lessons/002.md
+      - Lesson 003: legacy/lessons/003.md
   - Safety: safety.md
   - Build locally: build.md
   - Contributing: contributing.md

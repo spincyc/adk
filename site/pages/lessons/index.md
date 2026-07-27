@@ -1,17 +1,17 @@
-# Lessons
+# First-class lessons
 
-Work through the lessons in order. Each lesson adds one electrical idea while
-retaining the same predict, build, observe, diagnose, and explain method.
+The sequence introduces two small components, then uses every third lesson for
+a deterministic integration project.
 
-| Lesson | Circuit | Main idea | Typical time |
-|---|---|---|---|
-| [001](001.md) | Mega built-in LED | Object commands, timing, and evidence | 35–50 min |
-| [002](002.md) | Two external LEDs | Independent branches and current limiting | 70–100 min |
-| [003](003.md) | Common-cathode RGB LED | Three-channel PWM and color mixing | 90–120 min |
+| Lesson | Circuit | Main idea |
+|---|---|---|
+| [001](001.md) | Mega built-in LED | RAII output and visible diagnostics |
+| [002](002.md) | D22 button input | Pull-up wiring and raw observation |
+| [003](003.md) | Reaction timer | Debounce, explicit time, and replay |
 
-Lessons 001–003 exercise the current compatibility API. They establish useful
-physical and experimental foundations, but do not yet demonstrate the planned
-transactional per-component lifecycle.
+These interfaces are host verified and compile for the Mega 2560. They remain
+experimental until their physical acceptance cards are recorded. Historical
+preview lessons are preserved under [Legacy](../legacy/index.md).
 
-For every external circuit, the pencil drawing is an orientation aid only.
-Build from the exact schematic and connection table in the PDF.
+Pencil drawings provide orientation only. Build from each PDF’s exact schematic
+and connection table.

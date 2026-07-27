@@ -1,94 +1,40 @@
-# Start with ADK
+# Start on Arch Linux
 
-## What you need
-
-- An Arduino Mega 2560
-- A known-good USB data cable
-- An Arch Linux development computer
-- This ADK checkout
-
-Lessons with external circuits list their additional parts on their landing
-pages and in their printable PDFs.
-
-## Prepare an Arch Linux checkout
-
-From the repository root:
+## Install and verify
 
 ```sh
+git clone https://github.com/spincyc/adk.git
+cd adk
 make bootstrap
-```
-
-This explicit, Arch-only target performs a normal
-`pacman -Syu --needed` transaction using official repository packages, installs
-the Arduino AVR core, and reports whether serial-device permissions need
-attention. Ordinary build targets never install packages.
-
-Build and run the native tests and style checks:
-
-```sh
-make
-```
-
-Compile every lesson for the Mega 2560:
-
-```sh
+make check
 make arduino
+make lessons
 ```
 
-Build and validate the printable lessons:
+`bootstrap` uses stock Arch packages and installs the official Arduino AVR
+core. Normal builds do not use the frozen legacy tree.
+
+## Upload
+
+Connect an Arduino Mega 2560 and identify its serial port:
 
 ```sh
-make lessons-check
+arduino-cli board list
+make upload EXAMPLE=Lesson001DigitalOutput PORT=/dev/ttyACM0
 ```
 
-## Upload one lesson
+Disconnect every power source before changing wiring. Start with
+[Lesson 001](lessons/001.md), which uses the board’s built-in LED and requires
+no breadboard.
 
-Connect the board, identify its serial device, and upload explicitly:
+## Useful targets
 
-```sh
-make upload LESSON=001 PORT=/dev/ttyACM0
-```
+| Target | Purpose |
+|---|---|
+| `make check` | Host tests, style, and site checks |
+| `make arduino` | Compile every first-class Mega example |
+| `make lessons` | Build printable PDFs |
+| `make site-check` | Build and validate the publication tree |
+| `make legacy-check` | Explicitly verify the unsupported preview |
 
-Replace the lesson number and port as needed. ADK does not commit a
-machine-specific port and does not upload as part of an ordinary build.
-
-## Use ADK as a library
-
-Install or link the repository in an Arduino library search path. Current
-programs include the public umbrella header and initialize the compatibility
-object registry during `setup()`:
-
-```cpp
-#include <adk.h>
-
-adk::led::Mono status (LED_BUILTIN);
-
-void setup ()
-{
-    adk::initialize ();
-}
-
-void loop ()
-{
-    status.on  ();
-    delay      (100);
-    status.off ();
-    delay      (100);
-}
-```
-
-Programs using current components with periodic behavior must also call
-`adk::update()` from `loop()`. Do not confuse this compatibility lifecycle
-with the planned per-component `initialize()`/`shutdown()` RAII interfaces.
-
-## Before powering a circuit
-
-1. Disconnect USB, barrel-jack power, batteries, programmers, and powered
-   modules.
-2. Build from the exact schematic and verify each connection.
-3. Confirm polarity and part pinouts from their datasheets.
-4. Check that every LED channel has its own series resistor.
-5. Remove loose conductors and inspect for shorts.
-6. Apply power only after the powerless inspection passes.
-
-Continue with [the lesson sequence](lessons/index.md).
+See [Build locally](build.md) for variables and troubleshooting.
