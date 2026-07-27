@@ -6,6 +6,7 @@ include mk/docs.mk
 include mk/site.mk
 include mk/style.mk
 include mk/legacy.mk
+include mk/quality.mk
 
 .DEFAULT_GOAL := check
 

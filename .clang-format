@@ -7,8 +7,9 @@ IndentWidth: 4
 ContinuationIndentWidth: 4
 TabWidth: 4
 
-NamespaceIndentation: Inner
+NamespaceIndentation: All
 CompactNamespaces: true
+InsertBraces: true
 
 BreakBeforeBraces: Custom
 BraceWrapping:
@@ -33,8 +34,10 @@ AllowShortBlocksOnASingleLine: Never
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
+AllowShortLambdasOnASingleLine: None
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortEnumsOnASingleLine: false
+AllowShortCompoundRequirementOnASingleLine: false
 
 AlignConsecutiveAssignments: Consecutive
 AlignConsecutiveDeclarations: Consecutive
