@@ -1,6 +1,32 @@
 #include "rgb_led.h"
 
+#include "board.h"
+
 namespace adk {
+
+    namespace {
+        Status validateChannel (const RgbLedChannel& channel) noexcept
+        {
+            if (channel.resistorOhms == 0)
+            {
+                return Status::InvalidArgument;
+            }
+
+            if (!Mega2560Board::validPin (channel.pin))
+            {
+                return Status::InvalidPin;
+            }
+
+            if (!Mega2560Board::supports (
+                    channel.pin,
+                    PinCapability::PwmOutput))
+            {
+                return Status::Unsupported;
+            }
+
+            return Status::Ok;
+        }
+    }
 
     Rgb::Rgb (uint8_t red, uint8_t green, uint8_t blue) noexcept
         : red_   (red)
@@ -61,11 +87,27 @@ namespace adk {
             return Status::Ok;
         }
 
-        if (redChannel_.resistorOhms == 0 ||
-            greenChannel_.resistorOhms == 0 ||
-            blueChannel_.resistorOhms == 0)
+        if (redChannel_.pin == greenChannel_.pin ||
+            redChannel_.pin == blueChannel_.pin ||
+            greenChannel_.pin == blueChannel_.pin)
         {
             return Status::InvalidArgument;
+        }
+
+        const RgbLedChannel channels[] = {
+            redChannel_,
+            greenChannel_,
+            blueChannel_
+        };
+
+        for (const auto& channel : channels)
+        {
+            const Status status = validateChannel (channel);
+
+            if (status != Status::Ok)
+            {
+                return status;
+            }
         }
 
         Status status = red_.initialize ();
