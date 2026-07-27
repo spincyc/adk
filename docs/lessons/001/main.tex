@@ -187,7 +187,7 @@ adk::DigitalOutput output (runtime.resources (), LED_BUILTIN,
                            adk::Level::Low);
 
 adk::Status status = output.initialize ();
-if (status != adk::Status::Ok)
+if (!status.ok ())
 {
     // Stay inert. Report the explicit status.
 }
@@ -217,9 +217,9 @@ adk::ResourceRegistry resources;
 {
     adk::DigitalOutput output (resources, 13);
 
-    require (output.initialize () == adk::Status::Ok,
+    require (output.initialize ().ok (),
              "output initialization");
-    require (output.write (adk::Level::High) == adk::Status::Ok,
+    require (output.write (adk::Level::High).ok (),
              "output high write");
 }
 \end{lstlisting}
@@ -325,7 +325,8 @@ Run these on the host fake. Do not create shorts or faults on hardware.
     \item Call \texttt{write()} before initialization. Record its status and
           confirm no platform operation occurred.
     \item Initialize with \texttt{NUM\_DIGITAL\_PINS}. Confirm
-          \texttt{Status::InvalidPin}, an empty trace, and no resource claim.
+          \texttt{error() == StatusCode::InvalidPin}, an empty trace, and no
+          resource claim.
     \item Call \texttt{shutdown()} twice. Confirm the second call is harmless.
     \item Leave scope while active. Confirm destructor cleanup matches explicit
           shutdown.

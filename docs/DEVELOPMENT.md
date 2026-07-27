@@ -53,6 +53,12 @@ value. Both are small values with no allocation or diagnostic text. Statuses
 distinguish at least invalid configuration, unsupported capability, busy
 resource, and hardware failure.
 
+Treat both as complete values. Use `ok()` for ordinary control flow,
+`error()` only when a branch needs the underlying `StatusCode`, and
+`transient()` only as a potentially-recoverable cause classification. A
+`Result<T>` additionally exposes `status()` so logging, propagation, and policy
+code receive the complete status; check `ok()` before reading `value()`.
+
 A claim registry has fixed capacity and deterministic lookup. Exclusive claims
 cannot overlap. A failed multi-resource acquisition releases the earlier
 claims in reverse order. Shared buses have one owner; devices receive an

@@ -223,7 +223,7 @@ cached value without silently sampling again.
 adk::Runtime     runtime;
 adk::AnalogInput potentiometer (runtime.resources (), 54);
 
-if (potentiometer.initialize () == adk::Status::Ok)
+if (potentiometer.initialize ().ok ())
 {
     potentiometer.update ();
     const adk::AnalogInput::Reading raw = potentiometer.read ();
@@ -255,7 +255,7 @@ const adk::AnalogInput::Reading position   = potentiometer.read ();
 const adk::PwmOutput::Duty      brightness =
     chooseBrightness (position);
 
-if (brightnessLed.write (brightness) != adk::Status::Ok)
+if (!brightnessLed.write (brightness).ok ())
 {
     stopSafely ();
 }

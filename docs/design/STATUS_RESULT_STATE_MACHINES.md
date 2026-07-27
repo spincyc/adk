@@ -73,7 +73,7 @@ domain outcome explains why the game stopped while `status` preserves the
 source operation's concrete failure.
 
 Keep both fields. Add derived predicates only. In particular, do not make
-`SimonOutcome::InvalidInput` alias `Status::InvalidArgument`; the former is an
+`SimonOutcome::InvalidInput` alias `StatusCode::InvalidArgument`; the former is an
 observed chord in a valid game, while the latter means the API call or time
 trace violated its contract.
 
@@ -95,7 +95,7 @@ automatic update retry.
 An invalid chord is valid evidence about user input and belongs in
 `KeypadState::InvalidChord`. It should not become an operational error. A
 sample with failed electrical validity belongs in `KeypadState::Fault` and may
-retain `Status::HardwareFailure`, while raw mask and edge suppression remain
+retain `StatusCode::HardwareFailure` through its complete status, while raw mask and edge suppression remain
 observable.
 
 Because a later stable valid sample can recover the keypad, the component may

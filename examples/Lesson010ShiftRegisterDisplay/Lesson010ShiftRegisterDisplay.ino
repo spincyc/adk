@@ -64,23 +64,23 @@ namespace {
 
     bool acquireCircuit ()
     {
-        if (diagnosticLed.initialize () != adk::Status::Ok)
+        if (!diagnosticLed.initialize ().ok ())
         {
             return false;
         }
 
-        if (display.initialize () != adk::Status::Ok)
+        if (!display.initialize ().ok ())
         {
             diagnosticLed.shutdown ();
             return false;
         }
 
-        return display.show (adk::SevenSegmentGlyph::Zero) == adk::Status::Ok;
+        return display.show (adk::SevenSegmentGlyph::Zero).ok ();
     }
 
     bool showReady ()
     {
-        return diagnosticLed.on () == adk::Status::Ok;
+        return diagnosticLed.on ().ok ();
     }
 
     bool countIsDue (adk::TimePoint now)
@@ -102,7 +102,7 @@ namespace {
 
     void showDigit (adk::SevenSegmentGlyph digit)
     {
-        if (display.show (digit) != adk::Status::Ok)
+        if (!display.show (digit).ok ())
         {
             stopSafely ();
         }
