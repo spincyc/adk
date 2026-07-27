@@ -11,6 +11,12 @@ briefs come from [the project catalog](PROJECTS.md) and the
 
 Last reconciled: 2026-07-27 on `main`.
 
+The repository-wide recovery audit and ordered journal-ingestion prompts are
+recorded in
+[the work-queue recovery audit](audits/REPOSITORY_WORK_QUEUE_RECOVERY_AUDIT.md).
+Its findings must be reconciled through bounded tasks; the audit itself does
+not promote work or replace this ledger.
+
 - Lessons 001--028 are promoted and host verified; physical cards remain open.
 - Lesson 029 has a committed implementation brief and first-class scheduler and
   audit core. Next: independent audit, normal build registration, narrative
