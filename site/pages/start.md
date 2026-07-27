@@ -11,8 +11,9 @@ make arduino
 make lessons
 ```
 
-`bootstrap` uses stock Arch packages and installs the official Arduino AVR
-core. Normal builds do not use the frozen legacy tree.
+`bootstrap` uses stock Arch packages, including Git, and installs official
+Arduino AVR core 1.8.8, matching CI and the size baselines. Normal builds do
+not use the frozen legacy tree.
 
 ## Upload
 

@@ -36,9 +36,12 @@ make serial-log PORT=/dev/ttyACM0 SERIAL_LOG=build/serial/lesson007.log
 ```
 
 `monitor` is interactive. `serial-log` timestamps the same stream and copies it
-to `SERIAL_LOG`; stop either with Ctrl-C. A lesson must still be diagnosable
-from its LED, status pattern, test point, meter reading, or other circuit-native
-signal when no serial terminal is open.
+to `SERIAL_LOG`; stop either with Ctrl-C. If the monitor cannot open, loses the
+device, or rejects its configuration, `serial-log` preserves that nonzero
+status even when the log sink succeeds. Bytes received before failure remain
+in the log. A lesson must still be diagnosable from its LED, status pattern,
+test point, meter reading, or other circuit-native signal when no serial
+terminal is open.
 
 ## Record hardware evidence
 
@@ -142,7 +145,7 @@ The default `make check` includes both HDMI control-model and shared
 route-profile tests.
 
 ## Available targets
-## bootstrap                 Install stock Arch dependencies and the AVR core.
+## bootstrap                 Install stock Arch dependencies and AVR core 1.8.8.
 ## boards                    List connected Arduino ports.
 ## arduino                   Compile every supported Mega example.
 ## arduino-<example>         Compile one named example.

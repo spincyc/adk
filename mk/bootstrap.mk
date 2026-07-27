@@ -2,6 +2,7 @@ ARCH_PACKAGES := \
 	arduino-cli \
 	base-devel \
 	clang \
+	git \
 	ghostscript \
 	mkdocs \
 	poppler \
@@ -20,7 +21,7 @@ bootstrap-packages:
 
 bootstrap-arduino: bootstrap-packages
 	$(ARDUINO_CLI) core update-index
-	$(ARDUINO_CLI) core install arduino:avr
+	$(ARDUINO_CLI) core install $(ARDUINO_AVR_CORE)
 
 bootstrap-permissions: bootstrap-packages
 	@found=false; inaccessible=false; \

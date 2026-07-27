@@ -76,6 +76,9 @@ See the [live course](https://spincyc.github.io/adk/),
 
 ## Arch Linux
 
+`make bootstrap` installs the stock Arch dependencies, including Git, and the
+same Arduino AVR core 1.8.8 used by CI and the firmware-size baselines.
+
 ```sh
 make bootstrap
 make help

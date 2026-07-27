@@ -14,7 +14,7 @@ make bootstrap
 
 This explicit provisioning target runs a normal
 `pacman -Syu --needed` transaction, installs the C++ and documentation tools,
-installs the official Arduino AVR core, and checks access to connected serial
+installs official Arduino AVR core 1.8.8, and checks access to connected serial
 devices. Ordinary build targets never install packages or use `sudo`.
 
 ## Common targets
@@ -33,6 +33,9 @@ devices. Ordinary build targets never install packages or use `sudo`.
 | `make monitor PORT=...` | Watch timestamped serial output interactively |
 | `make serial-log PORT=...` | Watch and save timestamped serial output |
 | `make lessons` | Build every lesson PDF |
+
+`serial-log` returns the monitor's failure status while retaining any bytes
+received before an open, disconnect, or configuration error.
 | `make lessons-check` | Build PDFs and validate their basic structure and size |
 | `make clean` | Remove the marked local build directory |
 

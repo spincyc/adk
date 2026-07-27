@@ -124,8 +124,11 @@ Install the AVR core once:
 
 ```sh
 arduino-cli core update-index
-arduino-cli core install arduino:avr
+arduino-cli core install arduino:avr@1.8.8
 ```
+
+This is the reviewed core used by CI, `make bootstrap`, and the checked-in
+firmware-size baselines.
 
 Compile every canonical example from the repository root:
 
