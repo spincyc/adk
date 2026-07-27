@@ -39,6 +39,14 @@ Updated: 2026-07-27
 | Site build-tool review | Complete | Compared official Arch generators and selected MkDocs |
 | Site validation | Complete | Added semantic HTML, link, fragment, asset, and PDF checks |
 | Simon design documentation | Complete | Added deterministic engine, replay, test, and lesson plan |
+| Release code audit | Complete | Verified host/AVR builds and catalogued deferred RAII and test work |
+| Release Arduino audit | Complete | Verified Mega builds; identified future Library Manager layout work |
+| Release lesson audit | Complete | Corrected timing, metadata, and independently buildable source downloads |
+| Release documentation audit | Complete | Corrected accessibility and lifecycle status claims |
+| Release site audit | Complete | Verified links, fragments, assets, PDFs, and `/adk/` base paths |
+| Release workflow audit | Complete | Verified pinned Actions, permissions, artifact scope, and publication sequence |
+| Release Git audit | Complete | Verified a linear fast-forward path from remote `main` |
+| Live Pages audit | Complete | Confirmed Pages must be enabled after the first `main` publication |
 
 No subagent is authorized to push. Editing assignments use disjoint file sets;
 the primary agent integrates, tests, reviews, and commits the results.

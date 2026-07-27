@@ -7,7 +7,7 @@ namespace adk { namespace color {
     struct Rgb
     {
         using Raw = uint8_t;
-        
+
         Rgb (Raw red, Raw green, Raw blue);
 
         bool operator== (const Rgb& other) const;

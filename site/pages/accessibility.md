@@ -75,8 +75,8 @@ but they do not replace testing by people using the material.
 
 ## Lessons, downloads, and PDFs
 
-- The HTML lesson is the canonical accessible lesson. A PDF must never be the
-  only form of lesson content.
+- The target is for each HTML lesson to be the complete canonical accessible
+  lesson, so a PDF is never the only form of lesson content.
 - PDF links state their purpose, format, page count, and approximate size, for
   example: “Download printable Lesson 004 PDF (12 pages, 2.1 MB).”
 - A published accessible PDF must have tagged semantic structure, correct
@@ -88,6 +88,16 @@ but they do not replace testing by people using the material.
   website navigation and interactive-only controls; avoid orphaned headings
   and unnecessary blank pages. Validate one grayscale paper copy for each new
   lesson layout.
+
+### First-publication status
+
+The current HTML pages provide searchable summaries, prerequisites, safety
+boundaries, wiring, and download navigation. The print-edition PDFs still
+contain some exercises, evidence tables, and diagrams that have not yet been
+transcribed into equivalent HTML. The PDFs have useful document metadata and
+extractable text, but they are not yet tagged PDFs. Full HTML lesson parity,
+PDF tagging, and manual assistive-technology testing remain release-roadmap
+work; this first publication does not claim WCAG conformance.
 
 ## Verification
 

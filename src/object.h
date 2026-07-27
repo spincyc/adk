@@ -18,7 +18,7 @@ namespace adk {
       protected:
         virtual void initialize () = 0;
         virtual void update     ();
-        
+
       private:
         Object* next_;
     };
