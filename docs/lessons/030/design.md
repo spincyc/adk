@@ -1,7 +1,7 @@
 # Lesson 030 readiness: inert show-cue simulator
 
-Status: design recommendation; do not implement until Lessons 028 and 029 are
-host-verified dependency boundaries.
+Status: implementation-ready design; Lessons 028 and 029 are host-verified
+dependency boundaries.
 
 ## Purpose and boundary
 
@@ -20,8 +20,8 @@ an emergency stop.
 
 ## Readiness decisions
 
-Resolve these rules in the Lesson 029 interface before implementing the
-capstone:
+Lesson 029 resolved the scheduler and audit rules below. Lesson 030 must
+preserve them while adding composition:
 
 1. The scheduler owns a validated copy of its fixed-capacity plan. A caller
    cannot mutate a plan after initialization.
