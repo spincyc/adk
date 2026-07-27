@@ -34,25 +34,30 @@ machine-readable carton quantity table. Counts must therefore remain
 
 ## Coverage vocabulary
 
-- **Supported**: a first-class RAII interface and current lesson/example exist.
-- **Composite**: usable through supported endpoints, but no part-specific
+- **Host verified; bench open**: a first-class RAII interface, deterministic
+  tests, Mega example, and lesson package exist, but the exact specimen has no
+  recorded physical acceptance.
+- **Composite**: usable through host-verified endpoints, but no part-specific
   adapter is warranted.
-- **In progress**: first-class source exists in the current worktree but its
-  full release boundary is not yet published.
 - **Planned**: named by the canonical curriculum.
 - **Missing**: no first-class adapter or committed curriculum boundary.
 - **Infrastructure**: a construction or power item, not a software component.
+
+These terms describe ADK artifacts, not carton contents. A planned behavior
+does not support a module, and a host-verified model does not support an exact
+adapter until its completed [inventory record][inventory-template] and bench
+card identify the physical specimen.
 
 ## Board, construction, and discrete parts
 
 | Kit part | Official quantity | ADK coverage | Adapter or instructional gap |
 |---|---:|---|---|
-| Mega 2560 controller | 1 | Supported: `Mega2560Board`, `Runtime` | Physical bench records remain per lesson |
+| Mega 2560 controller | 1 | Host verified; bench open: `Mega2560Board`, `Runtime` | Physical bench records remain per lesson |
 | USB cable | 1 | Infrastructure: CLI upload/monitor workflow | None; document data-capable cable diagnosis |
 | 830-point breadboard | 1 | Infrastructure in lesson schematics | Add continuity/rail-break orientation lab |
 | 65-piece male jumper set | 1 set | Infrastructure | No software adapter |
 | Female-to-male DuPont wires | 5 | Infrastructure | No software adapter |
-| Breadboard power-supply module | 1 lesson unit | Planned for E2 loads | Add supply-owner policy and measured rail checks |
+| Breadboard power-supply module | 1 lesson unit | Infrastructure; exact board blocked pending inventory | No generic supply adapter is planned: record regulator, jumpers, polarity, source priority, backfeed behavior, and loaded rails before use |
 | 9 V, 1 A adapter | 1 lesson unit | Planned for E2 loads | Never feed actuators from a Mega pin; bench acceptance required |
 | 9 V battery/connector | Datasheet only | Not a preferred ADK supply | Explain voltage sag and prohibit motor lessons from relying on it |
 | Prototype expansion shield | Datasheet only | Missing | Optional board-layout adapter; low priority |
@@ -67,41 +72,42 @@ machine-readable carton quantity table. Counts must therefore remain
 
 | Kit part | Official quantity | ADK coverage | Adapter or instructional gap |
 |---|---:|---|---|
-| Red, green, blue, yellow 5 mm LEDs | 5 each | Supported: `DigitalOutput`, `MonoLed`, lessons 001–003 | Add per-color forward-voltage measurement |
+| Red, green, blue, yellow 5 mm LEDs | 5 each | Host verified; bench open: `DigitalOutput`, `MonoLed`, lessons 001–003 | Add per-color forward-voltage measurement |
 | White LED | Bundle datasheet | Composite: `MonoLed` | Require resistor calculation from measured forward voltage |
-| RGB LED | 1 | Supported: `PwmOutput`, `RgbLed`, lesson 004 | Current code assumes the documented common-cathode circuit |
-| Small pushbuttons | 5 | Supported: `DigitalInput`, `Button`, lessons 002–003 | None |
+| RGB LED | 1 | Host verified; bench open: `PwmOutput`, `RgbLed`, lesson 004 | Current code assumes the documented common-cathode circuit |
+| Small pushbuttons | 5 | Host verified; bench open: `DigitalInput`, `Button`, lessons 002–003 | Exact switches still need bench records |
 | Tilt-ball switch | 1 | Composite: `DigitalInput`/`Button` | Add named `TiltSwitch` semantics and orientation trace |
 | Rotary encoder module | 1 lesson unit | Planned indirectly with operator input | Missing quadrature decoder and push-button composition |
-| 4×4 membrane keypad | 1 lesson unit | In progress: `Keypad`, `MatrixKeypad`, lesson 016 | Complete release and Mega bench record |
-| 10 kΩ potentiometer | 1 lesson unit | Supported: `AnalogInput`, lesson 007 | ADC reference ownership is intentionally deferred |
+| 4×4 membrane keypad | 1 lesson unit | Host verified; bench open: `Keypad`, `MatrixKeypad`, lesson 016 | Record exact tail order and Mega bench evidence |
+| 10 kΩ potentiometer | 1 lesson unit | Host verified; bench open: `AnalogInput`, lesson 007 | ADC reference ownership is intentionally deferred |
 | Two-axis joystick with switch | 1 lesson unit | Composite from two `AnalogInput`s and one `DigitalInput` | Add calibrated `Joystick` value type and dead-zone lesson |
 | Photoresistor | 1 | Supported composition in lessons 008–009 | A typed nonlinear sensor adapter remains optional |
 | NTC thermistor | 1 lesson unit | Planned in lesson 008 | Add divider model and fixed-point temperature conversion |
 | Active buzzer | 1 | Missing | Add simple `ActiveBuzzer` digital semantic component |
-| Passive buzzer | 1 lesson unit | Supported: `PiezoSounder`, lesson 005 | Bench acceptance must identify the actual transducer |
+| Passive buzzer | 1 lesson unit | Host verified; bench open: `PiezoSounder`, lesson 005 | Bench acceptance must identify the actual transducer |
 | Sound-sensor module | 1 lesson unit | Composite analog/digital input | Add envelope/calibration adapter; never imply calibrated SPL |
-| IR receiver and remote | 1 each | Planned: receive policy in lesson 025 | Add receive-only capture and decoded-command boundary |
+| IR receiver and remote | 1 each | Host verified; bench open: `PulseCapture`, `InfraredDecoder`, lesson 025 | Exact receiver electrical adapter and known-remote bench trace remain open; unknown replay and transmit are excluded |
 
 ## Sensors and time
 
 | Kit part | Official quantity | ADK coverage | Adapter or instructional gap |
 |---|---:|---|---|
-| HC-SR04 ultrasonic module | 1 lesson unit | Planned: lesson 019 | Missing pulse-timing endpoint, timeout, and validity model |
-| DHT11 temperature/humidity module | 1 lesson unit | In progress: `Dht11Sensor`, `ClimateSensor`, lesson 013 | Complete deterministic transport faults and bench record |
+| HC-SR04 ultrasonic module | 1 lesson unit | Host verified; bench open: `PulseInput`, `UltrasonicRanger`, lesson 019 | Exact module timing and Mega bench evidence remain open |
+| DHT11 temperature/humidity module | 1 lesson unit | Host verified; bench open: `Dht11Sensor`, `ClimateSensor`, lesson 013 | Exact device identity, electrical timing, and bench record remain open |
 | GY-521/MPU-6050 motion module | Revision-dependent | Missing | Add owned `I2cBus`, register transport, calibration, and sample model |
 | QMI-8658 motion module | Revision-dependent alternative | Missing | Separate device adapter behind the same inertial-sample value type |
 | HC-SR501 PIR module | 1 lesson unit | Composite: `DigitalInput` | Add warm-up, retrigger, and stale-observation semantics |
 | Water-level sensor board | 1 lesson unit | Composite: `AnalogInput` | Add corrosion/duty-cycle warning; no unattended leak-safety claim |
-| DS1307 or DS3231 RTC module | Revision-dependent | Planned: lesson 022 | Add `I2cBus`, validated calendar value, and clock-validity state |
+| DS1307 or DS3231 RTC module | Revision-dependent | Host-verified bus and RTC state models only: `I2cBus`, `Rtc`, lesson 022 | No DS1307/DS3231 register adapter is claimed; identify chip, pull-ups, charging circuit, and cell first |
 
 ## Displays, storage, and identification
 
 | Kit part | Official quantity | ADK coverage | Adapter or instructional gap |
 |---|---:|---|---|
-| LCD1602 parallel display | 1 | In progress: `CharacterDisplay`; curriculum lessons 014–015 | Add HD44780 transport adapter and release lesson |
-| 74HC595 shift register | 1 | Supported: `ShiftRegister`, lesson 010 | Bench acceptance open |
-| One-digit 7-segment display | 1 lesson unit | Supported: `SevenSegmentDisplay`, lesson 010 | Confirm common-anode/cathode variant on the bench |
+| LCD1602 parallel display | 1 | Host verified; bench open: `CharacterDisplay`, lessons 014–015 | Exact controller/pinout and physical acceptance remain open |
+| LCD1602 with PCF8574 backpack | Revision-dependent variant | Planned behavior only | `CharacterDisplay` does not imply PCF8574 support; inventory address straps, expander mapping, pull-up rails, backlight driver, and controller separately |
+| 74HC595 shift register | 1 | Host verified; bench open: `ShiftRegisterOutput`, lesson 010 | Exact IC and load-current bench acceptance open |
+| One-digit 7-segment display | 1 lesson unit | Host verified; bench open: `SevenSegmentDisplay`, lesson 010 | Confirm common-anode/cathode variant on the bench |
 | Four-digit 7-segment display | 1 lesson unit | Planned extension of lesson 010 | Missing multiplexed display owner and nonblocking refresh |
 | MAX7219 8×8 LED matrix module | 1 lesson unit | Missing | Add shared SPI transport and bounded frame buffer |
 | RC522 RFID module, card, and key fob | 1 lesson unit/set | Missing | Add SPI device lease and UID observation only; no access-security claim |
@@ -114,10 +120,10 @@ failure states. None may be powered directly from a Mega I/O pin.
 
 | Kit part | Official quantity | ADK coverage | Adapter or instructional gap |
 |---|---:|---|---|
-| SG90 servo | 1 lesson unit | Planned: lesson 017 | Missing timer-owned pulse endpoint, bounded angle, and external-power contract |
-| 3–6 V DC motor and fan blade | 1 set | Planned: lessons 020–021 | Missing motor-driver adapter, dead time, current limit, and encoder feedback |
-| L293D H-bridge IC | 1 lesson unit | Planned: lesson 020 | Add typed direction/enable driver with all-off failure state |
-| 5 V relay | 1 lesson unit | Planned inert simulation: lessons 023–024 | Only a low-voltage inert indicator load; never mains |
+| SG90 servo | 1 lesson unit | Host verified; bench open: `ServoOutput`, `BoundedServo`, lesson 017 | Exact servo and external-power bench acceptance remain open |
+| 3–6 V DC motor and fan blade | 1 set | Host-verified intent and rover models: lessons 020–021 | No exact motor is supported until driver, supply, current, motion, and bench evidence pass |
+| L293D H-bridge IC | 1 lesson unit | Host verified; bench open: `HBridgeOutput`, lesson 020 | Exact IC wiring, clamp behavior, load current, and thermal evidence remain open |
+| 5 V relay | 1 lesson unit | Host-verified inert simulation only: lessons 023–024 | No physical relay adapter or contact load is claimed; never mains |
 | 28BYJ-48 stepper motor | 1 lesson unit | Missing | Add bounded stepper state machine after motor safety foundation |
 | ULN2003 stepper-driver module | 1 lesson unit | Missing | Add four-channel driver ownership and all-off shutdown |
 
@@ -126,11 +132,14 @@ failure states. None may be powered directly from a Mega I/O pin.
 The kit does not justify flattening ADK into one wrapper per retail part.
 Interfaces should follow shared electrical mechanisms:
 
-1. finish analog sampling/filtering/night-light work;
-2. finish `MatrixKeypad`, DHT11, and character-display release boundaries;
-3. add an owned `I2cBus`, then RTC and one motion-device adapter;
-4. add an owned `SpiBus`, then MAX7219 and RC522 device leases;
-5. add pulse timing, then HC-SR04 and PIR semantics;
+1. preserve the host-verified lessons through 026 while completing their exact
+   specimen bench cards;
+2. use the owned `I2cBus` and `SpiBus` foundations from lesson 022 for
+   separately identified device adapters;
+3. add an RTC adapter and one motion-device adapter only after inventory;
+4. add MAX7219 and RC522 device leases after exact electrical qualification;
+5. reuse pulse timing from lessons 019 and 025 for identified PIR and rotary
+   semantics;
 6. add rotary decoding and joystick composition;
 7. add externally powered servo and motor endpoints under the E2 gate;
 8. leave relay and stepper work until the driver, supply, and shutdown evidence
@@ -140,6 +149,26 @@ This order makes kit breadth an integration test of the hierarchy instead of
 creating unrelated component classes. Circuit-native verification should
 remain part-specific: visible display patterns, LED state, audible cue,
 electrical test points, or bounded inert motion. Serial remains supplemental.
+
+## Explicit non-coverage and aliases
+
+- PCF8574 is a future, inventory-gated I2C expander adapter. A working parallel
+  LCD lesson does not establish its address, backpack pin map, pull-up voltage,
+  or backlight circuit.
+- Breadboard power boards and prototype shields are construction specimens,
+  not interchangeable software components. Their regulator, jumper, polarity,
+  backfeed, and thermal behavior must be inventoried per board revision.
+- Gas-board names such as `MQ-2`, “gas,” “smoke,” or “air quality” are aliases,
+  not supported measurements. Lesson 057 may characterize an identified
+  low-voltage analog/comparator output with harmless supplied traces; it does
+  not authorize gas exposure, heating a sensor, concentration units, alarms,
+  or safety claims.
+- `KY-` identifiers, seller lesson numbers, PCB color, and bundle position are
+  searchable aliases only. They never select a C++ type or waive exact
+  electrical identity.
+- Mercury switches, unidentified lasers or emitters, physiological claims,
+  unknown RF/IR command replay, mains relay loads, ignition, and pyrotechnic
+  control remain excluded.
 
 ## Known uncertainty
 
@@ -155,3 +184,4 @@ baseline.
 [tutorial-page]: https://www.elegoo.com/blogs/arduino-projects/elegoo-mega-2560-the-most-complete-starter-kit-tutorial
 [tutorial-zip]: https://download.elegoo.com/01%20STEM%20Kits/02%20Mega%202560/Complete/ELEGOO%20The%20Most%20Complete%20Starter%20Kit%20for%20MEGA%20V1.0.2022.03.24.zip
 [user-manual]: https://m.media-amazon.com/images/I/D1oC-c3G5TS.pdf
+[inventory-template]: ../inventory/exact-module.md
