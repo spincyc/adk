@@ -60,6 +60,28 @@ namespace {
         require (color != black, "color inequality");
     }
 
+    void testEveryColorBoundary ()
+    {
+        const uint8_t values[] = {0, 1, 127, 254, 255};
+
+        for (const auto red : values)
+        {
+            for (const auto green : values)
+            {
+                for (const auto blue : values)
+                {
+                    const adk::Rgb color (red, green, blue);
+
+                    require (color.red () == red, "boundary red value");
+                    require (color.green () == green, "boundary green value");
+                    require (color.blue () == blue, "boundary blue value");
+                    require (color == adk::Rgb (red, green, blue),
+                             "boundary color equality");
+                }
+            }
+        }
+    }
+
     void testChannelsAndCommonCathode ()
     {
         fake::reset ();
@@ -147,6 +169,74 @@ namespace {
                      "zero-ohm channel rejected");
             require (!led.initialized (), "invalid RGB stays stopped");
             require (fake::trace ().empty (), "invalid descriptor touches no hardware");
+        }
+    }
+
+    void testPinValidationPrecedesHardware ()
+    {
+        const adk::RgbLedChannel invalidPins[][3] = {
+            {{70, 220}, greenChannel, blueChannel},
+            {redChannel, {70, 330}, blueChannel},
+            {redChannel, greenChannel, {70, 470}}
+        };
+        const adk::RgbLedChannel unsupportedPins[][3] = {
+            {{14, 220}, greenChannel, blueChannel},
+            {redChannel, {14, 330}, blueChannel},
+            {redChannel, greenChannel, {14, 470}}
+        };
+
+        for (const auto& channels : invalidPins)
+        {
+            fake::reset ();
+
+            adk::ResourceRegistry resources;
+            adk::RgbLed           led   (
+                resources, channels[0], channels[1], channels[2]);
+
+            require (led.initialize () == adk::Status::InvalidPin,
+                     "invalid channel pin rejected");
+            require (!led.initialized (), "invalid pin leaves RGB stopped");
+            require (fake::trace ().empty (),
+                     "all invalid pins checked before hardware");
+        }
+
+        for (const auto& channels : unsupportedPins)
+        {
+            fake::reset ();
+
+            adk::ResourceRegistry resources;
+            adk::RgbLed           led   (
+                resources, channels[0], channels[1], channels[2]);
+
+            require (led.initialize () == adk::Status::Unsupported,
+                     "unsupported channel pin rejected");
+            require (!led.initialized (), "unsupported pin leaves RGB stopped");
+            require (fake::trace ().empty (),
+                     "all capabilities checked before hardware");
+        }
+    }
+
+    void testDuplicatePinsAreInvalid ()
+    {
+        const adk::RgbLedChannel duplicatePins[][3] = {
+            {redChannel, {6, 330}, blueChannel},
+            {redChannel, greenChannel, {6, 470}},
+            {redChannel, greenChannel, {5, 470}}
+        };
+
+        for (const auto& channels : duplicatePins)
+        {
+            fake::reset ();
+
+            adk::ResourceRegistry resources;
+            adk::RgbLed           led   (
+                resources, channels[0], channels[1], channels[2]);
+
+            require (led.initialize () == adk::Status::InvalidArgument,
+                     "duplicate RGB pins rejected");
+            require (!led.initialized (), "duplicate pins leave RGB stopped");
+            require (fake::trace ().empty (),
+                     "duplicate pins touch no hardware");
         }
     }
 
@@ -283,6 +373,11 @@ namespace {
         replacement.shutdown ();
 
         require (fake::trace ().empty (), "repeated shutdown is inert");
+
+        require (replacement.initialize () == adk::Status::Ok,
+                 "RGB restarts after shutdown");
+        require (replacement.color () == adk::Rgb (),
+                 "RGB restart begins off");
     }
 }
 
@@ -301,14 +396,17 @@ int main ()
     static_assert (!std::is_copy_constructible<adk::PwmOutput>::value, "");
     static_assert (!std::is_move_constructible<adk::PwmOutput>::value, "");
 
-    testColorValue                 ();
-    testChannelsAndCommonCathode   ();
-    testInitializationIsIdempotent ();
-    testDescriptorValidation       ();
-    testFirstChannelConflict       ();
-    testSecondChannelRollback      ();
-    testThirdChannelRollback       ();
-    testShutdownAndDestruction     ();
+    testColorValue                    ();
+    testEveryColorBoundary            ();
+    testChannelsAndCommonCathode      ();
+    testInitializationIsIdempotent    ();
+    testDescriptorValidation          ();
+    testPinValidationPrecedesHardware ();
+    testDuplicatePinsAreInvalid       ();
+    testFirstChannelConflict          ();
+    testSecondChannelRollback         ();
+    testThirdChannelRollback          ();
+    testShutdownAndDestruction        ();
 
     std::cout << "All ADK RGB LED tests passed.\n";
 }
