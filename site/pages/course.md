@@ -1,0 +1,24 @@
+# Course map
+
+ADK introduces two component layers and then exercises them in a project. Every
+lesson number divisible by three is project-bearing.
+
+| Lessons | New components | Project | Status |
+|---:|---|---|---|
+| 001–003 | Digital output, digital input, Button | Reaction timer | Host verified |
+| 004–006 | PWM, RGB LED, sounder | Simon | Planned |
+| 007–009 | Analog input, calibration, filtering | Adaptive night light | Planned |
+| 010–012 | Shift register, display, timed states | Traffic junction | Planned |
+| 013–015 | Environmental sensor, LCD, records | Environmental station | Planned |
+| 016–018 | Keypad, servo, persistence | Inert access trainer | Planned |
+| 019–021 | Range sensor, motor driver, encoder | Bench rover | Planned |
+| 022–024 | RTC, storage, bus and relay simulation | Greenhouse controller | Planned |
+| 025–027 | Infrared and receive-only radio | Telemetry console | Planned |
+| 028–030 | Fault simulation, cue scheduling, logs | Inert show-cue simulator | Planned |
+
+The [canonical curriculum](docs/CURRICULUM.md) owns lesson numbers,
+prerequisites, and acceptance gates. [Project briefs](docs/PROJECTS.md) explain
+how each checkpoint composes the earlier layers.
+
+Historical preview material is available under [Legacy](legacy/index.md), but
+is not a prerequisite or current API reference.

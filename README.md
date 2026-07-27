@@ -1,99 +1,78 @@
 # ADK
 
-ADK is a small C++ library and progressive electronics course for the Arduino
-Mega 2560. The firmware remains compatible with the AVR toolchain; native host
-tests use C++17. ADK models circuit parts as non-copyable component objects,
-then uses each interface to teach the physical circuit, resource ownership,
-lifetime, testing, and composition.
+ADK is a deterministic, no-exception C++ component library and electronics
+course for the Arduino Mega 2560.
 
-ADK is available under the [MIT License](LICENSE).
+The first-class API is host verified and experimental. Physical acceptance is
+tracked separately; no page claims bench verification without a recorded
+result. The original preview is frozen under `legacy/`.
 
-The project works either as an Arduino library or as a standalone checkout on
-Arch Linux.
+## First circuit
 
-## Start locally
+```cpp
+#include <Adk.h>
 
-Provision the complete Arch Linux development environment:
+adk::Runtime       runtime;
+adk::DigitalOutput led (runtime.resources (), LED_BUILTIN);
+
+void setup ()
+{
+    led.initialize ();
+}
+
+void loop ()
+{
+    led.write (adk::Level::High);
+    delay     (500);
+    led.write (adk::Level::Low);
+    delay     (500);
+}
+```
+
+`Runtime` owns fixed resource claims. Components are inert until
+`initialize()`, return explicit `Status`, clean up through idempotent
+`shutdown() noexcept`, and release ownership during destruction. ADK does not
+use heap allocation, exceptions, RTTI, or a hidden global dispatcher.
+
+## Course
+
+- 001 — `DigitalOutput` and visible diagnostics
+- 002 — `DigitalInput` and pull-up wiring
+- 003 — `Button` plus deterministic Reaction Timer
+- Every third lesson is a multi-component project
+
+See the [live course](https://spincyc.github.io/adk/),
+[canonical curriculum](docs/CURRICULUM.md), and
+[project briefs](docs/PROJECTS.md).
+
+## Arch Linux
 
 ```sh
 make bootstrap
-```
-
-`bootstrap` is an explicit Arch-only provisioning action. It performs a normal
-full `pacman -Syu --needed` transaction, installs only official repository
-packages, installs the official Arduino AVR core, and reports whether the
-current user needs membership in Arch's `uucp` serial-device group. Ordinary
-build and test targets never invoke it.
-
-Then run the host checks or compile all Mega 2560 lessons:
-
-```sh
-make
+make check
 make arduino
+make lessons
+make site
 ```
 
-If dependencies are managed separately, host checks require a C++17 toolchain
-and Python; firmware builds require `arduino-cli` with the `arduino:avr` core.
-
-Upload is always explicit:
+Upload an example:
 
 ```sh
-make upload LESSON=001 PORT=/dev/ttyACM0
+make upload EXAMPLE=Lesson001DigitalOutput PORT=/dev/ttyACM0
 ```
 
-No port or developer-specific installation path is committed.
+## Contracts
 
-## Make targets
+- [Development hierarchy](docs/DEVELOPMENT.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Components](docs/COMPONENTS.md)
+- [Testing](docs/TESTING.md)
+- [Safety](docs/SAFETY_MODEL.md)
+- [Style](docs/STYLE.md)
+- [Packaging](docs/PACKAGING.md)
+- [PDF policy](docs/PDF_POLICY.md)
 
-| Target | Purpose |
-|---|---|
-| `make` or `make check` | Build and run host tests and project style checks |
-| `make arduino` | Compile every lesson for the Mega 2560 |
-| `make lessons` | Generate all lesson PDFs |
-| `make lessons-check` | Generate PDFs and validate their basic structure and size |
-| `make site` | Build the GitHub Pages artifact in `build/site` |
-| `make site-check` | Build and validate site structure, links, assets, and PDFs |
-| `make site-serve` | Preview the site at `http://127.0.0.1:8000` |
-| `make style-check` | Enforce ADK rules that ClangFormat cannot fully express |
-| `make clean` | Remove generated build intermediates |
+The fireworks capstone is an inert cue simulator only. ADK does not control
+igniters or launchers and does not clone or transmit unknown remote protocols.
 
-The default target does not compile firmware or generate PDFs.
-
-## Use as a library
-
-Install or link this repository in an Arduino library search path, then:
-
-```cpp
-#include <adk.h>
-
-adk::led::Mono status(LED_BUILTIN);
-
-void setup()
-{
-    adk::initialize();
-}
-
-void loop()
-{
-    status.on  ();
-    delay      (100);
-    status.off ();
-    delay      (100);
-}
-```
-
-Current examples are in `lessons/001` through `lessons/003`. Their printable
-lesson plans are built with `make lessons`. Programs using components with
-periodic behavior must also call `adk::update()` from `loop()`.
-
-## Project map
-
-- `src/` — installable Arduino library
-- `lessons/` — compilable Mega 2560 sketches
-- `docs/lessons/` — lesson sources and pencil orientation plates
-- `doc/lessons/` — generated PDFs
-- `tests/` — host-native hardware fakes and regression tests
-- `mk/` — focused Make fragments
-- `docs/` — architecture, style, research, and roadmap
-
-Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before adding a component.
+MIT licensed.

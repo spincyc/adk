@@ -32,7 +32,7 @@ def copy_tree(source: Path, destination: Path, *, required: bool = True) -> None
 def copy_lesson_materials() -> None:
     """Publish reviewed lessons at stable, human-readable download paths."""
     lesson_pdfs = sorted((ROOT / "doc/lessons").glob("*.pdf"))
-    sketches = sorted((ROOT / "lessons").glob("*/*.ino"))
+    sketches = sorted((ROOT / "examples").glob("*/*.ino"))
     sources = sorted((ROOT / "docs/lessons").glob("*/main.tex"))
 
     for source in lesson_pdfs:
@@ -62,6 +62,29 @@ def copy_lesson_materials() -> None:
         SOURCE_ROOT / "downloads/sources/lessons/assets",
         required=False,
     )
+    copy_tree(
+        ROOT / "legacy/doc/lessons",
+        SOURCE_ROOT / "downloads/legacy/lessons",
+        required=False,
+    )
+    for source in sorted((ROOT / "legacy/lessons").glob("*/*.ino")):
+        destination = SOURCE_ROOT / "downloads/legacy/sketches" / source.name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+    for source in sorted((ROOT / "legacy/docs/lessons").glob("*/main.tex")):
+        destination = (
+            SOURCE_ROOT
+            / "downloads/legacy/sources/lessons"
+            / source.parent.name
+            / "main.tex"
+        )
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+    copy_tree(
+        ROOT / "legacy/docs/lessons/assets",
+        SOURCE_ROOT / "downloads/legacy/sources/lessons/assets",
+        required=False,
+    )
 
 
 def stage() -> None:
@@ -85,19 +108,28 @@ def stage() -> None:
     )
     canonical_docs = (
         "ARCHITECTURE.md",
+        "COMPONENTS.md",
         "COMPARABLE_PROJECTS.md",
+        "CURRICULUM.md",
+        "DEVELOPMENT.md",
+        "PACKAGING.md",
+        "PDF_POLICY.md",
+        "PROJECTS.md",
         "ROADMAP.md",
+        "SAFETY_MODEL.md",
+        "SIZE_BUDGETS.md",
         "STYLE.md",
+        "TESTING.md",
     )
     for name in canonical_docs:
         source = ROOT / "docs" / name
         destination = SOURCE_ROOT / "docs" / name
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
-    simon = ROOT / "docs/projects/simon.md"
-    simon_destination = SOURCE_ROOT / "docs/projects/simon.md"
-    simon_destination.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(simon, simon_destination)
+    for project in sorted((ROOT / "docs/projects").glob("*.md")):
+        destination = SOURCE_ROOT / "docs/projects" / project.name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(project, destination)
     copy_tree(ROOT / "site/pages", SOURCE_ROOT, required=False)
     copy_tree(ROOT / "site/assets", SOURCE_ROOT / "assets")
     copy_lesson_materials()
