@@ -300,6 +300,89 @@ The snapshot exposes mode, sample state, diagnostic state, status, normalized
 light, requested duty, and `lampOn`. The engine owns no hardware; the adapter
 keeps the PWM lamp off if initialization or actuation fails.
 
+## Shift register and seven-segment display
+
+`ShiftRegisterOutput` composes three `DigitalOutput` endpoints for the data,
+clock, and latch lines of a serial-in, parallel-out register. Initialization
+claims all three pins transactionally and presents the configured inactive byte.
+`show()` shifts the most-significant bit first and latches the complete byte;
+callers never observe a deliberately half-latched value.
+
+```cpp
+const adk::ShiftRegisterPins displayPins = {22, 23, 24};
+
+adk::ShiftRegisterOutput registerOutput
+(
+    runtime.resources (),
+    displayPins
+);
+
+if (registerOutput.initialize () == adk::Status::Ok)
+{
+    registerOutput.show (0x3FU);
+}
+```
+
+`clear()` presents zero. Shutdown first presents `inactiveValue()`, then returns
+the three pins to high impedance in reverse acquisition order.
+
+`SevenSegmentDisplay` gives those bits circuit meaning. It supports
+common-cathode and common-anode displays, hexadecimal digits, dash, blank, and
+an optional decimal point:
+
+```cpp
+adk::SevenSegmentDisplay display
+(
+    runtime.resources (),
+    displayPins,
+    adk::SevenSegmentPolarity::CommonCathode
+);
+
+display.initialize ();
+display.show (adk::SevenSegmentGlyph::A);
+display.blank ();
+```
+
+Every segment, including the decimal point, still requires its own resistor.
+`encodedValue()` exposes the byte requested from the shift register so TP-data,
+TP-clock, TP-latch, and the visible glyph can be interpreted as separate links
+in the evidence chain. The three-wire interface does not own `/OE`; it cannot
+promise that a physical register remains blank while the Mega itself powers up.
+
+## Traffic junction engine
+
+`TrafficJunction` is a hardware-neutral, nonblocking state machine. The
+application observes a complete request and circuit-health snapshot, supplies
+the current time, then actuates the returned complete signal pattern:
+
+```cpp
+const adk::TrafficInput observation
+(
+    pedestrianButton.pressEvent (),
+    circuitHealthy
+);
+
+traffic.update (now, observation);
+
+const adk::TrafficSnapshot decision = traffic.snapshot ();
+```
+
+`TrafficConfig` makes startup all-red, vehicle all-red, green, yellow,
+pedestrian walk, and clearance durations explicit. The snapshot reports phase,
+status, complete signals, phase start, next deadline, request state, transition
+events, and transition count.
+
+A request is release-gated by the `Button` before it reaches the engine and is
+then retained until its legal pedestrian phase. `TrafficPhase::Fault` has no
+deadline and presents all red with pedestrian stop. A false
+`TrafficInput::circuitHealthy` enters that state immediately; the engine never
+attempts hardware recovery or hides the fault behind a callback.
+
+The engine owns no endpoints and cannot prove that a commanded LED is
+electrically active. The Mega adapter separately indicates successful resource
+acquisition on D13 and presents the complete vehicle and pedestrian pattern on
+resistor-limited LEDs.
+
 ## Simon engine
 
 `Simon` is a hardware-neutral deterministic state machine. The application
@@ -336,3 +419,37 @@ implementation, deterministic host tests, Mega 2560 build, hardware acceptance
 record, HTML reference, and lesson PDF all pass together. The
 [component index](components.md) records that evidence. Until then, this page
 describes the experimental first-class API rather than a stable ABI.
+
+## USB and HDMI research boundaries
+
+The transparent USB and HDMI mesh is research, not part of the Arduino library
+ABI and not a supported physical product. Its ordinary Linux controller plans,
+authorizes, fences, and audits routes; it carries neither USB transactions nor
+HDMI media.
+
+The USB product target connects one unmodified Windows or Linux computer to a
+computer attachment unit (`Cau`), crosses the shared switched Ethernet fabric,
+then reaches one peripheral attachment unit (`Pau`) and the exact physical
+topology rooted at one of its four independently powered USB 3 Type-A ports.
+The `Cau` consumes one computer USB port and does not invent a hub. A
+user-supplied hub, when present at the `Pau`, and all its descendants move as
+one atomic topology. See the
+[transparent USB product contract](docs/research/USB_TRANSPARENT_PRODUCT.md)
+and [mesh roadmap](projects/mesh-roadmap.md).
+
+Linux USB/IP and its temporary single-process ledger are prototype measurement
+tools only. They cannot establish physical transparency, Windows compatibility,
+USB 3 timing, durable ownership, or product conformance. They are neither the
+product controller nor its authoritative route state. The
+[USB/IP procedure](projects/usb3-matrix.md) preserves that limited boundary.
+
+The HDMI mesh terminates the source-side HDMI link, transports interpreted
+video, audio, timing, and metadata over the same Ethernet fabric, then
+reconstructs a fresh sink-side HDMI link. Named profiles make bandwidth and
+latency tradeoffs explicit; a pinned profile never silently degrades. See the
+[HDMI mesh architecture](docs/research/HDMI_MESH_ARCHITECTURE.md).
+
+Executable research models and deterministic host tests exercise routing,
+fencing, profile selection, and failure policy. No physical transparent USB
+attachment, HDMI payload, PoE power, throughput, latency, recovery, or
+interoperability result has yet been recorded.
