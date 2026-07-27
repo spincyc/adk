@@ -5,12 +5,13 @@ PDFLATEX    ?= pdflatex
 BUILD_DIR   ?= build
 BUILD_MARKER := $(BUILD_DIR)/.adk-build
 BOARD_FQBN  ?= arduino:avr:mega
-LESSONS     := 001 002 003 004
+LESSONS     := 001 002 003 004 005
 EXAMPLES    := \
 	Lesson001DigitalOutput \
 	Lesson002DigitalInput \
 	Lesson003ReactionTimer \
-	Lesson004PwmRgb
+	Lesson004PwmRgb \
+	Lesson005PiezoSounder
 PORT        ?=
 
 HOST_CPPFLAGS += -Isrc -Itests/fake_arduino
