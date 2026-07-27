@@ -29,6 +29,8 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_analog_input \
 	$(BUILD_DIR)/host/test_bus \
 	$(BUILD_DIR)/host/test_io \
+	$(BUILD_DIR)/host/test_inert_load_interlock \
+	$(BUILD_DIR)/host/test_inert_load_panel \
 	$(BUILD_DIR)/host/test_keypad \
 	$(BUILD_DIR)/host/test_matrix_keypad \
 	$(BUILD_DIR)/host/test_mega_avr_bus_io \
@@ -56,7 +58,8 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_simon \
 	$(BUILD_DIR)/host/test_threshold_input \
 	$(BUILD_DIR)/host/test_traffic_junction \
-	$(BUILD_DIR)/host/test_ultrasonic_ranger
+	$(BUILD_DIR)/host/test_ultrasonic_ranger \
+	$(BUILD_DIR)/host/test_watering_controller
 
 HOST_HEADERS := $(shell find src tests/fake_arduino -type f -name '*.h' | sort)
 
@@ -103,6 +106,22 @@ $(BUILD_DIR)/host/test_io: $(HOST_IO_SOURCES) tests/test_io.cpp \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_IO_SOURCES) tests/test_io.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_inert_load_interlock: $(HOST_CORE_SOURCES) \
+		src/inert_load_interlock.cpp src/power_domain.cpp \
+		tests/test_inert_load_interlock.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/inert_load_interlock.cpp \
+		src/power_domain.cpp tests/test_inert_load_interlock.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_inert_load_panel: $(HOST_IO_SOURCES) \
+		src/inert_load_panel.cpp src/pump_output.cpp \
+		tests/test_inert_load_panel.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_IO_SOURCES) src/inert_load_panel.cpp \
+		src/pump_output.cpp tests/test_inert_load_panel.cpp \
+		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_keypad: $(HOST_CORE_SOURCES) src/keypad.cpp \
 		tests/test_keypad.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
@@ -309,6 +328,17 @@ $(BUILD_DIR)/host/test_ultrasonic_ranger: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/pulse_input.cpp src/ultrasonic_ranger.cpp \
 		tests/test_ultrasonic_ranger.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_watering_controller: $(HOST_IO_SOURCES) \
+		src/analog_input.cpp src/board.cpp src/moisture_sensor.cpp \
+		src/pump_output.cpp \
+		src/watering_controller.cpp tests/test_watering_controller.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_IO_SOURCES) src/analog_input.cpp src/board.cpp \
+		src/moisture_sensor.cpp \
+		src/pump_output.cpp src/watering_controller.cpp \
+		tests/test_watering_controller.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host: | $(BUILD_MARKER)
 	mkdir -p "$@"

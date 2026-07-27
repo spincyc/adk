@@ -18,7 +18,8 @@ lesson number divisible by three is project-bearing.
 | 020 | Motor intent and stop policy | — | Host verified; E1 bench open |
 | 021 | Rover supervision | Bench rover | Host verified; E1 bench open |
 | 022 | Owned buses, RTC state, and deterministic durable records | Bus and storage trainer | Host verified; bench open |
-| 023–024 | Constrained output simulation | Greenhouse controller | Planned |
+| 023 | Constrained output simulation | Inert load interlock | Host verified; E1 bench open |
+| 024 | Deterministic sensing, output, and records | Greenhouse controller | Active integration |
 | 025–027 | Infrared and receive-only radio | Telemetry console | Planned |
 | 028–030 | Fault simulation, cue scheduling, logs | Inert show-cue simulator | Planned |
 
