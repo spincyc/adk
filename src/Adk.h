@@ -8,6 +8,7 @@
 #include "mono_led.h"
 #include "pwm_output.h"
 #include "reaction_timer.h"
+#include "rgb_led.h"
 #include "resource.h"
 #include "runtime.h"
 #include "status.h"
