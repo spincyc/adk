@@ -9,6 +9,12 @@ Read these before changing first-class code or lessons:
 5. `docs/SAFETY_MODEL.md` — electrical and project limits
 6. `docs/PACKAGING.md` — Arduino and release layout
 7. `docs/PDF_POLICY.md` — printable-document requirements
+8. `docs/WORK_QUEUE.md` — authoritative active, queued, deferred, and physical work
+
+Re-read `docs/WORK_QUEUE.md` before assigning work, after every lesson or
+project integration, and before any release or publication audit. Update it in
+the same boundary whenever work is added, completed, split, deferred, or
+removed for a documented reason.
 
 `legacy/` is frozen and unsupported. Do not include it from first-class code,
 examples, tests, or release metadata.

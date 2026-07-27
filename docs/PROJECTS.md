@@ -16,8 +16,10 @@ are implemented and host verified. Traffic Junction (012) has also landed with
 deterministic host evidence, a Mega 2560 example, lesson material, and size
 evidence. Its physical bench card remains open. The Environmental Station
 (015) has also landed with deterministic evidence and an open bench card.
-Lesson 017 is active; projects 018--030 are ordered briefs, not implemented
-claims.
+Lessons 017--018 are host verified with their bench cards open. Lessons
+019--021 are active integration boundaries. Projects 022--030 remain ordered briefs, not
+implementation claims. See the
+[authoritative work queue](WORK_QUEUE.md) for the complete ledger.
 
 Every API and lesson remains experimental. Mega 2560 bench acceptance is open
 for every project. Development continues through the full project sequence
@@ -54,8 +56,8 @@ may claim hardware verification until its measured record is published.
 | 007--009 | `AnalogInput`, calibration, sampled filtering | Adaptive night light |
 | 010--012 | Seven-segment display, shift register, finite-state timing | Traffic junction |
 | 013--015 | Temperature/humidity sensor, LCD, serial records | Environmental station |
-| 016--018 | Keypad, servo, persistent configuration | Inert access-control trainer |
-| 019--021 | Distance sensor, motor driver, encoder | Bench rover |
+| 016--018 | Keypad, bounded servo, supplied configuration | Inert access-control trainer |
+| 019--021 | Distance sensor and motor driver | Bench rover |
 | 022--024 | RTC, SD logging, buses, relay simulation | Greenhouse controller |
 | 025--027 | Infrared and receive-only radio observation | Telemetry console |
 | 028--030 | Operator panel, continuity simulation, event log | Inert show-cue simulator |
@@ -72,9 +74,9 @@ explicit open item.
 | Project | Delivery state | Required deterministic artifact | Required physical observation |
 |---:|---|---|---|
 | 012 | Host verified; bench open | Traffic trace proving clearance timing, request service, all-red failure, and shift-register bit order | Display self-test plus mutually exclusive red/yellow/green indications |
-| 015 | Queued next | Timestamped sensor fixtures, health transitions, display pages, min/max reset, and stable record vectors | Sensor-health indicator and displayed sample age beside optional Serial records |
-| 018 | Queued | Key-event traces, lockout boundaries, corrupt configuration, restart, and bounded servo command vectors | Key acknowledgement, soft-latch position marker, and independent load-power removal |
-| 021 | Queued | Range, encoder, route, stall, reversal-dead-time, and stop-dominance traces | Wheels-raised direction/enable indicators, encoder transitions, and physical stop state |
+| 015 | Host verified; bench open | Timestamped sensor fixtures, health transitions, display pages, min/max reset, and stable record vectors | Sensor-health indicator and displayed sample age beside optional Serial records |
+| 018 | Host verified; bench open | Key-event traces, lockout boundaries, supplied configuration, restart, and bounded audit intent | Key acknowledgement, visible policy state, and inert soft-latch intent |
+| 021 | Active integration | Range, route, stall, reversal-dead-time, and stop-dominance traces | Wheels-raised direction/enable indicators and physical stop state |
 | 024 | Queued | Schedule, sensor-fault, RTC/storage-fault, hysteresis, exclusion, restart, and golden-log traces | Inert load LEDs, bus/storage activity, and unmistakable safe/fault combinations |
 | 027 | Queued | Timestamped wired/infrared/receive-only fixtures, stale-data handling, scheduler order, and record replay | Capture, age, stale, alarm, and storage states visible without Serial |
 | 030 | Queued capstone | Immutable cue schedule, arming order, simulated continuity, simultaneous-event policy, stop dominance, restart lockout, and audit replay | Inert channel lamps, redundant armed/fault/stop states, and no energizing output path |
@@ -439,8 +441,8 @@ offers a direct component comparison, not a security design.
 stops for nearby obstacles, and can replay its behavior in a host simulation.
 The first build runs with wheels raised.
 
-**Builds on:** Distance sampling, motor driver, encoder counts, scheduled
-control, and supervisory state machines.
+**Builds on:** Distance sampling, motor intent, scheduled control, and
+supervisory state machines.
 
 **Kit:** DC motors and wheels, rated H-bridge module, distance sensor,
 encoders if available, separate battery pack, chassis, emergency-stop button.

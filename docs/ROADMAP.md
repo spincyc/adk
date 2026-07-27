@@ -2,6 +2,8 @@
 
 `CURRICULUM.md` is the canonical lesson and project numbering authority.
 `COMPONENTS.md` owns the target component inventory.
+`WORK_QUEUE.md` is the authoritative active, queued, deferred, physical, and
+publication ledger.
 
 ## Current host-verified slices
 
