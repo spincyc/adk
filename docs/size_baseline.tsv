@@ -16,3 +16,4 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	1	Lesson015EnvironmentalStation	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	14110	32768	906	1536
 1	1	Lesson016MatrixKeypad	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6130	24576	316	1024
 1	1	Lesson017BoundedServo	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6656	24576	323	1024
+1	1	Lesson018AccessTrainer	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	11832	32768	763	1536
