@@ -92,6 +92,7 @@ release-metadata-check:
 
 release-check: release-metadata-check
 	$(MAKE) --no-print-directory clean
+	$(MAKE) --no-print-directory -B lessons
 	$(MAKE) --no-print-directory quality PACKAGE_REF="$(PACKAGE_REF)"
 	$(MAKE) --no-print-directory arduino-lint-release
 	python3 scripts/check_release.py --ref "$(PACKAGE_REF)"
