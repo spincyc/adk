@@ -39,6 +39,7 @@ nav:
       - "017 — Bounded servo intent": lessons/017.md
       - "018 — Inert access trainer": lessons/018.md
       - "019 — Ultrasonic range": lessons/019.md
+      - "020 — Motor intent": lessons/020.md
   - Components: components.md
   - Supported API: api-supported.md
   - Design:

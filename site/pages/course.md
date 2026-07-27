@@ -15,7 +15,8 @@ lesson number divisible by three is project-bearing.
 | 017 | Bounded servo | — | Host verified; E2 bench open |
 | 018 | Keypad policy and audit intent | Inert access trainer | Host verified; E1 bench open |
 | 019 | Ultrasonic range and explicit validity | — | Host verified; bench open |
-| 020–021 | Motor intent and stop policy | Bench rover | Active integration |
+| 020 | Motor intent and stop policy | — | Host verified; E1 bench open |
+| 021 | Rover supervision | Bench rover | Active integration |
 | 022–024 | RTC, storage, bus and relay simulation | Greenhouse controller | Planned |
 | 025–027 | Infrared and receive-only radio | Telemetry console | Planned |
 | 028–030 | Fault simulation, cue scheduling, logs | Inert show-cue simulator | Planned |

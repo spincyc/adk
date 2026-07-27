@@ -24,6 +24,7 @@ third lesson for a deterministic integration project.
 | [017](017.md) | Bounded servo | Calibrated motion intent and safe pulse evidence |
 | [018](018.md) | Inert access trainer | Keypad policy, visible state, and bounded audit intent |
 | [019](019.md) | Ultrasonic range | Explicit echo timing, timeout, and range validity |
+| [020](020.md) | Motor intent | Direction, bounded duty, reversal dead time, and stop dominance |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance
