@@ -8,10 +8,10 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--014 have first-class implementation work, deterministic host
+Lessons 001--015 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
-bench cards remain open. Lesson 015 is the active implementation boundary.
-Lessons 016--030 remain the ordered delivery queue.
+bench cards remain open. Lesson 016 is the active implementation boundary.
+Lessons 017--030 remain the ordered delivery queue.
 
 All lessons remain experimental. Host verification, firmware compilation,
 documentation publication, and size evidence do not imply that a circuit has
@@ -52,8 +52,9 @@ For every lesson, the queued implementation order is:
 | 010--012 | Host verified; bench open | `ShiftRegisterOutput`, seven-segment presentation, explicit traffic timing, and `TrafficJunction` | Shift-clock/data/latch test points, display self-test, and an all-red fault state |
 | 013 | Host verified; bench open | Validated temperature/humidity samples and scheduled acquisition | Sensor-health indicator and a measurable sample cadence |
 | 014 | Host verified; bench open | LCD presentation and stable records | Display status field, enable test point, and acquisition LED |
-| 015 | Active implementation | Environmental-station composition | Display age/status field and sensor-health evidence |
-| 016--018 | Queued | Keypad events, bounded servo intent, persistent configuration, and inert access trainer | Key echo/status pattern, command-position marker, and a soft-latch state indicator |
+| 015 | Host verified; bench open | Environmental-station composition | Display age/status field and sensor-health evidence |
+| 016 | Active implementation | Keypad events and matrix scanning | Key echo/status pattern and row scan test point |
+| 017--018 | Queued | Bounded servo intent, persistent configuration, and inert access trainer | Command-position marker and a soft-latch state indicator |
 | 019--021 | Queued | Range validity, motor/encoder intent, supervisory stop, and bench rover | Echo timing point, direction/enable indicators, encoder evidence, and independent stop state |
 | 022--024 | Queued | Owned `I2cBus`/`SpiBus`, RTC, SD records, constrained simulated loads, and greenhouse controller | Bus activity points, record acknowledgement, load-state LEDs, and a fault pattern |
 | 025--027 | Queued | Decoded infrared input, lawful receive-only radio records, scheduling, and telemetry console | Capture indicator, timestamp/age display, stale-data alarm, and stored replay record |

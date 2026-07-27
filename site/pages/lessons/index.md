@@ -19,6 +19,7 @@ third lesson for a deterministic integration project.
 | [012](012.md) | Tabletop traffic junction | Conflict-free signals and all-red failure |
 | [013](013.md) | DHT11 climate sensor | Timed acquisition and validated samples |
 | [014](014.md) | Character display | Staged startup and stable records |
+| [015](015.md) | Environmental station | Deterministic climate project |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance
