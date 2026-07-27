@@ -17,6 +17,7 @@ third lesson for a deterministic integration project.
 | [010](010.md) | Shift-register display | Serialized output and visible glyphs |
 | [011](011.md) | Timed traffic states | Explicit deadlines and request retention |
 | [012](012.md) | Tabletop traffic junction | Conflict-free signals and all-red failure |
+| [013](013.md) | DHT11 climate sensor | Timed acquisition and validated samples |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance
