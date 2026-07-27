@@ -33,23 +33,29 @@ safety, packaging, or publication gate does.
 
 ## Kit expansion
 
-Lessons 031--060 are the canonical append-only kit expansion. Exact specimens,
+Lessons 031--081 are the canonical append-only kit expansion. Exact specimens,
 module markings, voltage limits, and primary sources remain prerequisites to
 physical work; retail kit names are not electrical identities.
 
 | Lessons | State | Block |
 |---:|---|---|
 | [031--033](design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md) | Queued first | Analog joystick, quadrature encoder, calibration console |
-| [034--036](projects/component_project_cadence.md#lessons-034--036-magnetic-passage-logger) | Queued | Magnetic/contact observation, passage policy, passage logger |
-| [037--039](projects/component_project_cadence.md#lessons-037--039-vibration-and-sound-laboratory) | Queued | Contact dynamics, acoustic envelope, percussion sequencer |
-| [040--042](projects/component_project_cadence.md#lessons-040--042-optical-course-marshal) | Queued | Optical observations, presence, tabletop course marshal |
-| [043--045](projects/component_project_cadence.md#lessons-043--045-leak-and-thermal-alarm-trainer) | Queued | Resistive probes, thermal/radiant observation, museum-case monitor |
-| [046--048](projects/component_project_cadence.md#lessons-046--048-tactile-kinetic-sculpture) | Queued | Touch/proximity, bounded stepper motion, kinetic sculpture |
-| [049--051](projects/component_project_cadence.md#lessons-049--051-identity-controlled-parts-carousel) | Queued | Local identity records, homing, inert parts carousel |
-| [052--054](projects/component_project_cadence.md#lessons-052--054-infrared-protocol-workbench) | Queued | Owned IR capture, known-code transmission, command translator |
-| [055--057](projects/component_project_cadence.md#lessons-055--057-modular-sensor-test-bench) | Queued | Threshold descriptors, characterization, module test bench |
-| [058--060](projects/component_project_cadence.md#lessons-058--060-cooperative-escape-room-console) | Queued | Constraint model, fault-aware panel, inert escape-room console |
-| [061--063](projects/component_project_cadence.md#deferred-lessons-061--063-balance-table-instrument) | Deferred | MPU6050 samples, orientation presentation, balance-table instrument |
+| [034--036](projects/component_project_cadence.md) | Queued | Magnetic/contact observation, passage policy, passage logger |
+| [037--039](projects/component_project_cadence.md) | Queued | Contact dynamics, acoustic envelope, percussion sequencer |
+| [040--042](projects/component_project_cadence.md) | Queued | Optical observations, presence, tabletop course marshal |
+| [043--045](projects/component_project_cadence.md) | Queued | Resistive probes, thermal/radiant observation, museum-case monitor |
+| [046--048](projects/component_project_cadence.md) | Queued | Touch/proximity, bounded stepper motion, kinetic sculpture |
+| [049--051](projects/component_project_cadence.md) | Queued | Local identity records, homing, inert parts carousel |
+| [052--054](projects/component_project_cadence.md) | Queued | Owned IR capture, known-code transmission, command translator |
+| [055--057](projects/component_project_cadence.md) | Queued | Threshold descriptors, characterization, module test bench |
+| [058--060](projects/component_project_cadence.md) | Queued | Constraint model, fault-aware panel, inert escape-room console |
+| [061--063](projects/component_project_cadence.md) | Queued | MPU6050 samples, orientation presentation, balance-table instrument |
+| [064--066](projects/component_project_cadence.md) | Queued | Revision-specific MPU6050/QMI8658 adapters, source qualification, motion recorder |
+| [067--069](projects/component_project_cadence.md) | Queued | Owned single-wire transport, DS18B20 probe set, thermal mapper |
+| [070--072](projects/component_project_cadence.md) | Queued | Multiplexed digits, MAX7219 and PCF8574 display transports, timing desk |
+| [073--075](projects/component_project_cadence.md) | Queued | DS1302 three-wire clock, BMP180/PCF8591 acquisition, pressure and analog station |
+| [076--078](projects/component_project_cadence.md) | Queued | Identified color adapter, fixed calibration, sorting trainer |
+| [079--081](projects/component_project_cadence.md) | Queued | Bounded low-side driver, indicator semantics, inert qualification bench |
 
 The input-first 031--033 decision supersedes older use of 032--033 for the
 MPU6050 and balance table. That work is retained at 061--063 without a number

@@ -50,6 +50,8 @@ nav:
       - Curriculum: docs/CURRICULUM.md
       - Projects: docs/PROJECTS.md
       - Roadmap: docs/ROADMAP.md
+      - Durable work queue: docs/WORK_QUEUE.md
+      - Input expansion 031–033: docs/design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md
       - Style: docs/STYLE.md
       - Mega ADC notes: docs/MEGA_ADC_NOTES.md
       - Comparable projects: docs/COMPARABLE_PROJECTS.md

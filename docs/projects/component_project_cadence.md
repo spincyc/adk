@@ -475,10 +475,10 @@ Circuit-native observation:
 Primary coverage: deliberate reuse of all earlier endpoint families and a
 meaningful integration test for the common kit.
 
-## Deferred lessons 061--063: balance-table instrument
+## Lessons 061--063: balance-table instrument
 
-This block follows the canonical 031--060 kit expansion. Its numbers are
-reserved so MPU6050 work cannot collide with the input-first block.
+This block begins the expansion beyond lesson 060. Its numbers are reserved so
+motion-device work cannot collide with the input-first block.
 
 ### 061 — MPU6050 inertial samples
 
@@ -512,6 +512,238 @@ test points provide the non-Serial path.
 Primary kit coverage: MPU6050, joystick, 8x8 matrix, RGB LED, passive buzzer,
 button, potentiometer, I2C bus, and shift/display transport.
 
+## Lessons 064--066: interchangeable motion recorder
+
+### 064 — Revision-specific inertial adapters
+
+Add a QMI8658 adapter beside the MPU6050 adapter. Both produce the same
+device-neutral inertial sample, but retain device identity, configured range,
+data-ready state, saturation, and transport status. No runtime probe may write
+configuration to an unidentified address.
+
+### 065 — Inertial source qualification
+
+Qualify one explicitly configured source using stationary bias, axis mapping,
+sample age, and range checks. Source selection is configuration, not voting or
+automatic failover. Recorded samples can drive the qualifier without either
+device driver.
+
+### 066 — Project: interchangeable motion recorder
+
+The learner records the same hand-motion script with the kit's identified
+motion module, compares normalized traces on the host, and presents live
+orientation and health on the matrix and RGB LED.
+
+Deterministic evidence includes golden traces for each adapter, register
+identity mismatch, NACK, stale/data-ready disagreement, range saturation,
+axis permutations, and byte-identical normalized records. SDA, SCL, interrupt,
+and sensor-rail test points expose acquisition; a matrix self-test is separate
+from a moving cursor; RGB fault dominates valid orientation.
+
+Before power is applied, the inventory must name MPU6050 or QMI8658, PCB
+markings, address strap, regulator and level-shifter population, logic voltage,
+and primary register-map revision. An unidentified revision remains unpowered.
+
+Primary kit coverage: revision-dependent MPU6050 or QMI8658, I2C, matrix, RGB
+LED, button, RTC, and SD.
+
+## Lessons 067--069: multi-probe thermal mapper
+
+### 067 — Owned single-wire transactions
+
+Add an owned, bounded single-wire transaction endpoint with explicit reset,
+presence, bit-slot, strong-pull-up policy, timeout, and rollback. Add DS18B20
+identity, scratchpad, CRC, resolution, and conversion-state handling above it;
+do not hide timing or parasite-power requirements in the sensor class.
+
+### 068 — Qualified thermal probe sets
+
+Compose fixed-capacity probe identities and readings into a thermal snapshot.
+Duplicate identities, disappearance, conversion-in-progress, CRC failure,
+stale values, implausible steps, and mixed resolutions remain visible.
+
+### 069 — Project: thermal gradient mapper
+
+Two or more identified probes measure a safe tabletop gradient produced by
+room-temperature and hand-warmed objects. The LCD pages through probe identity,
+temperature, age, and validity while LEDs show which probe is being presented.
+RTC/SD records use the stable sensor identity rather than discovery order.
+
+Deterministic evidence includes reset/presence slots, ROM search fixtures,
+CRC vectors, resolution-dependent deadlines, duplicate and disappearing
+probes, timestamp wrap, and interrupted records. The data line, switched probe
+rail, and conversion-activity LED provide non-Serial evidence; a fault pattern
+cannot be mistaken for a cold reading.
+
+The specimen gate records the exact DS18B20 marking, package, pull-up,
+waterproof-probe construction if present, supply mode, and datasheet. No
+immersion, hot surface, parasite-power, or unknown three-pin module is used
+until its electrical and material construction is established.
+
+Primary kit coverage: DS18B20 variants, LCD, RTC, SD, buttons, and LEDs.
+
+## Lessons 070--072: display transport laboratory
+
+### 070 — Nonblocking multiplexed digits
+
+Add a four-digit display owner whose supplied-time refresh emits bounded digit
+and segment frames. Common-anode/cathode polarity, blanking, leading zeros,
+decimal points, overflow, refresh loss, and shutdown blanking are explicit.
+The endpoint owns every digit-select and segment resource it drives.
+
+### 071 — Register-driven display presentation
+
+Add a MAX7219 adapter over the existing owned SPI transaction boundary.
+Configuration, intensity, scan limit, decode mode, row writes, chip-select,
+transport faults, and blank-on-shutdown policy remain explicit. Frame
+generation stays independent of this adapter. An identified PCF8574 LCD
+backpack may adapt the existing `CharacterDisplay` transport over owned I2C;
+its address, bit mapping, backlight polarity, and pull-up voltage are explicit
+specimen configuration, never guessed from a marketplace name.
+
+### 072 — Project: dual-display timing desk
+
+One deterministic stopwatch model drives a multiplexed four-digit display and
+a MAX7219 matrix progress dial. Buttons control start, lap, and reset; the
+project reports presentation disagreement rather than silently trusting one
+display.
+
+Deterministic evidence covers every glyph and digit phase, refresh jitter,
+timestamp wrap, SPI failure at each register, partial frame rollback,
+presentation disagreement, and shutdown. Digit-select, segment, clock, data,
+and chip-select test points expose transport; both displays run a distinct
+self-test before either presents time.
+
+The specimen gate records display polarity and resistor network, MAX7219 or
+PCF8574 marking/module schematic, supply and logic levels, matrix orientation,
+backpack bit mapping, maximum segment/backlight current, and measured current
+budget. Unknown modules remain blank and unpowered.
+
+Primary kit coverage: four-digit seven-segment display, MAX7219 matrix,
+PCF8574 LCD backpack variants, buttons, SPI, I2C, and status LEDs.
+
+## Lessons 073--075: pressure and analog acquisition station
+
+### 073 — Owned three-wire clock observations
+
+Add a bounded three-wire transaction endpoint and DS1302 adapter without
+pretending it is I2C or the lesson 022 RTC device. Clock, data direction,
+chip-enable, burst limits, write protection, oscillator validity, calendar
+validation, and backup-power state remain explicit.
+
+### 074 — Pressure and external analog conversion
+
+Add BMP180 and PCF8591 adapters over owned I2C transactions. The pressure
+adapter retains identity, calibration coefficients, conversion deadlines,
+compensated units, range, and invalid arithmetic. The converter retains
+channel, mode, stale-first-read behavior, DAC code, reference/supply
+assumptions, and bounded settle time. Neither is a precision or safety
+instrument.
+
+### 075 — Project: pressure and analog acquisition station
+
+The station records pressure plus one controlled potentiometer channel, shows
+trend direction and data age locally, and optionally drives the PCF8591 DAC
+only into a documented high-impedance measurement point. RTC/SD records allow
+the exact decision trace to be replayed.
+
+Deterministic evidence includes DS1302 bit and burst traces, invalid calendar
+and write protection, datasheet pressure-compensation vectors, bad
+coefficients, conversion timeout, I2C NACK, stale first conversion, channel
+switch settling, DAC bounds, trend hysteresis, and record interruption.
+Three-wire clock/data/enable, SDA/SCL, analog input, DAC, and sensor-rail test
+points accompany acquisition, trend, and fault LEDs.
+
+The specimen gate records DS1302 identity, crystal and backup source, BMP180
+identity rather than a look-alike pressure sensor, board regulators and
+pull-ups, PCF8591 marking, supply/reference, analog-source range, and DAC load.
+No unknown register device is probed by trial writes.
+
+Primary kit coverage: DS1302 variants, BMP180, PCF8591, potentiometer, LCD, SD,
+and LEDs.
+
+## Lessons 076--078: color classification trainer
+
+### 076 — Identified color observations
+
+Add a device adapter only after identifying the kit's color-sensor mechanism.
+Frequency-output devices own scaling/filter pins and consume bounded pulse
+counts; register devices use the existing owned bus. Both may produce one
+device-neutral raw-channel observation while retaining mechanism, integration
+window, saturation, and validity.
+
+### 077 — Calibrated color classification
+
+Map supplied raw color and clear/reference channels through dark and white
+calibration into bounded normalized features and an explicit confidence.
+Unknown, too-dark, saturated, and ambiguous samples are first-class outcomes;
+labels and thresholds are fixed configuration rather than learned hidden state.
+
+### 078 — Project: tabletop color sorting trainer
+
+The learner presents labeled paper swatches. The station predicts one of a
+small configured set, shows raw and classified state, and moves only a paper
+pointer after confirmation. Incorrect and ambiguous results remain visible and
+enter a fixed-capacity confusion record.
+
+Deterministic evidence includes dark/white calibration, channel permutations,
+pulse-count and register fixtures, saturation, ambient drift, boundary colors,
+confidence ties, confirmation cancellation, and replayed pointer intent.
+Illumination/activity and accepted-class LEDs are distinct; LCD or matrix
+shows unknown explicitly; frequency/bus and servo-intent test points work with
+motion power removed.
+
+The specimen gate records the sensor IC, optical filter/LED population, lens or
+package, interface type, supply and logic levels, and cited integration limits.
+Illumination is current limited; no unidentified laser is used as a light
+source.
+
+Primary kit coverage: identified color-sensor variants, LCD or matrix, RGB
+LED, buttons, servo pointer, and pulse or I2C transport.
+
+## Lessons 079--081: low-energy component qualification bench
+
+### 079 — Bounded low-side load driver
+
+Add a low-side-driver intent and endpoint for an identified PN2222 or S8050
+specimen. Base current, load-current ceiling, active polarity, flyback policy,
+resource ownership, and all-off rollback are configuration. Tests use a fake
+endpoint; first hardware uses only a current-limited LED or identified small
+inductive fixture under the E2 gate.
+
+### 080 — Small indicator-module semantics
+
+Compose existing digital and light endpoints into explicit active-buzzer,
+traffic-light, dual-color, auto-flash, and voltage-indicator observations.
+Autonomous waveforms remain observations rather than scheduler claims.
+Descriptors record polarity, resistor/driver population, warm-up, and safe
+state; there is no universal “three-pin module” driver.
+
+### 081 — Project: component qualification bench
+
+The bench guides one identified low-voltage specimen through pinout review,
+inactive-state measurement, bounded stimulus, and a stable acceptance record.
+It compares direct LED loads, transistor-switched inert loads, and small
+indicator modules without mains, high energy, unattended operation, or an
+unknown emitter.
+
+Deterministic evidence covers descriptor rejection, current-budget arithmetic,
+active-high/low behavior, open/stuck endpoint faults, cancellation, flyback
+requirement, autonomous waveform observations, partial records, and restart.
+Separate power, raw input, accepted state, driver intent, and persistent fault
+indicators expose every stage; named base/gate, collector/load, rail, and
+flyback test points support measured acceptance.
+
+Every specimen requires both-face photographs, active-device marking, traced
+pin order, supply/signal limits, resistor and driver population, load identity,
+energy class, and primary source. Missing identity assigns PX and prohibits
+power. Relay contacts, mains, lasers, gas exposure, physiological claims, and
+motor/fan blades are outside this bench.
+
+Primary kit coverage: PN2222 and S8050 variants, 1N4007, active buzzer,
+traffic-light and dual-color LED modules, auto-flash LED, voltage detector,
+breadboard supply evidence, resistors, capacitors, buttons, and status display.
+
 ## Coverage ledger
 
 This ledger prevents quiet omissions. “Primary” means a project depends on the
@@ -531,7 +763,7 @@ compares electrically similar retail boards.
 | Receive-capable RF | 027 passive only | no transmit project |
 | Continuity and cue panel | 030 inert only | 060 fault model |
 | Joystick, rotary encoder | 033 | 036, 048, 060, 063 |
-| MPU6050 | 063 | future inertial projects |
+| MPU6050 or QMI8658 revision | 063 | 066 cross-device records |
 | Hall variants, reed | 036 | 051, 060 |
 | Tilt, knock, vibration, shock, sound | 039 | 048, 060 |
 | Line, obstacle, interrupter, light cup | 042 | 057, 060 |
@@ -543,6 +775,12 @@ compares electrically similar retail boards.
 | RFID | 036 | 051, 060 |
 | IR emitter | 054, known local codes only | none required |
 | Analog/comparator module variants | 057 | inventory acceptance |
+| DS18B20 and single-wire variants | 069 | thermal records |
+| Four-digit display, MAX7219 matrix | 072 | timing presentation |
+| PCF8574 LCD backpack | 072 | timing presentation |
+| DS1302, BMP180, PCF8591 | 075 | clock/pressure/analog records |
+| Identified color-sensor variants | 078 | classification records |
+| PN2222/S8050, diode, indicator variants | 081 inert loads only | inventory acceptance |
 | Laser emitter | none until classified | optional disabled optical fixture |
 
 The last laser row is intentional. A module with unknown wavelength, optical

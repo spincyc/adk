@@ -16,9 +16,8 @@ are implemented and host verified. Traffic Junction (012) has also landed with
 deterministic host evidence, a Mega 2560 example, lesson material, and size
 evidence. Its physical bench card remains open. The Environmental Station
 (015) has also landed with deterministic evidence and an open bench card.
-Lessons 017--018 are host verified with their bench cards open. Lessons
-019--021 are active integration boundaries. Projects 022--030 remain ordered briefs, not
-implementation claims. See the
+Lessons 017--021 are host verified with their bench cards open. Projects
+022--030 remain ordered briefs, not implementation claims. See the
 [authoritative work queue](WORK_QUEUE.md) for the complete ledger.
 
 Every API and lesson remains experimental. Mega 2560 bench acceptance is open
@@ -76,7 +75,7 @@ explicit open item.
 | 012 | Host verified; bench open | Traffic trace proving clearance timing, request service, all-red failure, and shift-register bit order | Display self-test plus mutually exclusive red/yellow/green indications |
 | 015 | Host verified; bench open | Timestamped sensor fixtures, health transitions, display pages, min/max reset, and stable record vectors | Sensor-health indicator and displayed sample age beside optional Serial records |
 | 018 | Host verified; bench open | Key-event traces, lockout boundaries, supplied configuration, restart, and bounded audit intent | Key acknowledgement, visible policy state, and inert soft-latch intent |
-| 021 | Active integration | Range, route, stall, reversal-dead-time, and stop-dominance traces | Wheels-raised direction/enable indicators and physical stop state |
+| 021 | Host verified; bench open | Range, route, stale/fault, reversal-dead-time, and stop-dominance traces | E1 direction/enable indicators; later wheels-raised direction and physical stop state |
 | 024 | Queued | Schedule, sensor-fault, RTC/storage-fault, hysteresis, exclusion, restart, and golden-log traces | Inert load LEDs, bus/storage activity, and unmistakable safe/fault combinations |
 | 027 | Queued | Timestamped wired/infrared/receive-only fixtures, stale-data handling, scheduler order, and record replay | Capture, age, stale, alarm, and storage states visible without Serial |
 | 030 | Queued capstone | Immutable cue schedule, arming order, simulated continuity, simultaneous-event policy, stop dominance, restart lockout, and audit replay | Inert channel lamps, redundant armed/fault/stop states, and no energizing output path |
@@ -410,22 +409,24 @@ is a useful later extension with timestamped durable records.
 
 ## Lesson 018 — Inert access-control trainer
 
-**Build:** A keypad accepts a configurable code, an LCD shows prompts, and a
-servo moves a cardboard latch model. Lockout timing and configuration storage
-are deterministic and auditable.
+**Build:** A keypad accepts a configured demonstration sequence, an LCD shows
+prompts, and an LED presents an inert soft-latch intent. Lockout timing,
+component-fault handling, and bounded audit presentation are deterministic.
+No credential storage or physical latch is part of this lesson.
 
-**Builds on:** Operator panels, display composition, servo positioning,
-persistent records, and fault-aware state machines.
+**Builds on:** Operator panels, display composition, bounded servo intent, and
+fault-aware state machines.
 
-**Kit:** Matrix keypad, hobby servo, LCD, buttons, cardboard mechanism, separate
-regulated servo supply with common ground.
+**Kit:** Matrix keypad, LCD, resistor-limited LED, buttons, and cardboard
+pointer. The servo and its load supply remain disconnected.
 
-**Evidence:** Tests cover correct and incorrect codes, incomplete entries,
-lockout boundaries, reset, corrupt storage, power-loss checkpoints, and servo
-command limits. No test stores a real credential.
+**Evidence:** Tests cover correct and incorrect sequences, incomplete entries,
+lockout boundaries, reset, component faults, shutdown, and bounded audit
+intent. No test stores a real credential.
 
-**Safety:** Demonstration only—not a security product. Use a soft cardboard
-latch, keep fingers clear, and never power a servo from an I/O pin.
+**Safety:** Demonstration only—not a security product. The published circuit
+is LED-only and cannot secure or move anything. Lesson 017 separately describes
+the open physical acceptance work for a soft paper pointer.
 
 **Comparable exemplars:** Arduino's
 [Sweep](https://docs.arduino.cc/learn/electronics/servo-motors/) introduces

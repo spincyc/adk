@@ -435,6 +435,39 @@ Tests inject the transport to replay pulse widths and faults without hardware.
 The RGB health pattern and the D22 data test point provide separate
 software-state and electrical-activity evidence.
 
+## Character display and environmental station
+
+`CharacterDisplay` owns six parallel HD44780 signal endpoints and stages a
+fixed 16×2 presentation before committing it to the display. Initialization
+and writes roll back or enter the documented inert state on endpoint failure.
+
+`EnvironmentalStation` is hardware-neutral. It accepts complete climate
+observations, controls, and supplied time, then returns stable display and
+record intent with explicit sample age, extrema, and health. It does not read a
+sensor, display, Serial stream, or hidden clock.
+
+## Matrix keypad and access trainer
+
+`Keypad` interprets release-gated key observations. `MatrixKeypad` owns four
+row outputs and three column inputs and presents one complete scan result; scan
+order never becomes application policy.
+
+`AccessTrainer` consumes key, component-health, and supplied-time snapshots. It
+returns display, audit, and inert soft-latch intent. It does not store a
+credential, drive a servo, or claim to provide physical security. Lesson 018's
+Mega circuit presents policy state on the LCD and a resistor-limited LED.
+
+## Ultrasonic range, motor intent, and rover supervision
+
+`PulseInput` records an explicitly supplied echo duration or timeout.
+`UltrasonicRanger` converts that observation into a sample that keeps valid,
+timeout, too-near, too-far, and hardware-fault outcomes distinct.
+
+`MotorIntent` is a hardware-neutral policy engine for bounded duty, reversal
+dead time, and stop-dominant faults. `RoverController` composes fresh range
+samples, route commands, and supplied time into requested and applied motion
+intent. The lesson 021 E1 circuit uses LEDs only; it does not drive motors.
+
 ## Simon engine
 
 `Simon` is a hardware-neutral deterministic state machine. The application

@@ -25,7 +25,14 @@ publication ledger.
 14. deterministic environmental-station composition in lesson 015;
 15. release-gated matrix keypad input in lesson 016;
 16. bounded servo intent, versioned configuration records, owned Timer5/D44
-    pulse output, and explicit external-power admission in lesson 017.
+    pulse output, and explicit external-power admission in lesson 017;
+17. inert access policy with keypad input, visible soft-latch intent, lockout,
+    and bounded audit presentation in lesson 018;
+18. explicit ultrasonic echo timing, timeout, and range validity in lesson 019;
+19. bounded motor intent with reversal dead time and stop dominance in lesson
+    020; and
+20. deterministic range-aware rover supervision with inert command evidence in
+    lesson 021.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
@@ -33,8 +40,9 @@ is experimental rather than hardware supported.
 
 ## Next slice
 
-1. the inert access-trainer project at lesson 018;
-2. range sensing, motor intent, and the bench-rover project.
+1. owned I2C and SPI transaction boundaries;
+2. RTC and storage records with injected failures; and
+3. the inert greenhouse-controller project in lessons 022--024.
 
 Later slices follow the canonical three-lesson cadence through analog sensing,
 displays, environmental records, bounded actuators, buses and storage,
