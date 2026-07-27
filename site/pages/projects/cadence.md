@@ -6,8 +6,8 @@ PDF.
 
 | Lesson | Project | Principal evidence |
 |---:|---|---|
-| 003 | Reaction timer | Bounce, false-start, timeout, wrap, replay |
-| 006 | Simon | Stable sequence vectors and full input replay |
+| 003 | Reaction timer | Bounce, false-start, timeout, wrap, replay — hardware experimental |
+| 006 | Simon | Stable sequence vectors and full input replay — hardware experimental |
 | 009 | Adaptive night light | Calibration, filtering, hysteresis |
 | 012 | Traffic junction | No conflicting greens; all-red failure |
 | 015 | Environmental station | Sensor validity and stable records |

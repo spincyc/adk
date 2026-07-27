@@ -173,6 +173,63 @@ Composition logic, not scan order, decides how simultaneous buttons behave.
 calculation remains correct across timer wrap for intervals shorter than half
 the counter range.
 
+## PWM output and RGB LED
+
+`PwmOutput` has the same inert construction and RAII cleanup contract as
+`DigitalOutput`, but accepts an 8-bit duty value. It rejects valid non-PWM Mega
+pins with `Unsupported`. Default-frequency channels share their timer lease;
+frequency-changing components must claim a timer exclusively.
+
+```cpp
+adk::RgbLed led (runtime.resources (),
+                 {6, 220},
+                 {5, 220},
+                 {3, 220});
+
+if (led.initialize () == adk::Status::Ok)
+{
+    led.set (adk::Rgb (255, 64, 0));
+}
+```
+
+`RgbLed` composes three PWM endpoints transactionally. The current component is
+for a common-cathode LED: zero is inactive. Each `RgbLedChannel` records its pin
+and series-resistor value.
+
+## Piezo sounder
+
+`PiezoSounder` owns one pin and Timer2. `play()` replaces any current tone and
+stores the caller-provided start time; `update()` stops it at the deterministic
+deadline.
+
+```cpp
+sounder.play
+(
+    440,
+    adk::Duration  (250),
+    adk::TimePoint (millis ())
+);
+```
+
+Supported frequencies are 31–20,000 Hz and durations are 1–60,000 ms. The
+component does not queue notes or call `delay()`. Direct Arduino `tone()` or
+timer-library calls bypass ADK ownership and must not be mixed with it.
+
+## Simon engine
+
+`Simon` is a hardware-neutral deterministic state machine. The application
+samples all four buttons first, supplies one complete `SimonInput`, then maps
+the returned `SimonSnapshot` to output components.
+
+`FixedCueSource` supports exact test vectors.
+`XorShift32CueSource` provides the versioned `XorShift32V1` sequence. The same
+configuration, algorithm version, seed, timestamps, and input snapshots produce
+the same states and outcomes.
+
+The engine uses fixed-capacity storage and owns no hardware. Its cue source must
+outlive it. Simultaneous presses are invalid independent of button scan order,
+and a correct press is not complete until release.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.

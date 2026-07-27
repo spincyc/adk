@@ -19,9 +19,12 @@ nav:
   - Course map: course.md
   - Lessons:
       - Course map: lessons/index.md
-      - "001 — Built-in LED": lessons/001.md
-      - "002 — Two LEDs": lessons/002.md
-      - "003 — RGB LED": lessons/003.md
+      - "001 — Digital output": lessons/001.md
+      - "002 — Digital input": lessons/002.md
+      - "003 — Reaction timer": lessons/003.md
+      - "004 — PWM and RGB": lessons/004.md
+      - "005 — Piezo sounder": lessons/005.md
+      - "006 — Simon": lessons/006.md
   - Components: components.md
   - Supported API: api-supported.md
   - Design:
