@@ -1,6 +1,7 @@
 # Arduino-Mk Build Dirs
 build-*
 /build/
+/legacy/build/
 __pycache__/
 *.py[cod]
 
