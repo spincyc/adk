@@ -1,5 +1,6 @@
 #pragma once
 
+#include "access_trainer.h"
 #include "analog_input.h"
 #include "board.h"
 #include "button.h"
@@ -15,6 +16,7 @@
 #include "mono_led.h"
 #include "night_light.h"
 #include "piezo_sounder.h"
+#include "power_domain.h"
 #include "pwm_output.h"
 #include "reaction_timer.h"
 #include "rgb_led.h"
