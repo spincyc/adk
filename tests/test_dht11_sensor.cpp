@@ -21,8 +21,8 @@ namespace {
         size_t             pulseIndex    = 0;
         uint16_t           pulseAge      = 0;
         uint32_t           time          = 0;
-        adk::Status        driveStatus   = adk::Status::Ok;
-        adk::Status        releaseStatus = adk::Status::Ok;
+        adk::Status        driveStatus   = adk::StatusCode::Ok;
+        adk::Status        releaseStatus = adk::StatusCode::Ok;
         int                readFailureAt = -1;
         int                reads         = 0;
         int                drives        = 0;
@@ -46,13 +46,13 @@ namespace {
         {
             if (reads++ == readFailureAt)
             {
-                return {adk::Status::HardwareFailure, adk::Level::Low};
+                return {adk::StatusCode::HardwareFailure, adk::Level::Low};
             }
 
             const adk::Level level = pulseIndex < pulses.size ()
                                          ? pulses[pulseIndex].level
                                          : adk::Level::High;
-            return {adk::Status::Ok, level};
+            return {adk::StatusCode::Ok, level};
         }
 
         void waitMicroseconds (uint16_t duration) noexcept override
@@ -122,13 +122,13 @@ namespace {
         appendFrame             (transport, frame);
         adk::Dht11Sensor sensor (resources, 22, transport);
 
-        assert (sensor.initialize () == adk::Status::Ok);
-        assert (sensor.initialize () == adk::Status::Ok);
+        assert ((sensor.initialize ()).ok ());
+        assert ((sensor.initialize ()).ok ());
         assert (adk::test::arduino::mode (22) == INPUT);
-        assert (sensor.update (adk::TimePoint (100)) == adk::Status::Ok);
-        assert (sensor.update (adk::TimePoint (1099)) == adk::Status::Ok);
+        assert ((sensor.update (adk::TimePoint (100))).ok ());
+        assert ((sensor.update (adk::TimePoint (1099))).ok ());
         assert (transport.drives == 0);
-        assert (sensor.update (adk::TimePoint (1100)) == adk::Status::Ok);
+        assert ((sensor.update (adk::TimePoint (1100))).ok ());
         assert (transport.drives == 1);
 
         const adk::ClimateSample sample =
@@ -137,7 +137,7 @@ namespace {
         assert (sample.humidityPermille == 453);
         assert (sample.state == adk::ClimateSampleState::Valid);
 
-        assert          (sensor.update (adk::TimePoint (2099)) == adk::Status::Ok);
+        assert          ((sensor.update (adk::TimePoint (2099))).ok ());
         assert          (transport.drives == 1);
         sensor.shutdown ();
         sensor.shutdown ();
@@ -153,22 +153,22 @@ namespace {
         ScriptedTransport     transport;
         adk::ResourceClaim    busy;
 
-        assert (resources.claim ({adk::ResourceKind::Pin, 22}, busy) ==
-                adk::Status::Ok);
+        assert                   (
+            (resources.claim ({adk::ResourceKind::Pin, 22}, busy)).ok ());
         adk::Dht11Sensor blocked (resources, 22, transport);
-        assert                   (blocked.initialize () == adk::Status::ResourceBusy);
+        assert                   ((blocked.initialize ()).error () == adk::StatusCode::ResourceBusy);
         assert                   (adk::test::arduino::trace ().empty ());
         busy.release             ();
 
         {
             adk::Dht11Sensor sensor (resources, 22, transport);
-            assert                  (sensor.initialize () == adk::Status::Ok);
+            assert                  ((sensor.initialize ()).ok ());
         }
 
         assert (!resources.claimed ({adk::ResourceKind::Pin, 22}));
 
         adk::Dht11Sensor invalid (resources, 70, transport);
-        assert                   (invalid.initialize () == adk::Status::InvalidPin);
+        assert                   ((invalid.initialize ()).error () == adk::StatusCode::InvalidPin);
     }
 
     void testTimeoutChecksumAndRecovery ()
@@ -177,11 +177,10 @@ namespace {
         adk::ResourceRegistry resources;
         ScriptedTransport     transport;
         adk::Dht11Sensor      sensor (resources, 22, transport);
-        assert                       (sensor.initialize () == adk::Status::Ok);
-        assert                       (sensor.update (adk::TimePoint (0)) ==
-                adk::Status::Ok);
+        assert                       ((sensor.initialize ()).ok ());
+        assert                       ((sensor.update (adk::TimePoint (0))).ok ());
 
-        assert (sensor.update (adk::TimePoint (1000)) == adk::Status::HardwareFailure);
+        assert ((sensor.update (adk::TimePoint (1000))).error () == adk::StatusCode::HardwareFailure);
         assert (sensor.sample (adk::TimePoint (1000), adk::Duration (1000)).state ==
                 adk::ClimateSampleState::TransportTimeout);
         assert (adk::test::arduino::mode (22) == INPUT);
@@ -189,14 +188,14 @@ namespace {
         const uint8_t bad[5] = {40, 0, 20, 0, 61};
         transport.pulses.clear ();
         appendFrame            (transport, bad);
-        assert                 (sensor.update (adk::TimePoint (2000)) == adk::Status::HardwareFailure);
+        assert                 ((sensor.update (adk::TimePoint (2000))).error () == adk::StatusCode::HardwareFailure);
         assert                 (sensor.sample (adk::TimePoint (2000), adk::Duration (1000)).state ==
                 adk::ClimateSampleState::ChecksumFailure);
 
         const uint8_t good[5] = {40, 0, 20, 0, 60};
         transport.pulses.clear ();
         appendFrame            (transport, good);
-        assert                 (sensor.update (adk::TimePoint (3000)) == adk::Status::Ok);
+        assert                 ((sensor.update (adk::TimePoint (3000))).ok ());
         assert                 (sensor.sample (adk::TimePoint (3000), adk::Duration (1000)).state ==
                 adk::ClimateSampleState::Valid);
     }
@@ -209,31 +208,30 @@ namespace {
         const uint8_t         frame[5] = {50, 0, 25, 0, 75};
         appendFrame             (transport, frame, 47, 70);
         adk::Dht11Sensor sensor (resources, 22, transport);
-        assert                  (sensor.initialize () == adk::Status::Ok);
-        assert                  (sensor.update (adk::TimePoint (0)) ==
-                adk::Status::Ok);
-        assert                  (sensor.update (adk::TimePoint (1000)) == adk::Status::HardwareFailure);
+        assert                  ((sensor.initialize ()).ok ());
+        assert                  ((sensor.update (adk::TimePoint (0))).ok ());
+        assert                  ((sensor.update (adk::TimePoint (1000))).error () == adk::StatusCode::HardwareFailure);
         assert                  (adk::test::arduino::mode (22) == INPUT);
 
         ScriptedTransport releaseFailure;
-        releaseFailure.releaseStatus = adk::Status::HardwareFailure;
+        releaseFailure.releaseStatus = adk::StatusCode::HardwareFailure;
         adk::Dht11Sensor releaseSensor (resources, 23, releaseFailure);
-        assert                         (releaseSensor.initialize () == adk::Status::Ok);
-        assert                         (releaseSensor.update (adk::TimePoint (0)) ==
-                adk::Status::Ok);
-        assert                         (releaseSensor.update (adk::TimePoint (1000)) ==
-                adk::Status::HardwareFailure);
+        assert                         ((releaseSensor.initialize ()).ok ());
+        assert                         ((releaseSensor.update (adk::TimePoint (0))).ok ());
+        assert                         (
+            (releaseSensor.update (adk::TimePoint (1000))).error () ==
+            adk::StatusCode::HardwareFailure);
         assert (adk::test::arduino::mode (23) == INPUT);
 
         ScriptedTransport readFailure;
         appendFrame (readFailure, frame);
         readFailure.readFailureAt = 10;
         adk::Dht11Sensor readSensor (resources, 24, readFailure);
-        assert                      (readSensor.initialize () == adk::Status::Ok);
-        assert                      (readSensor.update (adk::TimePoint (0)) ==
-                adk::Status::Ok);
-        assert                      (readSensor.update (adk::TimePoint (1000)) ==
-                adk::Status::HardwareFailure);
+        assert                      ((readSensor.initialize ()).ok ());
+        assert                      ((readSensor.update (adk::TimePoint (0))).ok ());
+        assert                      (
+            (readSensor.update (adk::TimePoint (1000))).error () ==
+            adk::StatusCode::HardwareFailure);
         assert (adk::test::arduino::mode (24) == INPUT);
     }
 
@@ -245,11 +243,12 @@ namespace {
         const uint8_t         humid[5] = {100, 1, 20, 0, 121};
         appendFrame             (transport, humid);
         adk::Dht11Sensor sensor (resources, 22, transport);
-        assert                  (sensor.initialize () == adk::Status::Ok);
-        assert                  (sensor.update (adk::TimePoint (0xfffffc17U)) ==
-                adk::Status::Ok);
-        assert                  (sensor.update (adk::TimePoint (0xffffffffU)) ==
-                adk::Status::InvalidArgument);
+        assert                  ((sensor.initialize ()).ok ());
+        assert                  (
+            (sensor.update (adk::TimePoint (0xfffffc17U))).ok ());
+        assert                  (
+            (sensor.update (adk::TimePoint (0xffffffffU))).error () ==
+            adk::StatusCode::InvalidArgument);
 
         resetArduinoAt (0);
         ScriptedTransport validTransport;
@@ -257,10 +256,10 @@ namespace {
         appendFrame (validTransport, valid);
         adk::ResourceRegistry secondResources;
         adk::Dht11Sensor      validSensor (secondResources, 22, validTransport);
-        assert                            (validSensor.initialize () == adk::Status::Ok);
-        assert                            (validSensor.update (adk::TimePoint (0)) ==
-                adk::Status::Ok);
-        assert                            (validSensor.update (adk::TimePoint (1000)) == adk::Status::Ok);
+        assert                            ((validSensor.initialize ()).ok ());
+        assert                            (
+            (validSensor.update (adk::TimePoint (0))).ok ());
+        assert                            ((validSensor.update (adk::TimePoint (1000))).ok ());
         assert                            (validSensor.sample (adk::TimePoint (1100), adk::Duration (100)).state ==
                 adk::ClimateSampleState::Valid);
         assert (validSensor.sample (adk::TimePoint (1101), adk::Duration (100)).state ==

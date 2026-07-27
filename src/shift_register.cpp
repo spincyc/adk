@@ -26,33 +26,33 @@ namespace adk {
     {
         if (initialized ())
         {
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         if (pins_.data >= NUM_DIGITAL_PINS ||
             pins_.clock >= NUM_DIGITAL_PINS ||
             pins_.latch >= NUM_DIGITAL_PINS)
         {
-            return Status::InvalidPin;
+            return StatusCode::InvalidPin;
         }
 
         if (pins_.data == pins_.clock ||
             pins_.data == pins_.latch ||
             pins_.clock == pins_.latch)
         {
-            return Status::InvalidArgument;
+            return StatusCode::InvalidArgument;
         }
 
         Status status = data_.initialize ();
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             return status;
         }
 
         status = clock_.initialize ();
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             data_.shutdown ();
             return status;
@@ -60,7 +60,7 @@ namespace adk {
 
         status = latch_.initialize ();
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             clock_.shutdown ();
             data_ .shutdown ();
@@ -69,13 +69,13 @@ namespace adk {
 
         status = show (inactiveValue_);
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             shutdown ();
             return status;
         }
 
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void ShiftRegisterOutput::shutdown () noexcept
@@ -98,7 +98,7 @@ namespace adk {
     {
         if (!initialized ())
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         latch_.write (Level::Low);
@@ -114,7 +114,7 @@ namespace adk {
         latch_.write (Level::Low);
 
         value_ = value;
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     Status ShiftRegisterOutput::clear () noexcept

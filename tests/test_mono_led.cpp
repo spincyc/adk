@@ -39,11 +39,11 @@ void testActiveHighLifecycle ()
     require (led.activeHigh (), "LED active polarity");
     require (!led.active (), "LED starts inactive");
     require (!led.initialized (), "LED starts uninitialized");
-    require (led.on () == adk::Status::NotInitialized, "inactive LED rejects on");
-    require (led.off () == adk::Status::NotInitialized, "inactive LED rejects off");
+    require (led.on ().error () == adk::StatusCode::NotInitialized, "inactive LED rejects on");
+    require (led.off ().error () == adk::StatusCode::NotInitialized, "inactive LED rejects off");
     require (fake::trace ().empty (), "inactive LED touched hardware");
 
-    require          (led.initialize () == adk::Status::Ok, "LED initialization");
+    require          (led.initialize ().ok (), "LED initialization");
     require          (led.initialized (), "LED initialized state");
     require          (!led.active (), "LED initializes inactive");
     require          (fake::trace ().size () == 2, "LED initialization trace");
@@ -51,19 +51,19 @@ void testActiveHighLifecycle ()
     requireOperation (1, fake::OperationKind::PinMode, 13, OUTPUT);
 
     fake::clearTrace ();
-    require          (led.initialize () == adk::Status::Ok, "LED repeated initialization");
+    require          (led.initialize ().ok (), "LED repeated initialization");
     require          (fake::trace ().empty (), "repeated LED initialization touched hardware");
 
-    require          (led.on () == adk::Status::Ok, "LED on");
+    require          (led.on ().ok (), "LED on");
     require          (led.active (), "LED active state");
     requireOperation (0, fake::OperationKind::DigitalWrite, 13, HIGH);
 
-    require          (led.set (false) == adk::Status::Ok, "LED set inactive");
+    require          (led.set (false).ok (), "LED set inactive");
     require          (!led.active (), "LED inactive state");
     requireOperation (1, fake::OperationKind::DigitalWrite, 13, LOW);
 
     fake::clearTrace ();
-    require          (led.on () == adk::Status::Ok, "LED on before shutdown");
+    require          (led.on ().ok (), "LED on before shutdown");
     fake::clearTrace ();
     led.shutdown     ();
     require          (!led.initialized (), "LED shutdown state");
@@ -84,14 +84,14 @@ void testActiveLowPolarity ()
     adk::MonoLed          led (resources, 9, false);
 
     require          (!led.activeHigh (), "active-low polarity");
-    require          (led.initialize () == adk::Status::Ok, "active-low initialization");
+    require          (led.initialize ().ok (), "active-low initialization");
     requireOperation (0, fake::OperationKind::DigitalWrite, 9, HIGH);
     requireOperation (1, fake::OperationKind::PinMode, 9, OUTPUT);
 
     fake::clearTrace ();
-    require          (led.on () == adk::Status::Ok, "active-low on");
+    require          (led.on ().ok (), "active-low on");
     requireOperation (0, fake::OperationKind::DigitalWrite, 9, LOW);
-    require          (led.off () == adk::Status::Ok, "active-low off");
+    require          (led.off ().ok (), "active-low off");
     requireOperation (1, fake::OperationKind::DigitalWrite, 9, HIGH);
 }
 
@@ -102,21 +102,21 @@ void testClaimsAndErrors ()
     adk::MonoLed          owner   (resources, 8);
     adk::MonoLed          blocked (resources, 8);
 
-    require          (owner.initialize () == adk::Status::Ok, "LED owner initialization");
+    require          (owner.initialize ().ok (), "LED owner initialization");
     fake::clearTrace ();
-    require          (blocked.initialize () == adk::Status::ResourceBusy, "LED conflict status");
+    require          (blocked.initialize ().error () == adk::StatusCode::ResourceBusy, "LED conflict status");
     require          (!blocked.initialized (), "blocked LED remains uninitialized");
     require          (!blocked.active (), "blocked LED remains inactive");
     require          (fake::trace ().empty (), "LED conflict touched hardware");
 
     owner.shutdown   ();
     fake::clearTrace ();
-    require          (blocked.initialize () == adk::Status::Ok, "LED claim reuse");
+    require          (blocked.initialize ().ok (), "LED claim reuse");
 
     fake::reset ();
     adk::ResourceRegistry invalidResources;
     adk::MonoLed          invalid (invalidResources, NUM_DIGITAL_PINS);
-    require                       (invalid.initialize () == adk::Status::InvalidPin, "invalid LED pin");
+    require                       (invalid.initialize ().error () == adk::StatusCode::InvalidPin, "invalid LED pin");
     require                       (!invalid.initialized (), "invalid LED remains uninitialized");
     require                       (fake::trace ().empty (), "invalid LED touched hardware");
 }
@@ -129,8 +129,8 @@ void testDestruction ()
     {
         adk::MonoLed led (resources, 7);
 
-        require          (led.initialize () == adk::Status::Ok, "scoped LED initialization");
-        require          (led.on () == adk::Status::Ok, "scoped LED on");
+        require          (led.initialize ().ok (), "scoped LED initialization");
+        require          (led.on ().ok (), "scoped LED on");
         fake::clearTrace ();
     }
 
@@ -140,7 +140,7 @@ void testDestruction ()
 
     fake::clearTrace         ();
     adk::MonoLed replacement (resources, 7);
-    require                  (replacement.initialize () == adk::Status::Ok,
+    require                  (replacement.initialize ().ok (),
              "LED destruction released claim");
 }
 } // namespace

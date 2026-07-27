@@ -19,11 +19,11 @@ namespace {
         {
             if (configureCount == failConfigureAt)
             {
-                return adk::Status::HardwareFailure;
+                return adk::StatusCode::HardwareFailure;
             }
 
             configured[configureCount++] = pin;
-            return adk::Status::Ok;
+            return adk::StatusCode::Ok;
         }
 
         void release (adk::PinId pin) noexcept override
@@ -35,11 +35,11 @@ namespace {
         {
             if (writeCount == failWriteAt)
             {
-                return adk::Status::HardwareFailure;
+                return adk::StatusCode::HardwareFailure;
             }
 
             writes[writeCount++] = {pin, level};
-            return adk::Status::Ok;
+            return adk::StatusCode::Ok;
         }
 
         void waitMicroseconds (uint16_t duration) noexcept override
@@ -71,15 +71,14 @@ namespace {
 
     void startDisplay (adk::Hd44780Display& display)
     {
-        require (display.initialize () == adk::Status::Ok, "display initializes");
-        require (display.update (adk::TimePoint (100)) == adk::Status::Ok,
-                 "startup anchors");
+        require (display.initialize ().ok (), "display initializes");
+        require (display.update (adk::TimePoint (100)).ok (), "startup anchors");
 
         const uint32_t times[] = {115, 120, 121, 122, 123, 124, 125, 127, 128, 129};
 
         for (uint32_t time : times)
         {
-            require (display.update (adk::TimePoint (time)) == adk::Status::Ok,
+            require (display.update (adk::TimePoint (time)).ok (),
                      "startup step succeeds");
         }
 
@@ -93,16 +92,16 @@ namespace {
         adk::Hd44780Display   display (resources, pins, transport);
 
         require (!display.initialized (), "display starts inert");
-        require (display.update (adk::TimePoint (0)) == adk::Status::NotInitialized,
+        require (display.update (adk::TimePoint (0)).error () ==
+                     adk::StatusCode::NotInitialized,
                  "stopped display rejects updates");
-        require (display.show (0, "ready") == adk::Status::NotInitialized,
+        require (display.show (0, "ready").error () == adk::StatusCode::NotInitialized,
                  "stopped display rejects text");
 
         startDisplay (display);
         const size_t configured = transport.configureCount;
 
-        require (display.initialize () == adk::Status::Ok,
-                 "repeated initialization succeeds");
+        require (display.initialize ().ok (), "repeated initialization succeeds");
         require (transport.configureCount == configured,
                  "repeated initialization is inert");
 
@@ -120,27 +119,26 @@ namespace {
     {
         adk::ResourceRegistry resources;
         RecordingTransport    transport;
-        adk::Hd44780Display display (resources, pins, transport);
+        adk::Hd44780Display   display (resources, pins, transport);
 
         startDisplay (display);
 
-        require (display.show (2, "bad") == adk::Status::InvalidArgument,
+        require (display.show (2, "bad").error () == adk::StatusCode::InvalidArgument,
                  "unknown row is rejected");
-        require (display.show (0, nullptr) == adk::Status::InvalidArgument,
+        require (display.show (0, nullptr).error () == adk::StatusCode::InvalidArgument,
                  "null text is rejected");
-        require (display.show (0, "12345678901234567") == adk::Status::CapacityExceeded,
+        require (display.show (0, "12345678901234567").error () ==
+                     adk::StatusCode::CapacityExceeded,
                  "long text is rejected");
-        require (display.show (0, "room 21C") == adk::Status::Ok,
-                 "short text is padded");
+        require (display.show (0, "room 21C").ok (), "short text is padded");
         require (std::strcmp (display.line (0), "room 21C        ") == 0,
                  "desired line remains observable");
         require (display.line (2) == nullptr, "unknown line has no snapshot");
 
         const size_t before = transport.writeCount;
-        require (display.update (adk::TimePoint (200)) == adk::Status::Ok,
-                 "one dirty cell flushes");
+        require (display.update (adk::TimePoint (200)).ok (), "one dirty cell flushes");
         require (transport.writeCount > before, "flush writes one cell");
-        require (display.update (adk::TimePoint (201)) == adk::Status::Ok,
+        require (display.update (adk::TimePoint (201)).ok (),
                  "next dirty cell flushes separately");
     }
 
@@ -152,7 +150,7 @@ namespace {
             const adk::Hd44780Pins duplicate = {22, 22, 24, 25, 26, 27};
             adk::Hd44780Display    display (resources, duplicate, transport);
 
-            require (display.initialize () == adk::Status::InvalidArgument,
+            require (display.initialize ().error () == adk::StatusCode::InvalidArgument,
                      "duplicate pins are rejected");
             require (transport.configureCount == 0, "invalid pins touch no hardware");
         }
@@ -163,15 +161,14 @@ namespace {
             transport.failConfigureAt = 3;
             adk::Hd44780Display display (resources, pins, transport);
 
-            require (display.initialize () == adk::Status::HardwareFailure,
+            require (display.initialize ().error () == adk::StatusCode::HardwareFailure,
                      "configure failure is reported");
             require (!display.initialized (), "failed display remains stopped");
             require (transport.releaseCount == 6,
                      "configure failure releases every claim");
 
             transport.failConfigureAt = 99;
-            require (display.initialize () == adk::Status::Ok,
-                     "released pins can be reacquired");
+            require (display.initialize ().ok (), "released pins can be reacquired");
         }
     }
 
@@ -183,16 +180,14 @@ namespace {
         {
             adk::Hd44780Display display (resources, pins, transport);
 
-            require (display.initialize () == adk::Status::Ok,
-                     "scoped display initializes");
+            require (display.initialize ().ok (), "scoped display initializes");
         }
 
         require (transport.releaseCount == 6, "destructor releases every pin");
 
         adk::Hd44780Display replacement (resources, pins, transport);
 
-        require (replacement.initialize () == adk::Status::Ok,
-                 "destructor permits resource reuse");
+        require (replacement.initialize ().ok (), "destructor permits resource reuse");
     }
 
     void testStableRecords ()
@@ -201,8 +196,7 @@ namespace {
         const adk::ClimateSample valid       = {-125, 456, adk::TimePoint (4294967290U),
                                                 adk::ClimateSampleState::Valid};
 
-        require (adk::formatClimateRecord (valid, 42, record, sizeof (record)) ==
-                     adk::Status::Ok,
+        require (adk::formatClimateRecord (valid, 42, record, sizeof (record)).ok (),
                  "record fits");
         require (std::strcmp (record,
                               "seq=42,state=valid,temp_centi_c=-125,rh_permille=456,"
@@ -210,18 +204,17 @@ namespace {
                  "record is exact and locale independent");
 
         char small[8] = {};
-        require (adk::formatClimateRecord (valid, 42, small, sizeof (small)) ==
-                     adk::Status::CapacityExceeded,
+        require (adk::formatClimateRecord (valid, 42, small, sizeof (small)).error () ==
+                     adk::StatusCode::CapacityExceeded,
                  "small buffer reports capacity");
         require (small[sizeof (small) - 1U] == '\0', "small buffer remains terminated");
-        require (adk::formatClimateRecord (valid, 0, nullptr, 0) ==
-                     adk::Status::InvalidArgument,
+        require (adk::formatClimateRecord (valid, 0, nullptr, 0).error () ==
+                     adk::StatusCode::InvalidArgument,
                  "null record buffer is rejected");
 
         const adk::ClimateSample fault = {0, 0, adk::TimePoint (7),
                                           adk::ClimateSampleState::ChecksumFailure};
-        require (adk::formatClimateRecord (fault, 1, record, sizeof (record)) ==
-                     adk::Status::Ok,
+        require (adk::formatClimateRecord (fault, 1, record, sizeof (record)).ok (),
                  "fault record fits");
         require (std::strstr (record, "state=checksum_failure") != nullptr,
                  "fault state remains explicit");

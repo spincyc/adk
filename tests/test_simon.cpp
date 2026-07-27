@@ -11,14 +11,14 @@ namespace {
         adk::Status reset () noexcept override
         {
             reads = 0;
-            return adk::Status::Ok;
+            return adk::StatusCode::Ok;
         }
 
         adk::Status next (adk::CueId& cue) noexcept override
         {
             cue = static_cast<adk::CueId> (reads % adk::Simon::cueCount);
             ++reads;
-            return adk::Status::Ok;
+            return adk::StatusCode::Ok;
         }
 
         adk::SimonAlgorithm algorithmVersion () const noexcept override
@@ -43,9 +43,13 @@ namespace {
         }
     }
 
-    void requireStatus (adk::Status actual, adk::Status expected, const char* message)
+    void requireStatus (adk::Status     actual,
+                        adk::StatusCode expected,
+                        const char*     message)
     {
-        require (actual == expected, message);
+        require (expected == adk::StatusCode::Ok ? actual.ok ()
+                                                 : actual.error () == expected,
+                 message);
     }
 
     adk::SimonConfig config (uint8_t maximum = 4)
@@ -114,19 +118,19 @@ namespace {
 
         requireStatus (
             simon.update (adk::TimePoint (now + 9u), none ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "cue before boundary");
         requirePhase (simon, adk::SimonPhase::PlaybackOn, "cue remains before boundary");
 
         requireStatus (
             simon.update (adk::TimePoint (now + 10u), none ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "cue boundary");
         requirePhase (simon, adk::SimonPhase::PlaybackGap, "cue enters gap");
 
         requireStatus (
             simon.update (adk::TimePoint (now + 15u), none ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "gap boundary");
         return now + 15u;
     }
@@ -147,7 +151,7 @@ namespace {
     void startGame (adk::Simon& simon, uint32_t now)
     {
         requireStatus (simon.update (adk::TimePoint (now), start ()),
-                       adk::Status::Ok,
+                       adk::StatusCode::Ok,
                        "start game");
         requirePhase (simon, adk::SimonPhase::PlaybackOn, "start enters playback");
     }
@@ -164,7 +168,7 @@ namespace {
         {
             adk::XorShift32CueSource source (seeds[vector]);
 
-            requireStatus (source.reset (), adk::Status::Ok, "generator resets");
+            requireStatus (source.reset (), adk::StatusCode::Ok, "generator resets");
 
             require (
                 source.algorithmVersion () == adk::SimonAlgorithm::XorShift32V1,
@@ -177,17 +181,17 @@ namespace {
             {
                 adk::CueId cue = adk::CueId::One;
 
-                requireStatus (source.next (cue), adk::Status::Ok, "generator produces cue");
+                requireStatus (source.next (cue), adk::StatusCode::Ok, "generator produces cue");
 
                 require (
                     static_cast<uint8_t> (cue) == vectors[vector][index],
                     "generator golden vector");
             }
 
-            requireStatus (source.reset (), adk::Status::Ok, "generator replay reset");
+            requireStatus (source.reset (), adk::StatusCode::Ok, "generator replay reset");
 
             adk::CueId first = adk::CueId::One;
-            requireStatus (source.next (first), adk::Status::Ok, "generator replay");
+            requireStatus (source.next (first), adk::StatusCode::Ok, "generator replay");
 
             require (
                 static_cast<uint8_t> (first) == vectors[vector][0],
@@ -198,17 +202,17 @@ namespace {
         adk::FixedCueSource fixed (cues, 2);
         adk::CueId cue = adk::CueId::One;
 
-        requireStatus (fixed.reset (), adk::Status::Ok, "fixed source resets");
-        requireStatus (fixed.next (cue), adk::Status::Ok, "fixed first");
+        requireStatus (fixed.reset (), adk::StatusCode::Ok, "fixed source resets");
+        requireStatus (fixed.next (cue), adk::StatusCode::Ok, "fixed first");
 
         require (cue == adk::CueId::Four, "fixed order first");
 
-        requireStatus (fixed.next (cue), adk::Status::Ok, "fixed second");
+        requireStatus (fixed.next (cue), adk::StatusCode::Ok, "fixed second");
 
         require (cue == adk::CueId::Two, "fixed order second");
 
         requireStatus (
-            fixed.next (cue), adk::Status::CapacityExceeded, "fixed exhaustion");
+            fixed.next (cue), adk::StatusCode::CapacityExceeded, "fixed exhaustion");
         require (
             fixed.algorithmVersion () == adk::SimonAlgorithm::Fixed,
             "fixed version metadata");
@@ -217,7 +221,7 @@ namespace {
         adk::FixedCueSource empty (nullptr, 0);
 
         requireStatus (
-            empty.reset (), adk::Status::InvalidArgument, "empty source rejected");
+            empty.reset (), adk::StatusCode::InvalidArgument, "empty source rejected");
     }
 
     void testConfigurationAndInitialization ()
@@ -229,7 +233,7 @@ namespace {
 
         requireStatus (
             uninitialized.update (adk::TimePoint (0), none ()),
-            adk::Status::NotInitialized,
+            adk::StatusCode::NotInitialized,
             "update before initialize");
 
         for (uint8_t field = 0; field < 7; ++field)
@@ -255,7 +259,7 @@ namespace {
             adk::Simon simon (invalid, invalidSource);
 
             requireStatus (
-                simon.initialize (), adk::Status::InvalidArgument, "invalid config rejected");
+                simon.initialize (), adk::StatusCode::InvalidArgument, "invalid config rejected");
         }
 
         adk::SimonConfig inverted = config ();
@@ -267,7 +271,7 @@ namespace {
 
         requireStatus (
             invertedSimon.initialize (),
-            adk::Status::InvalidArgument,
+            adk::StatusCode::InvalidArgument,
             "inverted lengths rejected");
 
         adk::SimonConfig excessive = config ();
@@ -279,7 +283,7 @@ namespace {
 
         requireStatus (
             excessiveSimon.initialize (),
-            adk::Status::InvalidArgument,
+            adk::StatusCode::InvalidArgument,
             "ambiguous duration rejected");
 
         adk::FixedCueSource shortSource (cues, 1);
@@ -290,7 +294,7 @@ namespace {
 
         requireStatus (
             shortSimon.initialize (),
-            adk::Status::CapacityExceeded,
+            adk::StatusCode::CapacityExceeded,
             "source exhaustion reported");
         require (
             shortSimon.snapshot ().outcome == adk::SimonOutcome::SourceFailure,
@@ -302,7 +306,7 @@ namespace {
 
         requireStatus (
             invalidCueSimon.initialize (),
-            adk::Status::InvalidArgument,
+            adk::StatusCode::InvalidArgument,
             "out-of-range source cue rejected");
         require (
             invalidCueSimon.snapshot ().outcome == adk::SimonOutcome::SourceFailure,
@@ -316,7 +320,7 @@ namespace {
 
         adk::Simon simon (config (2), source);
 
-        requireStatus (simon.initialize (), adk::Status::Ok, "play initialize");
+        requireStatus (simon.initialize (), adk::StatusCode::Ok, "play initialize");
 
         requirePhase (simon, adk::SimonPhase::Idle, "initialized idle");
 
@@ -333,7 +337,7 @@ namespace {
 
         requireStatus (
             simon.update (adk::TimePoint (101), press (0x0fu)),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "playback ignores chord");
         requirePhase (simon, adk::SimonPhase::PlaybackOn, "input ignored during playback");
 
@@ -346,19 +350,19 @@ namespace {
 
         requireStatus (
             simon.update (adk::TimePoint (++now), press (0x02u)),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "correct press");
         requirePhase (simon, adk::SimonPhase::AwaitRelease, "correct press gates release");
 
         requireStatus (
             simon.update (adk::TimePoint (++now), held (0x02u)),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "held input");
         requirePhase (simon, adk::SimonPhase::AwaitRelease, "hold cannot repeat");
 
         requireStatus (
             simon.update (adk::TimePoint (++now), release (0x02u)),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "release input");
         requirePhase (simon, adk::SimonPhase::RoundSuccess, "round succeeds after release");
 
@@ -368,13 +372,13 @@ namespace {
 
         requireStatus (
             simon.update (adk::TimePoint (now + 6u), none ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "result before boundary");
         requirePhase (simon, adk::SimonPhase::RoundSuccess, "result remains");
 
         requireStatus (
             simon.update (adk::TimePoint (now + 7u), none ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "result boundary");
         requirePhase (simon, adk::SimonPhase::PlaybackOn, "next round playback");
 
@@ -390,7 +394,7 @@ namespace {
 
             adk::Simon simon (config (1), source);
 
-            requireStatus (simon.initialize (), adk::Status::Ok, "mismatch initialize");
+            requireStatus (simon.initialize (), adk::StatusCode::Ok, "mismatch initialize");
 
             startGame (simon, 0);
 
@@ -398,7 +402,7 @@ namespace {
 
             requireStatus (
                 simon.update (adk::TimePoint (++now), press (0x02u)),
-                adk::Status::Ok,
+                adk::StatusCode::Ok,
                 "wrong cue");
             requirePhase (simon, adk::SimonPhase::GameFailure, "mismatch fails");
 
@@ -416,7 +420,7 @@ namespace {
 
                 adk::Simon simon (config (1), source);
 
-                requireStatus (simon.initialize (), adk::Status::Ok, "chord initialize");
+                requireStatus (simon.initialize (), adk::StatusCode::Ok, "chord initialize");
 
                 startGame (simon, 0);
 
@@ -425,7 +429,7 @@ namespace {
                     static_cast<uint8_t> ((1u << left) | (1u << right));
                 requireStatus (
                     simon.update (adk::TimePoint (now + 1u), press (mask)),
-                    adk::Status::Ok,
+                    adk::StatusCode::Ok,
                     "pair chord");
                 require (
                     simon.snapshot ().outcome == adk::SimonOutcome::InvalidInput,
@@ -440,7 +444,7 @@ namespace {
 
             adk::Simon simon (config (1), source);
 
-            requireStatus (simon.initialize (), adk::Status::Ok, "multi initialize");
+            requireStatus (simon.initialize (), adk::StatusCode::Ok, "multi initialize");
 
             startGame (simon, 0);
 
@@ -448,7 +452,7 @@ namespace {
 
             requireStatus (
                 simon.update (adk::TimePoint (now + 1u), press (mask)),
-                adk::Status::Ok,
+                adk::StatusCode::Ok,
                 "multi chord");
             require (
                 simon.snapshot ().outcome == adk::SimonOutcome::InvalidInput,
@@ -460,7 +464,7 @@ namespace {
 
             adk::Simon simon (config (1), source);
 
-            requireStatus (simon.initialize (), adk::Status::Ok, "timeout initialize");
+            requireStatus (simon.initialize (), adk::StatusCode::Ok, "timeout initialize");
 
             startGame (simon, 50);
 
@@ -468,13 +472,13 @@ namespace {
 
             requireStatus (
                 simon.update (adk::TimePoint (now + 19u), none ()),
-                adk::Status::Ok,
+                adk::StatusCode::Ok,
                 "timeout before boundary");
             requirePhase (simon, adk::SimonPhase::AwaitPress, "before timeout accepted");
 
             requireStatus (
                 simon.update (adk::TimePoint (now + 20u), press (0x01u)),
-                adk::Status::Ok,
+                adk::StatusCode::Ok,
                 "press at timeout");
             require (
                 simon.snapshot ().outcome == adk::SimonOutcome::Timeout,
@@ -489,7 +493,7 @@ namespace {
 
         adk::Simon simon (config (1), source);
 
-        requireStatus (simon.initialize (), adk::Status::Ok, "maximum initialize");
+        requireStatus (simon.initialize (), adk::StatusCode::Ok, "maximum initialize");
 
         startGame (simon, 0);
 
@@ -497,11 +501,11 @@ namespace {
 
         requireStatus (
             simon.update (adk::TimePoint (++now), press (0x04u)),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "maximum correct press");
         requireStatus (
             simon.update (adk::TimePoint (++now), release (0x04u)),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "maximum release");
         requirePhase (simon, adk::SimonPhase::GameSuccess, "maximum enters success");
 
@@ -511,7 +515,7 @@ namespace {
 
         requireStatus (
             simon.update (adk::TimePoint (++now), start ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "terminal restart");
         requirePhase (simon, adk::SimonPhase::PlaybackOn, "restart playback");
 
@@ -525,25 +529,25 @@ namespace {
 
         adk::Simon wrapSimon (config (1), wrapSource);
 
-        requireStatus (wrapSimon.initialize (), adk::Status::Ok, "wrap initialize");
+        requireStatus (wrapSimon.initialize (), adk::StatusCode::Ok, "wrap initialize");
 
         startGame (wrapSimon, nearWrap);
 
         requireStatus (
             wrapSimon.update (adk::TimePoint (3u), none ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "wrap before boundary");
         requirePhase (wrapSimon, adk::SimonPhase::PlaybackOn, "wrap before cue deadline");
 
         requireStatus (
             wrapSimon.update (adk::TimePoint (4u), none ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "wrap at boundary");
         requirePhase (wrapSimon, adk::SimonPhase::PlaybackGap, "wrap cue boundary");
 
         requireStatus (
             wrapSimon.update (adk::TimePoint (3u), none ()),
-            adk::Status::InvalidArgument,
+            adk::StatusCode::InvalidArgument,
             "backward time rejected");
     }
 
@@ -565,10 +569,10 @@ namespace {
 
             adk::Simon simon (config (1), source);
 
-            requireStatus (simon.initialize (), adk::Status::Ok, "input initialize");
+            requireStatus (simon.initialize (), adk::StatusCode::Ok, "input initialize");
             requireStatus (
                 simon.update (adk::TimePoint (0), input),
-                adk::Status::InvalidArgument,
+                adk::StatusCode::InvalidArgument,
                 "inconsistent input rejected");
         }
 
@@ -578,7 +582,7 @@ namespace {
         maximum.growthPerRound = adk::Simon::sequenceCapacity;
         adk::Simon simon (maximum, source);
 
-        requireStatus (simon.initialize (), adk::Status::Ok, "capacity initialize");
+        requireStatus (simon.initialize (), adk::StatusCode::Ok, "capacity initialize");
 
         require (
             source.reads == adk::Simon::sequenceCapacity,
@@ -586,7 +590,7 @@ namespace {
         require (
             simon.snapshot ().sequenceLength == adk::Simon::sequenceCapacity,
             "capacity stores maximum length");
-        requireStatus (simon.initialize (), adk::Status::Ok, "capacity deterministic reset");
+        requireStatus (simon.initialize (), adk::StatusCode::Ok, "capacity deterministic reset");
 
         require (
             source.reads == adk::Simon::sequenceCapacity,
@@ -610,13 +614,13 @@ namespace {
 
             adk::Simon simon (config (2), source);
 
-            requireStatus (simon.initialize (), adk::Status::Ok, "replay initialize");
+            requireStatus (simon.initialize (), adk::StatusCode::Ok, "replay initialize");
 
             for (uint8_t row = 0; row < 8; ++row)
             {
                 requireStatus (
                     simon.update (adk::TimePoint (traceTime[row]), traceInput[row]),
-                    adk::Status::Ok,
+                    adk::StatusCode::Ok,
                     "replay update");
                 const adk::SimonSnapshot snapshot = simon.snapshot ();
 
@@ -629,7 +633,7 @@ namespace {
                     require (
                         snapshot.phase == firstRun[row].phase &&
                         snapshot.outcome == firstRun[row].outcome &&
-                        snapshot.status == firstRun[row].status &&
+                        snapshot.status.error () == firstRun[row].status.error () &&
                         snapshot.displayedCue == firstRun[row].displayedCue &&
                         snapshot.expectedCue == firstRun[row].expectedCue &&
                         snapshot.observedCue == firstRun[row].observedCue &&

@@ -16,6 +16,16 @@ namespace {
         }
     }
 
+    void requireOk (Status status, const char* message)
+    {
+        require (status.ok (), message);
+    }
+
+    void requireError (Status status, StatusCode code, const char* message)
+    {
+        require (status.error () == code, message);
+    }
+
     NightLightConfig testConfig ()
     {
         NightLightConfig config;
@@ -32,9 +42,9 @@ namespace {
                            LightSampleState     sampleState,
                            const char*          message)
     {
-        require (nightLight.update (NightLightInput (400, sampleState)) ==
-                 Status::HardwareFailure,
-                 message);
+        requireError (nightLight.update (NightLightInput (400, sampleState)),
+                      StatusCode::HardwareFailure,
+                      message);
 
         const NightLightSnapshot snapshot = nightLight.snapshot ();
 
@@ -50,10 +60,11 @@ namespace {
         NightLightConfig config     = testConfig ();
         NightLight       nightLight = NightLight (config);
 
-        require (nightLight.update (NightLightInput ()) == Status::NotInitialized,
-                 "update before initialize");
-        require (nightLight.initialize () == Status::Ok, "initialize");
-        require (nightLight.initialize () == Status::Ok, "repeat initialize");
+        requireError (nightLight.update (NightLightInput ()),
+                      StatusCode::NotInitialized,
+                      "update before initialize");
+        requireOk (nightLight.initialize (), "initialize");
+        requireOk (nightLight.initialize (), "repeat initialize");
 
         const NightLightSnapshot snapshot = nightLight.snapshot ();
 
@@ -65,71 +76,74 @@ namespace {
         config.turnOnBelowPermille = config.turnOffAbovePermille;
         NightLight invalidThresholds (config);
 
-        require (invalidThresholds.initialize () == Status::InvalidArgument,
-                 "reject equal thresholds");
+        requireError (invalidThresholds.initialize (),
+                      StatusCode::InvalidArgument,
+                      "reject equal thresholds");
 
         config                         = testConfig ();
         config.turnOffAbovePermille    = 1001;
         NightLight invalidRange (config);
 
-        require (invalidRange.initialize () == Status::InvalidArgument,
-                 "reject threshold range");
+        requireError (invalidRange.initialize (),
+                      StatusCode::InvalidArgument,
+                      "reject threshold range");
 
         config                     = testConfig ();
         config.minimumDuty         = 0;
         NightLight invisibleOutput (config);
 
-        require (invisibleOutput.initialize () == Status::InvalidArgument,
-                 "reject invisible diagnostic output");
+        requireError (invisibleOutput.initialize (),
+                      StatusCode::InvalidArgument,
+                      "reject invisible diagnostic output");
 
         config                     = testConfig ();
         config.minimumDuty         = 221;
         NightLight reversedDuty (config);
 
-        require (reversedDuty.initialize () == Status::InvalidArgument,
-                 "reject reversed duty");
+        requireError (reversedDuty.initialize (),
+                      StatusCode::InvalidArgument,
+                      "reject reversed duty");
     }
 
     void testHysteresisAndBrightness ()
     {
         NightLight nightLight (testConfig ());
 
-        require (nightLight.initialize () == Status::Ok, "hysteresis initialize");
-        require (nightLight.update (NightLightInput (300)) == Status::Ok,
-                 "on threshold remains off");
+        requireOk (nightLight.initialize (), "hysteresis initialize");
+        requireOk (nightLight.update (NightLightInput (300)),
+                   "on threshold remains off");
         require (!nightLight.snapshot ().lampOn, "strict on threshold");
 
-        require (nightLight.update (NightLightInput (299)) == Status::Ok,
-                 "dark sample");
+        requireOk (nightLight.update (NightLightInput (299)), "dark sample");
 
         const uint8_t firstDuty = nightLight.snapshot ().outputDuty;
 
         require (nightLight.snapshot ().lampOn, "dark turns lamp on");
         require (firstDuty > 20 && firstDuty < 220, "scaled initial duty");
 
-        require (nightLight.update (NightLightInput (450)) == Status::Ok,
-                 "hysteresis band rising");
+        requireOk (nightLight.update (NightLightInput (450)),
+                   "hysteresis band rising");
         require (nightLight.snapshot ().lampOn, "lamp stays on in band");
         require (nightLight.snapshot ().outputDuty < firstDuty,
                  "brighter sample lowers duty");
 
-        require (nightLight.update (NightLightInput (500)) == Status::Ok,
-                 "off threshold remains on");
+        requireOk (nightLight.update (NightLightInput (500)),
+                   "off threshold remains on");
         require (nightLight.snapshot ().lampOn, "strict off threshold");
         require (nightLight.snapshot ().outputDuty == 20,
                  "minimum visible duty at boundary");
 
-        require (nightLight.update (NightLightInput (501)) == Status::Ok,
-                 "bright sample");
+        requireOk (nightLight.update (NightLightInput (501)), "bright sample");
+
         require (!nightLight.snapshot ().lampOn, "bright turns lamp off");
         require (nightLight.snapshot ().outputDuty == 0, "off has zero duty");
 
-        require (nightLight.update (NightLightInput (400)) == Status::Ok,
-                 "hysteresis band falling");
+        requireOk (nightLight.update (NightLightInput (400)),
+                   "hysteresis band falling");
         require (!nightLight.snapshot ().lampOn, "lamp stays off in band");
 
-        require (nightLight.update (NightLightInput (0)) == Status::Ok,
-                 "darkest sample");
+        requireOk (nightLight.update (NightLightInput (0)), "darkest sample");
+
         require (nightLight.snapshot ().outputDuty == 220, "bounded maximum duty");
     }
 
@@ -137,14 +151,14 @@ namespace {
     {
         NightLight nightLight (testConfig ());
 
-        require (nightLight.initialize () == Status::Ok, "property initialize");
+        requireOk (nightLight.initialize (), "property initialize");
 
         uint8_t previousDuty = 220;
 
         for (uint16_t lightPermille = 0; lightPermille <= 500; ++lightPermille)
         {
-            require (nightLight.update (NightLightInput (lightPermille)) == Status::Ok,
-                     "property update");
+            requireOk (nightLight.update (NightLightInput (lightPermille)),
+                       "property update");
 
             const NightLightSnapshot snapshot = nightLight.snapshot ();
 
@@ -159,8 +173,8 @@ namespace {
 
         require (nightLight.snapshot ().outputDuty == 20,
                  "off threshold reaches minimum duty");
-        require (nightLight.update (NightLightInput (501)) == Status::Ok,
-                 "first sample beyond off threshold");
+        requireOk (nightLight.update (NightLightInput (501)),
+                   "first sample beyond off threshold");
         require (nightLight.snapshot ().outputDuty == 0,
                  "inactive duty remains outside active range");
     }
@@ -176,10 +190,10 @@ namespace {
 
         NightLight widestValidRange (config);
 
-        require (widestValidRange.initialize () == Status::Ok,
-                 "accept widest threshold and duty ranges");
-        require (widestValidRange.update (NightLightInput (0)) == Status::Ok,
-                 "darkest sample");
+        requireOk (widestValidRange.initialize (),
+                   "accept widest threshold and duty ranges");
+        requireOk (widestValidRange.update (NightLightInput (0)), "darkest sample");
+
         require (widestValidRange.snapshot ().lampOn,
                  "darkest sample activates widest useful range");
         require (widestValidRange.snapshot ().outputDuty == 255,
@@ -192,10 +206,10 @@ namespace {
 
         NightLight narrowValidRange (config);
 
-        require (narrowValidRange.initialize () == Status::Ok,
-                 "accept adjacent thresholds and fixed duty");
-        require (narrowValidRange.update (NightLightInput (998)) == Status::Ok,
-                 "activate narrow range");
+        requireOk (narrowValidRange.initialize (),
+                   "accept adjacent thresholds and fixed duty");
+        requireOk (narrowValidRange.update (NightLightInput (998)),
+                   "activate narrow range");
         require (narrowValidRange.snapshot ().outputDuty == 255,
                  "fixed duty remains fixed");
     }
@@ -204,26 +218,29 @@ namespace {
     {
         NightLight nightLight (testConfig ());
 
-        require (nightLight.initialize () == Status::Ok, "reset initialize");
-        require (nightLight.update (NightLightInput (0)) == Status::Ok,
-                 "reset active precondition");
+        requireOk (nightLight.initialize (), "reset initialize");
+        requireOk (nightLight.update (NightLightInput (0)),
+                   "reset active precondition");
+
         require (nightLight.snapshot ().lampOn, "reset active state");
-        require (nightLight.initialize () == Status::Ok, "reset while active");
+
+        requireOk (nightLight.initialize (), "reset while active");
+
         require (!nightLight.snapshot ().lampOn, "reinitialize turns output off");
         require (nightLight.snapshot ().outputDuty == 0, "reinitialize clears duty");
 
-        require (nightLight.update (
-                     NightLightInput (0, LightSampleState::Stale)) ==
-                 Status::HardwareFailure,
-                 "reset fault precondition");
-        require (nightLight.initialize () == Status::Ok, "reset while faulted");
+        requireError (
+            nightLight.update (NightLightInput (0, LightSampleState::Stale)),
+            StatusCode::HardwareFailure,
+            "reset fault precondition");
+        requireOk (nightLight.initialize (), "reset while faulted");
 
         const NightLightSnapshot snapshot = nightLight.snapshot ();
 
         require (snapshot.mode == NightLightMode::Off, "reset clears fault mode");
         require (snapshot.sampleState == LightSampleState::Valid,
                  "reset clears fault sample state");
-        require (snapshot.status == Status::Ok, "reset clears fault status");
+        require (snapshot.status.ok (), "reset clears fault status");
         require (snapshot.diagnostic == NightLightDiagnostic::Ready,
                  "reset restores ready diagnostic");
     }
@@ -232,22 +249,23 @@ namespace {
     {
         NightLight nightLight (testConfig ());
 
-        require (nightLight.initialize () == Status::Ok, "fault initialize");
-        require (nightLight.update (NightLightInput (0)) == Status::Ok,
-                 "fault precondition");
+        requireOk (nightLight.initialize (), "fault initialize");
+        requireOk (nightLight.update (NightLightInput (0)), "fault precondition");
+
         require (nightLight.snapshot ().lampOn, "fault precondition active");
 
         requireSafeFault (nightLight, LightSampleState::BelowRange, "below-range fault");
         requireSafeFault (nightLight, LightSampleState::AboveRange, "above-range fault");
         requireSafeFault (nightLight, LightSampleState::Stale, "stale fault");
 
-        require (nightLight.update (NightLightInput (250)) == Status::Ok,
-                 "valid sample recovers");
+        requireOk (nightLight.update (NightLightInput (250)),
+                   "valid sample recovers");
         require (nightLight.snapshot ().mode == NightLightMode::On,
                  "recovery reevaluates threshold");
 
-        require (nightLight.update (NightLightInput (1001)) == Status::InvalidArgument,
-                 "reject invalid normalized sample");
+        requireError (nightLight.update (NightLightInput (1001)),
+                      StatusCode::InvalidArgument,
+                      "reject invalid normalized sample");
         require (nightLight.snapshot ().mode == NightLightMode::Fault,
                  "invalid sample faults");
         require (nightLight.snapshot ().outputDuty == 0,
@@ -266,12 +284,13 @@ namespace {
         NightLight first  (testConfig ());
         NightLight second (testConfig ());
 
-        require (first.initialize () == Status::Ok, "first replay initialize");
-        require (second.initialize () == Status::Ok, "second replay initialize");
+        requireOk (first.initialize (), "first replay initialize");
+        requireOk (second.initialize (), "second replay initialize");
 
         for (const NightLightInput& input : trace)
         {
-            require (first.update (input) == second.update (input), "replay status");
+            require (first.update (input).error () == second.update (input).error (),
+                     "replay status");
 
             const NightLightSnapshot left  = first.snapshot  ();
             const NightLightSnapshot right = second.snapshot ();
@@ -279,7 +298,8 @@ namespace {
             require (left.mode == right.mode, "replay mode");
             require (left.sampleState == right.sampleState, "replay sample state");
             require (left.diagnostic == right.diagnostic, "replay diagnostic");
-            require (left.status == right.status, "replay snapshot status");
+            require (left.status.error () == right.status.error (),
+                     "replay snapshot status");
             require (left.lightPermille == right.lightPermille, "replay light");
             require (left.outputDuty == right.outputDuty, "replay duty");
             require (left.lampOn == right.lampOn, "replay lamp");

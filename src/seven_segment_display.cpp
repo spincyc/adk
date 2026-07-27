@@ -42,7 +42,7 @@ namespace adk {
     {
         if (!validPolarity (polarity_))
         {
-            return Status::InvalidArgument;
+            return StatusCode::InvalidArgument;
         }
 
         return output_.initialize ();
@@ -61,7 +61,7 @@ namespace adk {
     {
         if (!validGlyph (glyph))
         {
-            return Status::InvalidArgument;
+            return StatusCode::InvalidArgument;
         }
 
         uint8_t value = segmentPattern (glyph);
@@ -78,7 +78,7 @@ namespace adk {
 
         const Status status = output_.show (value);
 
-        if (status == Status::Ok)
+        if (status.ok ())
         {
             glyph_        = glyph;
             decimalPoint_ = decimalPoint;

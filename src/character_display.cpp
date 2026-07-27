@@ -16,7 +16,7 @@ namespace adk {
             {
                 digitalWrite (pin, LOW);
                 pinMode      (pin, OUTPUT);
-                return Status::Ok;
+                return StatusCode::Ok;
             }
 
             void release (PinId pin) noexcept override
@@ -27,7 +27,7 @@ namespace adk {
             Status write (PinId pin, Level level) noexcept override
             {
                 digitalWrite (pin, level == Level::High ? HIGH : LOW);
-                return Status::Ok;
+                return StatusCode::Ok;
             }
 
             void waitMicroseconds (uint16_t duration) noexcept override
@@ -134,7 +134,7 @@ namespace adk {
                     output[terminator] = '\0';
                 }
 
-                return fits ? Status::Ok : Status::CapacityExceeded;
+                return fits ? StatusCode::Ok : StatusCode::CapacityExceeded;
             }
         };
     } // namespace
@@ -175,17 +175,17 @@ namespace adk {
     {
         if (initialized_)
         {
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         Status status = claimPins ();
 
-        if (status == Status::Ok)
+        if (status.ok ())
         {
             status = configurePins ();
         }
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             shutdown ();
             return status;
@@ -196,7 +196,7 @@ namespace adk {
         flushIndex_       = 0;
         initialized_      = true;
         hasStartupAnchor_ = false;
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void Hd44780Display::shutdown () noexcept
@@ -236,7 +236,7 @@ namespace adk {
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         if (!ready ())
@@ -256,12 +256,12 @@ namespace adk {
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         if (row >= characterDisplayRows || text == nullptr)
         {
-            return Status::InvalidArgument;
+            return StatusCode::InvalidArgument;
         }
 
         uint8_t column = 0;
@@ -272,7 +272,7 @@ namespace adk {
 
             if (value < 0x20U || value > 0x7eU)
             {
-                return Status::InvalidArgument;
+                return StatusCode::InvalidArgument;
             }
 
             ++column;
@@ -280,7 +280,7 @@ namespace adk {
 
         if (column == characterDisplayColumns && text[column] != '\0')
         {
-            return Status::CapacityExceeded;
+            return StatusCode::CapacityExceeded;
         }
 
         for (column = 0; column < characterDisplayColumns; ++column)
@@ -298,7 +298,7 @@ namespace adk {
             }
         }
 
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     const char* Hd44780Display::line (uint8_t row) const noexcept
@@ -321,14 +321,14 @@ namespace adk {
             if (!Mega2560Board::validPin (pins[index]) ||
                 !Mega2560Board::supports (pins[index], PinCapability::DigitalOutput))
             {
-                return Status::InvalidPin;
+                return StatusCode::InvalidPin;
             }
 
             for (uint8_t earlier = 0; earlier < index; ++earlier)
             {
                 if (pins[index] == pins[earlier])
                 {
-                    return Status::InvalidArgument;
+                    return StatusCode::InvalidArgument;
                 }
             }
         }
@@ -338,13 +338,13 @@ namespace adk {
             const Status status =
                 resources_->claim ({ResourceKind::Pin, pins[index]}, claims_[index]);
 
-            if (status != Status::Ok)
+            if (!status.ok ())
             {
                 return status;
             }
         }
 
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     Status Hd44780Display::configurePins () noexcept
@@ -356,13 +356,13 @@ namespace adk {
         {
             const Status status = transport_->configureOutput (pins[index]);
 
-            if (status != Status::Ok)
+            if (!status.ok ())
             {
                 return status;
             }
         }
 
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     Status Hd44780Display::advanceStartup (TimePoint now) noexcept
@@ -371,7 +371,7 @@ namespace adk {
         {
             startupAt_        = now;
             hasStartupAnchor_ = true;
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         const uint32_t wait = startup_ == Startup::AwaitPower ? 15U
@@ -381,32 +381,35 @@ namespace adk {
 
         if (!due (now, startupAt_, wait))
         {
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
-        Status status = Status::Ok;
+        Status status = StatusCode::Ok;
 
         switch (startup_)
         {
             case Startup::AwaitPower: status = writeNibble (false, 0x03U); break;
-            case Startup::WakeOne:    status = writeNibble (false, 0x03U); break;
-            case Startup::WakeTwo:    status = writeNibble (false, 0x03U); break;
-            case Startup::WakeThree:  status = writeNibble (false, 0x02U); break;
 
-            case Startup::FourBit:   status = writeByte (false, 0x28U); break;
+            case Startup::WakeOne: status = writeNibble (false, 0x03U); break;
 
-            case Startup::Function:  status = writeByte (false, 0x08U); break;
+            case Startup::WakeTwo: status = writeNibble (false, 0x03U); break;
+
+            case Startup::WakeThree: status = writeNibble (false, 0x02U); break;
+
+            case Startup::FourBit: status = writeByte (false, 0x28U); break;
+
+            case Startup::Function: status = writeByte (false, 0x08U); break;
 
             case Startup::DisplayOff: status = writeByte (false, 0x01U); break;
 
-            case Startup::Clear:      status = writeByte (false, 0x06U); break;
+            case Startup::Clear: status = writeByte (false, 0x06U); break;
 
-            case Startup::Entry:      status = writeByte (false, 0x0cU); break;
-            case Startup::DisplayOn: startup_ = Startup::Ready; return Status::Ok;
-            case Startup::Ready: return Status::Ok;
+            case Startup::Entry: status = writeByte (false, 0x0cU); break;
+            case Startup::DisplayOn: startup_ = Startup::Ready; return StatusCode::Ok;
+            case Startup::Ready: return StatusCode::Ok;
         }
 
-        if (status == Status::Ok)
+        if (status.ok ())
         {
             startup_   = static_cast<Startup> (static_cast<uint8_t> (startup_) + 1U);
             startupAt_ = now;
@@ -435,12 +438,12 @@ namespace adk {
                 static_cast<uint8_t> ((row == 0U ? 0x00U : 0x40U) + column);
             Status status = writeByte (false, static_cast<uint8_t> (0x80U | address));
 
-            if (status == Status::Ok)
+            if (status.ok ())
             {
                 status = writeByte (true, static_cast<uint8_t> (desired_[row][column]));
             }
 
-            if (status == Status::Ok)
+            if (status.ok ())
             {
                 shown_[row][column] = desired_[row][column];
                 flushIndex_         = static_cast<uint8_t> (
@@ -450,7 +453,7 @@ namespace adk {
             return status;
         }
 
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     Status Hd44780Display::writeByte (bool registerSelect, uint8_t value) noexcept
@@ -458,7 +461,7 @@ namespace adk {
         Status status =
             writeNibble (registerSelect, static_cast<uint8_t> (value >> 4U));
 
-        if (status == Status::Ok)
+        if (status.ok ())
         {
             status = writeNibble (registerSelect, static_cast<uint8_t> (value & 0x0fU));
         }
@@ -472,7 +475,7 @@ namespace adk {
         Status status = transport_->write (pins_.registerSelect,
                                            registerSelect ? Level::High : Level::Low);
 
-        for (uint8_t bit = 0; status == Status::Ok && bit < 4U; ++bit)
+        for (uint8_t bit = 0; status.ok () && bit < 4U; ++bit)
         {
             status = transport_->write (dataPins[bit],
                                         (value & static_cast<uint8_t> (1U << bit)) != 0U
@@ -480,12 +483,12 @@ namespace adk {
                                             : Level::Low);
         }
 
-        if (status == Status::Ok)
+        if (status.ok ())
         {
             status = transport_->write (pins_.enable, Level::High);
         }
 
-        if (status == Status::Ok)
+        if (status.ok ())
         {
             transport_->waitMicroseconds (1);
             status = transport_->write   (pins_.enable, Level::Low);
@@ -514,7 +517,7 @@ namespace adk {
     {
         if (output == nullptr || capacity == 0U)
         {
-            return Status::InvalidArgument;
+            return StatusCode::InvalidArgument;
         }
 
         RecordWriter writer = {output, capacity, 0, true};

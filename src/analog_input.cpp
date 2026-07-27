@@ -27,24 +27,24 @@ namespace adk {
     {
         if (initialized_)
         {
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         if (!Mega2560Board::validPin (pin_))
         {
-            return Status::InvalidPin;
+            return StatusCode::InvalidPin;
         }
 
         if (!Mega2560Board::supports (pin_, PinCapability::AnalogInput))
         {
-            return Status::Unsupported;
+            return StatusCode::Unsupported;
         }
 
         const Status status = resources_->claim (
             {ResourceKind::Pin, pin_},
             claim_);
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             return status;
         }
@@ -52,7 +52,7 @@ namespace adk {
         pinMode      (pin_, INPUT);
         initialized_ = true;
         update       ();
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void AnalogInput::shutdown () noexcept

@@ -20,19 +20,19 @@ namespace adk {
                 }
 
                 pinMode (pin, arduinoMode);
-                return Status::Ok;
+                return StatusCode::Ok;
             }
 
             Status write (PinId pin, bool high) noexcept override
             {
                 digitalWrite (pin, high ? HIGH : LOW);
-                return Status::Ok;
+                return StatusCode::Ok;
             }
 
             Status read (PinId pin, bool& high) noexcept override
             {
                 high = digitalRead (pin) != LOW;
-                return Status::Ok;
+                return StatusCode::Ok;
             }
         };
 
@@ -63,17 +63,17 @@ namespace adk {
     {
         if (initialized_)
         {
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         if (!pinsValid ())
         {
-            return Status::InvalidPin;
+            return StatusCode::InvalidPin;
         }
 
         Status status = keypad_.initialize ();
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             return status;
         }
@@ -94,7 +94,7 @@ namespace adk {
             status = resources_->claim (
                 {ResourceKind::Pin, pins[index]}, claims_[index]);
 
-            if (status != Status::Ok)
+            if (!status.ok ())
             {
                 releaseClaims    ();
                 keypad_.shutdown ();
@@ -108,7 +108,7 @@ namespace adk {
         {
             status = io_->setMode (rows[row], MatrixKeypadPinMode::HighImpedance);
 
-            if (status != Status::Ok)
+            if (!status.ok ())
             {
                 makePinsSafe     ();
                 releaseClaims    ();
@@ -123,7 +123,7 @@ namespace adk {
         {
             status = io_->setMode (columns[column], MatrixKeypadPinMode::InputPullUp);
 
-            if (status != Status::Ok)
+            if (!status.ok ())
             {
                 makePinsSafe     ();
                 releaseClaims    ();
@@ -133,7 +133,7 @@ namespace adk {
         }
 
         initialized_ = true;
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void MatrixKeypad::shutdown () noexcept
@@ -153,15 +153,15 @@ namespace adk {
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         uint16_t pressedMask = 0;
         const Status scanStatus = scan (pressedMask);
         const Status keypadStatus =
-            keypad_.update (now, {pressedMask, scanStatus == Status::Ok});
+            keypad_.update (now, {pressedMask, scanStatus.ok ()});
 
-        return scanStatus == Status::Ok ? keypadStatus : scanStatus;
+        return scanStatus.ok () ? keypadStatus : scanStatus;
     }
 
     MatrixKeypadPins MatrixKeypad::pins () const noexcept
@@ -264,12 +264,12 @@ namespace adk {
         {
             Status status = io_->write (rows[row], false);
 
-            if (status == Status::Ok)
+            if (status.ok ())
             {
                 status = io_->setMode (rows[row], MatrixKeypadPinMode::Output);
             }
 
-            if (status != Status::Ok)
+            if (!status.ok ())
             {
                 makeRowsSafe ();
                 pressedMask = 0;
@@ -282,7 +282,7 @@ namespace adk {
 
                 status = io_->read (columns[column], high);
 
-                if (status != Status::Ok)
+                if (!status.ok ())
                 {
                     makeRowsSafe ();
                     pressedMask = 0;
@@ -299,7 +299,7 @@ namespace adk {
 
             status = io_->setMode (rows[row], MatrixKeypadPinMode::HighImpedance);
 
-            if (status != Status::Ok)
+            if (!status.ok ())
             {
                 makeRowsSafe ();
                 pressedMask = 0;
@@ -307,6 +307,6 @@ namespace adk {
             }
         }
 
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 }

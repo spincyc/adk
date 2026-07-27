@@ -15,11 +15,17 @@ namespace {
     }
 
     void requireStatus (
-        adk::Status actual,
-        adk::Status expected,
-        const char* message)
+        adk::Status     actual,
+        adk::StatusCode expected,
+        const char*     message)
     {
-        require (actual == expected, message);
+        if (expected == adk::StatusCode::Ok)
+        {
+            require (actual.ok (), message);
+            return;
+        }
+
+        require (actual.error () == expected, message);
     }
 
     adk::ButtonObservation released ()
@@ -81,7 +87,7 @@ namespace {
     {
         requireStatus (
             timer.update (adk::TimePoint (start), pressed ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "start trial");
         requireState (
             timer,
@@ -90,13 +96,13 @@ namespace {
 
         requireStatus (
             timer.update (adk::TimePoint (start + 1u), releaseEvent ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "release trial");
         requireState (timer, adk::ReactionState::Ready, "ready state");
 
         requireStatus (
             timer.update (adk::TimePoint (start + 11u), released ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "finish ready");
         requireState (timer, adk::ReactionState::Wait, "wait state");
     }
@@ -107,7 +113,7 @@ namespace {
 
         requireStatus (
             timer.update (adk::TimePoint (start + 31u), released ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "finish wait");
         requireState (timer, adk::ReactionState::Cue, "cue state");
     }
@@ -119,19 +125,20 @@ namespace {
 
         requireStatus (
             timer.update (adk::TimePoint (0), released ()),
-            adk::Status::NotInitialized,
+            adk::StatusCode::NotInitialized,
             "update before initialize");
         require (
-            timer.snapshot ().status == adk::Status::NotInitialized,
+            timer.snapshot ().status.error () ==
+                adk::StatusCode::NotInitialized,
             "initial snapshot status");
 
         requireStatus (
             timer.initialize (),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "initialize");
         requireStatus (
             timer.initialize (),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "reinitialize");
 
         const adk::ReactionTimerSnapshot snapshot = timer.snapshot ();
@@ -178,7 +185,7 @@ namespace {
 
             requireStatus (
                 timer.initialize (),
-                adk::Status::InvalidArgument,
+                adk::StatusCode::InvalidArgument,
                 "zero duration rejected");
         }
 
@@ -206,7 +213,7 @@ namespace {
 
             requireStatus (
                 timer.initialize (),
-                adk::Status::InvalidArgument,
+                adk::StatusCode::InvalidArgument,
                 "ambiguous duration rejected");
         }
     }
@@ -215,14 +222,14 @@ namespace {
     {
         adk::ReactionTimer timer (shortConfig ());
 
-        requireStatus (timer.initialize (), adk::Status::Ok, "gate initialize");
+        requireStatus (timer.initialize (), adk::StatusCode::Ok, "gate initialize");
         requireStatus (
             timer.update (adk::TimePoint (100), pressed ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "gate press");
         requireStatus (
             timer.update (adk::TimePoint (101), held ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "held start");
         requireState (
             timer,
@@ -231,13 +238,13 @@ namespace {
 
         requireStatus (
             timer.update (adk::TimePoint (102), released ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "observed release");
         requireState (timer, adk::ReactionState::Ready, "release opens gate");
 
         requireStatus (
             timer.update (adk::TimePoint (111), released ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "before ready deadline");
         requireState (
             timer,
@@ -246,7 +253,7 @@ namespace {
 
         requireStatus (
             timer.update (adk::TimePoint (112), released ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "at ready deadline");
         requireState (
             timer,
@@ -255,7 +262,7 @@ namespace {
 
         requireStatus (
             timer.update (adk::TimePoint (131), released ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "before wait deadline");
         requireState (
             timer,
@@ -264,7 +271,7 @@ namespace {
 
         requireStatus (
             timer.update (adk::TimePoint (132), pressed ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "press at wait deadline");
 
         const adk::ReactionTimerSnapshot failure = timer.snapshot ();
@@ -285,7 +292,7 @@ namespace {
 
         requireStatus (
             timer.initialize (),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "success initialize");
         advanceToCue (timer, 100);
 
@@ -299,7 +306,7 @@ namespace {
 
         requireStatus (
             timer.update (adk::TimePoint (142), pressed ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "successful press");
 
         const adk::ReactionTimerSnapshot success = timer.snapshot ();
@@ -321,7 +328,7 @@ namespace {
 
         requireStatus (
             timer.update (adk::TimePoint (181), held ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "before result deadline");
         requireState (
             timer,
@@ -329,7 +336,7 @@ namespace {
             "result persists before boundary");
         requireStatus (
             timer.update (adk::TimePoint (182), held ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "at result deadline");
         requireState (
             timer,
@@ -337,7 +344,7 @@ namespace {
             "result boundary returns idle");
         requireStatus (
             timer.update (adk::TimePoint (183), held ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "held after result");
         requireState (
             timer,
@@ -351,13 +358,13 @@ namespace {
 
         requireStatus (
             timer.initialize (),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "timeout initialize");
         advanceToCue (timer, 0);
 
         requireStatus (
             timer.update (adk::TimePoint (60), pressed ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "press before timeout");
         require (
             timer.snapshot ().outcome == adk::ReactionOutcome::Success,
@@ -365,13 +372,13 @@ namespace {
 
         requireStatus (
             timer.initialize (),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "timeout reset");
         advanceToCue (timer, 100);
 
         requireStatus (
             timer.update (adk::TimePoint (161), pressed ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "press at timeout");
 
         const adk::ReactionTimerSnapshot timeout = timer.snapshot ();
@@ -391,15 +398,15 @@ namespace {
 
         requireStatus (
             timer.initialize (),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "step initialize");
         requireStatus (
             timer.update (adk::TimePoint (10), pressed ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "step start");
         requireStatus (
             timer.update (adk::TimePoint (1000), releaseEvent ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "large release step");
         requireState (
             timer,
@@ -407,7 +414,7 @@ namespace {
             "large step advances once");
         requireStatus (
             timer.update (adk::TimePoint (1000), released ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "same time ready update");
         requireState (
             timer,
@@ -416,7 +423,7 @@ namespace {
 
         requireStatus (
             timer.update (adk::TimePoint (1010), released ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "ready deadline");
         requireState (
             timer,
@@ -430,30 +437,30 @@ namespace {
 
         requireStatus (
             timer.initialize (),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "clock initialize");
         requireStatus (
             timer.update (adk::TimePoint (100), pressed ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "clock baseline");
 
         const adk::ReactionTimerSnapshot before = timer.snapshot ();
 
         requireStatus (
             timer.update (adk::TimePoint (99), releaseEvent ()),
-            adk::Status::InvalidArgument,
+            adk::StatusCode::InvalidArgument,
             "backward time rejected");
 
         const adk::ReactionTimerSnapshot rejected = timer.snapshot ();
 
         require (rejected.state == before.state, "rejection preserves state");
         require (
-            rejected.status == adk::Status::InvalidArgument,
+            rejected.status.error () == adk::StatusCode::InvalidArgument,
             "rejection visible");
 
         requireStatus (
             timer.update (adk::TimePoint (101), held ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "valid time recovers");
     }
 
@@ -465,29 +472,29 @@ namespace {
 
         requireStatus (
             timer.initialize (),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "wrap initialize");
         requireStatus (
             timer.update (adk::TimePoint (start), pressed ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "wrap start");
         requireStatus (
             timer.update (adk::TimePoint (start + 1u), releaseEvent ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "wrap release");
         requireStatus (
             timer.update (adk::TimePoint (start + 11u), released ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "wrap ready");
         requireState  (timer, adk::ReactionState::Wait, "wait before wrap");
         requireStatus (
             timer.update (adk::TimePoint (start + 31u), released ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "wait across wrap");
         requireState  (timer, adk::ReactionState::Cue, "cue across wrap");
         requireStatus (
             timer.update (adk::TimePoint (start + 38u), pressed ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "reaction across wrap");
         require (
             timer.snapshot ().reactionTime == adk::Duration (7),
@@ -505,25 +512,25 @@ namespace {
 
         requireStatus (
             timer.initialize (),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "LED initialize");
         requireStatus (
             timer.update (adk::TimePoint (0), pressed ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "LED start");
         requireStatus (
             timer.update (adk::TimePoint (1), releaseEvent ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "LED ready");
         require       (timer.snapshot ().ledOn, "ready pulse starts on");
         requireStatus (
             timer.update (adk::TimePoint (251), released ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "ready pulse off boundary");
         require       (!timer.snapshot ().ledOn, "ready pulse turns off");
         requireStatus (
             timer.update (adk::TimePoint (501), released ()),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "ready pulse repeats");
         require (timer.snapshot ().ledOn, "ready pulse repeats on");
     }
@@ -554,22 +561,22 @@ namespace {
 
         requireStatus (
             first.initialize (),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "first replay initialize");
         requireStatus (
             second.initialize (),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "second replay initialize");
 
         for (const Row& row : rows)
         {
             requireStatus (
                 first.update (adk::TimePoint (row.time), row.button),
-                adk::Status::Ok,
+                adk::StatusCode::Ok,
                 "first replay row");
             requireStatus (
                 second.update (adk::TimePoint (row.time), row.button),
-                adk::Status::Ok,
+                adk::StatusCode::Ok,
                 "second replay row");
             require (
                 sameSnapshot (first.snapshot (), second.snapshot ()),

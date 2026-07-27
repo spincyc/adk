@@ -14,9 +14,9 @@ namespace {
         }
     }
 
-    void requireStatus (adk::Status actual, adk::Status expected, const char* message)
+    void requireStatus (adk::Status actual, adk::StatusCode expected, const char* message)
     {
-        require (actual == expected, message);
+        require (actual.error () == expected, message);
     }
 
     void resetFakes ()
@@ -81,10 +81,10 @@ namespace {
         require       (sounder.pin () == 8, "configured pin");
         require       (sounder.frequency () == 0, "constructed frequency");
         requireStatus (sounder.play (440, adk::Duration (100), adk::TimePoint (0)),
-                       adk::Status::NotInitialized, "play before initialize");
+                       adk::StatusCode::NotInitialized, "play before initialize");
 
-        requireStatus (sounder.initialize (), adk::Status::Ok, "initialize");
-        requireStatus (sounder.initialize (), adk::Status::Ok, "initialize idempotent");
+        requireStatus (sounder.initialize (), adk::StatusCode::Ok, "initialize");
+        requireStatus (sounder.initialize (), adk::StatusCode::Ok, "initialize idempotent");
         require       (sounder.initialized (), "initialized state");
         require       (resources.claimed ({adk::ResourceKind::Pin, 8}), "pin claimed");
         require       (resources.claimed ({adk::ResourceKind::Timer, 2}),
@@ -111,7 +111,7 @@ namespace {
         adk::ResourceRegistry resources;
         adk::PiezoSounder     sounder (resources, NUM_DIGITAL_PINS);
 
-        requireStatus (sounder.initialize (), adk::Status::InvalidPin,
+        requireStatus (sounder.initialize (), adk::StatusCode::InvalidPin,
                        "invalid pin rejected");
         require (!sounder.initialized (), "invalid pin remains inert");
         require (adk::test::arduino::trace ().empty (), "invalid pin no I/O");
@@ -125,11 +125,11 @@ namespace {
         adk::ResourceClaim    blocker;
 
         requireStatus (resources.claim ({adk::ResourceKind::Pin, 8}, blocker),
-                       adk::Status::Ok, "pin blocker");
+                       adk::StatusCode::Ok, "pin blocker");
 
         adk::PiezoSounder sounder (resources, 8);
 
-        requireStatus (sounder.initialize (), adk::Status::ResourceBusy,
+        requireStatus (sounder.initialize (), adk::StatusCode::ResourceBusy,
                        "pin conflict");
         require (!sounder.initialized (), "pin conflict remains inert");
         require (!resources.claimed ({adk::ResourceKind::Timer, 2}),
@@ -145,11 +145,11 @@ namespace {
         adk::ResourceClaim    blocker;
 
         requireStatus (resources.claim ({adk::ResourceKind::Timer, 2}, blocker),
-                       adk::Status::Ok, "timer blocker");
+                       adk::StatusCode::Ok, "timer blocker");
 
         adk::PiezoSounder sounder (resources, 8);
 
-        requireStatus (sounder.initialize (), adk::Status::ResourceBusy,
+        requireStatus (sounder.initialize (), adk::StatusCode::ResourceBusy,
                        "timer conflict");
         require (!sounder.initialized (), "timer conflict remains inert");
         require (!resources.claimed ({adk::ResourceKind::Pin, 8}),
@@ -157,7 +157,7 @@ namespace {
         require (adk::test::arduino::trace ().empty (), "timer conflict no I/O");
 
         blocker.release  ();
-        requireStatus    (sounder.initialize (), adk::Status::Ok,
+        requireStatus    (sounder.initialize (), adk::StatusCode::Ok,
                        "initialize after timer release");
     }
 
@@ -168,34 +168,34 @@ namespace {
         adk::ResourceRegistry resources;
         adk::PiezoSounder     sounder (resources, 8);
 
-        requireStatus (sounder.initialize (), adk::Status::Ok, "bounds initialize");
+        requireStatus (sounder.initialize (), adk::StatusCode::Ok, "bounds initialize");
 
         requireStatus (sounder.play (adk::PiezoSounder::minimumFrequencyHz - 1u,
                                      adk::Duration (1), adk::TimePoint (0)),
-                       adk::Status::InvalidArgument, "frequency below minimum");
+                       adk::StatusCode::InvalidArgument, "frequency below minimum");
         requireStatus (sounder.play (adk::PiezoSounder::maximumFrequencyHz + 1u,
                                      adk::Duration (1), adk::TimePoint (0)),
-                       adk::Status::InvalidArgument, "frequency above maximum");
+                       adk::StatusCode::InvalidArgument, "frequency above maximum");
         requireStatus (sounder.play (adk::PiezoSounder::minimumFrequencyHz,
                                      adk::Duration (0), adk::TimePoint (0)),
-                       adk::Status::InvalidArgument, "zero duration");
+                       adk::StatusCode::InvalidArgument, "zero duration");
         requireStatus (
             sounder.play (adk::PiezoSounder::minimumFrequencyHz,
                           adk::Duration  (adk::PiezoSounder::maximumDurationMs + 1u),
                           adk::TimePoint (0)),
-            adk::Status::InvalidArgument, "duration above maximum");
+            adk::StatusCode::InvalidArgument, "duration above maximum");
         require (toneCallCount () == 0, "invalid requests make no tone");
         require (!sounder.sounding (), "invalid requests remain silent");
 
         requireStatus (sounder.play (adk::PiezoSounder::minimumFrequencyHz,
                                      adk::Duration (1), adk::TimePoint (10)),
-                       adk::Status::Ok, "minimum frequency accepted");
+                       adk::StatusCode::Ok, "minimum frequency accepted");
         sounder.stop  ();
         requireStatus (
             sounder.play (adk::PiezoSounder::maximumFrequencyHz,
                           adk::Duration  (adk::PiezoSounder::maximumDurationMs),
                           adk::TimePoint (20)),
-            adk::Status::Ok, "maximum bounds accepted");
+            adk::StatusCode::Ok, "maximum bounds accepted");
     }
 
     void testExplicitCompletion ()
@@ -205,11 +205,11 @@ namespace {
         adk::ResourceRegistry resources;
         adk::PiezoSounder     sounder (resources, 8);
 
-        requireStatus                  (sounder.initialize (), adk::Status::Ok, "completion initialize");
+        requireStatus                  (sounder.initialize (), adk::StatusCode::Ok, "completion initialize");
         adk::test::arduino::clearTrace ();
 
         requireStatus (sounder.play (440, adk::Duration (100), adk::TimePoint (1000)),
-                       adk::Status::Ok, "play tone");
+                       adk::StatusCode::Ok, "play tone");
         require     (sounder.sounding (), "tone sounding");
         require     (sounder.frequency () == 440, "tone frequency");
         require     (adk::test::arduino::toneFrequency (8) == 440,
@@ -242,12 +242,12 @@ namespace {
         adk::ResourceRegistry resources;
         adk::PiezoSounder     sounder (resources, 8);
 
-        requireStatus (sounder.initialize (), adk::Status::Ok,
+        requireStatus (sounder.initialize (), adk::StatusCode::Ok,
                        "replacement initialize");
         requireStatus (sounder.play (440, adk::Duration (100), adk::TimePoint (10)),
-                       adk::Status::Ok, "first tone");
+                       adk::StatusCode::Ok, "first tone");
         requireStatus (sounder.play (880, adk::Duration (50), adk::TimePoint (80)),
-                       adk::Status::Ok, "replacement tone");
+                       adk::StatusCode::Ok, "replacement tone");
 
         require     (sounder.frequency () == 880, "replacement frequency");
         requireTone (0, adk::test::arduino::OperationKind::Tone, 8, 440,
@@ -270,12 +270,12 @@ namespace {
         adk::ResourceRegistry resources;
         adk::PiezoSounder     sounder (resources, 8);
 
-        requireStatus (sounder.initialize (), adk::Status::Ok,
+        requireStatus (sounder.initialize (), adk::StatusCode::Ok,
                        "preservation initialize");
         requireStatus (sounder.play (440, adk::Duration (100), adk::TimePoint (10)),
-                       adk::Status::Ok, "preservation tone");
+                       adk::StatusCode::Ok, "preservation tone");
         requireStatus (sounder.play (0, adk::Duration (1), adk::TimePoint (20)),
-                       adk::Status::InvalidArgument,
+                       adk::StatusCode::InvalidArgument,
                        "invalid replacement rejected");
         require (sounder.sounding (), "invalid replacement preserves sounding state");
         require (sounder.frequency () == 440,
@@ -298,9 +298,9 @@ namespace {
         adk::PiezoSounder     sounder (resources, 8);
         const uint32_t        start = 0xfffffff0u;
 
-        requireStatus (sounder.initialize (), adk::Status::Ok, "wrap initialize");
+        requireStatus (sounder.initialize (), adk::StatusCode::Ok, "wrap initialize");
         requireStatus (sounder.play (1000, adk::Duration (32), adk::TimePoint (start)),
-                       adk::Status::Ok, "wrap play");
+                       adk::StatusCode::Ok, "wrap play");
 
         sounder.update (adk::TimePoint (15));
         require        (sounder.sounding (), "wrap before deadline");
@@ -318,10 +318,10 @@ namespace {
         {
             adk::PiezoSounder sounder (resources, 8);
 
-            requireStatus (sounder.initialize (), adk::Status::Ok,
+            requireStatus (sounder.initialize (), adk::StatusCode::Ok,
                            "shutdown initialize");
             requireStatus (sounder.play (1000, adk::Duration (100), adk::TimePoint (0)),
-                           adk::Status::Ok, "shutdown play");
+                           adk::StatusCode::Ok, "shutdown play");
 
             sounder.shutdown ();
 
@@ -341,10 +341,10 @@ namespace {
         {
             adk::PiezoSounder sounder (resources, 8);
 
-            requireStatus (sounder.initialize (), adk::Status::Ok,
+            requireStatus (sounder.initialize (), adk::StatusCode::Ok,
                            "destructor initialize");
             requireStatus (sounder.play (500, adk::Duration (100), adk::TimePoint (0)),
-                           adk::Status::Ok, "destructor play");
+                           adk::StatusCode::Ok, "destructor play");
         }
 
         requireTone (1, adk::test::arduino::OperationKind::NoTone, 8, 0,

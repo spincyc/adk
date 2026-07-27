@@ -12,7 +12,7 @@ namespace {
     {
         const Status status = keypad.update (TimePoint (time), {mask, valid});
 
-        assert (status == Status::Ok || status == Status::HardwareFailure);
+        assert (status.ok () || status.error () == StatusCode::HardwareFailure);
     }
 
     void settle (Keypad& keypad,
@@ -29,8 +29,8 @@ namespace {
         KeypadConfig config;
         Keypad       keypad (config);
 
-        assert (keypad.initialize () == Status::Ok);
-        assert (keypad.initialize () == Status::Ok);
+        assert (keypad.initialize ().ok ());
+        assert (keypad.initialize ().ok ());
 
         settle (keypad, 0, 1U);
         assert (keypad.snapshot ().key        == KeypadKey::Digit1);
@@ -51,7 +51,7 @@ namespace {
     {
         Keypad keypad {KeypadConfig ()};
 
-        assert (keypad.initialize () == Status::Ok);
+        assert (keypad.initialize ().ok ());
 
         sample (keypad, 100U, 2U);
         sample (keypad, 119U, 2U);
@@ -92,7 +92,7 @@ namespace {
         {
             Keypad keypad {KeypadConfig ()};
 
-            assert (keypad.initialize () == Status::Ok);
+            assert (keypad.initialize ().ok ());
 
             settle (keypad,
                     static_cast<uint32_t> (index) * 30U,
@@ -107,7 +107,7 @@ namespace {
         KeypadConfig config;
         Keypad       keypad (config);
 
-        assert (keypad.initialize () == Status::Ok);
+        assert (keypad.initialize ().ok ());
 
         settle (keypad, 0, 3U);
         assert (keypad.snapshot ().state == KeypadState::InvalidChord);
@@ -125,13 +125,13 @@ namespace {
         KeypadConfig config;
         Keypad       keypad (config);
 
-        assert (keypad.initialize () == Status::Ok);
+        assert (keypad.initialize ().ok ());
 
         settle (keypad, 0U, 1U);
         settle (keypad, 30U, 0U, false);
 
         assert (keypad.snapshot ().state  == KeypadState::Fault);
-        assert (keypad.snapshot ().status == Status::HardwareFailure);
+        assert (keypad.snapshot ().status.error () == StatusCode::HardwareFailure);
 
         settle (keypad, 60U, 1U);
 
@@ -148,7 +148,7 @@ namespace {
     {
         Keypad keypad {KeypadConfig ()};
 
-        assert (keypad.initialize () == Status::Ok);
+        assert (keypad.initialize ().ok ());
 
         sample (keypad, 0xfffffff8UL, 1U);
         sample (keypad, 0x0000000bUL, 1U);
@@ -158,28 +158,27 @@ namespace {
         sample (keypad, 0x0000000cUL, 1U);
 
         assert (keypad.snapshot ().pressEvent);
-        assert (keypad.update (TimePoint (0x8000000cUL), {0U, true}) ==
-                Status::InvalidArgument);
+        assert (keypad.update (TimePoint (0x8000000cUL), {0U, true}).error () ==
+                StatusCode::InvalidArgument);
         assert (keypad.snapshot ().rawMask == 1U);
 
-        assert (keypad.update (TimePoint (0x0000000dUL), {1U, true}) ==
-                Status::Ok);
-        assert (keypad.snapshot ().status == Status::Ok);
+        assert (keypad.update (TimePoint (0x0000000dUL), {1U, true}).ok ());
+        assert (keypad.snapshot ().status.ok ());
     }
 
     void rejectsUnsupportedMaskWithoutChangingSample ()
     {
         Keypad keypad {KeypadConfig ()};
 
-        assert (keypad.initialize () == Status::Ok);
+        assert (keypad.initialize ().ok ());
 
         settle (keypad, 0U, 1U);
 
-        assert (keypad.update (TimePoint (21U), {0x1000U, true}) ==
-                Status::InvalidArgument);
+        assert (keypad.update (TimePoint (21U), {0x1000U, true}).error () ==
+                StatusCode::InvalidArgument);
         assert (keypad.snapshot ().rawMask == 1U);
-        assert (keypad.update (TimePoint (22U), {1U, true}) == Status::Ok);
-        assert (keypad.snapshot ().status == Status::Ok);
+        assert (keypad.update (TimePoint (22U), {1U, true}).ok ());
+        assert (keypad.snapshot ().status.ok ());
     }
 
     void replayIsDeterministic ()
@@ -199,7 +198,7 @@ namespace {
         {
             Keypad keypad {KeypadConfig ()};
 
-            assert (keypad.initialize () == Status::Ok);
+            assert (keypad.initialize ().ok ());
 
             for (uint8_t index = 0; index < 5U; ++index)
             {
@@ -234,21 +233,21 @@ namespace {
 
         Keypad keypad    (invalid);
 
-        assert (keypad.update (TimePoint (0), {0U, true}) ==
-                Status::NotInitialized);
-        assert (keypad.initialize () == Status::InvalidArgument);
+        assert (keypad.update (TimePoint (0), {0U, true}).error () ==
+                StatusCode::NotInitialized);
+        assert (keypad.initialize ().error () == StatusCode::InvalidArgument);
 
         keypad.shutdown ();
         keypad.shutdown ();
 
         assert (!keypad.initialized ());
-        assert (keypad.snapshot ().status == Status::NotInitialized);
+        assert (keypad.snapshot ().status.error () == StatusCode::NotInitialized);
 
         invalid.debounce = Duration (0x80000000UL);
 
         Keypad ambiguous (invalid);
 
-        assert (ambiguous.initialize () == Status::InvalidArgument);
+        assert (ambiguous.initialize ().error () == StatusCode::InvalidArgument);
     }
 }
 

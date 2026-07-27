@@ -22,7 +22,7 @@ namespace adk {
     {
         Status status = output_.initialize ();
 
-        if (status == Status::Ok)
+        if (status.ok ())
         {
             active_ = false;
         }
@@ -45,7 +45,7 @@ namespace adk {
     {
         Status status = output_.write (physicalLevel (active));
 
-        if (status == Status::Ok)
+        if (status.ok ())
         {
             active_ = active;
         }

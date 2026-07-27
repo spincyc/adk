@@ -26,7 +26,7 @@ namespace {
         {
             if (fail ())
             {
-                return adk::Status::HardwareFailure;
+                return adk::StatusCode::HardwareFailure;
             }
 
             modes[pin] = mode;
@@ -45,36 +45,36 @@ namespace {
                 }
             }
 
-            return adk::Status::Ok;
+            return adk::StatusCode::Ok;
         }
 
         adk::Status write (adk::PinId, bool high) noexcept override
         {
             if (fail ())
             {
-                return adk::Status::HardwareFailure;
+                return adk::StatusCode::HardwareFailure;
             }
 
-            return high ? adk::Status::HardwareFailure : adk::Status::Ok;
+            return high ? adk::StatusCode::HardwareFailure : adk::StatusCode::Ok;
         }
 
         adk::Status read (adk::PinId pin, bool& high) noexcept override
         {
             if (fail ())
             {
-                return adk::Status::HardwareFailure;
+                return adk::StatusCode::HardwareFailure;
             }
 
             if (activeRow >= 4 || pin < pins.column0 || pin > pins.column2)
             {
-                return adk::Status::HardwareFailure;
+                return adk::StatusCode::HardwareFailure;
             }
 
             const uint8_t column = static_cast<uint8_t> (pin - pins.column0);
             const uint8_t key    = static_cast<uint8_t> (activeRow * 3U + column);
 
             high = (pressedMask & static_cast<uint16_t> (1U << key)) == 0;
-            return adk::Status::Ok;
+            return adk::StatusCode::Ok;
         }
 
         bool fail () noexcept
@@ -98,10 +98,11 @@ namespace {
         adk::MatrixKeypad     keypad (resources, pins);
 
         assert (!keypad.initialized ());
-        assert (keypad.update (adk::TimePoint (0)) == adk::Status::NotInitialized);
+        assert (keypad.update (adk::TimePoint (0)).error () ==
+                adk::StatusCode::NotInitialized);
         assert (fake::trace ().empty ());
-        assert (keypad.initialize () == adk::Status::Ok);
-        assert (keypad.initialize () == adk::Status::Ok);
+        assert (keypad.initialize ().ok ());
+        assert (keypad.initialize ().ok ());
         assert (keypad.initialized ());
 
         for (uint8_t row = 22; row <= 25; ++row)
@@ -119,7 +120,7 @@ namespace {
         fake::setDigitalInput (28, HIGH);
         fake::clearTrace      ();
 
-        assert (keypad.update (adk::TimePoint (0)) == adk::Status::Ok);
+        assert (keypad.update (adk::TimePoint (0)).ok ());
         assert (keypad.snapshot ().rawMask == 0);
         assert (fake::trace ().size () == 24);
 
@@ -165,14 +166,14 @@ namespace {
         adk::ResourceRegistry resources;
         adk::MatrixKeypad     keypad (resources, pins);
 
-        assert (keypad.initialize () == adk::Status::Ok);
+        assert (keypad.initialize ().ok ());
 
         fake::setDigitalInput (26, LOW);
         fake::setDigitalInput (27, HIGH);
         fake::setDigitalInput (28, HIGH);
 
-        assert (keypad.update (adk::TimePoint (0)) == adk::Status::Ok);
-        assert (keypad.update (adk::TimePoint (20)) == adk::Status::Ok);
+        assert (keypad.update (adk::TimePoint (0)).ok ());
+        assert (keypad.update (adk::TimePoint (20)).ok ());
         assert (keypad.snapshot ().rawMask == 0x249U);
         assert (keypad.snapshot ().state == adk::KeypadState::InvalidChord);
     }
@@ -201,11 +202,11 @@ namespace {
             RecordingMatrixIo     io;
             adk::MatrixKeypad     keypad (resources, pins, adk::KeypadConfig (), &io);
 
-            assert (keypad.initialize () == adk::Status::Ok);
+            assert (keypad.initialize ().ok ());
             io.pressedMask = static_cast<uint16_t> (1U << key);
 
-            assert (keypad.update (adk::TimePoint (0)) == adk::Status::Ok);
-            assert (keypad.update (adk::TimePoint (20)) == adk::Status::Ok);
+            assert (keypad.update (adk::TimePoint (0)).ok ());
+            assert (keypad.update (adk::TimePoint (20)).ok ());
             assert (keypad.snapshot ().rawMask == io.pressedMask);
             assert (keypad.snapshot ().state == adk::KeypadState::Pressed);
             assert (keypad.snapshot ().key == keys[key]);
@@ -224,12 +225,12 @@ namespace {
                 adk::MatrixKeypad     keypad (
                     resources, pins, adk::KeypadConfig (), &io);
 
-                assert (keypad.initialize () == adk::Status::Ok);
+                assert (keypad.initialize ().ok ());
                 io.pressedMask = static_cast<uint16_t> (
                     (1U << first) | (1U << second));
 
-                assert (keypad.update (adk::TimePoint (0)) == adk::Status::Ok);
-                assert (keypad.update (adk::TimePoint (20)) == adk::Status::Ok);
+                assert (keypad.update (adk::TimePoint (0)).ok ());
+                assert (keypad.update (adk::TimePoint (20)).ok ());
                 assert (keypad.snapshot ().rawMask == io.pressedMask);
                 assert (keypad.snapshot ().state == adk::KeypadState::InvalidChord);
                 assert (!keypad.snapshot ().pressEvent);
@@ -246,14 +247,14 @@ namespace {
             RecordingMatrixIo     io;
             adk::MatrixKeypad     keypad (resources, pins, adk::KeypadConfig (), &io);
 
-            assert (keypad.initialize () == adk::Status::Ok);
+            assert (keypad.initialize ().ok ());
             io.operation   = 0;
             io.failAt      = failAt;
             io.pressedMask = 0x0800U;
 
             const adk::Status status = keypad.update (adk::TimePoint (0));
 
-            if (status == adk::Status::HardwareFailure)
+            if (status.error () == adk::StatusCode::HardwareFailure)
             {
                 assert (keypad.snapshot ().rawMask == 0);
                 assert (io.activeRow == 4);
@@ -265,14 +266,14 @@ namespace {
                 }
 
                 io.operation = 0;
-                assert (keypad.update (adk::TimePoint (20)) ==
-                        adk::Status::HardwareFailure);
+                assert (keypad.update (adk::TimePoint (20)).error () ==
+                        adk::StatusCode::HardwareFailure);
                 assert (keypad.snapshot ().state == adk::KeypadState::Fault);
 
                 io.failAt    = 0;
                 io.operation = 0;
-                assert (keypad.update (adk::TimePoint (40)) ==
-                        adk::Status::HardwareFailure);
+                assert (keypad.update (adk::TimePoint (40)).error () ==
+                        adk::StatusCode::HardwareFailure);
             }
         }
     }
@@ -286,7 +287,8 @@ namespace {
             adk::MatrixKeypad     keypad (resources, pins, adk::KeypadConfig (), &io);
 
             io.failAt = failAt;
-            assert (keypad.initialize () == adk::Status::HardwareFailure);
+            assert (keypad.initialize ().error () ==
+                    adk::StatusCode::HardwareFailure);
             assert (!keypad.initialized ());
             assert (io.activeRow == 4);
 
@@ -312,7 +314,7 @@ namespace {
             adk::ResourceRegistry resources;
             adk::MatrixKeypad     keypad (resources, invalidPins);
 
-            assert (keypad.initialize () == adk::Status::InvalidPin);
+            assert (keypad.initialize ().error () == adk::StatusCode::InvalidPin);
             assert (fake::trace ().empty ());
         }
 
@@ -326,9 +328,10 @@ namespace {
             adk::MatrixKeypad     keypad (resources, pins);
 
             assert (resources.claim (
-                        {adk::ResourceKind::Pin, occupiedPin}, occupied) ==
-                    adk::Status::Ok);
-            assert (keypad.initialize () == adk::Status::ResourceBusy);
+                        {adk::ResourceKind::Pin, occupiedPin}, occupied)
+                        .ok ());
+            assert (keypad.initialize ().error () ==
+                    adk::StatusCode::ResourceBusy);
             assert (fake::trace ().empty ());
 
             for (uint8_t pin = pins.row0; pin <= pins.column2; ++pin)
@@ -344,7 +347,8 @@ namespace {
         adk::MatrixKeypad     keypad (
             resources, pins, adk::KeypadConfig (adk::Duration (0)));
 
-        assert (keypad.initialize () == adk::Status::InvalidArgument);
+        assert (keypad.initialize ().error () ==
+                adk::StatusCode::InvalidArgument);
         assert (fake::trace ().empty ());
 
         for (uint8_t pin = pins.row0; pin <= pins.column2; ++pin)
@@ -362,7 +366,7 @@ namespace {
         {
             adk::MatrixKeypad keypad (resources, pins);
 
-            assert (keypad.initialize () == adk::Status::Ok);
+            assert (keypad.initialize ().ok ());
         }
 
         for (uint8_t pin = 22; pin <= 28; ++pin)

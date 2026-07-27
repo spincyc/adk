@@ -95,24 +95,24 @@ namespace adk {
     {
         if (initialized_)
         {
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         if (!Mega2560Board::validPin (dataPin_))
         {
-            return Status::InvalidPin;
+            return StatusCode::InvalidPin;
         }
 
         if (!Mega2560Board::supports (dataPin_, PinCapability::DigitalInput) ||
             !Mega2560Board::supports (dataPin_, PinCapability::DigitalOutput))
         {
-            return Status::Unsupported;
+            return StatusCode::Unsupported;
         }
 
         const ResourceId resource = {ResourceKind::Pin, dataPin_};
         const Status     status   = resources_->claim (resource, claim_);
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             return status;
         }
@@ -124,7 +124,7 @@ namespace adk {
         initialized_   = true;
         hasScheduleAnchor_ = false;
         hasAcquired_   = false;
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void Dht11Sensor::shutdown () noexcept
@@ -150,14 +150,14 @@ namespace adk {
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         if (!hasScheduleAnchor_)
         {
             initializedAt_      = now;
             hasScheduleAnchor_ = true;
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         const TimePoint scheduleAnchor =
@@ -168,8 +168,8 @@ namespace adk {
         if (!due (now, scheduleAnchor, interval))
         {
             const uint32_t elapsed = now.elapsedSince (scheduleAnchor).milliseconds ();
-            return elapsed > maximumUnambiguousDuration ? Status::InvalidArgument
-                                                        : Status::Ok;
+            return elapsed > maximumUnambiguousDuration ? StatusCode::InvalidArgument
+                                                        : StatusCode::Ok;
         }
 
         uint8_t      bytes[5]        = {};
@@ -178,10 +178,10 @@ namespace adk {
         lastAcquiredAt_ = now;
         hasAcquired_    = true;
 
-        if (transportStatus != Status::Ok)
+        if (!transportStatus.ok ())
         {
             storeFault (ClimateSampleState::TransportTimeout, now);
-            return Status::HardwareFailure;
+            return StatusCode::HardwareFailure;
         }
 
         const uint8_t checksum =
@@ -190,7 +190,7 @@ namespace adk {
         if (checksum != bytes[4])
         {
             storeFault (ClimateSampleState::ChecksumFailure, now);
-            return Status::HardwareFailure;
+            return StatusCode::HardwareFailure;
         }
 
         const uint16_t humidity = static_cast<uint16_t> (
@@ -200,8 +200,8 @@ namespace adk {
                                   static_cast<uint16_t> (bytes[3]) * 10U);
 
         sample_ = validateClimateSample (temperature, humidity, now, dht11Limits);
-        return sample_.state == ClimateSampleState::Valid ? Status::Ok
-                                                          : Status::InvalidArgument;
+        return sample_.state == ClimateSampleState::Valid ? StatusCode::Ok
+                                                          : StatusCode::InvalidArgument;
     }
 
     ClimateSample Dht11Sensor::sample (TimePoint now,
@@ -238,58 +238,58 @@ namespace adk {
     {
         Status status = driveLow ();
 
-        if (status == Status::Ok)
+        if (status.ok ())
         {
             waitUs               (requestLowMicroseconds);
             status = releaseLine ();
         }
 
-        if (status == Status::Ok)
+        if (status.ok ())
         {
             status = waitForLevel (Level::Low, responseWaitMaximum);
         }
 
         uint16_t width = 0;
 
-        if (status == Status::Ok)
+        if (status.ok ())
         {
             status = measureLevel (Level::Low, responsePulseMaximum, width);
 
-            if (status == Status::Ok &&
+            if (status.ok () &&
                 !inRange (width, responsePulseMinimum,
                           responsePulseValidMaximum))
             {
-                status = Status::HardwareFailure;
+                status = StatusCode::HardwareFailure;
             }
         }
 
-        if (status == Status::Ok)
+        if (status.ok ())
         {
             status = measureLevel (Level::High, responsePulseMaximum, width);
 
-            if (status == Status::Ok &&
+            if (status.ok () &&
                 !inRange (width, responsePulseMinimum,
                           responsePulseValidMaximum))
             {
-                status = Status::HardwareFailure;
+                status = StatusCode::HardwareFailure;
             }
         }
 
-        for (uint8_t bit = 0; status == Status::Ok && bit < 40U; ++bit)
+        for (uint8_t bit = 0; status.ok () && bit < 40U; ++bit)
         {
             status = measureLevel (Level::Low, bitPulseMaximum, width);
 
-            if (status == Status::Ok &&
+            if (status.ok () &&
                 !inRange (width, bitLowMinimum, bitLowMaximum))
             {
-                status = Status::HardwareFailure;
+                status = StatusCode::HardwareFailure;
             }
-            else if (status == Status::Ok)
+            else if (status.ok ())
             {
                 status = measureLevel (Level::High, bitPulseMaximum, width);
             }
 
-            if (status != Status::Ok)
+            if (!status.ok ())
             {
                 break;
             }
@@ -306,7 +306,7 @@ namespace adk {
             }
             else
             {
-                status = Status::HardwareFailure;
+                status = StatusCode::HardwareFailure;
                 break;
             }
 
@@ -333,13 +333,13 @@ namespace adk {
 
             if (observed.value () == level)
             {
-                return Status::Ok;
+                return StatusCode::Ok;
             }
 
             waitUs (1);
         }
 
-        return Status::HardwareFailure;
+        return StatusCode::HardwareFailure;
     }
 
     Status Dht11Sensor::measureLevel (Level level, uint16_t timeout,
@@ -347,7 +347,7 @@ namespace adk {
     {
         Status status = waitForLevel (level, timeout);
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             return status;
         }
@@ -366,13 +366,13 @@ namespace adk {
             if (observed.value () != level)
             {
                 width = static_cast<uint16_t> (nowUs () - startedAt);
-                return Status::Ok;
+                return StatusCode::Ok;
             }
 
             waitUs (1);
         }
 
-        return Status::HardwareFailure;
+        return StatusCode::HardwareFailure;
     }
 
     Status Dht11Sensor::driveLow () noexcept
@@ -384,7 +384,7 @@ namespace adk {
 
         digitalWrite (dataPin_, LOW);
         pinMode      (dataPin_, OUTPUT);
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     Status Dht11Sensor::releaseLine () noexcept
@@ -395,7 +395,7 @@ namespace adk {
         }
 
         pinMode (dataPin_, INPUT);
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     Result<Level> Dht11Sensor::readLine () noexcept
@@ -406,7 +406,7 @@ namespace adk {
         }
 
         const Level level = digitalRead (dataPin_) == HIGH ? Level::High : Level::Low;
-        return Result<Level> (Status::Ok, level);
+        return Result<Level> (StatusCode::Ok, level);
     }
 
     void Dht11Sensor::waitUs (uint16_t duration) noexcept

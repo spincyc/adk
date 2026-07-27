@@ -61,7 +61,7 @@ namespace {
             adk::ResourceRegistry resources;
             adk::PwmOutput        output (resources, pin, 127);
 
-            require          (output.initialize () == adk::Status::Ok, "PWM pin initialization");
+            require          (output.initialize ().ok (), "PWM pin initialization");
             require          (output.initialized (), "PWM pin initialized state");
             require          (output.pin () == pin, "PWM pin accessor");
             require          (output.duty () == 127, "PWM initial duty");
@@ -85,24 +85,24 @@ namespace {
         require (output.pin () == 11, "PWM pin");
         require (output.duty () == 0, "PWM default duty");
         require (!output.initialized (), "PWM starts uninitialized");
-        require (output.write (255) == adk::Status::NotInitialized,
+        require (output.write (255).error () == adk::StatusCode::NotInitialized,
                  "PWM rejects pre-initialization write");
         require (fake::trace ().empty (), "inactive PWM touched hardware");
 
-        require          (output.initialize () == adk::Status::Ok, "PWM initialization");
+        require          (output.initialize ().ok (), "PWM initialization");
         requireOperation (0, fake::OperationKind::AnalogWrite, 11, 0);
 
         fake::clearTrace ();
-        require          (output.initialize () == adk::Status::Ok,
+        require          (output.initialize ().ok (),
                  "PWM repeated initialization");
         require (fake::trace ().empty (),
                  "repeated PWM initialization touched hardware");
 
-        require          (output.write (255) == adk::Status::Ok, "PWM maximum duty");
+        require          (output.write (255).ok (), "PWM maximum duty");
         require          (output.duty () == 255, "PWM maximum duty state");
         requireOperation (0, fake::OperationKind::AnalogWrite, 11, 255);
 
-        require          (output.write (0) == adk::Status::Ok, "PWM minimum duty");
+        require          (output.write (0).ok (), "PWM minimum duty");
         require          (output.duty () == 0, "PWM minimum duty state");
         requireOperation (1, fake::OperationKind::AnalogWrite, 11, 0);
 
@@ -117,7 +117,7 @@ namespace {
         output.shutdown  ();
         require          (fake::trace ().empty (), "repeated PWM shutdown touched hardware");
 
-        require (output.initialize () == adk::Status::Ok, "PWM restart");
+        require (output.initialize ().ok (), "PWM restart");
         require (output.duty () == 0, "PWM restart initial duty");
     }
 
@@ -131,7 +131,7 @@ namespace {
             adk::ResourceRegistry resources;
             adk::PwmOutput        output (resources, pin);
 
-            require (output.initialize () == adk::Status::Unsupported,
+            require (output.initialize ().error () == adk::StatusCode::Unsupported,
                      "non-PWM pin status");
             require (!output.initialized (), "non-PWM output remains inactive");
             require (fake::trace ().empty (), "non-PWM pin touched hardware");
@@ -141,7 +141,7 @@ namespace {
         adk::ResourceRegistry resources;
         adk::PwmOutput        invalid (resources, 70);
 
-        require (invalid.initialize () == adk::Status::InvalidPin, "invalid PWM pin");
+        require (invalid.initialize ().error () == adk::StatusCode::InvalidPin, "invalid PWM pin");
         require (!invalid.initialized (), "invalid PWM remains inactive");
         require (fake::trace ().empty (), "invalid PWM pin touched hardware");
     }
@@ -153,9 +153,9 @@ namespace {
         adk::DigitalOutput    owner   (resources, 10);
         adk::PwmOutput        blocked (resources, 10, 64);
 
-        require          (owner.initialize () == adk::Status::Ok, "pin owner initialization");
+        require          (owner.initialize ().ok (), "pin owner initialization");
         fake::clearTrace ();
-        require          (blocked.initialize () == adk::Status::ResourceBusy,
+        require          (blocked.initialize ().error () == adk::StatusCode::ResourceBusy,
                  "PWM conflict status");
         require (!blocked.initialized (), "blocked PWM remains inactive");
         require (blocked.duty () == 64, "blocked PWM preserves initial duty");
@@ -163,7 +163,7 @@ namespace {
 
         owner.shutdown   ();
         fake::clearTrace ();
-        require          (blocked.initialize () == adk::Status::Ok, "PWM claim reuse");
+        require          (blocked.initialize ().ok (), "PWM claim reuse");
         requireOperation (0, fake::OperationKind::AnalogWrite, 10, 64);
     }
 
@@ -175,9 +175,9 @@ namespace {
         adk::PwmOutput        first  (resources, 9,  32);
         adk::PwmOutput        second (resources, 10, 64);
 
-        require (first.initialize () == adk::Status::Ok,
+        require (first.initialize ().ok (),
                  "first timer peer initializes");
-        require (second.initialize () == adk::Status::Ok,
+        require (second.initialize ().ok (),
                  "second timer peer shares timer");
         require (resources.claimed ({adk::ResourceKind::Timer, 2}),
                  "shared PWM timer claimed");
@@ -194,15 +194,15 @@ namespace {
 
         adk::ResourceClaim timerOwner;
 
-        require (resources.claim ({adk::ResourceKind::Timer, 2}, timerOwner) ==
-                     adk::Status::Ok,
+        require (resources.claim ({adk::ResourceKind::Timer, 2}, timerOwner)
+                     .ok (),
                  "exclusive timer owner");
 
         adk::PwmOutput blocked (resources, 9, 91);
 
         fake::clearTrace ();
 
-        require (blocked.initialize () == adk::Status::ResourceBusy,
+        require (blocked.initialize ().error () == adk::StatusCode::ResourceBusy,
                  "exclusive timer blocks PWM");
         require (!resources.claimed ({adk::ResourceKind::Pin, 9}),
                  "timer failure rolls back pin");
@@ -210,7 +210,7 @@ namespace {
 
         timerOwner.release ();
 
-        require (blocked.initialize () == adk::Status::Ok,
+        require (blocked.initialize ().ok (),
                  "PWM initializes after timer release");
     }
 
@@ -222,7 +222,7 @@ namespace {
         {
             adk::PwmOutput output (resources, 6, 200);
 
-            require (output.initialize () == adk::Status::Ok,
+            require (output.initialize ().ok (),
                      "scoped PWM initialization");
             fake::clearTrace ();
         }
@@ -233,7 +233,7 @@ namespace {
 
         fake::clearTrace           ();
         adk::PwmOutput replacement (resources, 6);
-        require                    (replacement.initialize () == adk::Status::Ok,
+        require                    (replacement.initialize ().ok (),
                  "PWM destruction released claim");
     }
 } // namespace

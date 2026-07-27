@@ -63,7 +63,7 @@ void testLifecycleAndSampling ()
     require      (fake::trace ().empty (), "inactive update touched hardware");
 
     fake::setAnalogInput (54, 317);
-    require              (input.initialize () == adk::Status::Ok, "input initialization");
+    require              (input.initialize ().ok (), "input initialization");
     require              (input.initialized (), "input active");
     require              (input.read () == 317, "initial sample cached");
     require              (fake::trace ().size () == 2, "initialization trace");
@@ -71,7 +71,7 @@ void testLifecycleAndSampling ()
     requireOperation     (1, fake::OperationKind::AnalogRead, 54, 317);
 
     fake::clearTrace ();
-    require          (input.initialize () == adk::Status::Ok, "repeated initialization");
+    require          (input.initialize ().ok (), "repeated initialization");
     require          (fake::trace ().empty (), "repeated initialization touched hardware");
 
     fake::setAnalogInput (54, 811);
@@ -103,7 +103,7 @@ void testReadingBounds ()
     adk::AnalogInput      input (resources, 69);
 
     fake::setAnalogInput (69, 0);
-    require              (input.initialize () == adk::Status::Ok, "minimum initialization");
+    require              (input.initialize ().ok (), "minimum initialization");
     require              (input.read () == 0, "minimum reading");
 
     fake::setAnalogInput (69, 1023);
@@ -130,7 +130,7 @@ void testMegaAnalogPinMap ()
         adk::AnalogInput      input (resources, pin);
 
         fake::setAnalogInput (pin, pin);
-        require              (input.initialize () == adk::Status::Ok,
+        require              (input.initialize ().ok (),
                  "Mega analog pin accepted");
         require              (input.read () == pin, "Mega analog pin sampled");
     }
@@ -143,26 +143,26 @@ void testErrorsAndClaimReuse ()
     adk::AnalogInput      owner   (resources, 55);
     adk::AnalogInput      blocked (resources, 55);
 
-    require          (owner.initialize () == adk::Status::Ok, "owner initialization");
+    require          (owner.initialize ().ok (), "owner initialization");
     fake::clearTrace ();
-    require          (blocked.initialize () == adk::Status::ResourceBusy,
+    require          (blocked.initialize ().error () == adk::StatusCode::ResourceBusy,
              "claim conflict");
     require          (fake::trace ().empty (), "claim conflict touched hardware");
 
     owner.shutdown   ();
     fake::clearTrace ();
-    require          (blocked.initialize () == adk::Status::Ok, "claim reuse");
+    require          (blocked.initialize ().ok (), "claim reuse");
 
     fake::reset ();
     adk::ResourceRegistry unsupportedResources;
     adk::AnalogInput      unsupported (unsupportedResources, 53);
-    require                           (unsupported.initialize () == adk::Status::Unsupported,
+    require                           (unsupported.initialize ().error () == adk::StatusCode::Unsupported,
              "digital-only pin rejected");
     require                           (fake::trace ().empty (), "unsupported pin touched hardware");
 
     adk::ResourceRegistry invalidResources;
     adk::AnalogInput      invalid (invalidResources, 70);
-    require                       (invalid.initialize () == adk::Status::InvalidPin,
+    require                       (invalid.initialize ().error () == adk::StatusCode::InvalidPin,
              "invalid pin rejected");
     require                       (fake::trace ().empty (), "invalid pin touched hardware");
 }
@@ -176,7 +176,7 @@ void testDestructionReleasesClaim ()
         fake::setAnalogInput     (56, 512);
         adk::AnalogInput   input (resources, 56);
 
-        require                  (input.initialize () == adk::Status::Ok,
+        require                  (input.initialize ().ok (),
                  "lifetime initialization");
         fake::clearTrace         ();
     }
@@ -186,7 +186,7 @@ void testDestructionReleasesClaim ()
 
     fake::clearTrace               ();
     adk::DigitalOutput replacement (resources, 56);
-    require                        (replacement.initialize () == adk::Status::Ok,
+    require                        (replacement.initialize ().ok (),
              "destruction released claim");
 }
 
@@ -198,7 +198,7 @@ std::vector<fake::Operation> analogTrace ()
     adk::ResourceRegistry resources;
     adk::AnalogInput      input (resources, 57);
 
-    require              (input.initialize () == adk::Status::Ok, "trace initialization");
+    require              (input.initialize ().ok (), "trace initialization");
     fake::setAnalogInput (57, 987);
     input.update         ();
     input.shutdown       ();

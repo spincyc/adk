@@ -41,7 +41,7 @@ namespace {
         button.update (adk::TimePoint (4));
 
         require (!button.rawPressed (), "stopped update is inert");
-        require (button.initialize () == adk::Status::Ok, "button initializes");
+        require (button.initialize ().ok (), "button initializes");
         require (button.initialized (), "button reports initialized");
         require (button.input ().initialized (), "owned input initializes");
         require (adk::test::arduino::mode (7) == INPUT_PULLUP, "pull-up configured");
@@ -68,7 +68,7 @@ namespace {
         adk::ResourceRegistry resources;
         adk::Button           button (
             resources, {buttonPin, adk::Pull::Up, adk::Level::Low, adk::Duration (20)});
-        require (button.initialize () == adk::Status::Ok, "boundary initializes");
+        require (button.initialize ().ok (), "boundary initializes");
 
         sample (button, LOW, 100);
 
@@ -117,7 +117,7 @@ namespace {
         adk::ResourceRegistry resources;
         adk::Button           button (
             resources, {buttonPin, adk::Pull::Up, adk::Level::Low, adk::Duration (20)});
-        require (button.initialize () == adk::Status::Ok, "bounce initializes");
+        require (button.initialize ().ok (), "bounce initializes");
 
         sample (button, LOW, 10);
         sample (button, LOW, 29);
@@ -155,7 +155,7 @@ namespace {
         adk::ResourceRegistry resources;
         adk::Button           button (
             resources, {buttonPin, adk::Pull::Up, adk::Level::Low, adk::Duration (20)});
-        require (button.initialize () == adk::Status::Ok, "held initializes");
+        require (button.initialize ().ok (), "held initializes");
         require (button.rawPressed (), "held startup raw state");
         require (button.pressed (), "held startup stable state");
         require (!button.pressEvent (), "held startup suppresses press");
@@ -183,7 +183,7 @@ namespace {
         adk::ResourceRegistry resources;
         adk::Button           button (
             resources, {buttonPin, adk::Pull::Up, adk::Level::Low, adk::Duration (20)});
-        require (button.initialize () == adk::Status::Ok, "wrap initializes");
+        require (button.initialize ().ok (), "wrap initializes");
 
         sample (button, LOW, 0xfffffff8U);
         sample (button, LOW, 0x0000000bU);
@@ -205,7 +205,7 @@ namespace {
         adk::Button           button (
             resources, {buttonPin, adk::Pull::None, adk::Level::High, adk::Duration (0)});
 
-        require (button.initialize () == adk::Status::Ok, "active-high initializes");
+        require (button.initialize ().ok (), "active-high initializes");
         require (!button.rawPressed (), "active-high low is released");
         require (adk::test::arduino::mode (7) == INPUT, "no-pull mode configured");
 

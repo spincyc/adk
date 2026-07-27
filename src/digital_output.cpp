@@ -25,18 +25,18 @@ namespace adk {
     {
         if (initialized_)
         {
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         if (pin_ >= NUM_DIGITAL_PINS)
         {
-            return Status::InvalidPin;
+            return StatusCode::InvalidPin;
         }
 
         Status status =
             resources_->claim ({ResourceKind::Pin, pin_}, claim_);
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             return status;
         }
@@ -46,7 +46,7 @@ namespace adk {
 
         level_       = initial_;
         initialized_ = true;
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void DigitalOutput::shutdown () noexcept
@@ -66,12 +66,12 @@ namespace adk {
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         digitalWrite (pin_, level == Level::High ? HIGH : LOW);
         level_ = level;
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     PinId DigitalOutput::pin () const noexcept
