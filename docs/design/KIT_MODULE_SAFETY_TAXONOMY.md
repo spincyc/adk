@@ -12,6 +12,10 @@ markings, traces its power path, and obtains the primary device and module
 documentation before wiring. An unidentified or contradictory module is
 blocked, not “tested carefully.”
 
+Use the [exact-module inventory template](../inventory/exact-module.md) for
+that record. A canonical planned behavior, a host-verified endpoint, or a
+similar-looking accepted specimen does not support a new physical adapter.
+
 The Elegoo lists establish likely inventory only. They do not override a
 component datasheet, module schematic, measured pinout, or
 [`SAFETY_MODEL.md`](../SAFETY_MODEL.md).
@@ -88,6 +92,7 @@ load current, or safe shutdown.
 | Mercury tilt switch | PX, H/W | Do not use. Quarantine a glass or mercury-marked part; substitute a sealed ball-tilt sensor | Inventory record showing substitution |
 | Potentiometer, thermistor, photoresistor, analog Hall element | P0/P1 | Divider current, ADC source impedance, Vref, saturation, and floating lead explicit | TP at divider and VI mapped output; both rail endpoints and disconnected-lead limitation |
 | Comparator sensor boards: sound, light, flame, tracking, obstacle, Hall, touch, rain/water threshold | PX→P1/P2 | Identify sensor and LM393-like board, supply, comparator pull-up rail, potentiometer direction, and AO/DO pin order | TP for raw analog and digital threshold where present; VI for interpreted state and FI for invalid/saturated input |
+| Heated gas-response boards | PX, H | No generic gas adapter. Identify sensing element, heater rail/current/duty, analog/comparator circuit, controlled harmless stimulus, ventilation, disposal, and allowed claims in a separate review; lesson 057 does not authorize exposure or calibrated concentration | Unpowered inventory and supplied host traces only until separately admitted; never life-safety evidence |
 | Bare microphone/electret and sound modules | PX→P1 | Never connect a bare microphone as if it were an amplified module; identify bias/amplifier and bound output to ADC rails | TP bias and envelope; VI threshold; prerecorded host trace beside live observation |
 | Analog temperature IC, thermistor, DS18B20-style digital thermometer, DHT11 module | PX→P1/P2 | Exact part/pinout; supply and pull-up topology; distinguish invalid, stale, reset-default, and transport faults; no medical/safety claim | TP supply/data plus VI health pattern and primary temperature/humidity display |
 | Soil-moisture, water-level, rain and conductive probes | P1, W | De-energize between samples where supported; current, corrosion, electrolysis, spills, and drying procedure explicit; never immerse electronics | TP probe excitation, VI valid/fault, visual corrosion inspection; current before/after test |
@@ -101,6 +106,7 @@ load current, or safe shutdown.
 | Passive piezo disc/sounder | P0/P1 | Confirm passive part; bounded frequency/duty and optional series resistor; no startling or prolonged loud exposure | AO plus TP waveform; silent/high-impedance shutdown |
 | Active buzzer or siren module | PX→P1/P3 | Identify polarity, operating voltage, current, onboard transistor, and sound level; a speaker is not a buzzer | VI command plus AO, measured current, silent shutdown and PR where externally powered |
 | Character LCD, OLED, MAX7219 matrix, TM1637 display | PX→P1/P2 | Exact controller/module voltage; backlight/segment current; onboard pull-ups; 3.3/5 V bus compatibility | DO self-test and fault glyph/pattern; TP supply/bus; blank or documented safe display on shutdown |
+| PCF8574 LCD backpack | PX→P1/P2 | Exact expander suffix/address, LCD bit map, pull-up rail, backlight driver/polarity, contrast circuit, and LCD controller; parallel display behavior is not adapter support | DO fixed self-test and fault pattern; TP both rails and I2C; backlight and display shutdown observed separately |
 | 74HC595 and other bare logic | P1 | Supply, decoupling, input levels, output and package-total currents; use drivers for loads | VI walking-one pattern plus TP clock/latch/data and outputs-disabled state |
 | RTC modules | PX→P1/P2 | Identify RTC, pull-up rails, charging circuit, and installed cell chemistry; never charge a primary coin cell | DO time/health, TP bus and backup rail, FI oscillator/power-loss status |
 | SD/microSD module | PX→P2 | Card and module are 3.3 V; verify regulator and level shifting in every signal direction; corruption/power-loss explicit | VI activity separate from commit success, DO read-back, TP 3.3 V and SPI |
@@ -178,6 +184,15 @@ A module adapter can enter a lesson only after all answers are recorded:
 Any missing identity, rating, schematic, or protection answer assigns **PX** and
 blocks wiring. A tutorial screenshot, seller listing, PCB color, or similar
 module is not a substitute.
+
+## Alias and exclusion rule
+
+Record `KY-` numbers, seller names, PCB color, and bundle position only as
+aliases. They never choose a C++ type, establish a pinout, or transfer bench
+acceptance between specimens. Explicit exclusions remain mercury switches,
+unidentified lasers or emitters, physiological and life-safety claims,
+unknown-command RF/IR replay, mains relay loads, ignition, and pyrotechnic
+control. Use inert fixtures or supplied traces instead.
 
 ## Primary references
 

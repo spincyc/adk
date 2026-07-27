@@ -39,7 +39,10 @@ Record this before selecting an interface or applying power:
 
 Photograph both PCB faces beside a written label. If the active-device marking
 or pin order cannot be established, quarantine the module rather than probe it
-under power.
+under power. Use the durable
+[exact-module inventory template](../inventory/exact-module.md); a planned
+curriculum behavior or a host-verified generic endpoint is not an accepted
+physical adapter.
 
 ## Canonical behavior taxonomy
 
@@ -62,13 +65,14 @@ seller aliases, not interchangeable parts.
 | Timed pulse transducer | ultrasonic ranger | trigger level/width, echo voltage, timeout | planned `PulseInput`/`UltrasonicRanger` |
 | Single-wire digital sensor | DS18B20, “18B20,” digital temperature | exact chip, bus pull-up, conversion timing and resolution | not implemented |
 | Proprietary timed sensor | DHT11, humiture, temperature/humidity | exact device, timing, stale/invalid sample policy | `Dht11Sensor` exists; bench acceptance still required |
-| Register bus device | BMP180, GY-521/MPU6050, DS1302/DS1307 RTC, PCF8591, color sensor, LCD1602 backpack | bus type, address, voltage, register identity, pull-ups | display/climate layers partial; first-class bus ownership planned |
+| Register bus device | BMP180, GY-521/MPU6050, DS1302/DS1307 RTC, PCF8591, color sensor, LCD1602 backpack | bus type, address, voltage, register identity, pull-ups | `I2cBus`/`SpiBus` and generic RTC/display models are host verified; these chip/module adapters remain planned |
 | Switched load output | relay, motor module | input polarity, isolation truth, coil/load supply, safe state | outside E1; inert-load wrappers planned |
 | Infrared receive | IR receiver | carrier/demodulator identity, output polarity, timing | receive-only abstraction planned |
 | Infrared or laser emit | IR transmitter, laser emitter | optical limits and documented harmless target | no generic support; review required |
 | Exposed conductive probe | rain, water level, soil moisture, steam | excitation method, corrosion, contamination, analog range | `AnalogInput` can sample; long-term sensor contract absent |
 | Human physiological indication | pulse-rate, heart-rate | module identity, placement, signal conditioning | research only; no medical claim or supported component |
 | Power source/regulator | breadboard power module, voltage detector | input topology, polarity, rail selection, regulator limits | not a sensor; inspect separately before use |
+| Heated gas-response board | MQ-family, gas, smoke, air quality | exact sensing element, heater supply/duty, analog/comparator circuit, controlled stimulus, ventilation, disposal, calibration and claim boundary | no physical adapter; lesson 057 can characterize only identified low-voltage outputs and cannot claim gas concentration or safety |
 
 ## Names that must remain distinct
 
@@ -117,6 +121,27 @@ Through-hole, SMD, common-anode, common-cathode, current-limited, and
 unresisted RGB boards appear under the same name. ADK’s current `RgbLed`
 lesson requires the documented channel polarity and external current limiting;
 it must not infer either from color or connector count.
+
+### PCF8574 backpack and parallel LCD
+
+`CharacterDisplay` behavior and a parallel LCD circuit do not establish a
+PCF8574 backpack adapter. Backpacks vary in expander suffix, address straps,
+LCD bit mapping, pull-up rail, and backlight polarity. Record each of those
+fields before an I2C adapter is selected.
+
+### Power board and regulated supply
+
+A breadboard power module is a construction specimen, not a generic power
+component. Similar boards can differ in regulator, input polarity, USB/barrel
+priority, jumper mapping, reverse-current behavior, current limit, and thermal
+performance. Keep it unpowered until the exact board record is complete.
+
+### Gas, smoke, and air-quality boards
+
+Seller aliases do not establish a sensing chemistry or calibrated unit. A
+future descriptor may expose identified raw and comparator behavior, but it
+does not by itself authorize heater power, gas exposure, concentration claims,
+alarm use, or life-safety conclusions.
 
 ## ADK admission rule
 
