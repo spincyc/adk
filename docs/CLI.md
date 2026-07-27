@@ -183,7 +183,13 @@ route-profile tests.
 ## lessons                   Build all lesson PDFs.
 ## site                      Build the documentation site.
 ## site-serve                Serve the site locally.
-## quality                   Run the complete supported release gate.
+## quality                   Run local software, package, and documentation gates.
+## arduino-lint              Run strict Arduino library structure checks.
+## arduino-lint-submit       Run strict initial-inclusion checks.
+## arduino-lint-update       Run strict post-inclusion update checks.
+## arduino-lint-release      Run the selected registry-phase checks.
+## release-metadata-check    Check clean ref, version, and archive policy.
+## release-check             Run the complete non-publishing local release gate.
 ## package-smoke             Build every example from an installed clean archive.
 ## native-package            Export the C++17 native source archive.
 ## native-package-smoke      Build, link, and run a clean archive consumer.

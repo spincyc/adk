@@ -40,11 +40,11 @@ Keep `library.properties` at the repository root with UTF-8 `key=value` lines:
 
 ```properties
 name=Adk
-version=0.1.0
+version=0.3.0
 author=Kevin Shanahan
 maintainer=Kevin Shanahan <kevin.p.shanahan@gmail.com>
-sentence=Deterministic C++ components for learning Arduino circuits.
-paragraph=Provides lifecycle-managed input and output components, host tests, and progressive projects for the Arduino Mega 2560.
+sentence=Deterministic RAII circuit components for Arduino Mega 2560 lessons.
+paragraph=Provides explicit resource ownership, safe lifecycle control, deterministic I/O, validated sensor observations, operator interfaces, and replayable project engines.
 category=Device Control
 url=https://github.com/spincyc/adk
 architectures=avr
@@ -164,10 +164,12 @@ arduino-lint \
     .
 ```
 
-Use `submit` before the initial registry request and `update` for every later
-release. Both belong in CI; warnings are reviewed even when the command exits
-successfully. Pin the Arduino CLI, AVR core, Arduino Lint, and Actions versions
-used by CI.
+ADK has no recorded official Library Manager inclusion, so CI and
+`make arduino-lint-release` currently use `submit`. After inclusion is
+independently confirmed, change the reviewed release mode to `update`; do not
+run both contextual modes for every release. The explicit
+`arduino-lint-submit` and `arduino-lint-update` targets remain available for
+policy review. Local release evidence and CI use Arduino Lint 1.3.0.
 
 Also test the installed archive, not only `--library .`:
 
@@ -180,7 +182,7 @@ The reproducible local and CI gate is:
 
 ```sh
 make package-smoke
-make package-smoke PACKAGE_REF=v0.2.0
+make package-smoke PACKAGE_REF=0.2.0
 ```
 
 It exports `PACKAGE_REF` with Git, applies the release `export-ignore` rules,
@@ -214,7 +216,7 @@ adk-native/
 
 The archive contains source, not a prebuilt library. The smoke target extracts
 it into a clean temporary directory, compiles every manifest entry as C++17,
-creates a deterministic `libadk.a`, then builds and runs an
+creates a temporary `libadk.a`, then builds and runs an
 `InertChannelAssessor` consumer with no repository-relative inputs.
 
 All public declaration headers are exported so peer includes resolve, but the
@@ -230,7 +232,17 @@ or `package-smoke`; both packaging gates remain independently required.
 
 ## Release gate
 
-Before tagging:
+Before tagging, run the complete non-publishing local gate from a clean,
+committed tree:
+
+```sh
+make release-check PACKAGE_REF=HEAD ARDUINO_LINT_RELEASE_MODE=submit
+```
+
+It confirms ref, metadata, changelog, and export policy before running the
+software, firmware, documentation, site, archive-consumer, and selected lint
+checks. It performs no tag, push, deployment, or Library Manager submission.
+Then review:
 
 1. Run host tests, formatting, documentation, site, Arduino compile, and all
    Arduino Lint gates.
@@ -243,10 +255,11 @@ Before tagging:
 6. Build the native source archive and run its clean C++17 consumer smoke test.
 7. Confirm every native manifest path resolves inside the export.
 8. Commit the version change.
-9. Create and push the matching release tag, conventionally `v0.1.0`.
+9. Create and push a tag exactly matching the metadata version.
 
-The version value is `0.1.0`; the Git tag may be `v0.1.0`. Never move or replace
-a published tag. Increment the version and publish a new tag instead.
+The current version is `0.3.0`; its matching tag is `0.3.0`, consistent with
+the existing tag history. Never move or replace a published tag. Increment the
+version and publish a new tag instead.
 
 For initial Library Manager inclusion, submit the repository URL to the
 [Arduino library registry][registry]. After acceptance, its indexer discovers

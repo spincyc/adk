@@ -230,9 +230,12 @@ measured sizes in the change or lesson acceptance record.
 - Full host, Arduino, lesson, site, and lint targets pass from a clean build.
 - The version, changelog, API status tables, roadmap, and deferred-work ledger
   agree.
-- A fresh consumer project can include the library and build one supported
-  example without a repository-relative path.
-- The published Pages URL and each current lesson download return success.
+- The clean Arduino archive installs and compiles every packaged Mega example
+  without a repository-relative path.
+- The native source archive compiles its manifest-listed C++17 sources and
+  links and runs its bounded value-only consumer.
+- After deployment, the live landing page and newest lesson HTML, PDF, and
+  canonical sketch pass the publication checker.
 
 ## Agent handoff
 
