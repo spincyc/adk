@@ -28,6 +28,8 @@ nav:
   - Design:
       - Determinism: determinism.md
       - Architecture: docs/ARCHITECTURE.md
+      - Roadmap: docs/ROADMAP.md
+      - Style: docs/STYLE.md
       - Comparable projects: docs/COMPARABLE_PROJECTS.md
   - Projects:
       - Overview: projects/index.md

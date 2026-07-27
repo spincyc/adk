@@ -41,6 +41,11 @@ Never improvise around an interlock, protective device, or uncertain circuit.
 
 ## Software and lifecycle safety
 
+The following rules define the target RAII component contract. The current
+compatibility API does not yet restore pins during object destruction or
+provide component-level `shutdown()`. With that API, remove all power before
+rewiring and do not treat C++ scope exit as an electrical safety mechanism.
+
 - Outputs must enter a documented inactive state during construction,
   initialization failure, shutdown, reset, and destruction. A generic output
   defaults to high impedance; semantic components use an explicit safe
