@@ -1,5 +1,6 @@
 #pragma once
 
+#include "analog_input.h"
 #include "board.h"
 #include "button.h"
 #include "digital.h"
