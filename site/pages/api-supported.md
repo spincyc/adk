@@ -180,6 +180,20 @@ Composition logic, not scan order, decides how simultaneous buttons behave.
 calculation remains correct across timer wrap for intervals shorter than half
 the counter range.
 
+## Bounded servo
+
+`BoundedServo` is a hardware-neutral calibrated intent model.
+`ServoConfigurationRecord` encodes a fixed, versioned configuration value; it
+does not provide EEPROM storage or torn-write recovery. `ServoOutput` owns the
+Mega 2560 D44/OC5C endpoint and Timer5.
+
+An `ExternalPowerDomainGate` expresses whether software may issue a pulse. It
+does not detect voltage, prove isolation, or switch the servo supply. Keep the
+servo-positive lead physically open while verifying the initial safe waveform
+at TP-S, then admit load power only under the lesson 017 E2 bench procedure.
+
+[Lesson 017](lessons/017.md) gives the complete lifecycle and evidence order.
+
 ## PWM output and RGB LED
 
 `PwmOutput` has the same inert construction and RAII cleanup contract as

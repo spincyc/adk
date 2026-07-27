@@ -21,6 +21,7 @@ third lesson for a deterministic integration project.
 | [014](014.md) | Character display | Staged startup and stable records |
 | [015](015.md) | Environmental station | Deterministic climate project |
 | [016](016.md) | Matrix keypad | Scanning and operator events |
+| [017](017.md) | Bounded servo | Calibrated motion intent and safe pulse evidence |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance
