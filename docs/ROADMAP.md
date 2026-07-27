@@ -30,32 +30,38 @@ publication ledger.
     and bounded audit presentation in lesson 018;
 18. explicit ultrasonic echo timing, timeout, and range validity in lesson 019;
 19. bounded motor intent with reversal dead time and stop dominance in lesson
-    020; and
+    020;
 20. deterministic range-aware rover supervision with inert command evidence in
-    lesson 021; and
+    lesson 021;
 21. owned I2C/SPI devices, direct Mega bus adapters, calibrated moisture
     observations, explicit RTC state, and fixed durable records in lesson 022;
-    and
 22. transactional inert LED loads and deterministic watering policy in lesson
-    023; and
+    023;
 23. coherent greenhouse stages, visible health patterns, and durable record
-    retry in lesson 024; and
+    retry in lesson 024;
 24. owned bounded infrared capture, classic NEC validity, and stable
-    receive-only records in lesson 025; and
+    receive-only records in lesson 025;
 25. exact receive-only telemetry packets, freshness tracking, bounded packet
-    reception, and visible evidence in lesson 026.
+    reception, and visible evidence in lesson 026;
+26. deterministic multi-source telemetry scheduling, attention, presentation,
+    and stable record replay in lesson 027; and
+27. synthetic inert-channel continuity assessment with explicit open, short,
+    stale, and contradictory evidence in lesson 028.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
 is experimental rather than hardware supported.
 
-## Next slice
+## Active slice
 
-1. deterministic inert cue scheduling in lesson 029.
+Lesson 029 has tracked cue-scheduler and bounded-audit core sources with focused
+tests. Its remaining boundary is independent review, normal host and umbrella
+registration, a narrative Mega example, size evidence, HTML/PDF publication,
+and promotion.
 
-Later slices follow the canonical three-lesson cadence through analog sensing,
-displays, environmental records, bounded actuators, buses and storage,
-receive-only observations, and the inert show-cue simulator.
+Lesson 030's inert show-cue simulator is queued behind that promotion. After
+030, development follows the canonical lessons 031--081 kit expansion, one
+implementation-depth three-lesson brief at a time.
 
 Every component requires lifecycle tests, deterministic fakes, a canonical Mega
 example, size evidence, terse HTML, a rich complementary PDF, and recorded
@@ -66,7 +72,8 @@ or unknown-protocol transmission.
 
 ## Parallel research tracks
 
-Two longer-range investigations sit outside the 30-lesson support promise:
+Two longer-range investigations sit outside the Arduino lesson curriculum and
+support claim:
 
 - full 8K HDMI transport and switching over a packet network;
 - a many-port USB 3 switching matrix over a packet network.

@@ -11,8 +11,8 @@ use the first-class RAII interfaces.
 Lessons 001--028 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
 bench cards remain open. Lesson 029 is the active implementation boundary;
-lessons 028--030 remain the
-ordered delivery queue. The [work queue](WORK_QUEUE.md) records later
+lesson 030 remains queued behind its reviewed promotion. The
+[work queue](WORK_QUEUE.md) records later
 expansion, research, physical, and publication work.
 
 All lessons remain experimental. Host verification, firmware compilation,

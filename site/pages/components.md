@@ -4,7 +4,7 @@ Status meanings:
 
 - **Host verified** — strict deterministic tests pass.
 - **Hardware experimental** — Mega build passes; bench card remains open.
-- **Planned** — contract or curriculum placement only.
+- **Queued** — contract or curriculum placement only.
 
 | Layer | Type | Status | Owns |
 |---|---|---|---|
@@ -54,7 +54,7 @@ Status meanings:
 | Behavior | `ObservationTracker` | Host verified | Local receipt time, sequence, quality, and freshness |
 | Adapter | `PacketReceiver` | Host verified | Fixed-capacity caller-supplied packet queue |
 | Behavior | `TelemetryEvidenceModel` | Host verified | Visible packet and freshness evidence |
-| Later layers | Buses, sensors, actuators | Planned | See catalog |
+| Queued layers | Cue scheduling and later curriculum components | Queued | See catalog and work queue |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.
 Behavior engines expose output intent rather than hiding hardware callbacks.
@@ -87,6 +87,11 @@ are bounded and restore controller state. `MoistureSensor` keeps calibration
 and sample validity explicit; `Rtc` and `FixedStorage` model clock state,
 append, sync, failure, and restart without claiming a physical RTC or SD-card
 adapter.
+
+Lessons 023--028 continue with inert load policy, greenhouse composition,
+receive-only infrared and telemetry evidence, a deterministic telemetry
+console, and inert-channel assessment. Lesson 029's cue scheduling and audit
+core remains active integration rather than a promoted component boundary.
 
 - [Exact API](api-supported.md)
 - [Full component catalog](docs/COMPONENTS.md)
