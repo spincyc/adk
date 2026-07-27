@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-07-27T22:23:50Z"
+generated_at: "2026-07-27T22:29:50Z"
 task_count: 18
 ---
 
@@ -10,7 +10,7 @@ This file is a rebuildable view. Task `state.md` files are authoritative.
 
 ## Active
 
-- `d79a95ee-e892-427e-9c6b-7fc151608dc5` — register lesson 029 core [active, high] (depends on 0702f4b1-501a-4fca-a6b0-cac73da74125)
+None.
 
 ## Queued
 
@@ -38,3 +38,4 @@ None.
 - `f28da18e-494a-428a-a5a6-473f866567c7` — Submit recovered work entries to journal [done, high]
 - `0702f4b1-501a-4fca-a6b0-cac73da74125` — independently review lesson 029 core [done, high] (depends on 5801d853-3278-4a52-84dd-7e25c0794d7c)
 - `5801d853-3278-4a52-84dd-7e25c0794d7c` — reconcile the recovered ledger [done, high]
+- `d79a95ee-e892-427e-9c6b-7fc151608dc5` — register lesson 029 core [done, high] (depends on 0702f4b1-501a-4fca-a6b0-cac73da74125)

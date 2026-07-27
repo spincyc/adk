@@ -2,7 +2,7 @@
 schema_version: 1
 task_uuid: "d79a95ee-e892-427e-9c6b-7fc151608dc5"
 title: "register lesson 029 core"
-status: "active"
+status: "done"
 priority: "high"
 priority_reason: "Recovered audit prompt 3; ordered by the repository recovery audit."
 parent: null
@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-27T22:23:36Z"
+updated_at: "2026-07-27T22:29:31Z"
 ---
 
 # Goal
