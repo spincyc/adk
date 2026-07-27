@@ -11,7 +11,7 @@ quality: quality-fast firmware-size-check package-smoke lessons-check site-check
 
 quality-fast: quality-tools quality-lint quality-test quality-size
 
-quality-lint: style-check
+quality-lint: style-check headers-check
 
 quality-test: host-test host-test-exceptions host-test-sanitize \
 	usb-matrix-check usb-mesh-check hdmi-mesh-check route-profile-check
