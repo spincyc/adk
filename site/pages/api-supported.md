@@ -383,6 +383,37 @@ electrically active. The Mega adapter separately indicates successful resource
 acquisition on D13 and presents the complete vehicle and pedestrian pattern on
 resistor-limited LEDs.
 
+## Climate sensor and DHT11 adapter
+
+`ClimateSensor` is the transport-neutral contract for timestamped, fixed-point
+temperature and relative-humidity samples. Consumers inspect
+`ClimateSample::state` before using either numeric field; unavailable,
+transport-timeout, checksum, range, stale, and invalid-timing states remain
+distinct.
+
+`Dht11Sensor` implements that contract while exclusively owning one
+bidirectional Mega pin. Construction is inert. The first `update(now)` anchors
+the stabilization interval, later updates enforce the one-second acquisition
+cadence, and `shutdown()` returns the data line to high impedance.
+
+```cpp
+adk::Dht11Sensor sensor (runtime.resources (), 22);
+
+if (sensor.initialize () == adk::Status::Ok)
+{
+    const adk::TimePoint now (millis ());
+
+    sensor.update (now);
+
+    const adk::ClimateSample observation =
+        sensor.sample (now, adk::Duration (5000));
+}
+```
+
+Tests inject the transport to replay pulse widths and faults without hardware.
+The RGB health pattern and the D22 data test point provide separate
+software-state and electrical-activity evidence.
+
 ## Simon engine
 
 `Simon` is a hardware-neutral deterministic state machine. The application
