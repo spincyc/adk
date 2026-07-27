@@ -8,10 +8,10 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--021 have first-class implementation work, deterministic host
+Lessons 001--022 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
-bench cards remain open. Lesson 022 is the active implementation boundary;
-lessons 023--030 remain the
+bench cards remain open. Lesson 023 is the active implementation boundary;
+lessons 024--030 remain the
 ordered delivery queue. The [work queue](WORK_QUEUE.md) records later
 expansion, research, physical, and publication work.
 
@@ -61,7 +61,8 @@ For every lesson, the queued implementation order is:
 | 019 | Host verified; bench open | Range validity and explicit echo timing | Echo timing point and distinct timeout/range evidence |
 | 020 | Host verified; bench open | Motor intent, reversal dead time, and stop policy | Direction/enable indicators and stopped-state evidence |
 | 021 | Host verified; bench open | Rover supervision and deterministic route policy | Independent stop and requested/applied motion evidence |
-| 022--024 | Queued | Owned `I2cBus`/`SpiBus`, RTC, SD records, constrained simulated loads, and greenhouse controller | Bus activity points, record acknowledgement, load-state LEDs, and a fault pattern |
+| 022 | Host verified; bench open | Owned `I2cBus`/`SpiBus`, explicit RTC state, and deterministic durable-record models | Bus activity points and durable record acknowledgement |
+| 023--024 | Queued | Constrained simulated loads and greenhouse controller; physical RTC/media adapters remain deferred | Load-state LEDs, a fault pattern, and deterministic record replay |
 | 025--027 | Queued | Decoded infrared input, lawful receive-only radio records, scheduling, and telemetry console | Capture indicator, timestamp/age display, stale-data alarm, and stored replay record |
 | 028--030 | Queued capstone | Injectable continuity/fault models, deterministic cue scheduling, operator confirmation, and inert show-cue simulator | Redundant state indicators, inert channel lamps, stop dominance, and a complete audit log |
 
@@ -100,7 +101,7 @@ supplies the shortest planned path through the library.
 | 019 | Component | Distance sensing and explicit validity | Timeout and out-of-range remain distinct from valid measurements |
 | 020 | Component | Motor driver and emergency-stop policy | Direction, enable, dead time, and shutdown are explicit and fail safe |
 | 021 | Project-bearing | Bench rover | Sensing, motion, scripted routes, and emergency stop pass first with wheels raised |
-| 022 | Component | RTC, SD records, `I2cBus`, and `SpiBus` | Leased transactions restore bus state and records survive restart |
+| 022 | Component | RTC state, durable-record models, `I2cBus`, and `SpiBus` | Leased transactions restore bus state and deterministic records survive restart |
 | 023 | Component | Relay-module simulation and constrained outputs | Inert fan, pump, and heater states enforce mutual exclusion |
 | 024 | Project-bearing | Greenhouse controller | Schedules, sensor faults, simulated loads, and logs reproduce every decision |
 | 025 | Component | Infrared receive and decoded command models | Captures preserve timing evidence while protocol policy stays separate |

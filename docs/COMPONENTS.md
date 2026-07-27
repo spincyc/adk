@@ -2,7 +2,7 @@
 
 This is the planning map for first-class ADK interfaces. It complements
 `CURRICULUM.md`: that file defines teaching order; this file defines ownership,
-composition, resources, and test seams. The lesson 021 slice is implemented,
+composition, resources, and test seams. The lesson 022 slice is implemented,
 host verified, and experimental. A catalog name is still a target unless a
 matching public header has landed; in particular, lesson 009 models its
 photoresistor through `AnalogInput` and does not yet publish a
@@ -99,8 +99,8 @@ that configuration into domain meaning.
 | `CharacterDisplay` | Parallel endpoints or `I2cDevice` | Presentation buffer separated from application state | 015 |
 | `ClimateSensor` | Borrowed transport | Timestamped fixed-point sample with explicit validity | 015 |
 | `Dht11Sensor` | One bidirectional digital pin | Explicit stabilization and cadence; high-impedance shutdown | 015 |
-| `Rtc` | `I2cDevice` | Validated civil time plus oscillator/power-loss status | 024 |
-| `SdCard` | `SpiDevice`, `Storage` | Append/sync outcomes preserve audit state | 024 |
+| `Rtc` | Borrowed clock adapter | Reading and oscillator state remain distinct from transport status | 024 |
+| `FixedStorage` | `FixedStorageMedium`, `Storage` | Staged and durable prefixes make append/sync/restart explicit | 024 |
 | `Keypad` | Row outputs, column inputs | Debounced key/chord snapshots | 018 |
 | `MatrixKeypad` | Four row outputs and three column inputs | One complete release-gated key observation per scan | 018 |
 | `Joystick` | Two `AnalogInput`, optional `Button` | Calibrated axes and dead zone | 018 |
