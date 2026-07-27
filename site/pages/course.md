@@ -23,8 +23,9 @@ lesson number divisible by three is project-bearing.
 | 025 | Owned infrared capture and classic NEC evidence | Infrared evidence trainer | Host verified; E1 bench open |
 | 026 | Receive-only packets and freshness | Telemetry evidence trainer | Host verified; E1 bench open |
 | 027 | Deterministic scheduling and presentation | Telemetry console | Host verified; E1 bench open |
-| 028 | Inert channel assessment | — | Active integration |
-| 029–030 | Cue scheduling and logs | Inert show-cue simulator | Planned |
+| 028 | Inert channel assessment | — | Host verified; E1 bench open |
+| 029 | Cue scheduling and logs | — | Active integration |
+| 030 | Inert composition | Inert show-cue simulator | Planned |
 
 The [canonical curriculum](docs/CURRICULUM.md) owns lesson numbers,
 prerequisites, and acceptance gates. [Project briefs](docs/PROJECTS.md) explain

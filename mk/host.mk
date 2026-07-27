@@ -31,6 +31,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_io \
 	$(BUILD_DIR)/host/test_inert_load_interlock \
 	$(BUILD_DIR)/host/test_inert_load_panel \
+	$(BUILD_DIR)/host/test_inert_channel_assessor \
 	$(BUILD_DIR)/host/test_infrared_decoder \
 	$(BUILD_DIR)/host/test_infrared_record \
 	$(BUILD_DIR)/host/test_keypad \
@@ -135,6 +136,13 @@ $(BUILD_DIR)/host/test_inert_load_panel: $(HOST_IO_SOURCES) \
 		$(HOST_IO_SOURCES) src/inert_load_panel.cpp \
 		src/pump_output.cpp tests/test_inert_load_panel.cpp \
 		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_inert_channel_assessor: $(HOST_CORE_SOURCES) \
+		src/inert_channel_assessor.cpp \
+		tests/test_inert_channel_assessor.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/inert_channel_assessor.cpp \
+		tests/test_inert_channel_assessor.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_infrared_decoder: $(HOST_CORE_SOURCES) \
 		src/board.cpp src/infrared_decoder.cpp src/pulse_capture.cpp \

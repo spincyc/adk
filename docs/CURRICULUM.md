@@ -8,9 +8,9 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--027 have first-class implementation work, deterministic host
+Lessons 001--028 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
-bench cards remain open. Lesson 028 is the active implementation boundary;
+bench cards remain open. Lesson 029 is the active implementation boundary;
 lessons 028--030 remain the
 ordered delivery queue. The [work queue](WORK_QUEUE.md) records later
 expansion, research, physical, and publication work.
@@ -67,7 +67,9 @@ For every lesson, the queued implementation order is:
 | 025 | Host verified; bench open | Owned infrared capture and classic NEC-only evidence | Capture indicator and stable receive-only record |
 | 026 | Host verified; bench open | Exact telemetry packets and freshness tracking | Timestamp, integrity, and age evidence from deterministic fixtures |
 | 027 | Host verified; bench open | Scheduling and deterministic telemetry console | Stale-data alarm and stored replay record |
-| 028--030 | Queued capstone | Injectable continuity/fault models, deterministic cue scheduling, operator confirmation, and inert show-cue simulator | Redundant state indicators, inert channel lamps, stop dominance, and a complete audit log |
+| 028 | Host verified; bench open | Inert channel assessment | Open, short, stale, and contradictory fixture evidence |
+| 029 | Active integration | Deterministic inert cue scheduling and bounded audit evidence | Confirmation window, stop dominance, and replayable records |
+| 030 | Queued capstone | Physically inert show-cue simulator | Redundant state indicators, inert channel lamps, stop dominance, and a complete audit log |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation

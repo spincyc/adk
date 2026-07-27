@@ -18,6 +18,7 @@
 #include "i2c_bus.h"
 #include "infrared_decoder.h"
 #include "infrared_record.h"
+#include "inert_channel_assessor.h"
 #include "inert_load_interlock.h"
 #include "inert_load_panel.h"
 #include "keypad.h"
