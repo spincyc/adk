@@ -25,6 +25,7 @@ HOST_PIEZO_SOURCES := \
 
 HOST_TESTS := \
 	$(BUILD_DIR)/host/test_core \
+	$(BUILD_DIR)/host/test_access_trainer \
 	$(BUILD_DIR)/host/test_analog_input \
 	$(BUILD_DIR)/host/test_io \
 	$(BUILD_DIR)/host/test_keypad \
@@ -65,6 +66,13 @@ $(BUILD_DIR)/host/test_core: $(HOST_CORE_SOURCES) tests/test_core.cpp \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) tests/test_core.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_access_trainer: $(HOST_CORE_SOURCES) \
+		src/access_trainer.cpp src/keypad.cpp tests/test_access_trainer.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/access_trainer.cpp src/keypad.cpp \
+		tests/test_access_trainer.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_analog_input: $(HOST_CORE_SOURCES) \
 		src/analog_input.cpp src/board.cpp src/digital_output.cpp \
@@ -186,10 +194,12 @@ $(BUILD_DIR)/host/test_servo_calibration: $(HOST_CORE_SOURCES) \
 		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_servo_output: $(HOST_CORE_SOURCES) \
-		src/board.cpp src/servo_output.cpp tests/test_servo_output.cpp \
+		src/board.cpp src/power_domain.cpp src/servo_output.cpp \
+		tests/test_servo_output.cpp \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
-		$(HOST_CORE_SOURCES) src/board.cpp src/servo_output.cpp \
+		$(HOST_CORE_SOURCES) src/board.cpp src/power_domain.cpp \
+		src/servo_output.cpp \
 		tests/test_servo_output.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_seven_segment_display: $(HOST_IO_SOURCES) \
