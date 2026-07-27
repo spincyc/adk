@@ -14,6 +14,7 @@
 #include "i2c_bus.h"
 #include "keypad.h"
 #include "matrix_keypad.h"
+#include "mega_bus_driver.h"
 #include "mono_led.h"
 #include "motor_intent.h"
 #include "night_light.h"
