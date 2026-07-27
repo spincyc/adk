@@ -218,3 +218,7 @@ CI runs the same commands from a clean checkout. Local bootstrap uses stock
 Arch Linux package names, while both local bootstrap and CI install Arduino AVR
 core 1.8.8. GitHub Actions are pinned remotely. Tests must not require network
 access after dependencies are installed.
+
+Ordinary `site-check` remains offline. After Pages deployment, the publication
+workflow separately verifies the live landing page, newest lesson, PDF
+signature, and byte-identical canonical sketch with bounded retries.

@@ -4,7 +4,7 @@ Build observable Arduino circuits from small, deterministic C++ objects. ADK is
 a resource-owning library and an evidence-centered course for the Arduino Mega
 2560—built, tested, and published entirely from the command line.
 
-<nav class="landing-actions" aria-label="Primary">
+<nav class="landing-actions" aria-label="Getting started">
   <a class="landing-primary" href="start/">Build from the command line</a>
   <a href="lessons/">Follow lessons 001–030</a>
   <a href="components/">Browse components</a>
@@ -12,8 +12,9 @@ a resource-owning library and an evidence-centered course for the Arduino Mega
 
 > **Current boundary:** lessons 001–030 are published and host verified, and
 > their canonical examples compile for the Mega 2560. Physical acceptance
-> remains open until each lesson has a recorded bench result. Lesson 031 is the
-> next queued component; lessons 031–081 remain the retained kit expansion.
+> remains open until each lesson has a recorded bench result.
+> [Lesson 030](lessons/030.md) is the current published capstone. Lesson 031 is
+> the next queued component; lessons 031–081 remain the retained kit expansion.
 
 ## One method, three ways in
 
