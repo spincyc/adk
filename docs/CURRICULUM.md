@@ -8,10 +8,10 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--023 have first-class implementation work, deterministic host
+Lessons 001--024 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
-bench cards remain open. Lesson 024 is the active implementation boundary;
-lessons 025--030 remain the
+bench cards remain open. Lesson 025 is the active implementation boundary;
+lessons 026--030 remain the
 ordered delivery queue. The [work queue](WORK_QUEUE.md) records later
 expansion, research, physical, and publication work.
 
@@ -63,7 +63,7 @@ For every lesson, the queued implementation order is:
 | 021 | Host verified; bench open | Rover supervision and deterministic route policy | Independent stop and requested/applied motion evidence |
 | 022 | Host verified; bench open | Owned `I2cBus`/`SpiBus`, explicit RTC state, and deterministic durable-record models | Bus activity points and durable record acknowledgement |
 | 023 | Host verified; bench open | Constrained simulated loads and watering policy | Mutually exclusive load-state LEDs and a fault pattern |
-| 024 | Active integration | Greenhouse controller; physical RTC/media adapters remain deferred | Deterministic decision and record replay |
+| 024 | Host verified; bench open | Greenhouse controller; physical RTC/media adapters remain deferred | Deterministic decision and record replay |
 | 025--027 | Queued | Decoded infrared input, lawful receive-only radio records, scheduling, and telemetry console | Capture indicator, timestamp/age display, stale-data alarm, and stored replay record |
 | 028--030 | Queued capstone | Injectable continuity/fault models, deterministic cue scheduling, operator confirmation, and inert show-cue simulator | Redundant state indicators, inert channel lamps, stop dominance, and a complete audit log |
 

@@ -44,6 +44,9 @@ Status meanings:
 | Component | `FixedStorage` | Host verified | Fixed staged and durable record prefixes |
 | Component | `IndicatorPump`, `InertLoadPanel` | Hardware experimental | Three borrowed resistor-LED channels |
 | Behavior | `WateringController` | Host verified | Moisture samples, output intent, and supplied time |
+| Behavior | `GreenhouseController` | Host verified | Borrowed sensor, output, display, record sink, and supplied time |
+| Component | `GreenhouseHealthPattern` | Hardware experimental | One RGB evidence LED |
+| Adapter | `StorageRecordSink` | Host verified | Borrowed storage with append/sync durability |
 | Later layers | Buses, sensors, actuators | Planned | See catalog |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.

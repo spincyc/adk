@@ -43,8 +43,11 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_climate_sensor \
 	$(BUILD_DIR)/host/test_dht11_sensor \
 	$(BUILD_DIR)/host/test_environmental_station \
+	$(BUILD_DIR)/host/test_greenhouse_controller \
+	$(BUILD_DIR)/host/test_greenhouse_health_pattern \
 	$(BUILD_DIR)/host/test_night_light \
 	$(BUILD_DIR)/host/test_reaction_timer \
+	$(BUILD_DIR)/host/test_record_sink \
 	$(BUILD_DIR)/host/test_pwm_output \
 	$(BUILD_DIR)/host/test_rgb_led \
 	$(BUILD_DIR)/host/test_rover_controller \
@@ -216,6 +219,33 @@ $(BUILD_DIR)/host/test_environmental_station: $(HOST_CORE_SOURCES) \
 		src/environmental_station.cpp tests/test_environmental_station.cpp \
 		$(HOST_LDFLAGS) -o "$@"
 
+$(BUILD_DIR)/host/test_greenhouse_controller: $(HOST_IO_SOURCES) \
+		src/analog_input.cpp src/board.cpp src/character_display.cpp \
+		src/climate_sensor.cpp src/greenhouse_controller.cpp src/moisture_sensor.cpp \
+		src/pump_output.cpp src/record_sink.cpp src/watering_controller.cpp \
+		tests/test_greenhouse_controller.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_IO_SOURCES) src/analog_input.cpp src/board.cpp \
+		src/character_display.cpp src/climate_sensor.cpp \
+		src/greenhouse_controller.cpp \
+		src/moisture_sensor.cpp src/pump_output.cpp src/record_sink.cpp \
+		src/watering_controller.cpp tests/test_greenhouse_controller.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_greenhouse_health_pattern: $(HOST_RGB_SOURCES) \
+		src/analog_input.cpp src/character_display.cpp src/climate_sensor.cpp \
+		src/greenhouse_controller.cpp src/greenhouse_health_pattern.cpp \
+		src/moisture_sensor.cpp src/pump_output.cpp src/record_sink.cpp \
+		src/watering_controller.cpp \
+		tests/test_greenhouse_health_pattern.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_RGB_SOURCES) src/analog_input.cpp src/character_display.cpp \
+		src/climate_sensor.cpp src/greenhouse_controller.cpp \
+		src/greenhouse_health_pattern.cpp src/moisture_sensor.cpp \
+		src/pump_output.cpp src/record_sink.cpp src/watering_controller.cpp \
+		tests/test_greenhouse_health_pattern.cpp $(HOST_LDFLAGS) -o "$@"
+
 $(BUILD_DIR)/host/test_night_light: $(HOST_CORE_SOURCES) \
 		src/night_light.cpp tests/test_night_light.cpp \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
@@ -229,6 +259,13 @@ $(BUILD_DIR)/host/test_reaction_timer: $(HOST_IO_SOURCES) src/button.cpp \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_IO_SOURCES) src/button.cpp src/reaction_timer.cpp \
 		tests/test_reaction_timer.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_record_sink: $(HOST_CORE_SOURCES) \
+		src/fixed_storage.cpp src/record_sink.cpp src/storage.cpp \
+		tests/test_record_sink.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/fixed_storage.cpp src/record_sink.cpp \
+		src/storage.cpp tests/test_record_sink.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_pwm_output: $(HOST_PWM_SOURCES) \
 		tests/test_pwm_output.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host

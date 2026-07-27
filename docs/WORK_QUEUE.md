@@ -21,8 +21,7 @@ briefs come from [the project catalog](PROJECTS.md) and the
 
 | Boundary | State | Required next result |
 |---|---|---|
-| [001--023](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [024](design/LESSONS_022_024.md) | Active integration | Deterministic greenhouse project with coherent stages, health evidence, and durable records |
+| [001--024](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
 | [025](design/LESSONS_025_027_TELEMETRY.md) | Active integration | Owned atomic pulse capture, decoded IR evidence, tests, example, and lesson package |
 | [026--027](design/LESSONS_025_027_TELEMETRY.md) | Queued | Lawful receive-only observations and telemetry console |
 | [028--030](design/LESSONS_028_030.md) | Queued | Fault/continuity models, deterministic cue scheduling, and physically inert show-cue simulator |
