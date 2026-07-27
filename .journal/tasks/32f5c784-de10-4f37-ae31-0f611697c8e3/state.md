@@ -2,7 +2,7 @@
 schema_version: 1
 task_uuid: "32f5c784-de10-4f37-ae31-0f611697c8e3"
 title: "execute the full clean release-readiness gate"
-status: "queued"
+status: "active"
 priority: "high"
 priority_reason: "Recovered audit prompt 10; ordered by the repository recovery audit."
 parent: null
@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-27T22:00:43Z"
+updated_at: "2026-07-27T23:32:51Z"
 ---
 
 # Goal
