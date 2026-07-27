@@ -44,6 +44,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_seven_segment_display \
 	$(BUILD_DIR)/host/test_shift_register \
 	$(BUILD_DIR)/host/test_simon \
+	$(BUILD_DIR)/host/test_threshold_input \
 	$(BUILD_DIR)/host/test_traffic_junction
 
 HOST_HEADERS := $(shell find src tests/fake_arduino -type f -name '*.h' | sort)
@@ -194,6 +195,12 @@ $(BUILD_DIR)/host/test_simon: $(HOST_CORE_SOURCES) src/simon.cpp \
 		tests/test_simon.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/simon.cpp tests/test_simon.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_threshold_input: src/threshold_input.cpp \
+		tests/test_threshold_input.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		src/threshold_input.cpp tests/test_threshold_input.cpp \
 		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_traffic_junction: $(HOST_CORE_SOURCES) \
