@@ -1,17 +1,21 @@
 #include <Adk.h>
 
+constexpr adk::PinId buttonPin = 22;
+
 adk::Runtime      runtime;
-adk::DigitalInput button (runtime.resources (), 22, adk::Pull::Up);
-adk::MonoLed      led    (runtime.resources (), LED_BUILTIN);
+adk::DigitalInput buttonInput (runtime.resources (), buttonPin, adk::Pull::Up);
+adk::MonoLed      led         (runtime.resources (), LED_BUILTIN);
 
 void setup ()
 {
-    button.initialize ();
-    led.initialize    ();
+    buttonInput.initialize ();
+    led.initialize         ();
 }
 
 void loop ()
 {
-    button.update ();
-    led.set       (button.read () == adk::Level::Low);
+    buttonInput.update ();
+
+    const bool pressed = buttonInput.read () == adk::Level::Low;
+    led.set                               (pressed);
 }
