@@ -8,10 +8,10 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--024 have first-class implementation work, deterministic host
+Lessons 001--025 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
-bench cards remain open. Lesson 025 is the active implementation boundary;
-lessons 026--030 remain the
+bench cards remain open. Lesson 026 is the active implementation boundary;
+lessons 027--030 remain the
 ordered delivery queue. The [work queue](WORK_QUEUE.md) records later
 expansion, research, physical, and publication work.
 

@@ -39,7 +39,9 @@ publication ledger.
 22. transactional inert LED loads and deterministic watering policy in lesson
     023; and
 23. coherent greenhouse stages, visible health patterns, and durable record
-    retry in lesson 024.
+    retry in lesson 024; and
+24. owned bounded infrared capture, classic NEC validity, and stable
+    receive-only records in lesson 025.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
@@ -47,7 +49,7 @@ is experimental rather than hardware supported.
 
 ## Next slice
 
-1. owned infrared pulse capture and classic NEC evidence in lesson 025.
+1. lawful receive-only radio observations in lesson 026.
 
 Later slices follow the canonical three-lesson cadence through analog sensing,
 displays, environmental records, bounded actuators, buses and storage,

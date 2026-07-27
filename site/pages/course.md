@@ -20,7 +20,8 @@ lesson number divisible by three is project-bearing.
 | 022 | Owned buses, RTC state, and deterministic durable records | Bus and storage trainer | Host verified; bench open |
 | 023 | Constrained output simulation | Inert load interlock | Host verified; E1 bench open |
 | 024 | Deterministic sensing, output, and records | Greenhouse controller | Host verified; E1 bench open |
-| 025–027 | Infrared and receive-only radio | Telemetry console | Planned |
+| 025 | Owned infrared capture and classic NEC evidence | Infrared evidence trainer | Host verified; E1 bench open |
+| 026–027 | Receive-only observations | Telemetry console | Planned |
 | 028–030 | Fault simulation, cue scheduling, logs | Inert show-cue simulator | Planned |
 
 The [canonical curriculum](docs/CURRICULUM.md) owns lesson numbers,

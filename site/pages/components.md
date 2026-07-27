@@ -47,6 +47,9 @@ Status meanings:
 | Behavior | `GreenhouseController` | Host verified | Borrowed sensor, output, display, record sink, and supplied time |
 | Component | `GreenhouseHealthPattern` | Hardware experimental | One RGB evidence LED |
 | Adapter | `StorageRecordSink` | Host verified | Borrowed storage with append/sync durability |
+| Endpoint | `PulseCapture`, `MegaPulseCaptureIo` | Hardware experimental | One interrupt-capable pin and interrupt line |
+| Behavior | `InfraredDecoder` | Host verified | Immutable classic NEC pulse evidence |
+| Value codec | `InfraredRecord` | Host verified | Fixed receive-only observation record |
 | Later layers | Buses, sensors, actuators | Planned | See catalog |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.

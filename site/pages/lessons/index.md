@@ -29,6 +29,7 @@ third lesson for a deterministic integration project.
 | [022](022.md) | Owned buses and durable records | Transaction ownership, explicit clock state, and restart recovery |
 | [023](023.md) | Inert load interlock | Mutually exclusive LED loads and safe watering policy |
 | [024](024.md) | Observable greenhouse trainer | Coherent stages, health evidence, and durable replay |
+| [025](025.md) | Infrared frame evidence | Owned capture, classic NEC validity, and stable records |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance

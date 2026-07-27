@@ -44,6 +44,7 @@ nav:
       - "022 — Owned buses and durable records": lessons/022.md
       - "023 — Inert load interlock": lessons/023.md
       - "024 — Greenhouse trainer": lessons/024.md
+      - "025 — Infrared evidence": lessons/025.md
   - Components: components.md
   - Supported API: api-supported.md
   - Design:
