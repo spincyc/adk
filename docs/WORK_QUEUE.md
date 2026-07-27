@@ -4,7 +4,8 @@ This is ADK's authoritative delivery and deferred-work ledger. It records what
 must not be dropped; it does not promote an interface. Lesson numbers and
 subjects come from [the curriculum](CURRICULUM.md), architecture and acceptance
 come from [the development contract](DEVELOPMENT.md), and detailed project
-briefs come from [the project catalog](PROJECTS.md).
+briefs come from [the project catalog](PROJECTS.md) and the
+[extended cadence](projects/component_project_cadence.md).
 
 ## Status meanings
 
@@ -56,10 +57,10 @@ physical work; retail kit names are not electrical identities.
 | [052--054](projects/component_project_cadence.md) | Queued | Owned IR capture, known-code transmission, command translator |
 | [055--057](projects/component_project_cadence.md) | Queued | Threshold descriptors, characterization, module test bench |
 | [058--060](projects/component_project_cadence.md) | Queued | Constraint model, fault-aware panel, inert escape-room console |
-| [061--063](projects/component_project_cadence.md) | Queued | MPU6050 samples, orientation presentation, balance-table instrument |
-| [064--066](projects/component_project_cadence.md) | Queued | Revision-specific MPU6050/QMI8658 adapters, source qualification, motion recorder |
+| [061--063](projects/component_project_cadence.md) | Queued | Revision-neutral MPU6050/QMI8658 samples, orientation presentation, balance-table instrument |
+| [064--066](projects/component_project_cadence.md) | Queued | Normalized inertial records, source qualification, motion recorder |
 | [067--069](projects/component_project_cadence.md) | Queued | Owned single-wire transport, DS18B20 probe set, thermal mapper |
-| [070--072](projects/component_project_cadence.md) | Queued | Multiplexed digits, MAX7219 and PCF8574 display transports, timing desk |
+| [070--072](projects/component_project_cadence.md) | Queued | Multiplexed digits, MAX7219 display transport, timing desk |
 | [073--075](projects/component_project_cadence.md) | Queued | DS1302 three-wire clock, BMP180/PCF8591 acquisition, pressure and analog station |
 | [076--078](projects/component_project_cadence.md) | Queued | Identified color adapter, fixed calibration, sorting trainer |
 | [079--081](projects/component_project_cadence.md) | Queued | Bounded low-side driver, indicator semantics, inert qualification bench |
@@ -71,6 +72,21 @@ collision. The [kit coverage audit](design/ELEGOO_MEGA_KIT_COVERAGE_2026-07-27.m
 [safety taxonomy](design/KIT_MODULE_SAFETY_TAXONOMY.md) remain implementation
 inputs. Coverage is not complete until every claimed module has an exact
 inventory record and the relevant block passes its gates.
+
+Lessons 031--033 have an implementation-ready design brief. Lessons 034--081
+are canonical subjects and retained work, but their cadence entries are not
+implementation-ready lesson plans. Before code begins for each three-lesson
+arc, expand it to the same depth as 031--033: public values and interfaces,
+resource and pin budgets, deterministic fixture and failure matrices,
+narrative example flow, staged circuit-native experiments, HTML/PDF division,
+specimen gates, and explicit bench acceptance. “Planned specimen coverage”
+never means that an exact kit module is supported.
+
+The PCF8574 LCD backpack, gas-response experiments, unidentified emitters,
+physiological claims, and prototype/power construction variants still require
+separately scoped, inventory-gated planning. Lesson 057 covers only identified
+low-voltage analog/comparator characterization; it is not a catch-all claim
+for every product sold as a 37-sensor kit.
 
 ## Physical acceptance campaign
 
