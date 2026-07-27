@@ -21,8 +21,8 @@ not promote work or replace this ledger.
 - Lesson 029 has an independently reviewed scheduler and audit core, canonical
   Mega example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
-- Lesson 030 has a committed implementation contract. Implementation follows
-  Lesson 029 promotion.
+- Lesson 030 has a committed implementation contract and is the active
+  physically inert show-cue simulator boundary.
 - The USB research track has a deterministic product-native `Cau`/`Pau`
   `ColdMove` model. It performs no USB action and makes no transparency claim.
 - The exact kit inventory template and honest planned-versus-supported coverage
@@ -61,7 +61,7 @@ qualification are not yet supported.
 | Boundary | State | Required next result |
 |---|---|---|
 | [001--029](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [030](design/LESSONS_028_030.md) | Queued | Physically inert show-cue simulator |
+| [030](design/LESSONS_028_030.md) | Active integration | Physically inert show-cue simulator |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming

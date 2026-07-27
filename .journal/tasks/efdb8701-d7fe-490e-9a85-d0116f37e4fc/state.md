@@ -2,7 +2,7 @@
 schema_version: 1
 task_uuid: "efdb8701-d7fe-490e-9a85-d0116f37e4fc"
 title: "implement lesson 030 capstone"
-status: "queued"
+status: "active"
 priority: "high"
 priority_reason: "Recovered audit prompt 5; ordered by the repository recovery audit."
 parent: null
@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-27T22:00:43Z"
+updated_at: "2026-07-27T22:42:15Z"
 ---
 
 # Goal
