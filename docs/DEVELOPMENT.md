@@ -241,6 +241,11 @@ agent, after integrating a lesson or project, and before release or
 publication. Update it in the same boundary when work changes state; a chat
 message or agent mailbox is not a durable queue.
 
+The integrator continues through safe queued work without routine confirmation.
+A blocker needs an owner and next action, while independent work continues.
+Only a consequential ambiguity unsupported by repository evidence justifies a
+user question, and questions are asked one at a time.
+
 An agent claims one bounded deliverable and lists the files it may edit before
 working. Parallel agents must not edit the same file. Shared indexes, build
 fragments, navigation, generated artifacts, and status tables have one named

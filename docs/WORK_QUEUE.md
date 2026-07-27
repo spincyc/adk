@@ -131,3 +131,18 @@ The integrator and every agent must re-read this file before work assignment,
 after each lesson or project integration, and before release or publication.
 New conversation scope enters this ledger before it can be treated as safely
 queued.
+
+## Continuous execution rule
+
+Proceed through every safe, discoverable item in this ledger without routine
+confirmation. Commit at coherent dependency boundaries and continue to the
+next unblocked item. A failed gate records an owner, evidence, and next action;
+it does not stop unrelated work. Ask the user one question at a time only when
+a consequential choice cannot be resolved from this ledger, the canonical
+design documents, repository evidence, or an already agreed preference.
+
+Conversation history is not the work queue. Add every agreed deliverable,
+constraint, deferral, and acceptance condition here or in a linked canonical
+document during the same work boundary. Before ending an execution turn,
+reconcile new scope and completed work with this ledger so context loss cannot
+silently discard it.
