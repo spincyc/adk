@@ -1,0 +1,18 @@
+include mk/config.mk
+include mk/bootstrap.mk
+include mk/host.mk
+include mk/arduino.mk
+include mk/docs.mk
+include mk/style.mk
+
+.DEFAULT_GOAL := check
+
+.PHONY: check clean
+check: host-test style-check
+
+clean:
+	@if test -f "$(BUILD_MARKER)"; then \
+		rm -rf -- "$(BUILD_DIR)"; \
+	else \
+		echo "Nothing to clean: $(BUILD_DIR) is not an ADK build directory."; \
+	fi
