@@ -4,11 +4,11 @@ LESSON_PDFS := $(addprefix doc/lessons/,$(addsuffix .pdf,$(LESSONS)))
 lessons: $(LESSON_PDFS)
 
 doc/lessons/001.pdf: docs/lessons/001/main.tex \
-		docs/lessons/assets/001-built-in-led-pencil.png
+		docs/lessons/assets/001-digital-output-pencil.png
 doc/lessons/002.pdf: docs/lessons/002/main.tex \
-		docs/lessons/assets/002-two-leds-pencil.png
+		docs/lessons/assets/002-digital-input-pencil.png
 doc/lessons/003.pdf: docs/lessons/003/main.tex \
-		docs/lessons/assets/003-rgb-led-pencil.png
+		docs/lessons/assets/003-reaction-timer-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons

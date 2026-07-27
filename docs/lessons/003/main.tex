@@ -1,0 +1,610 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=0.70in]{geometry}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage[american]{circuitikz}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{titlesec}
+\usetikzlibrary{positioning}
+\graphicspath{{docs/lessons/assets/}{../assets/}}
+
+\definecolor{AdkBlue}{HTML}{24577A}
+\definecolor{AdkRed}{HTML}{A23B32}
+\definecolor{AdkGreen}{HTML}{39734C}
+\definecolor{CodeGray}{HTML}{F7F7F7}
+
+\hypersetup
+{
+    pdftitle={ADK Lesson 003: Deterministic Reaction Timer},
+    pdfauthor={Kevin Shanahan},
+    pdfsubject={Button, DigitalOutput, deterministic debounce, replay, and Mega 2560 acceptance}
+}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textsc{ADK Lesson 003}}
+\rhead{Reaction timer}
+\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries\color{AdkBlue}}{\thesection}{0.5em}{}
+\titleformat{\subsection}{\large\bfseries\color{AdkBlue}}{\thesubsection}{0.5em}{}
+
+\lstdefinestyle{adkcpp}
+{
+    language=C++,
+    backgroundcolor=\color{CodeGray},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{AdkBlue}\bfseries,
+    commentstyle=\color{AdkGreen},
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    frame=single,
+    rulecolor=\color{black!20},
+    breaklines=true,
+    tabsize=4
+}
+\newcommand{\checkbox}{\(\square\)}
+\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
+\newcommand{\warningbox}[1]{%
+  \begin{center}
+  \fcolorbox{AdkRed}{AdkRed!6}{\parbox{0.91\linewidth}{\textbf{\color{AdkRed}Safety checkpoint.} #1}}
+  \end{center}}
+\newcommand{\evidencebox}[1]{%
+  \begin{center}
+  \fcolorbox{AdkBlue}{AdkBlue!5}{\parbox{0.91\linewidth}{#1}}
+  \end{center}}
+
+\begin{document}
+
+\begin{center}
+  {\Huge\bfseries Deterministic Reaction Timer}\\[4pt]
+  {\Large Button + DigitalOutput on the Arduino Mega 2560}\\[8pt]
+  \textit{First predict, then replay, then trust the stopwatch.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 003 --- integration project & Time & 100--140 minutes\\
+Inputs & pushbutton on D22 & Output & LED on D8\\
+Status & host verified; hardware experimental & Board & Arduino Mega 2560\\
+\end{tabularx}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth,height=0.28\textheight,keepaspectratio]
+      {003-reaction-timer-pencil.png}
+  \caption*{\textbf{Orientation only.} Use the exact schematic and connection
+  table below. Confirm the LED resistor, D8, D22, and GND before power.}
+\end{figure}
+
+\section{Mission and success criteria}
+
+Build a reaction timer with a debounced button and a diagnostic LED. A press and
+release start the trial, a ready pulse precedes a configured dark wait, and the
+cue then remains on for a configured response window. A press during the dark
+wait is premature; no press before timeout is a failure. Given the same immutable
+configuration and timestamped observations, the program must reproduce the same
+states and result.
+
+By the end, you can:
+
+\begin{itemize}
+  \item trace an active-low button and an active-high LED from pin to ground;
+  \item distinguish a raw electrical sample from a debounced state and edge;
+  \item explain why time is supplied to \texttt{update()} instead of read secretly;
+  \item replay a bounce trace and predict its single stable press event;
+  \item test premature presses, timeout, rollover-safe elapsed time, and shutdown;
+  \item collect a Mega 2560 acceptance record without calling observation proof of timing accuracy.
+\end{itemize}
+
+\warningbox{Disconnect USB and every other power source before changing wiring.
+Use a 330\(\Omega\) series resistor with the external LED. Do not connect an
+output directly to ground or 5\,V. The button circuit below uses the Mega's
+internal pull-up: do not add an external 5\,V jumper. Stop immediately for heat,
+odor, unexpected brightness, or repeated resets.}
+
+\section{Why this is lesson 003}
+
+Lessons 001 and 002 introduced one hardware endpoint at a time. This third
+lesson composes them into a project:
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=8mm and 11mm,
+    box/.style={draw,rounded corners,minimum height=8mm,align=center},
+    >=latex]
+  \node[box] (sample) {Mega GPIO\\sample};
+  \node[box,right=of sample] (input) {\texttt{DigitalInput}\\raw electrical state};
+  \node[box,right=of input] (button) {\texttt{Button}\\stable state + edges};
+  \node[box,below=of button] (timer) {ReactionTimer\\deterministic state};
+  \node[box,left=of timer] (output) {\texttt{DigitalOutput}\\safe pin ownership};
+  \node[box,left=of output] (led) {LED +\\330\(\Omega\)};
+  \draw[->] (sample) -- (input);
+  \draw[->] (input) -- (button);
+  \draw[->] (button) -- (timer);
+  \draw[->] (timer) -- (output);
+  \draw[->] (output) -- (led);
+\end{tikzpicture}
+\end{center}
+
+The project \emph{composes} owners. It does not make a button inherit from an
+input pin or a game inherit from an LED. Each layer gives the layer above a
+smaller, clearer contract.
+
+\section{Predict before wiring}
+
+The button defaults to the internal pull-up. Open means HIGH and pressed means
+LOW. The LED is active-high.
+
+\begin{tabularx}{\linewidth}{@{}c c c X@{}}
+\toprule
+Button & D22 sample & D8 level & Meaning\\
+\midrule
+released & HIGH & LOW  & waiting in the dark\\
+pressed  & LOW  & LOW  & possible press; debounce first\\
+released & HIGH & HIGH & cue is visible; timer is running\\
+pressed  & LOW  & HIGH & possible reaction; debounce first\\
+\bottomrule
+\end{tabularx}
+
+\textbf{Predict.} A dirty contact reads LOW, HIGH, LOW, LOW at
+1000, 1002, 1005, and 1025\,ms. With a 20\,ms debounce interval, at what
+timestamp can a stable press first be reported? \blank{1.0in}
+
+\textbf{Predict.} Why must the cue remain off after an early press until the
+button has been released?\\[3pt]
+\blank{\linewidth}
+
+\newpage
+\section{Exact schematic --- build only from this page}
+
+\begin{center}
+\begin{circuitikz}[american voltages]
+  \draw
+    (0,4.2) node[left,align=right]{Mega D8\\digital output}
+    to[short,o-] (1.1,4.2)
+    to[R,l={$R_1=330\,\Omega$}] (3.5,4.2)
+    to[leD,l={$LED_1$}] (5.8,4.2)
+    -- (6.7,4.2) -- (6.7,3.4) node[ground]{};
+
+  \draw
+    (0,1.5) node[left,align=right]{Mega D22\\\texttt{INPUT\_PULLUP}}
+    to[short,o-] (2.6,1.5)
+    to[nos,l={momentary pushbutton}] (5.3,1.5)
+    -- (6.7,1.5) -- (6.7,.7) node[ground]{};
+
+  \node[draw,rounded corners,align=left,anchor=west] at (7.5,3.2)
+    {\textbf{Output branch}\\
+     D8 \(\rightarrow\) 330\(\Omega\)\\
+     \(\rightarrow\) LED anode\\
+     LED cathode \(\rightarrow\) GND};
+  \node[draw,rounded corners,align=left,anchor=west] at (7.5,1.2)
+    {\textbf{Input branch}\\
+     D22 \(\rightarrow\) switch\\
+     switch \(\rightarrow\) GND\\
+     no external 5\,V wire};
+\end{circuitikz}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+Connection & Required part & Unpowered verification\\
+\midrule
+D8 to LED anode & 330\(\Omega\) resistor in series & meter or color bands\\
+LED cathode to GND & LED polarity & datasheet; flat edge is only a clue\\
+D22 to switch terminal A & jumper & continuity to D22 only\\
+switch terminal B to GND & jumper & open unpressed, continuous pressed\\
+\bottomrule
+\end{tabularx}
+
+\textbf{Four-pin buttons.} The two pins on either side may already be connected
+internally. Use a continuity meter while unpowered; place the circuit across
+the contacts that change from open to closed when pressed.
+
+\textbf{Why D22?} It is an ordinary Mega digital pin, physically separated from
+the common PWM cluster and serial pins. The project needs no interrupt. Polling
+at supplied timestamps makes behavior testable and sufficient for human input.
+
+\section{Ownership and lifetime}
+
+Construction records configuration but does not touch hardware. Initialization
+claims each pin and configures it. Shutdown is idempotent. The output becomes
+high impedance; the input releases its pull-up and claim. Destruction calls
+shutdown, including when a caller using exceptions unwinds through ADK code.
+ADK itself neither throws nor allocates.
+
+\begin{lstlisting}[style=adkcpp]
+adk::ResourceRegistry resources;
+adk::DigitalOutput    cue       (resources, 8, adk::Level::Low);
+
+adk::Button trigger
+{
+    resources,
+    adk::ButtonConfig
+    {
+        22,
+        adk::Pull::Up,
+        adk::Level::Low,
+        adk::Duration (20)
+    }
+};
+
+adk::ReactionTimerConfig timerConfig;
+timerConfig.readyDuration   = adk::Duration (1000);
+timerConfig.waitDuration    = adk::Duration (2000);
+timerConfig.responseTimeout = adk::Duration (1500);
+timerConfig.resultDuration  = adk::Duration (1000);
+
+adk::ReactionTimer timer (timerConfig);
+
+const bool cueReady    = cue.initialize     () == adk::Status::Ok;
+const bool buttonReady = trigger.initialize () == adk::Status::Ok;
+const bool timerReady  = timer.initialize   () == adk::Status::Ok;
+
+if (!(cueReady && buttonReady && timerReady))
+{
+    trigger.shutdown ();
+    cue.shutdown     ();
+    return;
+}
+\end{lstlisting}
+
+The compile-authoritative full sketch is
+This endpoint-focused listing uses the exact supported API. The canonical
+\texttt{examples/Lesson003ReactionTimer} composes the same output through
+\texttt{MonoLed} and obtains the registry from \texttt{Runtime}. Its
+\texttt{LED\_BUILTIN} pin is D13; for the exact external D8 circuit in this
+lesson, make a local example copy and change only that constructor argument to
+8. Notice the aligned calls and explicit \texttt{== Status::Ok} checks.
+\texttt{ReactionTimer} is a pure state owner; the GPIO owners perform hardware
+cleanup. No callback runs during cleanup.
+
+\section{Raw, stable, and event are different facts}
+
+A switch contact may alternate several times before settling.
+\texttt{rawPressed()} reports the latest interpreted candidate.
+\texttt{pressed()} changes only after the candidate state has remained unchanged
+for the configured interval. \texttt{pressEvent()} and
+\texttt{releaseEvent()} are non-consuming snapshots: every observer gets the
+same answer until the next update.
+
+\begin{center}
+\begin{tikzpicture}[x=.012cm,y=.72cm,>=latex]
+  \draw[->] (0,0) -- (720,0) node[right]{time (ms)};
+  \foreach \x/\lab in {0/1000,160/1002,400/1005,560/1007,720/1009}
+  {
+    \draw (\x,-.08) -- (\x,.08) node[below=5pt]{\lab};
+  }
+  \draw[very thick,AdkRed]
+    (0,2) -- (160,2) -- (160,1) -- (400,1) -- (400,2)
+    -- (560,2) -- (560,1) -- (720,1);
+  \node[left] at (0,1.5) {raw};
+  \draw[very thick,AdkBlue] (0,3.3) -- (720,3.3);
+  \node[left] at (0,3.3) {stable};
+  \node[align=left,anchor=west] at (770,2.2)
+    {No stable press yet:\\the final LOW has not\\lasted 20\,ms.};
+\end{tikzpicture}
+\end{center}
+
+At 1029\,ms, if LOW persisted, \texttt{pressed()} and \texttt{pressEvent()} are
+both true. Calling \texttt{pressEvent()} twice still returns true. At the next
+update, \texttt{pressEvent()} becomes false while \texttt{pressed()} remains
+true. A stable release later produces one \texttt{releaseEvent()}.
+
+\subsection{A precise debounce rule}
+
+\begin{enumerate}
+  \item Interpret the raw level using active-low or active-high configuration.
+  \item If raw differs from the current candidate, replace the candidate and
+        record \texttt{candidateSince = now}.
+  \item If candidate differs from stable and
+        \texttt{now - candidateSince >= debounce}, commit the stable state.
+  \item Derive exactly one press or release snapshot from that stable transition.
+\end{enumerate}
+
+Unsigned elapsed subtraction makes the comparison safe across one clock
+rollover, provided every configured interval is less than half the time range.
+Do not compare absolute deadlines with \texttt{now >= deadline}.
+
+\newpage
+\section{The reaction-timer state machine}
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=11mm and 14mm,
+    state/.style={draw,rounded corners,minimum width=28mm,minimum height=9mm,align=center},
+    >=latex]
+  \node[state] (idle) {Idle\\LED off};
+  \node[state,right=of idle] (release) {AwaitRelease\\LED off};
+  \node[state,right=of release] (ready) {Ready\\pulsing};
+  \node[state,below=of ready] (wait) {Wait\\LED off};
+  \node[state,left=of wait] (cue) {Cue\\LED on};
+  \node[state,left=of cue] (success) {Success\\pulsing};
+  \node[state,below=of wait] (failure) {Failure\\LED on};
+  \draw[->] (idle) -- node[above]{press event} (release);
+  \draw[->] (release) -- node[above]{release / not pressed} (ready);
+  \draw[->] (ready) -- node[right]{ready duration} (wait);
+  \draw[->] (wait) -- node[above]{wait duration} (cue);
+  \draw[->] (wait) -- node[right]{press event} (failure);
+  \draw[->] (cue) -- node[above]{press event} (success);
+  \draw[->] (cue) -- node[left]{timeout} (failure);
+  \draw[->] (success) to[bend right=28] node[above]{result duration} (idle);
+  \draw[->] (failure) to[bend left=18] node[right]{result duration} (idle);
+\end{tikzpicture}
+\end{center}
+
+The button arms its press event only after a stable release, so a button held
+during initialization cannot start a trial. \texttt{AwaitRelease} also requires
+release before the ready phase. Only debounced events count. The cue timestamp
+and LED snapshot belong to the same state transition:
+
+\[
+    reaction = pressTimestamp - cueTimestamp.
+\]
+
+Do not turn on the LED in one update and record the start in a later update.
+The measured value then includes an undocumented scheduling error. This first
+implementation uses a fixed \texttt{waitDuration}; a later randomized adapter
+must choose that value before construction and record its generator version and
+seed. It must not hide randomness inside \texttt{ReactionTimer}.
+
+\section{Reference update order}
+
+\begin{lstlisting}[style=adkcpp]
+void loop ()
+{
+    const adk::TimePoint now (millis ());
+
+    trigger.update (now);
+    const adk::Status timerStatus = timer.update (now, trigger);
+
+    const adk::ReactionTimerSnapshot state = timer.snapshot ();
+    const adk::Level level = state.ledOn
+                           ? adk::Level::High
+                           : adk::Level::Low;
+    const adk::Status outputStatus = cue.write (level);
+
+    if (!(timerStatus == adk::Status::Ok &&
+          outputStatus == adk::Status::Ok))
+    {
+        trigger.shutdown ();
+        cue.shutdown     ();
+    }
+}
+\end{lstlisting}
+
+All observers see one coherent update. Input sampling precedes behavior; behavior
+precedes output. Reporting comes last in the canonical example. Reordering those
+phases can introduce a one-update disagreement between the LED and recorded
+start time.
+
+\section{Replay before hardware}
+
+First test \texttt{ReactionTimer} at its narrow observation boundary. Configure
+ready = 100\,ms, wait = 1000\,ms, response timeout = 1500\,ms, and result =
+1000\,ms. Initialize it, then replay these exact observations. The button bounce
+trace on the previous page is tested independently and then end-to-end.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}r l l X@{}}
+\toprule
+Time (ms) & button observation & state & expected snapshot\\
+\midrule
+0    & released & Idle & LED off; no outcome\\
+100  & pressed + press event & AwaitRelease & LED off\\
+200  & released + release event & Ready & ready pulse on\\
+299  & released & Ready & duration not yet due\\
+300  & released & Wait & LED off\\
+1299 & released & Wait & duration not yet due\\
+1300 & released & Cue & cue time = 1300; LED on\\
+1450 & pressed + press event & Success & reaction = 150\,ms\\
+2450 & released & Idle & result duration elapsed\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\evidencebox{\textbf{Determinism check.} Run the trace twice from newly
+constructed objects with the same configuration. Compare every
+snapshot, output write, state, and result byte for byte. A matching final
+number alone is insufficient.}
+
+\subsection{Complete these trace exercises}
+
+\begin{enumerate}
+  \item Add a press event at 800\,ms. Expected state, outcome, and reason:\\[3pt]
+        \blank{0.92\linewidth}.
+  \item Hold LOW while initializing \texttt{Button}. Identify its press-arming
+        behavior and the first action that can start \texttt{ReactionTimer}:\\[3pt]
+        \blank{0.92\linewidth}.
+  \item Replay times near unsigned wrap:
+        \texttt{0xFFFFFFF0}, \texttt{0xFFFFFFFA}, \texttt{0x00000004}.
+        Calculate each elapsed difference: \blank{3.0in}.
+  \item Read \texttt{pressEvent()} twice after a stable press update. Record both:
+        \blank{2.0in}. Advance once and record it again:
+        \blank{1.0in}.
+\end{enumerate}
+
+\newpage
+\section{Minimum correctness suite}
+
+Each row needs an assertion over state, event snapshots, hardware operations,
+and resource claims.
+
+\begin{tabularx}{\linewidth}{@{}p{0.29\linewidth}X p{0.20\linewidth}@{}}
+\toprule
+Case & Required proof & Result\\
+\midrule
+clean press/release & one press, one release, correct timestamps & \checkbox{}\\
+bounce shorter than 20\,ms & no stable edge & \checkbox{}\\
+exactly 20\,ms & edge occurs at the inclusive boundary & \checkbox{}\\
+premature press & \texttt{Failure}; outcome \texttt{PrematurePress}; cue absent & \checkbox{}\\
+held at start & trial waits for release & \checkbox{}\\
+press after cue & reaction uses supplied timestamps & \checkbox{}\\
+two event observers & identical non-consuming snapshots & \checkbox{}\\
+timestamp rollover & elapsed subtraction remains correct & \checkbox{}\\
+busy D8 or D22 & initialization fails without leaked claim & \checkbox{}\\
+injected configure failure & reverse rollback; no later write & \checkbox{}\\
+repeated initialization & success without reconfiguration & \checkbox{}\\
+repeated shutdown & no unsafe duplicate operation & \checkbox{}\\
+destruction while active & D8 high impedance; claims reusable & \checkbox{}\\
+two identical replays & every observable byte matches & \checkbox{}\\
+\bottomrule
+\end{tabularx}
+
+\textbf{Fault-injection exercise.} Make D22 configuration fail after D8 has
+been claimed and configured. Write the expected cleanup operations in order:\\[3pt]
+\blank{0.98\linewidth}.
+
+\textbf{Composition exercise.} Explain why the reaction timer should receive a
+button snapshot rather than read D22 itself:\\[3pt]
+\blank{0.98\linewidth}.
+
+\section{Mega 2560 procedure}
+
+\begin{enumerate}
+  \item Record repository commit, Arduino CLI version, AVR core version, and
+        fully qualified board name \texttt{arduino:avr:mega}.
+  \item Disconnect power. Build the exact schematic and check every row in the
+        connection table. Confirm the external LED resistor with a meter or bands.
+  \item Compile the unmodified \texttt{examples/Lesson003ReactionTimer}. Record
+        flash and static RAM. Compilation proves only that the program fits and
+        type-checks.
+  \item Copy the example to a temporary sketch and replace
+        \texttt{LED\_BUILTIN} with 8 so it matches this lesson's exact external
+        schematic. Compile, upload, and keep the button released through reset.
+        Verify the LED pulses during Ready, remains off during Wait, and then
+        turns on for Cue.
+  \item Press once after the cue. Verify exactly one result is reported and the
+        cue changes according to the documented terminal state.
+  \item Run three trials. Then deliberately press early; verify false-start
+        indication and release gating.
+  \item Hold the button through reset. Verify no immediate valid reaction.
+  \item Invoke or reach the example's shutdown path. Measure D8: confirm it is
+        input/high impedance rather than merely observing a dark LED.
+  \item Disconnect USB before any change. Inspect the board and components for
+        abnormal temperature or damage.
+\end{enumerate}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l X l X@{}}
+\toprule
+Field & Record & Field & Record\\
+\midrule
+Commit & & Mega board ID &\\[7pt]
+CLI / AVR core & & Supply / USB source &\\[7pt]
+Flash bytes & & Static RAM bytes &\\[7pt]
+Meter / analyzer & & D8 shutdown reading &\\[7pt]
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{center}
+\begin{tabular}{@{}c c c c c@{}}
+\toprule
+Trial & configured wait (ms) & cue time & press time & reaction (ms)\\
+\midrule
+1 &&&&\\[7pt]
+2 &&&&\\[7pt]
+3 &&&&\\[7pt]
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Status language.} If only the host tests and Mega compile pass, write
+``host verified; Mega compiled.'' Write ``hardware verified'' only after the
+physical checklist and measurements are complete.
+
+\section{Diagnose from evidence}
+
+\begin{tabularx}{\linewidth}{@{}p{0.26\linewidth}X X@{}}
+\toprule
+Observation & Likely causes & First safe check\\
+\midrule
+LED never lights & reversed LED, wrong row, failed init, premature press & power off; trace D8 branch\\
+LED always lights & D8 shorted HIGH, wrong state, output not shut down & disconnect; inspect then fake trace\\
+button always active & switch orientation, D22 grounded, polarity mismatch & power off; continuity test\\
+one press reports many & raw state used as event, debounce reset error & replay bounce trace\\
+reaction too small & wrong event accepted or cue timestamp recorded late & inspect button arming and transition\\
+result varies in replay & hidden clock/random/global state & log every supplied input\\
+board resets on cue & short or excessive current & disconnect immediately\\
+\bottomrule
+\end{tabularx}
+
+\section{Analysis and extension}
+
+\begin{enumerate}
+  \item Show the reaction calculation for each hardware trial. Report timer
+        resolution; do not report more precision than the clock supplies.
+  \item Does debounce add 20\,ms to the reported reaction? State whether the
+        design records the first raw candidate or stable-transition timestamp,
+        then defend that policy:\\[3pt]
+        \blank{0.92\linewidth}.
+  \item Add a second diagnostic output without changing \texttt{Button}. Use it
+        to distinguish Ready, Wait, Cue, Success, and Failure.
+  \item Replace the LED cue with a semantic \texttt{MonoLed}. Which layer should
+        know that HIGH means luminous? \blank{3.4in}.
+  \item Design a two-button choice reaction test. Define simultaneous stable
+        presses as an explicit invalid chord; do not depend on update order.
+  \item Design a replay file containing configuration, timestamps, button
+        observations, and expected snapshots. Then specify the generator version
+        and seed fields a future randomized wait adapter would add.
+\end{enumerate}
+
+\section{Claim, evidence, reasoning}
+
+\textbf{Claim.} The project converts a bouncing active-low contact into exactly
+one deterministic reaction result while managing both pins safely.
+
+\textbf{Evidence.} Cite at least one complete replay, one fault-injection test,
+three physical trials, and the measured D8 shutdown state.\\[2pt]
+\blank{\linewidth}\\[8pt]
+\blank{\linewidth}\\[8pt]
+
+\textbf{Reasoning.} Connect the evidence to the debounce interval, button arming,
+state transition timestamps, resource ownership, and high-impedance cleanup.\\[2pt]
+\blank{\linewidth}\\[8pt]
+\blank{\linewidth}\\[8pt]
+
+\section{Further reading}
+
+\begin{itemize}
+  \item Arduino Mega 2560 Rev3 documentation and schematics:
+        \href{https://docs.arduino.cc/hardware/mega-2560/}{official Mega 2560 hardware page}
+  \item Arduino language reference, digital pins and pull-ups:
+        \url{https://docs.arduino.cc/language-reference/}
+  \item Microchip ATmega640/1280/1281/2560/2561 datasheet:
+        \url{https://www.microchip.com/en-us/product/ATmega2560}
+  \item Jack Ganssle, \textit{A Guide to Debouncing}:
+        \url{https://www.ganssle.com/debouncing.htm}
+  \item C++ Core Guidelines, resource management:
+        \href{https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines\#S-resource}{resource-management section}
+  \item ADK HTML reference and compile-authoritative examples:
+        \url{https://spincyc.github.io/adk/}
+\end{itemize}
+
+\textbf{Final sign-off}\\
+Wiring checked unpowered: \checkbox{}\quad
+Replay passed twice: \checkbox{}\quad
+False start tested: \checkbox{}\quad
+D8 shutdown measured: \checkbox{}\quad
+Power removed before teardown: \checkbox{}
+
+\vfill
+\begin{center}
+\small ADK lesson 003 --- printable experiment companion to the terse HTML reference
+\end{center}
+
+\end{document}
