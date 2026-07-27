@@ -12,13 +12,13 @@ Time-dependent behavior receives the current time explicitly:
 behavior.update (now);
 ```
 
-The spelling above illustrates the target design; no such general behavior API
-is implemented yet. Supplying time makes debounce, timeouts, playback, and
-timestamp wraparound testable without real delays.
+`Button`, `ReactionTimer`, `PiezoSounder`, and `Simon` use this explicit-time
+discipline. Supplying time makes debounce, timeouts, playback, and timestamp
+wraparound testable without real delays.
 
 One update samples inputs once, advances state once, and publishes one stable
-output snapshot. Button press and release events are planned as non-consuming
-snapshots: multiple observers see the same value until the next update.
+output snapshot. Button press and release events are non-consuming snapshots:
+multiple observers see the same value until the next update.
 
 ## Inputs and traces
 
@@ -37,9 +37,9 @@ press-release cycle is required.
 
 ## Repeatable sequences
 
-The planned Simon engine uses neutral cue identities rather than colors or pin
-numbers. Hardware mapping assigns each cue to a position, button, LED, and
-optional tone.
+The host-verified Simon engine uses neutral `CueId` values rather than colors
+or pin numbers. Hardware mapping assigns each cue to a position, button, LED,
+and optional tone.
 
 A production sequence may be pseudorandom, but replay is exact:
 
@@ -65,9 +65,9 @@ A production sequence may be pseudorandom, but replay is exact:
 Compilation is not hardware acceptance. A component page should state which
 layers it has actually passed.
 
-## Simon acceptance set
+## Simon verification status
 
-The planned midpoint project will cover:
+Host tests cover:
 
 - legal state transitions;
 - exact cue-on and inter-cue timing;
@@ -80,6 +80,8 @@ The planned midpoint project will cover:
 - golden seeded sequences;
 - replay of timestamped input traces.
 
-Table-driven traces will serve both as executable correctness tests and as
-examples of proper API use. The project remains marked planned until those
-tests and its hardware adapter exist.
+Table-driven traces serve both as executable correctness tests and examples of
+proper API use. The engine is host verified and compiles as part of the Mega
+library. The four-button, light, and sound adapter remains hardware
+experimental until its canonical example and signed physical acceptance card
+exist.
