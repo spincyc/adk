@@ -12,8 +12,8 @@ a resource-owning library and an evidence-centered course for the Arduino Mega
 
 > **Current boundary:** lessons 001–021 are published and host verified, and
 > their canonical examples compile for the Mega 2560. Physical acceptance
-> remains open until each lesson has a recorded bench result. Lesson 022
-> are integration work, not supported releases.
+> remains open until each lesson has a recorded bench result. Lesson 022 is
+> active implementation work, not a supported release.
 
 ## One method, three ways in
 
@@ -64,7 +64,8 @@ if (!status.ok ())
 Public objects use explicit ownership, deterministic time, transactional
 initialization, and RAII cleanup without exceptions or heap allocation. The
 published projects are the reaction timer, Simon, adaptive night light,
-traffic junction, environmental station, and inert access trainer.
+traffic junction, environmental station, inert access trainer, and bench
+rover.
 
 [Read the supported API](api-supported.md), begin with
 [Lesson 001](lessons/001.md), or download the printable companion from each

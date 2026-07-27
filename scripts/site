@@ -127,6 +127,7 @@ def stage() -> None:
         "SIZE_BUDGETS.md",
         "STYLE.md",
         "TESTING.md",
+        "WORK_QUEUE.md",
     )
     for name in canonical_docs:
         source = ROOT / "docs" / name
@@ -137,6 +138,25 @@ def stage() -> None:
         destination = SOURCE_ROOT / "docs/projects" / project.name
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(project, destination)
+    design_documents = (
+        "ELEGOO_MEGA_KIT_COVERAGE_2026-07-27.md",
+        "KIT_MODULE_SAFETY_TAXONOMY.md",
+        "LESSONS_022_024.md",
+        "LESSONS_025_027_TELEMETRY.md",
+        "LESSONS_028_030.md",
+        "LESSONS_031_033_INPUT_EXPANSION_PLAN.md",
+    )
+    for name in design_documents:
+        source = ROOT / "docs/design" / name
+        destination = SOURCE_ROOT / "docs/design" / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+    acceptance_template = ROOT / "docs/templates/hardware-acceptance.md"
+    acceptance_destination = (
+        SOURCE_ROOT / "docs/templates/hardware-acceptance.md"
+    )
+    acceptance_destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(acceptance_template, acceptance_destination)
     copy_tree(
         ROOT / "docs/research",
         SOURCE_ROOT / "docs/research",
