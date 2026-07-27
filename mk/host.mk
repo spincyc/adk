@@ -33,6 +33,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_pwm_output \
 	$(BUILD_DIR)/host/test_rgb_led \
 	$(BUILD_DIR)/host/test_piezo_sounder \
+	$(BUILD_DIR)/host/test_sampled_signal \
 	$(BUILD_DIR)/host/test_simon
 
 HOST_HEADERS := $(shell find src tests/fake_arduino -type f -name '*.h' | sort)
@@ -101,6 +102,13 @@ $(BUILD_DIR)/host/test_piezo_sounder: $(HOST_PIEZO_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_PIEZO_SOURCES) tests/test_piezo_sounder.cpp \
 		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_sampled_signal: $(HOST_CORE_SOURCES) \
+		src/sampled_signal.cpp tests/test_sampled_signal.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/sampled_signal.cpp \
+		tests/test_sampled_signal.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_simon: $(HOST_CORE_SOURCES) src/simon.cpp \
 		tests/test_simon.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
