@@ -11,6 +11,8 @@ doc/lessons/003.pdf: docs/lessons/003/main.tex \
 		docs/lessons/assets/003-reaction-timer-pencil.png
 doc/lessons/004.pdf: docs/lessons/004/main.tex \
 		docs/lessons/assets/004-pwm-rgb-pencil.png
+doc/lessons/005.pdf: docs/lessons/005/main.tex \
+		docs/lessons/assets/005-piezo-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons
