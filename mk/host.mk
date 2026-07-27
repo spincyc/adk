@@ -31,6 +31,8 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_io \
 	$(BUILD_DIR)/host/test_inert_load_interlock \
 	$(BUILD_DIR)/host/test_inert_load_panel \
+	$(BUILD_DIR)/host/test_infrared_decoder \
+	$(BUILD_DIR)/host/test_infrared_record \
 	$(BUILD_DIR)/host/test_keypad \
 	$(BUILD_DIR)/host/test_matrix_keypad \
 	$(BUILD_DIR)/host/test_mega_avr_bus_io \
@@ -53,6 +55,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_rover_controller \
 	$(BUILD_DIR)/host/test_rtc_storage \
 	$(BUILD_DIR)/host/test_piezo_sounder \
+	$(BUILD_DIR)/host/test_pulse_capture \
 	$(BUILD_DIR)/host/test_sampled_signal \
 	$(BUILD_DIR)/host/test_servo_calibration \
 	$(BUILD_DIR)/host/test_servo_output \
@@ -125,6 +128,22 @@ $(BUILD_DIR)/host/test_inert_load_panel: $(HOST_IO_SOURCES) \
 		$(HOST_IO_SOURCES) src/inert_load_panel.cpp \
 		src/pump_output.cpp tests/test_inert_load_panel.cpp \
 		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_infrared_decoder: $(HOST_CORE_SOURCES) \
+		src/board.cpp src/infrared_decoder.cpp src/pulse_capture.cpp \
+		src/pulse_input.cpp tests/test_infrared_decoder.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/board.cpp src/infrared_decoder.cpp \
+		src/pulse_capture.cpp src/pulse_input.cpp \
+		tests/test_infrared_decoder.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_infrared_record: $(HOST_CORE_SOURCES) \
+		src/infrared_record.cpp tests/test_infrared_record.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/infrared_record.cpp \
+		tests/test_infrared_record.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_keypad: $(HOST_CORE_SOURCES) src/keypad.cpp \
 		tests/test_keypad.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
@@ -298,6 +317,14 @@ $(BUILD_DIR)/host/test_piezo_sounder: $(HOST_PIEZO_SOURCES) \
 		tests/test_piezo_sounder.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_PIEZO_SOURCES) tests/test_piezo_sounder.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_pulse_capture: $(HOST_CORE_SOURCES) \
+		src/board.cpp src/pulse_capture.cpp src/pulse_input.cpp \
+		tests/test_pulse_capture.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/board.cpp src/pulse_capture.cpp \
+		src/pulse_input.cpp tests/test_pulse_capture.cpp \
 		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_sampled_signal: $(HOST_CORE_SOURCES) \
