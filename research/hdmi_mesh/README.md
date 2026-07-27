@@ -33,6 +33,22 @@ Build and run:
 make hdmi-mesh-check
 ```
 
+Inspect the deterministic synthetic fixture without hardware or network access:
+
+```sh
+make hdmi-mesh-routes
+make hdmi-mesh-route \
+    HDMI_SOURCE=input:camera-a HDMI_DESTINATION=output:wall-center
+make hdmi-mesh-trace HDMI_ROUTE=route:camera-to-wall
+make hdmi-mesh-crc HDMI_ROUTE=route:camera-to-wall
+make hdmi-mesh-latency HDMI_ROUTE=route:camera-to-wall
+```
+
+Every report begins with `fixture synthetic`. CRC and latency are fixed model
+evidence that exercises the inspection contract; they are not measurements.
+The commands are read-only and perform no discovery, routing, media, network,
+or hardware operation.
+
 The fixed capacities are 16 nodes, 32 sources, 64 sinks, and 64 simultaneous
 routes. No operation allocates memory, throws, touches hardware, or performs
 network I/O.
