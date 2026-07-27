@@ -209,27 +209,30 @@ continuity from 5\,V to GND and trace D6 through the resistor and piezo to GND.
 \begin{lstlisting}[style=adkcpp]
 #include <Adk.h>
 
-adk::Runtime       runtime;
-adk::PiezoSounder sounder (runtime.resources (), 6);
+constexpr adk::PinId                   SounderPin = 6;
+constexpr adk::PiezoSounder::Frequency CueHz      = 440;
+const adk::Duration                    CueLength  (250);
+
+adk::Runtime      runtime;
+adk::PiezoSounder sounder (runtime.resources (), SounderPin);
 
 void setup ()
 {
     const adk::Status status = sounder.initialize ();
 
-    if (status == adk::Status::Ok)
+    if (status != adk::Status::Ok)
     {
-        sounder.play
-        (
-            440,
-            adk::Duration  (250),
-            adk::TimePoint (millis ())
-        );
+        return;
     }
+
+    const adk::TimePoint now (millis ());
+    sounder.play (CueHz, CueLength, now);
 }
 
 void loop ()
 {
-    sounder.update (adk::TimePoint (millis ()));
+    const adk::TimePoint now (millis ());
+    sounder.update (now);
 }
 \end{lstlisting}
 
