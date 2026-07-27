@@ -10,7 +10,7 @@ lesson number divisible by three is project-bearing.
 | 007–009 | Analog input, calibration, filtering | Adaptive night light | Hardware experimental |
 | 010–012 | Shift register, display, timed states | Traffic junction | Host verified; bench open |
 | 013 | DHT11 sensor and validated samples | — | Host verified; bench open |
-| 014–015 | Character display and stable records | Environmental station | Planned |
+| 014–015 | Character display and stable records | Environmental station | Host verified; bench open |
 | 016–018 | Keypad, servo, persistence | Inert access trainer | Planned |
 | 019–021 | Range sensor, motor driver, encoder | Bench rover | Planned |
 | 022–024 | RTC, storage, bus and relay simulation | Greenhouse controller | Planned |
