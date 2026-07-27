@@ -167,6 +167,11 @@ def stage() -> None:
         SOURCE_ROOT / "docs/inventory",
         required=False,
     )
+    copy_tree(
+        ROOT / "docs/audits",
+        SOURCE_ROOT / "docs/audits",
+        required=False,
+    )
     copy_tree(ROOT / "site/pages", SOURCE_ROOT, required=False)
     published_lessons = {
         source.stem for source in (ROOT / "doc/lessons").glob("*.pdf")
