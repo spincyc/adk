@@ -7,6 +7,7 @@
 #include "digital.h"
 #include "digital_input.h"
 #include "digital_output.h"
+#include "dht11_sensor.h"
 #include "keypad.h"
 #include "matrix_keypad.h"
 #include "mono_led.h"
