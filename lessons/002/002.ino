@@ -11,7 +11,7 @@ void setup ()
 
 void loop ()
 {
-    constexpr auto intervalMs = 100;
+    constexpr auto intervalMs = 1000;
 
     red .on  ();
     blue.off ();

@@ -45,13 +45,21 @@ def copy_lesson_materials() -> None:
         shutil.copy2(source, destination)
     for source in sources:
         destination = (
-            SOURCE_ROOT / "downloads/sources/lessons" / f"{source.parent.name}.tex"
+            SOURCE_ROOT
+            / "downloads/sources/lessons"
+            / source.parent.name
+            / "main.tex"
         )
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
     copy_tree(
         ROOT / "docs/lessons/assets",
         SOURCE_ROOT / "downloads/assets",
+        required=False,
+    )
+    copy_tree(
+        ROOT / "docs/lessons/assets",
+        SOURCE_ROOT / "downloads/sources/lessons/assets",
         required=False,
     )
 
