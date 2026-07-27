@@ -67,6 +67,48 @@ hysteresis, sensor-open and sensor-short behavior, and the corresponding RGB
 diagnostic state. Each record separately proves resource acquisition and the
 electrical safe state.
 
+## Explore the USB research models
+
+The phase-one adapter is an experimental Linux USB/IP workflow. It uses a
+temporary local ledger and is not the authoritative fenced mesh controller.
+Setup, dependency diagnosis, tests, discovery, status, logging, and plan
+targets do not attach, detach, bind, or load kernel modules:
+
+```sh
+make usb-matrix-setup
+make usb-matrix-doctor
+make usb-matrix-check
+make usb-matrix-discover
+make usb-matrix-status
+make usb-matrix-log
+
+make usb-export-plan USB_BUS_ID=1-2
+make usb-assign-plan \
+    USB_DEVICE_NODE=source-a USB_BUS_ID=1-2 USB_HOST_NODE=destination-a
+make usb-matrix-dry-run \
+    USB_DEVICE_NODE=source-a USB_BUS_ID=1-2 USB_HOST_NODE=destination-a
+make usb-release-plan USB_HOST_NODE=destination-a USB_PORT=0
+```
+
+`usb-matrix-dry-run` is an alias for one assignment plan. Discovery invokes
+read-only `usbip` commands and therefore requires the stock Arch `usbip`
+package and access to the named nodes. Only `usb-export`, `usb-assign`, and
+`usb-release`, plus their `usb-import` and `usb-route` aliases, request kernel
+or USB/IP mutation. They never invoke `sudo`; arrange privileges separately.
+
+The dynamic mesh controller and action adapter are host-only research models.
+They model multiple source devices, destination slots, exclusive routes,
+fencing, and break-before-make movement without accessing USB hardware:
+
+```sh
+make usb-mesh-check
+make usb-mesh-test
+```
+
+There is no root `usb-mesh-dry-run` target yet. The future mesh CLI and its
+plan/apply commands are documented as planned interfaces in
+`docs/research/USB3_MESH_CLI.md`; they are not runnable commands.
+
 ## Validate and publish
 
 ```sh
@@ -96,6 +138,13 @@ Run `make quality` before committing a supported boundary.
 ## hardware-card-check       Check a hardware card's required structure.
 ## host-test                 Run deterministic host tests without exceptions.
 ## host-test-exceptions      Verify RAII cleanup in an exception environment.
+## usb-matrix-check          Test the experimental Linux USB/IP adapter.
+## usb-matrix-doctor         Check phase-one USB/IP command dependencies.
+## usb-matrix-discover       Discover local and optionally remote USB/IP devices.
+## usb-matrix-status         Print the non-authoritative temporary lease ledger.
+## usb-matrix-dry-run        Preview one phase-one USB/IP assignment.
+## usb-mesh-check            Test the host-only dynamic mesh research models.
+## usb-mesh-test             Build and run the mesh controller and adapter tests.
 ## lessons                   Build all lesson PDFs.
 ## site                      Build the documentation site.
 ## site-serve                Serve the site locally.
