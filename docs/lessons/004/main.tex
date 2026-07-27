@@ -192,9 +192,10 @@ limits. If any estimate lacks margin, increase resistance or stop.
 
 \section*{3. Understand duty, not ``analog voltage''}
 
-\texttt{PwmOutput::Duty} is an 8-bit value: 0 is always inactive, 255 is
-always active, and intermediate values switch rapidly. Duty 128 is about
-50\%, but it does not command a steady 2.5 V. The LED and eye integrate pulses.
+\texttt{PwmOutput::Duty} is an 8-bit value: 0 is 0\% high duty, 255 is
+100\% high duty, and intermediate values switch rapidly. Duty 128 is about
+50\%, but it does not command a steady 2.5 V. In this lesson's common-cathode
+LED, zero is inactive. Other circuits may assign different semantics.
 
 \begin{center}
 \begin{tikzpicture}[x=0.95cm,y=0.65cm]

@@ -25,7 +25,7 @@ namespace {
 
     adk::Button buttonFour (runtime.resources (), buttonFourConfig);
 
-    adk::Button* buttons[] = {&buttonOne, &buttonTwo, &buttonThree, &buttonFour};
+    adk::Button* cueButtons[] = {&buttonOne, &buttonTwo, &buttonThree, &buttonFour};
 
     adk::MonoLed ledOne (runtime.resources (), ledPins[0]);
 
@@ -35,7 +35,7 @@ namespace {
 
     adk::MonoLed ledFour (runtime.resources (), ledPins[3]);
 
-    adk::MonoLed* leds[] = {&ledOne, &ledTwo, &ledThree, &ledFour};
+    adk::MonoLed* cueLeds[] = {&ledOne, &ledTwo, &ledThree, &ledFour};
 
     const adk::RgbLedChannel redChannel   = {5, 330};
     const adk::RgbLedChannel greenChannel = {6, 330};
@@ -44,14 +44,59 @@ namespace {
 
     adk::PiezoSounder sounder (runtime.resources (), 11);
 
-    adk::XorShift32CueSource source (sequenceSeed);
-    adk::SimonConfig         config;
-    adk::Simon               game (config, source);
+    adk::XorShift32CueSource cueSource (sequenceSeed);
+    adk::SimonConfig         gameConfig;
+    adk::Simon               simon (gameConfig, cueSource);
 
     adk::SimonPhase previousPhase = adk::SimonPhase::Idle;
     adk::CueId      previousCue   = adk::CueId::One;
     bool            cueVisible    = false;
     bool            halted        = false;
+
+    bool initializeHardware ();
+
+    adk::SimonInput observePlayer (adk::TimePoint now);
+
+    adk::Status decideGame (adk::TimePoint now, const adk::SimonInput& input);
+
+    bool presentGame (adk::TimePoint now, const adk::SimonSnapshot& snapshot);
+
+    void stopSafely ();
+} // namespace
+
+void setup ()
+{
+    halted = !initializeHardware ();
+}
+
+void loop ()
+{
+    if (halted)
+    {
+        return;
+    }
+
+    const adk::TimePoint now (millis ());
+
+    const adk::SimonInput observation = observePlayer (now);
+
+    const adk::Status decision = decideGame (now, observation);
+
+    if (!(decision == adk::Status::Ok))
+    {
+        stopSafely ();
+        return;
+    }
+
+    const adk::SimonSnapshot snapshot = simon.snapshot ();
+
+    if (!presentGame (now, snapshot))
+    {
+        stopSafely ();
+    }
+}
+
+namespace {
 
     void shutdownHardware ()
     {
@@ -61,12 +106,12 @@ namespace {
 
         for (uint8_t index = adk::Simon::cueCount; index > 0; --index)
         {
-            leds[index - 1]->shutdown ();
+            cueLeds[index - 1]->shutdown ();
         }
 
         for (uint8_t index = adk::Simon::cueCount; index > 0; --index)
         {
-            buttons[index - 1]->shutdown ();
+            cueButtons[index - 1]->shutdown ();
         }
     }
 
@@ -76,19 +121,19 @@ namespace {
 
         for (uint8_t index = 0; index < adk::Simon::cueCount; ++index)
         {
-            ready = (buttons[index]->initialize () == adk::Status::Ok) && ready;
+            ready = (cueButtons[index]->initialize () == adk::Status::Ok) && ready;
         }
 
         for (uint8_t index = 0; index < adk::Simon::cueCount; ++index)
         {
-            ready = (leds[index]->initialize () == adk::Status::Ok) && ready;
+            ready = (cueLeds[index]->initialize () == adk::Status::Ok) && ready;
         }
 
         ready = (statusLed.initialize () == adk::Status::Ok) && ready;
 
         ready = (sounder.initialize () == adk::Status::Ok) && ready;
 
-        ready = (game.initialize () == adk::Status::Ok) && ready;
+        ready = (simon.initialize () == adk::Status::Ok) && ready;
 
         if (!ready)
         {
@@ -98,39 +143,44 @@ namespace {
         return ready;
     }
 
-    adk::SimonInput sampleButtons (adk::TimePoint now)
+    adk::SimonInput observePlayer (adk::TimePoint now)
     {
         adk::SimonInput input;
 
         for (uint8_t index = 0; index < adk::Simon::cueCount; ++index)
         {
-            buttons[index]->update (now);
+            cueButtons[index]->update (now);
 
             const uint8_t mask = static_cast<uint8_t> (1u << index);
 
-            if (buttons[index]->pressed ())
+            if (cueButtons[index]->pressed ())
             {
                 input.activeMask |= mask;
             }
 
-            if (buttons[index]->pressEvent ())
+            if (cueButtons[index]->pressEvent ())
             {
                 input.pressedMask |= mask;
             }
 
-            if (buttons[index]->releaseEvent ())
+            if (cueButtons[index]->releaseEvent ())
             {
                 input.releasedMask |= mask;
             }
         }
 
-        const adk::SimonPhase phase    = game.snapshot ().phase;
+        const adk::SimonPhase phase    = simon.snapshot ().phase;
         const bool            canStart = phase == adk::SimonPhase::Idle ||
                                          phase == adk::SimonPhase::GameSuccess ||
                                          phase == adk::SimonPhase::GameFailure;
 
         input.startEvent = canStart && input.pressedMask != 0;
         return input;
+    }
+
+    adk::Status decideGame (adk::TimePoint now, const adk::SimonInput& input)
+    {
+        return simon.update (now, input);
     }
 
     adk::PiezoSounder::Frequency frequencyFor (adk::CueId cue)
@@ -146,7 +196,7 @@ namespace {
         for (uint8_t index = 0; index < adk::Simon::cueCount; ++index)
         {
             const bool active = (mask & static_cast<uint8_t> (1u << index)) != 0;
-            ready             = (leds[index]->set (active) == adk::Status::Ok) && ready;
+            ready = (cueLeds[index]->set (active) == adk::Status::Ok) && ready;
         }
 
         return ready;
@@ -164,7 +214,7 @@ namespace {
             previousCue = snapshot.displayedCue;
             cueVisible  = true;
             return sounder.play (frequencyFor (snapshot.displayedCue),
-                                 config.cueOnDuration, now) == adk::Status::Ok;
+                                 gameConfig.cueOnDuration, now) == adk::Status::Ok;
         }
 
         if (!snapshot.hasDisplayedCue)
@@ -218,46 +268,23 @@ namespace {
 
         return statusLed.set (color) == adk::Status::Ok;
     }
+
+    bool presentGame (adk::TimePoint now, const adk::SimonSnapshot& snapshot)
+    {
+        // Cue LEDs expose playback; RGB exposes phase without Serial.
+        const bool ledsReady = applyLeds (snapshot.ledMask);
+
+        const bool soundReady = applySound (now, snapshot);
+
+        const bool statusReady = applyStatusLed (snapshot.phase);
+
+        previousPhase = snapshot.phase;
+        return ledsReady && soundReady && statusReady;
+    }
+
+    void stopSafely ()
+    {
+        shutdownHardware ();
+        halted = true;
+    }
 } // namespace
-
-void setup ()
-{
-    halted = !initializeHardware ();
-}
-
-void loop ()
-{
-    if (halted)
-    {
-        return;
-    }
-
-    const adk::TimePoint now (millis ());
-
-    const adk::SimonInput input = sampleButtons (now);
-
-    const adk::Status status = game.update (now, input);
-
-    if (!(status == adk::Status::Ok))
-    {
-        shutdownHardware ();
-        halted = true;
-        return;
-    }
-
-    const adk::SimonSnapshot snapshot = game.snapshot ();
-
-    const bool ledsReady = applyLeds (snapshot.ledMask);
-
-    const bool soundReady = applySound (now, snapshot);
-
-    const bool statusReady = applyStatusLed (snapshot.phase);
-
-    previousPhase = snapshot.phase;
-
-    if (!(ledsReady && soundReady && statusReady))
-    {
-        shutdownHardware ();
-        halted = true;
-    }
-}

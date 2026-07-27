@@ -2,7 +2,7 @@
 
 namespace {
 
-    constexpr unsigned long StepIntervalMs = 1000;
+    constexpr unsigned long stepIntervalMs = 1000;
 
     adk::Runtime runtime;
     adk::RgbLed  led (runtime.resources (), {6, 220}, {5, 220}, {3, 220});
@@ -11,24 +11,22 @@ namespace {
                             adk::Rgb (0, 0, 255), adk::Rgb (255, 255, 255),
                             adk::Rgb (0, 0, 0),   adk::Rgb (255, 64, 0)};
 
-    constexpr uint8_t ColorCount = sizeof (colors) / sizeof (colors[0]);
+    constexpr uint8_t colorCount = sizeof (colors) / sizeof (colors[0]);
 
     unsigned long nextChangeMs = 0;
     uint8_t       colorIndex   = 0;
     bool          ready        = false;
 
+    bool changeDue (unsigned long now);
+
+    void showNextColor ();
+
 } // namespace
 
 void setup ()
 {
-    const adk::Status status = led.initialize ();
+    ready = led.initialize () == adk::Status::Ok;
 
-    if (status != adk::Status::Ok)
-    {
-        return;
-    }
-
-    ready        = true;
     nextChangeMs = millis ();
 }
 
@@ -41,18 +39,32 @@ void loop ()
 
     const unsigned long now = millis ();
 
-    if (static_cast<int32_t> (now - nextChangeMs) < 0)
+    if (!changeDue (now))
     {
         return;
     }
 
-    if (led.set (colors[colorIndex]) != adk::Status::Ok)
-    {
-        led.shutdown ();
-        ready = false;
-        return;
-    }
-
-    colorIndex = static_cast<uint8_t> ((colorIndex + 1) % ColorCount);
-    nextChangeMs += StepIntervalMs;
+    showNextColor ();
 }
+
+namespace {
+
+    bool changeDue (unsigned long now)
+    {
+        return static_cast<int32_t> (now - nextChangeMs) >= 0;
+    }
+
+    void showNextColor ()
+    {
+        if (led.set (colors[colorIndex]) != adk::Status::Ok)
+        {
+            led.shutdown ();
+            ready = false;
+            return;
+        }
+
+        colorIndex = static_cast<uint8_t> ((colorIndex + 1) % colorCount);
+        nextChangeMs += stepIntervalMs;
+    }
+
+} // namespace
