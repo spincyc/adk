@@ -78,7 +78,7 @@ jobs:
             - name: Install AVR core
               run: |
                   arduino-cli core update-index
-                  arduino-cli core install arduino:avr
+                  arduino-cli core install arduino:avr@1.8.8
 
             - name: Compile and enforce firmware budgets
               shell: bash
@@ -115,4 +115,5 @@ jobs:
                   library-manager: submit
                   project-type: library
                   recursive: true
+                  version: 1.3.0
                   verbose: true
