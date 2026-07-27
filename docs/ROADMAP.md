@@ -21,7 +21,9 @@
 12. validated climate samples and the owned DHT11 adapter in lesson 013;
 13. staged character-display output and stable records in lesson 014;
 14. deterministic environmental-station composition in lesson 015;
-15. release-gated matrix keypad input in lesson 016.
+15. release-gated matrix keypad input in lesson 016;
+16. bounded servo intent, versioned configuration records, owned Timer5/D44
+    pulse output, and explicit external-power admission in lesson 017.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
@@ -29,9 +31,8 @@ is experimental rather than hardware supported.
 
 ## Next slice
 
-1. bounded servo intent with explicit external power and configuration;
-2. the inert access-trainer project at lesson 018;
-3. range sensing, motor intent, and the bench-rover project.
+1. the inert access-trainer project at lesson 018;
+2. range sensing, motor intent, and the bench-rover project.
 
 Later slices follow the canonical three-lesson cadence through analog sensing,
 displays, environmental records, bounded actuators, buses and storage,

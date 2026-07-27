@@ -24,6 +24,9 @@ Status meanings:
 | Component | `ShiftRegisterOutput` | Hardware experimental | Three digital outputs |
 | Component | `SevenSegmentDisplay` | Hardware experimental | One shift-register output |
 | Behavior | `TrafficJunction` | Host verified | No hardware; observes request, health, and time |
+| Behavior | `BoundedServo` | Host verified | No hardware; maps bounded calibrated intent |
+| Value codec | `ServoConfigurationRecord` | Host verified | Fixed versioned record; no storage transport |
+| Endpoint | `ServoOutput` | Hardware experimental | D44/OC5C, Timer5, and a power-admission gate |
 | Later layers | Buses, sensors, actuators | Planned | See catalog |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.
@@ -36,12 +39,14 @@ onto LEDs, RGB feedback, and sound.
 and diagnostic LED, while the engine only accepts a complete observation and
 returns output intent.
 
-The same composition continues through lessons 010–013. A
+The same composition continues through lessons 010–017. A
 `SevenSegmentDisplay` owns its serialized output; `TrafficJunction` instead
 owns no pins and returns a complete legal signal pattern for its Mega adapter.
 `Dht11Sensor` owns one bidirectional data pin while presenting validated,
 timestamped climate samples through the transport-neutral `ClimateSensor`
-contract.
+contract. `BoundedServo` produces calibrated pulse intent while `ServoOutput`
+owns the Timer5 endpoint; the external-power gate admits commands but is not
+evidence that load power is present or disconnected.
 
 - [Exact API](api-supported.md)
 - [Full component catalog](docs/COMPONENTS.md)

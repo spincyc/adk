@@ -6,7 +6,7 @@ Arduino Mega 2560.
 
 <nav class="landing-actions" aria-label="Primary">
   <a class="landing-primary" href="start/">Start with the command line</a>
-  <a href="lessons/">Browse lessons 001–016</a>
+  <a href="lessons/">Browse lessons 001–017</a>
 </nav>
 
 > **Current status:** the first-class API is experimental. Host tests and Mega
