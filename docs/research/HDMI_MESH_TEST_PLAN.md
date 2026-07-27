@@ -372,9 +372,10 @@ unchanged installed route runs through its pre-authorized bounded lease and
 that every affected transmitter mutes on expiry. It may not renew, change
 profile, expand fan-out, or accept another sink reservation.
 
-The documented fault presentation uses a local test pattern, border, LED, or
-named electrical test point in addition to logs. Resource/control readiness,
-network readiness, media lock, and safe blank/mute state are separate evidence.
+The production fault presentation uses HDMI no-signal plus a labelled local
+LED/display indication. An explicitly selected maintenance mode may use a
+local test pattern or border. Resource/control readiness, network readiness,
+media lock, and no-signal/mute state are separate evidence.
 The local display names requested and applied profile, link rate, latency class,
 failure policy, and exact fault without relying on color.
 

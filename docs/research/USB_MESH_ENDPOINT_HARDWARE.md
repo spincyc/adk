@@ -78,6 +78,39 @@ insufficient or ambiguous budget leaves the requested root off and fenced.
 Per-port current limiting does not replace aggregate admission, and aggregate
 headroom does not replace per-port protection.
 
+### Baseline Cau
+
+The baseline Cau is one isolated route and fault domain:
+
+- one fixed-role USB 3 Type-B `ComputerPort`;
+- one Cat6A-qualified 10GBASE-T RJ45 carrying data and primary PoE++ power;
+- one qualified auxiliary-DC fallback input;
+- no hub, extra USB function, or second `ComputerPort`;
+- no operating power drawn from computer VBUS and no backfeed;
+- VBUS sense only for standards-required attach/session detection;
+- connector ESD protection and qualified SuperSpeed routing.
+
+Certified Type-A-to-Type-B and Type-C-to-Type-B cables are permitted. The Cau
+performs no Type-C role or Power Delivery negotiation. Scale by adding Caus. A
+later chassis may package channels but cannot share their USB presentation,
+route epoch, PoE budget, or fault domain.
+
+### Baseline shared link
+
+Each Cau and Pau uses one Cat6A-qualified 10GBASE-T RJ45 channel for mesh data
+and negotiated PoE++ power. Auxiliary DC follows an explicit priority,
+switchover, and reverse-current policy. Qualification records negotiated
+class, available power, cable loss, connector and converter temperature,
+enclosure ambient, and sustained traffic/load.
+
+The household network carries USB, HDMI, control, telemetry, and ordinary LAN
+traffic. VLAN and QoS are logical tools only. Admission measures the complete
+path, reserves ordinary-LAN headroom, and fails before detach when bandwidth,
+burst, latency, jitter, endpoint, thermal, or power budget is insufficient.
+Congestion that breaks an active pinned contract invokes disconnect,
+power/fence, stability wait, and fresh enumeration; it never silently
+downgrades the route.
+
 The controller is an ordinary Linux service. It stores desired routes, assigns
 fencing epochs, reconciles endpoint state, and records the audit journal. It
 does not carry USB transfers and needs no Arduino or special interface card.

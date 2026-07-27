@@ -11,9 +11,23 @@
 
 Status: design guidance  
 Research date: 2026-07-27  
-Scope: dynamically reconfigurable USB source and destination nodes
+Scope: physical Cau/Pau product identity with USB/IP prototype mappings
 
 ## Decision
+
+For product records, the stable hierarchy is:
+
+```text
+Cau -> one ComputerPort
+Pau -> PeripheralPort[4] -> one complete TopologyRoot each
+UsbPortRoute -> one ComputerPort + one PeripheralPort + one TopologyEpoch
+```
+
+Each Pau root has independent identity, fence, protected-power state, and fault
+evidence. A real hub and every descendant share one root identity and move
+atomically. Product identity never names a virtual controller/import slot and
+never splits or synthesizes a hub. The source/destination tables below are a
+mapping for the USB/IP prototype only.
 
 The mesh identifies nodes, ports, observed attachments, enrolled peripherals,
 and destination hosts separately. A route names stable enrolled identities and
@@ -340,7 +354,7 @@ Until those steps land, `USB_DEVICE_NODE`, `USB_HOST_NODE`, `USB_BUS_ID`, and
 `USB_PORT` are laboratory coordinates. They do not constitute a scalable mesh
 identity model.
 
-## Open design decisions
+## Prototype identity decisions
 
 - Which hardware root of trust, if any, is required for production nodes?
 - Does the first mesh bind serial-less devices permanently to ports, or permit
@@ -350,7 +364,6 @@ identity model.
 - What inventory lease duration balances failure detection against controller
   and node churn?
 - Which device classes may use automatic placement?
-- Does a source port permit one direct device only, or can policy enroll a hub
-  and its complete subtree?
+- How should the prototype encode a product-mandated atomic real-hub subtree?
 - What replicated-controller model and quorum size are appropriate after the
   single-controller phase?

@@ -314,9 +314,10 @@ make usb-matrix-replay TRACE=...
 
 ### Stage 1 — one Linux USB/IP route
 
-Use two Arch Linux systems on an isolated wired network. Export one known USB 3
-bulk-storage test device and import it into one test host. Automate discovery,
-attach, detach, inventory, and logs from the CLI.
+Use two Arch Linux systems on a controlled VLAN of the shared household
+network. Export one known USB 3 bulk-storage test device and import it into one
+test host. Automate discovery, attach, detach, inventory, and logs from the
+CLI. Isolation is logical and temporary; coexistence load remains a later gate.
 
 Acceptance:
 
@@ -385,9 +386,9 @@ IP before designing a PCB.
 8. Which Type-C data and power roles, if any, are required after USB-A proves
    the architecture?
 
-The first hard decision is host transparency. If installed Linux client
-software is acceptable, USB/IP gives the project a credible beginning. If not,
-the project becomes a much larger USB gadget-proxy and compatibility effort.
+Host transparency is fixed: no Cau software is installed on Windows or Linux.
+USB/IP gives only a control and measurement prototype. Product acceptance
+requires the larger physical Cau/Pau reconstruction and compatibility effort.
 
 ## Primary references
 

@@ -284,12 +284,24 @@ into a pass.
 
 Later evidence includes:
 
+- clean Windows and Linux computers with no Cau driver, service, installer,
+  filter, virtual host controller, test signing, or out-of-tree module;
+- one Type-B Cau and four independently powered Type-A Pau roots, with each
+  concurrent root consuming a separate Cau and computer USB port;
+- direct topology and a user-provided real hub subtree, with no synthetic hub,
+  flattening, splitting, or hidden function;
+- old-computer disconnect before VBUS removal, measured discharge before epoch
+  advance, protected repower before fresh observation, and new enumeration;
+- externally powered reset/re-enumeration without a false cold-cycle claim;
+- 10GBASE-T Cat6A, negotiated PoE++ and auxiliary-DC transitions, computer
+  VBUS sense/no-draw/no-backfeed, ESD, thermal, and signal-integrity evidence;
 - endpoint discovery, reconnect, power loss, cable loss, and switch-port move;
 - dynamic reroute and controller restart under controlled bulk transfers;
 - generated payload hashes before and after detach;
 - enumeration, reset, cancellation, latency, jitter, throughput, and loss by
   USB transfer type;
-- simultaneous traffic at each supported topology scale;
+- simultaneous USB, HDMI, controller, telemetry, and ordinary-LAN traffic at
+  each supported scale, including congestion and pinned-profile failure;
 - protected VBUS, overcurrent, and power-state observations independent of
   logical route state;
 - endpoint and host agreement on the same device ownership epoch and session;

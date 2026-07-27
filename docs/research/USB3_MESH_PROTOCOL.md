@@ -119,6 +119,27 @@ Wall-clock timestamps may aid operators but do not decide protocol ordering.
 
 ## Route transaction
 
+### Product ColdMove order
+
+A product move uses this non-collapsible order:
+
+```text
+old Cau disconnect confirmed
+    -> old transfers fenced
+    -> Pau PeripheralPort VBUS off
+    -> measured VBUS discharge confirmed
+    -> durable TopologyEpoch advance
+    -> protected VBUS restore
+    -> exact TopologyRoot observed anew
+    -> new Cau plug and native enumeration
+```
+
+Every acknowledgement names Cau, `ComputerPort`, Pau, `PeripheralPort`,
+`TopologyRoot`, epoch, power observation, and deadline. Missing disconnect or
+discharge evidence leaves the root off and fenced. Externally powered topology
+receives reset, discarded observations, and fresh enumeration; it is not
+reported as cold-cycled. No message preserves live USB or application state.
+
 A destination has at most one source. A source is exclusive by default.
 Broadcast or multi-destination export requires an explicit source capability
 and separate USB semantic analysis; it is never inferred from topology.
@@ -203,6 +224,15 @@ not share endpoint-global mutable USB state unless its capability explicitly
 permits that composition.
 
 ## Discovery, admission, and scale
+
+Product admission evaluates the observed shared household path, not an
+imaginary media fabric. It reserves bandwidth, burst capacity, latency/jitter
+budget, endpoint buffers, negotiated PoE, thermal reserve, and ordinary-LAN
+headroom for the pinned or explicitly allowed profile. USB, HDMI, control,
+telemetry, and ordinary traffic are included in the observation. Planning
+failure leaves a healthy route unchanged. Active contract loss invokes the
+configured disconnect, power/fence, stability-wait, and fresh-enumeration
+sequence; profiles never downgrade silently.
 
 Discovery locates candidates; it does not authorize them. A node joins only
 after mutual authentication and assignment to a `meshId`. Admission policy
