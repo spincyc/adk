@@ -21,6 +21,19 @@ namespace {
         }
     }
 
+    void requireOk (adk::Status status, const char* message)
+    {
+        require (status.ok (), message);
+    }
+
+    void requireError (
+        adk::Status     status,
+        adk::StatusCode error,
+        const char*     message)
+    {
+        require (status.error () == error, message);
+    }
+
     void requireOperation (
         std::size_t         index,
         fake::OperationKind kind,
@@ -68,35 +81,36 @@ namespace {
         require (output.pins ().data == 22, "data pin descriptor");
         require (output.pins ().clock == 23, "clock pin descriptor");
         require (output.pins ().latch == 24, "latch pin descriptor");
-        require (output.show (0xA5U) == adk::Status::NotInitialized,
-                 "stopped register rejects transfer");
-        require (output.clear () == adk::Status::NotInitialized,
-                 "stopped register rejects clear");
+
+        requireError (output.show (0xA5U),
+                      adk::StatusCode::NotInitialized,
+                      "stopped register rejects transfer");
+        requireError (output.clear (),
+                      adk::StatusCode::NotInitialized,
+                      "stopped register rejects clear");
+
         require (fake::trace ().empty (), "stopped register touches no hardware");
 
-        require (output.initialize () == adk::Status::Ok,
-                 "register initializes");
-        require (output.initialized (), "register initialized state");
-        require (output.value () == 0, "initialization publishes inactive value");
+        requireOk (output.initialize (), "register initializes");
+        require   (output.initialized (), "register initialized state");
+        require   (output.value () == 0, "initialization publishes inactive value");
 
         fake::clearTrace ();
 
-        require (output.show (0xA5U) == adk::Status::Ok,
-                 "register accepts byte");
+        requireOk       (output.show (0xA5U), "register accepts byte");
         require         (output.value () == 0xA5U, "register caches published byte");
         requireTransfer (0xA5U);
 
         fake::clearTrace ();
 
-        require         (output.clear () == adk::Status::Ok, "register clears");
+        requireOk       (output.clear (), "register clears");
         require         (output.value () == 0, "clear caches zero");
         requireTransfer (0);
 
         fake::clearTrace ();
 
-        require (output.initialize () == adk::Status::Ok,
-                 "repeated initialization succeeds");
-        require (fake::trace ().empty (), "repeated initialization is inert");
+        requireOk (output.initialize (), "repeated initialization succeeds");
+        require   (fake::trace ().empty (), "repeated initialization is inert");
     }
 
     void testInactivePatternAndShutdown ()
@@ -111,12 +125,12 @@ namespace {
             require (output.value () == 0xFFU, "custom inactive initial cache");
             require (output.inactiveValue () == 0xFFU,
                      "custom inactive descriptor");
-            require (output.initialize () == adk::Status::Ok,
-                     "custom inactive register initializes");
+            requireOk (output.initialize (),
+                       "custom inactive register initializes");
 
             fake::clearTrace ();
-            require          (output.show (0x42U) == adk::Status::Ok,
-                     "custom inactive register shows byte");
+            requireOk        (output.show (0x42U),
+                              "custom inactive register shows byte");
             fake::clearTrace ();
         }
 
@@ -147,8 +161,7 @@ namespace {
 
         adk::ShiftRegisterOutput replacement (resources, registerPins);
 
-        require (replacement.initialize () == adk::Status::Ok,
-                 "destruction releases all pins");
+        requireOk (replacement.initialize (), "destruction releases all pins");
 
         fake::clearTrace      ();
 
@@ -184,12 +197,13 @@ namespace {
             const bool               duplicate =
                 pins.data == pins.clock || pins.data == pins.latch ||
                 pins.clock == pins.latch;
-            const adk::Status expected = duplicate
-                                             ? adk::Status::InvalidArgument
-                                             : adk::Status::InvalidPin;
+            const adk::StatusCode expected =
+                duplicate ? adk::StatusCode::InvalidArgument
+                          : adk::StatusCode::InvalidPin;
 
-            require (output.initialize () == expected,
-                     "invalid pin descriptor rejected");
+            requireError (output.initialize (),
+                          expected,
+                          "invalid pin descriptor rejected");
             require (!output.initialized (), "invalid register stays stopped");
             require (fake::trace ().empty (),
                      "invalid descriptor touches no hardware");
@@ -208,12 +222,13 @@ namespace {
             adk::DigitalOutput        owner (resources, blockedPin);
             adk::ShiftRegisterOutput output (resources, registerPins);
 
-            require (owner.initialize () == adk::Status::Ok,
-                     "conflict owner initializes");
+            requireOk (owner.initialize (), "conflict owner initializes");
+
             fake::clearTrace ();
 
-            require (output.initialize () == adk::Status::ResourceBusy,
-                     "pin conflict reported");
+            requireError (output.initialize (),
+                          adk::StatusCode::ResourceBusy,
+                          "pin conflict reported");
             require (!output.initialized (), "conflict leaves register stopped");
 
             owner.shutdown   ();
@@ -223,12 +238,9 @@ namespace {
             adk::DigitalOutput clockReuse (resources, registerPins.clock);
             adk::DigitalOutput latchReuse (resources, registerPins.latch);
 
-            require (dataReuse.initialize () == adk::Status::Ok,
-                     "rollback releases data pin");
-            require (clockReuse.initialize () == adk::Status::Ok,
-                     "rollback releases clock pin");
-            require (latchReuse.initialize () == adk::Status::Ok,
-                     "rollback releases latch pin");
+            requireOk (dataReuse.initialize (), "rollback releases data pin");
+            requireOk (clockReuse.initialize (), "rollback releases clock pin");
+            requireOk (latchReuse.initialize (), "rollback releases latch pin");
         }
     }
 }

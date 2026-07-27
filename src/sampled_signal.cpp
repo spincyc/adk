@@ -17,13 +17,13 @@ namespace adk {
     {
         if (!valid ())
         {
-            return Result<uint16_t> (Status::InvalidArgument, 0);
+            return Result<uint16_t> (StatusCode::InvalidArgument, 0);
         }
 
         if (!config_.clamp
             && (sample < config_.observedMinimum || sample > config_.observedMaximum))
         {
-            return Result<uint16_t> (Status::InvalidArgument, 0);
+            return Result<uint16_t> (StatusCode::InvalidArgument, 0);
         }
 
         uint16_t boundedSample = sample;
@@ -52,7 +52,7 @@ namespace adk {
             ? static_cast<uint16_t> (config_.mappedAtMinimum + mappedOffset)
             : static_cast<uint16_t> (config_.mappedAtMinimum - mappedOffset);
 
-        return Result<uint16_t> (Status::Ok, mapped);
+        return Result<uint16_t> (StatusCode::Ok, mapped);
     }
 
     MovingAverage::MovingAverage (uint8_t windowSize) noexcept
@@ -95,7 +95,7 @@ namespace adk {
     {
         if (!valid ())
         {
-            return Result<uint16_t> (Status::InvalidArgument, 0);
+            return Result<uint16_t> (StatusCode::InvalidArgument, 0);
         }
 
         if (sampleCount_ < windowSize_)
@@ -120,16 +120,16 @@ namespace adk {
     {
         if (!valid ())
         {
-            return Result<uint16_t> (Status::InvalidArgument, 0);
+            return Result<uint16_t> (StatusCode::InvalidArgument, 0);
         }
         if (!hasValue ())
         {
-            return Result<uint16_t> (Status::NotInitialized, 0);
+            return Result<uint16_t> (StatusCode::NotInitialized, 0);
         }
 
         const uint16_t average =
             static_cast<uint16_t> ((sum_ + sampleCount_ / 2U) / sampleCount_);
-        return Result<uint16_t> (Status::Ok, average);
+        return Result<uint16_t> (StatusCode::Ok, average);
     }
 
     Deadband::Deadband (uint16_t width) noexcept
@@ -178,9 +178,9 @@ namespace adk {
     {
         if (!hasValue_)
         {
-            return Result<uint16_t> (Status::NotInitialized, 0);
+            return Result<uint16_t> (StatusCode::NotInitialized, 0);
         }
 
-        return Result<uint16_t> (Status::Ok, value_);
+        return Result<uint16_t> (StatusCode::Ok, value_);
     }
 }

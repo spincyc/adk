@@ -14,7 +14,8 @@ namespace adk {
             const ClimateSample sample = {0, 0, TimePoint (0),
                                           ClimateSampleState::Unavailable};
 
-            return {sample, EnvironmentalHealth::Starting, Status::NotInitialized,
+            return {sample, EnvironmentalHealth::Starting,
+                    StatusCode::NotInitialized,
                     TimePoint (0), 0};
         }
     } // namespace
@@ -23,7 +24,8 @@ namespace adk {
         ClimateSensor& sensor, const EnvironmentalStationConfig& config) noexcept
         : sensor_ (&sensor), config_ (config),
           snapshot_ (
-              {emptyRecord (), TimePoint (0), Status::NotInitialized, false, false}),
+              {emptyRecord (), TimePoint (0), StatusCode::NotInitialized, false,
+               false}),
           lastUpdateAt_ (0), initialized_ (false), hasUpdated_ (false)
     {
     }
@@ -37,12 +39,12 @@ namespace adk {
     {
         if (initialized_)
         {
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         if (!configValid ())
         {
-            clearState (Status::InvalidArgument);
+            clearState (StatusCode::InvalidArgument);
             return snapshot_.status;
         }
 
@@ -55,16 +57,16 @@ namespace adk {
             return snapshot_.status;
         }
 
-        clearState (Status::Ok);
+        clearState (StatusCode::Ok);
         initialized_ = true;
 
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void EnvironmentalStation::shutdown () noexcept
     {
         sensor_->shutdown ();
-        clearState        (Status::NotInitialized);
+        clearState        (StatusCode::NotInitialized);
     }
 
     bool EnvironmentalStation::initialized () const noexcept
@@ -76,7 +78,7 @@ namespace adk {
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         sensor_->shutdown ();
@@ -90,17 +92,17 @@ namespace adk {
             return status;
         }
 
-        clearState (Status::Ok);
+        clearState (StatusCode::Ok);
         initialized_ = true;
 
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     Status EnvironmentalStation::update (TimePoint now) noexcept
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         snapshot_.recordReady = false;
@@ -109,9 +111,9 @@ namespace adk {
                                maximumUnambiguousDuration)
         {
             snapshot_.record.health       = EnvironmentalHealth::TimingFault;
-            snapshot_.record.sensorStatus = Status::InvalidArgument;
+            snapshot_.record.sensorStatus = StatusCode::InvalidArgument;
             snapshot_.record.recordedAt   = now;
-            snapshot_.status              = Status::InvalidArgument;
+            snapshot_.status              = StatusCode::InvalidArgument;
             snapshot_.hasDeadline         = false;
             return snapshot_.status;
         }
@@ -177,7 +179,7 @@ namespace adk {
             return EnvironmentalHealth::Stale;
         }
 
-        if (sensorStatus == Status::Ok &&
+        if (sensorStatus.ok () &&
             sample.state == ClimateSampleState::Unavailable)
         {
             return EnvironmentalHealth::Starting;

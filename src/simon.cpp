@@ -32,21 +32,21 @@ namespace adk {
     Status FixedCueSource::reset () noexcept
     {
         index_ = 0;
-        return cues_ != nullptr && count_ > 0 ? Status::Ok
-                                             : Status::InvalidArgument;
+        return cues_ != nullptr && count_ > 0 ? StatusCode::Ok
+                                             : StatusCode::InvalidArgument;
     }
 
     Status FixedCueSource::next (CueId& cue) noexcept
     {
         if (cues_ == nullptr || index_ >= count_)
         {
-            return Status::CapacityExceeded;
+            return StatusCode::CapacityExceeded;
         }
 
         cue = cues_[index_++];
         return static_cast<uint8_t> (cue) < Simon::cueCount
-                   ? Status::Ok
-                   : Status::InvalidArgument;
+                   ? StatusCode::Ok
+                   : StatusCode::InvalidArgument;
     }
 
     SimonAlgorithm FixedCueSource::algorithmVersion () const noexcept
@@ -68,7 +68,7 @@ namespace adk {
     Status XorShift32CueSource::reset () noexcept
     {
         state_ = initialSeed_;
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     Status XorShift32CueSource::next (CueId& cue) noexcept
@@ -77,7 +77,7 @@ namespace adk {
         state_ ^= state_ >> 17u;
         state_ ^= state_ << 5u;
         cue = static_cast<CueId> (state_ & 0x03u);
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     SimonAlgorithm XorShift32CueSource::algorithmVersion () const noexcept
@@ -96,7 +96,7 @@ namespace adk {
         , sequence_          {}
         , phase_             (SimonPhase::Idle)
         , outcome_           (SimonOutcome::None)
-        , status_            (Status::NotInitialized)
+        , status_            (StatusCode::NotInitialized)
         , phaseSince_        (TimePoint (0))
         , lastUpdate_        (TimePoint (0))
         , observedCue_       (CueId::One)
@@ -115,13 +115,13 @@ namespace adk {
 
         if (!configValid ())
         {
-            status_ = Status::InvalidArgument;
+            status_ = StatusCode::InvalidArgument;
             return status_;
         }
 
         status_ = source_->reset ();
 
-        if (status_ != Status::Ok)
+        if (!status_.ok ())
         {
             return status_;
         }
@@ -129,7 +129,7 @@ namespace adk {
         sequenceLength_ = 0;
         status_         = growSequence (config_.startingLength);
 
-        if (status_ != Status::Ok)
+        if (!status_.ok ())
         {
             outcome_ = SimonOutcome::SourceFailure;
             return status_;
@@ -146,23 +146,23 @@ namespace adk {
         hasLastUpdate_  = false;
         hasObservedCue_ = false;
 
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     Status Simon::update (TimePoint now, const SimonInput& input) noexcept
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         if (!inputValid (input) || !timeValid (now))
         {
-            status_ = Status::InvalidArgument;
+            status_ = StatusCode::InvalidArgument;
             return status_;
         }
 
-        status_        = Status::Ok;
+        status_        = StatusCode::Ok;
         lastUpdate_    = now;
         hasLastUpdate_ = true;
 
@@ -266,7 +266,7 @@ namespace adk {
 
                     status_ = growSequence (static_cast<uint8_t> (target));
 
-                    if (status_ == Status::Ok)
+                    if (status_.ok ())
                     {
                         outcome_ = SimonOutcome::None;
                         startPlayback (now);
@@ -285,7 +285,7 @@ namespace adk {
                 {
                     status_ = initialize ();
 
-                    if (status_ == Status::Ok)
+                    if (status_.ok ())
                     {
                         lastUpdate_    = now;
                         hasLastUpdate_ = true;
@@ -428,20 +428,20 @@ namespace adk {
             CueId cue = CueId::One;
             const Status status = source_->next (cue);
 
-            if (status != Status::Ok)
+            if (!status.ok ())
             {
                 return status;
             }
 
             if (static_cast<uint8_t> (cue) >= cueCount)
             {
-                return Status::InvalidArgument;
+                return StatusCode::InvalidArgument;
             }
 
             sequence_[sequenceLength_++] = cue;
         }
 
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void Simon::startPlayback (TimePoint now) noexcept

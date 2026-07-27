@@ -21,6 +21,19 @@ namespace {
         }
     }
 
+    void requireOk (adk::Status status, const char* message)
+    {
+        require (status.ok (), message);
+    }
+
+    void requireError (
+        adk::Status     status,
+        adk::StatusCode error,
+        const char*     message)
+    {
+        require (status.error () == error, message);
+    }
+
     void testGlyphTable ()
     {
         const uint8_t expected[] = {
@@ -37,18 +50,16 @@ namespace {
             displayPins,
             adk::SevenSegmentPolarity::CommonCathode);
 
-        require (display.initialize () == adk::Status::Ok,
-                 "cathode display initializes");
+        requireOk (display.initialize (), "cathode display initializes");
 
         for (uint8_t index = 0; index < sizeof (expected); ++index)
         {
             const auto glyph = static_cast<adk::SevenSegmentGlyph> (index);
 
-            require (display.show (glyph) == adk::Status::Ok,
-                     "glyph is accepted");
-            require (display.glyph () == glyph, "glyph is remembered");
-            require (display.encodedValue () == expected[index],
-                     "cathode glyph encoding");
+            requireOk (display.show (glyph), "glyph is accepted");
+            require   (display.glyph () == glyph, "glyph is remembered");
+            require   (display.encodedValue () == expected[index],
+                       "cathode glyph encoding");
         }
     }
 
@@ -62,23 +73,21 @@ namespace {
             displayPins,
             adk::SevenSegmentPolarity::CommonAnode);
 
-        require (display.initialize () == adk::Status::Ok,
-                 "anode display initializes");
-        require (display.encodedValue () == 0xffU,
-                 "anode initialization is blank");
-        require (display.show (adk::SevenSegmentGlyph::Two, true) ==
-                     adk::Status::Ok,
-                 "anode glyph is shown");
-        require (display.encodedValue () ==
-                     static_cast<uint8_t> (~0xdbU),
-                 "anode encoding is inverted");
-        require (display.decimalPoint (), "decimal point is remembered");
-        require (display.polarity () ==
-                     adk::SevenSegmentPolarity::CommonAnode,
-                 "polarity is reported");
-        require (display.blank () == adk::Status::Ok, "display blanks");
-        require (display.encodedValue () == 0xffU, "anode blank is inactive");
-        require (!display.decimalPoint (), "blank clears decimal point");
+        requireOk (display.initialize (), "anode display initializes");
+        require   (display.encodedValue () == 0xffU,
+                   "anode initialization is blank");
+        requireOk (display.show (adk::SevenSegmentGlyph::Two, true),
+                   "anode glyph is shown");
+        require   (display.encodedValue () ==
+                       static_cast<uint8_t> (~0xdbU),
+                   "anode encoding is inverted");
+        require   (display.decimalPoint (), "decimal point is remembered");
+        require   (display.polarity () ==
+                       adk::SevenSegmentPolarity::CommonAnode,
+                   "polarity is reported");
+        requireOk (display.blank (), "display blanks");
+        require   (display.encodedValue () == 0xffU, "anode blank is inactive");
+        require   (!display.decimalPoint (), "blank clears decimal point");
     }
 
     void testLifecycleAndValidation ()
@@ -92,25 +101,27 @@ namespace {
             adk::SevenSegmentPolarity::CommonCathode);
 
         require (!display.initialized (), "display starts stopped");
-        require (display.show (adk::SevenSegmentGlyph::Eight) ==
-                     adk::Status::NotInitialized,
-                 "stopped display rejects a glyph");
-        require (display.initialize () == adk::Status::Ok,
-                 "display initializes");
+
+        requireError (display.show (adk::SevenSegmentGlyph::Eight),
+                      adk::StatusCode::NotInitialized,
+                      "stopped display rejects a glyph");
+
+        requireOk (display.initialize (), "display initializes");
 
         fake::clearTrace ();
 
-        require (display.initialize () == adk::Status::Ok,
-                 "repeated initialization succeeds");
-        require (fake::trace ().empty (), "repeated initialization is inert");
-        require (display.show (static_cast<adk::SevenSegmentGlyph> (255)) ==
-                     adk::Status::InvalidArgument,
-                 "unknown glyph is rejected");
+        requireOk (display.initialize (), "repeated initialization succeeds");
+        require   (fake::trace ().empty (), "repeated initialization is inert");
+
+        requireError (
+            display.show (static_cast<adk::SevenSegmentGlyph> (255)),
+            adk::StatusCode::InvalidArgument,
+            "unknown glyph is rejected");
+
         require (fake::trace ().empty (), "unknown glyph touches no hardware");
 
-        require (display.show (adk::SevenSegmentGlyph::Eight) ==
-                     adk::Status::Ok,
-                 "active glyph is shown");
+        requireOk (display.show (adk::SevenSegmentGlyph::Eight),
+                   "active glyph is shown");
         display.shutdown ();
 
         require (!display.initialized (), "shutdown stops display");
@@ -132,8 +143,9 @@ namespace {
             displayPins,
             static_cast<adk::SevenSegmentPolarity> (255));
 
-        require (display.initialize () == adk::Status::InvalidArgument,
-                 "unknown polarity is rejected");
+        requireError (display.initialize (),
+                      adk::StatusCode::InvalidArgument,
+                      "unknown polarity is rejected");
         require (!display.initialized (), "invalid display stays stopped");
         require (fake::trace ().empty (), "invalid polarity touches no hardware");
     }
@@ -150,18 +162,18 @@ namespace {
             displayPins,
             adk::SevenSegmentPolarity::CommonCathode);
 
-        require (owner.initialize () == adk::Status::Ok, "pin owner initializes");
+        requireOk (owner.initialize (), "pin owner initializes");
 
         fake::clearTrace ();
 
-        require (display.initialize () == adk::Status::ResourceBusy,
-                 "display reports a pin conflict");
+        requireError (display.initialize (),
+                      adk::StatusCode::ResourceBusy,
+                      "display reports a pin conflict");
         require (!display.initialized (), "conflicted display stays stopped");
 
         owner.shutdown ();
 
-        require (display.initialize () == adk::Status::Ok,
-                 "display reuses a released pin");
+        requireOk (display.initialize (), "display reuses a released pin");
     }
 
     void testDestructorBlanksAndReleases ()
@@ -176,23 +188,18 @@ namespace {
                 displayPins,
                 adk::SevenSegmentPolarity::CommonAnode);
 
-            require (display.initialize () == adk::Status::Ok,
-                     "scoped display initializes");
-            require (display.show (adk::SevenSegmentGlyph::Eight) ==
-                         adk::Status::Ok,
-                     "scoped display is active");
+            requireOk (display.initialize (), "scoped display initializes");
+            requireOk (display.show (adk::SevenSegmentGlyph::Eight),
+                       "scoped display is active");
         }
 
         adk::DigitalOutput data  (resources, displayPins.data);
         adk::DigitalOutput clock (resources, displayPins.clock);
         adk::DigitalOutput latch (resources, displayPins.latch);
 
-        require (data.initialize () == adk::Status::Ok,
-                 "destructor releases data pin");
-        require (clock.initialize () == adk::Status::Ok,
-                 "destructor releases clock pin");
-        require (latch.initialize () == adk::Status::Ok,
-                 "destructor releases latch pin");
+        requireOk (data.initialize (), "destructor releases data pin");
+        requireOk (clock.initialize (), "destructor releases clock pin");
+        requireOk (latch.initialize (), "destructor releases latch pin");
     }
 }
 

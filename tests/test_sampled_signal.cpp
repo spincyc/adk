@@ -12,7 +12,8 @@ namespace {
         const adk::LinearCalibration       calibration (config);
 
         assert (!calibration.valid ());
-        assert (calibration.map (400).status () == adk::Status::InvalidArgument);
+        assert (!calibration.map (400).ok ());
+        assert (calibration.map (400).error () == adk::StatusCode::InvalidArgument);
     }
 
     void testCalibrationMapsAndRounds ()
@@ -36,8 +37,10 @@ namespace {
 
         assert (clamped.map (0).value () == 0);
         assert (clamped.map (1023).value () == 1000);
-        assert (strict.map (99).status () == adk::Status::InvalidArgument);
-        assert (strict.map (901).status () == adk::Status::InvalidArgument);
+        assert (!strict.map (99).ok ());
+        assert (strict.map (99).error () == adk::StatusCode::InvalidArgument);
+        assert (!strict.map (901).ok ());
+        assert (strict.map (901).error () == adk::StatusCode::InvalidArgument);
     }
 
     void testCalibrationSupportsDescendingOutput ()
@@ -89,8 +92,10 @@ namespace {
 
         assert (!empty.valid ());
         assert (!excessive.valid ());
-        assert (empty.addSample (10).status () == adk::Status::InvalidArgument);
-        assert (excessive.value ().status () == adk::Status::InvalidArgument);
+        assert (!empty.addSample (10).ok ());
+        assert (empty.addSample (10).error () == adk::StatusCode::InvalidArgument);
+        assert (!excessive.value ().ok ());
+        assert (excessive.value ().error () == adk::StatusCode::InvalidArgument);
     }
 
     void testMovingAverageWarmsAndRolls ()
@@ -99,7 +104,8 @@ namespace {
 
         assert (average.valid ());
         assert (!average.hasValue ());
-        assert (average.value ().status () == adk::Status::NotInitialized);
+        assert (!average.value ().ok ());
+        assert (average.value ().error () == adk::StatusCode::NotInitialized);
         assert (average.addSample (10).value () == 10);
         assert (average.addSample (20).value () == 15);
         assert (average.addSample (30).value () == 20);
@@ -178,7 +184,8 @@ namespace {
         adk::Deadband deadband (10);
 
         assert (!deadband.hasValue ());
-        assert (deadband.value ().status () == adk::Status::NotInitialized);
+        assert (!deadband.value ().ok ());
+        assert (deadband.value ().error () == adk::StatusCode::NotInitialized);
         assert (deadband.addSample (500) == 500);
         assert (deadband.addSample (509) == 500);
         assert (deadband.addSample (510) == 510);

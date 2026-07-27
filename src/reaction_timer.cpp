@@ -25,7 +25,7 @@ namespace adk {
         : config_          (config)
         , state_           (ReactionState::Idle)
         , outcome_         (ReactionOutcome::None)
-        , status_          (Status::NotInitialized)
+        , status_          (StatusCode::NotInitialized)
         , stateSince_      (TimePoint (0))
         , cueTime_         (TimePoint (0))
         , lastUpdate_      (TimePoint (0))
@@ -41,14 +41,14 @@ namespace adk {
     {
         if (!configValid ())
         {
-            status_      = Status::InvalidArgument;
+            status_      = StatusCode::InvalidArgument;
             initialized_ = false;
-            return status_;
+            return StatusCode::InvalidArgument;
         }
 
         state_           = ReactionState::Idle;
         outcome_         = ReactionOutcome::None;
-        status_          = Status::Ok;
+        status_          = StatusCode::Ok;
         stateSince_      = TimePoint (0);
         cueTime_         = TimePoint (0);
         lastUpdate_      = TimePoint (0);
@@ -58,7 +58,7 @@ namespace adk {
         hasCueTime_      = false;
         hasReactionTime_ = false;
 
-        return status_;
+        return StatusCode::Ok;
     }
 
     Status ReactionTimer::update (TimePoint               now,
@@ -66,16 +66,16 @@ namespace adk {
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         if (!timeValid (now))
         {
-            status_ = Status::InvalidArgument;
-            return status_;
+            status_ = StatusCode::InvalidArgument;
+            return StatusCode::InvalidArgument;
         }
 
-        status_        = Status::Ok;
+        status_        = StatusCode::Ok;
         lastUpdate_    = now;
         hasLastUpdate_ = true;
 
@@ -141,7 +141,7 @@ namespace adk {
             break;
         }
 
-        return status_;
+        return StatusCode::Ok;
     }
 
     Status ReactionTimer::update (TimePoint now, const Button& button) noexcept

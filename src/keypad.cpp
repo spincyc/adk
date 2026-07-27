@@ -20,7 +20,7 @@ namespace adk {
         , candidateMask_   (0)
         , stableMask_      (0)
         , rawMask_         (0)
-        , status_          (Status::NotInitialized)
+        , status_          (StatusCode::NotInitialized)
         , candidateValid_  (true)
         , stableValid_     (true)
         , initialized_     (false)
@@ -35,13 +35,13 @@ namespace adk {
     {
         if (initialized_)
         {
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         if (config_.debounce.milliseconds () == 0 ||
             config_.debounce.milliseconds () >= 0x80000000UL)
         {
-            return Status::InvalidArgument;
+            return StatusCode::InvalidArgument;
         }
 
         candidateSince_ = TimePoint ();
@@ -49,7 +49,7 @@ namespace adk {
         candidateMask_  = 0;
         stableMask_     = 0;
         rawMask_        = 0;
-        status_         = Status::Ok;
+        status_         = StatusCode::Ok;
         candidateValid_ = true;
         stableValid_    = true;
         initialized_    = true;
@@ -58,13 +58,13 @@ namespace adk {
         pressEvent_     = false;
         releaseEvent_   = false;
 
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void Keypad::shutdown () noexcept
     {
         initialized_  = false;
-        status_       = Status::NotInitialized;
+        status_       = StatusCode::NotInitialized;
         stableMask_   = 0;
         rawMask_      = 0;
         pressEvent_   = false;
@@ -78,17 +78,17 @@ namespace adk {
 
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         if (!timeValid (now) || (sample.pressedMask & 0xf000U) != 0)
         {
-            status_ = Status::InvalidArgument;
+            status_      = StatusCode::InvalidArgument;
             return status_;
         }
 
         rawMask_ = sample.pressedMask;
-        status_  = stableValid_ ? Status::Ok : Status::HardwareFailure;
+        status_  = stableValid_ ? StatusCode::Ok : StatusCode::HardwareFailure;
 
         if (candidateMask_ != rawMask_ || candidateValid_ != sample.valid)
         {
@@ -189,7 +189,7 @@ namespace adk {
 
         stableMask_  = mask;
         stableValid_ = valid;
-        status_      = valid ? Status::Ok : Status::HardwareFailure;
+        status_      = valid ? StatusCode::Ok : StatusCode::HardwareFailure;
 
         if (mask == 0 && valid)
         {
