@@ -17,17 +17,15 @@
 \usepackage{titlesec}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
-\definecolor{AdkBlue}{HTML}{24577A}
-\definecolor{AdkRed}{HTML}{A23B32}
-\definecolor{AdkGreen}{HTML}{39734C}
-\definecolor{AdkGray}{HTML}{F0F2F3}
-\definecolor{CodeGray}{HTML}{F7F7F7}
+\definecolor{AdkBlue}{gray}{0}
+\definecolor{AdkRed}{gray}{0}
+\definecolor{AdkGreen}{gray}{0.30}
+\definecolor{AdkGray}{gray}{0.94}
+\definecolor{CodeGray}{gray}{0.97}
 
 \hypersetup
 {
-    colorlinks=true,
-    linkcolor=AdkBlue,
-    urlcolor=AdkBlue,
+    hidelinks,
     pdftitle={ADK Lesson 002: Digital Input},
     pdfauthor={Kevin Shanahan},
     pdfsubject={Safe pull-up inputs, raw diagnostics, and deterministic testing on Arduino Mega 2560}
@@ -291,12 +289,12 @@ filter, or synthesize events.
     \draw[->] (0,0) -- (13,0) node[right]{time};
     \draw (0,0.5) node[left]{LOW} -- (13,0.5);
     \draw (0,2.0) node[left]{HIGH} -- (13,2.0);
-    \draw[very thick,AdkBlue]
+    \draw[very thick,black]
         (0,2.0) -- (3.0,2.0) -- (3.0,0.5) -- (3.35,0.5)
         -- (3.35,2.0) -- (3.7,2.0) -- (3.7,0.5)
         -- (4.0,0.5) -- (4.0,2.0) -- (4.25,2.0)
         -- (4.25,0.5) -- (12.5,0.5);
-    \node[AdkRed] at (3.65,2.65) {possible closing bounce};
+    \node[black] at (3.65,2.65) {possible closing bounce};
 \end{tikzpicture}
 \end{center}
 
