@@ -2,7 +2,7 @@
 schema_version: 1
 task_uuid: "957366fa-d370-4060-89a3-40ec5c4a1722"
 title: "finish site navigation and deployment verification"
-status: "queued"
+status: "active"
 priority: "normal"
 priority_reason: "Recovered audit prompt 8; ordered by the repository recovery audit."
 parent: null
@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-27T22:00:43Z"
+updated_at: "2026-07-27T23:11:14Z"
 ---
 
 # Goal
