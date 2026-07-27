@@ -1,57 +1,62 @@
 
 #include <pin.h>
 
+#include <Arduino.h>
+
 namespace adk { namespace pin {
 
-    base::base(id pin_)
-        : _pin(pin_)
+    Base::Base (Id pin)
+        : pin_ (pin)
     {
     }
 
-    void input::setup()
+    Id Base::pin () const
     {
-        pinMode(pin(),INPUT);
+        return pin_;
     }
 
-    void output::setup()
+    void Input::initialize ()
     {
-        pinMode(pin(),OUTPUT);
+        pinMode (pin (), INPUT);
+    }
+
+    void Output::initialize ()
+    {
+        pinMode (pin (), OUTPUT);
     }
 
 }}
 
 namespace adk { namespace analog {
 
-    pin::value input::read()
+    pin::Value Input::read () const
     {
-        auto ret = analogRead(pin());
-        return ret;
+        return analogRead (pin ());
     }
 
-    void output::write(pin::value v_)
+    void Output::write (pin::Value value) const
     {
-        analogWrite(pin(),v_);
+        analogWrite (pin (), value);
     }
 
 }}
 
 namespace adk { namespace digital {
 
-    bool input::read()
+    bool Input::read () const
     {
-        auto value = digitalRead(pin());
-        return value == HIGH ? true : false;
+        auto value = digitalRead (pin ());
+        return value == HIGH;
     }
 
-    void input_up::setup()
+    void InputPullUp::initialize ()
     {
-        pinMode(pin(),INPUT_PULLUP);
+        pinMode (pin (), INPUT_PULLUP);
     }
 
-    void output::write(bool on_)
+    void Output::write (bool active) const
     {
-        digitalWrite(pin(),on_ ? HIGH : LOW);
+        digitalWrite (pin (), active ? HIGH : LOW);
     }
 
 }}
-

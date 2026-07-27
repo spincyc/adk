@@ -6,77 +6,77 @@
 
 namespace adk { namespace pin {
 
-    using id    = uint8_t;
-    using value = int32_t;
+    using Id    = uint8_t;
+    using Value = int32_t;
 
-    struct base : object
+    struct Base : Object
     {
-        base(id pin_);
+        explicit Base (Id pin);
 
-        id pin() const { return _pin; }
+        Id pin () const;
 
       protected:
-        id _pin;
+        Id pin_;
     };
 
-    struct input : base
+    struct Input : Base
     {
-        using base::base;
+        using Base::Base;
 
       protected:
-        void setup() override;
+        void initialize () override;
     };
 
-    struct output : base
+    struct Output : Base
     {
-        using base::base;
+        using Base::Base;
 
       protected:
-        void setup() override;
+        void initialize () override;
     };
 
 }}
 
 namespace adk { namespace analog {
 
-    struct input : pin::input
+    struct Input : pin::Input
     {
-        using pin::input::input;
+        using pin::Input::Input;
 
-        pin::value read();
+        pin::Value read () const;
     };
 
-    struct output : pin::output
+    struct Output : pin::Output
     {
-        using pin::output::output;
+        using pin::Output::Output;
 
-        void write(pin::value);
+        void write (pin::Value value) const;
     };
 
 }}
 
 namespace adk { namespace digital {
 
-    struct input : pin::input
+    struct Input : pin::Input
     {
-        using pin::input::input;
+        using pin::Input::Input;
 
-        bool read();
+        bool read () const;
     };
 
-    struct input_up : input
+    struct InputPullUp : Input
     {
-        using input::input;
+        using Input::Input;
 
       protected:
-        void setup() override;
+        void initialize () override;
     };
 
-    struct output : pin::output
+    struct Output : pin::Output
     {
-        using pin::output::output;
+        using pin::Output::Output;
 
-        void write(bool);
+        void write (bool active) const;
     };
 
 }}

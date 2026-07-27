@@ -1,20 +1,25 @@
 #pragma once
 
-#include <defines.h>
-
 namespace adk {
 
-    struct object
+    struct Object
     {
-        static void setup_all();
-        static void update_all();
+        static void initializeAll ();
+        static void updateAll     ();
 
-        object();
+        Object          ();
+        virtual ~Object () noexcept;
 
-      private:
-        virtual void setup() = 0;
+        Object            (const Object&) = delete;
+        Object& operator= (const Object&) = delete;
+        Object            (Object&&)      = delete;
+        Object& operator= (Object&&)      = delete;
+
+      protected:
+        virtual void initialize () = 0;
+        virtual void update     ();
         
-        object* _next;
+      private:
+        Object* next_;
     };
-
 }

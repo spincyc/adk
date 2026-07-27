@@ -5,29 +5,29 @@
 
 namespace adk { namespace led {
 
-    struct mono : digital::output
+    struct Mono : digital::Output
     {
-        using digital::output::output;
+        using digital::Output::Output;
 
-        void on();
-        void off();
+        void on  () const;
+        void off () const;
     };
 
-    struct rgb
+    struct Rgb
     {
-        rgb(analog::output red_,analog::output green_,analog::output blue_);
+        Rgb (pin::Id redPin, pin::Id greenPin, pin::Id bluePin);
 
-        auto& red   () const { return _red   ; }
-        auto& green () const { return _green ; }
-        auto& blue  () const { return _blue  ; }
+        const analog::Output& red   () const;
+        const analog::Output& green () const;
+        const analog::Output& blue  () const;
 
-        void on(const color::rgb&);
-        void off();
+        void on  (const color::Rgb& color) const;
+        void off () const;
 
-      protected:
-        analog::output _red;
-        analog::output _green;
-        analog::output _blue;
+      private:
+        analog::Output red_;
+        analog::Output green_;
+        analog::Output blue_;
     };
 
 }}
