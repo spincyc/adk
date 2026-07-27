@@ -16,6 +16,7 @@
 #include "matrix_keypad.h"
 #include "mega_bus_driver.h"
 #include "mono_led.h"
+#include "moisture_sensor.h"
 #include "motor_intent.h"
 #include "night_light.h"
 #include "piezo_sounder.h"
