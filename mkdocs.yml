@@ -19,7 +19,7 @@ nav:
   - Command-line workflow: docs/CLI.md
   - Course map: course.md
   - Lessons:
-      - Course map: lessons/index.md
+      - Lesson index: lessons/index.md
       - "001 — Digital output": lessons/001.md
       - "002 — Digital input": lessons/002.md
       - "003 — Reaction timer": lessons/003.md

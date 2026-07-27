@@ -5,7 +5,7 @@ QUALITY_ARCH_PACKAGES = base-devel clang
 
 .PHONY: quality quality-fast quality-lint quality-test quality-size \
 	quality-tools quality-packages host-size-check firmware-size-check \
-	host-test-sanitize serial-log-test arduino-lint
+	host-test-sanitize serial-log-test deployed-site-test arduino-lint
 
 quality: quality-fast firmware-size-check package-smoke lessons-check site-check
 
@@ -14,11 +14,14 @@ quality-fast: quality-tools quality-lint quality-test quality-size
 quality-lint: style-check headers-check
 
 quality-test: host-test host-test-exceptions host-test-sanitize \
-	serial-log-test usb-matrix-check usb-mesh-check hdmi-mesh-check \
+	serial-log-test deployed-site-test usb-matrix-check usb-mesh-check hdmi-mesh-check \
 	route-profile-check
 
 serial-log-test:
 	python -m unittest tests/test_serial_log.py
+
+deployed-site-test:
+	python -m unittest tests/test_deployed_site.py
 
 quality-size: host-size-check
 

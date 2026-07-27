@@ -31,9 +31,7 @@ Do not lose these release blockers:
 
 1. add native archive/export and consumer-smoke targets before claiming
    general non-Arduino C++ installation;
-2. finish the landing/navigation audit and add post-deploy checks for the
-   newest lesson and PDF;
-3. run the full clean quality gate, release, push, and verify GitHub Pages only
+2. run the full clean quality gate, release, push, and verify GitHub Pages only
    after the promoted lesson boundary is clean.
 
 The canonical post-030 order remains lessons 031--081, one implementation-depth

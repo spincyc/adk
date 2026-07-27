@@ -1,0 +1,216 @@
+#!/usr/bin/env python3
+
+"""Check the small set of public artifacts required for Lesson 030."""
+
+from __future__ import annotations
+
+import argparse
+import sys
+import time
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Callable
+from urllib.error import HTTPError, URLError
+from urllib.parse import urljoin, urlsplit
+from urllib.request import Request, urlopen
+
+
+DEFAULT_TIMEOUT_SECONDS = 10.0
+DEFAULT_RETRIES = 2
+DEFAULT_RETRY_DELAY_SECONDS = 0.25
+MAX_RESPONSE_BYTES = 2 * 1024 * 1024
+
+
+@dataclass(frozen=True)
+class Check:
+    path: str
+    description: str
+    prefix: bytes | None = None
+    markers: tuple[bytes, ...] = ()
+
+
+CHECKS = (
+    Check(
+        "",
+        "landing page",
+        markers=(b"lessons 001\xe2\x80\x93030", b"physically inert show-cue"),
+    ),
+    Check(
+        "lessons/030/",
+        "Lesson 030 page",
+        markers=(
+            b"Reviewed inert show-cue simulator",
+            b"synthetic observations and inert visual cues only",
+        ),
+    ),
+    Check("downloads/lessons/030.pdf", "Lesson 030 PDF", b"%PDF-"),
+    Check(
+        "downloads/sketches/Lesson030InertShowSimulator.ino",
+        "Lesson 030 Arduino example",
+        markers=(b"#include <Adk.h>", b"InertShowSimulator simulator"),
+    ),
+)
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+CANONICAL_EXAMPLE = (
+    REPOSITORY_ROOT
+    / "examples/Lesson030InertShowSimulator/Lesson030InertShowSimulator.ino"
+)
+
+
+def normalize_base_url(raw_base_url: str) -> str:
+    """Return a directory-like HTTP(S) or file URL suitable for urljoin."""
+    parsed = urlsplit(raw_base_url)
+    if parsed.scheme not in {"https", "file"}:
+        raise ValueError("base URL must use https or file")
+    if parsed.scheme == "https" and not parsed.netloc:
+        raise ValueError("HTTPS base URL must include a host")
+    if parsed.username is not None or parsed.password is not None:
+        raise ValueError("base URL must not contain credentials")
+    if parsed.query or parsed.fragment:
+        raise ValueError("base URL must not include a query or fragment")
+    return raw_base_url.rstrip("/") + "/"
+
+
+def read_url(url: str, timeout: float) -> bytes:
+    """Fetch one URL, bounding both the request time and response size."""
+    if urlsplit(url).scheme == "file" and urlsplit(url).path.endswith("/"):
+        url = urljoin(url, "index.html")
+    request = Request(url, headers={"User-Agent": "adk-deployment-check/1"})
+    with urlopen(request, timeout=timeout) as response:
+        requested = urlsplit(url)
+        effective = urlsplit(response.geturl())
+        if requested.scheme != effective.scheme or requested.netloc != effective.netloc:
+            raise OSError("response redirected outside the deployment origin")
+        if requested.path.endswith("/"):
+            path_matches = effective.path.startswith(requested.path)
+        else:
+            path_matches = effective.path == requested.path
+        if not path_matches:
+            raise OSError("response redirected outside the requested artifact path")
+        status = getattr(response, "status", None)
+        if status is not None and status != 200:
+            raise OSError(f"unexpected HTTP status {status}")
+        data = response.read(MAX_RESPONSE_BYTES + 1)
+    if len(data) > MAX_RESPONSE_BYTES:
+        raise OSError(f"response exceeds {MAX_RESPONSE_BYTES} bytes")
+    return data
+
+
+def validate_response(check: Check, data: bytes) -> str | None:
+    if not data:
+        return "response is empty"
+    if check.prefix is not None and not data.startswith(check.prefix):
+        return f"response does not begin with {check.prefix!r}"
+    for marker in check.markers:
+        if marker not in data:
+            return f"response is missing {marker!r}"
+    if check.path.endswith(".ino"):
+        try:
+            data.decode("utf-8")
+        except UnicodeDecodeError:
+            return "Arduino example is not valid UTF-8"
+        try:
+            canonical = CANONICAL_EXAMPLE.read_bytes()
+        except OSError as exception:
+            return f"cannot read canonical Arduino example: {exception}"
+        if data != canonical:
+            return "Arduino example differs from the audited checkout"
+    return None
+
+
+def check_deployment(
+    base_url: str,
+    *,
+    retries: int = DEFAULT_RETRIES,
+    timeout: float = DEFAULT_TIMEOUT_SECONDS,
+    retry_delay: float = DEFAULT_RETRY_DELAY_SECONDS,
+    fetch: Callable[[str, float], bytes] = read_url,
+    sleep: Callable[[float], None] = time.sleep,
+) -> list[str]:
+    """Return deterministic, human-readable failures for the deployed site."""
+    if retries < 0:
+        raise ValueError("retries must be nonnegative")
+    if timeout <= 0:
+        raise ValueError("timeout must be positive")
+    if retry_delay < 0:
+        raise ValueError("retry delay must be nonnegative")
+
+    normalized = normalize_base_url(base_url)
+    errors: list[str] = []
+    for check in CHECKS:
+        url = urljoin(normalized, check.path)
+        failure = ""
+        for attempt in range(retries + 1):
+            try:
+                data = fetch(url, timeout)
+                validation_error = validate_response(check, data)
+                if validation_error is None:
+                    failure = ""
+                    break
+                failure = validation_error
+            except (HTTPError, URLError, OSError, TimeoutError) as exception:
+                failure = str(exception)
+            if attempt < retries:
+                sleep(retry_delay)
+        if failure:
+            errors.append(
+                f"{check.description} ({url}) failed after "
+                f"{retries + 1} attempt(s): {failure}"
+            )
+    return errors
+
+
+def parse_arguments(arguments: list[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "base_url",
+        help="deployed site base URL, including any project path",
+    )
+    parser.add_argument(
+        "--retries",
+        type=int,
+        default=DEFAULT_RETRIES,
+        help=f"retries after the first attempt (default: {DEFAULT_RETRIES})",
+    )
+    parser.add_argument(
+        "--timeout",
+        type=float,
+        default=DEFAULT_TIMEOUT_SECONDS,
+        help=f"per-request timeout in seconds (default: {DEFAULT_TIMEOUT_SECONDS:g})",
+    )
+    parser.add_argument(
+        "--retry-delay",
+        type=float,
+        default=DEFAULT_RETRY_DELAY_SECONDS,
+        help=(
+            "delay between attempts in seconds "
+            f"(default: {DEFAULT_RETRY_DELAY_SECONDS:g})"
+        ),
+    )
+    return parser.parse_args(arguments)
+
+
+def main(arguments: list[str]) -> int:
+    options = parse_arguments(arguments)
+    try:
+        errors = check_deployment(
+            options.base_url,
+            retries=options.retries,
+            timeout=options.timeout,
+            retry_delay=options.retry_delay,
+        )
+    except ValueError as exception:
+        print(f"deployment check: {exception}", file=sys.stderr)
+        return 2
+
+    if errors:
+        for error in errors:
+            print(f"deployment check: {error}", file=sys.stderr)
+        return 1
+    print(f"deployment check passed: {normalize_base_url(options.base_url)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))
