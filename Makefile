@@ -10,6 +10,8 @@ include mk/site.mk
 include mk/style.mk
 include mk/legacy.mk
 include mk/quality.mk
+include mk/usb_mesh.mk
+include mk/hdmi_mesh.mk
 
 .DEFAULT_GOAL := check
 
