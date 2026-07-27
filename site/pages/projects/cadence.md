@@ -8,7 +8,7 @@ PDF.
 |---:|---|---|
 | 003 | Reaction timer | Bounce, false-start, timeout, wrap, replay — hardware experimental |
 | 006 | Simon | Stable sequence vectors and full input replay — hardware experimental |
-| 009 | Adaptive night light | Calibration, filtering, hysteresis |
+| 009 | Adaptive night light | Calibration, filtering, hysteresis — hardware experimental |
 | 012 | Traffic junction | No conflicting greens; all-red failure |
 | 015 | Environmental station | Sensor validity and stable records |
 | 018 | Inert access trainer | Lockout and corrupt-state recovery |

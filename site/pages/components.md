@@ -18,13 +18,20 @@ Status meanings:
 | Component | `RgbLed` | Hardware experimental | Three `PwmOutput` endpoints |
 | Component | `PiezoSounder` | Hardware experimental | One pin and Timer2 |
 | Behavior | `Simon` | Host verified | No hardware; observes input snapshots and time |
-| Later layers | Analog, buses, displays, sensors, actuators | Planned | See catalog |
+| Endpoint | `AnalogInput` | Hardware experimental | One analog-capable pin |
+| Value behavior | `LinearCalibration`, `MovingAverage`, `Deadband` | Host verified | Fixed-size sample state |
+| Behavior | `NightLight` | Host verified | No hardware; observes normalized samples |
+| Later layers | Buses, displays, sensors, actuators | Planned | See catalog |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.
 Behavior engines expose output intent rather than hiding hardware callbacks.
 `Simon` therefore owns neither buttons nor cue devices: an adapter translates
 one complete button observation into `SimonInput`, then maps `SimonSnapshot`
 onto LEDs, RGB feedback, and sound.
+
+`NightLight` follows the same boundary. Its Mega adapter owns the sensor, lamp,
+and diagnostic LED, while the engine only accepts a complete observation and
+returns output intent.
 
 - [Exact API](api-supported.md)
 - [Full component catalog](docs/COMPONENTS.md)
