@@ -3,21 +3,26 @@
 `CURRICULUM.md` is the canonical lesson and project numbering authority.
 `COMPONENTS.md` owns the target component inventory.
 
-## Current host-verified slice
+## Current host-verified slices
 
 1. no-exception status, wrap-safe time, fixed resource claims, and runtime;
 2. `DigitalOutput` and `MonoLed` for early visible diagnostics;
 3. `DigitalInput` and deterministic `Button`;
-4. deterministic Reaction Timer with lessons 001–003.
+4. deterministic Reaction Timer with lessons 001–003;
+5. `PwmOutput`, `RgbLed`, and shared default-timer leases;
+6. timer ownership and the nonblocking `PiezoSounder`;
+7. deterministic `Simon`, fixed and seeded cue sources, and lessons 004–006.
 
-Physical Mega 2560 acceptance remains required before this slice is called
+The component APIs and behavior engines pass deterministic host tests and
+compile for the Mega 2560. The complete Simon hardware adapter and physical
+acceptance cards remain open, so this work is experimental rather than
 hardware supported.
 
 ## Next slice
 
-1. `PwmOutput` and `RgbLed`;
-2. timer ownership and passive piezo sound;
-3. deterministic Simon at lesson 006.
+1. `AnalogInput`, potentiometer calibration, and explicit sample validity;
+2. photoresistor and thermistor filtering from supplied samples;
+3. adaptive night light at lesson 009.
 
 Later slices follow the canonical three-lesson cadence through analog sensing,
 displays, environmental records, bounded actuators, buses and storage,

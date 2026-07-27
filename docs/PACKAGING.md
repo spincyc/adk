@@ -12,14 +12,14 @@ adk/
 ├── keywords.txt
 ├── src/
 │   ├── Adk.h
-│   ├── core/
-│   ├── input/
-│   └── output/
+│   ├── status.h
+│   ├── resource.h
+│   └── component headers and out-of-line sources
 ├── examples/
-│   ├── Lesson004DigitalOutput/
-│   │   └── Lesson004DigitalOutput.ino
-│   └── Project001ReactionTimer/
-│       └── Project001ReactionTimer.ino
+│   ├── Lesson001DigitalOutput/
+│   │   └── Lesson001DigitalOutput.ino
+│   └── Lesson003ReactionTimer/
+│       └── Lesson003ReactionTimer.ino
 ├── docs/
 ├── lessons/
 ├── legacy/
@@ -106,7 +106,7 @@ editing the canonical solution. Keep answers in a separate
 The source relationship is:
 
 ```text
-examples/*.ino ── compile ──> Mega 2560 firmware
+examples/*/*.ino ── compile ──> Mega 2560 firmware
        │
        ├── include/excerpt ──> HTML lesson
        ├── include/excerpt ──> PDF lesson

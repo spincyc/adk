@@ -131,19 +131,19 @@ following project-specific evidence.
 
 | Lesson | Project | Class | Release gate |
 |---:|---|:---:|---|
-| 003 | Circuit heartbeat | E1 | Pin safe-state measurement; unplug-and-rewire drill |
-| 006 | Reaction timer | E1 | No startling high-energy output; stuck and simultaneous input traces |
-| 009 | Simon | E1 | Bounded light and sound; timeout, rollover, and shutdown traces |
-| 012 | Adaptive night-light | E1 | Sensor open/short cannot request an out-of-range output |
-| 015 | Bench instrument panel | E1 | Invalid controls and display loss leave outputs inactive |
-| 018 | Environmental logger | E1 | Bus/storage faults preserve sensing and shutdown; no safety alarm claim |
-| 021 | Lock simulator | E2 | Inert latch model first; restrained servo; independent load-power removal |
-| 024 | Tabletop rover | E2 | Wheels raised for first test; bounded area; physical load-power disconnect; loss-of-control stop test |
+| 003 | Reaction timer | E1 | No startling output; stuck, bounce, false-start, timeout, and shutdown traces |
+| 006 | Simon | E1 | Bounded light and sound; chord, timeout, rollover, and shutdown traces |
+| 009 | Adaptive night light | E1 | Sensor open/short cannot request an out-of-range output |
+| 012 | Traffic junction | E1 | Conflicting greens remain impossible; every failure forces all-red |
+| 015 | Environmental station | E1 | Invalid or missing sensor data remains explicit; no safety-alarm claim |
+| 018 | Inert access trainer | E2 | Soft latch first; restrained servo; independent load-power removal |
+| 021 | Bench rover | E2 | Wheels raised first; bounded area; physical load-power disconnect; loss-of-control stop test |
+| 024 | Greenhouse controller | E1 | LEDs simulate loads; schedules and faults cannot enable an unsafe combination |
 | 027 | Telemetry console | E1 | Receive-only or synthetic radio; stale data is explicit; no safety dispatch claim |
 | 030 | Show-cue simulator | E0/E1 | Inert outputs only; no launcher/initiator connection; complete deterministic fault and audit trace |
 
-Project 021 does not secure property. Project 024 carries no person, animal, hot
-item, sharp tool, or hazardous material. Project 027 does not monitor a
+Project 018 does not secure property. Project 021 carries no person, animal,
+hot item, sharp tool, or hazardous material. Project 027 does not monitor a
 safety-critical condition. Project 030 does not operate a real show.
 
 ## Lesson release record
