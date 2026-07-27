@@ -60,23 +60,25 @@ firmware-size-check: size-check
 	@echo "Firmware satisfies the recorded $(BOARD_FQBN) budgets."
 
 arduino-lint:
-	@command -v "$(ARDUINO_LINT)" >/dev/null || { \
-		echo "arduino-lint is required for a release and is not in Arch official repositories." >&2; \
-		exit 2; \
-	}
-	@"$(ARDUINO_LINT)" --version | grep -F "$(ARDUINO_LINT_VERSION)" >/dev/null || { \
-		echo "arduino-lint $(ARDUINO_LINT_VERSION) is required." >&2; \
-		exit 2; \
-	}
-	$(ARDUINO_LINT) --compliance strict --project-type library --recursive .
+	ARDUINO_LINT="$(ARDUINO_LINT)" \
+	ARDUINO_LINT_VERSION="$(ARDUINO_LINT_VERSION)" \
+	ARDUINO_LINT_MODE=strict \
+	PACKAGE_REF="$(PACKAGE_REF)" \
+	sh scripts/lint_package.sh
 
 arduino-lint-submit: arduino-lint
-	$(ARDUINO_LINT) --compliance strict --library-manager submit \
-		--project-type library --recursive .
+	ARDUINO_LINT="$(ARDUINO_LINT)" \
+	ARDUINO_LINT_VERSION="$(ARDUINO_LINT_VERSION)" \
+	ARDUINO_LINT_MODE=submit \
+	PACKAGE_REF="$(PACKAGE_REF)" \
+	sh scripts/lint_package.sh
 
 arduino-lint-update: arduino-lint
-	$(ARDUINO_LINT) --compliance strict --library-manager update \
-		--project-type library --recursive .
+	ARDUINO_LINT="$(ARDUINO_LINT)" \
+	ARDUINO_LINT_VERSION="$(ARDUINO_LINT_VERSION)" \
+	ARDUINO_LINT_MODE=update \
+	PACKAGE_REF="$(PACKAGE_REF)" \
+	sh scripts/lint_package.sh
 
 arduino-lint-release:
 	@case "$(ARDUINO_LINT_RELEASE_MODE)" in \
