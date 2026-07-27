@@ -17,6 +17,7 @@
 #include "night_light.h"
 #include "piezo_sounder.h"
 #include "power_domain.h"
+#include "pulse_input.h"
 #include "pwm_output.h"
 #include "reaction_timer.h"
 #include "rgb_led.h"
@@ -33,3 +34,4 @@
 #include "threshold_input.h"
 #include "time.h"
 #include "traffic_junction.h"
+#include "ultrasonic_ranger.h"
