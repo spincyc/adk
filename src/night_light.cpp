@@ -15,7 +15,7 @@ namespace adk {
         : config_         (config)
         , mode_           (NightLightMode::Off)
         , sampleState_    (LightSampleState::Valid)
-        , status_         (Status::NotInitialized)
+        , status_         (StatusCode::NotInitialized)
         , lightPermille_  (0)
         , outputDuty_     (0)
         , initialized_    (false)
@@ -26,14 +26,14 @@ namespace adk {
     {
         if (!configValid ())
         {
-            status_      = Status::InvalidArgument;
+            status_      = StatusCode::InvalidArgument;
             initialized_ = false;
             return status_;
         }
 
         mode_           = NightLightMode::Off;
         sampleState_    = LightSampleState::Valid;
-        status_         = Status::Ok;
+        status_         = StatusCode::Ok;
         lightPermille_  = 0;
         outputDuty_     = 0;
         initialized_    = true;
@@ -45,7 +45,7 @@ namespace adk {
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         if (input.sampleState != LightSampleState::Valid)
@@ -57,15 +57,15 @@ namespace adk {
         if (input.lightPermille > maximumPermille)
         {
             mode_          = NightLightMode::Fault;
-            sampleState_   = input.sampleState;
-            status_        = Status::InvalidArgument;
+            sampleState_   = LightSampleState::AboveRange;
+            status_        = StatusCode::InvalidArgument;
             lightPermille_ = input.lightPermille;
             outputDuty_    = 0;
             return status_;
         }
 
         sampleState_   = LightSampleState::Valid;
-        status_        = Status::Ok;
+        status_        = StatusCode::Ok;
         lightPermille_ = input.lightPermille;
 
         if (mode_ == NightLightMode::Fault)
@@ -139,7 +139,7 @@ namespace adk {
     {
         mode_           = NightLightMode::Fault;
         sampleState_    = input.sampleState;
-        status_         = Status::HardwareFailure;
+        status_         = StatusCode::HardwareFailure;
         lightPermille_  = input.lightPermille;
         outputDuty_     = 0;
     }

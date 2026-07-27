@@ -26,18 +26,18 @@ namespace adk {
     {
         if (initialized_)
         {
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         if (pin_ >= NUM_DIGITAL_PINS)
         {
-            return Status::InvalidPin;
+            return StatusCode::InvalidPin;
         }
 
         const ResourceId pinResource = {ResourceKind::Pin, pin_};
         Status           status      = resources_->claim (pinResource, pinClaim_);
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             return status;
         }
@@ -45,7 +45,7 @@ namespace adk {
         const ResourceId timerResource = {ResourceKind::Timer, toneTimer};
         status = resources_->claim (timerResource, timerClaim_);
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             pinClaim_.release ();
             return status;
@@ -53,7 +53,7 @@ namespace adk {
 
         pinMode (pin_, INPUT);
         initialized_ = true;
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void PiezoSounder::shutdown () noexcept
@@ -76,7 +76,7 @@ namespace adk {
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         if (frequency < minimumFrequencyHz ||
@@ -84,7 +84,7 @@ namespace adk {
             duration.milliseconds () == 0 ||
             duration.milliseconds () > maximumDurationMs)
         {
-            return Status::InvalidArgument;
+            return StatusCode::InvalidArgument;
         }
 
         tone (pin_, frequency);
@@ -93,7 +93,7 @@ namespace adk {
         duration_  = duration;
         startedAt_ = now;
         sounding_  = true;
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void PiezoSounder::stop () noexcept

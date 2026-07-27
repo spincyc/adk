@@ -20,11 +20,11 @@ namespace {
     }
 
     void requireStatus (
-        adk::Status actual,
-        adk::Status expected,
-        const char* message)
+        adk::Status     actual,
+        adk::StatusCode expected,
+        const char*     message)
     {
-        require (actual == expected, message);
+        require (actual.error () == expected, message);
     }
 
     adk::ResourceId pin (uint8_t index)
@@ -53,26 +53,26 @@ namespace {
         {
             if (active_)
             {
-                return adk::Status::Ok;
+                return adk::StatusCode::Ok;
             }
 
             adk::Status status = resources_.claim (first, first_);
 
-            if (status != adk::Status::Ok)
+            if (!status.ok ())
             {
                 return status;
             }
 
             status = resources_.claim (second, second_);
 
-            if (status != adk::Status::Ok)
+            if (!status.ok ())
             {
                 first_.release ();
                 return status;
             }
 
             active_ = true;
-            return adk::Status::Ok;
+            return adk::StatusCode::Ok;
         }
 
         void shutdown () noexcept
@@ -96,47 +96,46 @@ namespace {
 
     void testStatus ()
     {
-        const adk::Result<int> success (adk::Status::Ok, 42);
-        const adk::Result<int> failure (adk::Status::HardwareFailure, 0);
+        const adk::Result<int> success (adk::StatusCode::Ok, 42);
+        const adk::Result<int> failure (adk::StatusCode::HardwareFailure, 0);
 
         require (success.ok (), "successful result");
-        require (success.status () == adk::Status::Ok, "successful status");
+        require (success.status ().ok (), "successful status");
         require (success.value () == 42, "successful value");
         require (!failure.ok (), "failed result");
         require (
-            failure.status () == adk::Status::HardwareFailure,
+            failure.status ().error () == adk::StatusCode::HardwareFailure,
             "failed status");
         require (
             failure.error () == adk::StatusCode::HardwareFailure,
             "result exposes error code");
         require (failure.transient (), "result exposes transient failure");
         require (adk::Status ().ok (), "default status succeeds");
-        require (!adk::Status::InvalidPin.ok (), "error status fails");
+
+        const adk::Status invalidPin      (adk::StatusCode::InvalidPin);
+        const adk::Status resourceBusy    (adk::StatusCode::ResourceBusy);
+        const adk::Status hardwareFailure (adk::StatusCode::HardwareFailure);
+        const adk::Status invalidArgument (adk::StatusCode::InvalidArgument);
+        const adk::Status capacityFailure (adk::StatusCode::CapacityExceeded);
+
+        require (!invalidPin.ok (), "error status fails");
         require (
-            adk::Status::InvalidPin.error () == adk::StatusCode::InvalidPin,
+            invalidPin.error () == adk::StatusCode::InvalidPin,
             "status exposes error code");
-        require (
-            adk::Status::ResourceBusy.transient (),
-            "resource contention is transient");
-        require (
-            adk::Status::HardwareFailure.transient (),
-            "hardware failure is transient");
-        require (
-            !adk::Status::InvalidArgument.transient (),
-            "invalid argument is permanent");
-        require (
-            !adk::Status::CapacityExceeded.transient (),
-            "capacity failure is permanent");
+        require (resourceBusy.transient (), "resource contention is transient");
+        require (hardwareFailure.transient (), "hardware failure is transient");
+        require (!invalidArgument.transient (), "invalid argument is permanent");
+        require (!capacityFailure.transient (), "capacity failure is permanent");
 
         const adk::Status statuses[] = {
-            adk::Status::Ok,
-            adk::Status::InvalidArgument,
-            adk::Status::InvalidPin,
-            adk::Status::Unsupported,
-            adk::Status::ResourceBusy,
-            adk::Status::NotInitialized,
-            adk::Status::CapacityExceeded,
-            adk::Status::HardwareFailure
+            adk::StatusCode::Ok,
+            adk::StatusCode::InvalidArgument,
+            adk::StatusCode::InvalidPin,
+            adk::StatusCode::Unsupported,
+            adk::StatusCode::ResourceBusy,
+            adk::StatusCode::NotInitialized,
+            adk::StatusCode::CapacityExceeded,
+            adk::StatusCode::HardwareFailure
         };
 
         for (adk::Status status : statuses)
@@ -211,14 +210,14 @@ namespace {
 
             requireStatus     (
                 resources.claim (valid, claim),
-                adk::Status::Ok,
+                adk::StatusCode::Ok,
                 "valid boundary claim");
             require           (resources.claimed (valid), "valid boundary recorded");
             claim.release     ();
             require           (!resources.claimed (valid), "boundary release");
             requireStatus     (
                 resources.claim (invalid, claim),
-                adk::Status::Unsupported,
+                adk::StatusCode::Unsupported,
                 "invalid boundary rejected");
             require           (!resources.claimed (invalid), "invalid not recorded");
         }
@@ -232,18 +231,18 @@ namespace {
 
         requireStatus (
             resources.claim (pin (12), owner),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "first owner claims pin");
         requireStatus (
             resources.claim (pin (12), contender),
-            adk::Status::ResourceBusy,
+            adk::StatusCode::ResourceBusy,
             "second owner rejected");
         require (!contender.active (), "rejected claim remains inert");
 
         owner.release ();
         requireStatus (
             resources.claim (pin (12), contender),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "released resource reusable");
     }
 
@@ -255,15 +254,15 @@ namespace {
 
         requireStatus (
             firstRegistry.claim (pin (1), claim),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "claim starts active");
         requireStatus (
             firstRegistry.claim (pin (2), claim),
-            adk::Status::InvalidArgument,
+            adk::StatusCode::InvalidArgument,
             "active claim cannot be overwritten");
         requireStatus (
             secondRegistry.claim (pin (2), claim),
-            adk::Status::InvalidArgument,
+            adk::StatusCode::InvalidArgument,
             "active claim cannot change registry");
         require (firstRegistry.claimed (pin (1)), "original claim preserved");
         require (!firstRegistry.claimed (pin (2)), "replacement not claimed");
@@ -283,7 +282,7 @@ namespace {
 
             requireStatus (
                 resources.claim (pin (9), claim),
-                adk::Status::Ok,
+                adk::StatusCode::Ok,
                 "scoped claim");
             require (claim.active (), "scoped claim active");
         }
@@ -298,7 +297,7 @@ namespace {
 
         requireStatus (
             runtime.resources ().claim (pin (4), claim),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "runtime registry claim");
         require (
             runtime.resources ().claimed (pin (4)),
@@ -312,14 +311,14 @@ namespace {
 
         requireStatus (
             resources.claim (pin (8), blocker),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "rollback blocker");
 
         PairClaim pair (resources);
 
         requireStatus (
             pair.initialize (pin (7), pin (8)),
-            adk::Status::ResourceBusy,
+            adk::StatusCode::ResourceBusy,
             "second claim failure returned");
         require (!pair.initialized (), "failed pair remains inert");
         require (!resources.claimed (pin (7)), "first claim rolled back");
@@ -328,11 +327,11 @@ namespace {
         blocker.release  ();
         requireStatus    (
             pair.initialize (pin (7), pin (8)),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "pair retries after rollback");
         requireStatus    (
             pair.initialize (pin (7), pin (8)),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "initialize is idempotent");
 
         pair.shutdown   ();
@@ -350,11 +349,11 @@ namespace {
 
         requireStatus (
             resources.claimShared (timer, first),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "first shared claim");
         requireStatus (
             resources.claimShared (timer, second),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "second shared claim");
         require (resources.claimed (timer), "shared resource claimed");
 
@@ -373,25 +372,25 @@ namespace {
 
         requireStatus (
             resources.claimShared (timer, shared),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "shared before exclusive");
         requireStatus (
             resources.claim (timer, exclusive),
-            adk::Status::ResourceBusy,
+            adk::StatusCode::ResourceBusy,
             "shared blocks exclusive");
         shared.release  ();
         requireStatus   (
             resources.claim (timer, exclusive),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "exclusive after shared release");
         requireStatus (
             resources.claimShared (timer, shared),
-            adk::Status::ResourceBusy,
+            adk::StatusCode::ResourceBusy,
             "exclusive blocks shared");
         exclusive.release ();
         requireStatus     (
             resources.claimShared (timer, shared),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "shared after exclusive release");
     }
 
@@ -403,26 +402,26 @@ namespace {
 
         requireStatus (
             resources.claimShared ({adk::ResourceKind::Timer, 5}, claim),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "last shared timer");
         requireStatus (
             resources.claimShared ({adk::ResourceKind::Timer, 4}, claim),
-            adk::Status::InvalidArgument,
+            adk::StatusCode::InvalidArgument,
             "active shared destination");
         requireStatus (
             otherResources.claimShared (
                 {adk::ResourceKind::Timer, 4},
                 claim),
-            adk::Status::InvalidArgument,
+            adk::StatusCode::InvalidArgument,
             "active shared destination other registry");
         claim.release ();
         requireStatus (
             resources.claimShared ({adk::ResourceKind::Timer, 6}, claim),
-            adk::Status::Unsupported,
+            adk::StatusCode::Unsupported,
             "shared timer out of range");
         requireStatus (
             resources.claimShared ({adk::ResourceKind::Pin, 0}, claim),
-            adk::Status::Unsupported,
+            adk::StatusCode::Unsupported,
             "only timers are shareable");
     }
 
@@ -436,7 +435,7 @@ namespace {
 
             requireStatus (
                 resources.claimShared (timer, claim),
-                adk::Status::Ok,
+                adk::StatusCode::Ok,
                 "scoped shared claim");
         }
 
@@ -454,20 +453,20 @@ namespace {
         {
             requireStatus (
                 resources.claimShared (timer, claim),
-                adk::Status::Ok,
+                adk::StatusCode::Ok,
                 "fill shared capacity");
         }
 
         requireStatus (
             resources.claimShared (timer, overflow),
-            adk::Status::CapacityExceeded,
+            adk::StatusCode::CapacityExceeded,
             "shared capacity overflow");
         require (!overflow.active (), "overflow remains inert");
 
         claims[0].release ();
         requireStatus     (
             resources.claimShared (timer, overflow),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "released shared capacity reusable");
     }
 
@@ -482,24 +481,24 @@ namespace {
 
         requireStatus (
             resources.claim (secondTimer, blocker),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "shared transaction blocker");
         requireStatus (
             resources.claimShared (firstTimer, first),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "shared transaction first");
 
         const adk::Status status =
             resources.claimShared (secondTimer, second);
 
-        if (status != adk::Status::Ok)
+        if (!status.ok ())
         {
             first.release ();
         }
 
         requireStatus (
             status,
-            adk::Status::ResourceBusy,
+            adk::StatusCode::ResourceBusy,
             "shared transaction failure");
         require (!first.active (), "shared transaction rolled back");
         require (!resources.claimed (firstTimer), "first shared lease released");
@@ -514,7 +513,7 @@ namespace {
 
         requireStatus (
             pair.initialize (pin (20), pin (21)),
-            adk::Status::Ok,
+            adk::StatusCode::Ok,
             "unwind pair initialized");
         throw 1;
     }

@@ -9,22 +9,22 @@ namespace adk {
         {
             if (channel.resistorOhms == 0)
             {
-                return Status::InvalidArgument;
+                return StatusCode::InvalidArgument;
             }
 
             if (!Mega2560Board::validPin (channel.pin))
             {
-                return Status::InvalidPin;
+                return StatusCode::InvalidPin;
             }
 
             if (!Mega2560Board::supports (
                     channel.pin,
                     PinCapability::PwmOutput))
             {
-                return Status::Unsupported;
+                return StatusCode::Unsupported;
             }
 
-            return Status::Ok;
+            return StatusCode::Ok;
         }
     }
 
@@ -84,14 +84,14 @@ namespace adk {
     {
         if (initialized ())
         {
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         if (redChannel_.pin == greenChannel_.pin ||
             redChannel_.pin == blueChannel_.pin ||
             greenChannel_.pin == blueChannel_.pin)
         {
-            return Status::InvalidArgument;
+            return StatusCode::InvalidArgument;
         }
 
         const RgbLedChannel channels[] = {
@@ -104,7 +104,7 @@ namespace adk {
         {
             const Status status = validateChannel (channel);
 
-            if (status != Status::Ok)
+            if (!status.ok ())
             {
                 return status;
             }
@@ -112,14 +112,14 @@ namespace adk {
 
         Status status = red_.initialize ();
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             return status;
         }
 
         status = green_.initialize ();
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             red_.shutdown ();
             return status;
@@ -127,7 +127,7 @@ namespace adk {
 
         status = blue_.initialize ();
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             green_.shutdown ();
             red_  .shutdown ();
@@ -135,7 +135,7 @@ namespace adk {
         }
 
         color_ = Rgb ();
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void RgbLed::shutdown () noexcept
@@ -151,20 +151,20 @@ namespace adk {
     {
         if (!initialized ())
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         const Rgb previous = color_;
         Status    status   = red_.write (color.red ());
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             return status;
         }
 
         status = green_.write (color.green ());
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             red_.write (previous.red ());
             return status;
@@ -172,7 +172,7 @@ namespace adk {
 
         status = blue_.write (color.blue ());
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             green_.write (previous.green ());
             red_  .write (previous.red ());
@@ -180,7 +180,7 @@ namespace adk {
         }
 
         color_ = color;
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     Status RgbLed::off () noexcept

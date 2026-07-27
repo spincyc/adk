@@ -28,23 +28,23 @@ namespace adk {
     {
         if (initialized_)
         {
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         if (!Mega2560Board::validPin (pin_))
         {
-            return Status::InvalidPin;
+            return StatusCode::InvalidPin;
         }
 
         if (!Mega2560Board::supports (pin_, PinCapability::PwmOutput))
         {
-            return Status::Unsupported;
+            return StatusCode::Unsupported;
         }
 
         uint8_t timer = 0;
         Status  status = Mega2560Board::pwmTimer (pin_, timer);
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             return status;
         }
@@ -53,7 +53,7 @@ namespace adk {
             {ResourceKind::Pin, pin_},
             pinClaim_);
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             return status;
         }
@@ -62,7 +62,7 @@ namespace adk {
             {ResourceKind::Timer, timer},
             timerClaim_);
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             pinClaim_.release ();
             return status;
@@ -71,7 +71,7 @@ namespace adk {
         analogWrite  (pin_, initialDuty_);
         duty_        = initialDuty_;
         initialized_ = true;
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void PwmOutput::shutdown () noexcept
@@ -95,12 +95,12 @@ namespace adk {
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         analogWrite (pin_, duty);
         duty_ = duty;
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     PinId PwmOutput::pin () const noexcept

@@ -70,12 +70,12 @@ namespace adk {
     {
         if (initialized_)
         {
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         if (!traceValid ())
         {
-            return Status::InvalidArgument;
+            return StatusCode::InvalidArgument;
         }
 
         frameIndex_   = 0;
@@ -84,7 +84,7 @@ namespace adk {
         initialized_  = true;
         hasUpdated_   = false;
 
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void RecordedClimateSensor::shutdown () noexcept
@@ -105,20 +105,20 @@ namespace adk {
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         if (hasUpdated_ && now.elapsedSince (lastUpdateAt_).milliseconds () >
                                maximumUnambiguousDuration)
         {
-            return Status::InvalidArgument;
+            return StatusCode::InvalidArgument;
         }
 
         lastUpdateAt_ = now;
         hasUpdated_   = true;
 
         // Equal-time frames are consumed in trace order; the final status wins.
-        Status status = Status::Ok;
+        Status status;
 
         while (frameIndex_ < frameCount_ &&
                frameDue (now, frames_[frameIndex_].availableAt))

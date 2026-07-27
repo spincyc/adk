@@ -98,13 +98,13 @@ namespace {
         require (led.greenChannel ().resistorOhms == 330, "green resistor");
         require (led.blueChannel ().pin == 44, "blue pin");
         require (led.blueChannel ().resistorOhms == 470, "blue resistor");
-        require (led.set (adk::Rgb (1, 2, 3)) == adk::Status::NotInitialized,
+        require (led.set (adk::Rgb (1, 2, 3)).error () == adk::StatusCode::NotInitialized,
                  "stopped RGB rejects color");
-        require (led.off () == adk::Status::NotInitialized,
+        require (led.off ().error () == adk::StatusCode::NotInitialized,
                  "stopped RGB rejects off");
         require (fake::trace ().empty (), "stopped RGB touches no hardware");
 
-        require (led.initialize () == adk::Status::Ok, "RGB initializes");
+        require (led.initialize ().ok (), "RGB initializes");
         require (led.initialized (), "RGB initialized state");
         require (fake::trace ().size () == 3, "RGB initialization trace");
 
@@ -114,7 +114,7 @@ namespace {
 
         fake::clearTrace ();
 
-        require (led.set (adk::Rgb (11, 129, 250)) == adk::Status::Ok,
+        require (led.set (adk::Rgb (11, 129, 250)).ok (),
                  "RGB accepts color");
         require (led.color () == adk::Rgb (11, 129, 250), "RGB caches color");
         require (fake::trace ().size () == 3, "RGB color trace");
@@ -125,7 +125,7 @@ namespace {
 
         fake::clearTrace ();
 
-        require (led.off () == adk::Status::Ok, "RGB turns off");
+        require (led.off ().ok (), "RGB turns off");
         require (led.color () == adk::Rgb (), "off clears cached color");
 
         requireOperation (0, fake::OperationKind::AnalogWrite, 6,  0);
@@ -141,11 +141,11 @@ namespace {
         adk::RgbLed           led   (
             resources, redChannel, greenChannel, blueChannel);
 
-        require (led.initialize () == adk::Status::Ok, "first RGB initialization");
+        require (led.initialize ().ok (), "first RGB initialization");
 
         fake::clearTrace ();
 
-        require (led.initialize () == adk::Status::Ok, "repeated RGB initialization");
+        require (led.initialize ().ok (), "repeated RGB initialization");
         require (fake::trace ().empty (), "repeated initialize is inert");
     }
 
@@ -165,7 +165,7 @@ namespace {
             adk::RgbLed           led   (
                 resources, channels[0], channels[1], channels[2]);
 
-            require (led.initialize () == adk::Status::InvalidArgument,
+            require (led.initialize ().error () == adk::StatusCode::InvalidArgument,
                      "zero-ohm channel rejected");
             require (!led.initialized (), "invalid RGB stays stopped");
             require (fake::trace ().empty (), "invalid descriptor touches no hardware");
@@ -193,7 +193,7 @@ namespace {
             adk::RgbLed           led   (
                 resources, channels[0], channels[1], channels[2]);
 
-            require (led.initialize () == adk::Status::InvalidPin,
+            require (led.initialize ().error () == adk::StatusCode::InvalidPin,
                      "invalid channel pin rejected");
             require (!led.initialized (), "invalid pin leaves RGB stopped");
             require (fake::trace ().empty (),
@@ -208,7 +208,7 @@ namespace {
             adk::RgbLed           led   (
                 resources, channels[0], channels[1], channels[2]);
 
-            require (led.initialize () == adk::Status::Unsupported,
+            require (led.initialize ().error () == adk::StatusCode::Unsupported,
                      "unsupported channel pin rejected");
             require (!led.initialized (), "unsupported pin leaves RGB stopped");
             require (fake::trace ().empty (),
@@ -232,7 +232,7 @@ namespace {
             adk::RgbLed           led   (
                 resources, channels[0], channels[1], channels[2]);
 
-            require (led.initialize () == adk::Status::InvalidArgument,
+            require (led.initialize ().error () == adk::StatusCode::InvalidArgument,
                      "duplicate RGB pins rejected");
             require (!led.initialized (), "duplicate pins leave RGB stopped");
             require (fake::trace ().empty (),
@@ -249,11 +249,11 @@ namespace {
         adk::RgbLed           led   (
             resources, redChannel, greenChannel, blueChannel);
 
-        require (owner.initialize () == adk::Status::Ok, "red conflict owner");
+        require (owner.initialize ().ok (), "red conflict owner");
 
         fake::clearTrace ();
 
-        require (led.initialize () == adk::Status::ResourceBusy,
+        require (led.initialize ().error () == adk::StatusCode::ResourceBusy,
                  "red conflict status");
         require (!led.initialized (), "red conflict leaves RGB stopped");
         require (fake::trace ().empty (), "red conflict has no partial writes");
@@ -268,11 +268,11 @@ namespace {
         adk::RgbLed           led   (
             resources, redChannel, greenChannel, blueChannel);
 
-        require (owner.initialize () == adk::Status::Ok, "green conflict owner");
+        require (owner.initialize ().ok (), "green conflict owner");
 
         fake::clearTrace ();
 
-        require (led.initialize () == adk::Status::ResourceBusy,
+        require (led.initialize ().error () == adk::StatusCode::ResourceBusy,
                  "green conflict status");
         require (!led.initialized (), "green conflict leaves RGB stopped");
         require (led.color () == adk::Rgb (), "green rollback preserves off");
@@ -286,7 +286,7 @@ namespace {
 
         fake::clearTrace ();
 
-        require (reuse.initialize () == adk::Status::Ok,
+        require (reuse.initialize ().ok (),
                  "green rollback releases red claim");
     }
 
@@ -299,11 +299,11 @@ namespace {
         adk::RgbLed           led   (
             resources, redChannel, greenChannel, blueChannel);
 
-        require (owner.initialize () == adk::Status::Ok, "blue conflict owner");
+        require (owner.initialize ().ok (), "blue conflict owner");
 
         fake::clearTrace ();
 
-        require (led.initialize () == adk::Status::ResourceBusy,
+        require (led.initialize ().error () == adk::StatusCode::ResourceBusy,
                  "blue conflict status");
         require (!led.initialized (), "blue conflict leaves RGB stopped");
         require (fake::trace ().size () == 6, "blue rollback trace");
@@ -320,9 +320,9 @@ namespace {
 
         fake::clearTrace ();
 
-        require (redReuse.initialize () == adk::Status::Ok,
+        require (redReuse.initialize ().ok (),
                  "blue rollback releases red claim");
-        require (greenReuse.initialize () == adk::Status::Ok,
+        require (greenReuse.initialize ().ok (),
                  "blue rollback releases green claim");
     }
 
@@ -335,8 +335,8 @@ namespace {
         {
             adk::RgbLed led (resources, redChannel, greenChannel, blueChannel);
 
-            require (led.initialize () == adk::Status::Ok, "scoped RGB initialization");
-            require (led.set (adk::Rgb (40, 80, 120)) == adk::Status::Ok,
+            require (led.initialize ().ok (), "scoped RGB initialization");
+            require (led.set (adk::Rgb (40, 80, 120)).ok (),
                      "scoped RGB color");
             fake::clearTrace ();
         }
@@ -357,7 +357,7 @@ namespace {
         adk::RgbLed replacement (
             resources, redChannel, greenChannel, blueChannel);
 
-        require (replacement.initialize () == adk::Status::Ok,
+        require (replacement.initialize ().ok (),
                  "destruction releases all claims");
 
         fake::clearTrace ();
@@ -374,7 +374,7 @@ namespace {
 
         require (fake::trace ().empty (), "repeated shutdown is inert");
 
-        require (replacement.initialize () == adk::Status::Ok,
+        require (replacement.initialize ().ok (),
                  "RGB restarts after shutdown");
         require (replacement.color () == adk::Rgb (),
                  "RGB restart begins off");

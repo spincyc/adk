@@ -59,32 +59,34 @@ namespace adk {
         case 4:
         case 13:
             timer = 0;
-            return Status::Ok;
+            return StatusCode::Ok;
         case 11:
         case 12:
             timer = 1;
-            return Status::Ok;
+            return StatusCode::Ok;
         case 9:
         case 10:
             timer = 2;
-            return Status::Ok;
+            return StatusCode::Ok;
         case 2:
         case 3:
         case 5:
             timer = 3;
-            return Status::Ok;
+            return StatusCode::Ok;
         case 6:
         case 7:
         case 8:
             timer = 4;
-            return Status::Ok;
+            return StatusCode::Ok;
         case 44:
         case 45:
         case 46:
             timer = 5;
-            return Status::Ok;
+            return StatusCode::Ok;
         default:
-            return validPin (pin) ? Status::Unsupported : Status::InvalidPin;
+            return validPin (pin)
+                ? StatusCode::Unsupported
+                : StatusCode::InvalidPin;
         }
     }
 }

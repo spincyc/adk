@@ -15,7 +15,7 @@ namespace adk {
         : config_                    (config)
         , phase_                     (TrafficPhase::AllRed)
         , nextAfterAllRed_           (TrafficPhase::MainGreen)
-        , status_                    (Status::NotInitialized)
+        , status_                    (StatusCode::NotInitialized)
         , phaseSince_                (TimePoint (0))
         , lastUpdate_                (TimePoint (0))
         , pedestrianRequestPending_  (false)
@@ -36,12 +36,12 @@ namespace adk {
     {
         if (initialized_)
         {
-            return Status::Ok;
+            return StatusCode::Ok;
         }
 
         if (!configValid ())
         {
-            status_ = Status::InvalidArgument;
+            status_ = StatusCode::InvalidArgument;
             phase_  = TrafficPhase::Fault;
             return status_;
         }
@@ -49,25 +49,25 @@ namespace adk {
         resetState ();
         initialized_ = true;
 
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     Status TrafficJunction::reset () noexcept
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         resetState ();
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void TrafficJunction::shutdown () noexcept
     {
         phase_                    = TrafficPhase::AllRed;
         nextAfterAllRed_          = TrafficPhase::MainGreen;
-        status_                   = Status::NotInitialized;
+        status_                   = StatusCode::NotInitialized;
         phaseSince_               = TimePoint (0);
         lastUpdate_               = TimePoint (0);
         pedestrianRequestPending_ = false;
@@ -88,7 +88,7 @@ namespace adk {
     {
         if (!initialized_)
         {
-            return Status::NotInitialized;
+            return StatusCode::NotInitialized;
         }
 
         phaseChanged_   = false;
@@ -101,13 +101,13 @@ namespace adk {
 
         if (!input.circuitHealthy)
         {
-            enterFault (Status::HardwareFailure, now);
+            enterFault (StatusCode::HardwareFailure, now);
             return status_;
         }
 
         if (!timeValid (now))
         {
-            enterFault (Status::InvalidArgument, now);
+            enterFault (StatusCode::InvalidArgument, now);
             return status_;
         }
 
@@ -127,7 +127,7 @@ namespace adk {
             requestAccepted_          = true;
         }
 
-        status_ = Status::Ok;
+        status_ = StatusCode::Ok;
 
         if (deadlineDue (now))
         {
@@ -168,7 +168,7 @@ namespace adk {
 
         if (!signalsValid (signalsForPhase ()))
         {
-            enterFault (Status::HardwareFailure, now);
+            enterFault (StatusCode::HardwareFailure, now);
         }
 
         return status_;
@@ -201,7 +201,7 @@ namespace adk {
     {
         phase_                    = TrafficPhase::AllRed;
         nextAfterAllRed_          = TrafficPhase::MainGreen;
-        status_                   = Status::Ok;
+        status_                   = StatusCode::Ok;
         phaseSince_               = TimePoint (0);
         lastUpdate_               = TimePoint (0);
         pedestrianRequestPending_ = false;

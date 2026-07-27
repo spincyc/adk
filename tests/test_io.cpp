@@ -54,22 +54,22 @@ void testOutputLifecycle ()
     require (output.pin () == 13, "output pin");
     require (output.level () == adk::Level::Low, "output initial level");
     require (!output.initialized (), "output starts inactive");
-    require (output.write (adk::Level::High) == adk::Status::NotInitialized,
+    require (output.write (adk::Level::High).error () == adk::StatusCode::NotInitialized,
              "output rejects write before initialization");
     require (fake::trace ().empty (), "inactive output touched hardware");
 
-    require          (output.initialize () == adk::Status::Ok, "output initialization");
+    require          (output.initialize ().ok (), "output initialization");
     require          (output.initialized (), "output active");
     require          (fake::trace ().size () == 2, "output initialization trace");
     requireOperation (0, fake::OperationKind::DigitalWrite, 13, LOW);
     requireOperation (1, fake::OperationKind::PinMode, 13, OUTPUT);
 
     fake::clearTrace ();
-    require          (output.initialize () == adk::Status::Ok, "output repeated initialization");
+    require          (output.initialize ().ok (), "output repeated initialization");
     require          (fake::trace ().empty (),
              "repeated output initialization touched hardware");
 
-    require          (output.write (adk::Level::High) == adk::Status::Ok, "output high write");
+    require          (output.write (adk::Level::High).ok (), "output high write");
     require          (output.level () == adk::Level::High, "output high state");
     requireOperation (0, fake::OperationKind::DigitalWrite, 13, HIGH);
 
@@ -83,7 +83,7 @@ void testOutputLifecycle ()
     output.shutdown  ();
     require          (fake::trace ().empty (), "repeated output shutdown touched hardware");
 
-    require          (output.initialize () == adk::Status::Ok, "output restart");
+    require          (output.initialize ().ok (), "output restart");
     require          (output.level () == adk::Level::Low, "output restart level");
     requireOperation (0, fake::OperationKind::DigitalWrite, 13, LOW);
     requireOperation (1, fake::OperationKind::PinMode, 13, OUTPUT);
@@ -97,7 +97,7 @@ void testOutputInitialHighAndDestruction ()
     {
         adk::DigitalOutput output (resources, 8, adk::Level::High);
 
-        require          (output.initialize () == adk::Status::Ok, "high output initialization");
+        require          (output.initialize ().ok (), "high output initialization");
         requireOperation (0, fake::OperationKind::DigitalWrite, 8, HIGH);
         requireOperation (1, fake::OperationKind::PinMode, 8, OUTPUT);
         fake::clearTrace ();
@@ -108,7 +108,7 @@ void testOutputInitialHighAndDestruction ()
 
     fake::clearTrace               ();
     adk::DigitalOutput replacement (resources, 8);
-    require                        (replacement.initialize () == adk::Status::Ok,
+    require                        (replacement.initialize ().ok (),
              "output destruction released claim");
 }
 
@@ -119,20 +119,20 @@ void testOutputErrors ()
     adk::DigitalOutput    owner   (resources, 7);
     adk::DigitalOutput    blocked (resources, 7);
 
-    require          (owner.initialize () == adk::Status::Ok, "output owner initialization");
+    require          (owner.initialize ().ok (), "output owner initialization");
     fake::clearTrace ();
-    require          (blocked.initialize () == adk::Status::ResourceBusy,
+    require          (blocked.initialize ().error () == adk::StatusCode::ResourceBusy,
              "output conflict status");
     require (fake::trace ().empty (), "output conflict touched hardware");
 
     owner.shutdown   ();
     fake::clearTrace ();
-    require          (blocked.initialize () == adk::Status::Ok, "output claim reuse");
+    require          (blocked.initialize ().ok (), "output claim reuse");
 
     fake::reset ();
     adk::ResourceRegistry invalidResources;
     adk::DigitalOutput    invalid (invalidResources, NUM_DIGITAL_PINS);
-    require                       (invalid.initialize () == adk::Status::InvalidPin, "invalid output pin");
+    require                       (invalid.initialize ().error () == adk::StatusCode::InvalidPin, "invalid output pin");
     require                       (fake::trace ().empty (), "invalid output touched hardware");
 }
 
@@ -150,7 +150,7 @@ void testInputModesAndSampling ()
     input.update ();
     require      (fake::trace ().empty (), "inactive input touched hardware");
 
-    require          (input.initialize () == adk::Status::Ok, "input initialization");
+    require          (input.initialize ().ok (), "input initialization");
     require          (input.initialized (), "input active");
     require          (input.read () == adk::Level::High, "input initial sample");
     require          (fake::trace ().size () == 2, "input initialization trace");
@@ -158,7 +158,7 @@ void testInputModesAndSampling ()
     requireOperation (1, fake::OperationKind::DigitalRead, 4, HIGH);
 
     fake::clearTrace ();
-    require          (input.initialize () == adk::Status::Ok, "input repeated initialization");
+    require          (input.initialize ().ok (), "input repeated initialization");
     require          (fake::trace ().empty (), "repeated input initialization touched hardware");
 
     fake::setDigitalInput (4, LOW);
@@ -184,7 +184,7 @@ void testInputModesAndSampling ()
     adk::ResourceRegistry pullResources;
     fake::setDigitalInput    (5, HIGH);
     adk::DigitalInput pullUp (pullResources, 5, adk::Pull::Up);
-    require                  (pullUp.initialize () == adk::Status::Ok, "pull-up initialization");
+    require                  (pullUp.initialize ().ok (), "pull-up initialization");
     requireOperation         (0, fake::OperationKind::PinMode, 5, INPUT_PULLUP);
     requireOperation         (1, fake::OperationKind::DigitalRead, 5, HIGH);
 }
@@ -196,34 +196,34 @@ void testInputErrorsAndDestruction ()
     adk::DigitalInput     owner   (resources, 6);
     adk::DigitalInput     blocked (resources, 6);
 
-    require          (owner.initialize () == adk::Status::Ok, "input owner initialization");
+    require          (owner.initialize ().ok (), "input owner initialization");
     fake::clearTrace ();
-    require          (blocked.initialize () == adk::Status::ResourceBusy,
+    require          (blocked.initialize ().error () == adk::StatusCode::ResourceBusy,
              "input conflict status");
     require (fake::trace ().empty (), "input conflict touched hardware");
 
     owner.shutdown   ();
     fake::clearTrace ();
-    require          (blocked.initialize () == adk::Status::Ok, "input claim reuse");
+    require          (blocked.initialize ().ok (), "input claim reuse");
 
     fake::reset ();
     adk::ResourceRegistry invalidResources;
     adk::DigitalInput     invalid (invalidResources, NUM_DIGITAL_PINS);
-    require                       (invalid.initialize () == adk::Status::InvalidPin, "invalid input pin");
+    require                       (invalid.initialize ().error () == adk::StatusCode::InvalidPin, "invalid input pin");
     require                       (fake::trace ().empty (), "invalid input touched hardware");
 
     fake::reset ();
     adk::ResourceRegistry lifetimeResources;
     {
         adk::DigitalInput input (lifetimeResources, 3);
-        require                 (input.initialize () == adk::Status::Ok,
+        require                 (input.initialize ().ok (),
                  "lifetime input initialization");
         fake::clearTrace ();
     }
     requireOperation               (0, fake::OperationKind::PinMode, 3, INPUT);
     fake::clearTrace               ();
     adk::DigitalOutput replacement (lifetimeResources, 3);
-    require                        (replacement.initialize () == adk::Status::Ok,
+    require                        (replacement.initialize ().ok (),
              "input destruction released claim");
 }
 
@@ -234,8 +234,8 @@ std::vector<fake::Operation> outputTrace ()
     adk::ResourceRegistry resources;
     adk::DigitalOutput    output (resources, 12, adk::Level::High);
 
-    require            (output.initialize () == adk::Status::Ok, "trace output initialization");
-    require            (output.write (adk::Level::Low) == adk::Status::Ok, "trace output write");
+    require            (output.initialize ().ok (), "trace output initialization");
+    require            (output.write (adk::Level::Low).ok (), "trace output write");
     output.shutdown    ();
     return fake::trace ();
 }

@@ -73,31 +73,31 @@ namespace adk {
     {
         if (claim.active ())
         {
-            return Status::InvalidArgument;
+            return StatusCode::InvalidArgument;
         }
 
         uint8_t byte = 0;
         uint8_t mask = 0;
         if (!storageBit (resource, byte, mask))
         {
-            return Status::Unsupported;
+            return StatusCode::Unsupported;
         }
 
         if (storage_[byte] & mask)
         {
-            return Status::ResourceBusy;
+            return StatusCode::ResourceBusy;
         }
 
         if (resource.kind == ResourceKind::Timer
             && sharedTimerCount_[resource.index] != 0)
         {
-            return Status::ResourceBusy;
+            return StatusCode::ResourceBusy;
         }
 
         storage_[byte] |= mask;
         claim.registry_ = this;
         claim.resource_ = resource;
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     Status ResourceRegistry::claimShared (
@@ -106,36 +106,36 @@ namespace adk {
     {
         if (claim.active ())
         {
-            return Status::InvalidArgument;
+            return StatusCode::InvalidArgument;
         }
 
         if (resource.kind != ResourceKind::Timer
             || resource.index >= TimerCount)
         {
-            return Status::Unsupported;
+            return StatusCode::Unsupported;
         }
 
         uint8_t byte = 0;
         uint8_t mask = 0;
         if (!storageBit (resource, byte, mask))
         {
-            return Status::Unsupported;
+            return StatusCode::Unsupported;
         }
 
         if (storage_[byte] & mask)
         {
-            return Status::ResourceBusy;
+            return StatusCode::ResourceBusy;
         }
 
         if (sharedTimerCount_[resource.index] == UINT8_MAX)
         {
-            return Status::CapacityExceeded;
+            return StatusCode::CapacityExceeded;
         }
 
         ++sharedTimerCount_[resource.index];
         claim.registry_ = this;
         claim.resource_ = resource;
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     bool ResourceRegistry::claimed (ResourceId resource) const noexcept

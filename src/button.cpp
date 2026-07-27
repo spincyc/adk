@@ -37,7 +37,7 @@ namespace adk {
     {
         const Status status = input_.initialize ();
 
-        if (status != Status::Ok)
+        if (!status.ok ())
         {
             return status;
         }
@@ -50,7 +50,7 @@ namespace adk {
         pressArmed_       = !stablePressed_;
         timingCandidate_  = false;
 
-        return Status::Ok;
+        return StatusCode::Ok;
     }
 
     void Button::shutdown () noexcept
