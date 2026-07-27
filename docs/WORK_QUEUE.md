@@ -21,9 +21,9 @@ briefs come from [the project catalog](PROJECTS.md) and the
 
 | Boundary | State | Required next result |
 |---|---|---|
-| [001--027](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [028](design/LESSONS_028_030.md) | Active integration | Inert channel assessment with deterministic recorded observations |
-| [029--030](design/LESSONS_028_030.md) | Queued | Deterministic cue scheduling and physically inert show-cue simulator |
+| [001--028](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
+| [029](design/LESSONS_028_030.md) | Active integration | Deterministic cue scheduling with bounded audit evidence |
+| [030](design/LESSONS_028_030.md) | Queued | Physically inert show-cue simulator |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
