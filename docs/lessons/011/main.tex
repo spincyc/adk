@@ -76,7 +76,7 @@
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
 Lesson & 011 --- deterministic behavior & Time & 150--210 minutes\\
 Prerequisites & Lessons 001--010 & Board & Arduino Mega 2560\\
-Evidence & nine LEDs, button, named lamp test points & Status & host verified; bench open\\
+Evidence & nine LEDs, button, named lamp test points & Status & host verified; Mega compiled; bench open\\
 Safety & E1: USB-powered, resistor-limited LEDs only\\
 \end{tabularx}
 
@@ -159,7 +159,7 @@ SideGreen & main red, side green, pedestrian stop & one vehicle green\\
 SideYellow & main red, side yellow, pedestrian stop & no vehicle green\\
 PedestrianWalk & both vehicle reds, pedestrian walk & vehicles held red\\
 PedestrianClearance & both vehicle reds, pedestrian stop & vehicles held red\\
-Fault & both vehicle reds, pedestrian stop & latched until reinitialize\\
+Fault & both vehicle reds, pedestrian stop & latched until explicit reset\\
 \bottomrule
 \end{tabularx}
 
@@ -222,6 +222,9 @@ traffic.initialize ();
 traffic.update (now, adk::TrafficInput (requestEvent, circuitHealthy));
 
 const adk::TrafficSnapshot decision = traffic.snapshot ();
+
+traffic.reset    ();
+traffic.shutdown ();
 \end{lstlisting}
 
 \texttt{TrafficConfig} names each duration:
@@ -243,7 +246,12 @@ transitionCount
 \end{lstlisting}
 
 Observation does not consume an event. Supplying the same configuration,
-timestamps, and input events produces the same snapshots.
+timestamps, and input events produces the same snapshots. Repeated
+\texttt{initialize()} is idempotent: it preserves the active phase, timing,
+pending request, or fault latch. \texttt{reset()} explicitly starts a new run
+in startup \texttt{AllRed}; it requires an initialized object.
+\texttt{shutdown()} is idempotent, leaves an inert all-red snapshot, and makes
+later \texttt{update()} calls report \texttt{NotInitialized}.
 
 The canonical sketch uses the same high-level language as the circuit:
 
@@ -322,10 +330,11 @@ the service order changes without becoming nondeterministic.
 
 Passing \texttt{TrafficInput(false, false)} enters \texttt{Fault}, selects both
 vehicle reds and pedestrian stop, returns a failure status, and latches that
-condition. Only \texttt{initialize()} begins a new run. The adapter presents
-the all-red fault signals and turns D13 off. It treats an output-write failure
-more conservatively: every \texttt{MonoLed} shuts down, making each owned output
-high impedance.
+condition. Repeated \texttt{initialize()} deliberately preserves this latch;
+only \texttt{reset()} begins a new run. The adapter presents the all-red fault
+signals and turns D13 off. It treats an output-write failure more
+conservatively: it shuts down the state engine and every \texttt{MonoLed},
+making each owned output high impedance.
 
 \begin{tabularx}{\linewidth}{@{}l X X@{}}
 \toprule
@@ -386,8 +395,7 @@ Result & \checkbox\ pass \quad \checkbox\ deviation attached \quad date/reviewer
 \bottomrule
 \end{tabularx}
 
-\textbf{Current status: host verified; Mega 2560 firmware and physical bench
-acceptance remain open until their command output and completed record are
-published.}
+\textbf{Current status: host verified and Mega 2560 firmware compiled; physical
+bench acceptance remains open until the completed record is published.}
 
 \end{document}
