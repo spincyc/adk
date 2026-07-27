@@ -116,12 +116,3 @@ jobs:
                   project-type: library
                   recursive: true
                   verbose: true
-
-            - name: Lint library update
-              uses: arduino/arduino-lint-action@9a3603836c75e41753e531167395edeb90ba5dae # v3.0.0
-              with:
-                  compliance: strict
-                  library-manager: update
-                  project-type: library
-                  recursive: true
-                  verbose: true
