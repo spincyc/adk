@@ -89,6 +89,13 @@ also used nested agents where an independent mechanical audit was useful.
 | Documentation taxonomy | Complete | Rebuilt concise learner pages and source/PDF navigation |
 | Circuit observability policy | Complete | Required non-Serial test points and predict-observe-interpret evidence |
 | Final documentation audit | In progress | Rechecking claims, links, release state, and deferred work |
+| Analog input slice | Complete | Added raw Mega ADC ownership, tests, example, lesson, and circuit evidence |
+| Calibration and filtering slice | Complete | Added deterministic integer mapping, sample filtering, tests, and lesson |
+| Adaptive night-light project | Complete | Added hysteresis, bounded output intent, fault state, replay tests, and lesson |
+| CLI and packaging gates | Complete | Added per-example build/upload, serial capture, archive smoke, and release checks |
+| Firmware size baselines | Complete | Measured supported sketches and enforced versioned flash/SRAM budgets |
+| HDMI 8K network research | Complete | Defined FPGA/SoC media planes, bandwidth limits, 25/100 GbE options, licensing gates, and phased prototypes |
+| USB 3 matrix research | Complete | Defined terminated-edge tunneling, exclusive leases, authorization, SuperSpeed bandwidth, and phased prototypes |
 
 “Complete” means the assigned slice was delivered and locally checked; it does
 not by itself promote an interface to supported status. Physical Mega evidence,

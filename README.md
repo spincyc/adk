@@ -3,7 +3,7 @@
 ADK is a deterministic, no-exception C++ component library and electronics
 course for the Arduino Mega 2560.
 
-The first-class API through lesson 006 is host verified and experimental.
+The first-class API through lesson 009 is host verified and experimental.
 Physical Mega 2560 acceptance is still open and tracked separately; a
 successful firmware build is not a bench result. The original preview is
 frozen under `legacy/`.
@@ -43,6 +43,9 @@ use heap allocation, exceptions, RTTI, or a hidden global dispatcher.
 - 004 — `PwmOutput` and `RgbLed`
 - 005 — nonblocking `PiezoSounder`
 - 006 — deterministic Simon engine
+- 007 — explicit `AnalogInput` sampling
+- 008 — deterministic calibration and filtering
+- 009 — adaptive Night Light with hysteresis and fault indication
 - Every third lesson is a multi-component project
 
 See the [live course](https://spincyc.github.io/adk/),
@@ -92,5 +95,10 @@ Circuit-native evidence remains authoritative. See the
 
 The fireworks capstone is an inert cue simulator only. ADK does not control
 igniters or launchers and does not clone or transmit unknown remote protocols.
+
+Long-range research also explores 8K HDMI transport and a full USB 3 matrix
+over switched networks. Those are explicit FPGA/SoC and Linux-class data-plane
+investigations; the Mega 2560 is a control and observation endpoint, not the
+high-speed bridge.
 
 MIT licensed.
