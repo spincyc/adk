@@ -79,10 +79,50 @@ CI, compilation, photos, and an agent review cannot supply that evidence.
 
 - Input range, reference voltage, source impedance, and common-ground rules are
   stated.
+- ADC counts are ratios to the selected reference. A lesson that discusses
+  volts measures the reference rail instead of assuming it is exactly 5 V.
 - External signals cannot back-power an unpowered board.
 - Bus ownership, device supply, address or chip-select, and voltage compatibility
   are checked before connection.
 - Storage and display failure cannot leave an actuator enabled.
+
+### Lessons 007--009 analog circuits
+
+These lessons are E1 and use only a USB-powered Mega 2560, passive divider
+parts, and resistor-limited LEDs. Their supported bench circuits obey these
+additional rules:
+
+- Lesson 007 uses a 10 kΩ linear potentiometer between the Mega 5 V and GND
+  rails, with its wiper on A0/TP1. Do not connect the wiper to a digital output.
+- Lesson 008 retains that circuit so the raw and filtered observations describe
+  the same physical signal. Filtering is interpretation, not electrical
+  protection and not evidence that a wiring fault disappeared.
+- Lesson 009 uses one photoresistor and one 10 kΩ fixed resistor as a divider.
+  The fixed resistor limits current to at most 0.5 mA at 5 V even if the
+  photoresistor is shorted. The divider's Thevenin source resistance remains
+  no greater than 10 kΩ, matching the ADC source-impedance guidance.
+- Every LED channel has its own 220 Ω or larger series resistor. With the
+  actual LED forward voltage recorded, the worksheet must show no more than
+  15 mA per channel and must total all simultaneously active channels.
+- TP1 is measured only relative to a named GND test point. Place meter clips
+  with USB power removed, inspect them, then apply power; do not move bare
+  probes around the powered breadboard.
+- The default ADC reference is the measured board supply. TP1 must remain
+  between GND and that reference, and no external source is connected.
+- A rail reading can mean a legitimate sensor extreme or a short/open in the
+  divider. A disconnected A0 lead can float to an apparently plausible value.
+  Software therefore calls endpoints suspected faults, never claims complete
+  disconnection diagnosis, and always bounds LED duty.
+- A suspected fault turns the lamp off and selects the documented fault
+  pattern. A floating value that escapes detection can request only the same
+  bounded, resistor-limited LED output as a valid sample.
+
+The bench card records the measured 5 V rail, TP1 at both potentiometer stops
+or both controlled light extremes, each LED resistor, each active-channel
+current, and total LED current. Stop on a hot part, unstable USB connection,
+TP1 outside the rails, an uncommanded output, or disagreement between the
+schematic and breadboard. Remove USB power; software shutdown is not the stop
+method.
 
 ### Servos, motors, and relays
 
@@ -133,7 +173,7 @@ following project-specific evidence.
 |---:|---|:---:|---|
 | 003 | Reaction timer | E1 | No startling output; stuck, bounce, false-start, timeout, and shutdown traces |
 | 006 | Simon | E1 | Bounded light and sound; chord, timeout, rollover, and shutdown traces |
-| 009 | Adaptive night light | E1 | Sensor open/short cannot request an out-of-range output |
+| 009 | Adaptive night light | E1 | Recognized rail faults force zero duty; floating or plausible faults remain bounded by the resistor-limited output |
 | 012 | Traffic junction | E1 | Conflicting greens remain impossible; every failure forces all-red |
 | 015 | Environmental station | E1 | Invalid or missing sensor data remains explicit; no safety-alarm claim |
 | 018 | Inert access trainer | E2 | Soft latch first; restrained servo; independent load-power removal |

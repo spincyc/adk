@@ -14,6 +14,31 @@ frameworks. These projects offer useful patterns, not APIs to copy.
 | [MakeCode micro:bit courses](https://makecode.microbit.org/courses) and [I/O curriculum](https://microbit.org/teach/topics/inputs-and-outputs/) | Short courses progress through prediction, construction, observation, and extension. | Give each lesson a pre-build prediction, evidence table, fault exercise, and open-ended extension. |
 | [Arduino Plug and Make Kit](https://docs.arduino.cc/hardware/plug-and-make-kit/) | Seven composable modules reduce wiring friction so projects can emphasize programming concepts. | Test composition independently of wiring, but retain a wiring audit and hardware acceptance step. |
 
+## Analog-input sequence: lessons 007--009
+
+The closest official Arduino sequence is its
+[built-in analog examples](https://docs.arduino.cc/built-in-examples):
+`Analog Input`, `Analog In, Out Serial`, `Calibration`, and `Smoothing`.
+Together they move from sampling to scaling, then compensate for a real
+sensor. ADK keeps that progression but makes physical evidence and the
+transformation pipeline explicit.
+
+| Comparable work | Useful evidence | Pattern for ADK |
+|---|---|---|
+| Arduino `Analog Input` and `Analog In, Out Serial` | A potentiometer is controllable and repeatable; its sample can directly control LED timing or PWM. | Lesson 007 uses a potentiometer before an ambient sensor. Name the chain `shaft position -> test-point voltage -> ADC sample -> PWM duty -> brightness`, and let the LED verify behavior without Serial. |
+| Arduino `Smoothing Readings From an Analog Input` | A fixed-size running average makes noisy readings steadier. | Lesson 008 supplies deterministic sample fixtures, exposes raw and filtered values, and measures latency as well as noise reduction. Filtering must not hide saturation or a disconnected sensor. |
+| Arduino `Calibrate Sensor Input` | Observed minimum and maximum readings map a particular sensor and environment to the output range. | Keep calibration separate from filtering and mapping. Record endpoints, reject an unusable span, clamp output, and preserve the raw sample for diagnosis. |
+| [Adafruit photocell guide](https://learn.adafruit.com/photocells?view=all) | An LDR becomes measurable through a voltage divider; covering and illuminating it produces observable endpoint changes. | Lesson 009 introduces the LDR only after controlled ADC work. Label the divider junction as a multimeter test point and state which light direction should raise or lower voltage for the chosen orientation. |
+| [Adafruit Experimenter's Guide](https://learn.adafruit.com/experimenters-guide-for-metro?view=all) | It distinguishes a potentiometer's three-terminal controlled input from a light sensor that needs a divider and warns about common part-identification and wiring errors. | Start the night-light project with a part and wiring audit. Require voltage evidence before interpreting software state. |
+
+ADK adds one control concept that these introductory examples do not emphasize:
+the night light uses separate on and off thresholds. That hysteresis prevents
+visible chatter around twilight. Its observation channels distinguish the
+evidence layers: a named ADC test point proves sensor voltage, the primary lamp
+shows the controlled output, and a status color shows the decision state.
+Optional CLI serial logs may preserve samples, but they are never the only
+verification path.
+
 ## Component and runtime designs
 
 | Project | Useful evidence | Pattern for ADK |
