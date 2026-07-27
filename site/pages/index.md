@@ -6,14 +6,14 @@ a resource-owning library and an evidence-centered course for the Arduino Mega
 
 <nav class="landing-actions" aria-label="Primary">
   <a class="landing-primary" href="start/">Build from the command line</a>
-  <a href="lessons/">Follow lessons 001–029</a>
+  <a href="lessons/">Follow lessons 001–030</a>
   <a href="components/">Browse components</a>
 </nav>
 
-> **Current boundary:** lessons 001–029 are published and host verified, and
+> **Current boundary:** lessons 001–030 are published and host verified, and
 > their canonical examples compile for the Mega 2560. Physical acceptance
-> remains open until each lesson has a recorded bench result. Lesson 030 is the
-> next queued capstone; lessons 031–081 remain the retained kit expansion.
+> remains open until each lesson has a recorded bench result. Lesson 031 is the
+> next queued component; lessons 031–081 remain the retained kit expansion.
 
 ## One method, three ways in
 
@@ -65,7 +65,8 @@ Public objects use explicit ownership, deterministic time, transactional
 initialization, and RAII cleanup without exceptions or heap allocation. The
 published projects are the reaction timer, Simon, adaptive night light,
 traffic junction, environmental station, inert access trainer, bench rover,
-greenhouse controller, and telemetry console.
+greenhouse controller, telemetry console, and a physically inert show-cue
+simulator with continuity-gated cues and replayable audit evidence.
 
 [Read the supported API](api-supported.md), begin with
 [Lesson 001](lessons/001.md), or download the printable companion from each

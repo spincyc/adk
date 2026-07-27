@@ -17,12 +17,11 @@ recorded in
 Its findings must be reconciled through bounded tasks; the audit itself does
 not promote work or replace this ledger.
 
-- Lessons 001--029 are promoted and host verified; physical cards remain open.
-- Lesson 029 has an independently reviewed scheduler and audit core, canonical
-  Mega example, measured size baseline, HTML reference, monochrome PDF lesson,
+- Lessons 001--030 are promoted and host verified; physical cards remain open.
+- Lesson 030 has an independently reviewed composition core, canonical Mega
+  example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
-- Lesson 030 has a committed implementation contract and is the active
-  physically inert show-cue simulator boundary.
+- Lesson 031 is the next queued implementation boundary; it is not active.
 - The USB research track has a deterministic product-native `Cau`/`Pau`
   `ColdMove` model. It performs no USB action and makes no transparency claim.
 - The exact kit inventory template and honest planned-versus-supported coverage
@@ -39,7 +38,7 @@ Do not lose these release blockers:
 4. finish the landing/navigation audit and add post-deploy checks for the
    newest lesson and PDF;
 5. run the full clean quality gate, release, push, and verify GitHub Pages only
-   after the active lesson boundary is clean.
+   after the promoted lesson boundary is clean.
 
 The canonical post-030 order remains lessons 031--081, one implementation-depth
 three-lesson brief at a time. HDMI and USB product work remain research tracks;
@@ -60,8 +59,8 @@ qualification are not yet supported.
 
 | Boundary | State | Required next result |
 |---|---|---|
-| [001--029](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [030](design/LESSONS_028_030.md) | Active integration | Physically inert show-cue simulator |
+| [001--030](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
+| [031](design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md) | Queued | Calibrated analog joystick |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming

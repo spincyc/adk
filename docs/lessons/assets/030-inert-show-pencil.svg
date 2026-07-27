@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820"
+     viewBox="0 0 1400 820" role="img"
+     aria-labelledby="title description">
+  <title id="title">Lesson 030 inert show simulator orientation</title>
+  <desc id="description">A USB-powered Mega 2560 connects to four synthetic
+  observation editor inputs, five passive operator buttons, eight individually
+  resistor-limited cue LEDs, and one resistor-limited RGB state LED. TP28 marks
+  the synthetic evidence input and TP29 marks the selected cue output. No
+  external load is present.</desc>
+  <rect width="1400" height="820" fill="#fff"/>
+  <g fill="none" stroke="#222" stroke-width="4" stroke-linecap="round"
+     stroke-linejoin="round">
+    <!-- Mega and USB power -->
+    <rect x="55" y="105" width="405" height="550" rx="20"/>
+    <path d="M55 180H12M12 180V238"/>
+    <rect x="12" y="238" width="43" height="28" rx="5"/>
+
+    <!-- Synthetic observation editor -->
+    <rect x="560" y="55" width="770" height="180" rx="18"/>
+    <path d="M460 255H525V145H560"/>
+    <path d="M655 132v48m150-48v48m150-48v48m150-48v48"/>
+    <path d="M625 132h60m90 0h60m90 0h60m90 0h60"/>
+    <circle cx="655" cy="132" r="12"/>
+    <circle cx="805" cy="132" r="12"/>
+    <circle cx="955" cy="132" r="12"/>
+    <circle cx="1105" cy="132" r="12"/>
+    <circle cx="525" cy="255" r="11"/>
+
+    <!-- Operator panel -->
+    <rect x="560" y="270" width="770" height="155" rx="18"/>
+    <path d="M460 385H560"/>
+    <path d="M625 330h90m45 0h90m45 0h90m45 0h90m45 0h90"/>
+    <path d="M650 310v40m180-40v40m180-40v40m180-40v40m115-40v40"/>
+
+    <!-- Cue and state indicators -->
+    <rect x="560" y="460" width="770" height="240" rx="18"/>
+    <path d="M460 520H560M460 590H560"/>
+    <circle cx="630" cy="535" r="22"/><circle cx="710" cy="535" r="22"/>
+    <circle cx="790" cy="535" r="22"/><circle cx="870" cy="535" r="22"/>
+    <circle cx="950" cy="535" r="22"/><circle cx="1030" cy="535" r="22"/>
+    <circle cx="1110" cy="535" r="22"/><circle cx="1190" cy="535" r="22"/>
+    <path d="M630 557v45m80-45v45m80-45v45m80-45v45m80-45v45m80-45v45m80-45v45m80-45v45"/>
+    <path d="M605 602h50m30 0h50m30 0h50m30 0h50m30 0h50m30 0h50m30 0h50m30 0h50"/>
+    <circle cx="1240" cy="625" r="34"/>
+    <circle cx="1240" cy="625" r="22"/>
+    <circle cx="1240" cy="625" r="9"/>
+    <circle cx="525" cy="590" r="11"/>
+
+    <!-- Simulator flow -->
+    <path d="M180 735H1195"/>
+    <path d="M380 720l24 15-24 15M635 720l24 15-24 15M890 720l24 15-24 15"/>
+  </g>
+</svg>

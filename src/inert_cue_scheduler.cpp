@@ -25,7 +25,9 @@ namespace adk {
         : plan_ (config.plan), confirmationWindow_ (config.confirmationWindow),
           audit_ (audit), snapshot_ (inertSnapshot ()), planStartedAt_ (),
 
-          cueShownAt_ (), lastUpdatedAt_ (), lastInput_{}, planStarted_ (false),
+          cueShownAt_ (), lastUpdatedAt_ (), lastInput_{},
+          lastGate_{CueEvidenceDisposition::Permit, StatusCode::Ok},
+          planStarted_ (false),
 
           hasLastUpdate_ (false), initialized_ (false)
     {
@@ -65,13 +67,14 @@ namespace adk {
         snapshot_.status = StatusCode::Ok;
         planStartedAt_   = TimePoint ();
 
-        cueShownAt_      = TimePoint ();
+        cueShownAt_ = TimePoint ();
 
-        lastUpdatedAt_   = TimePoint ();
-        lastInput_       = {};
-        planStarted_     = false;
-        hasLastUpdate_   = false;
-        initialized_     = true;
+        lastUpdatedAt_ = TimePoint ();
+        lastInput_     = {};
+        lastGate_      = {CueEvidenceDisposition::Permit, StatusCode::Ok};
+        planStarted_   = false;
+        hasLastUpdate_ = false;
+        initialized_   = true;
 
         if (!append (TimePoint (), CueAuditEvent::Initialized))
         {
@@ -106,9 +109,63 @@ namespace adk {
     Status InertCueScheduler::update (TimePoint               now,
                                       const CueOperatorInput& input) noexcept
     {
+        const CueEvidenceGate permit = {CueEvidenceDisposition::Permit, StatusCode::Ok};
+
+        return update (now, input, permit);
+    }
+
+    Status InertCueScheduler::update (TimePoint now, const CueOperatorInput& input,
+                                      const CueEvidenceGate& gate) noexcept
+    {
         if (!initialized_)
         {
             return StatusCode::NotInitialized;
+        }
+
+        if (gate.disposition != CueEvidenceDisposition::Permit &&
+            gate.disposition != CueEvidenceDisposition::Hold &&
+            gate.disposition != CueEvidenceDisposition::Fault)
+        {
+            return StatusCode::InvalidArgument;
+        }
+
+        if ((gate.disposition == CueEvidenceDisposition::Fault && gate.status.ok ()) ||
+            (gate.disposition != CueEvidenceDisposition::Fault && !gate.status.ok ()))
+        {
+            return StatusCode::InvalidArgument;
+        }
+
+        if (hasLastUpdate_ && now == lastUpdatedAt_)
+        {
+            if (sameInput (input, lastInput_) && sameGate (gate, lastGate_))
+            {
+                return StatusCode::Ok;
+            }
+
+            if (snapshot_.phase == CueSchedulerPhase::Cancelled ||
+                snapshot_.phase == CueSchedulerPhase::Complete ||
+                snapshot_.phase == CueSchedulerPhase::Fault)
+            {
+                return StatusCode::InvalidArgument;
+            }
+
+            return enterFault (now, StatusCode::InvalidArgument);
+        }
+
+        if (snapshot_.phase == CueSchedulerPhase::Cancelled ||
+            snapshot_.phase == CueSchedulerPhase::Complete ||
+            snapshot_.phase == CueSchedulerPhase::Fault)
+        {
+            return hasLastUpdate_ && now.elapsedSince (lastUpdatedAt_).milliseconds () >
+                                         maximumUnambiguousDuration
+                       ? StatusCode::InvalidArgument
+                       : StatusCode::Ok;
+        }
+
+        if (hasLastUpdate_ && now.elapsedSince (lastUpdatedAt_).milliseconds () >
+                                  maximumUnambiguousDuration)
+        {
+            return StatusCode::InvalidArgument;
         }
 
         if (input.cancelPressed)
@@ -126,6 +183,7 @@ namespace adk {
 
             lastUpdatedAt_       = now;
             lastInput_           = input;
+            lastGate_            = gate;
             hasLastUpdate_       = true;
             snapshot_.phase      = CueSchedulerPhase::Cancelled;
             snapshot_.decision   = CueDecision::Cancelled;
@@ -136,31 +194,9 @@ namespace adk {
             return StatusCode::Ok;
         }
 
-        if (snapshot_.phase == CueSchedulerPhase::Cancelled ||
-            snapshot_.phase == CueSchedulerPhase::Complete ||
-            snapshot_.phase == CueSchedulerPhase::Fault)
-        {
-            return StatusCode::Ok;
-        }
-
-        if (hasLastUpdate_ && now == lastUpdatedAt_)
-        {
-            if (sameInput (input, lastInput_))
-            {
-                return StatusCode::Ok;
-            }
-
-            return enterFault (now, StatusCode::InvalidArgument);
-        }
-
-        if (hasLastUpdate_ && now.elapsedSince (lastUpdatedAt_).milliseconds () >
-                                  maximumUnambiguousDuration)
-        {
-            return enterFault (now, StatusCode::InvalidArgument);
-        }
-
         lastUpdatedAt_ = now;
         lastInput_     = input;
+        lastGate_      = gate;
         hasLastUpdate_ = true;
         refreshElapsed (now);
 
@@ -169,19 +205,67 @@ namespace adk {
             return enterFault (now, StatusCode::InvalidArgument);
         }
 
-        if (!input.reviewHeld && snapshot_.phase != CueSchedulerPhase::Idle &&
-            snapshot_.phase != CueSchedulerPhase::Held)
+        if (gate.disposition == CueEvidenceDisposition::Fault)
         {
-            if (!append (now, CueAuditEvent::Held))
+            return enterFault (now, gate.status.ok () ? StatusCode::InternalInvariant
+                                                      : gate.status);
+        }
+
+        if (gate.disposition == CueEvidenceDisposition::Hold)
+        {
+            if (snapshot_.phase == CueSchedulerPhase::Held)
+            {
+                snapshot_.status = gate.status;
+                return gate.status;
+            }
+
+            const bool    wasActive   = snapshot_.phase == CueSchedulerPhase::Active;
+            const uint8_t recordCount = static_cast<uint8_t> (wasActive ? 2U : 1U);
+
+            if (!audit_.canAppendOperational (recordCount))
             {
                 enterHeld (now, StatusCode::CapacityExceeded);
                 return StatusCode::CapacityExceeded;
             }
 
-            if (snapshot_.phase == CueSchedulerPhase::Active)
+            if (wasActive)
             {
+                append (now, CueAuditEvent::CueHidden, StatusCode::Ok, true,
+                        snapshot_.cueIndex);
                 ++snapshot_.cueIndex;
             }
+
+            append (now, CueAuditEvent::Held, gate.status);
+
+            snapshot_.phase      = CueSchedulerPhase::Held;
+            snapshot_.decision   = CueDecision::Held;
+            snapshot_.status     = gate.status;
+            snapshot_.hasCue     = false;
+            snapshot_.cueElapsed = Duration ();
+            planStarted_         = false;
+            return gate.status;
+        }
+
+        if (!input.reviewHeld && snapshot_.phase != CueSchedulerPhase::Idle &&
+            snapshot_.phase != CueSchedulerPhase::Held)
+        {
+            const bool    wasActive   = snapshot_.phase == CueSchedulerPhase::Active;
+            const uint8_t recordCount = static_cast<uint8_t> (wasActive ? 2U : 1U);
+
+            if (!audit_.canAppendOperational (recordCount))
+            {
+                enterHeld (now, StatusCode::CapacityExceeded);
+                return StatusCode::CapacityExceeded;
+            }
+
+            if (wasActive)
+            {
+                append (now, CueAuditEvent::CueHidden, StatusCode::Ok, true,
+                        snapshot_.cueIndex);
+                ++snapshot_.cueIndex;
+            }
+
+            append (now, CueAuditEvent::Held);
 
             snapshot_.phase      = CueSchedulerPhase::Held;
             snapshot_.decision   = CueDecision::Held;
@@ -200,6 +284,23 @@ namespace adk {
         return snapshot_;
     }
 
+    uint8_t InertCueScheduler::cueCount () const noexcept
+    {
+        return plan_.count;
+    }
+
+    Result<InertCue> InertCueScheduler::cue (uint8_t index) const noexcept
+    {
+        const InertCue unavailable = {0, Duration (), Duration ()};
+
+        if (index >= plan_.count)
+        {
+            return Result<InertCue> (StatusCode::InvalidArgument, unavailable);
+        }
+
+        return Result<InertCue> (StatusCode::Ok, plan_.cues[index]);
+    }
+
     bool InertCueScheduler::validPlan () const noexcept
     {
         if (plan_.count == 0 || plan_.count > InertCuePlan::capacity)
@@ -212,10 +313,10 @@ namespace adk {
 
         for (uint8_t index = 0; index < plan_.count; ++index)
         {
-            const InertCue& cue     = plan_.cues[index];
-            const uint32_t  offset  = cue.offset.milliseconds ();
+            const InertCue& cue    = plan_.cues[index];
+            const uint32_t  offset = cue.offset.milliseconds ();
 
-            const uint32_t  visible = cue.visibleFor.milliseconds ();
+            const uint32_t visible = cue.visibleFor.milliseconds ();
 
             if (cue.id >= InertCuePlan::capacity || visible == 0 ||
                 offset > maximumUnambiguousDuration ||
@@ -518,11 +619,9 @@ namespace adk {
             ++nextIndex;
         }
 
-        const bool complete = nextIndex >= plan_.count;
-        const bool request =
-            !complete && snapshot_.planElapsed >= plan_.cues[nextIndex].offset;
-        const uint8_t recordCount = static_cast<uint8_t> (
-            1U + expired + static_cast<uint8_t> (complete || request));
+        const bool    complete = nextIndex >= plan_.count;
+        const uint8_t recordCount =
+            static_cast<uint8_t> (1U + expired + static_cast<uint8_t> (complete));
 
         if (!audit_.canAppendOperational (recordCount))
         {
@@ -555,18 +654,8 @@ namespace adk {
         snapshot_.hasCue = true;
         snapshot_.status = StatusCode::Ok;
 
-        if (request)
-        {
-            append (now, CueAuditEvent::ConfirmationRequested, StatusCode::Ok, true,
-                    nextIndex);
-            snapshot_.phase    = CueSchedulerPhase::Confirmation;
-            snapshot_.decision = CueDecision::ConfirmationRequired;
-        }
-        else
-        {
-            snapshot_.phase    = CueSchedulerPhase::Waiting;
-            snapshot_.decision = CueDecision::Waiting;
-        }
+        snapshot_.phase    = CueSchedulerPhase::Waiting;
+        snapshot_.decision = CueDecision::Waiting;
 
         return StatusCode::Ok;
     }
@@ -608,5 +697,11 @@ namespace adk {
                left.confirmPressed == right.confirmPressed &&
                left.skipPressed == right.skipPressed &&
                left.cancelPressed == right.cancelPressed;
+    }
+
+    bool InertCueScheduler::sameGate (const CueEvidenceGate& left,
+                                      const CueEvidenceGate& right) const noexcept
+    {
+        return left.disposition == right.disposition && left.status == right.status;
     }
 } // namespace adk

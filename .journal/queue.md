@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-07-27T22:46:08Z"
+generated_at: "2026-07-27T23:06:26Z"
 task_count: 18
 ---
 
@@ -10,7 +10,7 @@ This file is a rebuildable view. Task `state.md` files are authoritative.
 
 ## Active
 
-- `efdb8701-d7fe-490e-9a85-d0116f37e4fc` — implement lesson 030 capstone [active, high] (depends on d6a8e538-7ae1-4522-9b37-ffa79055b36b)
+None.
 
 ## Queued
 
@@ -38,3 +38,4 @@ None.
 - `5801d853-3278-4a52-84dd-7e25c0794d7c` — reconcile the recovered ledger [done, high]
 - `d6a8e538-7ae1-4522-9b37-ffa79055b36b` — complete and promote lesson 029 [done, high] (depends on d79a95ee-e892-427e-9c6b-7fc151608dc5)
 - `d79a95ee-e892-427e-9c6b-7fc151608dc5` — register lesson 029 core [done, high] (depends on 0702f4b1-501a-4fca-a6b0-cac73da74125)
+- `efdb8701-d7fe-490e-9a85-d0116f37e4fc` — implement lesson 030 capstone [done, high] (depends on d6a8e538-7ae1-4522-9b37-ffa79055b36b)

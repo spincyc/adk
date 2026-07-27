@@ -25,11 +25,18 @@ namespace {
 
         result.plan.cues[0] = {3, adk::Duration (firstOffset), adk::Duration (10)};
 
-        result.plan.cues[1] = {7, adk::Duration (firstOffset + 20U),
-                               adk::Duration (10)};
-        result.plan.count   = 2;
+        result.plan.cues[1]       = {7, adk::Duration (firstOffset + 20U),
+                                     adk::Duration (10)};
+        result.plan.count         = 2;
         result.confirmationWindow = adk::Duration (5);
         return result;
+    }
+
+    adk::CueEvidenceGate
+    gate (adk::CueEvidenceDisposition disposition = adk::CueEvidenceDisposition::Permit,
+          adk::Status                 status      = adk::StatusCode::Ok) noexcept
+    {
+        return {disposition, status};
     }
 
     void beginRun (adk::InertCueScheduler& scheduler, uint32_t start) noexcept
@@ -42,15 +49,20 @@ namespace {
 
     void testLifecycleAndCopiedConfiguration ()
     {
-        adk::CueAuditEntry           storage[20];
-        adk::CueAuditBuffer          audit (storage, 20);
+        adk::CueAuditEntry  storage[20];
+        adk::CueAuditBuffer audit (storage, 20);
 
         adk::InertCueSchedulerConfig source = config ();
 
-        adk::InertCueScheduler       scheduler (source, audit);
+        adk::InertCueScheduler scheduler (source, audit);
 
         source.plan.cues[0].id = 31;
         assert (scheduler.initialize ().ok ());
+
+        assert (scheduler.cueCount () == 2);
+        assert (scheduler.cue (0).ok ());
+        assert (scheduler.cue (0).value ().id == 3);
+        assert (scheduler.cue (2).error () == adk::StatusCode::InvalidArgument);
 
         assert (scheduler.initialize ().ok ());
 
@@ -120,8 +132,8 @@ namespace {
     {
         for (uint8_t variant = 0; variant < 9; ++variant)
         {
-            adk::CueAuditEntry           storage[12];
-            adk::CueAuditBuffer          audit (storage, 12);
+            adk::CueAuditEntry  storage[12];
+            adk::CueAuditBuffer audit (storage, 12);
 
             adk::InertCueSchedulerConfig invalid = config (1);
 
@@ -136,7 +148,7 @@ namespace {
 
                 case 6: invalid.plan.cues[1].offset = adk::Duration (10); break;
                 case 7:
-                    invalid.plan.cues[1].offset     = adk::Duration (0x7fffffffu);
+                    invalid.plan.cues[1].offset = adk::Duration (0x7fffffffu);
 
                     invalid.plan.cues[1].visibleFor = adk::Duration (1);
                     break;
@@ -150,8 +162,8 @@ namespace {
             assert (!audit.initialized ());
         }
 
-        adk::CueAuditEntry           storage[12];
-        adk::CueAuditBuffer          audit (storage, 12);
+        adk::CueAuditEntry  storage[12];
+        adk::CueAuditBuffer audit (storage, 12);
 
         adk::InertCueSchedulerConfig zeroWindow = config ();
 
@@ -165,8 +177,8 @@ namespace {
 
     void testLogicalWindowAndVisibility ()
     {
-        adk::CueAuditEntry     storage[24];
-        adk::CueAuditBuffer    audit (storage, 24);
+        adk::CueAuditEntry  storage[24];
+        adk::CueAuditBuffer audit (storage, 24);
 
         adk::InertCueScheduler scheduler (config (), audit);
 
@@ -217,12 +229,12 @@ namespace {
         delayed.plan.count         = 3;
         delayed.plan.cues[0]       = {1, adk::Duration (0), adk::Duration (2)};
 
-        delayed.plan.cues[1]       = {2, adk::Duration (10), adk::Duration (2)};
+        delayed.plan.cues[1] = {2, adk::Duration (10), adk::Duration (2)};
 
-        delayed.plan.cues[2]       = {3, adk::Duration (20), adk::Duration (2)};
+        delayed.plan.cues[2] = {3, adk::Duration (20), adk::Duration (2)};
 
-        adk::CueAuditEntry     storage[20];
-        adk::CueAuditBuffer    audit (storage, 20);
+        adk::CueAuditEntry  storage[20];
+        adk::CueAuditBuffer audit (storage, 20);
 
         adk::InertCueScheduler scheduler (delayed, audit);
 
@@ -250,8 +262,8 @@ namespace {
 
     void testPriorityHoldResumeAndSameTimestamp ()
     {
-        adk::CueAuditEntry     storage[24];
-        adk::CueAuditBuffer    audit (storage, 24);
+        adk::CueAuditEntry  storage[24];
+        adk::CueAuditBuffer audit (storage, 24);
 
         adk::InertCueScheduler scheduler (config (), audit);
 
@@ -309,16 +321,102 @@ namespace {
 
         beginRun (cancelled, 100);
 
-        assert (
-            cancelled.update (adk::TimePoint (50), input (true, true, true, true, true))
-                .ok ());
+        assert (cancelled
+                    .update (adk::TimePoint (102), input (true, true, true, true, true))
+                    .    ok ());
         assert (cancelled.snapshot ().phase == adk::CueSchedulerPhase::Cancelled);
+    }
+
+    void testEvidenceGateAndCancelIdentity ()
+    {
+        adk::CueAuditEntry  storage[24];
+        adk::CueAuditBuffer audit (storage, 24);
+
+        adk::InertCueScheduler scheduler (config (), audit);
+
+        assert (scheduler.initialize ().ok ());
+        assert (scheduler.update (adk::TimePoint (1), input (true)).ok ());
+
+        assert (scheduler
+                    .update (adk::TimePoint (2), input (true, true),
+                       gate (adk::CueEvidenceDisposition::Hold))
+                    .ok ());
+        assert (scheduler.snapshot ().phase == adk::CueSchedulerPhase::Held);
+        assert (!scheduler.snapshot ().hasCue);
+
+        const uint8_t heldCount = audit.count ();
+
+        assert (scheduler
+                    .update (adk::TimePoint (2), input (true, true),
+                       gate (adk::CueEvidenceDisposition::Hold))
+                    .ok ());
+        assert (audit.count () == heldCount);
+
+        assert (scheduler
+                    .update (adk::TimePoint (2), input (true, true),
+                       gate (adk::CueEvidenceDisposition::Permit))
+                    .error () == adk::StatusCode::InvalidArgument);
+        assert (scheduler.snapshot ().phase == adk::CueSchedulerPhase::Fault);
+
+        scheduler.shutdown ();
+        audit.    shutdown ();
+
+        adk::InertCueScheduler faulted (config (), audit);
+
+        assert (faulted.initialize ().ok ());
+        assert (faulted
+                    .update (adk::TimePoint (1), input (true),
+                       gate (adk::CueEvidenceDisposition::Fault,
+                                   adk::StatusCode::InvalidConfiguration))
+                    .error () == adk::StatusCode::InvalidConfiguration);
+        assert (faulted.snapshot ().phase == adk::CueSchedulerPhase::Fault);
+
+        faulted.shutdown ();
+        audit.  shutdown ();
+
+        adk::InertCueScheduler cancelled (config (), audit);
+
+        assert (cancelled.initialize ().ok ());
+        assert (cancelled.update (adk::TimePoint (1), input (true)).ok ());
+        assert (
+            cancelled
+                .update (adk::TimePoint (2), input (true, false, false, false, true))
+                .    ok ());
+        assert (cancelled.update (adk::TimePoint (2), input (true)).error () ==
+                adk::StatusCode::InvalidArgument);
+        assert (cancelled.snapshot ().phase == adk::CueSchedulerPhase::Cancelled);
+    }
+
+    void testActiveHoldRecordsHiddenBeforeHeld ()
+    {
+        adk::CueAuditEntry     storage[24];
+        adk::CueAuditBuffer    audit     (storage, 24);
+        adk::InertCueScheduler scheduler (config (), audit);
+
+        assert   (scheduler.initialize ().ok ());
+        beginRun (scheduler, 0);
+        assert   (scheduler.update (adk::TimePoint (2), input (true, false, true)).ok ());
+        assert   (scheduler.snapshot ().phase == adk::CueSchedulerPhase::Active);
+
+        const uint8_t before = audit.count ();
+
+        assert (scheduler
+                    .update (adk::TimePoint (3), input (true),
+                             gate (adk::CueEvidenceDisposition::Hold))
+                    .ok ());
+        assert (scheduler.snapshot ().phase == adk::CueSchedulerPhase::Held);
+        assert (!scheduler.snapshot ().hasCue);
+        assert (audit.count () == static_cast<uint8_t> (before + 2U));
+        assert (storage[before].event == adk::CueAuditEvent::CueHidden);
+        assert (storage[before].hasCue);
+        assert (storage[before + 1U].event == adk::CueAuditEvent::Held);
+        assert (!storage[before + 1U].hasCue);
     }
 
     void testRolloverAndCapacityHold ()
     {
-        adk::CueAuditEntry     storage[16];
-        adk::CueAuditBuffer    audit (storage, 16);
+        adk::CueAuditEntry  storage[16];
+        adk::CueAuditBuffer audit (storage, 16);
 
         adk::InertCueScheduler scheduler (config (), audit);
 
@@ -334,8 +432,8 @@ namespace {
 
         assert (storage[audit.count () - 1].event == adk::CueAuditEvent::Shutdown);
 
-        adk::CueAuditEntry     smallStorage[6];
-        adk::CueAuditBuffer    smallAudit (smallStorage, 6);
+        adk::CueAuditEntry  smallStorage[6];
+        adk::CueAuditBuffer smallAudit (smallStorage, 6);
 
         adk::InertCueScheduler constrained (config (), smallAudit);
 
@@ -362,7 +460,7 @@ namespace {
 
         for (uint8_t pass = 0; pass < 2; ++pass)
         {
-            adk::CueAuditBuffer    audit (replay[pass], 20);
+            adk::CueAuditBuffer audit (replay[pass], 20);
 
             adk::InertCueScheduler scheduler (config (), audit);
 
@@ -413,6 +511,10 @@ int main ()
     testDelayedCoalescingAndTimeoutStatus ();
 
     testPriorityHoldResumeAndSameTimestamp ();
+
+    testEvidenceGateAndCancelIdentity ();
+
+    testActiveHoldRecordsHiddenBeforeHeld ();
 
     testRolloverAndCapacityHold ();
 
