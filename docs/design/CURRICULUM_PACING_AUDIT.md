@@ -1,5 +1,11 @@
 # Curriculum pacing audit
 
+> Historical audit: the recommendations through lesson 030 remain useful.
+> Its former post-030 sequence is superseded by
+> [`CURRICULUM.md`](../CURRICULUM.md) and
+> [`WORK_QUEUE.md`](../WORK_QUEUE.md), which are the canonical numbered
+> curriculum and implementation queue.
+
 ## Purpose
 
 This note reviews the canonical lessons 001–030 as a learning sequence rather
