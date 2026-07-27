@@ -15,7 +15,10 @@
 8. `AnalogInput` with explicit raw sampling and Mega analog-pin validation;
 9. deterministic calibration and sampled filtering without hidden time;
 10. adaptive `NightLight` intent with hysteresis, bounded duty, explicit
-    invalid-sample behavior, and lessons 007–009.
+    invalid-sample behavior, and lessons 007–009;
+11. shift-register and seven-segment ownership, explicit traffic timing, and
+    the traffic-junction project in lessons 010–012;
+12. validated climate samples and the owned DHT11 adapter in lesson 013.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
@@ -23,9 +26,10 @@ is experimental rather than hardware supported.
 
 ## Next slice
 
-1. shift-register ownership and a nonblocking display model;
-2. finite-state timing with observable pedestrian requests;
-3. fail-safe tabletop traffic junction at lesson 012.
+1. character-display presentation and stable record formatting;
+2. deterministic environmental-station composition at lesson 015;
+3. matrix keypad input, followed by bounded actuation and an inert access
+   trainer.
 
 Later slices follow the canonical three-lesson cadence through analog sensing,
 displays, environmental records, bounded actuators, buses and storage,
