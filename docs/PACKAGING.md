@@ -173,6 +173,17 @@ Also test the installed archive, not only `--library .`:
 3. Compile every installed example for `arduino:avr:mega`.
 4. Confirm no build depends on ignored or untracked repository files.
 
+The reproducible local and CI gate is:
+
+```sh
+make package-smoke
+make package-smoke PACKAGE_REF=v0.2.0
+```
+
+It exports `PACKAGE_REF` with Git, applies the release `export-ignore` rules,
+installs the result into an isolated library directory, rejects symlinks and
+executable files, and compiles every packaged example without `--library .`.
+
 Record flash and static RAM sizes. Fail CI when an established example exceeds
 its explicit budget without an approved update.
 

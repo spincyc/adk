@@ -2,6 +2,7 @@ include mk/config.mk
 include mk/bootstrap.mk
 include mk/host.mk
 include mk/arduino.mk
+include mk/package.mk
 include mk/docs.mk
 include mk/site.mk
 include mk/style.mk
