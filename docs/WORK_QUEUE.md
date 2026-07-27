@@ -21,9 +21,8 @@ briefs come from [the project catalog](PROJECTS.md) and the
 
 | Boundary | State | Required next result |
 |---|---|---|
-| [001--025](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [026](design/LESSONS_025_027_TELEMETRY.md) | Active integration | Lawful receive-only observations, fixed records, tests, example, and lesson package |
-| [027](design/LESSONS_025_027_TELEMETRY.md) | Queued | Deterministic multi-room telemetry console |
+| [001--026](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
+| [027](design/LESSONS_025_027_TELEMETRY.md) | Active integration | Deterministic multi-room telemetry console with bounded records and visible health |
 | [028--030](design/LESSONS_028_030.md) | Queued | Fault/continuity models, deterministic cue scheduling, and physically inert show-cue simulator |
 
 Integration order is strict: component or endpoint, deterministic tests,
