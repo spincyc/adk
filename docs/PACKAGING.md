@@ -169,7 +169,9 @@ ADK has no recorded official Library Manager inclusion, so CI and
 independently confirmed, change the reviewed release mode to `update`; do not
 run both contextual modes for every release. The explicit
 `arduino-lint-submit` and `arduino-lint-update` targets remain available for
-policy review. Local release evidence and CI use Arduino Lint 1.3.0.
+policy review. Make exports `PACKAGE_REF` into a clean `Adk` directory before
+linting, so ignored build/site output cannot affect results. Local release
+evidence and CI use Arduino Lint 1.3.0.
 
 Also test the installed archive, not only `--library .`:
 
