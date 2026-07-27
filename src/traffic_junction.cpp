@@ -27,9 +27,17 @@ namespace adk {
     {
     }
 
+    TrafficJunction::~TrafficJunction () noexcept
+    {
+        shutdown ();
+    }
+
     Status TrafficJunction::initialize () noexcept
     {
-        initialized_ = false;
+        if (initialized_)
+        {
+            return Status::Ok;
+        }
 
         if (!configValid ())
         {
@@ -38,19 +46,41 @@ namespace adk {
             return status_;
         }
 
+        resetState ();
+        initialized_ = true;
+
+        return Status::Ok;
+    }
+
+    Status TrafficJunction::reset () noexcept
+    {
+        if (!initialized_)
+        {
+            return Status::NotInitialized;
+        }
+
+        resetState ();
+        return Status::Ok;
+    }
+
+    void TrafficJunction::shutdown () noexcept
+    {
         phase_                    = TrafficPhase::AllRed;
         nextAfterAllRed_          = TrafficPhase::MainGreen;
-        status_                   = Status::Ok;
+        status_                   = Status::NotInitialized;
         phaseSince_               = TimePoint (0);
         lastUpdate_               = TimePoint (0);
         pedestrianRequestPending_ = false;
-        initialized_              = true;
+        initialized_              = false;
         hasLastUpdate_            = false;
         phaseChanged_             = false;
         requestAccepted_          = false;
         transitionCount_          = 0;
+    }
 
-        return status_;
+    bool TrafficJunction::initialized () const noexcept
+    {
+        return initialized_;
     }
 
     Status TrafficJunction::update (TimePoint now,
@@ -165,6 +195,20 @@ namespace adk {
             transitionCount_};
 
         return result;
+    }
+
+    void TrafficJunction::resetState () noexcept
+    {
+        phase_                    = TrafficPhase::AllRed;
+        nextAfterAllRed_          = TrafficPhase::MainGreen;
+        status_                   = Status::Ok;
+        phaseSince_               = TimePoint (0);
+        lastUpdate_               = TimePoint (0);
+        pedestrianRequestPending_ = false;
+        hasLastUpdate_            = false;
+        phaseChanged_             = false;
+        requestAccepted_          = false;
+        transitionCount_          = 0;
     }
 
     bool TrafficJunction::configValid () const noexcept

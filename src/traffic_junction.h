@@ -69,13 +69,19 @@ namespace adk {
     struct TrafficJunction
     {
         explicit TrafficJunction (const TrafficConfig& config) noexcept;
+        ~TrafficJunction         () noexcept;
 
         Status initialize () noexcept;
+        Status reset      () noexcept;
+        void   shutdown   () noexcept;
         Status update     (TimePoint now, const TrafficInput& input) noexcept;
 
-        TrafficSnapshot snapshot () const noexcept;
+        bool            initialized () const noexcept;
+        TrafficSnapshot snapshot    () const noexcept;
 
       private:
+        void resetState () noexcept;
+
         bool           configValid       () const noexcept;
         bool           timeValid         (TimePoint now) const noexcept;
         bool           deadlineDue       (TimePoint now) const noexcept;
