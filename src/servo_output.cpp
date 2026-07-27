@@ -211,6 +211,8 @@ namespace adk {
 
         if (!compareStatus.ok ())
         {
+            disable    ();
+            attached_ = false;
             return compareStatus;
         }
 
@@ -219,7 +221,8 @@ namespace adk {
 
         if (!connectStatus.ok ())
         {
-            registers_->writeCompareC (0);
+            disable    ();
+            attached_ = false;
             return connectStatus;
         }
 
@@ -404,6 +407,10 @@ namespace adk {
         if (status.ok ())
         {
             pulseUs_ = pulseUs;
+        }
+        else
+        {
+            pulseUs_ = 0;
         }
 
         return status;
