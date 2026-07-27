@@ -25,5 +25,6 @@
 #include "shift_register.h"
 #include "simon.h"
 #include "status.h"
+#include "threshold_input.h"
 #include "time.h"
 #include "traffic_junction.h"
