@@ -138,6 +138,10 @@ Run `make quality` before committing a supported boundary.
 ## hardware-card-check       Check a hardware card's required structure.
 ## host-test                 Run deterministic host tests without exceptions.
 ## host-test-exceptions      Verify RAII cleanup in an exception environment.
+## host-test-sanitize        Run host tests with sanitizer instrumentation.
+## size                      Report firmware sizes against reviewed baselines.
+## size-check                Reject firmware-size budget regressions.
+## size-update               Refresh reviewed firmware-size baselines.
 ## usb-matrix-check          Test the experimental Linux USB/IP adapter.
 ## usb-matrix-doctor         Check phase-one USB/IP command dependencies.
 ## usb-matrix-discover       Discover local and optionally remote USB/IP devices.
