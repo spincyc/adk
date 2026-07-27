@@ -44,7 +44,9 @@ namespace adk {
 
             for (size_t index = 0; index < size; ++index)
             {
-                crc ^= static_cast<uint16_t> (bytes[index]) << 8;
+                const uint16_t next = static_cast<uint16_t> (
+                    static_cast<uint16_t> (bytes[index]) << 8);
+                crc ^= next;
 
                 for (uint8_t bit = 0; bit < 8; ++bit)
                 {
