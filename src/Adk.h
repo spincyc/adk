@@ -20,3 +20,4 @@
 #include "simon.h"
 #include "status.h"
 #include "time.h"
+#include "traffic_junction.h"
