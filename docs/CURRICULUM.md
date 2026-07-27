@@ -9,13 +9,59 @@ use the first-class RAII interfaces.
 ## Current status
 
 Lessons 001--009 have first-class implementation work, deterministic host
-tests, canonical Mega 2560 examples, and lesson sources. They remain
-experimental. Host verification and firmware compilation do not imply that
-the circuits have passed their Mega 2560 bench cards; physical acceptance is
-open until measured results are published. Lessons 010--030 are planned.
+tests, canonical Mega 2560 examples, and lesson sources. Lessons 010--012 have
+landed with the same host, Mega compile, documentation, and size evidence;
+their bench cards remain open. Lesson 013 is the active implementation
+boundary. Lessons 014--030 remain the ordered delivery queue.
+
+All lessons remain experimental. Host verification, firmware compilation,
+documentation publication, and size evidence do not imply that a circuit has
+passed its Mega 2560 bench card. Physical acceptance is deliberately deferred
+until measured results are recorded; that open hardware gate does not pause
+implementation of later lessons.
 
 The fixed resource registry uses 17 bytes: 11 ownership bytes plus six shared
 timer counters. It uses no heap allocation.
+
+## Uninterrupted delivery policy
+
+Curriculum implementation proceeds through lesson 030 without waiting for the
+physical bench campaign. Each lesson may advance through interface, lifecycle,
+determinism, host, Arduino compile, size, documentation, packaging, and
+publication gates. Its status remains **host verified; hardware acceptance
+open** until the physical record exists.
+
+An earlier open bench card does not block a later software or documentation
+slice. An unresolved interface, deterministic test, electrical-safety rule, or
+compile failure does block its consumers. Later work must not invent measured
+voltages, timing tolerances, current, signal integrity, or physical behavior.
+
+For every lesson, the queued implementation order is:
+
+1. establish the deterministic behavior and resource boundary;
+2. add the endpoint or component with rollback and safe shutdown;
+3. add host fakes, replay traces, and failure tests;
+4. add a narrative Mega example and enforce its firmware budget;
+5. publish complementary HTML and PDF material with circuit-native evidence;
+6. record the unperformed bench checks as open acceptance items;
+7. continue to the next lesson when all non-hardware gates pass.
+
+## Delivery queue
+
+| Block | Status | Interface and composition boundary | Circuit-native evidence |
+|---|---|---|---|
+| 010--012 | Host verified; bench open | `ShiftRegisterOutput`, seven-segment presentation, explicit traffic timing, and `TrafficJunction` | Shift-clock/data/latch test points, display self-test, and an all-red fault state |
+| 013 | Active implementation | Validated temperature/humidity samples and scheduled acquisition | Sensor-health indicator and a measurable sample cadence |
+| 014--015 | Queued next | LCD presentation, stable records, and the environmental station | Display age/status field and sensor-health evidence |
+| 016--018 | Queued | Keypad events, bounded servo intent, persistent configuration, and inert access trainer | Key echo/status pattern, command-position marker, and a soft-latch state indicator |
+| 019--021 | Queued | Range validity, motor/encoder intent, supervisory stop, and bench rover | Echo timing point, direction/enable indicators, encoder evidence, and independent stop state |
+| 022--024 | Queued | Owned `I2cBus`/`SpiBus`, RTC, SD records, constrained simulated loads, and greenhouse controller | Bus activity points, record acknowledgement, load-state LEDs, and a fault pattern |
+| 025--027 | Queued | Decoded infrared input, lawful receive-only radio records, scheduling, and telemetry console | Capture indicator, timestamp/age display, stale-data alarm, and stored replay record |
+| 028--030 | Queued capstone | Injectable continuity/fault models, deterministic cue scheduling, operator confirmation, and inert show-cue simulator | Redundant state indicators, inert channel lamps, stop dominance, and a complete audit log |
+
+The coordinator promotes a row from queued to active only after its public
+dependencies have landed. The queue fixes teaching order, not implementation
+claims.
 
 ## Cadence
 
