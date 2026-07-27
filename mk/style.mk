@@ -1,4 +1,4 @@
-STYLE_SOURCES := $(shell find src lessons tests -type f \
+STYLE_SOURCES := $(shell find src examples tests -type f \
 	\( -name '*.h' -o -name '*.cpp' -o -name '*.ino' \) | sort)
 
 .PHONY: style-check
