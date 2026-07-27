@@ -24,10 +24,15 @@ remain fail-closed when the network or control plane disagrees.
 
 The lab prototype does not provide these guarantees. Its USB/IP commands and
 temporary ledger are suitable only for one operator, known disposable hosts,
-known harmless devices, and an isolated wired network. It must not be described
-as a secure, highly available, or deployable mesh.
+known harmless devices, and a controlled VLAN on the shared household network.
+It must not be described as a secure, highly available, or deployable mesh.
 
 ## Terms and invariants
+
+Product terms are one-port `Cau`, `ComputerPort`, four-root `Pau`,
+`PeripheralPort`, atomic `TopologyRoot`, and `TopologyEpoch`. The generic
+device/host endpoint wording below applies to the USB/IP prototype. Product
+appliances have fixed electrical roles and never synthesize a hub.
 
 A **device endpoint** owns one or more physical USB devices and exports them. A
 **host endpoint** reconstructs attachment for a destination host. An appliance

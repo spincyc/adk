@@ -1,5 +1,11 @@
 # USB matrix lease controller
 
+> **Prototype only:** this directory models Linux USB/IP leases. Its source,
+> destination, virtual-host, bus-ID, and port vocabulary is not the transparent
+> product model. The product contract is
+> `docs/research/USB_TRANSPARENT_PRODUCT.md`: physical one-port Caus, four-root
+> Paus, exact real topology, native Windows/Linux USB, and no Cau software.
+
 This host-only prototype is the authoritative route state machine for the
 USB/IP experiment. It owns logical leases, not USB transfers. A transport
 adapter executes detach and attach commands, then confirms their result with

@@ -16,6 +16,12 @@ appliances on a scalable switched IP fabric
 
 ## Decision
 
+All scaling occurs on the normal shared household network. USB, HDMI, control,
+telemetry, and ordinary LAN traffic coexist on the same physical switching
+system. VLANs, QoS, reservations, and faster uplinks may be added logically or
+as ordinary LAN upgrades; a dedicated USB/HDMI media fabric is not a supported
+solution.
+
 Build the matrix as a mesh of interchangeable edge appliances, not as fixed
 source/destination pairs. Every physical USB attachment is a named port
 resource. A route binds one host-facing port to one peripheral-facing port for
@@ -139,7 +145,7 @@ Use measured service times to replace these planning assumptions:
 
 | Stage | Ports | Concurrent routes | Control model | Suggested fabric |
 |---|---:|---:|---|---|
-| Lab | 4--16 | 2--8 | one controller | isolated 10/25 GbE |
+| Lab | 4--16 | 2--8 | one controller | shared LAN with measured 10 GbE edges |
 | Rack | 32--256 | 16--128 | three voters | redundant 25/100 GbE |
 | Room | 256--2,048 | 128--1,024 | lease shards, three voters each | leaf/spine 100 GbE uplinks |
 | Larger | over 2,048 | measured only | regional shards and explicit quotas | engineered fabric |
@@ -167,10 +173,10 @@ traffic. Never infer isochronous support from aggregate throughput.
 
 ## Topology and transport
 
-Use a redundant leaf/spine network once traffic exceeds one switch. Dual-home
-each production edge when its hardware and transport can preserve session
-identity across paths. Multiple paths improve link resilience but must not
-duplicate or reorder USB operations beyond the tunnel's rules.
+Scale the household LAN topology when measured contention requires it.
+Redundant switching and faster ordinary-LAN uplinks are permitted, but USB and
+HDMI remain co-resident with household traffic. Multiple paths improve link
+resilience only when they preserve session identity and ordering.
 
 Keep three planes distinct:
 
@@ -268,7 +274,8 @@ ownership epoch. Contradiction is red and disconnected.
 1. Prove one controller, two host-side edges, and two peripheral-side edges.
 2. Make either side dynamically selectable and test every pair.
 3. Add failure injection, bounded leases, and durable authenticated audit.
-4. Add admission control and a nonblocking leaf/spine test under load.
+4. Add admission control and a shared-LAN coexistence test under USB, HDMI,
+   control, telemetry, and ordinary household load.
 5. Measure the single controller before considering deferred HA.
 6. If justified later, add three-voter authority and then consider sharding by
    source-device identity.

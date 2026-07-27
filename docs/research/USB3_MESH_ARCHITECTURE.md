@@ -21,6 +21,14 @@ over a switched Ethernet/IP fabric
 
 ## Decision
 
+The product model has fixed roles. One Cau contains one Type-B `ComputerPort`;
+one Pau contains four independently powered Type-A `PeripheralPort` roots.
+One route binds one complete real topology root to one computer port. A real
+hub subtree is atomic. Product appliances never change role, synthesize a hub,
+combine roots, or expose a virtual host port. The generic node, source,
+destination, and virtual-host vocabulary below describes the USB/IP prototype
+only.
+
 Treat every USB-facing port as an independently addressable endpoint. A node
 may expose host-facing ports, device-facing ports, or both. An authorized
 operator can assign any eligible device port to any eligible host port without
@@ -382,7 +390,7 @@ identity, policy, path telemetry, concurrent bulk and interrupt routes, and
 fault reconciliation. Measure route-switch interruption and competing-load
 behavior.
 
-### Phase 3: replicated authority
+### Phase 3: replicated authority (deferred)
 
 Replicate the durable lease service, test leader loss and partitions, and
 retain monotonic fencing across restore. Introduce sharding only after the
@@ -407,7 +415,7 @@ carry over by architecture alone.
   peripherals during research;
 - no assumption that encryption makes a malicious USB device safe.
 
-## Open decisions
+## Prototype-only open decisions
 
 1. Which measured compatibility requirements should trigger the later
    transparent physical proxy/appliance milestone?
@@ -415,18 +423,15 @@ carry over by architecture alone.
    acceptance target include Gen 2 or Gen 2x2?
 3. Which first device classes matter: bulk storage, HID, UVC video, USB audio,
    or a controlled synthetic test device?
-4. Should one host node expose several independently assignable virtual host
-   ports, and what fixed maximum is acceptable for phase one?
+4. How many virtual ports should the disposable USB/IP importer expose?
 5. During control-plane loss, should active routes expire promptly or remain
    active under a bounded renewable lease?
-6. Is cross-site routing a goal, or may the first mesh require one isolated
-   low-latency Layer-2/Layer-3 lab fabric?
+6. Which controlled segment of the shared household network should host the
+   first USB/IP measurements?
 7. What switch and endpoint link rates define the first concurrency target:
    10, 25, or 100 GbE?
 8. Must route policy support human-selected exact endpoints only, or also
    deterministic placement into destination groups?
 
-Phase one uses Linux USB/IP clients. The remaining safest defaults are Gen 1, a
-synthetic bulk device followed by non-sensitive storage, several virtual host
-ports per node, short renewable leases, one isolated lab fabric, 10/25 GbE,
-and exact endpoint selection before constraint-based placement.
+Phase one uses Linux USB/IP clients on a controlled segment of the shared
+network. Its virtual-port choices do not alter the product contract.

@@ -50,6 +50,17 @@ meaning with each transaction.
 
 ## Dynamic node model
 
+The product hardware is not dynamically dual-role. One Cau has one fixed-role
+Type-B `ComputerPort`; one Pau has four fixed-role Type-A `PeripheralPort`
+roots. Each active root consumes one independent Cau and computer USB port.
+A user hub is one atomic real subtree. Dual-role controllers and virtual host
+slots below are implementation research, not product topology.
+
+Baseline appliances use one Cat6A 10GBASE-T RJ45 for shared-LAN data and
+primary negotiated PoE++, plus qualified auxiliary DC. Admission includes path
+capacity, ordinary-LAN headroom, PoE reserve, and thermal reserve. A nominal
+10 Gb/s link is not proof of USB transparency.
+
 Each appliance registers one or more ports. A port advertises facts rather
 than a permanent role:
 

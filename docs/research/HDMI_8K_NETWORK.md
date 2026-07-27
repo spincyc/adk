@@ -7,10 +7,13 @@ Research date: 2026-07-27
 
 A full 8K60 HDMI matrix over ordinary packet switches is buildable, but not
 with an Arduino in the media path. The credible endpoint is an FPGA or adaptive
-SoC with HDMI 2.1 receiver/transmitter IP, high-speed memory where required,
-and 25/100 GbE. An Arduino Mega can be a deliberately limited control and
-observation plane: select routes, display endpoint health, operate physical
-controls, and watchdog the media processor.
+SoC with HDMI 2.1 receiver/transmitter IP and high-speed memory where required.
+The product uses the ordinary managed household LAN; its baseline 10GBASE-T
+endpoint link requires a declared compressed profile for 8K, while 25/100 GbE
+remains a higher-rate option on that same shared network. An Arduino Mega can
+be a deliberately limited control and observation plane: select routes,
+display endpoint health, operate physical controls, and watchdog the media
+processor.
 
 Two products are worth separating:
 
@@ -77,6 +80,28 @@ and validate the negotiated format rather than infer it from the “8K” label.
 
 ## Three media-plane designs
 
+### Feasibility decision: do not tunnel HDMI symbols
+
+Raw TMDS or FRL electrical forwarding is not a product mode. Copper HDMI
+signalling, link training, FEC, scrambling, clock behavior, DDC, and HPD are
+local link concerns with timing and physical-layer requirements that an
+ordinary packet network does not preserve. Encapsulating sampled symbols would
+also retain a rate tied to the HDMI link and provide no useful 10GBASE-T path.
+
+The product therefore terminates the source-facing HDMI link, interprets the
+admitted essences and metadata, transports them as a named packet-media
+profile, and constructs a fresh sink-facing HDMI link. A same-board RX-to-TX
+electrical or pixel loopback is useful laboratory evidence for HDMI IP and
+signal integrity, but it is not evidence that Ethernet transport works.
+
+The evaluated network modes are:
+
+1. interpreted uncompressed media as the pixel-exact high-rate reference;
+2. JPEG XS or another explicitly qualified bounded low-latency profile for the
+   practical shared-network product;
+3. a named long-GOP profile only for use cases that accept its latency and
+   switching behavior.
+
 ### A. Uncompressed: correctness reference
 
 Pipeline:
@@ -132,9 +157,11 @@ vendor evaluation point, not a universal quality guarantee
 
 Recommended network targets:
 
-- 10 GbE for one aggressively compressed 8K flow or early research;
+- shared 10GBASE-T for one explicitly bounded compressed 8K flow or early
+  research, only after household headroom and every traversed queue are
+  admitted;
 - 25 GbE for quality margin, audio/metadata, and future codec profiles;
-- 100 GbE uplinks/spines for multiple simultaneous endpoints.
+- 100 GbE shared-LAN aggregation for multiple simultaneous endpoints.
 
 JPEG XS is usually described as visually lossless or near-lossless at selected
 rates; that is not mathematical losslessness. The test plan must include
@@ -227,17 +254,20 @@ the only indication that the path works.
 
 ## Switching, timing, and routing
 
-An “ordinary switched network” means standards-based Ethernet/IP, not an
-unmanaged consumer switch. The fabric needs:
+An “ordinary switched network” means the standards-based managed household
+Ethernet/IP network, not an unmanaged consumer switch or a dedicated media
+fabric. The installed shared path needs:
 
 - nonblocking capacity for the declared route set;
-- 25/100 GbE endpoint ports and suitably faster spine/uplinks;
+- endpoint and aggregation rates that satisfy each admitted profile; baseline
+  product access is 10GBASE-T while uncompressed 8K laboratory reference paths
+  require a measured higher-rate path;
 - IGMPv3 snooping and an explicit multicast querier;
 - VLAN and QoS separation for media, PTP, and control;
 - large enough buffers with documented behavior under microbursts;
 - PTP transparent or boundary-clock support;
 - telemetry for queue drops, multicast state, and clock health;
-- optional dual independent A/B fabrics for hitless protection.
+- configured ordinary-LAN headroom under concurrent household and mesh load.
 
 IEEE describes TSN as bounded-latency, low-jitter, low-loss service based on
 synchronization, reservation, shaping, and queuing. IEEE 802.1AS defines

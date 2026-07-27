@@ -190,9 +190,10 @@ it never wraps.
 9. Record desired state separately from every observed plane.
 
 Every step has a deadline, idempotency key, reason code, and deterministic
-recovery rule. Failure leaves affected outputs disabled or on an unmistakable
-local test pattern. Automatic restoration is a new authorized epoch, never
-reuse of stale authority.
+recovery rule. Failure leaves affected outputs disabled with HDMI no-signal.
+An unmistakable local test pattern requires a separately authorized
+maintenance mode. Automatic restoration is a new authorized epoch, never reuse
+of stale authority.
 
 Only the durable controller issues route grants. Endpoints do not elect a
 leader, compare wall clocks, use last-writer-wins, or invent leases during a
@@ -272,7 +273,7 @@ load and define access, export, retention, and deletion policy.
 | Property | Phase-one lab | Deployable mesh |
 |---|---|---|
 | Content | Generated or approved unprotected media | Explicit content policy and legal review |
-| Network | Isolated wired fabric | Segmented, monitored, capacity-managed fabric |
+| Network | Shared managed household LAN with lab-only traffic profiles | Segmented, monitored, capacity-managed shared LAN |
 | Authority | One durable controller | Hardened single controller; HA still deferred |
 | Identity | Manually provisioned short-lived credentials | Hardware-backed lifecycle and revocation |
 | Endpoints | Known evaluation hardware | Hardened boot, updates, isolation, and parser review |

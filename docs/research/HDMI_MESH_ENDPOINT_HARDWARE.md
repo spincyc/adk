@@ -22,6 +22,19 @@ drive route buttons and status lamps and read a narrow health-register
 interface. It does not receive HDMI, process pixels, packetize media, implement
 PTP, or carry Ethernet media traffic.
 
+Product endpoints attach to the same ordinary managed household LAN used by
+USB, control, telemetry, and other clients. A dedicated media switch,
+independent management Ethernet, or physically separate A/B media fabric is
+not a product assumption. VLANs and QoS are logical policy tools on that shared
+network. Every product route must fit a named profile on the measured complete
+path while preserving configured household headroom.
+
+The baseline product investigation starts with one 10GBASE-T access link per
+HDMI endpoint. A compressed 1080p or 4K profile may fit after measured overhead
+and margin; uncompressed 8K60 cannot. Higher-rate access or aggregation may
+exist on the same household network, but it does not create a separate media
+fabric and does not remove the slowest-link admission gate.
+
 ```text
 ordinary Linux controller
         |
@@ -126,7 +139,7 @@ risk.
 | Quantity | Item | Purpose |
 |---:|---|---|
 | 1 | Existing x86-64 Linux computer | Authoritative controller and CLI |
-| 1 | Existing managed Ethernet switch | Management network only |
+| 1 | Existing managed household Ethernet switch | Shared management and synthetic-media model |
 | 1 | Existing Mega 2560 kit | Optional buttons and visible health evidence |
 
 No media FPGA is required. Prove enrollment, desired and observed state,
@@ -153,7 +166,7 @@ not claim networked HDMI at this stage.
 | Quantity | Item | Purpose |
 |---:|---|---|
 | 1 additional | VEK385 kit | Second physical endpoint |
-| 1 | Managed nonblocking 100GbE switch | Media fabric |
+| 1 | Managed nonblocking 100GbE-capable switch | Shared-LAN laboratory feasibility, not a dedicated product fabric |
 | 2 | Validated 100GbE DACs, or two optics plus fiber | Endpoint links |
 | 1 | PTP-capable laboratory clock or proved switch clock | Time discipline |
 | 1 | Second sink or capture/analyzer access | Phase-three fan-out and multicast evidence |
@@ -172,9 +185,10 @@ Add JPEG XS only after the uncompressed reference is correct. Obtain the codec
 IP, tools, and profile license explicitly; then measure latency and degradation
 using UI text, noise, HDR gradients, and repeated generations.
 
-Add a second switch and duplicate links only after single-controller,
-single-fabric behavior is stable. Media-path redundancy is separate from
-controller high availability, which remains deferred.
+Evaluate redundant paths only as a topology within the same managed household
+network after single-path behavior is stable. A second dedicated media fabric
+is outside the product constraint. Media-path redundancy remains separate from
+controller high availability, which is deferred.
 
 ### Stage 4: production endpoint study
 
@@ -186,7 +200,7 @@ and resource measurements are stable. The production study must cover:
 - QSFP28 cage, module power and cooling, MAC address allocation, and clocks;
 - LPDDR memory and worst-case buffering;
 - secure boot, signed updates, endpoint identity, and key storage;
-- independent management Ethernet;
+- shared-LAN management and media isolation, admission, and fault containment;
 - watchdog, power sequencing, thermal sensors, fan control, and visible alarms;
 - regulatory, HDMI adopter, HDCP, Ethernet, EMC, and safety obligations.
 
@@ -205,16 +219,18 @@ This is a custom high-speed digital product, not an Arduino shield project.
 | Route execution and health | observes | yes | displays |
 | Buttons and local lamps | optional | health registers | yes |
 
-The controller may use ordinary 1GbE management networking. Keeping policy off
-the endpoint makes a route change independent of the media board vendor and
-allows the same controller model to govern USB and HDMI meshes.
+The controller may use an ordinary lower-rate household LAN connection.
+Keeping policy off the endpoint makes a route change independent of the media
+board vendor and allows the same controller model to govern USB and HDMI
+meshes.
 
 ## Purchase gate
 
 The first likely physical purchase is one VEK385, not two, after the license
 and transceiver feasibility questions are answered. One board can retire the
 largest HDMI/clock/resource risks with local loopback. Buy the second board and
-100GbE switch only after that evidence is recorded.
+a higher-rate shared-LAN switch only after that evidence and a complete
+household-network admission plan are recorded.
 
 Physical verification is deferred. Nothing in this document claims that ADK
 has compiled a VEK385 design, trained an HDMI link, transported a frame, or
