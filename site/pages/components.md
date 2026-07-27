@@ -21,7 +21,10 @@ Status meanings:
 | Endpoint | `AnalogInput` | Hardware experimental | One analog-capable pin |
 | Value behavior | `LinearCalibration`, `MovingAverage`, `Deadband` | Host verified | Fixed-size sample state |
 | Behavior | `NightLight` | Host verified | No hardware; observes normalized samples |
-| Later layers | Buses, displays, sensors, actuators | Planned | See catalog |
+| Component | `ShiftRegisterOutput` | Hardware experimental | Three digital outputs |
+| Component | `SevenSegmentDisplay` | Hardware experimental | One shift-register output |
+| Behavior | `TrafficJunction` | Host verified | No hardware; observes request, health, and time |
+| Later layers | Buses, sensors, actuators | Planned | See catalog |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.
 Behavior engines expose output intent rather than hiding hardware callbacks.
@@ -32,6 +35,10 @@ onto LEDs, RGB feedback, and sound.
 `NightLight` follows the same boundary. Its Mega adapter owns the sensor, lamp,
 and diagnostic LED, while the engine only accepts a complete observation and
 returns output intent.
+
+The same composition continues through lessons 010–012. A
+`SevenSegmentDisplay` owns its serialized output; `TrafficJunction` instead
+owns no pins and returns a complete legal signal pattern for its Mega adapter.
 
 - [Exact API](api-supported.md)
 - [Full component catalog](docs/COMPONENTS.md)

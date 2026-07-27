@@ -14,10 +14,14 @@ third lesson for a deterministic integration project.
 | [007](007.md) | Potentiometer and PWM LED | Raw ADC evidence and explicit calibration |
 | [008](008.md) | Sample filter | Reproducible filtering and fault observation |
 | [009](009.md) | Adaptive night light | Hysteresis and multi-component diagnosis |
+| [010](010.md) | Shift-register display | Serialized output and visible glyphs |
+| [011](011.md) | Timed traffic states | Explicit deadlines and request retention |
+| [012](012.md) | Tabletop traffic junction | Conflict-free signals and all-red failure |
 
-These interfaces are host verified and compile for the Mega 2560. They remain
-experimental until their physical acceptance cards are recorded. Historical
-preview lessons are preserved under [Legacy](../legacy/index.md).
+These interfaces are host verified and their canonical examples compile for the
+Mega 2560. Every circuit remains experimental until its physical acceptance
+card is recorded. Historical preview lessons are preserved under
+[Legacy](../legacy/index.md).
 
 Pencil drawings provide orientation only. Build from each PDF’s exact schematic
 and connection table.
