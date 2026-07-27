@@ -54,7 +54,9 @@ Status meanings:
 | Behavior | `ObservationTracker` | Host verified | Local receipt time, sequence, quality, and freshness |
 | Adapter | `PacketReceiver` | Host verified | Fixed-capacity caller-supplied packet queue |
 | Behavior | `TelemetryEvidenceModel` | Host verified | Visible packet and freshness evidence |
-| Queued layers | Cue scheduling and later curriculum components | Queued | See catalog and work queue |
+| Value codec | `CueAuditBuffer`, `CueAuditEncoder` | Host verified | Caller-owned bounded records and stable text |
+| Behavior | `InertCueScheduler` | Host verified | Supplied time, confirmation, holds, and inert snapshots |
+| Queued layers | Lesson 030 composition and later curriculum components | Queued | See catalog and work queue |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.
 Behavior engines expose output intent rather than hiding hardware callbacks.
@@ -88,10 +90,10 @@ and sample validity explicit; `Rtc` and `FixedStorage` model clock state,
 append, sync, failure, and restart without claiming a physical RTC or SD-card
 adapter.
 
-Lessons 023--028 continue with inert load policy, greenhouse composition,
+Lessons 023--029 continue with inert load policy, greenhouse composition,
 receive-only infrared and telemetry evidence, a deterministic telemetry
-console, and inert-channel assessment. Lesson 029's cue scheduling and audit
-core remains active integration rather than a promoted component boundary.
+console, inert-channel assessment, and deterministic cue scheduling with a
+bounded replayable audit. Lesson 030 composition remains queued.
 
 - [Exact API](api-supported.md)
 - [Full component catalog](docs/COMPONENTS.md)

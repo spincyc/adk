@@ -1,7 +1,7 @@
 # Lessons 028--030 design: inert show-cue simulator
 
-Status: lesson 028 host verified with bench acceptance open; lesson 029 active
-integration; lesson 030 queued behind lesson 029 promotion.
+Status: lessons 028 and 029 host verified with bench acceptance open; lesson
+030 queued for integration.
 
 This capstone teaches contradiction detection, deterministic scheduling,
 operator confirmation, audit records, and replay. It does not control a show.
@@ -259,12 +259,19 @@ struct CueSchedulerSnapshot
     Duration          planElapsed;
     Duration          cueElapsed;
     Status            status;
+    bool              hasCue;
+};
+
+struct InertCueSchedulerConfig
+{
+    InertCuePlan plan;
+    Duration confirmationWindow;
 };
 
 struct InertCueScheduler
 {
-    InertCueScheduler (const InertCuePlan& plan,
-                       Duration confirmationWindow) noexcept;
+    InertCueScheduler (const InertCueSchedulerConfig& config,
+                       CueAuditBuffer& audit) noexcept;
 
     Status initialize () noexcept;
     void   shutdown   () noexcept;
@@ -275,13 +282,14 @@ struct InertCueScheduler
 };
 ```
 
-The scheduler is a pure deterministic state machine. Time begins only after
-confirmation. Due cues request confirmation rather than becoming active
-automatically. A confirmation outside the configured window skips that cue and
-records the reason. A delayed loop coalesces elapsed inactive time; it never
+The scheduler is a pure deterministic state machine. Run establishes the plan
+epoch; accepted confirmation establishes that cue's visibility interval
+without shifting later offsets. Due cues request confirmation rather than
+becoming active automatically. An expired confirmation window skips that cue
+and records `Timeout`. A delayed loop coalesces elapsed inactive time; it never
 activates past cues in a catch-up burst. Cancel is terminal until reinitialize.
 Invalid input or impossible plan state enters `Fault`, whose snapshot has no
-active cue.
+active cue. Only a byte-identical frame is idempotent at a repeated timestamp.
 
 ### Audit record
 
@@ -302,6 +310,7 @@ enum struct CueAuditEvent : uint8_t
     Resumed,
     Cancelled,
     Faulted,
+    Completed,
     Shutdown
 };
 
@@ -313,10 +322,12 @@ struct CueAuditEntry
     InertCueId    cue;
     uint8_t       cueIndex;
     Status        status;
+    bool          hasCue;
 };
 ```
 
-`CueAuditBuffer` is a caller-provided fixed ring. The scheduler does not own a
+`CueAuditBuffer` is caller-provided bounded append storage, not an overwriting
+ring. The scheduler does not own a
 stream and never invokes a callback during cleanup. When storage is full, it
 enters `Held`, reports `CapacityExceeded`, and preserves all existing records.
 It cannot continue unrecorded.
@@ -324,7 +335,7 @@ It cannot continue unrecorded.
 Stable text grammar version 1 is:
 
 ```text
-adk-cue,1,<sequence>,<milliseconds>,<event>,<cue>,<index>,<status>\n
+adk-cue,1,<sequence>,<ticks>,<event>,<cue-or-dash>,<index-or-dash>,<status>\n
 ```
 
 The formatter is allocation-free, ASCII, locale-independent, and never
@@ -333,18 +344,20 @@ state plus a downloadable host replay trace.
 
 ### Circuit-native evidence
 
-The selected cue's inert LED is lit only during `Active`. The RGB status is:
+The selected cue's inert LED is lit only during `Active`. The single-channel
+RGB status is:
 
-- blue: review;
-- amber: confirmation required;
+- steady blue: idle or review;
+- short blue pulse: waiting or held, with phase-specific cadence;
+- fast red pulse: confirmation required;
 - green: cue visible;
-- violet pulse: held;
 - red: cancelled or fault;
-- off: idle or safe shutdown.
+- off: safe shutdown.
 
-TP29 on the selected LED output proves the electrical output. The LCD or cue
-selection LEDs name which cue is pending before confirmation. Serial does not
-participate in the decision.
+Lesson 029 TP29 on the selected LED output supports the snapshot-to-inert-LED
+mapping claim. A dark LED or inactive voltage alone does not prove high
+impedance. Cue selection LEDs name which cue is pending before confirmation.
+Serial does not participate in the decision.
 
 Host cases cover plan validation, every phase and event, chords, release gate,
 confirmation edges, timeout edges, delayed loops, rollover, audit exhaustion,

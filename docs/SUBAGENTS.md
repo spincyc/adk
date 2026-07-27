@@ -122,9 +122,9 @@ full integration gates, and publication remain coordinator responsibilities.
 
 ## Current checkpoint
 
-Lessons 001--028 are host verified with their physical cards open. Lesson 029
-is the sole active lesson integration boundary, and lesson 030 is queued behind
-its promotion. Lessons 031--081 remain the queued three-lesson expansion.
+Lessons 001--029 are host verified with their physical cards open. Lesson 030
+is the next queued lesson integration boundary. Lessons 031--081 remain the
+queued three-lesson expansion.
 
 Transparent USB, HDMI mesh, and shared-fabric material remains research and
 host-model evidence only. Bounded next USB and HDMI/shared-fabric research
@@ -158,9 +158,9 @@ The historical integration sequence was:
 13. land site, packaging, CI, release metadata, and publication at each
     coherent release boundary.
 
-That sequence is complete through lesson 028. Current dependency order is
-lesson 029, then project 030, then lessons 031--081 one implementation-depth
-three-lesson arc at a time.
+That sequence is complete through lesson 029. Current dependency order is
+project 030, then lessons 031--081 one implementation-depth three-lesson arc
+at a time.
 
 Each boundary must build and pass its applicable checks before the next
 consumer is committed. Review findings that cannot be closed at that boundary
