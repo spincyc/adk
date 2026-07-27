@@ -1,5 +1,4 @@
 ARDUINO_CLI ?= arduino-cli
-CLANG_FORMAT ?= clang-format
 CXX         ?= c++
 PDFLATEX    ?= pdflatex
 

@@ -1,0 +1,158 @@
+#!/usr/bin/env python3
+"""Stage, validate, build, and preview the ADK documentation site."""
+
+from __future__ import annotations
+
+import argparse
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+BUILD_ROOT = ROOT / "build"
+SOURCE_ROOT = BUILD_ROOT / "site-source"
+SITE_ROOT = BUILD_ROOT / "site"
+CONFIG = ROOT / "mkdocs.yml"
+
+
+class SiteError(RuntimeError):
+    """A site input or tool problem that requires attention."""
+
+
+def copy_tree(source: Path, destination: Path, *, required: bool = True) -> None:
+    if not source.is_dir():
+        if required:
+            raise SiteError(f"missing site input directory: {source.relative_to(ROOT)}")
+        return
+    shutil.copytree(source, destination, dirs_exist_ok=True)
+
+
+def copy_lesson_materials() -> None:
+    """Publish reviewed lessons at stable, human-readable download paths."""
+    lesson_pdfs = sorted((ROOT / "doc/lessons").glob("*.pdf"))
+    sketches = sorted((ROOT / "lessons").glob("*/*.ino"))
+    sources = sorted((ROOT / "docs/lessons").glob("*/main.tex"))
+
+    for source in lesson_pdfs:
+        destination = SOURCE_ROOT / "downloads/lessons" / source.name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+    for source in sketches:
+        destination = SOURCE_ROOT / "downloads/sketches" / source.name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+    for source in sources:
+        destination = (
+            SOURCE_ROOT / "downloads/sources/lessons" / f"{source.parent.name}.tex"
+        )
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+    copy_tree(
+        ROOT / "docs/lessons/assets",
+        SOURCE_ROOT / "downloads/assets",
+        required=False,
+    )
+
+
+def stage() -> None:
+    """Assemble the explicitly publishable tree consumed by MkDocs."""
+    readme = ROOT / "README.md"
+    if not CONFIG.is_file():
+        raise SiteError("missing MkDocs configuration: mkdocs.yml")
+    if not readme.is_file():
+        raise SiteError("missing site landing source: README.md")
+
+    if SOURCE_ROOT.exists():
+        shutil.rmtree(SOURCE_ROOT)
+    SOURCE_ROOT.mkdir(parents=True)
+
+    shutil.copy2(readme, SOURCE_ROOT / "index.md")
+    license_lines = (ROOT / "LICENSE").read_text(encoding="utf-8").splitlines()
+    license_body = "\n".join(license_lines[1:]).lstrip()
+    (SOURCE_ROOT / "license.md").write_text(
+        f"# MIT License\n\n{license_body}\n",
+        encoding="utf-8",
+    )
+    canonical_docs = (
+        "ARCHITECTURE.md",
+        "COMPARABLE_PROJECTS.md",
+        "ROADMAP.md",
+        "STYLE.md",
+    )
+    for name in canonical_docs:
+        source = ROOT / "docs" / name
+        destination = SOURCE_ROOT / "docs" / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
+    simon = ROOT / "docs/projects/simon.md"
+    simon_destination = SOURCE_ROOT / "docs/projects/simon.md"
+    simon_destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(simon, simon_destination)
+    copy_tree(ROOT / "site/pages", SOURCE_ROOT, required=False)
+    copy_tree(ROOT / "site/assets", SOURCE_ROOT / "assets")
+    copy_lesson_materials()
+
+
+def mkdocs(*arguments: str) -> None:
+    executable = shutil.which("mkdocs")
+    if executable is None:
+        raise SiteError(
+            "mkdocs is required; on Arch Linux run 'make bootstrap-packages'"
+        )
+    command = [executable, *arguments, "--config-file", str(CONFIG)]
+    result = subprocess.run(command, cwd=ROOT, check=False)
+    if result.returncode != 0:
+        raise SiteError(f"MkDocs exited with status {result.returncode}")
+
+
+def check() -> None:
+    stage()
+    mkdocs("build", "--strict", "--site-dir", str(SITE_ROOT))
+    checker = ROOT / "scripts/check_site.py"
+    result = subprocess.run(
+        [sys.executable, str(checker), str(SITE_ROOT)],
+        cwd=ROOT,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise SiteError(f"site checker exited with status {result.returncode}")
+    print("site: built and validated the publishable artifact")
+
+
+def build() -> None:
+    stage()
+    mkdocs("build", "--strict", "--site-dir", str(SITE_ROOT))
+    print(f"site: built {SITE_ROOT.relative_to(ROOT)}")
+
+
+def serve(port: int) -> None:
+    stage()
+    mkdocs("serve", "--strict", "--dev-addr", f"127.0.0.1:{port}")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    subparsers.add_parser("check", help="stage and validate a strict site build")
+    subparsers.add_parser("build", help="build the publishable site artifact")
+    preview = subparsers.add_parser("serve", help="serve a local live preview")
+    preview.add_argument("--port", type=int, default=8000)
+    arguments = parser.parse_args()
+
+    try:
+        if arguments.command == "check":
+            check()
+        elif arguments.command == "build":
+            build()
+        else:
+            serve(arguments.port)
+    except SiteError as error:
+        print(f"site: {error}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
