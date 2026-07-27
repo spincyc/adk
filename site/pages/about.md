@@ -16,11 +16,11 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--006 use the first-class per-object
-RAII interfaces. They cover digital output and input, Button, Reaction Timer,
-PWM and RGB output, passive piezo sound, and the deterministic Simon engine.
-The APIs pass deterministic host tests and compile for the Mega 2560, but
-physical acceptance remains open.
+ADK is early-stage software. Lessons 001--028 use the first-class per-object
+RAII interfaces. Their APIs pass deterministic host tests and their canonical
+examples compile for the Mega 2560, but physical acceptance remains open.
+Lesson 029 is the sole active integration boundary; lesson 030 is queued behind
+its promotion.
 
 The hierarchy is developed in dependency order:
 
@@ -32,9 +32,9 @@ The per-object lifecycle uses transactional `initialize()`, idempotent
 `shutdown() noexcept`, and destructor-driven cleanup. The original
 global-registration preview is frozen under [Legacy](legacy/index.md).
 
-The next slice begins with analog input, calibration, and sampled filtering,
-then composes them into the adaptive night light at lesson 009. See the
-[roadmap](docs/ROADMAP.md) for the full sequence.
+The active slice is lesson 029's deterministic inert cue scheduling and bounded
+audit evidence. Lesson 030's inert show-cue simulator is queued behind it. See
+the [roadmap](docs/ROADMAP.md) for the full sequence.
 
 ## Principles
 

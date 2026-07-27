@@ -5,9 +5,9 @@ lesson number divisible by three is project-bearing.
 
 | Lessons | New components | Project | Status |
 |---:|---|---|---|
-| 001–003 | Digital output, digital input, Button | Reaction timer | Hardware experimental |
-| 004–006 | PWM, RGB LED, sounder | Simon | Hardware experimental |
-| 007–009 | Analog input, calibration, filtering | Adaptive night light | Hardware experimental |
+| 001–003 | Digital output, digital input, Button | Reaction timer | Host verified; bench open |
+| 004–006 | PWM, RGB LED, sounder | Simon | Host verified; bench open |
+| 007–009 | Analog input, calibration, filtering | Adaptive night light | Host verified; bench open |
 | 010–012 | Shift register, display, timed states | Traffic junction | Host verified; bench open |
 | 013 | DHT11 sensor and validated samples | — | Host verified; bench open |
 | 014–015 | Character display and stable records | Environmental station | Host verified; bench open |
@@ -25,7 +25,11 @@ lesson number divisible by three is project-bearing.
 | 027 | Deterministic scheduling and presentation | Telemetry console | Host verified; E1 bench open |
 | 028 | Inert channel assessment | — | Host verified; E1 bench open |
 | 029 | Cue scheduling and logs | — | Active integration |
-| 030 | Inert composition | Inert show-cue simulator | Planned |
+| 030 | Inert composition | Inert show-cue simulator | Queued |
+
+Lessons 031–033 are queued first. Lessons 034–081 are retained canonical work;
+each later three-lesson arc requires an implementation-depth brief before code
+begins.
 
 The [canonical curriculum](docs/CURRICULUM.md) owns lesson numbers,
 prerequisites, and acceptance gates. [Project briefs](docs/PROJECTS.md) explain

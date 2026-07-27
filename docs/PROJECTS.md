@@ -11,14 +11,10 @@ are complete.
 
 ## Current status
 
-The Reaction Timer (003), Simon engine (006), and adaptive Night Light (009)
-are implemented and host verified. Traffic Junction (012) has also landed with
-deterministic host evidence, a Mega 2560 example, lesson material, and size
-evidence. Its physical bench card remains open. The Environmental Station
-(015) has also landed with deterministic evidence and an open bench card.
-Lessons 017--028 are host verified with their bench cards open. Projects
-029--030 remain ordered briefs, not implementation claims. See the
-[authoritative work queue](WORK_QUEUE.md) for the complete ledger.
+Lessons 001--028 are host verified with their bench cards open. Lesson 029 is
+in active integration with tracked scheduler and audit core sources; lesson
+030 remains a queued capstone. See the [authoritative work
+queue](WORK_QUEUE.md) for the complete ledger.
 
 Every API and lesson remains experimental. Mega 2560 bench acceptance is open
 for every project. Development continues through the full project sequence

@@ -18,9 +18,10 @@ Its findings must be reconciled through bounded tasks; the audit itself does
 not promote work or replace this ledger.
 
 - Lessons 001--028 are promoted and host verified; physical cards remain open.
-- Lesson 029 has a committed implementation brief and first-class scheduler and
-  audit core. Next: independent audit, normal build registration, narrative
-  example, measured size, HTML/PDF package, and boundary promotion.
+- Lesson 029 has a committed implementation brief and tracked scheduler and
+  audit core sources with focused tests. Next: independent audit, normal build
+  registration and umbrella export, narrative example, measured size,
+  HTML/PDF/site package, and boundary promotion.
 - Lesson 030 has a committed implementation contract. Implementation follows
   Lesson 029 promotion.
 - The USB research track has a deterministic product-native `Cau`/`Pau`
@@ -30,10 +31,10 @@ not promote work or replace this ledger.
 
 Do not lose these release blockers:
 
-1. refresh the stale but reproducibly rebuilt lesson 012 PDF;
+1. correct lesson 014's nonexistent `make serial-monitor` command and
+   reproducibly rebuild `doc/lessons/014.pdf`;
 2. add `git` to the Arch bootstrap package set, pin the local AVR core to the CI
-   version, preserve monitor failures through the logging pipeline, and correct
-   the stale `make serial-monitor` lesson command;
+   version, and preserve monitor failures through the logging pipeline;
 3. add native archive/export and consumer-smoke targets before claiming
    general non-Arduino C++ installation;
 4. finish the landing/navigation audit and add post-deploy checks for the
@@ -61,7 +62,7 @@ qualification are not yet supported.
 | Boundary | State | Required next result |
 |---|---|---|
 | [001--028](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [029](design/LESSONS_028_030.md) | Active integration | Deterministic cue scheduling with bounded audit evidence |
+| [029](design/LESSONS_028_030.md) | Active integration | Independent core review, normal host/umbrella registration, narrative Mega example, size evidence, HTML/PDF/site package, then promotion |
 | [030](design/LESSONS_028_030.md) | Queued | Physically inert show-cue simulator |
 
 Integration order is strict: component or endpoint, deterministic tests,
