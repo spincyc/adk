@@ -27,9 +27,9 @@ Every exclusive owner is inert after construction, non-copyable, and initially
 non-movable. Its common contract is:
 
 ```cpp
-Result initialize  ();
+Status initialize  () noexcept;
 void   shutdown    () noexcept;
-bool   initialized () const;
+bool   initialized () const noexcept;
 ```
 
 `initialize()` acquires every required resource before exposing active
@@ -45,11 +45,13 @@ Generic output endpoints become high impedance on shutdown. A semantic
 component first selects its documented inactive electrical state, then releases
 its endpoint. Board capability checks happen before a claim or hardware write.
 
-### Result and resources
+### Status, result, and resources
 
-`Result` is a small value with an inspectable status; it carries no allocation
-or text. Statuses distinguish at least invalid configuration, unsupported
-capability, busy resource, and platform failure.
+Lifecycle and command operations that return no payload use `Status`.
+`Result<T>` is reserved for an operation that must return both a status and a
+value. Both are small values with no allocation or diagnostic text. Statuses
+distinguish at least invalid configuration, unsupported capability, busy
+resource, and hardware failure.
 
 A claim registry has fixed capacity and deterministic lookup. Exclusive claims
 cannot overlap. A failed multi-resource acquisition releases the earlier
@@ -80,12 +82,12 @@ series. Do not land a consumer before its dependency.
 6. Add `DigitalInput`, raw sampling, pull policy, and host fault injection.
 7. Add `Button`, deterministic debounce, edges, release gating, and chords.
 8. Build project 1: a deterministic reaction timer.
-9. Add nonblocking scheduling and reusable blink behavior.
-10. Add `PwmOutput` and `RgbLed`.
-11. Add `AnalogInput`, potentiometer, and photoresistor.
-12. Build project 2: a deterministic light-and-color instrument.
-13. Add tone/timer ownership and a piezo sounder.
-14. Add the deterministic Simon engine and project.
+9. Add `PwmOutput` and `RgbLed`.
+10. Add tone/timer ownership and a piezo sounder.
+11. Build project 2: deterministic Simon.
+12. Add `AnalogInput`, calibration, and sampled filtering.
+13. Build project 3: an adaptive night light.
+14. Add nonblocking scheduling and reusable display behavior.
 15. Continue in three-lesson blocks: two component lessons followed by one
     integrating project.
 
@@ -109,6 +111,40 @@ in one commit. Generated PDFs may accompany their lesson source. A migration
 commit may remove a legacy dependency only after its supported replacement
 passes every gate.
 
+## Example narrative
+
+Examples introduce objects in dependency order: platform, resource owners,
+endpoints, semantic components, then coordinating behavior. `setup()` presents
+acquire, configure, start. `loop()` presents observe, decide, actuate. Keep
+those phases visible even when one phase is a single domain action.
+
+Name helpers after the circuit action or lesson concept. Put high-level flow
+before low-level mechanics so a learner encounters purpose before pin detail.
+Code, diagrams, HTML, and PDF prose use the same vocabulary.
+
+Do not split a short narrative into forwarding helpers merely to make functions
+smaller. Do not narrate obvious code with comments. A comment earns its place
+by preserving a constraint, electrical reason, timing invariant, or decision
+that names and types cannot express.
+
+### Circuit-native observability
+
+Observability is a design input, not a troubleshooting afterthought. Every
+circuit reserves a visible, audible, displayed, or electrically measurable
+non-Serial signal. A named test point may be a pin, component terminal, or
+connector location with a documented reference and expected range.
+
+Each experiment follows predict, observe, interpret:
+
+1. predict the signal before power or code changes;
+2. observe it at the named place and time;
+3. interpret whether the evidence supports the component contract.
+
+Prove resource acquisition separately from the safe electrical state.
+Initialization status or a dedicated diagnostic signal may prove the former;
+a level, waveform, or high-impedance measurement proves the latter. Serial is
+optional supplementary context and cannot be the sole verification path.
+
 ## Component deliverables
 
 Every endpoint or component lands with:
@@ -120,7 +156,9 @@ Every endpoint or component lands with:
 - terse HTML reference with links to source, example, tests, and related work;
 - a complementary PDF lesson with schematic, pencil orientation drawing,
   experiment, diagnosis, exercises, and acceptance record;
-- a hardware checklist that distinguishes compilation from observation.
+- a hardware checklist that distinguishes compilation from observation;
+- a non-Serial debug signal or named test point with prediction,
+  interpretation, and separate resource/safe-state checks.
 
 Every third lesson is an integrating project. Project tests include a replayable
 happy path, every state transition, timeout and rollover boundaries, invalid

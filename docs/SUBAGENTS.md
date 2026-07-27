@@ -47,16 +47,73 @@ Updated: 2026-07-27
 | Release workflow audit | Complete | Verified pinned Actions, permissions, artifact scope, and publication sequence |
 | Release Git audit | Complete | Verified a linear fast-forward path from remote `main` |
 | Live Pages audit | Complete | Confirmed Pages must be enabled after the first `main` publication |
-| RAII architecture | Complete | Added fixed claims, explicit time, status, and runtime |
-| Digital endpoints | Complete | Added output-first GPIO ownership and deterministic tests |
-| Semantic components | Complete | Added `MonoLed` and debounced `Button` with lifecycle tests |
-| Reaction Timer | Complete | Added deterministic engine, replay tests, example, and project plan |
-| Curriculum v1 | Complete | Canonicalized projects at every third lesson through 030 |
-| Lessons 001–003 | Complete | Added exact examples, rich PDFs, and pencil orientation plates |
-| Packaging v1 | Complete | Added Arduino examples, `Adk.h`, metadata, and release contract |
-| Quality CI | Complete | Added host, style, PDF, site, Mega, size, and lint gates |
-| Accessibility policy | Complete | Recorded honest HTML/PDF complement and tagged-PDF roadmap |
-| Final independent audit | In progress | Rechecking clean archives, links, API claims, and publication |
+## First-class implementation slice
 
-No subagent is authorized to push. Editing assignments use disjoint file sets;
-the primary agent integrates, tests, reviews, and commits the results.
+The coordinator assigned all available delegation slots during the second
+slice. Work was split by dependency boundary and file ownership; review agents
+also used nested agents where an independent mechanical audit was useful.
+
+| Agent workstream | Final status | Result |
+|---|---|---|
+| Architecture contract | Complete | Defined first-class layers, ordered commits, exact gates, and handoffs |
+| Core design | Complete | Added shared timer leases, rollback, Mega PWM mapping, and 17-byte registry |
+| Core tests | Complete | Covered shared claims, exhaustion, rollback, piezo timing, and teardown |
+| Host fake | Complete | Added Mega pin count and deterministic tone/no-tone traces |
+| Digital input integration | Complete | Reconciled names and style with the new sound path |
+| PWM endpoint tests | Complete | Covered the complete Mega PWM map, conflicts, traces, and RAII |
+| RGB component | Complete | Added three-endpoint composition, transactional color, and safe shutdown |
+| RGB tests | Complete | Covered values, polarity, conflicts, rollback, traits, and destruction |
+| Piezo component tests | Complete | Covered timer ownership, deadlines, rollover, replacement, and cleanup |
+| Simon engine | Complete | Added fixed-capacity deterministic state machine and replay sources |
+| Simon API review | Complete | Stabilized cue values, source lifetime, and C++11 construction |
+| Test strategy review | Complete | Added high-value PWM, piezo, Simon, and replay cases |
+| Style audit | Complete | Fixed alignment and reported contract, filename, and virtual-dispatch issues |
+| Formatter capability review | Complete | Reported rules that require repository checks beyond clang-format |
+| C++ style scan | Complete | Reported type duplication, lifecycle wording, and integration gaps |
+| Size-budget audit | Complete | Enforced the 17-byte registry ceiling and flagged virtual Simon dispatch |
+| Make integration | Complete | Integrated focused host, exception, Mega, umbrella, and PDF gates |
+| Make independent review | Complete | Specified opt-in legacy isolation and stock-Arch quality gates |
+| Quality CI | Complete | Added host, unwind, size, lessons, Mega, lint, and gated Pages jobs |
+| Packaging review | Complete | Verified current artifacts and identified remaining release blockers |
+| Git boundary review | Complete | Defined dependency-safe lesson, sound, Simon, site, and release commits |
+| Curriculum | Complete | Canonicalized lessons and projects through lesson 030 |
+| Project catalog | Complete | Defined a cumulative project at every third lesson |
+| Component catalog | Complete | Reconciled experimental status, numbering, and registry size |
+| Lesson 004 example | Complete | Added and measured the Mega PWM/RGB sketch |
+| Lesson 005 PDF | Complete | Added pencil orientation art and verified the six-page PDF |
+| Lesson 006 PDF/example | Complete | Added Simon art, RGB composition, and measured the Mega sketch |
+| Lesson accessibility | Complete | Added language metadata and verified stable, extractable PDFs |
+| Safety review | Complete | Added E1 limits, current budgets, inert-load rules, and RF exclusions |
+| Site curriculum | Complete | Added lessons 004–006 and current component/project status |
+| Supported API page | Complete | Documented experimental RAII ownership, timing, errors, and migration |
+| Documentation taxonomy | Complete | Rebuilt concise learner pages and source/PDF navigation |
+| Circuit observability policy | Complete | Required non-Serial test points and predict-observe-interpret evidence |
+| Final documentation audit | In progress | Rechecking claims, links, release state, and deferred work |
+
+“Complete” means the assigned slice was delivered and locally checked; it does
+not by itself promote an interface to supported status. Physical Mega evidence,
+full integration gates, and publication remain coordinator responsibilities.
+
+## Integration boundaries
+
+Agents do not commit or push. They edit disjoint file sets and report exact
+commands, results, measurements, risks, and a proposed commit subject. The
+coordinator alone stages shared build files, indexes, navigation, generated
+artifacts, release metadata, and the status ledger.
+
+Integration follows the hierarchy without squashing across layers:
+
+1. isolate the imported preview API under `legacy/`;
+2. land status, time, platform, board, and resource ownership;
+3. land `DigitalOutput`, then `MonoLed`;
+4. land `DigitalInput`, then `Button`;
+5. land the Reaction Timer project and lessons 001–003;
+6. land `PwmOutput` and `RgbLed`, then lesson 004;
+7. land timer ownership and `PiezoSounder`, then lesson 005;
+8. land the hardware-independent Simon engine, then lesson/project 006;
+9. land site, packaging, CI, release metadata, and publication.
+
+Each boundary must build and pass its applicable checks before the next
+consumer is committed. Review findings that cannot be closed at that boundary
+remain explicit deferred work; no agent may weaken a gate or silently change a
+public contract to make integration pass.
