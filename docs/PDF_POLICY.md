@@ -12,7 +12,9 @@ The current `pdflatex` pipeline provides:
 - embedded fonts with Unicode mappings where the selected font permits them;
 - searchable, copyable text;
 - deterministic inputs and `SOURCE_DATE_EPOCH`;
-- two TeX passes, bounded output size, and basic Poppler validation.
+- two TeX passes, bounded output size, and automated Poppler validation;
+- a final TeX log without overfull boxes, undefined references, undefined
+  citations, or an unresolved rerun request.
 
 It does **not** produce tagged PDF. `pdfinfo` currently reports `Tagged: no`.
 Therefore ADK does not claim PDF/UA or WCAG conformance for these files.
@@ -57,11 +59,13 @@ do
 done
 ```
 
-Review `pdffonts` manually. Each used font should be embedded (`emb: yes`) and
-should normally have a Unicode map (`uni: yes`). Also inspect page order,
-clipping, contrast, links, text selection, keyboard navigation, reflow or high
-zoom, and grayscale printing. Test with at least one screen reader before making
-an accessibility claim.
+`make lessons-check` automates nonblank metadata, page and encryption state,
+font embedding, nonempty text extraction, final-pass TeX warnings, and
+monochrome output. Review `pdffonts` manually as well: each used font should
+normally have a Unicode map (`uni: yes`). Also inspect page order, clipping,
+contrast, links, text selection, keyboard navigation, reflow or high zoom, and
+grayscale printing. Test with at least one screen reader before making an
+accessibility claim.
 
 Poppler checks syntax and extraction; it does not establish PDF/UA conformance.
 A `Tagged: yes` result also does not prove correct semantics or reading order.
