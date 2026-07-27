@@ -96,6 +96,17 @@ also used nested agents where an independent mechanical audit was useful.
 | Firmware size baselines | Complete | Measured supported sketches and enforced versioned flash/SRAM budgets |
 | HDMI 8K network research | Complete | Defined FPGA/SoC media planes, bandwidth limits, 25/100 GbE options, licensing gates, and phased prototypes |
 | USB 3 matrix research | Complete | Defined terminated-edge tunneling, exclusive leases, authorization, SuperSpeed bandwidth, and phased prototypes |
+| Lessons 010--030 delivery plan | Complete | Fixed uninterrupted dependency order, observability evidence, and explicitly deferred bench acceptance |
+| Shift-register and display slice | Complete | Landed deterministic serialized output, presentation, tests, example, lesson, size evidence, and open bench card |
+| Traffic timing and project slice | Complete | Landed explicit timing, `TrafficJunction`, replay tests, lessons 011--012, size evidence, and open bench cards |
+| Lesson 013 implementation | In progress | Building the validated climate-sample boundary; lesson 014 and later work remain queued |
+| Lessons 014--030 queue | Queued | Preserving the canonical dependency order and a project at every third lesson |
+| USB mesh control models | Complete | Landed deterministic routing, fencing, durable action planning, and build gates |
+| Transparent USB product contract | Complete | Fixed native Windows/Linux operation, CAU/PAU topology, PoE power, profiles, and failure behavior |
+| HDMI mesh control model | Complete | Landed deterministic route control and profile/failure-policy gates |
+| HDMI mesh research | Complete | Documented interpreted media transport, reconstruction, dynamic routes, endpoint evidence, and compliance limits |
+| Shared USB/HDMI fabric | Complete | Documented one household network, capacity admission, named profiles, QoS, and ordinary-LAN headroom |
+| High-speed endpoint hardware | Queued research | No transparent USB or HDMI appliance, interoperability, compliance, or measured performance claim |
 
 “Complete” means the assigned slice was delivered and locally checked; it does
 not by itself promote an interface to supported status. Physical Mega evidence,
@@ -118,9 +129,20 @@ Integration follows the hierarchy without squashing across layers:
 6. land `PwmOutput` and `RgbLed`, then lesson 004;
 7. land timer ownership and `PiezoSounder`, then lesson 005;
 8. land the hardware-independent Simon engine, then lesson/project 006;
-9. land site, packaging, CI, release metadata, and publication.
+9. land analog input, sampled-signal behavior, and the Night Light project;
+10. land shift-register output and display behavior;
+11. land explicit traffic timing, then the Traffic Junction project;
+12. continue the canonical three-lesson blocks through lesson 030;
+13. land site, packaging, CI, release metadata, and publication at each
+    coherent release boundary.
 
 Each boundary must build and pass its applicable checks before the next
 consumer is committed. Review findings that cannot be closed at that boundary
 remain explicit deferred work; no agent may weaken a gate or silently change a
 public contract to make integration pass.
+
+Physical Mega 2560 acceptance is a parallel campaign, not a prerequisite for
+continuing later host-verified lesson implementation. Every unperformed bench
+check stays visible in its lesson, project status, release notes, and
+acceptance card; no agent may relabel compiled or simulated evidence as a
+physical result.

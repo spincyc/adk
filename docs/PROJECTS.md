@@ -12,9 +12,15 @@ are complete.
 ## Current status
 
 The Reaction Timer (003), Simon engine (006), and adaptive Night Light (009)
-are implemented and host verified. Their APIs and lessons are experimental;
-Mega 2560 bench acceptance remains open. Projects 012--030 are briefs, not
-implemented claims.
+are implemented and host verified. Traffic Junction (012) has also landed with
+deterministic host evidence, a Mega 2560 example, lesson material, and size
+evidence. Its physical bench card remains open. Lesson 013 is active; projects
+015--030 are ordered briefs, not implemented claims.
+
+Every API and lesson remains experimental. Mega 2560 bench acceptance is open
+for every project. Development continues through the full project sequence
+without treating an unperformed bench card as a software blocker; no project
+may claim hardware verification until its measured record is published.
 
 ## Common project rules
 
@@ -54,6 +60,27 @@ implemented claims.
 
 The exact sensor model may follow the kit inventory, but changing a part must
 not change the deterministic behavior interface or its tests.
+
+## Project delivery queue
+
+Each row is a dependency boundary. Complete its non-hardware gates before
+landing the next project consumer, while retaining the bench card as an
+explicit open item.
+
+| Project | Delivery state | Required deterministic artifact | Required physical observation |
+|---:|---|---|---|
+| 012 | Host verified; bench open | Traffic trace proving clearance timing, request service, all-red failure, and shift-register bit order | Display self-test plus mutually exclusive red/yellow/green indications |
+| 015 | Queued next | Timestamped sensor fixtures, health transitions, display pages, min/max reset, and stable record vectors | Sensor-health indicator and displayed sample age beside optional Serial records |
+| 018 | Queued | Key-event traces, lockout boundaries, corrupt configuration, restart, and bounded servo command vectors | Key acknowledgement, soft-latch position marker, and independent load-power removal |
+| 021 | Queued | Range, encoder, route, stall, reversal-dead-time, and stop-dominance traces | Wheels-raised direction/enable indicators, encoder transitions, and physical stop state |
+| 024 | Queued | Schedule, sensor-fault, RTC/storage-fault, hysteresis, exclusion, restart, and golden-log traces | Inert load LEDs, bus/storage activity, and unmistakable safe/fault combinations |
+| 027 | Queued | Timestamped wired/infrared/receive-only fixtures, stale-data handling, scheduler order, and record replay | Capture, age, stale, alarm, and storage states visible without Serial |
+| 030 | Queued capstone | Immutable cue schedule, arming order, simulated continuity, simultaneous-event policy, stop dominance, restart lockout, and audit replay | Inert channel lamps, redundant armed/fault/stop states, and no energizing output path |
+
+Each project package still includes the public component interfaces, host
+tests, narrative Mega example, HTML reference, rich PDF, size evidence, and
+open hardware card required by the development contract. “Queued” authorizes
+planning only; it does not promote an interface or lesson.
 
 ## Lesson 001 practice — Diagnostic beacon
 
@@ -174,12 +201,13 @@ provide the physical experiments that ADK turns into testable components.
 
 ## Research runway — switched high-speed media and peripherals
 
-These are architecture investigations, not Arduino lesson promises. Neither
-interface is implemented or supported. An Arduino Mega 2560 cannot terminate,
-switch, or transport HDMI 2.1-class video or USB 3.x data. Its useful role is a
-low-speed management controller: buttons, status indicators, environmental
-telemetry, reset sequencing, and deterministic control-plane tests around
-dedicated high-speed hardware.
+These are architecture investigations, not Arduino lesson promises. Their
+deterministic controller models and design documents have landed, but no
+high-speed endpoint is implemented or supported. An Arduino Mega 2560 cannot
+terminate, switch, or transport HDMI 2.1-class video or USB 3.x data. Its
+useful role is a low-speed management controller: buttons, status indicators,
+environmental telemetry, reset sequencing, and deterministic control-plane
+tests around dedicated high-speed hardware.
 
 ### 8K HDMI over a switched network
 
@@ -190,10 +218,20 @@ protection, audio, timing, and bounded switching behavior?
 **Likely system boundary:** Dedicated HDMI receiver/transmitter silicon,
 FPGA/adaptive-SoC video pipelines, JPEG XS or another justified codec, and
 25/100 GbE-class network interfaces perform the data plane. A Linux-class
-processor manages routing, NMOS discovery/connection, and standards
-integration. ADK may provide a deterministic, electrically isolated operator
-panel and health display; it does not touch protected media keys or high-speed
-lanes.
+processor at each attachment unit manages the endpoint. One durable controller
+running on an ordinary Linux computer manages identities, authorization,
+profile admission, route epochs, and audit records, but never carries media.
+Computer-side receivers interpret video, audio, timing, and metadata; room-side
+transmitters reconstruct a fresh HDMI link. ADK may provide a deterministic,
+electrically isolated operator panel and health display; it does not touch
+protected media keys or high-speed lanes.
+
+HDMI routes share the household switched network with USB and ordinary LAN
+traffic. Named profiles make resolution, refresh, color, compression,
+bandwidth, and latency explicit. A route may pin one profile or use an explicit
+ordered fallback set. Endpoints display the applied profile and fault state;
+an active pinned route blanks and mutes rather than silently degrading when its
+contract cannot be maintained.
 
 **First proof:** Begin with synthetic, unprotected video and recorded control
 traffic. Measure bandwidth, end-to-end latency, frame integrity, clock recovery,
@@ -221,7 +259,9 @@ first-order work.
 [AMWA IS-05 connection management][is05], [JPEG XS 8K FPGA evaluation
 brief][jpeg-xs], and an [AMD 100G-capable adaptive-SoC platform][amd-vek385].
 The detailed [feasibility study](research/HDMI_8K_NETWORK.md) and
-[phased architecture](research/hdmi_8k_switched_network.md) keep the
+[phased architecture](research/hdmi_8k_switched_network.md), plus the
+[dynamic HDMI mesh](research/HDMI_MESH_ARCHITECTURE.md) and
+[shared-fabric contract](research/SHARED_USB_HDMI_FABRIC.md), keep the
 assumptions, calculations, and deferred compliance work reviewable.
 
 [hdmi21]: https://www.hdmi.org/spec/hdmi2_1/index.aspx
@@ -231,21 +271,37 @@ assumptions, calculations, and deferred compliance work reviewable.
 [jpeg-xs]: https://www.intopix.com/Ressources/Solution%20Brief/jpeg-xs-8k-fpga-evaluation-kit-solution-brief.pdf
 [amd-vek385]: https://docs.amd.com/r/en-US/ug1712-vek385-eval-bd/Transceivers
 
-### Full USB 3 matrix over a switched network
+### Transparent USB 3 mesh over a switched network
 
-**Research question:** Can any authorized host connect through a controlled
-fabric to any selected USB 3 peripheral while retaining SuperSpeed throughput,
-hot-plug behavior, isolation, and understandable failure semantics?
+**Research question:** Can an unmodified Windows or Linux computer connect
+through physical USB to an attachment unit, traverse the shared switched
+network, and reach the exact peripheral or user-provided hub topology attached
+to a room-side unit?
 
-**Likely system boundary:** Terminate USB at each edge; never packet-switch
-USB physical-layer symbols. A peripheral edge uses a real xHCI host to
-enumerate devices. The first host edge uses Linux virtual host-controller
-support; a later PCIe virtual xHCI endpoint could serve an unmodified host. A
-matrix controller grants one host an exclusive, generation-fenced device
-lease. A 25/50/100 GbE fabric carries request/completion streams with separate
-periodic and bulk traffic classes. The Mega may operate buttons, port-status
-LEDs, power telemetry, and a deterministic control-plane simulator; it cannot
-proxy the SuperSpeed physical or protocol layers.
+Treat this as a dynamically reconfigurable endpoint mesh rather than a fixed
+crossbar or a Linux USB/IP product. The computer requires no custom driver,
+service, kernel module, or virtual host controller. A `ComputerAttachmentUnit`
+(`Cau`) presents one selected remote topology through one physical USB 3
+Type-B computer connection. A `PeripheralAttachmentUnit` (`Pau`) provides four
+independently powered USB 3 Type-A topology roots. A user-provided hub and all
+of its descendants remain one atomic topology; the product inserts no hidden
+hub and consumes no additional computer USB ports.
+
+One durable controller runs on a normal Linux computer and stays out of the
+data path. Each topology has at most one active `Cau`. Moves are
+generation-fenced, break-before-make, cold-power-cycle the PAU-supplied VBUS,
+and appear to Windows or Linux as native unplug/replug. High availability is
+deferred; controller loss fails route changes closed.
+
+**Likely system boundary:** Terminate and reconstruct USB at the two appliance
+edges; never packet-switch USB physical-layer symbols. The PAU performs USB
+host duties and observes the real topology. The CAU behaves as USB device-side
+hardware and reconstructs equivalent descriptors, endpoints, topology changes,
+and transactions. Both baseline appliances use 10GBASE-T PoE++ with auxiliary
+DC fallback; every PAU port has protected, measured, controllable VBUS. The
+Mega may operate buttons, displays, power telemetry, and deterministic
+control-plane tests; it cannot proxy the SuperSpeed protocol or physical
+layers.
 
 **First proof:** Use owned, non-sensitive loopback and mass-storage test
 devices on an isolated lab network. Measure enumeration, sustained and burst
@@ -253,21 +309,27 @@ throughput, latency, reset, disconnect, endpoint recovery, and route changes.
 Expose physical port power, local ownership, network assignment, and fault
 state without depending on Serial.
 
-**Stages:** Start with USB/IP command-line trace/replay. Build a Linux
-two-host/two-device exclusive matrix over 25 GbE. Add bandwidth admission and
-long-running audio/camera tests. Then investigate a PCIe virtual xHCI endpoint,
-FPGA queue/timestamp offload, a four-port 100 GbE fabric, Gen 2x2, and multiple
-switches. Attachment reserves bandwidth, resets, and re-enumerates; migration
-is a disconnect/reconnect unless a device-specific quiesce mechanism is proven.
-Keep authorization, confidentiality, DMA-capable devices, firmware trust,
-USB-IF compliance, signal integrity, and per-port power switching inside the
+**Stages:** Use USB/IP only as a data-plane learning prototype. Build a
+controlled transparent HID topology, then bulk loopback, storage, composite
+devices, audio/video isochronous traffic, and user-provided hubs. Every stage
+uses physical CAU-to-computer USB with native Windows and Linux stacks. Keep
+authorization, confidentiality, hostile peripherals, firmware trust, USB-IF
+compliance, signal integrity, and protected per-port power inside the
 architecture from the start.
 
-The initial matrix is exclusive, not simultaneous multi-host sharing. It uses
-mutual TLS, default-deny device authorization, lease generations, audit logs,
-and quarantine on ambiguous recovery. It is not exposed directly to the
-Internet. Each edge supplies protected local VBUS; the network never bridges
-VBUS, and Type-C Power Delivery remains behind compliant controllers.
+USB and HDMI share the ordinary household network. Profile-based admission
+reserves bandwidth, latency, jitter, endpoint capacity, PoE budget, and
+ordinary-LAN headroom before applying a route. A pinned profile either holds
+or fails; ordered alternatives are explicit and never silent. If an active USB
+contract fails, the CAU disconnects, the PAU removes VBUS, stale transfers are
+fenced, and automatic fresh enumeration waits for the profile's configurable
+stable-path interval. Endpoint displays show the applied profile, recovery
+state, and exact fault without relying on Serial.
+
+Deterministic fault injection is a disabled-by-default lab mode with separate
+authorization, bounded duration, conspicuous `TEST` indication, and real
+faults taking precedence. Production failure policy and deliberate injection
+remain separate concepts.
 
 The decoded payload ceiling is roughly 4.0 Gb/s for USB 3 Gen 1, 9.697 Gb/s
 for Gen 2, and 19.394 Gb/s for Gen 2x2 before tunneling overhead and
@@ -276,8 +338,14 @@ direction; four simultaneous Gen 2 ports justify a 100 GbE investigation.
 
 **Primary references:** [USB 3.2 specification][usb32],
 [Linux USB/IP protocol][usbip], [Linux USB host-side API][linux-usb], and the
-[Mega 2560 Rev3 datasheet][mega-datasheet]. The detailed working note is
-[USB 3 over a switched network](research/USB3_NETWORK_MATRIX.md).
+[Mega 2560 Rev3 datasheet][mega-datasheet]. The canonical product decisions are
+in the [transparent USB contract](research/USB_TRANSPARENT_PRODUCT.md);
+the [mesh architecture](research/USB3_MESH_ARCHITECTURE.md),
+[endpoint hardware plan](research/USB_MESH_ENDPOINT_HARDWARE.md), and
+[shared-fabric contract](research/SHARED_USB_HDMI_FABRIC.md) retain the
+research detail. The earlier
+[USB/IP-oriented working note](research/USB3_NETWORK_MATRIX.md) is a prototype
+reference, not the product contract.
 
 [usb32]: https://www.usb.org/usb-32-0
 [usbip]: https://docs.kernel.org/usb/usbip_protocol.html
