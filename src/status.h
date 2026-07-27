@@ -63,33 +63,33 @@ namespace adk {
     template<typename Value>
     struct Result
     {
-        Result (Status status, const Value& value) noexcept
+        constexpr Result (Status status, const Value& value) noexcept
             : status_ (status)
             , value_  (value)
         {
         }
 
-        bool ok () const noexcept
+        constexpr bool ok () const noexcept
         {
             return status_.ok ();
         }
 
-        Status status () const noexcept
+        constexpr Status status () const noexcept
         {
             return status_;
         }
 
-        StatusCode error () const noexcept
+        constexpr StatusCode error () const noexcept
         {
             return status_.error ();
         }
 
-        bool transient () const noexcept
+        constexpr bool transient () const noexcept
         {
             return status_.transient ();
         }
 
-        const Value& value () const noexcept
+        constexpr const Value& value () const noexcept
         {
             return value_;
         }

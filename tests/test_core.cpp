@@ -96,6 +96,22 @@ namespace {
 
     void testStatus ()
     {
+        constexpr adk::Result<int> compileTimeSuccess (
+            adk::StatusCode::Ok, 42);
+        constexpr adk::Result<int> compileTimeFailure (
+            adk::StatusCode::HardwareFailure, 0);
+
+        static_assert (compileTimeSuccess.ok (), "constexpr result success");
+        static_assert (
+            compileTimeSuccess.value () == 42,
+            "constexpr result value");
+        static_assert (
+            compileTimeFailure.error () == adk::StatusCode::HardwareFailure,
+            "constexpr result error");
+        static_assert (
+            compileTimeFailure.transient (),
+            "constexpr result transient cause");
+
         const adk::Result<int> success (adk::StatusCode::Ok, 42);
         const adk::Result<int> failure (adk::StatusCode::HardwareFailure, 0);
 
