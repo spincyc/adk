@@ -31,18 +31,20 @@ namespace {
 
     bool halted = false;
 
-    bool                 acquireJunction       ();
-    adk::TrafficInput    observeJunction       (adk::TimePoint now);
-    adk::Status          decideJunction        (adk::TimePoint now,
-                                                const adk::TrafficInput& input);
-    bool                 actuateJunction       (adk::TimePoint now,
-                                                const adk::TrafficSnapshot& decision);
-    bool                 showSignals           (const adk::TrafficSignals& signals);
-    bool                 showCountdown         (adk::TimePoint now,
-                                                const adk::TrafficSnapshot& decision);
-    adk::SevenSegmentGlyph countdownGlyph      (uint8_t seconds);
-    void                 showAllRed            ();
-    void                 stopSafely            ();
+    bool                 acquireJunction  ();
+    adk::TrafficInput    observeJunction  (adk::TimePoint now);
+    adk::Status          decideJunction   (adk::TimePoint now,
+                                           const adk::TrafficInput& input);
+    bool                 actuateJunction  (adk::TimePoint now,
+                                           const adk::TrafficSnapshot& decision);
+    bool                 showSignals      (const adk::TrafficSignals& signals);
+    bool                 showCountdown    (adk::TimePoint now,
+                                           const adk::TrafficSnapshot& decision);
+    adk::SevenSegmentGlyph countdownGlyph (uint8_t seconds);
+    bool                 circuitHealthy   ();
+    bool                 requestAllRed    ();
+    void                 shutdownJunction ();
+    void                 haltJunction     ();
 } // namespace
 
 void setup ()
@@ -64,7 +66,7 @@ void loop ()
 
     if (status != adk::Status::Ok || !actuateJunction (now, decision))
     {
-        stopSafely ();
+        haltJunction ();
     }
 }
 
@@ -88,7 +90,7 @@ namespace {
         {
             if (signals[index]->initialize () != adk::Status::Ok)
             {
-                stopSafely ();
+                shutdownJunction ();
                 return false;
             }
         }
@@ -98,23 +100,29 @@ namespace {
             acquisitionIndicator.initialize () != adk::Status::Ok ||
             junction.initialize             () != adk::Status::Ok)
         {
-            stopSafely ();
+            shutdownJunction ();
             return false;
         }
 
         if (acquisitionIndicator.on () != adk::Status::Ok)
         {
-            stopSafely ();
+            shutdownJunction ();
             return false;
         }
 
-        return actuateJunction (adk::TimePoint (millis ()), junction.snapshot ());
+        if (!actuateJunction (adk::TimePoint (millis ()), junction.snapshot ()))
+        {
+            haltJunction ();
+            return false;
+        }
+
+        return true;
     }
 
     adk::TrafficInput observeJunction (adk::TimePoint now)
     {
         requestButton.update     (now);
-        return adk::TrafficInput (requestButton.pressEvent (), true);
+        return adk::TrafficInput (requestButton.pressEvent (), circuitHealthy ());
     }
 
     adk::Status decideJunction (adk::TimePoint now, const adk::TrafficInput& input)
@@ -195,22 +203,59 @@ namespace {
         return adk::SevenSegmentGlyph::Blank;
     }
 
-    void showAllRed ()
+    bool circuitHealthy ()
     {
-        mainGreen.off      ();
-        sideGreen.off      ();
-        pedestrianWalk.off ();
-        mainYellow.off     ();
-        sideYellow.off     ();
-        mainRed.on         ();
-        sideRed.on         ();
-        pedestrianStop.on  ();
+        return acquisitionIndicator.initialized () &&
+               countdown.initialized             () &&
+               requestButton.initialized         () &&
+               junction.initialized              () &&
+               mainRed.initialized               () &&
+               mainYellow.initialized            () &&
+               mainGreen.initialized             () &&
+               sideRed.initialized               () &&
+               sideYellow.initialized            () &&
+               sideGreen.initialized             () &&
+               pedestrianWalk.initialized        () &&
+               pedestrianStop.initialized        ();
     }
 
-    void stopSafely ()
+    bool requestAllRed ()
     {
-        showAllRed      ();
-        countdown.blank ();
+        bool complete = true;
+
+        complete = mainGreen.off      () == adk::Status::Ok && complete;
+        complete = sideGreen.off      () == adk::Status::Ok && complete;
+        complete = pedestrianWalk.off () == adk::Status::Ok && complete;
+        complete = mainYellow.off     () == adk::Status::Ok && complete;
+        complete = sideYellow.off     () == adk::Status::Ok && complete;
+        complete = mainRed.on         () == adk::Status::Ok && complete;
+        complete = sideRed.on         () == adk::Status::Ok && complete;
+        complete = pedestrianStop.on  () == adk::Status::Ok && complete;
+
+        return complete;
+    }
+
+    void shutdownJunction ()
+    {
+        junction.shutdown               ();
+        acquisitionIndicator.shutdown   ();
+        countdown.shutdown              ();
+        requestButton.shutdown          ();
+        pedestrianWalk.shutdown         ();
+        pedestrianStop.shutdown         ();
+        sideGreen.shutdown              ();
+        sideYellow.shutdown             ();
+        sideRed.shutdown                ();
+        mainGreen.shutdown              ();
+        mainYellow.shutdown             ();
+        mainRed.shutdown                ();
+    }
+
+    void haltJunction ()
+    {
         halted = true;
+        requestAllRed    ();
+        countdown.blank  ();
+        shutdownJunction ();
     }
 } // namespace
