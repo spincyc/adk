@@ -259,7 +259,7 @@ make interoperability
 
 ## Primary references
 
-- [HDMI 2.1b overview](https://www.hdmi.org/spec/hdmi2_1/index.aspx)
+- [HDMI resolutions and bandwidth](https://www.hdmi.org/spec2sub/res-bandwidth)
 - [HDMI 2.2 overview](https://www.hdmi.org/spec/hdmi2)
 - [SMPTE ST 2110 suite](https://www.smpte.org/standards/st2110)
 - [SMPTE ST 2110-20: uncompressed active video](https://pub.smpte.org/doc/st2110-20/20170918-pub/st2110-20-2017.pdf)

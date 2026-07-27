@@ -42,7 +42,7 @@ Use this first target:
 HDMI Licensing Administrator says HDMI 2.1b supports 8K60 and raises link
 capacity to 48 Gb/s. HDMI 2.1 uses four Fixed Rate Link lanes rather than the
 TMDS data-plus-clock arrangement used by HDMI 1.4/2.0
-([HDMI 2.1b overview](https://www.hdmi.org/spec/hdmi2_1/index.aspx),
+([HDMI resolutions and bandwidth](https://www.hdmi.org/spec2sub/res-bandwidth),
 [Intel HDMI overview](https://www.intel.com/content/www/us/en/docs/programmable/683798/23-3-19-7-2/hdmi-overview.html)).
 
 ### Active-picture rate
