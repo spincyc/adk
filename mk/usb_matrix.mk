@@ -5,7 +5,20 @@ USB_BUS_ID       ?=
 USB_HOST_NODE    ?=
 USB_PORT         ?=
 
+USB_MATRIX_CPPFLAGS := -Iresearch/usb_matrix
+USB_MATRIX_CXXFLAGS := -std=c++17 -Os -flto
+USB_MATRIX_CXXFLAGS += -fno-exceptions -fno-rtti
+USB_MATRIX_CXXFLAGS += -Wall -Wextra -Wpedantic -Wconversion -Werror
+USB_MATRIX_LDFLAGS  := -flto
+
+USB_MATRIX_CONTROLLER := $(BUILD_DIR)/usb-matrix/test-controller
+USB_MATRIX_SECURITY   := $(BUILD_DIR)/usb-matrix/test-security
+USB_MATRIX_CPP_SOURCES := \
+	research/usb_matrix/matrix_controller.cpp \
+	research/usb_matrix/matrix_controller.h
+
 .PHONY: usb-matrix-setup usb-matrix-check usb-matrix-test
+.PHONY: usb-matrix-controller-test usb-matrix-security-test
 .PHONY: usb-matrix-discover usb-matrix-status usb-matrix-doctor
 .PHONY: usb-matrix-dry-run usb-matrix-log usb-local usb-remote usb-ports
 .PHONY: usb-export-plan usb-export usb-assign-plan usb-assign
@@ -19,8 +32,33 @@ usb-matrix-setup: | $(BUILD_MARKER)
 
 usb-matrix-check: usb-matrix-test
 
-usb-matrix-test:
+usb-matrix-test: usb-matrix-controller-test usb-matrix-security-test
 	python -m unittest tests/test_usb_matrix.py tests/test_usb_matrix_security.py
+
+usb-matrix-controller-test: $(USB_MATRIX_CONTROLLER)
+	$(USB_MATRIX_CONTROLLER)
+
+usb-matrix-security-test: $(USB_MATRIX_SECURITY)
+	$(USB_MATRIX_SECURITY)
+
+$(USB_MATRIX_CONTROLLER): $(USB_MATRIX_CPP_SOURCES) \
+		research/usb_matrix/test_matrix_controller.cpp \
+		| $(BUILD_DIR)/usb-matrix
+	$(CXX) $(USB_MATRIX_CPPFLAGS) $(USB_MATRIX_CXXFLAGS) \
+		research/usb_matrix/matrix_controller.cpp \
+		research/usb_matrix/test_matrix_controller.cpp \
+		$(USB_MATRIX_LDFLAGS) -o "$@"
+
+$(USB_MATRIX_SECURITY): $(USB_MATRIX_CPP_SOURCES) \
+		research/usb_matrix/test_matrix_security.cpp \
+		| $(BUILD_DIR)/usb-matrix
+	$(CXX) $(USB_MATRIX_CPPFLAGS) $(USB_MATRIX_CXXFLAGS) \
+		research/usb_matrix/matrix_controller.cpp \
+		research/usb_matrix/test_matrix_security.cpp \
+		$(USB_MATRIX_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/usb-matrix: | $(BUILD_MARKER)
+	mkdir -p "$@"
 
 usb-matrix-discover: usb-local
 	@if test -n "$(USB_DEVICE_NODE)"; then \
