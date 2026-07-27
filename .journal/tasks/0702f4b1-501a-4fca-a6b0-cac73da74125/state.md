@@ -2,7 +2,7 @@
 schema_version: 1
 task_uuid: "0702f4b1-501a-4fca-a6b0-cac73da74125"
 title: "independently review lesson 029 core"
-status: "active"
+status: "done"
 priority: "high"
 priority_reason: "Recovered audit prompt 2; ordered by the repository recovery audit."
 parent: null
@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-27T22:11:08Z"
+updated_at: "2026-07-27T22:22:45Z"
 ---
 
 # Goal
