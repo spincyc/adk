@@ -18,10 +18,10 @@ Its findings must be reconciled through bounded tasks; the audit itself does
 not promote work or replace this ledger.
 
 - Lessons 001--028 are promoted and host verified; physical cards remain open.
-- Lesson 029 has an independently reviewed scheduler and audit core with
-  strict-warning focused tests. Next: normal build registration and umbrella
-  export, narrative example, measured size, HTML/PDF/site package, and boundary
-  promotion.
+- Lesson 029 has an independently reviewed scheduler and audit core registered
+  in the normal host, exception, and sanitizer paths and exported through the
+  supported umbrella. Next: narrative example, measured size, HTML/PDF/site
+  package, and boundary promotion.
 - Lesson 030 has a committed implementation contract. Implementation follows
   Lesson 029 promotion.
 - The USB research track has a deterministic product-native `Cau`/`Pau`
@@ -62,7 +62,7 @@ qualification are not yet supported.
 | Boundary | State | Required next result |
 |---|---|---|
 | [001--028](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [029](design/LESSONS_028_030.md) | Active integration | Normal host/umbrella registration, narrative Mega example, size evidence, HTML/PDF/site package, then promotion |
+| [029](design/LESSONS_028_030.md) | Active integration | Narrative Mega example, size evidence, HTML/PDF/site package, then promotion |
 | [030](design/LESSONS_028_030.md) | Queued | Physically inert show-cue simulator |
 
 Integration order is strict: component or endpoint, deterministic tests,

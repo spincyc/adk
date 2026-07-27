@@ -29,9 +29,11 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_analog_input \
 	$(BUILD_DIR)/host/test_bus \
 	$(BUILD_DIR)/host/test_io \
+	$(BUILD_DIR)/host/test_cue_audit \
 	$(BUILD_DIR)/host/test_inert_load_interlock \
 	$(BUILD_DIR)/host/test_inert_load_panel \
 	$(BUILD_DIR)/host/test_inert_channel_assessor \
+	$(BUILD_DIR)/host/test_inert_cue_scheduler \
 	$(BUILD_DIR)/host/test_infrared_decoder \
 	$(BUILD_DIR)/host/test_infrared_record \
 	$(BUILD_DIR)/host/test_keypad \
@@ -86,11 +88,33 @@ host-test-exceptions: | $(BUILD_DIR)/host
 		$(HOST_CORE_SOURCES) tests/test_core.cpp $(HOST_LDFLAGS) \
 		-o "$(BUILD_DIR)/host/test_core_exceptions"
 	$(BUILD_DIR)/host/test_core_exceptions
+	$(CXX) $(HOST_CPPFLAGS) $(filter-out -fno-exceptions,$(HOST_CXXFLAGS)) \
+		$(HOST_CORE_SOURCES) src/cue_audit.cpp tests/test_cue_audit.cpp \
+		$(HOST_LDFLAGS) -o "$(BUILD_DIR)/host/test_cue_audit_exceptions"
+	$(BUILD_DIR)/host/test_cue_audit_exceptions
+	$(CXX) $(HOST_CPPFLAGS) $(filter-out -fno-exceptions,$(HOST_CXXFLAGS)) \
+		$(HOST_CORE_SOURCES) src/cue_audit.cpp src/inert_cue_scheduler.cpp \
+		tests/test_inert_cue_scheduler.cpp $(HOST_LDFLAGS) \
+		-o "$(BUILD_DIR)/host/test_inert_cue_scheduler_exceptions"
+	$(BUILD_DIR)/host/test_inert_cue_scheduler_exceptions
 
 $(BUILD_DIR)/host/test_core: $(HOST_CORE_SOURCES) tests/test_core.cpp \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) tests/test_core.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_cue_audit: $(HOST_CORE_SOURCES) src/cue_audit.cpp \
+		tests/test_cue_audit.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/cue_audit.cpp tests/test_cue_audit.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_inert_cue_scheduler: $(HOST_CORE_SOURCES) \
+		src/cue_audit.cpp src/inert_cue_scheduler.cpp \
+		tests/test_inert_cue_scheduler.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/cue_audit.cpp src/inert_cue_scheduler.cpp \
+		tests/test_inert_cue_scheduler.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_bus: $(HOST_CORE_SOURCES) \
 		src/i2c_bus.cpp src/spi_bus.cpp tests/test_bus.cpp \
