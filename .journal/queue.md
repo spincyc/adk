@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-07-27T22:10:55Z"
+generated_at: "2026-07-27T22:11:29Z"
 task_count: 18
 ---
 
@@ -10,11 +10,10 @@ This file is a rebuildable view. Task `state.md` files are authoritative.
 
 ## Active
 
-None.
+- `0702f4b1-501a-4fca-a6b0-cac73da74125` — independently review lesson 029 core [active, high] (depends on 5801d853-3278-4a52-84dd-7e25c0794d7c)
 
 ## Queued
 
-- `0702f4b1-501a-4fca-a6b0-cac73da74125` — independently review lesson 029 core [queued, high] (depends on 5801d853-3278-4a52-84dd-7e25c0794d7c)
 - `32f5c784-de10-4f37-ae31-0f611697c8e3` — execute the full clean release-readiness gate [queued, high] (depends on efdb8701-d7fe-490e-9a85-d0116f37e4fc, 3cbaec90-9c9d-421e-b129-34bbdb477340, cb197bb3-b7e1-4054-8bfe-92f7f27963f2, 957366fa-d370-4060-89a3-40ec5c4a1722, 73b4e704-b483-424e-ab0c-6ffcac540ef3)
 - `d6a8e538-7ae1-4522-9b37-ffa79055b36b` — complete and promote lesson 029 [queued, high] (depends on d79a95ee-e892-427e-9c6b-7fc151608dc5)
 - `d79a95ee-e892-427e-9c6b-7fc151608dc5` — register lesson 029 core [queued, high] (depends on 0702f4b1-501a-4fca-a6b0-cac73da74125)
