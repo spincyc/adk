@@ -20,6 +20,7 @@ third lesson for a deterministic integration project.
 | [013](013.md) | DHT11 climate sensor | Timed acquisition and validated samples |
 | [014](014.md) | Character display | Staged startup and stable records |
 | [015](015.md) | Environmental station | Deterministic climate project |
+| [016](016.md) | Matrix keypad | Scanning and operator events |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance
