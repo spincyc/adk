@@ -111,7 +111,6 @@ Every hardware-backed component and lesson must record:
 - [Arduino Starter Kit Multi-Language inventory](https://store.arduino.cc/collections/diy-challenge/products/arduino-starter-kit-multi-language)
 - [Arduino Starter Kit R4 inventory](https://store.arduino.cc/products/starter-kit-r4)
 - [Arduino Gravity 27-sensor set inventory](https://store.arduino.cc/products/gravity-27-pcs-sensor-set-for-arduino)
-- [Arduino Gravity 37-sensor set inventory](https://store.arduino.cc/products/gravity-37-pcs-sensor-set-for-arduino)
 - [USB-IF compliance program](https://www.usb.org/compliance)
 - [HDMI Adopter overview](https://www.hdmi.org/adopter/index)
 - [Digital Content Protection licensing](https://www.digital-cp.com/licensing)

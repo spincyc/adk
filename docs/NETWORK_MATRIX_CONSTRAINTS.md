@@ -136,7 +136,6 @@ that a route is correct or safe.
 ## Primary references
 
 - [HDMI Adopter overview](https://www.hdmi.org/adopter/index)
-- [HDMI 2.1b capabilities](https://www.hdmi.org/spec/hdmi2_1/index.aspx)
 - [HDMI 2.2 bandwidth and resolutions](https://www.hdmi.org/spec2sub/res-bandwidth)
 - [Digital Content Protection licensing](https://www.digital-cp.com/licensing)
 - [USB-IF compliance program](https://www.usb.org/compliance)
