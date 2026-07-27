@@ -32,6 +32,10 @@ nav:
       - "010 — Shift register display": lessons/010.md
       - "011 — Timed traffic states": lessons/011.md
       - "012 — Traffic junction": lessons/012.md
+      - "013 — DHT11 climate sensor": lessons/013.md
+      - "014 — Character display": lessons/014.md
+      - "015 — Environmental station": lessons/015.md
+      - "016 — Matrix keypad": lessons/016.md
   - Components: components.md
   - Supported API: api-supported.md
   - Design:
@@ -80,11 +84,13 @@ nav:
           - Observability: docs/research/USB3_MESH_OBSERVABILITY.md
           - Test plan: docs/research/USB3_MESH_TEST_PLAN.md
       - USB 3 phase 1: projects/usb3-matrix.md
+      - Sensor-kit taxonomy: docs/research/SENSOR_KIT_TAXONOMY.md
   - Projects:
       - Cadence: projects/cadence.md
       - USB and HDMI mesh roadmap: projects/mesh-roadmap.md
       - Reaction timer: docs/projects/reaction_timer.md
       - Deterministic Simon: docs/projects/simon.md
+      - Complete-kit project cadence: docs/projects/component_project_cadence.md
   - Agent and release contracts:
       - Development: docs/DEVELOPMENT.md
       - Testing: docs/TESTING.md
