@@ -42,7 +42,8 @@
 - Added deterministic inert channel assessment and recorded observation
   fixtures with explicit open, short, stale, and contradictory evidence.
 - Added deterministic inert cue scheduling with bounded operator confirmation,
-  hold/cancel dominance, delayed-update coalescing, and byte-stable audit records.
+  hold/cancel dominance, delayed-update coalescing, and byte-stable audit
+  records.
 - Added the physically inert show-cue simulator with complete continuity
   snapshots, deterministic fault and cancellation precedence, visible
   LED-only evidence, and replayable audit traces.

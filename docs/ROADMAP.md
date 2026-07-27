@@ -44,9 +44,9 @@ publication ledger.
 25. exact receive-only telemetry packets, freshness tracking, bounded packet
     reception, and visible evidence in lesson 026;
 26. deterministic multi-source telemetry scheduling, attention, presentation,
-    and stable record replay in lesson 027; and
+    and stable record replay in lesson 027;
 27. synthetic inert-channel continuity assessment with explicit open, short,
-    stale, and contradictory evidence in lesson 028; and
+    stale, and contradictory evidence in lesson 028;
 28. deterministic inert cue scheduling, confirmation, stable snapshots, and
     bounded audit replay in lesson 029; and
 29. physically inert show-cue composition with complete channel observations,

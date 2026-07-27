@@ -17,7 +17,7 @@ cleanup()
   rm -rf -- "${temporary_root}"
 }
 
-trap cleanup EXIT HUP INT TERM
+trap cleanup 0 HUP INT TERM
 
 test -f "${native_package}" || {
   echo "Native package does not exist: ${native_package}" >&2
@@ -25,39 +25,41 @@ test -f "${native_package}" || {
 }
 
 mkdir -p "${extract_root}" "${object_root}"
-tar -tzf "${native_package}" |
-  while IFS= read -r archive_entry
-  do
-    case "${archive_entry}" in
-      adk-native|adk-native/*)
-        ;;
-      *)
-        echo "Native package entry escapes its fixed root: ${archive_entry}" >&2
-        exit 1
-        ;;
-    esac
+entry_list="${temporary_root}/archive-entries.txt"
+listing_list="${temporary_root}/archive-listing.txt"
+tar -tzf "${native_package}" > "${entry_list}"
+while IFS= read -r archive_entry
+do
+  case "${archive_entry}" in
+    adk-native|adk-native/*)
+      ;;
+    *)
+      echo "Native package entry escapes its fixed root: ${archive_entry}" >&2
+      exit 1
+      ;;
+  esac
 
-    case "/${archive_entry}/" in
-      *"/../"*)
-        echo "Native package contains an unsafe path: ${archive_entry}" >&2
-        exit 1
-        ;;
-    esac
-  done
+  case "/${archive_entry}/" in
+    *"/../"*)
+      echo "Native package contains an unsafe path: ${archive_entry}" >&2
+      exit 1
+      ;;
+  esac
+done < "${entry_list}"
 
-tar -tvzf "${native_package}" |
-  while IFS= read -r archive_listing
-  do
-    entry_type=$(printf '%s' "${archive_listing}" | cut -c1)
-    case "${entry_type}" in
-      d|-)
-        ;;
-      *)
-        echo "Native package contains a non-file entry." >&2
-        exit 1
-        ;;
-    esac
-  done
+tar -tvzf "${native_package}" > "${listing_list}"
+while IFS= read -r archive_listing
+do
+  entry_type=$(printf '%s' "${archive_listing}" | cut -c1)
+  case "${entry_type}" in
+    d|-)
+      ;;
+    *)
+      echo "Native package contains a non-file entry." >&2
+      exit 1
+      ;;
+  esac
+done < "${listing_list}"
 
 tar -xzf "${native_package}" -C "${extract_root}"
 

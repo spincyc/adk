@@ -1,12 +1,17 @@
 /.github       export-ignore
 /.journal      export-ignore
 /.gitignore    export-ignore
+/.clang-format export-ignore
+/.gitattributes export-ignore
 /AGENTS.md     export-ignore
 /Makefile      export-ignore
 /build         export-ignore
+/doc           export-ignore
+/docs          export-ignore
 /legacy        export-ignore
 /mk            export-ignore
 /mkdocs.yml    export-ignore
+/research      export-ignore
 /scripts       export-ignore
 /site          export-ignore
 /tests         export-ignore
