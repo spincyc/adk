@@ -16,6 +16,8 @@ MAX_PDF_SIZE = 50 * 1024 * 1024
 MIN_PDF_SIZE = 1024
 EXTERNAL_SCHEMES = {"http", "https", "mailto", "tel", "data"}
 PROJECT_BASE_PATH = "/adk"
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+BUILD_CONFIG = REPOSITORY_ROOT / "mk/config.mk"
 FILESYSTEM_LEAKS = (
     re.compile(r"file://", re.IGNORECASE),
     re.compile(r"(?:^|[\"'=()\s])/(?:home|Users|private|tmp|var/tmp)/"),
@@ -34,6 +36,7 @@ class DocumentParser(HTMLParser):
         self.references: list[tuple[str, str, int]] = []
         self.title_count = 0
         self.title_parts: list[str] = []
+        self.text_parts: list[str] = []
         self.title_depth = 0
         self.h1_count = 0
         self.main_count = 0
@@ -60,6 +63,7 @@ class DocumentParser(HTMLParser):
             self.title_depth -= 1
 
     def handle_data(self, data: str) -> None:
+        self.text_parts.append(data)
         if self.title_depth > 0:
             self.title_parts.append(data)
 
@@ -207,6 +211,108 @@ def validate_pdf(path: Path, root: Path, errors: list[str]) -> None:
         errors.append(f"{shown}: file does not have a PDF header")
 
 
+def newest_configured_lesson(errors: list[str]) -> tuple[str, str] | None:
+    try:
+        source = BUILD_CONFIG.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as exception:
+        errors.append(f"{BUILD_CONFIG}: cannot read lesson configuration: {exception}")
+        return None
+
+    lesson_match = re.search(r"(?m)^LESSONS\s*:=\s*(.+)$", source)
+    if lesson_match is None:
+        errors.append(f"{BUILD_CONFIG}: cannot find LESSONS configuration")
+        return None
+
+    lessons = re.findall(r"\b[0-9]{3}\b", lesson_match.group(1))
+    if not lessons:
+        errors.append(f"{BUILD_CONFIG}: LESSONS contains no lesson numbers")
+        return None
+    newest = max(lessons, key=int)
+
+    examples_match = re.search(
+        rf"\b(Lesson{re.escape(newest)}[A-Za-z0-9_]*)\b",
+        source,
+    )
+    if examples_match is None:
+        errors.append(
+            f"{BUILD_CONFIG}: no configured example found for lesson {newest}"
+        )
+        return None
+    return newest, examples_match.group(1)
+
+
+def has_reference(
+    document: Path,
+    parser: DocumentParser,
+    expected: Path,
+    root: Path,
+) -> bool:
+    for _attribute, reference, _line in parser.references:
+        target, _fragment, problem = resolve_reference(document, reference, root)
+        if problem is None and target is not None and target == expected:
+            return True
+    return False
+
+
+def validate_newest_lesson(
+    root: Path,
+    documents: dict[Path, DocumentParser],
+    errors: list[str],
+) -> None:
+    configured = newest_configured_lesson(errors)
+    if configured is None:
+        return
+    lesson, example = configured
+
+    landing = (root / "index.html").resolve()
+    lesson_index = (root / "lessons/index.html").resolve()
+    lesson_page = (root / f"lessons/{lesson}/index.html").resolve()
+    expected = (
+        (landing, lesson_page, f"landing page link to lesson {lesson}"),
+        (lesson_index, lesson_page, f"lesson index link to lesson {lesson}"),
+        (
+            lesson_page,
+            (root / f"downloads/lessons/{lesson}.pdf").resolve(),
+            f"lesson {lesson} PDF download",
+        ),
+        (
+            lesson_page,
+            (root / f"downloads/sketches/{example}.ino").resolve(),
+            f"lesson {lesson} example download",
+        ),
+    )
+
+    for document, target, description in expected:
+        parser = documents.get(document)
+        if parser is None:
+            errors.append(
+                f"{display_path(document, root)}: required page is missing for "
+                f"{description}"
+            )
+        elif not has_reference(document, parser, target, root):
+            errors.append(
+                f"{display_path(document, root)}: missing {description} "
+                f"({display_path(target, root)})"
+            )
+
+    parser = documents.get(lesson_page)
+    if parser is None:
+        return
+    visible_text = " ".join(" ".join(parser.text_parts).split())
+    markers = (
+        f"Lesson {lesson}",
+        "Status:",
+        "Energy class:",
+        "Safety boundary:",
+    )
+    for marker in markers:
+        if marker not in visible_text:
+            errors.append(
+                f"{display_path(lesson_page, root)}: missing newest-lesson "
+                f"content marker {marker!r}"
+            )
+
+
 def validate_site(root: Path) -> list[str]:
     errors: list[str] = []
     root = root.resolve()
@@ -296,6 +402,7 @@ def validate_site(root: Path) -> list[str]:
                         f"{fragment!r} in {shown_target}"
                     )
 
+    validate_newest_lesson(root, documents, errors)
     return errors
 
 

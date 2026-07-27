@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-07-27T23:11:30Z"
+generated_at: "2026-07-27T23:16:19Z"
 task_count: 18
 ---
 
@@ -10,7 +10,7 @@ This file is a rebuildable view. Task `state.md` files are authoritative.
 
 ## Active
 
-- `957366fa-d370-4060-89a3-40ec5c4a1722` — finish site navigation and deployment verification [active, normal] (depends on d6a8e538-7ae1-4522-9b37-ffa79055b36b)
+None.
 
 ## Queued
 
@@ -38,3 +38,4 @@ None.
 - `d79a95ee-e892-427e-9c6b-7fc151608dc5` — register lesson 029 core [done, high] (depends on 0702f4b1-501a-4fca-a6b0-cac73da74125)
 - `efdb8701-d7fe-490e-9a85-d0116f37e4fc` — implement lesson 030 capstone [done, high] (depends on d6a8e538-7ae1-4522-9b37-ffa79055b36b)
 - `3cbaec90-9c9d-421e-b129-34bbdb477340` — repair bootstrap and serial tooling [done, normal]
+- `957366fa-d370-4060-89a3-40ec5c4a1722` — finish site navigation and deployment verification [done, normal] (depends on d6a8e538-7ae1-4522-9b37-ffa79055b36b)
