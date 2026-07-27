@@ -21,6 +21,7 @@
 #include "infrared_record.h"
 #include "inert_channel_assessor.h"
 #include "inert_cue_scheduler.h"
+#include "inert_show_simulator.h"
 #include "inert_load_interlock.h"
 #include "inert_load_panel.h"
 #include "keypad.h"

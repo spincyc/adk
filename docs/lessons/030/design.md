@@ -1,7 +1,7 @@
 # Lesson 030 readiness: inert show-cue simulator
 
-Status: implementation-ready design; Lessons 028 and 029 are host-verified
-dependency boundaries.
+Status: implemented and host verified; the E1 physical acceptance card remains
+open.
 
 ## Purpose and boundary
 

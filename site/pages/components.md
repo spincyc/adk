@@ -56,7 +56,8 @@ Status meanings:
 | Behavior | `TelemetryEvidenceModel` | Host verified | Visible packet and freshness evidence |
 | Value codec | `CueAuditBuffer`, `CueAuditEncoder` | Host verified | Caller-owned bounded records and stable text |
 | Behavior | `InertCueScheduler` | Host verified | Supplied time, confirmation, holds, and inert snapshots |
-| Queued layers | Lesson 030 composition and later curriculum components | Queued | See catalog and work queue |
+| Behavior | `InertShowSimulator` | Host verified | Borrowed assessor, scheduler, audit, complete observation frames, and supplied time |
+| Queued layers | Lesson 031 and later curriculum components | Queued | See catalog and work queue |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.
 Behavior engines expose output intent rather than hiding hardware callbacks.
@@ -93,7 +94,9 @@ adapter.
 Lessons 023--029 continue with inert load policy, greenhouse composition,
 receive-only infrared and telemetry evidence, a deterministic telemetry
 console, inert-channel assessment, and deterministic cue scheduling with a
-bounded replayable audit. Lesson 030 composition remains queued.
+bounded replayable audit. Lesson 030 composes the assessor and scheduler with
+an explicit plan-position-to-channel map; incomplete evidence cannot authorize
+a transition, and contradictory evidence faults the composition.
 
 - [Exact API](api-supported.md)
 - [Full component catalog](docs/COMPONENTS.md)

@@ -117,6 +117,7 @@ that configuration into domain meaning.
 | `ContinuityModel` | Injected samples, no energetic load | Open/closed/short/stale simulation | 030 |
 | `CueAuditBuffer` / `CueAuditEncoder` | Caller-owned fixed storage | Append-only decisions and byte-stable records | 029 |
 | `InertCueScheduler` | Supplied time and operator values | Confirmation-gated inert visual intervals | 029 |
+| `InertShowSimulator` | Borrowed assessor, scheduler, and audit | Complete canonical observation frames gate mapped inert cues | 030 |
 
 ### Kit module adapters
 

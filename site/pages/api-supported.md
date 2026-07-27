@@ -489,14 +489,21 @@ and a correct press is not complete until release.
 ## Inert cue scheduler and audit
 
 `InertCueScheduler` copies a fixed plan and consumes only caller-supplied time
-and `CueOperatorInput` values. Review is a level; Run, Confirm, Skip, and Cancel
-are edges. Cancel dominates, releasing Review enters Held, and no cue becomes
-Active without explicit confirmation. A delayed update coalesces completed
-intervals while preserving their audit evidence.
+and `CueOperatorInput` values. The three-state `CueEvidenceGate` overload keeps
+composition policy outside the scheduler: Permit allows progress, Hold keeps
+the schedule inert without reporting an error, and Fault enters the scheduler's
+terminal fault phase with the supplied non-OK status. The two-argument
+`update()` overload is equivalent to Permit. Review is a level; Run, Confirm,
+Skip, and Cancel are edges. Cancel dominates, releasing Review enters Held,
+and no cue becomes Active without explicit confirmation. A delayed update
+finishes at most the current cue and leaves its successor Waiting so that the
+successor's evidence is checked on the next complete input frame.
 
 `CueSchedulerSnapshot::phase` is authoritative. `hasCue` names a current or
 next cue in Waiting, Confirmation, and Active; applications present a cue only
-for Active. Cue IDs are opaque labels and never hardware addresses.
+for Active. Cue IDs are opaque labels and never hardware addresses. `cueCount()`
+and the bounds-checked `cue(index)` expose the copied plan for composition-time
+validation; they do not transfer ownership or mutate schedule state.
 
 `CueAuditBuffer` uses bounded caller-owned append storage. It never overwrites
 records. `CueAuditEncoder` atomically emits the versioned `adk-cue,1` text
@@ -504,6 +511,30 @@ grammar into caller storage without allocation. The scheduler owns no pins,
 clock, stream, callback, or generic output adapter. See
 [Lesson 029](lessons/029.md) for the exact lifecycle, timing, circuit, and open
 bench procedure.
+
+## Inert show simulator
+
+`InertShowSimulator` composes one `InertChannelAssessor`, one
+`InertCueScheduler`, and their caller-owned `CueAuditBuffer`. Its copied
+`InertCueChannelMap` maps plan positions to assessment channels explicitly;
+cue IDs remain labels and are never interpreted as channel numbers.
+
+Every `update()` supplies exactly eight uniquely identified observations from
+one timestamp plus one complete operator snapshot. Input order is irrelevant:
+the simulator canonicalizes observations by channel before assessment,
+scheduling, and trace hashing. Open, short, stale, or unavailable evidence
+holds the selected cue inert. Contradictory evidence faults the composition.
+Cancel has precedence and can still move the scheduler to its safe terminal
+state when an otherwise malformed new frame is supplied.
+
+The simulator initializes the assessor before the scheduler, rolls back a
+partial start, and shuts them down in reverse order. It owns no hardware and
+does not own the borrowed components. The audit remains readable after
+shutdown. `InertShowSnapshot` exposes the composition state and fault,
+authoritative nested scheduler snapshot, selected-channel assessment when one
+is relevant, audit count, status, and deterministic `traceDigest`. Replaying
+the same valid timestamped frames from the same initial state produces the
+same digest and audit records.
 
 ## Error and electrical safety
 

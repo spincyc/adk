@@ -11,8 +11,8 @@ are complete.
 
 ## Current status
 
-Lessons 001--029 are host verified with their bench cards open. Lesson 030
-remains the next queued capstone. See the [authoritative work
+Lessons 001--030 are host verified with their bench cards open. Lesson 031
+is the next queued component boundary. See the [authoritative work
 queue](WORK_QUEUE.md) for the complete ledger.
 
 Every API and lesson remains experimental. Mega 2560 bench acceptance is open
@@ -90,7 +90,7 @@ explicit open item.
 | 021 | Host verified; bench open | Range, route, stale/fault, reversal-dead-time, and stop-dominance traces | E1 direction/enable indicators; later wheels-raised direction and physical stop state |
 | 024 | Host verified; bench open | Schedule, sensor-fault, RTC/storage-fault, hysteresis, exclusion, restart, and golden-log traces | Inert load LEDs, bus/storage activity, and unmistakable safe/fault combinations |
 | 027 | Host verified; bench open | Configured packet fixtures, stale-data handling, scheduler order, and byte-stable record replay | Selection, health, acknowledgement, and storage states visible without Serial |
-| 030 | Queued capstone | Immutable cue schedule, arming order, simulated continuity, simultaneous-event policy, stop dominance, restart lockout, and audit replay | Inert channel lamps, redundant armed/fault/stop states, and no energizing output path |
+| 030 | Host verified; bench open | Immutable cue schedule, arming order, simulated continuity, simultaneous-event policy, stop dominance, restart lockout, and audit replay | Inert channel lamps, redundant armed/fault/stop states, and no energizing output path |
 | 033 | Queued; detailed plan exists | Input and commit/cancel traces | Preview, committed, and fault indications |
 | 036 | Queued; detailed plan required | Passage, bounce, direction, and record traces | Raw contacts, accepted passage, and count |
 | 039 | Queued; detailed plan required | Contact, envelope, quantization, and playback traces | Accepted-hit LEDs, step display, and silent shutdown |
@@ -538,20 +538,23 @@ path.
 
 ## Lesson 030 — Inert show-cue simulator
 
-**Build:** An operator panel loads a fixed cue schedule, requires staged
-arming, simulates continuity, counts down, emits only LED/sound cues, logs every
-decision, and enters a latched safe state on stop or fault.
+**Build:** An operator panel runs a fixed cue schedule, requires review and
+confirmation, supplies complete synthetic continuity frames, emits only
+resistor-limited LED cues, logs scheduler decisions, and enters a latched safe
+state on cancel or fault.
 
-**Builds on:** All earlier input, output, display, storage, timing,
-configuration, logging, and deterministic state-machine work.
+**Builds on:** Buttons, mono and RGB LEDs, synthetic inert-channel assessment,
+cue scheduling, bounded audit storage, wrap-safe time, and deterministic
+state-machine work.
 
-**Kit:** Keypad, LCD, buttons including a prominent stop, LEDs and resistors,
-passive piezo, RTC, SD module. Continuity channels are switches and LEDs only.
+**Kit:** Mega 2560, nine momentary switches, eight cue LEDs, one
+common-cathode RGB LED, and one 1 kΩ resistor per LED channel. Continuity is
+edited as synthetic values; there is no external continuity connector.
 
-**Evidence:** Property and trace tests prove no cue without all arming
-conditions, stop dominance from every state, immutable schedules while armed,
-deterministic simultaneous-event ordering, restart lockout, corrupted-file
-rejection, complete logs, and safe shutdown.
+**Evidence:** Unit and replay tests prove no cue without Closed selected-channel
+evidence and confirmation, cancellation dominance, deterministic
+simultaneous-event ordering, same-timestamp identity, malformed-frame
+rejection, bounded complete logs, and safe shutdown.
 
 **Safety:** This is an inert teaching simulator. It must not contain ignition
 drivers, energetic material, transmitter cloning, RF replay, or launcher

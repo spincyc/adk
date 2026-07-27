@@ -34,6 +34,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_inert_load_panel \
 	$(BUILD_DIR)/host/test_inert_channel_assessor \
 	$(BUILD_DIR)/host/test_inert_cue_scheduler \
+	$(BUILD_DIR)/host/test_inert_show_simulator \
 	$(BUILD_DIR)/host/test_infrared_decoder \
 	$(BUILD_DIR)/host/test_infrared_record \
 	$(BUILD_DIR)/host/test_keypad \
@@ -79,9 +80,30 @@ HOST_TESTS := \
 
 HOST_HEADERS := $(shell find src tests/fake_arduino -type f -name '*.h' | sort)
 
-.PHONY: host-test host-test-exceptions
+INERT_SHOW_TRACE ?= tests/fixtures/inert_show_happy.trace
+INERT_SHOW_REPLAY_GOLDEN ?= tests/fixtures/inert_show_happy.golden
+INERT_SHOW_AUDIT_GOLDEN ?= tests/fixtures/inert_show_happy_audit.golden
+
+.PHONY: host-test host-test-exceptions inert-show-test inert-show-replay \
+	inert-show-audit inert-show-acceptance
 host-test: $(HOST_TESTS)
 	@for test in $(HOST_TESTS); do "$$test"; done
+
+inert-show-test: $(BUILD_DIR)/host/test_inert_show_simulator
+	$(BUILD_DIR)/host/test_inert_show_simulator
+
+inert-show-replay: $(BUILD_DIR)/host/inert_show_trace_runner
+	$(BUILD_DIR)/host/inert_show_trace_runner "$(if $(TRACE),$(TRACE),$(INERT_SHOW_TRACE))"
+
+inert-show-audit: $(BUILD_DIR)/host/inert_show_trace_runner
+	$(BUILD_DIR)/host/inert_show_trace_runner \
+		"$(if $(TRACE),$(TRACE),$(INERT_SHOW_TRACE))" --audit
+
+inert-show-acceptance: $(BUILD_DIR)/host/inert_show_trace_runner
+	@$(BUILD_DIR)/host/inert_show_trace_runner "$(INERT_SHOW_TRACE)" | \
+		cmp - "$(INERT_SHOW_REPLAY_GOLDEN)"
+	@$(BUILD_DIR)/host/inert_show_trace_runner "$(INERT_SHOW_TRACE)" --audit | \
+		cmp - "$(INERT_SHOW_AUDIT_GOLDEN)"
 
 host-test-exceptions: | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(filter-out -fno-exceptions,$(HOST_CXXFLAGS)) \
@@ -97,6 +119,12 @@ host-test-exceptions: | $(BUILD_DIR)/host
 		tests/test_inert_cue_scheduler.cpp $(HOST_LDFLAGS) \
 		-o "$(BUILD_DIR)/host/test_inert_cue_scheduler_exceptions"
 	$(BUILD_DIR)/host/test_inert_cue_scheduler_exceptions
+	$(CXX) $(HOST_CPPFLAGS) $(filter-out -fno-exceptions,$(HOST_CXXFLAGS)) \
+		$(HOST_CORE_SOURCES) src/inert_channel_assessor.cpp src/cue_audit.cpp \
+		src/inert_cue_scheduler.cpp src/inert_show_simulator.cpp \
+		tests/test_inert_show_simulator.cpp $(HOST_LDFLAGS) \
+		-o "$(BUILD_DIR)/host/test_inert_show_simulator_exceptions"
+	$(BUILD_DIR)/host/test_inert_show_simulator_exceptions
 
 $(BUILD_DIR)/host/test_core: $(HOST_CORE_SOURCES) tests/test_core.cpp \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
@@ -115,6 +143,24 @@ $(BUILD_DIR)/host/test_inert_cue_scheduler: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/cue_audit.cpp src/inert_cue_scheduler.cpp \
 		tests/test_inert_cue_scheduler.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_inert_show_simulator: $(HOST_CORE_SOURCES) \
+		src/inert_channel_assessor.cpp src/cue_audit.cpp \
+		src/inert_cue_scheduler.cpp src/inert_show_simulator.cpp \
+		tests/test_inert_show_simulator.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/inert_channel_assessor.cpp src/cue_audit.cpp \
+		src/inert_cue_scheduler.cpp src/inert_show_simulator.cpp \
+		tests/test_inert_show_simulator.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/inert_show_trace_runner: $(HOST_CORE_SOURCES) \
+		src/inert_channel_assessor.cpp src/cue_audit.cpp \
+		src/inert_cue_scheduler.cpp src/inert_show_simulator.cpp \
+		tests/inert_show_trace_runner.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/inert_channel_assessor.cpp src/cue_audit.cpp \
+		src/inert_cue_scheduler.cpp src/inert_show_simulator.cpp \
+		tests/inert_show_trace_runner.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_bus: $(HOST_CORE_SOURCES) \
 		src/i2c_bus.cpp src/spi_bus.cpp tests/test_bus.cpp \

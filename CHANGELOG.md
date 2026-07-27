@@ -37,12 +37,15 @@
   fixtures with explicit open, short, stale, and contradictory evidence.
 - Added deterministic inert cue scheduling with bounded operator confirmation,
   hold/cancel dominance, delayed-update coalescing, and byte-stable audit records.
+- Added the physically inert show-cue simulator with complete continuity
+  snapshots, deterministic fault and cancellation precedence, visible
+  LED-only evidence, and replayable audit traces.
 - Added executable USB route-controller and USB/IP research gates, plus the
   transparent USB and HDMI mesh architecture and safety boundaries.
 - Added complete-kit inventory, component-family, safety, pacing, and project
   plans extending the curriculum without renumbering existing lessons.
 
-Interfaces through lesson 029 are host verified and experimental. Physical
+Interfaces through lesson 030 are host verified and experimental. Physical
 Mega 2560 acceptance, USB/HDMI endpoint hardware, interoperability, and
 performance evidence remain open and are not implied by this version.
 

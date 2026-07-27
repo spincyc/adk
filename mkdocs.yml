@@ -49,6 +49,7 @@ nav:
       - "027 — Telemetry console": lessons/027.md
       - "028 — Inert channel assessment": lessons/028.md
       - "029 — Inert cue scheduling and audit": lessons/029.md
+      - "030 — Inert show-cue simulator": lessons/030.md
   - Components: components.md
   - Supported API: api-supported.md
   - Design:

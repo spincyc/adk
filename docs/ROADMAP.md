@@ -48,7 +48,10 @@ publication ledger.
 27. synthetic inert-channel continuity assessment with explicit open, short,
     stale, and contradictory evidence in lesson 028; and
 28. deterministic inert cue scheduling, confirmation, stable snapshots, and
-    bounded audit replay in lesson 029.
+    bounded audit replay in lesson 029; and
+29. physically inert show-cue composition with complete channel observations,
+    continuity gating, cancellation dominance, and replayable audit evidence
+    in lesson 030.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
@@ -56,9 +59,9 @@ is experimental rather than hardware supported.
 
 ## Next slice
 
-Lesson 029 is host verified and published with its E1 bench card open. Lesson
-030's inert show-cue simulator is the next queued integration boundary. After
-030, development follows the canonical lessons 031--081 kit expansion, one
+Lesson 030 is host verified and published with its E1 bench card open. Lesson
+031's calibrated analog joystick is the next queued implementation boundary.
+Development follows the canonical lessons 031--081 kit expansion, one
 implementation-depth three-lesson brief at a time.
 
 Every component requires lifecycle tests, deterministic fakes, a canonical Mega

@@ -1,7 +1,6 @@
 # Lessons 028--030 design: inert show-cue simulator
 
-Status: lessons 028 and 029 host verified with bench acceptance open; lesson
-030 queued for integration.
+Status: lessons 028--030 host verified with bench acceptance open.
 
 This capstone teaches contradiction detection, deterministic scheduling,
 operator confirmation, audit records, and replay. It does not control a show.
