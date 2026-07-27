@@ -74,7 +74,7 @@ introduce hardware abstractions.
 | 023 | Enforcing mutually exclusive load intent | Keep relays inert and represented by lamps. The lesson teaches the interlock, not relay contact wiring or mains control. |
 | 024 | Composing a reproducible greenhouse trainer | Preserve the project. Its new concept is deterministic decisions from schedules, samples, faults, and constrained inert loads. |
 | 025 | Separating captured IR evidence from command meaning | Keep receive and decode as one evidence boundary. Teach one owned remote protocol; protocol breadth is an extension. |
-| 026 | Recording passive radio observations | Keep receive-only observation, timestamps, age, and integrity. Spectrum-analyzer operation and protocol reverse engineering are outside the required lesson. |
+| 026 | Recording exact packet observations | Keep receive-only packet integrity, timestamps, age, and deterministic fixtures. Physical radio and spectrum work require a separately qualified adapter. |
 | 027 | Composing a multi-source telemetry console | Preserve the project. Its new concept is freshness and provenance across sources sharing one scheduler. |
 | 028 | Injecting channel faults | Narrow to the continuity model and explicit open, short, stale, and contradictory states. Redundant operator-state policy belongs in 029. |
 | 029 | Scheduling inert cues with confirmation and audit | Keep cue scheduling as the primary concept. Confirmation, stop dominance, and the audit record are inseparable evidence for the same state transition, but UI construction is reused rather than introduced. |

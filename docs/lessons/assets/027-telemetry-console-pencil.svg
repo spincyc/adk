@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820">
+  <rect width="1400" height="820" fill="#fff"/>
+  <g fill="none" stroke="#111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M45 70 Q310 48 580 72 L575 744 Q310 768 52 739 Z"/>
+    <path d="M82 114 H538 M84 670 H536"/>
+    <circle cx="125" cy="170" r="18"/><circle cx="503" cy="170" r="18"/>
+    <circle cx="125" cy="624" r="18"/><circle cx="503" cy="624" r="18"/>
+    <rect x="675" y="80" width="620" height="170" rx="16"/>
+    <rect x="705" y="112" width="560" height="100" rx="8"/>
+    <circle cx="735" cy="350" r="47"/><circle cx="915" cy="350" r="47"/>
+    <circle cx="1115" cy="350" r="52"/>
+    <circle cx="1260" cy="350" r="30"/>
+    <path d="M690 492 H1290 V720 H690 Z"/>
+    <path d="M735 540 H1242 M735 602 H1242 M735 664 H1242"/>
+    <path d="M575 160 C625 160 625 350 688 350"/>
+    <path d="M575 250 C625 250 625 350 868 350"/>
+    <path d="M575 340 C635 340 630 350 1060 350"/>
+    <path d="M575 430 C645 430 640 350 1230 350"/>
+    <path d="M575 520 C635 520 635 555 690 555"/>
+  </g>
+  <g fill="#111" font-family="DejaVu Sans, sans-serif">
+    <text x="210" y="105" font-size="34" font-weight="700">MEGA 2560</text>
+    <text x="95" y="224" font-size="25">USB POWER ONLY</text>
+    <text x="100" y="286" font-size="25">fixed source fixtures</text>
+    <text x="100" y="330" font-size="25">resource owners</text>
+    <text x="100" y="374" font-size="25">console decision</text>
+    <text x="100" y="418" font-size="25">record policy</text>
+    <text x="875" y="62" font-size="30" font-weight="700">VALUE · QUALITY · AGE</text>
+    <text x="698" y="425" font-size="23">NEXT</text>
+    <text x="836" y="425" font-size="23">ACKNOWLEDGE</text>
+    <text x="1068" y="425" font-size="23">RGB / CADENCE</text>
+    <text x="1205" y="425" font-size="23">RECORD</text>
+    <text x="900" y="525" font-size="27" font-weight="700">EVIDENCE PATHS</text>
+    <text x="740" y="588" font-size="23">source health → display + RGB</text>
+    <text x="740" y="650" font-size="23">new fault → bounded sound; ACK silences only</text>
+    <text x="740" y="710" font-size="23">accepted record → D13 pulse</text>
+    <text x="54" y="798" font-size="22">Orientation only. Final pin table follows the canonical sketch; no live RF is required.</text>
+  </g>
+</svg>

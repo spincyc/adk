@@ -51,7 +51,7 @@ is experimental rather than hardware supported.
 
 ## Next slice
 
-1. the deterministic telemetry-console project in lesson 027.
+1. inert channel assessment in lesson 028.
 
 Later slices follow the canonical three-lesson cadence through analog sensing,
 displays, environmental records, bounded actuators, buses and storage,

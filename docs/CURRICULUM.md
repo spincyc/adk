@@ -8,9 +8,9 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--026 have first-class implementation work, deterministic host
+Lessons 001--027 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
-bench cards remain open. Lesson 027 is the active implementation boundary;
+bench cards remain open. Lesson 028 is the active implementation boundary;
 lessons 028--030 remain the
 ordered delivery queue. The [work queue](WORK_QUEUE.md) records later
 expansion, research, physical, and publication work.
@@ -65,8 +65,8 @@ For every lesson, the queued implementation order is:
 | 023 | Host verified; bench open | Constrained simulated loads and watering policy | Mutually exclusive load-state LEDs and a fault pattern |
 | 024 | Host verified; bench open | Greenhouse controller; physical RTC/media adapters remain deferred | Deterministic decision and record replay |
 | 025 | Host verified; bench open | Owned infrared capture and classic NEC-only evidence | Capture indicator and stable receive-only record |
-| 026 | Host verified; bench open | Lawful receive-only radio records and freshness tracking | Timestamp/age evidence without transmit support |
-| 027 | Active integration | Scheduling and deterministic telemetry console | Stale-data alarm and stored replay record |
+| 026 | Host verified; bench open | Exact telemetry packets and freshness tracking | Timestamp, integrity, and age evidence from deterministic fixtures |
+| 027 | Host verified; bench open | Scheduling and deterministic telemetry console | Stale-data alarm and stored replay record |
 | 028--030 | Queued capstone | Injectable continuity/fault models, deterministic cue scheduling, operator confirmation, and inert show-cue simulator | Redundant state indicators, inert channel lamps, stop dominance, and a complete audit log |
 
 The coordinator promotes a row from queued to active only after its public
@@ -108,8 +108,8 @@ supplies the shortest planned path through the library.
 | 023 | Component | Relay-module simulation and constrained outputs | Inert fan, pump, and heater states enforce mutual exclusion |
 | 024 | Project-bearing | Greenhouse controller | Schedules, sensor faults, simulated loads, and logs reproduce every decision |
 | 025 | Component | Infrared receive and decoded command models | Captures preserve timing evidence while protocol policy stays separate |
-| 026 | Component | Radio receive-only observation and spectrum records | Lawful, passive observations become timestamped data without transmit support |
-| 027 | Project-bearing | Multi-room telemetry console | Wired sensors, receive-only links, displays, alarms, and storage share one scheduler |
+| 026 | Component | Exact packet reception and freshness evidence | Synthetic packet observations become timestamped data without a physical-radio claim |
+| 027 | Project-bearing | Multi-source telemetry console | Deterministic fixture sources, health evidence, acknowledgement, and storage share one scheduler |
 | 028 | Component | Continuity, fault, and redundant-state simulation | Open, short, stale, and contradictory states are injectable and observable |
 | 029 | Component | Cue scheduling, audit logs, and operator confirmation | A clocked cue engine is deterministic, inert, and fully replayable |
 | 030 | Project-bearing capstone | Inert show-cue simulator | Redundant arming, inert loads, faults, shutdown, and evidence logs pass review |
@@ -220,7 +220,7 @@ the external-power boundary introduced in `017`.
 | Servo and external-power boundaries | 017 | 018 | 021 |
 | Range and motor interfaces | 019--020 | 021 | 030, inert only |
 | I2C, SPI, storage, RTC, and relay simulation | 022--023 | 024 | 027, 030 |
-| Infrared and passive radio observation | 025--026 | 027 | Observation only |
+| Infrared and packet observation | 025--026 | 027 | Receive-only fixture evidence |
 | Fault injection and cue scheduling | 028--029 | 030 | Capstone evidence |
 | Joystick and encoder input | 031--032 | 033 | 048, 060, 063 |
 | Contact, acoustic, optical, and environmental observations | 034--044 | 036--045 | 057, 060 |
