@@ -25,12 +25,14 @@
   samples, explicit RTC state, and deterministic durable-record recovery.
 - Added transactional inert-load indicators and deterministic watering policy
   with explicit recovery and exclusion evidence.
+- Added the deterministic greenhouse trainer with coherent stages, visible
+  health modes, durable record retry, and replay evidence.
 - Added executable USB route-controller and USB/IP research gates, plus the
   transparent USB and HDMI mesh architecture and safety boundaries.
 - Added complete-kit inventory, component-family, safety, pacing, and project
   plans extending the curriculum without renumbering existing lessons.
 
-Interfaces through lesson 023 are host verified and experimental. Physical
+Interfaces through lesson 024 are host verified and experimental. Physical
 Mega 2560 acceptance, USB/HDMI endpoint hardware, interoperability, and
 performance evidence remain open and are not implied by this version.
 

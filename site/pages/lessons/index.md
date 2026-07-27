@@ -28,6 +28,7 @@ third lesson for a deterministic integration project.
 | [021](021.md) | Bench rover | Range-aware supervision and inert motor-command evidence |
 | [022](022.md) | Owned buses and durable records | Transaction ownership, explicit clock state, and restart recovery |
 | [023](023.md) | Inert load interlock | Mutually exclusive LED loads and safe watering policy |
+| [024](024.md) | Observable greenhouse trainer | Coherent stages, health evidence, and durable replay |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance
