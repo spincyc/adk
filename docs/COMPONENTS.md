@@ -2,7 +2,7 @@
 
 This is the planning map for first-class ADK interfaces. It complements
 `CURRICULUM.md`: that file defines teaching order; this file defines ownership,
-composition, resources, and test seams. The lesson 026 slice is implemented,
+composition, resources, and test seams. The lesson 027 slice is implemented,
 host verified, and experimental. A catalog name is still a target unless a
 matching public header has landed; in particular, lesson 009 models its
 photoresistor through `AnalogInput` and does not yet publish a
@@ -149,7 +149,7 @@ architectural layers.
 | Relay module | `Relay` + inert test load and isolation review | 023--024 |
 | IR receiver/remote | `InfraredReceiver` + decoder | 025--027 |
 | RFID module | SPI/UART device + identity record | 025/027 extension |
-| Receive-capable RF module | `RadioObserver`, receive-only | 026--027 |
+| Receive-capable RF module | Inventory-gated future adapter | Deferred |
 
 Adapters outside the 30-lesson spine are extension lessons. They must reuse
 the nearest endpoint and join a scheduled project before becoming supported.
@@ -169,7 +169,7 @@ pins behind a component's back.
 | Logger | Sample records and timestamps | Append/sync requests | Memory storage and failure offsets | 018 |
 | Lock model | Key events, timeout, attempt policy | Latch/display/log intents | Manual clock and replay trace | 021 |
 | Rover controller | Range/motion samples, operator mode | Bounded drive intent | World trace and emergency-stop injection | 024 |
-| Telemetry console | Timestamped local/remote samples | Display/alarm/log intents | Recorded packet and fault trace | 027 |
+| Telemetry console | Configured packet observations | Health/signal/log intents | Recorded packet and fault trace | 027 |
 | Cue simulator | Confirmations, continuity simulation, clock | Inert cue/audit intent | Full replay, fault matrix, redundant-state model | 030 |
 
 ## Mega 2560 profile
@@ -245,7 +245,7 @@ immediately exercised:
 022 buses + storage
 023 relay simulation    -> 024 greenhouse controller
 025 infrared receive
-026 passive radio       -> 027 telemetry console
+026 telemetry evidence  -> 027 telemetry console
 028 fault simulation
 029 cue scheduling      -> 030 inert show-cue simulator
 ```

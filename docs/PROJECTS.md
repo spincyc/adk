@@ -16,8 +16,8 @@ are implemented and host verified. Traffic Junction (012) has also landed with
 deterministic host evidence, a Mega 2560 example, lesson material, and size
 evidence. Its physical bench card remains open. The Environmental Station
 (015) has also landed with deterministic evidence and an open bench card.
-Lessons 017--026 are host verified with their bench cards open. Projects
-027--030 remain ordered briefs, not implementation claims. See the
+Lessons 017--027 are host verified with their bench cards open. Projects
+028--030 remain ordered briefs, not implementation claims. See the
 [authoritative work queue](WORK_QUEUE.md) for the complete ledger.
 
 Every API and lesson remains experimental. Mega 2560 bench acceptance is open
@@ -58,7 +58,7 @@ may claim hardware verification until its measured record is published.
 | 016--018 | Keypad, bounded servo, supplied configuration | Inert access-control trainer |
 | 019--021 | Distance sensor and motor driver | Bench rover |
 | 022--024 | Owned buses, deterministic records, inert-load simulation | Greenhouse controller |
-| 025--027 | Infrared and receive-only radio observation | Telemetry console |
+| 025--027 | Infrared and exact packet observation | Telemetry console |
 | 028--030 | Operator panel, continuity simulation, event log | Inert show-cue simulator |
 | 031--033 | Joystick, encoder, calibration policy | Calibration console |
 | 034--036 | Magnetic/contact sensing and passage policy | Magnetic passage logger |
@@ -94,7 +94,7 @@ explicit open item.
 | 018 | Host verified; bench open | Key-event traces, lockout boundaries, supplied configuration, restart, and bounded audit intent | Key acknowledgement, visible policy state, and inert soft-latch intent |
 | 021 | Host verified; bench open | Range, route, stale/fault, reversal-dead-time, and stop-dominance traces | E1 direction/enable indicators; later wheels-raised direction and physical stop state |
 | 024 | Host verified; bench open | Schedule, sensor-fault, RTC/storage-fault, hysteresis, exclusion, restart, and golden-log traces | Inert load LEDs, bus/storage activity, and unmistakable safe/fault combinations |
-| 027 | Queued | Timestamped wired/infrared/receive-only fixtures, stale-data handling, scheduler order, and record replay | Capture, age, stale, alarm, and storage states visible without Serial |
+| 027 | Host verified; bench open | Configured packet fixtures, stale-data handling, scheduler order, and byte-stable record replay | Selection, health, acknowledgement, and storage states visible without Serial |
 | 030 | Queued capstone | Immutable cue schedule, arming order, simulated continuity, simultaneous-event policy, stop dominance, restart lockout, and audit replay | Inert channel lamps, redundant armed/fault/stop states, and no energizing output path |
 | 033 | Queued; detailed plan exists | Input and commit/cancel traces | Preview, committed, and fault indications |
 | 036 | Queued; detailed plan required | Passage, bounce, direction, and record traces | Raw contacts, accepted passage, and count |
