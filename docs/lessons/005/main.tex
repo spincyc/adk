@@ -238,10 +238,11 @@ void loop ()
 
 \texttt{play(frequency, duration, now)} accepts 31--20,000\,Hz and a duration of
 1--60,000\,ms. Zero duration, an out-of-range frequency, or an excessive duration
-returns a status whose
-\texttt{error() == StatusCode::InvalidArgument} without starting a new tone.
-\texttt{play()} before initialization reports
-\texttt{error() == StatusCode::NotInitialized}.
+returns a status whose \texttt{error()} is
+\texttt{StatusCode::}\allowbreak\texttt{InvalidArgument} without starting a new
+tone.
+\texttt{play()} before initialization reports \texttt{error()} as
+\texttt{StatusCode::}\allowbreak\texttt{NotInitialized}.
 
 The API does not call \texttt{delay()}. It stores the supplied start time and
 duration. Each \texttt{update(now)} compares the caller's time with the deadline.

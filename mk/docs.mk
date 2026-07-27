@@ -62,5 +62,7 @@ lessons-check: lessons
 	@echo "ADK lesson PDF checks passed."
 
 include mk/pdf_monochrome.mk
+include mk/pdf_policy.mk
 
 lessons-check: pdf-monochrome-check
+lessons-check: pdf-policy-check
