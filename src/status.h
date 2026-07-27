@@ -44,15 +44,6 @@ namespace adk {
                    code_ == StatusCode::HardwareFailure;
         }
 
-        static const Status Ok;
-        static const Status InvalidArgument;
-        static const Status InvalidPin;
-        static const Status Unsupported;
-        static const Status ResourceBusy;
-        static const Status NotInitialized;
-        static const Status CapacityExceeded;
-        static const Status HardwareFailure;
-
       private:
         StatusCode code_;
     };

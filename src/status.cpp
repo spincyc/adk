@@ -2,15 +2,6 @@
 
 namespace adk {
 
-    const Status Status::Ok               (StatusCode::Ok);
-    const Status Status::InvalidArgument  (StatusCode::InvalidArgument);
-    const Status Status::InvalidPin       (StatusCode::InvalidPin);
-    const Status Status::Unsupported      (StatusCode::Unsupported);
-    const Status Status::ResourceBusy     (StatusCode::ResourceBusy);
-    const Status Status::NotInitialized   (StatusCode::NotInitialized);
-    const Status Status::CapacityExceeded (StatusCode::CapacityExceeded);
-    const Status Status::HardwareFailure  (StatusCode::HardwareFailure);
-
     const char* statusName (Status status) noexcept
     {
         switch (status.error ())
