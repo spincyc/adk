@@ -25,6 +25,7 @@ HOST_PIEZO_SOURCES := \
 
 HOST_TESTS := \
 	$(BUILD_DIR)/host/test_core \
+	$(BUILD_DIR)/host/test_analog_input \
 	$(BUILD_DIR)/host/test_io \
 	$(BUILD_DIR)/host/test_mono_led \
 	$(BUILD_DIR)/host/test_button \
@@ -50,6 +51,16 @@ $(BUILD_DIR)/host/test_core: $(HOST_CORE_SOURCES) tests/test_core.cpp \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) tests/test_core.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_analog_input: $(HOST_CORE_SOURCES) \
+		src/analog_input.cpp src/board.cpp src/digital_output.cpp \
+		tests/fake_arduino/Arduino.cpp \
+		tests/test_analog_input.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/analog_input.cpp src/board.cpp \
+		src/digital_output.cpp \
+		tests/fake_arduino/Arduino.cpp tests/test_analog_input.cpp \
+		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_io: $(HOST_IO_SOURCES) tests/test_io.cpp \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
