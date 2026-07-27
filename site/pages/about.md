@@ -16,24 +16,25 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--003 cover the built-in LED, two
-independent LEDs, and a common-cathode RGB LED. They compile against an imported
-compatibility API based on global registration and `adk::initialize()`.
+ADK is early-stage software. Lessons 001--006 use the first-class per-object
+RAII interfaces. They cover digital output and input, Button, Reaction Timer,
+PWM and RGB output, passive piezo sound, and the deterministic Simon engine.
+The APIs pass deterministic host tests and compile for the Mega 2560, but
+physical acceptance remains open.
 
-The target hierarchy is being developed in dependency order:
+The hierarchy is developed in dependency order:
 
 - hardware endpoints own pins, buses, timers, and interrupt claims;
 - circuit components give endpoints physical meaning; and
 - behaviors coordinate components without taking ownership of their physics.
 
-The intended per-object lifecycle is transactional `initialize()`, idempotent
-`shutdown() noexcept`, and destructor-driven cleanup. Documentation marks this
-as a target until the replacement interfaces and lessons are complete.
+The per-object lifecycle uses transactional `initialize()`, idempotent
+`shutdown() noexcept`, and destructor-driven cleanup. The original
+global-registration preview is frozen under [Legacy](legacy/index.md).
 
-The next hierarchy begins with lifecycle/resource claims, `DigitalInput`, and
-`Button`. A deterministic four-button, four-LED Simon simulator is the midpoint
-composition project. See the [roadmap](docs/ROADMAP.md) for the full
-sequence.
+The next slice begins with analog input, calibration, and sampled filtering,
+then composes them into the adaptive night light at lesson 009. See the
+[roadmap](docs/ROADMAP.md) for the full sequence.
 
 ## Principles
 
