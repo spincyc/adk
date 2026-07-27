@@ -177,7 +177,18 @@ not replace the register and display datasheets.
 \end{itemize}
 
 Place a 100\,nF ceramic bypass capacitor directly between pins 16 and 8. The
-pencil plate helps with physical orientation only.
+pencil plate helps with physical orientation only. In this introductory
+three-wire circuit, active-low OE is tied to GND, so the output drivers are
+enabled before the sketch runs. The 74HC595 storage register's power-up state
+is not specified; reset or power-up can therefore show an arbitrary, possibly
+bright, segment pattern until the first blank or glyph is latched. The
+software lifecycle cannot prevent that startup transient.
+
+A later hardware upgrade gives OE its own Mega output and a pull-up resistor.
+The pull-up keeps the register outputs disabled while the Mega resets; software
+then shifts and latches the blank value before driving OE low. That fourth
+control signal is required when blank output during power-up is part of the
+circuit contract.
 
 \begin{center}
 \includegraphics[width=0.89\linewidth]{010-shift-register-pencil.png}
@@ -219,12 +230,14 @@ DATA, CLOCK, and LATCH high impedance and releases their claims. Destruction
 does the same during normal scope exit or exception unwinding in a caller.
 ADK itself neither throws nor allocates.
 
-\subsection{A transfer without display flicker}
+\subsection{A transfer without update flicker}
 
 For each byte, \texttt{ShiftRegisterOutput::show()} holds LATCH low, presents
 the most-significant remaining bit on DATA, and pulses CLOCK. After eight
 clock pulses it pulses LATCH once. The output register changes as one visible
-step, so intermediate shifted bytes are not shown.
+step, so intermediate shifted bytes are not shown during normal updates. This
+does not control the register's unspecified state before the first software
+latch while OE remains tied low.
 
 \evidencebox{\textbf{Predict:} glyph 8 uses segments a--g, so its common-cathode
 value is \texttt{0x7f}. \textbf{Observe:} seven segments lit and decimal point
@@ -385,7 +398,8 @@ D13 separately proves successful acquisition & \checkbox & \\
 Digits 0--9 are stable and correctly mapped & \checkbox & \\
 TP-CLOCK shows eight pulses per update & \checkbox & \\
 TP-LATCH shows one later pulse per update & \checkbox & \\
-Startup begins at zero without a bright transient & \checkbox & \\
+Startup transient with OE tied low is observed and recorded & \checkbox & \\
+First software latch establishes the documented zero & \checkbox & \\
 Reset returns to the documented initial sequence & \checkbox & \\
 Shutdown blanks, then D22--D24 become high impedance & \checkbox & \\
 Power removal leaves every part cool and dark & \checkbox & \\
@@ -402,6 +416,11 @@ Power removal leaves every part cool and dark & \checkbox & \\
 above the recorded budget, signal outside the rails, unexpected simultaneous
 segments, or disagreement between the actual part datasheet and this lesson.
 Remove USB power physically; software shutdown is not the emergency stop.
+
+\textbf{Deferred upgrade:} repeat the startup and reset observations after
+adding a pulled-up, software-owned OE signal. Record that outputs remain
+disabled until a blank byte has been shifted and latched; do not transfer that
+claim to the three-wire circuit above.
 
 \section{What comes next}
 
