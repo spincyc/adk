@@ -3,10 +3,10 @@ schema_version: 1
 repository_uuid: "51e8871e-d671-4f8b-9e07-505dbc2090e8"
 primary_remote: "https://github.com/spincyc/adk.git"
 branch: "main"
-head_observed: "6ea8363ec4827de13ddc10b79e5c6fe29ba41d77"
-working_tree_state: "lesson-030-capstone-active"
+head_observed: "86db181b55d596ea5fc477fd368c5a30fa2a64b5"
+working_tree_state: "lesson-030-contract-corrected"
 active_tasks: ["efdb8701-d7fe-490e-9a85-d0116f37e4fc"]
-updated_at: "2026-07-27T22:42:15Z"
+updated_at: "2026-07-27T22:45:49Z"
 ---
 
 # Repository recovery state
