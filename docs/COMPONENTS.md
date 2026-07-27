@@ -2,7 +2,7 @@
 
 This is the planning map for first-class ADK interfaces. It complements
 `CURRICULUM.md`: that file defines teaching order; this file defines ownership,
-composition, resources, and test seams. The lesson 022 slice is implemented,
+composition, resources, and test seams. The lesson 023 slice is implemented,
 host verified, and experimental. A catalog name is still a target unless a
 matching public header has landed; in particular, lesson 009 models its
 photoresistor through `AnalogInput` and does not yet publish a
@@ -110,6 +110,8 @@ that configuration into domain meaning.
 | `PirSensor` | `DigitalInput` | Warm-up and motion state are explicit | 021 |
 | `MotorIntent` | Supplied motion requests and time | Bounded duty, reversal dead time, and stop dominance | 021 |
 | `Relay` | `DigitalOutput`, `PowerDomain` | Inert load only in lessons; inactive default | 024 |
+| `IndicatorPump` / `InertLoadPanel` | Three borrowed output channels | Transactional all-off exclusion; resistor-limited LEDs only | 024 |
+| `WateringController` | Moisture samples, `PumpOutput`, supplied time | Hysteresis, lockout, stale/fault stop, deterministic recovery | 024 |
 | `InfraredReceiver` | `PulseInput` or serial endpoint | Raw timing evidence separated from decoder | 027 |
 | `RadioObserver` | Receive-only bus/serial device | Passive timestamped observations; no transmit API | 027 |
 | `ContinuityModel` | Injected samples, no energetic load | Open/closed/short/stale simulation | 030 |

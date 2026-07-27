@@ -42,6 +42,8 @@ Status meanings:
 | Component | `MoistureSensor` | Hardware experimental | One analog input and explicit calibration |
 | Contract | `Rtc`, `Storage` | Host verified | Borrowed clock/media adapters |
 | Component | `FixedStorage` | Host verified | Fixed staged and durable record prefixes |
+| Component | `IndicatorPump`, `InertLoadPanel` | Hardware experimental | Three borrowed resistor-LED channels |
+| Behavior | `WateringController` | Host verified | Moisture samples, output intent, and supplied time |
 | Later layers | Buses, sensors, actuators | Planned | See catalog |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.

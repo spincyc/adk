@@ -42,6 +42,7 @@ nav:
       - "020 — Motor intent": lessons/020.md
       - "021 — Bench rover": lessons/021.md
       - "022 — Owned buses and durable records": lessons/022.md
+      - "023 — Inert load interlock": lessons/023.md
   - Components: components.md
   - Supported API: api-supported.md
   - Design:

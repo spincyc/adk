@@ -34,7 +34,10 @@ publication ledger.
 20. deterministic range-aware rover supervision with inert command evidence in
     lesson 021; and
 21. owned I2C/SPI devices, direct Mega bus adapters, calibrated moisture
-    observations, explicit RTC state, and fixed durable records in lesson 022.
+    observations, explicit RTC state, and fixed durable records in lesson 022;
+    and
+22. transactional inert LED loads and deterministic watering policy in lesson
+    023.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
@@ -42,8 +45,7 @@ is experimental rather than hardware supported.
 
 ## Next slice
 
-1. constrained, mutually exclusive inert load outputs in lesson 023; and
-2. the deterministic greenhouse-controller project in lesson 024.
+1. the deterministic greenhouse-controller project in lesson 024.
 
 Later slices follow the canonical three-lesson cadence through analog sensing,
 displays, environmental records, bounded actuators, buses and storage,
