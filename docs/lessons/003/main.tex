@@ -18,10 +18,10 @@
 \usetikzlibrary{positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
-\definecolor{AdkBlue}{HTML}{24577A}
-\definecolor{AdkRed}{HTML}{A23B32}
-\definecolor{AdkGreen}{HTML}{39734C}
-\definecolor{CodeGray}{HTML}{F7F7F7}
+\definecolor{AdkBlue}{gray}{0}
+\definecolor{AdkRed}{gray}{0}
+\definecolor{AdkGreen}{gray}{0.30}
+\definecolor{CodeGray}{gray}{0.97}
 
 \hypersetup
 {
@@ -287,11 +287,11 @@ same answer until the next update.
   {
     \draw (\x,-.08) -- (\x,.08) node[below=5pt]{\lab};
   }
-  \draw[very thick,AdkRed]
+  \draw[very thick,black,dashed]
     (0,2) -- (160,2) -- (160,1) -- (400,1) -- (400,2)
     -- (560,2) -- (560,1) -- (720,1);
   \node[left] at (0,1.5) {raw};
-  \draw[very thick,AdkBlue] (0,3.3) -- (720,3.3);
+  \draw[very thick,black] (0,3.3) -- (720,3.3);
   \node[left] at (0,3.3) {stable};
   \node[align=left,anchor=west] at (770,2.2)
     {No stable press yet:\\the final LOW has not\\lasted 20\,ms.};

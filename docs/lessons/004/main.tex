@@ -24,14 +24,14 @@
 \usetikzlibrary{arrows.meta,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
-\definecolor{ink}{HTML}{20252A}
-\definecolor{soft}{HTML}{F3F2EE}
-\definecolor{mid}{HTML}{6F777B}
-\definecolor{accent}{HTML}{3E5964}
-\definecolor{codebg}{HTML}{F7F7F4}
-\definecolor{wireR}{HTML}{8C3D3D}
-\definecolor{wireG}{HTML}{3B7046}
-\definecolor{wireB}{HTML}{3E5E83}
+\definecolor{ink}{gray}{0}
+\definecolor{soft}{gray}{0.94}
+\definecolor{mid}{gray}{0.42}
+\definecolor{accent}{gray}{0}
+\definecolor{codebg}{gray}{0.97}
+\definecolor{wireR}{gray}{0}
+\definecolor{wireG}{gray}{0}
+\definecolor{wireB}{gray}{0}
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -134,9 +134,9 @@ are PWM-capable on the Mega 2560.
     \node[draw,circle,minimum size=8mm] (blue) at (6.0,0.0) {B};
     \coordinate (common) at (7.4,1.2);
     \node[terminal] (gnd) at (10.0,1.2) {Mega GND};
-    \draw[very thick,wireR,->] (p6)--(rr)--(red);
-    \draw[very thick,wireG,->] (p5)--(rg)--(green);
-    \draw[very thick,wireB,->] (p3)--(rb)--(blue);
+    \draw[very thick,wireR,solid,->] (p6)--(rr)--(red);
+    \draw[very thick,wireG,dashed,->] (p5)--(rg)--(green);
+    \draw[very thick,wireB,densely dotted,->] (p3)--(rb)--(blue);
     \draw[thick] (red)--(7.0,2.4)--(common);
     \draw[thick] (green)--(common);
     \draw[thick] (blue)--(7.0,0.0)--(common);
@@ -270,9 +270,9 @@ the owned endpoints, leaving every channel at zero and high impedance.
     \node[box,right=of rgb,yshift=12mm] (r) {\texttt{PwmOutput}\\D6};
     \node[box,right=of rgb] (g) {\texttt{PwmOutput}\\D5};
     \node[box,right=of rgb,yshift=-12mm] (b) {\texttt{PwmOutput}\\D3};
-    \draw[->,wireR,thick] (rgb)--(r);
-    \draw[->,wireG,thick] (rgb)--(g);
-    \draw[->,wireB,thick] (rgb)--(b);
+    \draw[->,wireR,thick,solid] (rgb)--(r);
+    \draw[->,wireG,thick,dashed] (rgb)--(g);
+    \draw[->,wireB,thick,densely dotted] (rgb)--(b);
 \end{tikzpicture}
 \end{center}
 
