@@ -26,8 +26,8 @@ devices. Ordinary build targets never install packages or use `sudo`.
 | `make style-check` | Check project rules that clang-format cannot express |
 | `make format-check` | Verify clang-format without changing files |
 | `make format` | Format C++ sources, lessons, and tests |
-| `make arduino` | Compile every firmware lesson for the Mega 2560 |
-| `make arduino-001` | Compile one numbered firmware lesson |
+| `make arduino` | Compile every supported example for the Mega 2560 |
+| `make arduino-Lesson001DigitalOutput` | Compile one named example |
 | `make lessons` | Build every lesson PDF |
 | `make lessons-check` | Build PDFs and validate their basic structure and size |
 | `make clean` | Remove the marked local build directory |
@@ -42,10 +42,10 @@ exception-enabled application unwinds through them.
 Uploading is never part of a default build:
 
 ```sh
-make upload LESSON=001 PORT=/dev/ttyACM0
+make upload EXAMPLE=Lesson001DigitalOutput PORT=/dev/ttyACM0
 ```
 
-Inspect the board, wiring, lesson safety gate, selected lesson, and serial port
+Inspect the board, wiring, lesson safety gate, selected example, and serial port
 before uploading. No developer-specific port or installation path is committed.
 
 ## Use ADK from another project
@@ -53,7 +53,7 @@ before uploading. No developer-specific port or installation path is committed.
 Place or link the repository in an Arduino library search path and include:
 
 ```cpp
-#include <adk.h>
+#include <Adk.h>
 ```
 
 The library metadata currently declares AVR support. The Mega 2560 is the
