@@ -14,6 +14,8 @@ EXAMPLES    := \
 	Lesson005PiezoSounder \
 	Lesson006Simon
 PORT        ?=
+BAUD        ?= 115200
+SERIAL_LOG  ?= $(BUILD_DIR)/serial/monitor.log
 
 HOST_CPPFLAGS += -Isrc -Itests/fake_arduino
 HOST_CXXFLAGS += -std=c++17 -Os -flto
