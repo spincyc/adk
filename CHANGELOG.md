@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.3.0 — experimental
+
+- Added shift-register, seven-segment, HD44780 character-display, and matrix
+  keypad adapters with transactional ownership and deterministic host seams.
+- Added validated climate samples, a bounded DHT11 transport, stable records,
+  and the deterministic Environmental Station engine.
+- Added explicit traffic timing and the fail-safe tabletop Traffic Junction.
+- Replaced enum-style success comparisons with the compact `Status` value API:
+  `ok()`, `error()`, and centrally classified `transient()`.
+- Added narrative Mega examples and complementary monochrome HTML/PDF lessons
+  through lesson 016.
+- Added executable USB route-controller and USB/IP research gates, plus the
+  transparent USB and HDMI mesh architecture and safety boundaries.
+- Added complete-kit inventory, component-family, safety, pacing, and project
+  plans extending the curriculum without renumbering existing lessons.
+
+Interfaces through lesson 016 are host verified and experimental. Physical
+Mega 2560 acceptance, USB/HDMI endpoint hardware, interoperability, and
+performance evidence remain open and are not implied by this version.
+
 ## 0.2.0 — experimental
 
 - Added RAII `AnalogInput` for all Mega 2560 analog channels.
