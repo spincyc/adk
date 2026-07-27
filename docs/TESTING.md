@@ -16,6 +16,17 @@ Run the cheapest proof first:
 Host tests are the primary correctness gate. Hardware checks prove electrical
 assumptions and integration; they do not replace deterministic tests.
 
+Compile every public header independently before composition tests:
+
+```sh
+make headers-check
+```
+
+The gate checks every `src/*.h` under strict C++11 with warnings as errors,
+exceptions disabled, and RTTI disabled. The host Arduino fake include path
+supplies Arduino declarations when a public header needs them. Both
+`make check` and `make quality` include this gate.
+
 ## Circuit-native observation
 
 Every design has at least one verification path that does not depend on

@@ -8,6 +8,7 @@ include mk/size.mk
 include mk/docs.mk
 include mk/site.mk
 include mk/style.mk
+include mk/headers.mk
 include mk/legacy.mk
 include mk/quality.mk
 include mk/usb_matrix.mk
@@ -17,7 +18,7 @@ include mk/hdmi_mesh.mk
 .DEFAULT_GOAL := check
 
 .PHONY: check clean help
-check: host-test style-check
+check: host-test style-check headers-check
 
 help:
 	@awk '/^## [^ ]+  +/ { sub(/^## /, ""); print }' docs/CLI.md

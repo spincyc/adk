@@ -130,6 +130,7 @@ model's inspection shape; they are not physical measurements.
 ```sh
 make check
 make quality
+make headers-check
 make package-smoke
 make lessons-check
 make site-check
@@ -157,6 +158,7 @@ route-profile tests.
 ## host-test                 Run deterministic host tests without exceptions.
 ## host-test-exceptions      Verify RAII cleanup in an exception environment.
 ## host-test-sanitize        Run host tests with sanitizer instrumentation.
+## headers-check             Compile every public header alone under strict C++11.
 ## size                      Report firmware sizes against reviewed baselines.
 ## size-check                Reject firmware-size budget regressions.
 ## size-update               Refresh reviewed firmware-size baselines.
