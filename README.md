@@ -3,7 +3,7 @@
 ADK is a deterministic, no-exception C++ component library and electronics
 course for the Arduino Mega 2560.
 
-The first-class API through lesson 009 is host verified and experimental.
+The first-class API through lesson 016 is host verified and experimental.
 Physical Mega 2560 acceptance is still open and tracked separately; a
 successful firmware build is not a bench result. The original preview is
 frozen under `legacy/`.
@@ -31,7 +31,8 @@ void loop ()
 ```
 
 `Runtime` owns fixed resource claims. Components are inert until
-`initialize()`, return explicit `Status`, clean up through idempotent
+`initialize()`, return an explicit `Status` value with `ok()`, `error()`, and
+`transient()`, clean up through idempotent
 `shutdown() noexcept`, and release ownership during destruction. ADK does not
 use heap allocation, exceptions, RTTI, or a hidden global dispatcher.
 
@@ -46,6 +47,13 @@ use heap allocation, exceptions, RTTI, or a hidden global dispatcher.
 - 007 — explicit `AnalogInput` sampling
 - 008 — deterministic calibration and filtering
 - 009 — adaptive Night Light with hysteresis and fault indication
+- 010 — owned shift-register and seven-segment output
+- 011 — explicit timed traffic states
+- 012 — deterministic tabletop Traffic Junction
+- 013 — validated DHT11 climate observations
+- 014 — staged character-display output and stable records
+- 015 — deterministic Environmental Station
+- 016 — matrix scanning and release-gated keypad events
 - Every third lesson is a multi-component project
 
 See the [live course](https://spincyc.github.io/adk/),
