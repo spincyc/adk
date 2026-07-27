@@ -109,6 +109,22 @@ There is no root `usb-mesh-dry-run` target yet. The future mesh CLI and its
 plan/apply commands are documented as planned interfaces in
 `docs/research/USB3_MESH_CLI.md`; they are not runnable commands.
 
+The HDMI research model provides deterministic read-only reports for one
+synthetic route. These commands never discover endpoints, transport media,
+access a network, or touch hardware:
+
+```sh
+make hdmi-mesh-routes
+make hdmi-mesh-route \
+    HDMI_SOURCE=input:camera-a HDMI_DESTINATION=output:wall-center
+make hdmi-mesh-trace HDMI_ROUTE=route:camera-to-wall
+make hdmi-mesh-crc HDMI_ROUTE=route:camera-to-wall
+make hdmi-mesh-latency HDMI_ROUTE=route:camera-to-wall
+```
+
+Each report begins with `fixture synthetic`. CRC and latency values verify the
+model's inspection shape; they are not physical measurements.
+
 ## Validate and publish
 
 ```sh
@@ -121,6 +137,8 @@ make legacy-check
 ```
 
 Run `make quality` before committing a supported boundary.
+The default `make check` includes both HDMI control-model and shared
+route-profile tests.
 
 ## Available targets
 ## bootstrap                 Install stock Arch dependencies and the AVR core.
@@ -149,6 +167,12 @@ Run `make quality` before committing a supported boundary.
 ## usb-matrix-dry-run        Preview one phase-one USB/IP assignment.
 ## usb-mesh-check            Test the host-only dynamic mesh research models.
 ## usb-mesh-test             Build and run the mesh controller and adapter tests.
+## hdmi-mesh-check           Test the host-only HDMI control and observation models.
+## hdmi-mesh-routes          List the deterministic synthetic HDMI route.
+## hdmi-mesh-route           Inspect a synthetic route by input and output.
+## hdmi-mesh-trace           Print a synthetic route's ordered state trace.
+## hdmi-mesh-crc             Print synthetic model-only CRC evidence.
+## hdmi-mesh-latency         Print synthetic model-only latency evidence.
 ## lessons                   Build all lesson PDFs.
 ## site                      Build the documentation site.
 ## site-serve                Serve the site locally.

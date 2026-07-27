@@ -283,23 +283,25 @@ bounded CLI snapshots and event traces.
 All inspection and evidence capture is CLI-driven:
 
 ```text
-make hdmi-mesh-endpoints
 make hdmi-mesh-routes
 make hdmi-mesh-route HDMI_SOURCE=<stable-id> HDMI_DESTINATION=<stable-id>
 make hdmi-mesh-trace HDMI_ROUTE=<route-id>
-make hdmi-mesh-links
-make hdmi-mesh-clocks
 make hdmi-mesh-crc HDMI_ROUTE=<route-id>
 make hdmi-mesh-latency HDMI_ROUTE=<route-id>
-make hdmi-mesh-metrics
-make hdmi-mesh-watch
-make hdmi-mesh-evidence HDMI_RUN=<run-id>
 ```
 
-Human output never relies on terminal color. Machine output uses a versioned
-schema. `watch` prints ordered changes instead of redrawing an ambiguous
-dashboard. `evidence` makes a bounded, timestamped, redacted archive and
-manifest without changing a route.
+These five repository targets currently inspect one deterministic synthetic
+fixture. Use `input:camera-a`, `output:wall-center`, and
+`route:camera-to-wall`. Every report identifies itself as synthetic; CRC and
+latency values are model fixtures, not measurements. The targets perform no
+network, media, discovery, route mutation, or hardware operation.
+
+Endpoint, link, clock, metrics, watch, and evidence commands remain proposed
+endpoint-adapter interfaces. A physical adapter must provide versioned machine
+records. Its human output must not rely on terminal color. `watch` will print
+ordered changes instead of redrawing an ambiguous dashboard. `evidence` will
+produce a bounded, timestamped, redacted archive and manifest without changing
+a route.
 
 Route mutations use plan/apply. A plan names the expected prior epoch, proposed
 epoch, receiver, transmitter, EDID policy, media description, flows, detach
