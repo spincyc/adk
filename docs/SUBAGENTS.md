@@ -88,7 +88,7 @@ also used nested agents where an independent mechanical audit was useful.
 | Supported API page | Complete | Documented experimental RAII ownership, timing, errors, and migration |
 | Documentation taxonomy | Complete | Rebuilt concise learner pages and source/PDF navigation |
 | Circuit observability policy | Complete | Required non-Serial test points and predict-observe-interpret evidence |
-| Final documentation audit | In progress | Rechecking claims, links, release state, and deferred work |
+| Final documentation audit | Complete | Rechecked claims, links, release state, and deferred work |
 | Analog input slice | Complete | Added raw Mega ADC ownership, tests, example, lesson, and circuit evidence |
 | Calibration and filtering slice | Complete | Added deterministic integer mapping, sample filtering, tests, and lesson |
 | Adaptive night-light project | Complete | Added hysteresis, bounded output intent, fault state, replay tests, and lesson |
