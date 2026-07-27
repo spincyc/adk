@@ -84,13 +84,39 @@ namespace {
         TrafficJunction junction (testConfig ());
 
 
+        require (!junction.initialized (), "constructed junction is inert");
+
         require (junction.update (TimePoint (0), TrafficInput ()) ==
                      Status::NotInitialized,
                  "update before initialize");
 
         require (junction.initialize () == Status::Ok, "initialize");
 
-        require (junction.initialize () == Status::Ok, "repeat initialize");
+        require (junction.initialized (), "initialized state");
+
+        require (junction.update (TimePoint (0), TrafficInput (true)) == Status::Ok,
+                 "state before repeated initialize");
+
+        const TrafficSnapshot beforeRepeatInitialize = junction.snapshot ();
+
+
+        require (junction.initialize () == Status::Ok,
+                 "repeat initialize succeeds");
+
+        const TrafficSnapshot afterRepeatInitialize = junction.snapshot ();
+
+
+        require (afterRepeatInitialize.phase == beforeRepeatInitialize.phase,
+                 "repeat initialize preserves phase");
+
+        require (afterRepeatInitialize.pedestrianRequestPending,
+                 "repeat initialize preserves pending request");
+
+        require (afterRepeatInitialize.hasDeadline ==
+                     beforeRepeatInitialize.hasDeadline,
+                 "repeat initialize preserves timing state");
+
+        require (junction.reset () == Status::Ok, "explicit reset");
 
 
         const TrafficSnapshot snapshot = junction.snapshot ();
@@ -107,6 +133,31 @@ namespace {
         require (snapshot.transitionCount == 0, "initialize clears transitions");
 
         requireSafeSignals (snapshot, "initial signals safe");
+
+        junction.shutdown ();
+
+        require (!junction.initialized (), "shutdown clears initialized state");
+
+        require (junction.snapshot ().status == Status::NotInitialized,
+                 "shutdown status");
+
+        requirePhase (junction, TrafficPhase::AllRed, "shutdown forces all red");
+
+        require (junction.update (TimePoint (1), TrafficInput ()) ==
+                     Status::NotInitialized,
+                 "shutdown blocks updates");
+
+        junction.shutdown ();
+
+        require (!junction.initialized (), "repeat shutdown is inert");
+
+        require (junction.reset () == Status::NotInitialized,
+                 "reset requires initialized lifecycle");
+
+        require (junction.initialize () == Status::Ok,
+                 "initialize after shutdown");
+
+        require (junction.initialized (), "reinitialized state");
 
 
         TrafficConfig invalid = testConfig ();
@@ -404,7 +455,13 @@ namespace {
         requirePhase (junction, TrafficPhase::Fault, "fault remains latched");
 
 
-        require (junction.initialize () == Status::Ok, "initialize clears fault");
+        require (junction.initialize () == Status::Ok,
+                 "repeat initialize succeeds while faulted");
+
+        requirePhase (junction, TrafficPhase::Fault,
+                      "repeat initialize preserves fault latch");
+
+        require (junction.reset () == Status::Ok, "reset clears fault");
 
         requirePhase (junction, TrafficPhase::AllRed, "reset enters all red");
 
