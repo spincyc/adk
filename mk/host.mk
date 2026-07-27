@@ -13,7 +13,8 @@ HOST_IO_SOURCES := \
 HOST_TESTS := \
 	$(BUILD_DIR)/host/test_core \
 	$(BUILD_DIR)/host/test_io \
-	$(BUILD_DIR)/host/test_mono_led
+	$(BUILD_DIR)/host/test_mono_led \
+	$(BUILD_DIR)/host/test_button
 
 HOST_HEADERS := $(shell find src tests/fake_arduino -type f -name '*.h' | sort)
 
@@ -41,6 +42,12 @@ $(BUILD_DIR)/host/test_mono_led: $(HOST_IO_SOURCES) src/mono_led.cpp \
 		tests/test_mono_led.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_IO_SOURCES) src/mono_led.cpp tests/test_mono_led.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_button: $(HOST_IO_SOURCES) src/button.cpp \
+		tests/test_button.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_IO_SOURCES) src/button.cpp tests/test_button.cpp \
 		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host: | $(BUILD_MARKER)
