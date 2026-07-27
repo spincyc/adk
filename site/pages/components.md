@@ -36,9 +36,12 @@ onto LEDs, RGB feedback, and sound.
 and diagnostic LED, while the engine only accepts a complete observation and
 returns output intent.
 
-The same composition continues through lessons 010–012. A
+The same composition continues through lessons 010–013. A
 `SevenSegmentDisplay` owns its serialized output; `TrafficJunction` instead
 owns no pins and returns a complete legal signal pattern for its Mega adapter.
+`Dht11Sensor` owns one bidirectional data pin while presenting validated,
+timestamped climate samples through the transport-neutral `ClimateSensor`
+contract.
 
 - [Exact API](api-supported.md)
 - [Full component catalog](docs/COMPONENTS.md)

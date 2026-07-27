@@ -8,11 +8,10 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--009 have first-class implementation work, deterministic host
-tests, canonical Mega 2560 examples, and lesson sources. Lessons 010--012 have
-landed with the same host, Mega compile, documentation, and size evidence;
-their bench cards remain open. Lesson 013 is the active implementation
-boundary. Lessons 014--030 remain the ordered delivery queue.
+Lessons 001--013 have first-class implementation work, deterministic host
+tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
+bench cards remain open. Lesson 014 is the active implementation boundary.
+Lessons 015--030 remain the ordered delivery queue.
 
 All lessons remain experimental. Host verification, firmware compilation,
 documentation publication, and size evidence do not imply that a circuit has
@@ -51,7 +50,7 @@ For every lesson, the queued implementation order is:
 | Block | Status | Interface and composition boundary | Circuit-native evidence |
 |---|---|---|---|
 | 010--012 | Host verified; bench open | `ShiftRegisterOutput`, seven-segment presentation, explicit traffic timing, and `TrafficJunction` | Shift-clock/data/latch test points, display self-test, and an all-red fault state |
-| 013 | Active implementation | Validated temperature/humidity samples and scheduled acquisition | Sensor-health indicator and a measurable sample cadence |
+| 013 | Host verified; bench open | Validated temperature/humidity samples and scheduled acquisition | Sensor-health indicator and a measurable sample cadence |
 | 014--015 | Queued next | LCD presentation, stable records, and the environmental station | Display age/status field and sensor-health evidence |
 | 016--018 | Queued | Keypad events, bounded servo intent, persistent configuration, and inert access trainer | Key echo/status pattern, command-position marker, and a soft-latch state indicator |
 | 019--021 | Queued | Range validity, motor/encoder intent, supervisory stop, and bench rover | Echo timing point, direction/enable indicators, encoder evidence, and independent stop state |

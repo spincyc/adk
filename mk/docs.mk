@@ -27,6 +27,8 @@ doc/lessons/011.pdf: docs/lessons/011/main.tex \
 		docs/lessons/assets/011-timed-traffic-pencil.png
 doc/lessons/012.pdf: docs/lessons/012/main.tex \
 		docs/lessons/assets/012-traffic-junction-pencil.png
+doc/lessons/013.pdf: docs/lessons/013/main.tex \
+		docs/lessons/assets/013-dht11-climate-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons
