@@ -16,6 +16,22 @@ Run the cheapest proof first:
 Host tests are the primary correctness gate. Hardware checks prove electrical
 assumptions and integration; they do not replace deterministic tests.
 
+## Circuit-native observation
+
+Every design has at least one verification path that does not depend on
+Serial: an LED, sounder, display, or named point for a meter or logic probe.
+Serial output may add timestamps or detail, but it is optional and cannot be
+the only hardware evidence.
+
+Write each hardware check as predict, observe, interpret. Name the expected
+signal, its location and timing, the actual observation, and what contract the
+evidence supports or contradicts. A surprising result becomes a recorded
+diagnostic observation, not a pass/fail guess.
+
+Test resource ownership and safe electrical state independently. Successful
+initialization or an explicit status signal establishes acquisition. A pin
+level, waveform, or high-impedance measurement establishes safe state.
+
 ## Fake hardware layer
 
 Production components depend on narrow hardware interfaces, never directly on
@@ -142,7 +158,10 @@ Each lesson provides a Mega 2560 checklist with:
 - expected safe state before and after object lifetime;
 - one nominal behavior measurement;
 - boundary or fault behavior;
-- serial or visible diagnostic evidence;
+- a non-Serial diagnostic signal or named electrical test point;
+- separate resource-acquisition and safe-state observations;
+- prediction, observation, and interpretation for each measurement;
+- optional Serial evidence when useful;
 - shutdown and reset behavior;
 - observed result, board revision, tool versions, and date.
 
