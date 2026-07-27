@@ -14,6 +14,7 @@
 #include "keypad.h"
 #include "matrix_keypad.h"
 #include "mono_led.h"
+#include "motor_intent.h"
 #include "night_light.h"
 #include "piezo_sounder.h"
 #include "power_domain.h"
