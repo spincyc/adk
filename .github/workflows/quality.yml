@@ -80,7 +80,7 @@ jobs:
                   arduino-cli core update-index
                   arduino-cli core install arduino:avr
 
-            - name: Compile and report sizes
+            - name: Compile and enforce firmware budgets
               shell: bash
               run: |
                   set -o pipefail
@@ -89,9 +89,12 @@ jobs:
                       echo "## Mega 2560 firmware sizes"
                       echo
                       echo '```text'
-                      grep -E '^(Sketch uses|Global variables use)' "${RUNNER_TEMP}/arduino-build.log"
+                      cat build/size/avr.tsv
                       echo '```'
                   } >> "${GITHUB_STEP_SUMMARY}"
+
+            - name: Test installed release archive
+              run: make package-smoke
 
     arduino-lint:
         name: Arduino library lint
@@ -110,6 +113,15 @@ jobs:
               with:
                   compliance: strict
                   library-manager: submit
+                  project-type: library
+                  recursive: true
+                  verbose: true
+
+            - name: Lint library update
+              uses: arduino/arduino-lint-action@9a3603836c75e41753e531167395edeb90ba5dae # v3.0.0
+              with:
+                  compliance: strict
+                  library-manager: update
                   project-type: library
                   recursive: true
                   verbose: true
