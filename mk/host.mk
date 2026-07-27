@@ -10,12 +10,18 @@ HOST_IO_SOURCES := \
 	src/digital_output.cpp \
 	tests/fake_arduino/Arduino.cpp
 
+HOST_PWM_SOURCES := \
+	$(HOST_IO_SOURCES) \
+	src/board.cpp \
+	src/pwm_output.cpp
+
 HOST_TESTS := \
 	$(BUILD_DIR)/host/test_core \
 	$(BUILD_DIR)/host/test_io \
 	$(BUILD_DIR)/host/test_mono_led \
 	$(BUILD_DIR)/host/test_button \
-	$(BUILD_DIR)/host/test_reaction_timer
+	$(BUILD_DIR)/host/test_reaction_timer \
+	$(BUILD_DIR)/host/test_pwm_output
 
 HOST_HEADERS := $(shell find src tests/fake_arduino -type f -name '*.h' | sort)
 
@@ -57,6 +63,11 @@ $(BUILD_DIR)/host/test_reaction_timer: $(HOST_IO_SOURCES) src/button.cpp \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_IO_SOURCES) src/button.cpp src/reaction_timer.cpp \
 		tests/test_reaction_timer.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_pwm_output: $(HOST_PWM_SOURCES) \
+		tests/test_pwm_output.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_PWM_SOURCES) tests/test_pwm_output.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host: | $(BUILD_MARKER)
 	mkdir -p "$@"
