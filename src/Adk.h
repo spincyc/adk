@@ -12,5 +12,6 @@
 #include "rgb_led.h"
 #include "resource.h"
 #include "runtime.h"
+#include "simon.h"
 #include "status.h"
 #include "time.h"
