@@ -120,6 +120,7 @@ namespace {
 
     void stopSafely ()
     {
+        traffic.shutdown    ();
         ready.shutdown      ();
         stop.shutdown       ();
         walk.shutdown       ();
