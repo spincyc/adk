@@ -5,14 +5,15 @@ PDFLATEX    ?= pdflatex
 BUILD_DIR   ?= build
 BUILD_MARKER := $(BUILD_DIR)/.adk-build
 BOARD_FQBN  ?= arduino:avr:mega
-LESSONS     := 001 002 003 004 005 006
+LESSONS     := 001 002 003 004 005 006 007
 EXAMPLES    := \
 	Lesson001DigitalOutput \
 	Lesson002DigitalInput \
 	Lesson003ReactionTimer \
 	Lesson004PwmRgb \
 	Lesson005PiezoSounder \
-	Lesson006Simon
+	Lesson006Simon \
+	Lesson007AnalogInput
 PORT        ?=
 BAUD        ?= 115200
 SERIAL_LOG  ?= $(BUILD_DIR)/serial/monitor.log
