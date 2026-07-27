@@ -1,0 +1,307 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[margin=0.68in]{geometry}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{titlesec}
+\usetikzlibrary{arrows.meta,positioning}
+\graphicspath{{docs/lessons/assets/}{../assets/}}
+
+\definecolor{Ink}{gray}{0}
+\definecolor{CodeGray}{gray}{0.96}
+\definecolor{Soft}{gray}{0.90}
+\hypersetup
+{
+    pdftitle={ADK Lesson 016: Matrix Keypad},
+    pdfauthor={Kevin Shanahan},
+    pdfsubject={Deterministic keypad scanning, debounce, and visible evidence},
+    pdflang={en-US}
+}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textsc{ADK Lesson 016}}
+\rhead{Matrix Keypad}
+\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries\color{Ink}}{\thesection}{0.5em}{}
+\titleformat{\subsection}{\large\bfseries\color{Ink}}{\thesubsection}{0.5em}{}
+\lstdefinestyle{adkcpp}
+{
+    language=C++,
+    backgroundcolor=\color{CodeGray},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{Ink}\bfseries,
+    commentstyle=\color{Ink},
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    frame=single,
+    rulecolor=\color{Ink},
+    breaklines=true,
+    tabsize=4
+}
+\newcommand{\checkbox}{\(\square\)}
+\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
+\newcommand{\lessonbox}[1]{%
+  \begin{center}
+  \fcolorbox{Ink}{white}{\parbox{0.92\linewidth}{#1}}
+  \end{center}}
+
+\begin{document}
+
+\begin{center}
+  {\Huge\bfseries Matrix Keypad}\\[4pt]
+  {\Large Scan a physical matrix; interpret one deliberate key}\\[8pt]
+  \textit{D13 and TP-R0 explain the circuit without a Serial monitor.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 016 --- component & Time & 120--180 minutes\\
+Prerequisites & Lessons 001--015 & Board & Arduino Mega 2560\\
+Evidence & D13 patterns and TP-R0 & Status & host verified; bench open\\
+Safety & E1: USB-powered passive input circuit only\\
+\end{tabularx}
+
+\section{Mission}
+
+Build one operator-input path:
+\[
+\text{key matrix}\rightarrow\texttt{MatrixKeypad}\rightarrow
+\texttt{KeypadSnapshot}\rightarrow\text{D13 evidence}.
+\]
+\texttt{MatrixKeypad} owns and scans seven pins. Its composed
+\texttt{Keypad} interpreter debounces the 12-bit sample, maps one position to a
+semantic key, and rejects chords until every key is released. Time enters only
+through \texttt{update(now)}.
+
+\lessonbox{\textbf{Boundary.} This lesson teaches input interpretation. It is
+not a lock, credential system, or anti-ghosting keypad. A diode-less matrix can
+produce ambiguous multi-key observations, so every chord is rejected.}
+
+\subsection{Learning outcomes}
+
+\begin{itemize}
+  \item explain row selection and column pull-ups;
+  \item separate electrical scanning from deterministic interpretation;
+  \item predict debounce, press, release, and invalid-chord events;
+  \item distinguish acquisition evidence from safe-state evidence;
+  \item use RAII cleanup without exceptions, heap allocation, or blocking delay.
+\end{itemize}
+
+\section{Parts and safety}
+
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Part & Requirement\\
+\midrule
+Arduino Mega 2560 & USB-powered board\\
+4x3 membrane keypad & Passive switch matrix with identified seven-wire tail\\
+Seven jumpers & D22 through D28\\
+Logic probe or oscilloscope & Optional TP-R0 observation; high-impedance input\\
+\bottomrule
+\end{tabularx}
+
+Remove USB power before moving wires or attaching a probe. Identify the exact
+tail order from manufacturer documentation or an unpowered continuity test;
+printed connector order is not standardized. No keypad conductor connects
+directly to 5 V or GND.
+
+\section{Authoritative wiring}
+
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+Signal & Mega pin & Keypad contact\\
+\midrule
+Row0 / TP-R0 & D22 & row containing 1, 2, 3\\
+Row1 & D23 & row containing 4, 5, 6\\
+Row2 & D24 & row containing 7, 8, 9\\
+Row3 & D25 & row containing *, 0, \#\\
+Column0 & D26 & column containing 1, 4, 7, *\\
+Column1 & D27 & column containing 2, 5, 8, 0\\
+Column2 & D28 & column containing 3, 6, 9, \#\\
+Operator evidence & D13 & board LED; no external wire\\
+\bottomrule
+\end{tabularx}
+
+During each scan, exactly one row becomes an output driven low. Columns remain
+inputs with internal pull-ups. A closed key pulls its column low. The selected
+row immediately returns to input before the next row is selected.
+
+\begin{center}
+\includegraphics[width=0.96\linewidth]{016-matrix-keypad-pencil.png}
+
+\small\textit{Alternative text: pencil orientation plate with a Mega on the
+left, a breadboard in the middle, and a 4x3 keypad on the right; seven wires
+connect D22--D28 to rows R0--R3 and columns C0--C2, with TP-R0 on D22.
+The table above, not the illustrative connector order, is authoritative.}
+\end{center}
+
+\section{Scan and interpretation}
+
+\begin{center}
+\begin{tikzpicture}[>=Latex,
+    state/.style={draw,minimum width=28mm,minimum height=9mm,fill=white}]
+  \node[state] (released) {Released};
+  \node[state,right=18mm of released] (candidate) {Candidate};
+  \node[state,right=18mm of candidate] (accepted) {Pressed};
+  \node[state,below=13mm of candidate] (invalid) {Invalid chord};
+  \draw[->] (released)--node[above]{raw change}(candidate);
+  \draw[->] (candidate)--node[above]{stable 20 ms}(accepted);
+  \draw[->] (accepted) to[bend left=24] node[below]{full release}(released);
+  \draw[->] (candidate)--node[right]{multiple bits}(invalid);
+  \draw[->] (invalid) to[bend right=18] node[below]{full release}(released);
+\end{tikzpicture}
+\end{center}
+
+A stable single bit produces one \texttt{pressEvent}. Holding the key produces
+no repeats. A full stable release rearms the next press. A chord that collapses
+to one key remains disarmed until complete release.
+
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+Observation & D13 pattern & Interpretation\\
+\midrule
+Initialization & one short pulse & keypad and LED claims succeeded\\
+Digit 1--9 & one to nine short pulses & accepted semantic digit\\
+Digit 0 & ten short pulses & accepted zero, distinct from ready\\
+* & one long pulse & accepted star\\
+\# & two long pulses & accepted hash\\
+Invalid chord & repeating two-short group & release every key before retry\\
+Scan/update fault & repeating three-short group & stop relying on input\\
+\bottomrule
+\end{tabularx}
+
+\section{Narrative code}
+
+\begin{lstlisting}[style=adkcpp]
+void loop ()
+{
+    if (!running)
+    {
+        return;
+    }
+
+    const adk::TimePoint      now         (millis ());
+    const adk::KeypadSnapshot observation = observeKeypad       (now);
+    const OperatorDecision    decision    = decideOperatorEvent (observation);
+
+    if (!showOperatorEvidence (now, decision))
+    {
+        stopSafely ();
+    }
+}
+\end{lstlisting}
+
+The canonical sketch acquires the keypad, then the evidence LED. On a partial
+failure it releases the earlier object. The loop always reads
+``observe, decide, actuate.'' D13 patterns are nonblocking, so scanning
+continues while a result is displayed. \texttt{stopSafely()} shuts down in
+reverse order.
+
+\section{Experiments}
+
+\subsection{Experiment A: acquisition and row scan}
+
+\textbf{Predict.} Before successful initialization, TP-R0 has no recurring
+selection pulse. During scanning, D22 has one bounded low interval per update.
+
+\textbf{Observe.} Attach the probe to D22 and GND while unpowered. Restore USB
+power and record period \blank{25mm} and low time \blank{25mm}.
+
+\textbf{Interpret.} A recurring bounded pulse supports the claim that scanning
+began after acquisition. Its absence does not identify which claim failed.
+
+\subsection{Experiment B: mapping and release gate}
+
+Predict the D13 pattern, press one key, hold it, then release it completely.
+
+\begin{tabularx}{\linewidth}{@{}l l l l@{}}
+\toprule
+Key & Predicted pattern & Observed pattern & One event while held?\\
+\midrule
+1 & \blank{24mm} & \blank{24mm} & \blank{18mm}\\
+0 & \blank{24mm} & \blank{24mm} & \blank{18mm}\\
+* & \blank{24mm} & \blank{24mm} & \blank{18mm}\\
+\# & \blank{24mm} & \blank{24mm} & \blank{18mm}\\
+\bottomrule
+\end{tabularx}
+
+\subsection{Experiment C: invalid chord}
+
+\textbf{Predict.} Two held keys produce the repeating paired-short indication.
+Releasing only one key does not fabricate a new accepted press.
+
+\textbf{Observe.} Hold two keys, release one, then release the other.
+Result: \blank{42mm}.
+
+\textbf{Interpret.} Acceptance only after a complete release demonstrates
+release gating; it does not prove arbitrary combinations are ghost-free.
+
+\subsection{Experiment D: safe state}
+
+After the shutdown exercise, predict that D22--D28 are inputs, TP-R0 pulses
+stop, column pull-ups are removed, and D13 is inactive. Observe TP-R0:
+\blank{45mm}. D13 off alone does not prove keypad claims were released.
+
+\section{Diagnosis}
+
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Observation & Check\\
+\midrule
+No ready pulse and no TP-R0 pulse & pin conflict, initialization status, and D13 ownership\\
+Ready pulse but no accepted key & tail order, continuity, and row/column mapping\\
+Wrong digit & logical row/column order; do not rewrite the semantic map to hide wiring\\
+Paired pattern for one key & unintended bridge or ambiguous tail identification\\
+Three-short pattern & update status and lifecycle; do not treat the snapshot as input\\
+TP-R0 continues after shutdown & safe-state failure; remove USB power and record it\\
+\bottomrule
+\end{tabularx}
+
+\section{CLI and acceptance}
+
+\begin{verbatim}
+make host-test-keypad
+make host-test-matrix-keypad
+make arduino-Lesson016MatrixKeypad
+make firmware-size EXAMPLE=Lesson016MatrixKeypad
+make lessons
+make lessons-check
+\end{verbatim}
+
+\textbf{Software record:} commit \blank{35mm}; Arduino CLI \blank{27mm};
+AVR core \blank{27mm}; flash \blank{22mm}; static RAM \blank{22mm}.
+
+\textbf{Bench card---open until measured}
+
+\begin{itemize}
+  \item \checkbox\ Exact Mega revision and keypad part recorded.
+  \item \checkbox\ Tail order identified while unpowered.
+  \item \checkbox\ D22--D28 inspected against the table.
+  \item \checkbox\ TP-R0 scan cadence measured.
+  \item \checkbox\ All twelve keys and invalid chord observed.
+  \item \checkbox\ Reset, shutdown, and USB power removal observed.
+  \item \checkbox\ D22--D28 safe state checked separately from D13.
+\end{itemize}
+
+Supply \blank{20mm}; instrument \blank{35mm}; date \blank{25mm};
+reviewer \blank{35mm}. Deviations: \blank{70mm}.
+
+\lessonbox{\textbf{Current result: host verified; hardware acceptance open.}
+Compilation, deterministic tests, and this worksheet do not claim physical
+verification. Record measured evidence before changing that status.}
+
+\end{document}
