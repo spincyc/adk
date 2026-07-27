@@ -5,15 +5,15 @@ QUALITY_ARCH_PACKAGES = base-devel clang
 
 .PHONY: quality quality-fast quality-lint quality-test quality-size \
 	quality-tools quality-packages host-size-check firmware-size-check \
-	arduino-lint
+	host-test-sanitize arduino-lint
 
-quality: quality-fast firmware-size-check lessons-check site-check
+quality: quality-fast firmware-size-check package-smoke lessons-check site-check
 
 quality-fast: quality-tools quality-lint quality-test quality-size
 
 quality-lint: style-check
 
-quality-test: host-test host-test-exceptions
+quality-test: host-test host-test-exceptions host-test-sanitize
 
 quality-size: host-size-check
 
@@ -35,8 +35,16 @@ host-size-check: host-test
 		echo "$$image: $$used / $(QUALITY_HOST_MAX) bytes."; \
 	done
 
-firmware-size-check: arduino
-	@echo "Firmware fits the $(BOARD_FQBN) board limits."
+host-test-sanitize:
+	ASAN_OPTIONS=detect_leaks=1:halt_on_error=1 \
+	UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 \
+	$(MAKE) --no-print-directory host-test \
+		BUILD_DIR="$(BUILD_DIR)/sanitize" \
+		HOST_CXXFLAGS="$(HOST_CXXFLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer" \
+		HOST_LDFLAGS="$(HOST_LDFLAGS) -fsanitize=address,undefined"
+
+firmware-size-check: size-check
+	@echo "Firmware satisfies the recorded $(BOARD_FQBN) budgets."
 
 arduino-lint:
 	@command -v "$(ARDUINO_LINT)" >/dev/null || { \
