@@ -67,8 +67,12 @@ def copy_lesson_materials() -> None:
         SOURCE_ROOT / "downloads/legacy/lessons",
         required=False,
     )
-    for source in sorted((ROOT / "legacy/lessons").glob("*/*.ino")):
-        destination = SOURCE_ROOT / "downloads/legacy/sketches" / source.name
+    for source in sorted((ROOT / "legacy/lessons").glob("*/*.ino.txt")):
+        destination = (
+            SOURCE_ROOT
+            / "downloads/legacy/sketches"
+            / source.name.removesuffix (".txt")
+        )
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, destination)
     for source in sorted((ROOT / "legacy/docs/lessons").glob("*/main.tex")):
