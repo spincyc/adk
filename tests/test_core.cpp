@@ -3,6 +3,7 @@
 #include <status.h>
 #include <time.h>
 
+#include <array>
 #include <cstdlib>
 #include <iostream>
 #include <limits>
@@ -319,6 +320,172 @@ namespace {
         require         (!resources.claimed (pin (8)), "second pair claim released");
     }
 
+    void testSharedClaims ()
+    {
+        const adk::ResourceId timer = {adk::ResourceKind::Timer, 2};
+        adk::ResourceRegistry resources;
+        adk::SharedResourceClaim first;
+        adk::SharedResourceClaim second;
+
+        requireStatus (
+            resources.claimShared (timer, first),
+            adk::Status::Ok,
+            "first shared claim");
+        requireStatus (
+            resources.claimShared (timer, second),
+            adk::Status::Ok,
+            "second shared claim");
+        require (resources.claimed (timer), "shared resource claimed");
+
+        first.release  ();
+        require        (resources.claimed (timer), "one shared lease remains");
+        second.release ();
+        require        (!resources.claimed (timer), "final shared release");
+    }
+
+    void testSharedExclusiveConflicts ()
+    {
+        const adk::ResourceId timer = {adk::ResourceKind::Timer, 3};
+        adk::ResourceRegistry resources;
+        adk::SharedResourceClaim shared;
+        adk::ResourceClaim       exclusive;
+
+        requireStatus (
+            resources.claimShared (timer, shared),
+            adk::Status::Ok,
+            "shared before exclusive");
+        requireStatus (
+            resources.claim (timer, exclusive),
+            adk::Status::ResourceBusy,
+            "shared blocks exclusive");
+        shared.release  ();
+        requireStatus   (
+            resources.claim (timer, exclusive),
+            adk::Status::Ok,
+            "exclusive after shared release");
+        requireStatus (
+            resources.claimShared (timer, shared),
+            adk::Status::ResourceBusy,
+            "exclusive blocks shared");
+        exclusive.release ();
+        requireStatus     (
+            resources.claimShared (timer, shared),
+            adk::Status::Ok,
+            "shared after exclusive release");
+    }
+
+    void testSharedBoundsAndState ()
+    {
+        adk::ResourceRegistry resources;
+        adk::ResourceRegistry otherResources;
+        adk::SharedResourceClaim claim;
+
+        requireStatus (
+            resources.claimShared ({adk::ResourceKind::Timer, 5}, claim),
+            adk::Status::Ok,
+            "last shared timer");
+        requireStatus (
+            resources.claimShared ({adk::ResourceKind::Timer, 4}, claim),
+            adk::Status::InvalidArgument,
+            "active shared destination");
+        requireStatus (
+            otherResources.claimShared (
+                {adk::ResourceKind::Timer, 4},
+                claim),
+            adk::Status::InvalidArgument,
+            "active shared destination other registry");
+        claim.release ();
+        requireStatus (
+            resources.claimShared ({adk::ResourceKind::Timer, 6}, claim),
+            adk::Status::Unsupported,
+            "shared timer out of range");
+        requireStatus (
+            resources.claimShared ({adk::ResourceKind::Pin, 0}, claim),
+            adk::Status::Unsupported,
+            "only timers are shareable");
+    }
+
+    void testSharedLifetime ()
+    {
+        const adk::ResourceId timer = {adk::ResourceKind::Timer, 4};
+        adk::ResourceRegistry resources;
+
+        {
+            adk::SharedResourceClaim claim;
+
+            requireStatus (
+                resources.claimShared (timer, claim),
+                adk::Status::Ok,
+                "scoped shared claim");
+        }
+
+        require (!resources.claimed (timer), "shared destructor releases");
+    }
+
+    void testSharedCapacity ()
+    {
+        const adk::ResourceId timer = {adk::ResourceKind::Timer, 5};
+        adk::ResourceRegistry resources;
+        std::array<adk::SharedResourceClaim, 255> claims;
+        adk::SharedResourceClaim overflow;
+
+        for (adk::SharedResourceClaim& claim : claims)
+        {
+            requireStatus (
+                resources.claimShared (timer, claim),
+                adk::Status::Ok,
+                "fill shared capacity");
+        }
+
+        requireStatus (
+            resources.claimShared (timer, overflow),
+            adk::Status::CapacityExceeded,
+            "shared capacity overflow");
+        require (!overflow.active (), "overflow remains inert");
+
+        claims[0].release ();
+        requireStatus     (
+            resources.claimShared (timer, overflow),
+            adk::Status::Ok,
+            "released shared capacity reusable");
+    }
+
+    void testSharedTransactionalRollback ()
+    {
+        const adk::ResourceId firstTimer  = {adk::ResourceKind::Timer, 0};
+        const adk::ResourceId secondTimer = {adk::ResourceKind::Timer, 1};
+        adk::ResourceRegistry resources;
+        adk::ResourceClaim    blocker;
+        adk::SharedResourceClaim first;
+        adk::SharedResourceClaim second;
+
+        requireStatus (
+            resources.claim (secondTimer, blocker),
+            adk::Status::Ok,
+            "shared transaction blocker");
+        requireStatus (
+            resources.claimShared (firstTimer, first),
+            adk::Status::Ok,
+            "shared transaction first");
+
+        const adk::Status status =
+            resources.claimShared (secondTimer, second);
+
+        if (status != adk::Status::Ok)
+        {
+            first.release ();
+        }
+
+        requireStatus (
+            status,
+            adk::Status::ResourceBusy,
+            "shared transaction failure");
+        require (!first.active (), "shared transaction rolled back");
+        require (!resources.claimed (firstTimer), "first shared lease released");
+        require (!second.active (), "failed second lease inert");
+        require (resources.claimed (secondTimer), "foreign claim preserved");
+    }
+
 #if defined(__cpp_exceptions)
     void unwindClaim (adk::ResourceRegistry& resources)
     {
@@ -367,17 +534,32 @@ int main ()
         std::is_nothrow_destructible<adk::ResourceClaim>::value,
         "claim destruction supports exception unwinding");
     static_assert (
+        !std::is_copy_constructible<adk::SharedResourceClaim>::value,
+        "shared claims are unique leases");
+    static_assert (
+        !std::is_move_constructible<adk::SharedResourceClaim>::value,
+        "shared claims cannot silently transfer");
+    static_assert (
+        std::is_nothrow_destructible<adk::SharedResourceClaim>::value,
+        "shared destruction supports exception unwinding");
+    static_assert (
         std::is_nothrow_destructible<PairClaim>::value,
         "component destruction supports exception unwinding");
 
-    testStatus                 ();
-    testTime                   ();
-    testResourceKindsAndBounds ();
-    testConflictAndReuse       ();
-    testClaimStateRules        ();
-    testClaimLifetime          ();
-    testRuntimeOwnership       ();
-    testTransactionalRollback  ();
+    testStatus                      ();
+    testTime                        ();
+    testResourceKindsAndBounds      ();
+    testConflictAndReuse            ();
+    testClaimStateRules             ();
+    testClaimLifetime               ();
+    testRuntimeOwnership            ();
+    testTransactionalRollback       ();
+    testSharedClaims                ();
+    testSharedExclusiveConflicts    ();
+    testSharedBoundsAndState        ();
+    testSharedLifetime              ();
+    testSharedCapacity              ();
+    testSharedTransactionalRollback ();
 
 #if defined(__cpp_exceptions)
     testExceptionUnwinding ();
