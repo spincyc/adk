@@ -214,6 +214,7 @@ wraparound tests when timed, example, hardware checklist, HTML reference, and
 lesson PDF are present. Projects add composition traces and deterministic
 replay fixtures.
 
-CI runs the same commands from a clean checkout using stock Arch Linux package
-names locally and pinned GitHub Actions remotely. Tests must not require network
+CI runs the same commands from a clean checkout. Local bootstrap uses stock
+Arch Linux package names, while both local bootstrap and CI install Arduino AVR
+core 1.8.8. GitHub Actions are pinned remotely. Tests must not require network
 access after dependencies are installed.

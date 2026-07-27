@@ -2,6 +2,8 @@
 
 ## 0.3.0 — experimental
 
+- Pinned local bootstrap to Arduino AVR core 1.8.8, added the missing Arch Git
+  dependency, and made `serial-log` preserve monitor failures.
 - Added shift-register, seven-segment, HD44780 character-display, and matrix
   keypad adapters with transactional ownership and deterministic host seams.
 - Added validated climate samples, a bounded DHT11 transport, stable records,

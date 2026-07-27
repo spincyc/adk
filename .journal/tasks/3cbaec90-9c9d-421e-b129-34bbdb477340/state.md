@@ -2,7 +2,7 @@
 schema_version: 1
 task_uuid: "3cbaec90-9c9d-421e-b129-34bbdb477340"
 title: "repair bootstrap and serial tooling"
-status: "active"
+status: "done"
 priority: "normal"
 priority_reason: "Recovered audit prompt 6; ordered by the repository recovery audit."
 parent: null
@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-27T23:07:18Z"
+updated_at: "2026-07-27T23:10:32Z"
 ---
 
 # Goal

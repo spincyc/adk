@@ -57,8 +57,16 @@ monitor-describe: arduino-check
 serial-log: arduino-check | $(BUILD_MARKER)
 	@test -n "$(PORT)" || { echo "Set PORT=/dev/ttyACM0."; exit 1; }
 	mkdir -p "$(dir $(SERIAL_LOG))"
-	$(ARDUINO_CLI) monitor \
+	@monitor_status_file="$(SERIAL_LOG).monitor-status.$$$$"; \
+	trap 'rm -f -- "$$monitor_status_file"' 0 1 2 3 15; \
+	{ "$(ARDUINO_CLI)" monitor \
 		--port "$(PORT)" \
 		--fqbn "$(BOARD_FQBN)" \
 		--config "baudrate=$(BAUD)" \
-		--timestamp | tee "$(SERIAL_LOG)"
+		--timestamp; \
+		echo $$? > "$$monitor_status_file"; \
+	} | tee "$(SERIAL_LOG)"; \
+	tee_status=$$?; \
+	test -r "$$monitor_status_file" || exit 1; \
+	read monitor_status < "$$monitor_status_file"; \
+	test "$$monitor_status" -eq 0 && test "$$tee_status" -eq 0
