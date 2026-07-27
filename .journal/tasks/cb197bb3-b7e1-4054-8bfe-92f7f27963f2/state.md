@@ -2,7 +2,7 @@
 schema_version: 1
 task_uuid: "cb197bb3-b7e1-4054-8bfe-92f7f27963f2"
 title: "add native C++ consumer packaging"
-status: "queued"
+status: "active"
 priority: "normal"
 priority_reason: "Recovered audit prompt 7; ordered by the repository recovery audit."
 parent: null
@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-27T22:00:43Z"
+updated_at: "2026-07-27T23:16:35Z"
 ---
 
 # Goal
