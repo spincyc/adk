@@ -21,7 +21,8 @@ briefs come from [the project catalog](PROJECTS.md).
 | Boundary | State | Required next result |
 |---|---|---|
 | [001--021](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [022--024](design/LESSONS_022_024.md) | Queued | Owned bus/storage transaction boundary, inert load policy, and greenhouse project |
+| [022](design/LESSONS_022_024.md) | Active integration | Owned fixed-capacity I2C/SPI transaction foundation, tests, example, and lesson package |
+| [023--024](design/LESSONS_022_024.md) | Queued | Inert load policy and greenhouse project |
 | [025--027](design/LESSONS_025_027_TELEMETRY.md) | Queued | Decoded owned IR, lawful receive-only observations, and telemetry console |
 | [028--030](design/LESSONS_028_030.md) | Queued | Fault/continuity models, deterministic cue scheduling, and physically inert show-cue simulator |
 
@@ -85,7 +86,7 @@ controller. They remain outside the Arduino lesson support claim.
 | Track | Current evidence | Physical work still required |
 |---|---|---|
 | [Transparent USB product](research/USB_TRANSPARENT_PRODUCT.md) | Product terms, dynamic exclusive routes, profiles, fencing, deterministic controller and Linux USB/IP prototype | Physical computer attachment unit and peripheral attachment unit; native Windows/Linux enumeration; SuperSpeed class/topology matrix; protected VBUS; PoE budget; signal integrity, throughput, latency, recovery, security, and USB-IF work |
-| [HDMI mesh](research/HDMI_MESH_ARCHITECTURE.md) | Interpreted media/reconstruction architecture, dynamic routes, profiles, deterministic controller, shared-fabric policy | Licensed receiver/transmitter and FPGA/SoC endpoints; synthetic unprotected video; EDID/CEC/audio; 4K then 8K measurements; latency, integrity, PTP, failover, thermal/EMC, HDMI adopter and HDCP work |
+| [HDMI mesh](research/HDMI_MESH_ARCHITECTURE.md) | Interpreted media/reconstruction architecture, dynamic routes, profiles, deterministic controller, shared-fabric policy, and synthetic read-only CLI evidence | Licensed receiver/transmitter and FPGA/SoC endpoints; synthetic unprotected video; EDID/CEC/audio; 4K then 8K measurements; latency, integrity, PTP, failover, thermal/EMC, HDMI adopter and HDCP work |
 | [Shared fabric](research/SHARED_USB_HDMI_FABRIC.md) | Named admission profiles, pinning/fallback policy, ordinary-LAN headroom, observable fault states | Managed-switch lab, traffic isolation, capacity and PoE measurements, congestion/fault injection, and simultaneous USB/HDMI qualification |
 
 The Mega 2560 may provide buttons, status, telemetry, and fault-injection
