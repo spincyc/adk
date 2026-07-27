@@ -106,7 +106,7 @@ A lesson example should be much smaller than its nearest project ceiling.
 Debug text and serial diagnostics count; acceptance measurements use the
 documented release configuration, not a hand-edited quiet variant.
 
-## Required targets through the adaptive night light
+## Required targets through the traffic junction
 
 Size coverage follows the lesson cadence. A missing target is a failed gate,
 not an omitted row.
@@ -122,6 +122,9 @@ not an omitted row.
 | Lesson 007 | `AnalogInput` and potentiometer example | Component delta and global limits |
 | Lesson 008 | Calibration, moving-average, and deadband example | Component deltas and global limits |
 | Lesson 009 | Adaptive night-light project | 16 KiB / 768 B project limit |
+| Lesson 010 | Shift-register and seven-segment example | Component deltas and global limits |
+| Lesson 011 | Deterministic traffic-state example | Behavior delta and global limits |
+| Lesson 012 | Traffic-junction project | 24 KiB / 1,024 B project limit |
 
 Simon measurements include both fixed and seeded cue sources in the canonical
 project so dead-code elimination cannot hide either.
