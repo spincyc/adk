@@ -29,3 +29,32 @@ make usb-mesh-check
 
 The production design remains in `docs/research/USB3_MESH_*.md`. This model is
 not a supported ADK library interface.
+
+## Product-native Stage 0b model
+
+`product_model.h` and `product_model.cpp` are a separate deterministic model
+of the accepted product vocabulary. They bind one complete `TopologyIdentity`
+at a Pau `PeripheralPort` to one Cau, retain bounded identities and immutable
+plan digests, distinguish profile selection from failure policy, and reduce
+ordered `ColdMove` evidence into a visible state.
+
+The model never controls USB, VBUS, Ethernet, or an operating system. A power
+observation records only synthetic evidence supplied by a test. In particular,
+`Discharged`, `On`, and `Active` are model states, not physical claims.
+Controller loss fails off and visibly enters `ControllerLost`; a newer
+controller term may begin recovery but cannot restore an old attachment.
+
+`FakeJournal` is a fixed-capacity append-only witness for deterministic tests.
+It is neither durable storage nor a cryptographic audit log. Compile the
+isolated test without changing the repository build graph:
+
+```sh
+c++ -std=c++17 -Wall -Wextra -Werror -pedantic \
+    -fno-exceptions -fno-rtti \
+    -Iresearch/usb_mesh \
+    research/usb_mesh/product_model.cpp \
+    research/usb_mesh/test_product_model.cpp \
+    -o /tmp/adk-usb-product-model
+
+/tmp/adk-usb-product-model
+```
