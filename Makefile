@@ -5,6 +5,7 @@ include mk/arduino.mk
 include mk/docs.mk
 include mk/site.mk
 include mk/style.mk
+include mk/legacy.mk
 
 .DEFAULT_GOAL := check
 
