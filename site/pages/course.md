@@ -7,7 +7,7 @@ lesson number divisible by three is project-bearing.
 |---:|---|---|---|
 | 001–003 | Digital output, digital input, Button | Reaction timer | Hardware experimental |
 | 004–006 | PWM, RGB LED, sounder | Simon | Hardware experimental |
-| 007–009 | Analog input, calibration, filtering | Adaptive night light | Planned |
+| 007–009 | Analog input, calibration, filtering | Adaptive night light | Hardware experimental |
 | 010–012 | Shift register, display, timed states | Traffic junction | Planned |
 | 013–015 | Environmental sensor, LCD, records | Environmental station | Planned |
 | 016–018 | Keypad, servo, persistence | Inert access trainer | Planned |

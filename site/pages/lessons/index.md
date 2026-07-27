@@ -11,6 +11,9 @@ third lesson for a deterministic integration project.
 | [004](004.md) | Common-cathode RGB LED | PWM ownership and composition |
 | [005](005.md) | Passive piezo | Timer ownership and explicit duration |
 | [006](006.md) | Simon | Seeded cues and complete input snapshots |
+| [007](007.md) | Potentiometer and PWM LED | Raw ADC evidence and explicit calibration |
+| [008](008.md) | Sample filter | Reproducible filtering and fault observation |
+| [009](009.md) | Adaptive night light | Hysteresis and multi-component diagnosis |
 
 These interfaces are host verified and compile for the Mega 2560. They remain
 experimental until their physical acceptance cards are recorded. Historical

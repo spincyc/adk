@@ -112,10 +112,13 @@ def stage() -> None:
     )
     canonical_docs = (
         "ARCHITECTURE.md",
+        "CLI.md",
         "COMPONENTS.md",
         "COMPARABLE_PROJECTS.md",
         "CURRICULUM.md",
         "DEVELOPMENT.md",
+        "MEGA_ADC_NOTES.md",
+        "NETWORK_MATRIX_CONSTRAINTS.md",
         "PACKAGING.md",
         "PDF_POLICY.md",
         "PROJECTS.md",
@@ -134,6 +137,11 @@ def stage() -> None:
         destination = SOURCE_ROOT / "docs/projects" / project.name
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(project, destination)
+    copy_tree(
+        ROOT / "docs/research",
+        SOURCE_ROOT / "docs/research",
+        required=False,
+    )
     copy_tree(ROOT / "site/pages", SOURCE_ROOT, required=False)
     copy_tree(ROOT / "site/assets", SOURCE_ROOT / "assets")
     copy_lesson_materials()

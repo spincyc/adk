@@ -16,6 +16,7 @@ theme:
 nav:
   - Home: index.md
   - Start here: start.md
+  - Command-line workflow: docs/CLI.md
   - Course map: course.md
   - Lessons:
       - Course map: lessons/index.md
@@ -25,6 +26,9 @@ nav:
       - "004 — PWM and RGB": lessons/004.md
       - "005 — Piezo sounder": lessons/005.md
       - "006 — Simon": lessons/006.md
+      - "007 — Analog input": lessons/007.md
+      - "008 — Sampled signal": lessons/008.md
+      - "009 — Adaptive night light": lessons/009.md
   - Components: components.md
   - Supported API: api-supported.md
   - Design:
@@ -35,7 +39,13 @@ nav:
       - Projects: docs/PROJECTS.md
       - Roadmap: docs/ROADMAP.md
       - Style: docs/STYLE.md
+      - Mega ADC notes: docs/MEGA_ADC_NOTES.md
       - Comparable projects: docs/COMPARABLE_PROJECTS.md
+  - Network research:
+      - Shared constraints: docs/NETWORK_MATRIX_CONSTRAINTS.md
+      - HDMI 8K architecture: docs/research/HDMI_8K_NETWORK.md
+      - HDMI 8K quantitative study: docs/research/hdmi_8k_switched_network.md
+      - USB 3 matrix: docs/research/USB3_NETWORK_MATRIX.md
   - Projects:
       - Cadence: projects/cadence.md
       - Reaction timer: docs/projects/reaction_timer.md
