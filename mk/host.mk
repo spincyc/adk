@@ -31,6 +31,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_matrix_keypad \
 	$(BUILD_DIR)/host/test_mono_led \
 	$(BUILD_DIR)/host/test_button \
+	$(BUILD_DIR)/host/test_character_display \
 	$(BUILD_DIR)/host/test_climate_sensor \
 	$(BUILD_DIR)/host/test_dht11_sensor \
 	$(BUILD_DIR)/host/test_night_light \
@@ -100,6 +101,15 @@ $(BUILD_DIR)/host/test_button: $(HOST_IO_SOURCES) src/button.cpp \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_IO_SOURCES) src/button.cpp tests/test_button.cpp \
 		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_character_display: $(HOST_CORE_SOURCES) \
+		src/board.cpp src/character_display.cpp src/climate_sensor.cpp \
+		tests/fake_arduino/Arduino.cpp tests/test_character_display.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/board.cpp src/character_display.cpp \
+		src/climate_sensor.cpp tests/fake_arduino/Arduino.cpp \
+		tests/test_character_display.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_climate_sensor: $(HOST_CORE_SOURCES) \
 		src/climate_sensor.cpp tests/test_climate_sensor.cpp \
