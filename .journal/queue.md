@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-07-27T23:16:53Z"
+generated_at: "2026-07-27T23:22:01Z"
 task_count: 18
 ---
 
@@ -10,7 +10,7 @@ This file is a rebuildable view. Task `state.md` files are authoritative.
 
 ## Active
 
-- `cb197bb3-b7e1-4054-8bfe-92f7f27963f2` — add native C++ consumer packaging [active, normal]
+None.
 
 ## Queued
 
@@ -38,3 +38,4 @@ None.
 - `efdb8701-d7fe-490e-9a85-d0116f37e4fc` — implement lesson 030 capstone [done, high] (depends on d6a8e538-7ae1-4522-9b37-ffa79055b36b)
 - `3cbaec90-9c9d-421e-b129-34bbdb477340` — repair bootstrap and serial tooling [done, normal]
 - `957366fa-d370-4060-89a3-40ec5c4a1722` — finish site navigation and deployment verification [done, normal] (depends on d6a8e538-7ae1-4522-9b37-ffa79055b36b)
+- `cb197bb3-b7e1-4054-8bfe-92f7f27963f2` — add native C++ consumer packaging [done, normal]
