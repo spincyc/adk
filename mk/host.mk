@@ -31,6 +31,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_io \
 	$(BUILD_DIR)/host/test_keypad \
 	$(BUILD_DIR)/host/test_matrix_keypad \
+	$(BUILD_DIR)/host/test_mega_bus_driver \
 	$(BUILD_DIR)/host/test_mono_led \
 	$(BUILD_DIR)/host/test_motor_intent \
 	$(BUILD_DIR)/host/test_button \
@@ -112,6 +113,14 @@ $(BUILD_DIR)/host/test_matrix_keypad: $(HOST_IO_SOURCES) src/keypad.cpp \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_IO_SOURCES) src/keypad.cpp src/matrix_keypad.cpp \
 		tests/test_matrix_keypad.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_mega_bus_driver: $(HOST_CORE_SOURCES) \
+		src/i2c_bus.cpp src/mega_bus_driver.cpp src/spi_bus.cpp \
+		tests/test_mega_bus_driver.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/i2c_bus.cpp src/mega_bus_driver.cpp \
+		src/spi_bus.cpp tests/test_mega_bus_driver.cpp \
+		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_mono_led: $(HOST_IO_SOURCES) src/mono_led.cpp \
 		tests/test_mono_led.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
