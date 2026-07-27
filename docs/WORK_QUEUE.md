@@ -36,8 +36,8 @@ Deferred but retained: physical RTC and removable-media adapters require exact
 specimen selection, primary datasheets, electrical qualification, and their
 own failure and bench evidence. Lesson 022 supports deterministic RTC state and
 fixed-storage durability models, not physical RTC or SD hardware. Lesson 017's
-configuration codec also needs exhaustive every-byte corruption, erased,
-oversized, generation-wrap, and replay tests before that evidence is exhaustive.
+configuration codec has exhaustive every-byte corruption, erased, oversized,
+generation-wrap, and deterministic replay coverage.
 
 ## Kit expansion
 
