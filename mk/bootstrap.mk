@@ -3,6 +3,7 @@ ARCH_PACKAGES := \
 	base-devel \
 	clang \
 	ghostscript \
+	mkdocs \
 	poppler \
 	python \
 	texlive-basic \

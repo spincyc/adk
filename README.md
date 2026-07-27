@@ -51,8 +51,10 @@ No port or developer-specific installation path is committed.
 | `make arduino` | Compile every lesson for the Mega 2560 |
 | `make lessons` | Generate all lesson PDFs |
 | `make lessons-check` | Generate PDFs and validate their basic structure and size |
-| `make format` | Apply the configured C++ formatter |
-| `make format-check` | Check formatting without changing files |
+| `make site` | Build the GitHub Pages artifact in `build/site` |
+| `make site-check` | Build and validate site structure, links, assets, and PDFs |
+| `make site-serve` | Preview the site at `http://127.0.0.1:8000` |
+| `make style-check` | Enforce ADK rules that ClangFormat cannot fully express |
 | `make clean` | Remove generated build intermediates |
 
 The default target does not compile firmware or generate PDFs.

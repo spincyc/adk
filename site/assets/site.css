@@ -1,0 +1,93 @@
+:root
+{
+    --adk-ink:       #20231f;
+    --adk-muted:     #62685f;
+    --adk-paper:     #f6f3e9;
+    --adk-panel:     #fffdf7;
+    --adk-rule:      #d2ccbc;
+    --adk-accent:    #285c45;
+    --adk-highlight: #bd612f;
+}
+
+body
+{
+    color: var(--adk-ink);
+    background: var(--adk-paper);
+    font-size: 1rem;
+    line-height: 1.65;
+}
+
+body > header
+{
+    border-bottom: 1px solid var(--adk-rule);
+    background: var(--adk-panel);
+}
+
+body > header a
+{
+    color: var(--adk-ink);
+}
+
+body > main
+{
+    max-width: 74rem;
+}
+
+article
+{
+    max-width: 52rem;
+}
+
+h1,
+h2,
+h3,
+h4
+{
+    color: var(--adk-ink);
+    line-height: 1.2;
+}
+
+a
+{
+    color: var(--adk-accent);
+    text-underline-offset: 0.16em;
+}
+
+pre,
+code
+{
+    background: var(--adk-panel);
+}
+
+pre
+{
+    border: 1px solid var(--adk-rule);
+    border-radius: 0.35rem;
+}
+
+blockquote
+{
+    border-left-color: var(--adk-highlight);
+    color: var(--adk-muted);
+}
+
+table
+{
+    display: block;
+    overflow-x: auto;
+}
+
+th,
+td
+{
+    border-color: var(--adk-rule);
+}
+
+a[href$=".pdf"]::after
+{
+    content: " · PDF";
+    color: var(--adk-muted);
+    font-size: 0.75em;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}

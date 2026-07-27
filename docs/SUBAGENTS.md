@@ -30,6 +30,15 @@ Updated: 2026-07-27
 | API naming review | Complete | Found `InputPullup` and parenthesis-style inconsistencies |
 | Header review | Complete | Standalone/header/archive consumer builds passed |
 | Size review | Complete | Quantified host flags and identified virtual-registry AVR cost |
+| Pages architecture | Complete | Added self-contained stock-MkDocs staging and build |
+| Documentation taxonomy | Complete | Added learner, library-user, and contributor navigation |
+| API documentation | Complete | Separated current compatibility API from planned RAII API |
+| Pages workflow | Complete | Added SHA-pinned, least-privilege build and deploy jobs |
+| Site accessibility | Complete | Added WCAG, diagram, mobile, print, and PDF requirements |
+| Site content audit | Complete | Added build, contribution, project, and about pages |
+| Site build-tool review | Complete | Compared official Arch generators and selected MkDocs |
+| Site validation | Complete | Added semantic HTML, link, fragment, asset, and PDF checks |
+| Simon design documentation | Complete | Added deterministic engine, replay, test, and lesson plan |
 
 No subagent is authorized to push. Editing assignments use disjoint file sets;
 the primary agent integrates, tests, reviews, and commits the results.
