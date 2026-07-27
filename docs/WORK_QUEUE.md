@@ -27,11 +27,9 @@ not promote work or replace this ledger.
 - The exact kit inventory template and honest planned-versus-supported coverage
   language are committed. Physical inventory records remain open.
 
-Do not lose these release blockers:
+Do not lose this release blocker:
 
-1. add native archive/export and consumer-smoke targets before claiming
-   general non-Arduino C++ installation;
-2. run the full clean quality gate, release, push, and verify GitHub Pages only
+1. run the full clean quality gate, release, push, and verify GitHub Pages only
    after the promoted lesson boundary is clean.
 
 The canonical post-030 order remains lessons 031--081, one implementation-depth

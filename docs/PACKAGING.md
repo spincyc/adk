@@ -1,4 +1,4 @@
-# Arduino packaging
+# Packaging
 
 ADK is both a normal C++ library and an Arduino library. The repository root is
 the Arduino library root. A release must install from Library Manager without
@@ -190,6 +190,44 @@ executable files, and compiles every packaged example without `--library .`.
 Record flash and static RAM sizes. Fail CI when an established example exceeds
 its explicit budget without an approved update.
 
+## Native C++ source archive
+
+The separate native export is intentionally narrower than Arduino packaging:
+
+```sh
+make native-package
+make native-package-smoke
+```
+
+`native-package` writes `build/package/adk-native.tar.gz` with this layout:
+
+```text
+adk-native/
+├── include/adk/          public declaration headers
+├── src/                  Arduino-header-free C++ sources
+├── manifest/
+│   ├── README.md         exact scope and limitations
+│   └── sources.txt       authoritative compiled-source inventory
+├── LICENSE
+└── README.md
+```
+
+The archive contains source, not a prebuilt library. The smoke target extracts
+it into a clean temporary directory, compiles every manifest entry as C++17,
+creates a deterministic `libadk.a`, then builds and runs an
+`InertChannelAssessor` consumer with no repository-relative inputs.
+
+All public declaration headers are exported so peer includes resolve, but the
+manifest intentionally omits Arduino-bound endpoint implementations. Header
+presence is not a claim that a hardware-facing type links or operates on a
+native host. The demonstrated support claim is limited to the portable source
+set and value-only consumer exercised by the smoke test. There is no system
+installer, CMake package, pkg-config metadata, package-manager integration, or
+cross-toolchain ABI promise.
+
+This export does not change `library.properties`, the Arduino archive layout,
+or `package-smoke`; both packaging gates remain independently required.
+
 ## Release gate
 
 Before tagging:
@@ -202,8 +240,10 @@ Before tagging:
 4. Confirm it contains no build output, `.development`, symlinks, submodules, or
    executable binaries.
 5. Compile every example from a clean archive installation.
-6. Commit the version change.
-7. Create and push the matching release tag, conventionally `v0.1.0`.
+6. Build the native source archive and run its clean C++17 consumer smoke test.
+7. Confirm every native manifest path resolves inside the export.
+8. Commit the version change.
+9. Create and push the matching release tag, conventionally `v0.1.0`.
 
 The version value is `0.1.0`; the Git tag may be `v0.1.0`. Never move or replace
 a published tag. Increment the version and publish a new tag instead.

@@ -7,7 +7,8 @@ QUALITY_ARCH_PACKAGES = base-devel clang
 	quality-tools quality-packages host-size-check firmware-size-check \
 	host-test-sanitize serial-log-test deployed-site-test arduino-lint
 
-quality: quality-fast firmware-size-check package-smoke lessons-check site-check
+quality: quality-fast firmware-size-check package-smoke native-package-smoke \
+	lessons-check site-check
 
 quality-fast: quality-tools quality-lint quality-test quality-size
 

@@ -105,6 +105,20 @@ make serial-log PORT=/dev/ttyACM0 SERIAL_LOG=build/serial/lesson001.log
 Circuit-native evidence remains authoritative. See the
 [complete command-line workflow](docs/CLI.md).
 
+## Native C++ source archive
+
+```sh
+make native-package
+make native-package-smoke
+```
+
+The first command writes `build/package/adk-native.tar.gz`. The second extracts
+only that artifact in a temporary directory, compiles its manifest-listed
+sources as C++17 into `libadk.a`, and links and runs a value-only consumer.
+This proves the exported portable source boundary; it is not a system
+installation, package-manager integration, ABI promise, or native-hardware
+support claim.
+
 ## Contracts
 
 - [Command-line workflow](docs/CLI.md)
