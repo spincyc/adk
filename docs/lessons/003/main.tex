@@ -249,9 +249,9 @@ timerConfig.resultDuration  = adk::Duration (1000);
 
 adk::ReactionTimer timer (timerConfig);
 
-const bool cueReady    = cue.initialize     () == adk::Status::Ok;
-const bool buttonReady = trigger.initialize () == adk::Status::Ok;
-const bool timerReady  = timer.initialize   () == adk::Status::Ok;
+const bool cueReady    = cue.initialize     ().ok ();
+const bool buttonReady = trigger.initialize ().ok ();
+const bool timerReady  = timer.initialize   ().ok ();
 
 if (!(cueReady && buttonReady && timerReady))
 {
@@ -267,7 +267,7 @@ This endpoint-focused listing uses the exact supported API. The canonical
 \texttt{MonoLed} and obtains the registry from \texttt{Runtime}. Its
 \texttt{LED\_BUILTIN} pin is D13; for the exact external D8 circuit in this
 lesson, make a local example copy and change only that constructor argument to
-8. Notice the aligned calls and explicit \texttt{== Status::Ok} checks.
+8. Notice the aligned calls and explicit \texttt{ok()} checks.
 \texttt{ReactionTimer} is a pure state owner; the GPIO owners perform hardware
 cleanup. No callback runs during cleanup.
 
@@ -376,8 +376,8 @@ void loop ()
                            : adk::Level::Low;
     const adk::Status outputStatus = cue.write (level);
 
-    if (!(timerStatus == adk::Status::Ok &&
-          outputStatus == adk::Status::Ok))
+    if (!(timerStatus.ok () &&
+          outputStatus.ok ()))
     {
         trigger.shutdown ();
         cue.shutdown     ();

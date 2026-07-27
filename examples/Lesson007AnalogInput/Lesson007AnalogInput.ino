@@ -45,7 +45,7 @@ void loop ()
     const adk::AnalogInput::Reading position   = potentiometer.read           ();
     const adk::PwmOutput::Duty      brightness = chooseBrightness             (position);
 
-    if (brightnessLed.write (brightness) != adk::Status::Ok)
+    if (!brightnessLed.write (brightness).ok ())
     {
         stopSafely ();
     }
@@ -55,18 +55,18 @@ namespace {
 
     bool acquireCircuit ()
     {
-        if (diagnosticLed.initialize () != adk::Status::Ok)
+        if (!diagnosticLed.initialize ().ok ())
         {
             return false;
         }
 
-        if (potentiometer.initialize () != adk::Status::Ok)
+        if (!potentiometer.initialize ().ok ())
         {
             diagnosticLed.shutdown ();
             return false;
         }
 
-        if (brightnessLed.initialize () != adk::Status::Ok)
+        if (!brightnessLed.initialize ().ok ())
         {
             potentiometer.shutdown ();
             diagnosticLed.shutdown ();
@@ -78,7 +78,7 @@ namespace {
 
     bool showReady ()
     {
-        return diagnosticLed.on () == adk::Status::Ok;
+        return diagnosticLed.on ().ok ();
     }
 
     adk::PwmOutput::Duty chooseBrightness (adk::AnalogInput::Reading position)

@@ -82,7 +82,7 @@ void loop ()
 
     const adk::Status decision = decideGame (now, observation);
 
-    if (!(decision == adk::Status::Ok))
+    if (!decision.ok ())
     {
         stopSafely ();
         return;
@@ -121,19 +121,19 @@ namespace {
 
         for (uint8_t index = 0; index < adk::Simon::cueCount; ++index)
         {
-            ready = (cueButtons[index]->initialize () == adk::Status::Ok) && ready;
+            ready = cueButtons[index]->initialize ().ok () && ready;
         }
 
         for (uint8_t index = 0; index < adk::Simon::cueCount; ++index)
         {
-            ready = (cueLeds[index]->initialize () == adk::Status::Ok) && ready;
+            ready = cueLeds[index]->initialize ().ok () && ready;
         }
 
-        ready = (statusLed.initialize () == adk::Status::Ok) && ready;
+        ready = statusLed.initialize ().ok () && ready;
 
-        ready = (sounder.initialize () == adk::Status::Ok) && ready;
+        ready = sounder.initialize ().ok () && ready;
 
-        ready = (simon.initialize () == adk::Status::Ok) && ready;
+        ready = simon.initialize ().ok () && ready;
 
         if (!ready)
         {
@@ -196,7 +196,7 @@ namespace {
         for (uint8_t index = 0; index < adk::Simon::cueCount; ++index)
         {
             const bool active = (mask & static_cast<uint8_t> (1u << index)) != 0;
-            ready = (cueLeds[index]->set (active) == adk::Status::Ok) && ready;
+            ready = cueLeds[index]->set (active).ok () && ready;
         }
 
         return ready;
@@ -214,7 +214,8 @@ namespace {
             previousCue = snapshot.displayedCue;
             cueVisible  = true;
             return sounder.play (frequencyFor (snapshot.displayedCue),
-                                 gameConfig.cueOnDuration, now) == adk::Status::Ok;
+                                 gameConfig.cueOnDuration,
+                                 now).ok ();
         }
 
         if (!snapshot.hasDisplayedCue)
@@ -230,12 +231,12 @@ namespace {
         if (snapshot.phase == adk::SimonPhase::RoundSuccess ||
             snapshot.phase == adk::SimonPhase::GameSuccess)
         {
-            return sounder.play (880, adk::Duration (150), now) == adk::Status::Ok;
+            return sounder.play (880, adk::Duration (150), now).ok ();
         }
 
         if (snapshot.phase == adk::SimonPhase::GameFailure)
         {
-            return sounder.play (110, adk::Duration (300), now) == adk::Status::Ok;
+            return sounder.play (110, adk::Duration (300), now).ok ();
         }
 
         return true;
@@ -266,7 +267,7 @@ namespace {
             case adk::SimonPhase::Idle: break;
         }
 
-        return statusLed.set (color) == adk::Status::Ok;
+        return statusLed.set (color).ok ();
     }
 
     bool presentGame (adk::TimePoint now, const adk::SimonSnapshot& snapshot)

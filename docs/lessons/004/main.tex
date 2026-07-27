@@ -225,7 +225,7 @@ adk::Runtime   runtime;
 adk::PwmOutput red (runtime.resources (), 6, 0);
 
 adk::Status status = red.initialize ();
-if (status == adk::Status::Ok)
+if (status.ok ())
 {
     status = red.write (128);
 }
@@ -250,7 +250,7 @@ adk::RgbLed  led (runtime.resources (),
                   {5, 220},
                   {3, 220});
 
-if (led.initialize () == adk::Status::Ok)
+if (led.initialize ().ok ())
 {
     led.set (adk::Rgb (255, 64, 0));
     led.off ();

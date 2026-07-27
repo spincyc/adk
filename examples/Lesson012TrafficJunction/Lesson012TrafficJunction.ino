@@ -64,7 +64,7 @@ void loop ()
     const adk::Status          status      = decideJunction    (now, observation);
     const adk::TrafficSnapshot decision    = junction.snapshot ();
 
-    if (status != adk::Status::Ok || !actuateJunction (now, decision))
+    if (!status.ok () || !actuateJunction (now, decision))
     {
         haltJunction ();
     }
@@ -88,23 +88,23 @@ namespace {
 
         for (uint8_t index = 0; index < 8; ++index)
         {
-            if (signals[index]->initialize () != adk::Status::Ok)
+            if (!signals[index]->initialize ().ok ())
             {
                 shutdownJunction ();
                 return false;
             }
         }
 
-        if (requestButton.initialize () != adk::Status::Ok ||
-            countdown.initialize            () != adk::Status::Ok ||
-            acquisitionIndicator.initialize () != adk::Status::Ok ||
-            junction.initialize             () != adk::Status::Ok)
+        if (!requestButton.initialize ().ok () ||
+            !countdown.initialize            ().ok () ||
+            !acquisitionIndicator.initialize ().ok () ||
+            !junction.initialize             ().ok ())
         {
             shutdownJunction ();
             return false;
         }
 
-        if (acquisitionIndicator.on () != adk::Status::Ok)
+        if (!acquisitionIndicator.on ().ok ())
         {
             shutdownJunction ();
             return false;
@@ -142,33 +142,33 @@ namespace {
 
     bool showSignals (const adk::TrafficSignals& signals)
     {
-        if (mainGreen.off      () != adk::Status::Ok ||
-            sideGreen.off      () != adk::Status::Ok ||
-            pedestrianWalk.off () != adk::Status::Ok ||
-            mainYellow.off     () != adk::Status::Ok ||
-            sideYellow.off     () != adk::Status::Ok ||
-            mainRed.on         () != adk::Status::Ok ||
-            sideRed.on         () != adk::Status::Ok ||
-            pedestrianStop.on  () != adk::Status::Ok)
+        if (!mainGreen.off      ().ok () ||
+            !sideGreen.off      ().ok () ||
+            !pedestrianWalk.off ().ok () ||
+            !mainYellow.off     ().ok () ||
+            !sideYellow.off     ().ok () ||
+            !mainRed.on         ().ok () ||
+            !sideRed.on         ().ok () ||
+            !pedestrianStop.on  ().ok ())
         {
             return false;
         }
 
-        return mainRed.set        (signals.mainRed)        == adk::Status::Ok &&
-               mainYellow.set     (signals.mainYellow)     == adk::Status::Ok &&
-               mainGreen.set      (signals.mainGreen)      == adk::Status::Ok &&
-               sideRed.set        (signals.sideRed)        == adk::Status::Ok &&
-               sideYellow.set     (signals.sideYellow)     == adk::Status::Ok &&
-               sideGreen.set      (signals.sideGreen)      == adk::Status::Ok &&
-               pedestrianStop.set (signals.pedestrianStop) == adk::Status::Ok &&
-               pedestrianWalk.set (signals.pedestrianWalk) == adk::Status::Ok;
+        return mainRed.set        (signals.mainRed).ok        () &&
+               mainYellow.set     (signals.mainYellow).ok     () &&
+               mainGreen.set      (signals.mainGreen).ok      () &&
+               sideRed.set        (signals.sideRed).ok        () &&
+               sideYellow.set     (signals.sideYellow).ok     () &&
+               sideGreen.set      (signals.sideGreen).ok      () &&
+               pedestrianStop.set (signals.pedestrianStop).ok () &&
+               pedestrianWalk.set (signals.pedestrianWalk).ok ();
     }
 
     bool showCountdown (adk::TimePoint now, const adk::TrafficSnapshot& decision)
     {
         if (!decision.hasDeadline)
         {
-            return countdown.blank () == adk::Status::Ok;
+            return countdown.blank ().ok ();
         }
 
         const uint32_t remainingMs = decision.nextDeadline.milliseconds () -
@@ -180,8 +180,7 @@ namespace {
             seconds = 9U;
         }
 
-        return countdown.show (countdownGlyph (static_cast<uint8_t> (seconds))) ==
-               adk::Status::Ok;
+        return countdown.show (countdownGlyph (static_cast<uint8_t> (seconds))).ok ();
     }
 
     adk::SevenSegmentGlyph countdownGlyph (uint8_t seconds)
@@ -223,14 +222,14 @@ namespace {
     {
         bool complete = true;
 
-        complete = mainGreen.off      () == adk::Status::Ok && complete;
-        complete = sideGreen.off      () == adk::Status::Ok && complete;
-        complete = pedestrianWalk.off () == adk::Status::Ok && complete;
-        complete = mainYellow.off     () == adk::Status::Ok && complete;
-        complete = sideYellow.off     () == adk::Status::Ok && complete;
-        complete = mainRed.on         () == adk::Status::Ok && complete;
-        complete = sideRed.on         () == adk::Status::Ok && complete;
-        complete = pedestrianStop.on  () == adk::Status::Ok && complete;
+        complete = mainGreen.off      ().ok () && complete;
+        complete = sideGreen.off      ().ok () && complete;
+        complete = pedestrianWalk.off ().ok () && complete;
+        complete = mainYellow.off     ().ok () && complete;
+        complete = sideYellow.off     ().ok () && complete;
+        complete = mainRed.on         ().ok () && complete;
+        complete = sideRed.on         ().ok () && complete;
+        complete = pedestrianStop.on  ().ok () && complete;
 
         return complete;
     }

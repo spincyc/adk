@@ -265,7 +265,7 @@ if (!signalsShown)
     stopSafely ();
 }
 
-if (decision != adk::Status::Ok)
+if (!decision.ok ())
 {
     ready.off ();
 }

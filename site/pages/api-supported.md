@@ -26,9 +26,9 @@ only; initialization does not allocate memory.
 
 ## Status
 
-Operations report `adk::Status`, never exceptions:
+Operations report a complete `adk::Status` value, never exceptions:
 
-| Status | Meaning |
+| `StatusCode` from `error()` | Meaning |
 |---|---|
 | `Ok` | Operation completed |
 | `InvalidArgument` | Configuration is internally invalid |
@@ -39,8 +39,15 @@ Operations report `adk::Status`, never exceptions:
 | `CapacityExceeded` | Fixed-capacity storage is full |
 | `HardwareFailure` | The hardware operation failed |
 
-`statusName(status)` returns a short diagnostic name. `Result<T>` couples a
-status with a value; check `ok()` before using `value()`.
+Use `status.ok()` for normal control flow. `error()` exposes the
+`StatusCode` when diagnostics or a specific recovery path needs it.
+`transient()` marks a potentially recoverable cause; it is not an instruction
+to retry. Pass the complete `Status` object to logging and policy code so it can
+also use `statusName(status)`.
+
+`Result<T>` couples a complete status with a value. Check `ok()` before
+`value()`. Use `status()` to pass the complete failure onward, `error()` to
+inspect its code, and `transient()` to classify its cause.
 
 ## Lifecycle
 
@@ -49,7 +56,7 @@ Every owning endpoint or component follows the same contract:
 ```cpp
 adk::Status status = component.initialize ();
 
-if (status != adk::Status::Ok)
+if (!status.ok ())
 {
     // Report the fault without using the component.
 }
@@ -84,7 +91,7 @@ void setup ()
 {
     const adk::Status status = probe.initialize ();
 
-    if (status == adk::Status::Ok)
+    if (status.ok ())
     {
         probe.write (adk::Level::High);
     }
@@ -109,7 +116,7 @@ floating.
 ```cpp
 adk::DigitalInput input (runtime.resources (), 7, adk::Pull::Up);
 
-if (input.initialize () == adk::Status::Ok)
+if (input.initialize ().ok ())
 {
     input.update ();
     const adk::Level stableSnapshot = input.read ();
@@ -139,7 +146,7 @@ bool        buttonReady = false;
 
 void setup ()
 {
-    buttonReady = button.initialize () == adk::Status::Ok;
+    buttonReady = button.initialize ().ok ();
 }
 
 void loop ()
@@ -186,7 +193,7 @@ adk::RgbLed led (runtime.resources (),
                  {5, 220},
                  {3, 220});
 
-if (led.initialize () == adk::Status::Ok)
+if (led.initialize ().ok ())
 {
     led.set (adk::Rgb (255, 64, 0));
 }
@@ -225,7 +232,7 @@ initial reading. `update()` refreshes the cached value returned by `read()`;
 ```cpp
 adk::AnalogInput potentiometer (runtime.resources (), 54); // Mega A0
 
-if (potentiometer.initialize () == adk::Status::Ok)
+if (potentiometer.initialize ().ok ())
 {
     potentiometer.update ();
     const adk::AnalogInput::Reading position = potentiometer.read ();
@@ -261,7 +268,7 @@ const adk::Result<uint16_t> mapped = calibration.map (rawSample);
 
 if (!mapped.ok ())
 {
-    showSensorFault ();
+    showSensorFault (mapped.status ());
     return;
 }
 
@@ -269,7 +276,7 @@ const adk::Result<uint16_t> smooth = average.addSample (mapped.value ());
 
 if (!smooth.ok ())
 {
-    showSensorFault ();
+    showSensorFault (smooth.status ());
     return;
 }
 
@@ -317,7 +324,7 @@ adk::ShiftRegisterOutput registerOutput
     displayPins
 );
 
-if (registerOutput.initialize () == adk::Status::Ok)
+if (registerOutput.initialize ().ok ())
 {
     registerOutput.show (0x3FU);
 }
@@ -399,7 +406,7 @@ cadence, and `shutdown()` returns the data line to high impedance.
 ```cpp
 adk::Dht11Sensor sensor (runtime.resources (), 22);
 
-if (sensor.initialize () == adk::Status::Ok)
+if (sensor.initialize ().ok ())
 {
     const adk::TimePoint now (millis ());
 

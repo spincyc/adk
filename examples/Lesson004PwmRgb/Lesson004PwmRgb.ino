@@ -25,7 +25,7 @@ namespace {
 
 void setup ()
 {
-    ready = led.initialize () == adk::Status::Ok;
+    ready = led.initialize ().ok ();
 
     nextChangeMs = millis ();
 }
@@ -56,7 +56,7 @@ namespace {
 
     void showNextColor ()
     {
-        if (led.set (colors[colorIndex]) != adk::Status::Ok)
+        if (!led.set (colors[colorIndex]).ok ())
         {
             led.shutdown ();
             ready = false;

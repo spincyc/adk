@@ -238,7 +238,7 @@ an application, compare every initialization result explicitly:
 const adk::Status buttonStatus = button.initialize ();
 const adk::Status ledStatus    = led.initialize    ();
 
-if (buttonStatus != adk::Status::Ok || ledStatus != adk::Status::Ok)
+if (!buttonStatus.ok () || !ledStatus.ok ())
 {
     button.shutdown ();
     led.shutdown    ();
@@ -316,7 +316,7 @@ adk::ResourceRegistry resources;
 fake::setDigitalInput   (22, HIGH);
 adk::DigitalInput input (resources, 22, adk::Pull::Up);
 
-require (input.initialize () == adk::Status::Ok);
+require (input.initialize ().ok ());
 require (input.read () == adk::Level::High);
 
 fake::setDigitalInput (22, LOW);
@@ -340,8 +340,8 @@ A conflict is reported as a status:
 adk::DigitalInput owner   (resources, 22, adk::Pull::Up);
 adk::DigitalInput blocked (resources, 22, adk::Pull::Up);
 
-require (owner.initialize () == adk::Status::Ok);
-require (blocked.initialize () == adk::Status::ResourceBusy);
+require (owner.initialize ().ok ());
+require (blocked.initialize ().error () == adk::StatusCode::ResourceBusy);
 \end{lstlisting}
 
 Preserve these assertions when extending the tests:
@@ -354,8 +354,10 @@ Preserve these assertions when extending the tests:
     \item \texttt{update()} reads hardware and changes \texttt{read()};
     \item shutdown is idempotent and restores \texttt{INPUT};
     \item destruction releases the claim;
-    \item a second owner receives \texttt{Status::ResourceBusy};
-    \item an invalid pin receives \texttt{Status::InvalidPin} without touching hardware.
+    \item a second owner reports
+          \texttt{error() == StatusCode::ResourceBusy};
+    \item an invalid pin reports
+          \texttt{error() == StatusCode::InvalidPin} without touching hardware.
 \end{enumerate}
 
 \textbf{Extend the test:} script HIGH, LOW, HIGH, LOW without elapsed time. Record

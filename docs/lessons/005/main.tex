@@ -220,7 +220,7 @@ void setup ()
 {
     const adk::Status status = sounder.initialize ();
 
-    if (status != adk::Status::Ok)
+    if (!status.ok ())
     {
         return;
     }
@@ -238,8 +238,10 @@ void loop ()
 
 \texttt{play(frequency, duration, now)} accepts 31--20,000\,Hz and a duration of
 1--60,000\,ms. Zero duration, an out-of-range frequency, or an excessive duration
-returns \texttt{Status::InvalidArgument} without starting a new tone.
-\texttt{play()} before initialization returns \texttt{Status::NotInitialized}.
+returns a status whose
+\texttt{error() == StatusCode::InvalidArgument} without starting a new tone.
+\texttt{play()} before initialization reports
+\texttt{error() == StatusCode::NotInitialized}.
 
 The API does not call \texttt{delay()}. It stores the supplied start time and
 duration. Each \texttt{update(now)} compares the caller's time with the deadline.
@@ -272,10 +274,10 @@ of silently changing frequency or breaking a tone.
 \toprule
 Existing owner & Sounder initialization & Required evidence\\
 \midrule
-D6 pin owner & \texttt{Status::ResourceBusy} & no pin mode or tone call\\
-Timer2 owner & \texttt{Status::ResourceBusy} & D6 claim rolled back; no hardware call\\
-Unrelated pin/timer owner & \texttt{Status::Ok} & D6 and Timer2 claimed\\
-Same initialized sounder & \texttt{Status::Ok} & no repeated hardware work\\
+D6 pin owner & \texttt{error(): ResourceBusy} & no pin mode or tone call\\
+Timer2 owner & \texttt{error(): ResourceBusy} & D6 claim rolled back; no hardware call\\
+Unrelated pin/timer owner & \texttt{ok(): true} & D6 and Timer2 claimed\\
+Same initialized sounder & \texttt{ok(): true} & no repeated hardware work\\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -295,13 +297,13 @@ fake::reset ();
 adk::ResourceRegistry resources;
 adk::PiezoSounder     sounder (resources, 6);
 
-require (sounder.initialize () == adk::Status::Ok);
+require (sounder.initialize ().ok ());
 require (sounder.play
          (
              440,
              adk::Duration  (250),
              adk::TimePoint (1000)
-         ) == adk::Status::Ok);
+         ).ok ());
 
 sounder.update (adk::TimePoint (1249));
 require        (sounder.sounding ());
@@ -385,7 +387,7 @@ rated voltage: \blank{1.0in}\quad capacitance: \blank{1.0in}
     \item[\checkbox] Part is identified as a passive piezo with suitable rating.
     \item[\checkbox] Exact D6--100\,$\Omega$--piezo--GND path is verified unpowered.
     \item[\checkbox] Clean Mega build succeeds; flash and SRAM sizes are recorded.
-    \item[\checkbox] Initialization returns \texttt{Status::Ok}.
+    \item[\checkbox] Initialization returns a status whose \texttt{ok()} is true.
     \item[\checkbox] Three requested cues sound and end without \texttt{delay()}.
     \item[\checkbox] A simultaneous LED or input task remains responsive.
     \item[\checkbox] Invalid frequency returns \texttt{InvalidArgument} and remains silent.

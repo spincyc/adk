@@ -45,7 +45,7 @@ void loop ()
 
     const adk::Status decision = decide (now);
 
-    if (!(decision == adk::Status::Ok))
+    if (!decision.ok ())
     {
         stopSafely ();
         return;
@@ -53,7 +53,7 @@ void loop ()
 
     const adk::Status output = showTimerState ();
 
-    if (!(output == adk::Status::Ok))
+    if (!output.ok ())
     {
         stopSafely ();
     }
@@ -63,11 +63,11 @@ namespace {
 
     bool initializeProject ()
     {
-        bool ready = triggerButton.initialize () == adk::Status::Ok;
+        bool ready = triggerButton.initialize ().ok ();
 
-        ready = (reactionTimer.initialize () == adk::Status::Ok) && ready;
+        ready = reactionTimer.initialize ().ok () && ready;
 
-        ready = (cueLed.initialize () == adk::Status::Ok) && ready;
+        ready = cueLed.initialize ().ok () && ready;
 
         if (!ready)
         {
