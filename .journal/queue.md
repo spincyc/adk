@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-07-27T23:06:26Z"
+generated_at: "2026-07-27T23:07:37Z"
 task_count: 18
 ---
 
@@ -10,12 +10,11 @@ This file is a rebuildable view. Task `state.md` files are authoritative.
 
 ## Active
 
-None.
+- `3cbaec90-9c9d-421e-b129-34bbdb477340` — repair bootstrap and serial tooling [active, normal]
 
 ## Queued
 
 - `32f5c784-de10-4f37-ae31-0f611697c8e3` — execute the full clean release-readiness gate [queued, high] (depends on efdb8701-d7fe-490e-9a85-d0116f37e4fc, 3cbaec90-9c9d-421e-b129-34bbdb477340, cb197bb3-b7e1-4054-8bfe-92f7f27963f2, 957366fa-d370-4060-89a3-40ec5c4a1722, 73b4e704-b483-424e-ab0c-6ffcac540ef3)
-- `3cbaec90-9c9d-421e-b129-34bbdb477340` — repair bootstrap and serial tooling [queued, normal]
 - `73b4e704-b483-424e-ab0c-6ffcac540ef3` — reconcile release and lint policy [queued, normal] (depends on efdb8701-d7fe-490e-9a85-d0116f37e4fc, 3cbaec90-9c9d-421e-b129-34bbdb477340, cb197bb3-b7e1-4054-8bfe-92f7f27963f2, 957366fa-d370-4060-89a3-40ec5c4a1722)
 - `957366fa-d370-4060-89a3-40ec5c4a1722` — finish site navigation and deployment verification [queued, normal] (depends on d6a8e538-7ae1-4522-9b37-ffa79055b36b)
 - `9de22f03-58c6-4bcc-a991-fd934ea45f80` — deepen the next post-033 block [queued, normal] (depends on d6769eef-c69b-457c-bdf1-5aa7498ae5ab, fb9510ee-13cf-4bb7-a7ad-7b6f7bfce3df)
