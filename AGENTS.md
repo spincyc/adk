@@ -18,5 +18,17 @@ implementation, deterministic tests, Mega 2560 example, HTML reference, rich
 PDF lesson, size evidence, and explicit deferred hardware checks. Every lesson
 number divisible by three is a multi-component project.
 
+Examples are narrative code. Introduce objects in dependency order; shape
+`setup()` as acquire, configure, start; and shape `loop()` as observe, decide,
+actuate. Use domain-action helper names, place high-level flow before low-level
+mechanics, and keep code and lesson vocabulary identical. Avoid comment-heavy
+code and needless one-line helper decomposition.
+
+Every circuit needs a non-Serial observation path: an LED, sounder, display, or
+named electrical test point. Lessons state what to predict, where and when to
+observe it, and how to interpret it. Resource-acquisition evidence and
+safe-state evidence are separate checks. Serial output is optional supporting
+evidence, never the only proof.
+
 Never claim physical verification without a recorded bench acceptance result.
 Never add pyrotechnic ignition, launcher control, or unknown-protocol replay.
