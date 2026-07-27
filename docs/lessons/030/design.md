@@ -44,6 +44,33 @@ preserve them while adding composition:
 
 These are dependency corrections, not capstone-local workarounds.
 
+### Reviewed implementation corrections
+
+The pre-implementation audit resolved three gaps in the earlier sketch:
+
+1. Lesson 029 remains independent of Lesson 028. Lesson 030 copies an
+   `InertCueChannelMap` indexed by plan position. Its count must equal the
+   scheduler's read-only configured cue count, and every mapped channel must
+   be in the assessor's 0--7 range. Cue IDs and channel IDs deliberately differ
+   in fixtures and are never inferred from each other.
+2. The scheduler gains a channel-agnostic evidence gate with `Permit`, `Hold`,
+   and `Fault` dispositions plus a status value. The scheduler remains the sole
+   cue-audit writer. Lesson 030 derives the disposition from an assessment; it
+   does not synthesize button input or append duplicate audit entries.
+3. Dependencies are already constructed but uninitialized. While initialized,
+   the simulator exclusively coordinates their active lifecycle: assessor,
+   then scheduler (which initializes the audit), with reverse rollback.
+   Shutdown stops the scheduler, then assessor, and deliberately leaves the
+   scheduler-owned audit session readable.
+
+The total precedence for a newly accepted frame is cancel, invalid operator
+chord, evidence fault or hold, review release, phase action, then timed
+transition. Full-frame identity is validated before that precedence: an
+identical frame at the same timestamp is idempotent, while any changed
+same-timestamp frame is rejected. A complete observation frame means exactly
+all eight unique channel IDs; input order is canonicalized by channel for
+identity and digest calculation.
+
 ## Public composition API
 
 Prefer one value-oriented coordinator with explicit non-owning references to
@@ -82,6 +109,12 @@ struct InertShowInput
     CueOperatorInput               operatorInput;
 };
 
+struct InertCueChannelMap
+{
+    InertChannelId channels[InertCuePlan::capacity];
+    uint8_t        count;
+};
+
 struct InertShowSnapshot
 {
     InertShowState         state;
@@ -90,11 +123,14 @@ struct InertShowSnapshot
     CueSchedulerSnapshot   schedule;
     uint32_t               auditSequence;
     uint32_t               traceDigest;
+    Status                 status;
+    bool                   hasSelectedChannel;
 };
 
 struct InertShowSimulator
 {
-    InertShowSimulator (InertChannelAssessor& assessor,
+    InertShowSimulator (const InertCueChannelMap& map,
+                        InertChannelAssessor& assessor,
                         InertCueScheduler&     scheduler,
                         CueAuditBuffer&        audit) noexcept;
     ~InertShowSimulator () noexcept;
@@ -117,26 +153,28 @@ same-timestamp identity, and audit atomicity harder to specify. Private
 `observeFrame()` and `decideFrame()` helpers may preserve the instructional
 argument without exposing partial state.
 
-The simulator contains no endpoints and performs no I/O. It coordinates the
-assessor, scheduler, and audit buffer by reference. Their lifetimes must exceed
-its lifetime. Construction is inert, no heap is used, and initialization is
-all-or-none. The coordinator is non-copyable and initially non-movable.
-`shutdown()` first forces the scheduler's no-visible-cue state, records the
-reserved shutdown entry, and then shuts dependencies down in reverse order.
-Repeated shutdown and destruction are safe.
+The simulator contains no endpoints and performs no I/O. It copies the map and
+coordinates the assessor and scheduler by reference; the audit reference is
+read-only observation of the scheduler-owned ledger. All referenced lifetimes
+must exceed its lifetime. Construction is inert, no heap is used, and
+initialization is all-or-none. The coordinator is non-copyable and non-movable.
+`shutdown()` first forces the scheduler's no-visible-cue state and canonical
+Shutdown record, then shuts the assessor down. The ledger remains readable
+until its external storage owner explicitly clears it. Repeated shutdown and
+destruction are safe.
 
 The exact `InertShowInput` storage rule must be documented: `update()` consumes
-the pointed-to observations synchronously and retains no pointer. A nonzero
-count with null storage, a count outside Lesson 028 capacity, an invalid
-channel, a duplicate channel, or an incomplete required-channel set rejects
-the entire frame without changing snapshot, audit, or digest.
+the pointed-to observations synchronously and retains no pointer. The frame
+must contain exactly all eight unique channels. Null storage, another count,
+an invalid or duplicate channel, an invalid observation, or an ambiguous
+timestamp rejects the frame according to the precedence above.
 
 ## Composition rule
 
 For the scheduler's pending cue:
 
 - `Closed` permits confirmation and visible activation;
-- `Open` and `ShortSimulated` hold with distinct nonterminal evidence;
+- `Open` and `ShortSimulated` hold with distinct nonterminal conditions;
 - `Stale` and `Unavailable` hold and require a fresh complete frame;
 - `Contradictory` enters a latched fault;
 - cancel, invalid input, internal invariant failure, and audit exhaustion
@@ -162,9 +200,9 @@ Host tests must cover:
   release plus confirm;
 - audit one-before-full, the reserved shutdown slot, full capacity, and proof
   that an unrecordable transition produces no state or output transition;
-- complete-frame rejection for null storage, excess count, duplicate,
+- complete-frame rejection for null storage, wrong count, duplicate,
   missing, invalid, future, changed-same-time, and replayed frames;
-- repeated identical frames, repeated timestamps, half-range rejection,
+- identical full-frame same-timestamp replay, half-range rejection,
   timestamp rollover, and delayed updates with no catch-up activation;
 - recovery only through renewed review and confirmation;
 - shutdown from every state with a snapshot that requests no visible cue;
