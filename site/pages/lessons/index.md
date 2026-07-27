@@ -25,6 +25,7 @@ third lesson for a deterministic integration project.
 | [018](018.md) | Inert access trainer | Keypad policy, visible state, and bounded audit intent |
 | [019](019.md) | Ultrasonic range | Explicit echo timing, timeout, and range validity |
 | [020](020.md) | Motor intent | Direction, bounded duty, reversal dead time, and stop dominance |
+| [021](021.md) | Bench rover | Range-aware supervision and inert motor-command evidence |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance
