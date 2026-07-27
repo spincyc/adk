@@ -29,6 +29,9 @@ nav:
       - "007 — Analog input": lessons/007.md
       - "008 — Sampled signal": lessons/008.md
       - "009 — Adaptive night light": lessons/009.md
+      - "010 — Shift register display": lessons/010.md
+      - "011 — Timed traffic states": lessons/011.md
+      - "012 — Traffic junction": lessons/012.md
   - Components: components.md
   - Supported API: api-supported.md
   - Design:
@@ -43,11 +46,43 @@ nav:
       - Comparable projects: docs/COMPARABLE_PROJECTS.md
   - Network research:
       - Shared constraints: docs/NETWORK_MATRIX_CONSTRAINTS.md
+      - Shared USB and HDMI fabric: docs/research/SHARED_USB_HDMI_FABRIC.md
       - HDMI 8K architecture: docs/research/HDMI_8K_NETWORK.md
       - HDMI 8K quantitative study: docs/research/hdmi_8k_switched_network.md
+      - HDMI mesh:
+          - Architecture: docs/research/HDMI_MESH_ARCHITECTURE.md
+          - Identity and inventory: docs/research/HDMI_MESH_IDENTITY.md
+          - Control protocol: docs/research/HDMI_MESH_PROTOCOL.md
+          - Reconciler: docs/research/HDMI_MESH_RECONCILER.md
+          - Operator CLI: docs/research/HDMI_MESH_CLI.md
+          - Data plane: docs/research/HDMI_MESH_DATA_PLANE.md
+          - Endpoint hardware: docs/research/HDMI_MESH_ENDPOINT_HARDWARE.md
+          - Security: docs/research/HDMI_MESH_SECURITY.md
+          - Observability: docs/research/HDMI_MESH_OBSERVABILITY.md
+          - Test plan: docs/research/HDMI_MESH_TEST_PLAN.md
       - USB 3 matrix: docs/research/USB3_NETWORK_MATRIX.md
+      - USB 3 operator CLI: docs/research/USB3_MATRIX_CLI.md
+      - Transparent USB product:
+          - Product contract: docs/research/USB_TRANSPARENT_PRODUCT.md
+          - Cross-platform support: docs/research/USB_MESH_CROSS_PLATFORM.md
+          - Windows host support: docs/research/USB_MESH_WINDOWS_HOST.md
+          - Endpoint hardware: docs/research/USB_MESH_ENDPOINT_HARDWARE.md
+          - PoE power: docs/research/USB_MESH_POE_POWER.md
+      - USB 3 mesh:
+          - Architecture: docs/research/USB3_MESH_ARCHITECTURE.md
+          - Identity and inventory: docs/research/USB3_MESH_IDENTITY.md
+          - Control protocol: docs/research/USB3_MESH_PROTOCOL.md
+          - Reconciler: docs/research/USB3_MESH_RECONCILER.md
+          - Operator CLI: docs/research/USB3_MESH_CLI.md
+          - Data plane: docs/research/USB3_MESH_DATA_PLANE.md
+          - Security: docs/research/USB3_MESH_SECURITY.md
+          - Scaling: docs/research/USB3_MESH_SCALING.md
+          - Observability: docs/research/USB3_MESH_OBSERVABILITY.md
+          - Test plan: docs/research/USB3_MESH_TEST_PLAN.md
+      - USB 3 phase 1: projects/usb3-matrix.md
   - Projects:
       - Cadence: projects/cadence.md
+      - USB and HDMI mesh roadmap: projects/mesh-roadmap.md
       - Reaction timer: docs/projects/reaction_timer.md
       - Deterministic Simon: docs/projects/simon.md
   - Agent and release contracts:
