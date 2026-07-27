@@ -10,8 +10,11 @@ include mk/quality.mk
 
 .DEFAULT_GOAL := check
 
-.PHONY: check clean
+.PHONY: check clean help
 check: host-test style-check
+
+help:
+	@awk '/^## [^ ]+  +/ { sub(/^## /, ""); print }' docs/CLI.md
 
 clean:
 	@if test -f "$(BUILD_MARKER)"; then \

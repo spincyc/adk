@@ -53,6 +53,8 @@ See the [live course](https://spincyc.github.io/adk/),
 
 ```sh
 make bootstrap
+make help
+make boards
 make check
 make arduino
 make lessons
@@ -65,8 +67,19 @@ Upload an example:
 make upload EXAMPLE=Lesson001DigitalOutput PORT=/dev/ttyACM0
 ```
 
+Observe or record optional serial diagnostics:
+
+```sh
+make monitor PORT=/dev/ttyACM0 BAUD=115200
+make serial-log PORT=/dev/ttyACM0 SERIAL_LOG=build/serial/lesson001.log
+```
+
+Circuit-native evidence remains authoritative. See the
+[complete command-line workflow](docs/CLI.md).
+
 ## Contracts
 
+- [Command-line workflow](docs/CLI.md)
 - [Development hierarchy](docs/DEVELOPMENT.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Components](docs/COMPONENTS.md)
