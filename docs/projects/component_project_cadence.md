@@ -34,50 +34,54 @@ useful circuit-native display before Serial is connected.
 - Do not energize an unidentified laser, mains circuit, ignition load, or RF
   transmitter.
 
-## Lessons 031--033: balance-table instrument
+## Lessons 031--033: calibration console
 
-### 031 — Joystick and normalized axes
+This input-first block is canonical. The complete interface, experiment, and
+delivery contract is in the
+[input expansion plan](../design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md).
+
+### 031 — Analog joystick
 
 Add two-axis calibration, dead zones, saturation, center drift, and switch
-events over two `AnalogInput` objects and one `Button`.
+events over two `AnalogInput` objects and one `Button`. Keep both raw samples
+beside normalized intent.
 
-### 032 — MPU6050 inertial samples
+### 032 — Quadrature encoder
 
-Add an I2C accelerometer/gyroscope adapter, validated sample units, bias
-calibration, and a deterministic complementary-filter behavior. Transport
-failure, stale data, and physical saturation remain distinct.
+Decode every valid Gray-code edge into a bounded signed count. Invalid
+transitions, reversal, saturation, and the independent push button remain
+observable.
 
-### 033 — Project: balance-table instrument
+### 033 — Project: calibration console
 
-A handheld control surface maps tilt to an 8x8 LED-matrix cursor, uses the
-joystick to adjust sensitivity, and gives pitch feedback as the cursor nears
-an edge. The button freezes one measurement for comparison.
+The joystick selects a field and supplies coarse intent. The encoder trims it.
+Explicit commit and cancel events update two bounded values while the LCD,
+RGB LED, and binary LEDs keep preview and committed state distinct.
 
 ```text
-joystick samples ---+
-                    +--> calibration --> instrument model --> matrix frame
-inertial samples ---+                            |          --> tone intent
-explicit time -----------------------------------+
+joystick samples --> field/coarse intent --+
+encoder edges -----> trim/commit/cancel ----+--> console --> LCD/RGB/LEDs
+explicit time ------------------------------+
 ```
 
 Deterministic evidence:
 
-- golden stationary, tilt, rotation, saturation, and dropout sample traces;
-- filter behavior at exact sample boundaries and timestamp wrap;
-- axis permutation tests proving board orientation is only a mapping;
-- replay equality for matrix frames and tone requests; and
-- I2C NACK, stale sample, and corrupt identity injection.
+- raw minima, centers, dead-zone edges, saturation, and axis inversion;
+- every Gray-code phase, reversal, invalid jump, and count boundary;
+- atomic commit, cancel rollback, simultaneous-event precedence, and timeout;
+- fault recovery only through explicit reinitialization; and
+- byte-identical replay of snapshots and presentation intents.
 
 Circuit-native observation:
 
-- matrix self-test identifies every row and column;
-- the cursor shows calibrated direction without Serial;
-- RGB status distinguishes calibration, live, frozen, and fault;
-- SDA/SCL test points expose bus activity; and
-- joystick center voltage is available at named analog test points.
+- joystick axes have named analog test points;
+- encoder phases have named logic test points;
+- RGB distinguishes selection, editing, commit, cancel, and fault;
+- binary LEDs retain a preview if LCD presentation fails; and
+- shutdown evidence is separate from input-interpretation evidence.
 
-Primary kit coverage: joystick, MPU6050, 8x8 matrix, RGB LED, passive buzzer,
-button, potentiometer, I2C bus, shift/display transport.
+Primary kit coverage: joystick, rotary encoder, buttons, LCD, RGB LED, binary
+LEDs, and optional passive buzzer.
 
 ## Lessons 034--036: magnetic passage logger
 
@@ -87,10 +91,11 @@ Compare digital Hall, analog Hall, reed switch, and ball/tilt switch modules.
 Add polarity, hysteresis, dwell, and explicit open/short/stuck observations.
 Do not use a mercury switch; substitute a sealed ball switch.
 
-### 035 — Rotary position and counted motion
+### 035 — Qualified passage events
 
-Compose a quadrature rotary encoder with explicit edge timestamps, direction,
-detent policy, illegal transition detection, and bounded count arithmetic.
+Compose Hall/reed edges with dwell, direction, duplicate suppression, and
+timeout into one hardware-neutral passage record. Reuse the lesson 032 encoder
+as optional position evidence; do not redefine quadrature decoding.
 
 ### 036 — Project: magnetic passage logger
 
@@ -470,6 +475,43 @@ Circuit-native observation:
 Primary coverage: deliberate reuse of all earlier endpoint families and a
 meaningful integration test for the common kit.
 
+## Deferred lessons 061--063: balance-table instrument
+
+This block follows the canonical 031--060 kit expansion. Its numbers are
+reserved so MPU6050 work cannot collide with the input-first block.
+
+### 061 — MPU6050 inertial samples
+
+Add an owned I2C accelerometer/gyroscope adapter, validated sample units, bias
+calibration, and deterministic complementary filtering. Transport failure,
+stale data, and physical saturation remain distinct.
+
+### 062 — Orientation presentation
+
+Map supplied inertial samples into bounded pitch/roll intent and an 8x8 matrix
+cursor. Board orientation is explicit configuration. Matrix frames and tone
+intent depend only on samples, calibration, and supplied time.
+
+### 063 — Project: balance-table instrument
+
+A handheld instrument maps tilt to a matrix cursor, uses the joystick to adjust
+sensitivity, and freezes one measurement for comparison.
+
+```text
+joystick events ----+
+                    +--> calibration --> orientation --> matrix frame
+inertial samples ---+                         |       --> tone intent
+explicit time --------------------------------+
+```
+
+Evidence includes stationary, tilt, rotation, saturation, dropout, I2C NACK,
+stale-sample, axis-permutation, timestamp-wrap, and byte-identical replay
+fixtures. Matrix self-test, RGB health, SDA/SCL test points, and joystick-axis
+test points provide the non-Serial path.
+
+Primary kit coverage: MPU6050, joystick, 8x8 matrix, RGB LED, passive buzzer,
+button, potentiometer, I2C bus, and shift/display transport.
+
 ## Coverage ledger
 
 This ledger prevents quiet omissions. “Primary” means a project depends on the
@@ -479,8 +521,8 @@ compares electrically similar retail boards.
 | Module family | Primary project | Later reuse |
 |---|---:|---:|
 | LEDs, RGB, buttons, buzzers | 003/006 | all diagnostic paths |
-| Potentiometer, photoresistor | 009 | 033, 039, 042 |
-| Shift register, 7-segment, matrix | 012 | 033, 036, 039 |
+| Potentiometer, photoresistor | 009 | 039, 042, 063 |
+| Shift register, 7-segment, matrix | 012 | 036, 039, 063 |
 | DHT, LCD | 015 | 045 |
 | Keypad, servo | 018 | 051, 054, 060 |
 | Ultrasonic, PIR, DC motor/driver | 021 | 042 |
@@ -488,8 +530,9 @@ compares electrically similar retail boards.
 | IR receiver and remote | 027 | 054 |
 | Receive-capable RF | 027 passive only | no transmit project |
 | Continuity and cue panel | 030 inert only | 060 fault model |
-| Joystick, MPU6050 | 033 | 048, 060 |
-| Hall variants, reed, rotary encoder | 036 | 051, 060 |
+| Joystick, rotary encoder | 033 | 036, 048, 060, 063 |
+| MPU6050 | 063 | future inertial projects |
+| Hall variants, reed | 036 | 051, 060 |
 | Tilt, knock, vibration, shock, sound | 039 | 048, 060 |
 | Line, obstacle, interrupter, light cup | 042 | 057, 060 |
 | Water, rain, soil | 045 | 057 |

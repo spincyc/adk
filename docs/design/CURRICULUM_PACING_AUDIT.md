@@ -62,7 +62,7 @@ introduce hardware abstractions.
 | 017 | Bounding servo position | Narrow to servo command, external-power boundary, and safe inactive behavior. Persistent configuration is not required to prove bounded motion and should become an extension or later appended lesson. |
 | 018 | Composing an inert access-control trainer | Preserve the project. Use compile-time or supplied test credentials so storage is not introduced here. The new concept is deterministic lockout and operator-state composition. |
 | 019 | Distinguishing valid range from no echo | Keep the ultrasonic sensor focused on timeout, range validity, and units. Filtering is reused from 008 rather than retaught. |
-| 020 | Driving a motor through a safe command boundary | Narrow to direction, enable, reversal dead time, and stop dominance. Encoder measurement is a second physical subsystem and should be an optional extension until an appended encoder lesson exists. |
+| 020 | Driving a motor through a safe command boundary | Narrow to direction, enable, reversal dead time, and stop dominance. Encoder measurement is a separate subsystem taught in 032 and is not required by the canonical rover. |
 | 021 | Composing a tabletop bench rover | Preserve the project with scripted motion and range-triggered stop. Do not require closed-loop encoder control in the canonical acceptance test; wheels-raised and inert-indicator stages come first. |
 | 022 | Owning and recording one durable transaction | This is the most overloaded lesson: `I2cBus`, `SpiBus`, RTC, and SD cannot each receive honest treatment. Keep the existing content, but define the lesson's required claim as atomic timestamped record creation through already-supplied bus adapters. Move bus-electrical instruction and driver construction to append-only lessons. |
 | 023 | Enforcing mutually exclusive load intent | Keep relays inert and represented by lamps. The lesson teaches the interlock, not relay contact wiring or mains control. |
@@ -93,15 +93,15 @@ correction:
       -> 018 Access Trainer
 
 019 Range
-  -> 020 safe MotorDriver (encoder optional)
+  -> 020 safe MotorDriver
       -> 021 Bench Rover
 ```
 
 Lesson 022 should consume library-supplied bus adapters rather than pretending
 to teach both I2C and SPI from first principles. This preserves the greenhouse,
-telemetry, and cue dependencies without renumbering. The appended sequence
-below later gives those buses and encoder feedback their own instructional
-space.
+telemetry, and cue dependencies without renumbering. Lesson 032 now gives
+quadrature input its own instructional space; motor-mounted feedback remains a
+later specialization.
 
 ## Recommended time envelope
 
@@ -119,7 +119,12 @@ subsystems; session two runs deterministic scenarios, faults, and the final
 acceptance record. A project that needs a third session is carrying undeclared
 component instruction and should be narrowed.
 
-## Append-only Elegoo expansion
+## Historical append-only recommendation
+
+This section records the pacing audit's original recommendation. It is not the
+numbering authority. The input-first 031--033 block and the canonical 034--060
+sequence are now recorded in the [work queue](../WORK_QUEUE.md) and
+[component-project cadence](../projects/component_project_cadence.md).
 
 The common Mega starter-kit inventory contains useful components not given
 enough instructional space in 001–030: joystick, rotary encoder, stepper motor,
@@ -134,7 +139,7 @@ The first six appended blocks preserve the every-third-lesson project cadence:
 |---:|---|---|---|
 | 031 | Component | Two-axis joystick as calibrated analog input plus a digital press | A supplied trace and physical positions map to neutral directional intent with dead zone |
 | 032 | Component | Rotary encoder transition decoding | Recorded quadrature traces produce direction and bounded count without scan-order ambiguity |
-| 033 | Project | Menu controller | Joystick or encoder navigates the existing LCD menu deterministically and replays the same operator trace |
+| 033 | Project | Calibration console | Joystick selection, encoder trimming, commit, cancel, and visible preview replay deterministically |
 | 034 | Component | Stepper phase sequencing through the rated driver module | A bounded sequence advances known steps and always de-energizes safely |
 | 035 | Component | Position reference and homing with a low-energy switch | Approach, contact, backoff, timeout, and fault states are separately observable |
 | 036 | Project | Tabletop pointer | Homing plus scripted step motion reaches repeatable paper targets without closed-loop claims |
@@ -197,4 +202,3 @@ Before promoting a proposed lesson, answer all of these with concrete nouns:
 
 If the answers name two unrelated abstractions, split or narrow the lesson. If
 the only outcome is “all boxes checked,” reject it as filler.
-
