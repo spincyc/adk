@@ -1,5 +1,10 @@
 # USB 3 network matrix
 
+> **Product boundary:** [the transparent product contract](USB_TRANSPARENT_PRODUCT.md)
+> is authoritative. The product is physical computer USB -> Cau -> shared
+> switched Ethernet -> Pau -> physical peripheral or user-provided hub.
+> Linux USB/IP and virtual-host-controller paths are prototype-only.
+
 Status: research queue  
 Research date: 2026-07-27  
 Target: arbitrary, exclusive host-to-device assignments across an ordinary
@@ -7,19 +12,22 @@ switched Ethernet/IP network
 
 ## Conclusion
 
-A useful USB 3 matrix is feasible, but it is not a transparent wire switch and
-the Mega 2560 cannot carry its data plane. The practical first system is a set
-of Linux USB endpoint appliances running a USB request tunnel over a managed
-10/25 GbE network. ADK and the Mega can provide a physical control and
-observation panel. Each route is an exclusive lease; changing its host produces
-a real USB disconnect, reset, and enumeration.
+A useful USB 3 matrix is plausible research, but it is not a raw wire switch
+and the Mega 2560 cannot carry its data plane. The final product must
+nevertheless be transparent to unmodified Windows and Linux computers: a Cau
+reconstructs the exact topology rooted at one Pau port. The ordinary household
+network is shared with HDMI and other traffic. ADK and the Mega may provide a
+physical control and observation panel. Each route is exclusive; movement
+performs `ColdMove`, producing disconnect and fresh enumeration.
 
-The strongest first prototype uses Linux USB/IP rather than new FPGA logic.
+The strongest control-plane prototype uses Linux USB/IP rather than new FPGA logic.
 It can establish whether routing, device compatibility, latency, security, and
 operator semantics are worth custom hardware. A later FPGA/SoC endpoint may
 reduce jitter or remove host software dependencies, but a general SuperSpeed
 host/device proxy requires licensed controller IP, PHYs, signal-integrity work,
-and substantial protocol engineering.
+and substantial protocol engineering. USB/IP success does not satisfy product
+acceptance because it consumes a virtual host controller and requires Linux
+host software.
 
 “Full USB 3” is therefore a compatibility target to measure, not an initial
 claim. Bulk storage, HID, cameras, audio, composite devices, hubs, disconnects,
@@ -391,4 +399,3 @@ the project becomes a much larger USB gadget-proxy and compatibility effort.
 - [Linux Raw Gadget](https://docs.kernel.org/usb/raw-gadget.html)
 - [USB Type-C connector specification](https://www.usb.org/document-library/usb-type-cr-cable-and-connector-specification-release-25)
 - [USB Type-C source power tests](https://www.usb.org/sites/default/files/USB-C%20Source%20Power%20Test%20Specification%202021%2005%2024.pdf)
-
