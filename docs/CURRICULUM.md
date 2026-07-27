@@ -64,7 +64,9 @@ For every lesson, the queued implementation order is:
 | 022 | Host verified; bench open | Owned `I2cBus`/`SpiBus`, explicit RTC state, and deterministic durable-record models | Bus activity points and durable record acknowledgement |
 | 023 | Host verified; bench open | Constrained simulated loads and watering policy | Mutually exclusive load-state LEDs and a fault pattern |
 | 024 | Host verified; bench open | Greenhouse controller; physical RTC/media adapters remain deferred | Deterministic decision and record replay |
-| 025--027 | Queued | Decoded infrared input, lawful receive-only radio records, scheduling, and telemetry console | Capture indicator, timestamp/age display, stale-data alarm, and stored replay record |
+| 025 | Host verified; bench open | Owned infrared capture and classic NEC-only evidence | Capture indicator and stable receive-only record |
+| 026 | Active integration | Lawful receive-only radio records and freshness tracking | Timestamp/age evidence without transmit support |
+| 027 | Queued | Scheduling and deterministic telemetry console | Stale-data alarm and stored replay record |
 | 028--030 | Queued capstone | Injectable continuity/fault models, deterministic cue scheduling, operator confirmation, and inert show-cue simulator | Redundant state indicators, inert channel lamps, stop dominance, and a complete audit log |
 
 The coordinator promotes a row from queued to active only after its public
