@@ -167,6 +167,53 @@ namespace {
         requireOperation (0, fake::OperationKind::AnalogWrite, 10, 64);
     }
 
+    void testTimerSharingAndRollback ()
+    {
+        fake::reset ();
+
+        adk::ResourceRegistry resources;
+        adk::PwmOutput        first  (resources, 9,  32);
+        adk::PwmOutput        second (resources, 10, 64);
+
+        require (first.initialize () == adk::Status::Ok,
+                 "first timer peer initializes");
+        require (second.initialize () == adk::Status::Ok,
+                 "second timer peer shares timer");
+        require (resources.claimed ({adk::ResourceKind::Timer, 2}),
+                 "shared PWM timer claimed");
+
+        first.shutdown ();
+
+        require (resources.claimed ({adk::ResourceKind::Timer, 2}),
+                 "timer remains claimed by peer");
+
+        second.shutdown ();
+
+        require (!resources.claimed ({adk::ResourceKind::Timer, 2}),
+                 "last peer releases timer");
+
+        adk::ResourceClaim timerOwner;
+
+        require (resources.claim ({adk::ResourceKind::Timer, 2}, timerOwner) ==
+                     adk::Status::Ok,
+                 "exclusive timer owner");
+
+        adk::PwmOutput blocked (resources, 9, 91);
+
+        fake::clearTrace ();
+
+        require (blocked.initialize () == adk::Status::ResourceBusy,
+                 "exclusive timer blocks PWM");
+        require (!resources.claimed ({adk::ResourceKind::Pin, 9}),
+                 "timer failure rolls back pin");
+        require (fake::trace ().empty (), "timer failure performs no I/O");
+
+        timerOwner.release ();
+
+        require (blocked.initialize () == adk::Status::Ok,
+                 "PWM initializes after timer release");
+    }
+
     void testDestruction ()
     {
         fake::reset ();
@@ -201,6 +248,7 @@ int main ()
     testDutyEndpointsAndLifecycle ();
     testUnsupportedAndInvalidPins ();
     testClaimConflictAndReuse     ();
+    testTimerSharingAndRollback   ();
     testDestruction               ();
 
     std::cout << "All ADK PWM output tests passed.\n";
