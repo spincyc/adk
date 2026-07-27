@@ -71,10 +71,69 @@ namespace adk {
                 case CueAuditEvent::Resumed: return "resumed";
                 case CueAuditEvent::Cancelled: return "cancelled";
                 case CueAuditEvent::Faulted: return "faulted";
+                case CueAuditEvent::Completed: return "completed";
                 case CueAuditEvent::Shutdown: return "shutdown";
             }
 
             return nullptr;
+        }
+
+        bool validStatus (Status status) noexcept
+        {
+            return static_cast<uint8_t> (status.error ()) <=
+                   static_cast<uint8_t> (StatusCode::HardwareFailure);
+        }
+
+        Result<uint8_t> formatEntry (const CueAuditEntry& entry, char* output,
+                                     uint8_t capacity) noexcept
+        {
+            const char* event = eventName (entry.event);
+
+            if (event == nullptr || !validStatus (entry.status))
+            {
+                return Result<uint8_t> (StatusCode::InvalidArgument, 0);
+            }
+
+            uint8_t length = 0;
+            bool encoded = appendText (output, capacity, length, "adk-cue,1,") &&
+                           appendUnsigned (output, capacity, length, entry.sequence) &&
+
+                           appendCharacter (output, capacity, length, ',') &&
+
+                           appendUnsigned (output, capacity, length,
+                                           entry.recordedAt.milliseconds ()) &&
+                           appendCharacter (output, capacity, length, ',') &&
+
+                           appendText (output, capacity, length, event) &&
+
+                           appendCharacter (output, capacity, length, ',');
+
+            if (entry.hasCue)
+            {
+                encoded = encoded &&
+                          appendUnsigned (output, capacity, length, entry.cue) &&
+
+                          appendCharacter (output, capacity, length, ',') &&
+
+                          appendUnsigned (output, capacity, length, entry.cueIndex);
+            }
+            else
+            {
+                encoded = encoded && appendCharacter (output, capacity, length, '-') &&
+                          appendCharacter (output, capacity, length, ',') &&
+
+                          appendCharacter (output, capacity, length, '-');
+            }
+
+            encoded =
+                encoded && appendCharacter (output, capacity, length, ',') &&
+
+                appendText (output, capacity, length, statusName (entry.status)) &&
+
+                appendCharacter (output, capacity, length, '\n');
+
+            return encoded ? Result<uint8_t> (StatusCode::Ok, length)
+                           : Result<uint8_t> (StatusCode::CapacityExceeded, 0);
         }
     } // namespace
 
@@ -124,10 +183,20 @@ namespace adk {
         return count_;
     }
 
+    uint8_t CueAuditBuffer::capacity () const noexcept
+    {
+        return capacity_;
+    }
+
     Result<CueAuditEntry> CueAuditBuffer::entry (uint8_t index) const noexcept
     {
-        const CueAuditEntry empty = {
-            0, TimePoint (), CueAuditEvent::Faulted, 0, 0, StatusCode::NotInitialized};
+        const CueAuditEntry empty = {0,
+                                     TimePoint (),
+                                     CueAuditEvent::Faulted,
+                                     0,
+                                     0,
+                                     StatusCode::NotInitialized,
+                                     false};
 
         if (!initialized_)
         {
@@ -144,7 +213,7 @@ namespace adk {
 
     Status CueAuditBuffer::appendOperational (TimePoint recordedAt, CueAuditEvent event,
                                               InertCueId cue, uint8_t cueIndex,
-                                              Status status) noexcept
+                                              Status status, bool hasCue) noexcept
     {
         if (!initialized_)
         {
@@ -156,7 +225,7 @@ namespace adk {
             return StatusCode::CapacityExceeded;
         }
 
-        return append (recordedAt, event, cue, cueIndex, status);
+        return append (recordedAt, event, cue, cueIndex, status, hasCue);
     }
 
     bool CueAuditBuffer::canAppendOperational (uint8_t eventCount) const noexcept
@@ -179,21 +248,20 @@ namespace adk {
         }
 
         return append (recordedAt, CueAuditEvent::Held, cue, cueIndex,
-                       StatusCode::CapacityExceeded);
+                       StatusCode::CapacityExceeded, false);
     }
 
-    void CueAuditBuffer::appendShutdown (TimePoint recordedAt, InertCueId cue,
-                                         uint8_t cueIndex) noexcept
+    void CueAuditBuffer::appendShutdown (TimePoint recordedAt) noexcept
     {
         if (initialized_ && count_ < capacity_)
         {
-            append (recordedAt, CueAuditEvent::Shutdown, cue, cueIndex, StatusCode::Ok);
+            append (recordedAt, CueAuditEvent::Shutdown, 0, 0, StatusCode::Ok, false);
         }
     }
 
     Status CueAuditBuffer::append (TimePoint recordedAt, CueAuditEvent event,
-                                   InertCueId cue, uint8_t cueIndex,
-                                   Status status) noexcept
+                                   InertCueId cue, uint8_t cueIndex, Status status,
+                                   bool hasCue) noexcept
     {
         if (count_ >= capacity_)
         {
@@ -201,44 +269,49 @@ namespace adk {
         }
 
         storage_[count_++] = {nextSequence_++, recordedAt, event, cue,
-                              cueIndex,        status};
+                              cueIndex,        status,     hasCue};
         return StatusCode::Ok;
     }
 
-    Status CueAuditEncoder::encode (const CueAuditEntry& entry, char* output,
-                                    uint8_t  outputCapacity,
-                                    uint8_t& outputLength) const noexcept
+    Result<uint8_t>
+    CueAuditEncoder::requiredSize (const CueAuditEntry& entry) const noexcept
     {
-        const char* event = eventName (entry.event);
+        char scratch[maximumLength];
+        return formatEntry (entry, scratch, sizeof (scratch));
+    }
 
-        if (output == nullptr || event == nullptr)
+    Result<uint8_t> CueAuditEncoder::encode (const CueAuditEntry& entry, char* output,
+                                             uint8_t outputCapacity) const noexcept
+    {
+        if (output == nullptr && outputCapacity != 0)
         {
-            return StatusCode::InvalidArgument;
+            return Result<uint8_t> (StatusCode::InvalidArgument, 0);
         }
 
-        uint8_t    length = 0;
-        const bool encoded =
-            appendText      (output, outputCapacity, length, "adk-cue,1,") &&
-            appendUnsigned  (output, outputCapacity, length, entry.sequence) &&
-            appendCharacter (output, outputCapacity, length, ',') &&
-            appendUnsigned  (output, outputCapacity, length,
-                            entry.recordedAt.milliseconds ()) &&
-            appendCharacter (output, outputCapacity, length, ',') &&
-            appendText      (output, outputCapacity, length, event) &&
-            appendCharacter (output, outputCapacity, length, ',') &&
-            appendUnsigned  (output, outputCapacity, length, entry.cue) &&
-            appendCharacter (output, outputCapacity, length, ',') &&
-            appendUnsigned  (output, outputCapacity, length, entry.cueIndex) &&
-            appendCharacter (output, outputCapacity, length, ',') &&
-            appendText      (output, outputCapacity, length, statusName (entry.status)) &&
-            appendCharacter (output, outputCapacity, length, '\n');
+        char                  scratch[maximumLength];
+        const Result<uint8_t> formatted =
+            formatEntry (entry, scratch, sizeof (scratch));
 
-        if (!encoded || length > maximumLength)
+        if (!formatted.ok ())
         {
-            return StatusCode::CapacityExceeded;
+            return formatted;
         }
 
-        outputLength = length;
-        return StatusCode::Ok;
+        if (outputCapacity < formatted.value ())
+        {
+            return Result<uint8_t> (StatusCode::CapacityExceeded, 0);
+        }
+
+        if (output == nullptr)
+        {
+            return Result<uint8_t> (StatusCode::CapacityExceeded, 0);
+        }
+
+        for (uint8_t index = 0; index < formatted.value (); ++index)
+        {
+            output[index] = scratch[index];
+        }
+
+        return formatted;
     }
 } // namespace adk

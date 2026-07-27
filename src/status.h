@@ -8,23 +8,24 @@ namespace adk {
     {
         Ok,
         InvalidArgument,
+        InvalidConfiguration,
         InvalidPin,
         Unsupported,
         ResourceBusy,
         NotInitialized,
         CapacityExceeded,
+        Timeout,
+        InternalInvariant,
         HardwareFailure
     };
 
     struct Status
     {
-        constexpr Status () noexcept
-            : code_ (StatusCode::Ok)
+        constexpr Status () noexcept : code_ (StatusCode::Ok)
         {
         }
 
-        constexpr Status (StatusCode code) noexcept
-            : code_ (code)
+        constexpr Status (StatusCode code) noexcept : code_ (code)
         {
         }
 
@@ -60,12 +61,10 @@ namespace adk {
 
     const char* statusName (Status status) noexcept;
 
-    template<typename Value>
-    struct Result
+    template <typename Value> struct Result
     {
         constexpr Result (Status status, const Value& value) noexcept
-            : status_ (status)
-            , value_  (value)
+            : status_ (status), value_ (value)
         {
         }
 
@@ -98,4 +97,4 @@ namespace adk {
         Status status_;
         Value  value_;
     };
-}
+} // namespace adk
