@@ -9,6 +9,7 @@
 #include "digital_input.h"
 #include "digital_output.h"
 #include "dht11_sensor.h"
+#include "environmental_station.h"
 #include "keypad.h"
 #include "matrix_keypad.h"
 #include "mono_led.h"
