@@ -34,12 +34,12 @@ namespace adk {
         bool  initialized () const noexcept;
 
       private:
-        ResourceRegistry* resources_;
-        ResourceClaim     pinClaim_;
+        ResourceRegistry*   resources_;
+        ResourceClaim       pinClaim_;
         SharedResourceClaim timerClaim_;
-        PinId             pin_;
-        Duty              initialDuty_;
-        Duty              duty_;
-        bool              initialized_;
+        PinId               pin_;
+        Duty                initialDuty_;
+        Duty                duty_;
+        bool                initialized_;
     };
 }
