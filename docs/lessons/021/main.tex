@@ -1,0 +1,564 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[margin=0.68in]{geometry}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{titlesec}
+\usepackage[table]{xcolor}
+\usetikzlibrary{arrows.meta,decorations.pathmorphing,positioning}
+\graphicspath{{docs/lessons/assets/}{../assets/}}
+
+\definecolor{AdkBlack}{gray}{0}
+\definecolor{AdkDark}{gray}{0.20}
+\definecolor{CodeGray}{gray}{0.96}
+\hypersetup
+{
+    pdftitle={ADK Lesson 021: Simulated-First Bench Rover},
+    pdfauthor={Kevin Shanahan},
+    pdfsubject={Deterministic rover supervision, stop dominance, replay, and staged E2 bench evidence},
+    pdflang={en-US}
+}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textsc{ADK Lesson 021}}
+\rhead{Simulated-First Bench Rover}
+\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries\color{AdkBlack}}{\thesection}{0.5em}{}
+\titleformat{\subsection}{\large\bfseries\color{AdkBlack}}{\thesubsection}{0.5em}{}
+\lstdefinestyle{adkcpp}
+{
+    language=C++,
+    backgroundcolor=\color{CodeGray},
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{AdkBlack}\bfseries,
+    commentstyle=\color{AdkDark},
+    columns=fullflexible,
+    keepspaces=true,
+    showstringspaces=false,
+    frame=single,
+    rulecolor=\color{black!20},
+    breaklines=true,
+    tabsize=4
+}
+\newcommand{\checkbox}{\(\square\)}
+\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
+\newcommand{\warningbox}[1]{%
+  \begin{center}
+  \fcolorbox{black}{white}{\parbox{0.91\linewidth}{\textbf{Safety checkpoint.} #1}}
+  \end{center}}
+\newcommand{\evidencebox}[1]{%
+  \begin{center}
+  \fcolorbox{black}{white}{\parbox{0.91\linewidth}{#1}}
+  \end{center}}
+
+\begin{document}
+
+\begin{center}
+  {\Huge\bfseries Simulated-First Bench Rover}\\[4pt]
+  {\Large Observe, decide, stop, then permit bounded motion}\\[8pt]
+  \textit{A stopped intent is software evidence. Removed motor power is the
+  independent stop.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 021 --- integration project & Time & 240--360 minutes\\
+Prerequisites & Lessons 001--020 & Board & Arduino Mega 2560\\
+Evidence & host replay, six direction/enable lamps, and D13 &
+Status & host verified; E1 and E2 bench cards open\\
+Safety & E1 indicator simulation; E2 continuation deferred\\
+\end{tabularx}
+
+\warningbox{Do not place a rover on the floor during initial work. Complete the
+host replay and resistor-limited LED simulation before connecting a motor
+driver. Select one exact driver and motor only after checking their primary
+datasheets, supply limits, stall current, thermal limits, flyback strategy, and
+truth table. A physical switch must remove motor-supply power. The software
+stop button does not replace it. No person, animal, sharp tool, hot item, or
+hazardous load may ride on the rover. Keep away from roads, stairs, hair, loose
+clothing, and unattended operation.}
+
+\section{Mission}
+
+Compose range, wheel evidence, bounded motor intent, a static route, and an
+operator stop into a deterministic supervisor:
+
+\[
+\{\text{range},\text{wheel edges},\text{start},\text{stop},\text{time}\}
+\rightarrow \texttt{RoverController}
+\rightarrow \{\text{left intent},\text{right intent},\text{mode}\}.
+\]
+
+The first rover is a host model. The second is six resistor-limited lamps that
+show the two motor-driver interfaces without motor power. Only the final,
+still-unaccepted stage connects a documented driver and raises the wheels
+clear of the bench. These stages test the same route and supervisor.
+
+By the end, you can:
+
+\begin{itemize}
+  \item explain why the supervisor emits intent but owns no pins or clock;
+  \item replay the same inputs and obtain the same outputs byte for byte;
+  \item show that stop dominates every driving and turning state;
+  \item distinguish command evidence, electrical evidence, and physical motion;
+  \item diagnose stale range, no initial motion, wheel disagreement, route
+        timeout, and operator stop without relying on Serial;
+  \item leave physical acceptance open without inventing a successful bench
+        result.
+\end{itemize}
+
+\section{Composition and ownership}
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=8mm and 11mm,
+    box/.style={draw,rounded corners,minimum height=9mm,align=center},
+    >=Latex]
+  \node[box] (observe) {range + wheel edges\\start + stop + time};
+  \node[box,right=of observe] (rover) {\texttt{RoverController}\\route supervisor};
+  \node[box,right=of rover] (intent) {left/right\\\texttt{MotorCommand}};
+  \node[box,below left=of intent] (drivers) {two \texttt{MotorIntent}\\objects};
+  \node[box,below right=of intent] (evidence) {six direction and\\enable lamps + D13};
+  \draw[->] (observe) -- node[above]{observe} (rover);
+  \draw[->] (rover) -- node[above]{decide} (intent);
+  \draw[->] (intent) -- node[left]{actuate} (drivers);
+  \draw[->] (intent) -- node[right]{show} (evidence);
+\end{tikzpicture}
+\end{center}
+
+\texttt{RoverController} is hardware-neutral. It receives complete observations
+and produces complete intent. The canonical Mega sketch owns seven LED
+components, two \texttt{MotorIntent} objects, an
+\texttt{UltrasonicRanger}, and the controller. Its range echo and wheel edges
+are deterministic simulations. Setup acquires every object before admitting
+commands; shutdown first emits stopped intent, then makes the evidence outputs
+inactive and releases them in reverse order.
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Layer & Owns & Does not claim\\
+\midrule
+\texttt{RoverController} & bounded route copy and deterministic state & pins, timers,
+clock, motors\\
+\texttt{MotorIntent} & bounded applied command and reversal dead time &
+pins, mechanical motion, or safe supply removal\\
+Mega sketch & simulated observations and seven LED components & hidden control
+policy\\
+Physical disconnect & interruption of motor-supply energy & software state\\
+\bottomrule
+\end{tabularx}
+
+\section{Supervisor contract}
+
+Lessons 019 and 020 provide the landed \texttt{UltrasonicRanger} and
+\texttt{MotorIntent} dependencies. The exact controller boundary is:
+
+\begin{lstlisting}[style=adkcpp]
+struct RoverInput
+{
+    RangeReading range;
+    TimePoint rangeObservedAt;
+    RoverWheelObservation leftWheel;
+    RoverWheelObservation rightWheel;
+    bool startEvent;
+    bool stopRequested;
+    TimePoint observedAt;
+};
+
+struct RoverControllerSnapshot
+{
+    MotorCommand leftMotor;
+    MotorCommand rightMotor;
+    RoverMode mode;
+    RoverStopReason stopReason;
+    Status status;
+    RangeReading range;
+    uint8_t routeIndex;
+    bool stopDominated;
+};
+
+Status      initialize () noexcept;
+Status      update     (const RoverInput& input) noexcept;
+void        shutdown   () noexcept;
+RoverControllerSnapshot snapshot () const noexcept;
+\end{lstlisting}
+
+The route contains only fixed records: drive, turn left, turn right, pause, or
+finish; target wheel edges; maximum duration; and bounded duty. No allocation
+or hidden clock is needed. A caller timestamp, observations, prior state, and
+configuration determine each output.
+
+\subsection{Stop dominance}
+
+Evaluate the stop request before route progress. A stop request in
+\texttt{Ready}, \texttt{Driving}, \texttt{Turning}, or
+\texttt{ObstacleHold} selects zero-duty commands for both motors and enters
+\texttt{Stopped}. A start/stop chord is a stop. Shutdown also emits stopped
+intent. Sensor faults, stale range, initial-motion timeout, wheel disagreement,
+route timeout, unexpected motion, and invalid time all request both motors
+stopped.
+
+\evidencebox{\textbf{Invariant to predict:} whenever
+\texttt{stopRequested} is true, both applied commands are \texttt{Stopped} in
+that same update. Stop also dominates a simultaneous start event. The two
+\texttt{MotorIntent} objects apply those commands before the six LEDs present
+their applied snapshots. A software trace proves the supervisor intent; the
+enable witnesses prove only the presented logic state. Only a future physical
+disconnect can prove removal of motor-supply energy.}
+
+Restart is deliberate. Releasing stop or recovering a sensor does not resume
+the route. Require stop release, fresh valid range, stationary evidence, and a
+new start edge. Reset returns to inactive behavior and never restarts motion.
+
+\section{Deterministic trace and replay}
+
+Use one row per observation:
+
+\begin{verbatim}
+time,range-state,range-mm,left-total,right-total,start,stop-request,
+rover-mode,left-command,right-command,route-index
+\end{verbatim}
+
+The host plant is an integer-only teaching model. It converts commands and
+elapsed time into synthetic edge totals and scripted obstacle range. It can
+inject wheel gain mismatch, start delay, stopping delay, and faults. It is not
+a model of traction, stopping distance, supply sag, driver heating, or a
+specific chassis.
+
+\begin{enumerate}
+  \item Run a fixed route twice with the same configuration and input rows.
+  \item Compare every output field and serialized trace byte.
+  \item Insert a stop request into each active state.
+  \item Repeat at exact timeout boundaries and across timestamp rollover.
+  \item Change one input only; predict the first output row that may differ.
+\end{enumerate}
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Injected observation & Required decision & Circuit-native later evidence\\
+\midrule
+fresh clear range, matched edges & continue bounded route step & expected
+direction lamps and enable waveform\\
+range at stop threshold & obstacle hold, both duties zero & both enable
+witnesses inactive\\
+stale or invalid range & sensor fault, both duties zero & red fault cadence;
+both enable witnesses inactive\\
+one wheel supplies no new edges & motion fault after configured bound & red
+fault state in the snapshot; all six witnesses inactive\\
+stop request & stopped immediately & all six witnesses inactive\\
+\bottomrule
+\end{tabularx}
+
+Serial may preserve or compare this trace. It never commands movement and is
+never the only proof.
+
+\section{Stage A: inert motor-interface simulator}
+
+Build this before selecting a driver. Replace each driver's forward, reverse,
+and enable input with one LED and its own \(220\,\Omega\) or larger resistor.
+The six LEDs represent logic intent only.
+
+\begin{center}
+\begin{tikzpicture}[
+    pencil/.style={line width=0.55pt},
+    every node/.style={font=\small}]
+  \draw[pencil,rounded corners] (0,0) rectangle (4.2,4.0);
+  \node at (2.1,3.65) {Mega 2560};
+  \draw[pencil] (4.2,3.0) -- (6.0,3.0);
+  \draw[pencil] (4.2,2.3) -- (6.0,2.3);
+  \draw[pencil] (4.2,1.6) -- (6.0,1.6);
+  \draw[pencil] (4.2,0.9) -- (6.0,0.9);
+  \node[anchor=west] at (6.1,3.0) {D22 left forward LED + 1 k\(\Omega\)};
+  \node[anchor=west] at (6.1,2.3) {D23 left reverse LED + 1 k\(\Omega\)};
+  \node[anchor=west] at (6.1,1.6) {D24 left enable LED + 1 k\(\Omega\)};
+  \node[anchor=west] at (6.1,0.9) {D25--D27 repeat for right};
+  \draw[pencil] (0.7,0.4) -- (3.5,0.4);
+  \node[anchor=north] at (2.1,0.35) {named GND reference};
+\end{tikzpicture}
+\end{center}
+
+\textbf{Figure description:} a pencil-style orientation view places the Mega
+to the left and six individually resistor-limited indicator channels to the
+right. D22--D24 show left forward, reverse, and enable; D25--D27 repeat them
+for the right. Every cathode returns to the named Mega ground. The built-in
+D13 LED is separate acquisition evidence. This is an orientation drawing, not
+an authoritative driver schematic.
+
+\begin{center}
+  \includegraphics[width=0.91\linewidth]{021-rover-pencil.png}
+\end{center}
+
+\textbf{Pencil plate description:} the rover is raised on blocks with both
+wheels clear as an illustration of the deferred E2 stage. The supported E1
+circuit contains only the Mega and logic indicators. Forward, reverse, and
+enable evidence runs to each side. A hand at the motor-power disconnect
+emphasizes that software stop and energy removal would be separate
+observations in a future powered stage.
+
+Use pins selected by the canonical Lesson 021 sketch and its pin table; do not
+infer real driver wiring from the orientation drawing. At this stage no motor
+supply, H-bridge, motor, wheel, or battery is present.
+
+\begin{enumerate}
+  \item With USB removed, inspect every resistor and LED polarity.
+  \item Predict all six lamps inactive at startup.
+  \item Start the route and observe direction plus nonzero-duty enable intent.
+  \item Request a reversal and observe the dead-time dark interval.
+  \item Press software stop in every active mode; both enable lamps must become
+        inactive immediately.
+  \item Call shutdown; then measure D22--D27 against the named GND according to
+        the endpoint's documented high-impedance procedure.
+\end{enumerate}
+
+\section{Circuit-native observation plan}
+
+The circuit explains itself through independent channels:
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Question & Observation & What it proves\\
+\midrule
+Did setup acquire its objects? & built-in D13 turns on after all objects
+initialize & the acquisition sequence completed\\
+What command reached each adapter? & forward/reverse/enable lamps & applied
+direction and nonzero-duty intent\\
+Are enable signals inactive? & D24 and D27 relative to named logic GND &
+electrical logic state, not removal of motor energy\\
+Did shutdown release the outputs? & D22--D27 measured against named logic GND &
+high impedance after stopped intent was presented\\
+\bottomrule
+\end{tabularx}
+
+The six witnesses deliberately encode commands rather than every controller
+mode. A host snapshot distinguishes obstacle hold, fault, route completion,
+and operator stop when each correctly presents the same all-dark output.
+
+\section{Stage B: driver boundary, no wheels on the surface}
+
+\warningbox{This continuation is blocked until one exact H-bridge module and
+motor are identified from primary documentation. Do not generalize a pin table
+between modules that merely look alike. Do not power a motor from Mega 5 V or
+from a GPIO pin.}
+
+Complete this worksheet before wiring:
+
+\begin{tabularx}{\linewidth}{@{}l X l X@{}}
+\toprule
+Item & Recorded value/source & Item & Recorded value/source\\
+\midrule
+driver exact part/revision & \blank{1.12in} & motor exact part & \blank{1.05in}\\
+logic supply/range & \blank{1.12in} & motor supply/range & \blank{1.05in}\\
+continuous/peak current & \blank{1.12in} & measured/limited stall current &
+\blank{1.05in}\\
+flyback strategy & \blank{1.12in} & thermal limit/handling & \blank{1.05in}\\
+input truth table source & \blank{1.12in} & physical disconnect rating &
+\blank{1.05in}\\
+common-reference/isolation & \blank{1.12in} & back-power prevention &
+\blank{1.05in}\\
+\bottomrule
+\end{tabularx}
+
+The authoritative schematic must show logic supply, motor supply, return or
+isolation boundary, protection, driver outputs, both motors, named left/right
+enable test points, and the physical motor-power disconnect. Its exact wiring
+belongs to the selected module's accepted bench card; this draft intentionally
+supplies no generic H-bridge pinout.
+
+\subsection{Wheels-raised sequence}
+
+\begin{enumerate}
+  \item Remove USB and motor power. Raise and secure the chassis so no wheel can
+        touch the bench. Remove fan blades or other attachments.
+  \item Open the physical motor-power disconnect. Inspect against the exact
+        schematic and verify polarity and shared-reference/isolation policy.
+  \item Apply logic power only. Confirm both enable test points inactive during
+        startup, reset, stop, fault, and shutdown.
+  \item Close motor power at the lowest documented current-limited setting.
+        Test one motor at the lowest useful duty for the shortest route step.
+  \item Observe direction indicator, the named enable test point, a wheel mark,
+        and the selected encoder evidence together. Disagreement is a stop
+        condition.
+  \item Test stop, stale range, blocked echo, one stalled wheel observation,
+        and reset. Open the physical disconnect after every test.
+\end{enumerate}
+
+Do not infer safe floor behavior from a raised-wheel test. Traction, inertia,
+stopping distance, chassis balance, radio loss, and environmental obstacles
+have not been accepted.
+
+\section{Predict, observe, interpret}
+
+\begin{tabularx}{\linewidth}{@{}p{0.20\linewidth}p{0.25\linewidth}X@{}}
+\toprule
+Prediction & Observation & Interpretation\\
+\midrule
+startup cannot move & both enable test points inactive; all direction lamps inactive &
+supports safe logic state; does not prove motor supply is removed\\
+turn requests opposite wheel intents & direction lamps differ; wheel marks
+move as predicted & supports adapter and raised-wheel direction; does not prove
+floor trajectory\\
+near obstacle dominates route & obstacle cadence appears and both enable
+signals become inactive & supports range-to-stop chain when the range sample is
+fresh and valid\\
+stop dominates every state & stop indication appears and both enables become
+inactive in the same update & supports software stop and logic output; physical
+disconnect remains separate\\
+shutdown releases outputs & zero duty precedes documented high impedance &
+supports lifecycle order when measured at both enable pins\\
+\bottomrule
+\end{tabularx}
+
+\section{Diagnosis without Serial}
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Observation & Likely boundary & Next unpowered check\\
+\midrule
+acquisition walk stops early & resource/configuration conflict & compare pins,
+timers, and initialization order\\
+mode says drive; enable lamp dark & motor adapter or resource failure & compare
+output snapshot, enable pin, resistor, and LED polarity\\
+enable lamp pulses; wheel mark still & load power, driver, motor, or mechanics &
+open disconnect; inspect supply, driver rating, shaft freedom, and connections\\
+wheel moves; encoder LED still & marker, sensor gap, input, or capture fault &
+inspect marker alignment and sensor wiring\\
+one direction LED overlaps its opposite & adapter fault & open disconnect
+immediately; no motor test until corrected\\
+fault clears without new start & supervisor defect & preserve trace; return to
+host replay before any powered continuation\\
+\bottomrule
+\end{tabularx}
+
+\section{Acceptance record}
+
+\subsection*{Host and inert-indicator evidence}
+
+\begin{tabularx}{\linewidth}{@{}X l l@{}}
+\toprule
+Check & Result & Evidence\\
+\midrule
+same trace twice is byte-identical & \checkbox\ pass \quad \checkbox\ fail &
+\blank{1.25in}\\
+stop from every active state gives two zero duties & \checkbox\ pass
+\quad \checkbox\ fail & \blank{1.25in}\\
+stale/invalid range and encoder faults stop intent & \checkbox\ pass
+\quad \checkbox\ fail & \blank{1.25in}\\
+LED reversal shows documented dark interval & \checkbox\ pass
+\quad \checkbox\ fail & \blank{1.25in}\\
+startup, reset, fault, shutdown leave D22--D27 inactive & \checkbox\ pass
+\quad \checkbox\ fail & \blank{1.25in}\\
+\bottomrule
+\end{tabularx}
+
+\subsection*{E2 bench card --- open until physically performed}
+
+Board/serial: \blank{2.0in}\quad Date: \blank{1.2in}\quad Reviewer:
+\blank{1.45in}
+
+Driver/motor revisions: \blank{4.3in}
+
+Supply/current limit: \blank{4.45in}
+
+Instruments: \blank{2.1in}\quad Physical disconnect:
+\blank{2.0in}
+
+\begin{itemize}
+  \item[\checkbox] exact schematic and primary datasheets attached;
+  \item[\checkbox] wheels raised and chassis restrained;
+  \item[\checkbox] motor stall-current boundary recorded without exceeding any
+        driver, supply, wire, or connector rating;
+  \item[\checkbox] startup, reset, stop, hold, each fault, shutdown, and power
+        removal measured at both enable test points;
+  \item[\checkbox] load power physically removed during loss-of-control test;
+  \item[\checkbox] no unexpected movement, heat, odor, reset, or back-powering.
+\end{itemize}
+
+Measured observations/deviations:
+
+\vspace{0.44in}
+\hrule
+\vspace{0.44in}
+\hrule
+
+\evidencebox{\textbf{Release status:} this lesson remains a
+\textbf{host verified; E1 indicator and E2 physical acceptance open}. The
+dependencies, canonical example, deterministic tests, and Mega compilation
+have landed. The completed bench card must still record real instruments,
+supplies, pins, observations, reviewer, and date. Compilation, simulation,
+LEDs, and this worksheet are not physical acceptance.}
+
+\section{Further experiments}
+
+\begin{enumerate}
+  \item Minimize one replay that enters each fault using the fewest rows.
+  \item Vary the host plant's left-wheel gain and find the exact configured
+        mismatch boundary. Explain why it is not a physical tolerance claim.
+  \item Change the existing route pause. Verify that synthetic wheel movement
+        during the pause becomes explicit evidence rather than silently
+        advancing the route.
+  \item Design a separate stop indicator, then explain what evidence it adds
+        beyond the six all-dark command witnesses.
+  \item Propose a floor-test enclosure and stopping-distance protocol, but do
+        not perform it until a separate reviewed acceptance plan exists.
+\end{enumerate}
+
+\section{CLI route}
+
+\begin{verbatim}
+make host-test
+make host-test-sanitize
+make arduino-Lesson021BenchRover
+make size-check
+make lessons
+make lessons-check
+make upload-Lesson021BenchRover PORT=/dev/ttyACM0
+make serial-log PORT=/dev/ttyACM0 SERIAL_LOG=build/lesson021.csv
+make monitor PORT=/dev/ttyACM0 BAUD=115200
+\end{verbatim}
+
+The upload, monitor, and log targets support the lesson; no IDE is required.
+Serial logging adds context to the non-Serial evidence and never controls
+motion.
+
+\section{Primary references}
+
+\begin{itemize}
+  \item \href{https://github.com/spincyc/adk/blob/main/examples/Lesson021BenchRover/Lesson021BenchRover.ino}
+  {Canonical Mega example}
+  \item \href{https://github.com/spincyc/adk/blob/main/src/rover_controller.h}
+  {\texttt{RoverController} interface}
+  \item \href{https://github.com/spincyc/adk/blob/main/src/ultrasonic_ranger.h}
+  {\texttt{UltrasonicRanger} interface}
+  \item \href{https://github.com/spincyc/adk/blob/main/src/motor_intent.h}
+  {\texttt{MotorIntent} interface}
+  \item \href{https://github.com/spincyc/adk/blob/main/tests/test_rover_controller.cpp}
+  {Deterministic rover tests}
+  \item \href{https://github.com/spincyc/adk/blob/main/tests/test_ultrasonic_ranger.cpp}
+  {Ranger tests} and
+  \href{https://github.com/spincyc/adk/blob/main/tests/test_motor_intent.cpp}
+  {motor-intent tests}
+  \item Arduino Mega 2560 Rev3 hardware documentation:
+  \url{https://docs.arduino.cc/hardware/mega-2560}
+  \item Arduino built-in Ping range example:
+  \url{https://docs.arduino.cc/built-in-examples/sensors/Ping/}
+  \item Arduino Motor Shield Rev3 documentation, as a representative boundary
+  rather than the wiring authority for an unidentified module:
+  \url{https://docs.arduino.cc/hardware/motor-shield-rev3/}
+  \item ADK safety model: \path{docs/SAFETY_MODEL.md}
+  \item ADK executable rover design:
+  \path{docs/design/LESSONS_019_021_ROVER.md}
+\end{itemize}
+
+\end{document}
