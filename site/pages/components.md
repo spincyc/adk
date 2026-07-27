@@ -1,53 +1,25 @@
 # Components
 
-ADK grows from hardware endpoints into circuit components and then into
-behaviors and projects. The status column is the authority on whether a name is
-usable today:
+Status meanings:
 
-- **Compatibility** means the interface is implemented and used by the imported
-  lessons, but is expected to be replaced by the ownership-oriented API.
-- **Planned** means the interface or project is a design target. It must not be
-  used as though it were part of the library.
+- **Host verified** — strict deterministic tests pass.
+- **Hardware experimental** — Mega build passes; bench card remains open.
+- **Planned** — contract or curriculum placement only.
 
-| Component | Layer | Status | Host test | Mega build | Lesson |
-|---|---|---:|---:|---:|---:|
-| `pin::Base`, `pin::Input`, `pin::Output` | endpoint | Compatibility | Yes | Yes | Indirect |
-| `digital::Input`, `digital::InputPullUp`, `digital::Output` | endpoint | Compatibility | Partial | Yes | Indirect |
-| `analog::Input`, `analog::Output` | endpoint | Compatibility | Partial | Yes | Indirect |
-| `led::Mono` | component | Compatibility | Yes | Yes | 001, 002 |
-| `color::Rgb`, `led::Rgb` | value/component | Compatibility | Yes | Yes | 003 |
-| `DigitalInput` | endpoint | Planned | No | No | Planned |
-| `Button` | component | Planned | No | No | Planned |
-| `DigitalOutput`, `MonoLed` | endpoint/component | Planned | No | No | Planned |
-| Clock, debounce, and blink behavior | behavior | Planned | No | No | Planned |
-| `PwmOutput`, `RgbLed` | endpoint/component | Planned | No | No | Planned |
-| Analog controls and sensors | component | Planned | No | No | Planned |
-| Sound, servo, displays, buses, and operator controls | component | Planned | No | No | Planned |
-| Deterministic Simon | project | Planned | No | No | Planned |
+| Layer | Type | Status | Owns |
+|---|---|---|---|
+| Core | `Runtime`, `ResourceClaim`, `TimePoint`, `Status` | Host verified | Fixed registry and explicit time |
+| Endpoint | `DigitalOutput` | Hardware experimental | One output pin |
+| Endpoint | `DigitalInput` | Hardware experimental | One input pin |
+| Component | `MonoLed` | Hardware experimental | One `DigitalOutput` |
+| Component | `Button` | Hardware experimental | One `DigitalInput` |
+| Behavior | `ReactionTimer` | Hardware experimental | No hardware; observes Button and time |
+| Later layers | PWM, analog, buses, displays, sensors, actuators | Planned | See catalog |
 
-“Mega build” records compilation for the Mega 2560, not a claim that every
-combination has passed a physical hardware acceptance test. “Partial” host
-coverage means the fake Arduino layer exercises some operations but does not
-yet give the endpoint a complete, independent contract test suite.
+Composition is preferred: a Button has an input; it is not a specialized pin.
+Behavior engines expose output intent rather than hiding hardware callbacks.
 
-## Composition rule
-
-A hardware endpoint owns a pin, bus, timer, interrupt, or similar resource. A
-circuit component owns or composes its endpoints and gives them physical
-meaning. A behavior coordinates components without taking over their electrical
-responsibilities.
-
-For example, the planned `Button` owns a `DigitalInput`; it is not a specialized
-input pin. This keeps raw electrical diagnostics, debounce, and user-facing
-events separate while making ownership unambiguous.
-
-Each new component is complete only when it has:
-
-1. a documented physical and shutdown contract;
-2. a small interface and deterministic host tests;
-3. a Mega 2560 sketch and hardware acceptance procedure;
-4. a pencil orientation drawing and exact schematic;
-5. a lesson PDF linking prediction, measurement, diagnosis, and evidence.
-
-See [Current API](api-current.md) for usable symbols and
-[Target API](target-api.md) for the intended hierarchy.
+- [Exact API](api-supported.md)
+- [Full component catalog](docs/COMPONENTS.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Deterministic testing](docs/TESTING.md)
