@@ -15,6 +15,7 @@
 #include "resource.h"
 #include "runtime.h"
 #include "sampled_signal.h"
+#include "seven_segment_display.h"
 #include "shift_register.h"
 #include "simon.h"
 #include "status.h"
