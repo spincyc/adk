@@ -151,8 +151,9 @@ architectural layers.
 | RFID module | SPI/UART device + identity record | 025/027 extension |
 | Receive-capable RF module | Inventory-gated future adapter | Deferred |
 
-Adapters outside the 30-lesson spine are extension lessons. They must reuse
-the nearest endpoint and join a scheduled project before becoming supported.
+Adapters outside the canonical numbered curriculum are extension lessons. They
+must reuse the nearest endpoint and join a scheduled project before becoming
+supported.
 
 ## Behavior composition
 

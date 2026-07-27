@@ -1,6 +1,10 @@
-# Subagent status
+# Historical subagent status
 
-Updated: 2026-07-27
+Snapshot recorded: 2026-07-27
+
+This table preserves an earlier delegation snapshot; its in-progress and
+queued labels are historical, not live scheduling authority. Current work is
+owned by [the work queue](WORK_QUEUE.md) and the durable journal task state.
 
 | Workstream | Status | Result |
 |---|---|---|
@@ -116,14 +120,28 @@ also used nested agents where an independent mechanical audit was useful.
 not by itself promote an interface to supported status. Physical Mega evidence,
 full integration gates, and publication remain coordinator responsibilities.
 
-## Integration boundaries
+## Current checkpoint
 
-Agents do not commit or push. They edit disjoint file sets and report exact
-commands, results, measurements, risks, and a proposed commit subject. The
-coordinator alone stages shared build files, indexes, navigation, generated
-artifacts, release metadata, and the status ledger.
+Lessons 001--028 are host verified with their physical cards open. Lesson 029
+is the sole active lesson integration boundary, and lesson 030 is queued behind
+its promotion. Lessons 031--081 remain the queued three-lesson expansion.
 
-Integration follows the hierarchy without squashing across layers:
+Transparent USB, HDMI mesh, and shared-fabric material remains research and
+host-model evidence only. Bounded next USB and HDMI/shared-fabric research
+milestones are queued at low priority; endpoint hardware, interoperability,
+performance, compliance, and shared-LAN qualification remain deferred.
+High-speed endpoint hardware is not supported.
+
+## Durable integration boundaries
+
+The durable journal assigns each active task a lease and records its file
+ownership and checkpoints. Task owners may commit attributable implementation
+and journal boundaries locally. Shared indexes, build fragments, navigation,
+generated artifacts, release metadata, and status ledgers retain one named
+integrator. No agent pushes, changes branches, merges, rebases, or rewrites
+history without authority.
+
+The historical integration sequence was:
 
 1. isolate the imported preview API under `legacy/`;
 2. land status, time, platform, board, and resource ownership;
@@ -139,6 +157,10 @@ Integration follows the hierarchy without squashing across layers:
 12. continue the canonical three-lesson blocks through lesson 030;
 13. land site, packaging, CI, release metadata, and publication at each
     coherent release boundary.
+
+That sequence is complete through lesson 028. Current dependency order is
+lesson 029, then project 030, then lessons 031--081 one implementation-depth
+three-lesson arc at a time.
 
 Each boundary must build and pass its applicable checks before the next
 consumer is committed. Review findings that cannot be closed at that boundary

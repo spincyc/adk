@@ -72,14 +72,14 @@
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
 Lesson & 022 --- component & Time & 150--210 minutes\\
 Prerequisites & Lessons 001--021 & Board & Arduino Mega 2560\\
-Primary evidence & TP-M/A0, D13 pulse, D12 fault & Status & active integration\\
+Primary evidence & TP-M/A0, D13 pulse, D12 fault & Status & host verified; bench open\\
 Energy class & E1: USB and resistor-limited LEDs only\\
 \end{tabularx}
 
-\lessonbox{\textbf{Scope.} This draft exercises the current pure
+\lessonbox{\textbf{Scope.} This lesson exercises the current pure
 \texttt{I2cBus}, \texttt{I2cDevice}, \texttt{SpiBus}, and
 \texttt{SpiDevice} interfaces with sketch-local recording drivers. Every
-transfer receives a bounded timeout value. The draft generates no SDA, SCL,
+transfer receives a bounded timeout value. The lesson generates no SDA, SCL,
 MOSI, MISO, or SCK waveform and communicates with no physical device.
 \texttt{MegaI2cDriver}, \texttt{MegaSpiDriver}, and their direct AVR backends
 now own the fixed pins and restore chip select in deterministic tests. This
@@ -135,7 +135,7 @@ Optional meter & D12 safe-state check relative to a named GND point\\
 
 \begin{tabularx}{\linewidth}{@{}l l X@{}}
 \toprule
-Signal & Mega pin & Connection in this draft\\
+Signal & Mega pin & Lesson connection\\
 \midrule
 Moisture input / TP-M & A0 / D54 & potentiometer wiper\\
 Potentiometer rails & 5 V, GND & one outer terminal to each rail\\
@@ -369,7 +369,7 @@ void loop ()
 }
 \end{lstlisting}
 
-The canonical draft names the high-level actions before recording mechanics.
+The canonical example names the high-level actions before recording mechanics.
 Setup acquires the evidence LEDs, bus and device owners, moisture sensor,
 simulated RTC, and storage session. Each scheduled cycle observes TP-M, rejects
 a non-valid sample or clock, obtains one deterministic I2C metadata token,
@@ -412,7 +412,7 @@ Raw target & TP-M & State & Permille & D13 duration\\
 started. With all resources free, both owners initialize.
 
 \textbf{Observe.} Use the deterministic host tests for claim conflicts. On the
-Mega draft, observe whether the normal transaction acknowledgement begins.
+Mega example, observe whether the normal transaction acknowledgement begins.
 
 \textbf{Interpret.} A missing pulse can reject the hypothesis that the whole
 path completed. A pulse supports the software path only. The landed Mega
@@ -461,7 +461,7 @@ owners and persistent D49 device claim were available to this software path.
 
 \textbf{Safe-state proof.} Host tests show the landed Mega adapters restore
 their bus pins and chip select to documented inactive states after shutdown
-and injected failure. The recording driver has no physical pins, so this draft
+and injected failure. The recording driver has no physical pins, so this lesson
 cannot turn that trace into a measurement. D12 and D13 can demonstrate their
 own LED endpoint cleanup only.
 
