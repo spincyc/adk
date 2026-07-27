@@ -93,7 +93,7 @@ explicit open item.
 | 015 | Host verified; bench open | Timestamped sensor fixtures, health transitions, display pages, min/max reset, and stable record vectors | Sensor-health indicator and displayed sample age beside optional Serial records |
 | 018 | Host verified; bench open | Key-event traces, lockout boundaries, supplied configuration, restart, and bounded audit intent | Key acknowledgement, visible policy state, and inert soft-latch intent |
 | 021 | Host verified; bench open | Range, route, stale/fault, reversal-dead-time, and stop-dominance traces | E1 direction/enable indicators; later wheels-raised direction and physical stop state |
-| 024 | Queued | Schedule, sensor-fault, RTC/storage-fault, hysteresis, exclusion, restart, and golden-log traces | Inert load LEDs, bus/storage activity, and unmistakable safe/fault combinations |
+| 024 | Host verified; bench open | Schedule, sensor-fault, RTC/storage-fault, hysteresis, exclusion, restart, and golden-log traces | Inert load LEDs, bus/storage activity, and unmistakable safe/fault combinations |
 | 027 | Queued | Timestamped wired/infrared/receive-only fixtures, stale-data handling, scheduler order, and record replay | Capture, age, stale, alarm, and storage states visible without Serial |
 | 030 | Queued capstone | Immutable cue schedule, arming order, simulated continuity, simultaneous-event policy, stop dominance, restart lockout, and audit replay | Inert channel lamps, redundant armed/fault/stop states, and no energizing output path |
 | 033 | Queued; detailed plan exists | Input and commit/cancel traces | Preview, committed, and fault indications |
