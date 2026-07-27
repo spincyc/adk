@@ -36,8 +36,34 @@ namespace adk {
         }
     }
 
+    SharedResourceClaim::SharedResourceClaim () noexcept
+        : registry_ (nullptr)
+        , resource_ ({ResourceKind::Timer, 0})
+    {
+    }
+
+    SharedResourceClaim::~SharedResourceClaim () noexcept
+    {
+        release ();
+    }
+
+    bool SharedResourceClaim::active () const noexcept
+    {
+        return registry_ != nullptr;
+    }
+
+    void SharedResourceClaim::release () noexcept
+    {
+        if (registry_)
+        {
+            registry_->releaseShared (resource_);
+            registry_ = nullptr;
+        }
+    }
+
     ResourceRegistry::ResourceRegistry () noexcept
-        : storage_ {}
+        : storage_          {}
+        , sharedTimerCount_ {}
     {
     }
 
@@ -62,7 +88,51 @@ namespace adk {
             return Status::ResourceBusy;
         }
 
+        if (resource.kind == ResourceKind::Timer
+            && sharedTimerCount_[resource.index] != 0)
+        {
+            return Status::ResourceBusy;
+        }
+
         storage_[byte] |= mask;
+        claim.registry_ = this;
+        claim.resource_ = resource;
+        return Status::Ok;
+    }
+
+    Status ResourceRegistry::claimShared (
+        ResourceId           resource,
+        SharedResourceClaim& claim) noexcept
+    {
+        if (claim.active ())
+        {
+            return Status::InvalidArgument;
+        }
+
+        if (resource.kind != ResourceKind::Timer
+            || resource.index >= TimerCount)
+        {
+            return Status::Unsupported;
+        }
+
+        uint8_t byte = 0;
+        uint8_t mask = 0;
+        if (!storageBit (resource, byte, mask))
+        {
+            return Status::Unsupported;
+        }
+
+        if (storage_[byte] & mask)
+        {
+            return Status::ResourceBusy;
+        }
+
+        if (sharedTimerCount_[resource.index] == UINT8_MAX)
+        {
+            return Status::CapacityExceeded;
+        }
+
+        ++sharedTimerCount_[resource.index];
         claim.registry_ = this;
         claim.resource_ = resource;
         return Status::Ok;
@@ -72,7 +142,28 @@ namespace adk {
     {
         uint8_t byte = 0;
         uint8_t mask = 0;
-        return storageBit (resource, byte, mask) && (storage_[byte] & mask);
+        if (!storageBit (resource, byte, mask))
+        {
+            return false;
+        }
+
+        if (storage_[byte] & mask)
+        {
+            return true;
+        }
+
+        return resource.kind == ResourceKind::Timer
+            && sharedTimerCount_[resource.index] != 0;
+    }
+
+    void ResourceRegistry::releaseShared (ResourceId resource) noexcept
+    {
+        if (resource.kind == ResourceKind::Timer
+            && resource.index < TimerCount
+            && sharedTimerCount_[resource.index] != 0)
+        {
+            --sharedTimerCount_[resource.index];
+        }
     }
 
     void ResourceRegistry::release (ResourceId resource) noexcept
