@@ -1,5 +1,6 @@
 #pragma once
 
+#include "button.h"
 #include "digital.h"
 #include "digital_input.h"
 #include "digital_output.h"
