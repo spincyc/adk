@@ -2,7 +2,7 @@
 schema_version: 1
 task_uuid: "f7517e0d-8ca0-4a85-88d5-e7657de132b3"
 title: "plan the physical acceptance campaign"
-status: "queued"
+status: "active"
 priority: "normal"
 priority_reason: "Recovered audit prompt 11; ordered by the repository recovery audit."
 parent: null
@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-27T22:00:43Z"
+updated_at: "2026-07-28T00:43:36Z"
 ---
 
 # Goal
@@ -43,3 +43,9 @@ primary behavior, non-Serial evidence, shutdown/reset/power-removal safe
 state, and any E2/external-power boundary. Software agents may prepare cards
 and review evidence but must never fabricate observations or mark a child
 complete without the signed bench record.
+
+## Activation
+
+The software-preparation boundary is active. No per-lesson physical child will
+be created until a named operator and exact board, specimens, supply, and
+instruments are available.

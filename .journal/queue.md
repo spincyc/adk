@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-07-28T00:43:20Z"
+generated_at: "2026-07-28T00:44:03Z"
 task_count: 18
 ---
 
@@ -10,11 +10,10 @@ This file is a rebuildable view. Task `state.md` files are authoritative.
 
 ## Active
 
-None.
+- `f7517e0d-8ca0-4a85-88d5-e7657de132b3` — plan the physical acceptance campaign [active, normal]
 
 ## Queued
 
-- `f7517e0d-8ca0-4a85-88d5-e7657de132b3` — plan the physical acceptance campaign [queued, normal]
 - `35f3ab7c-b93b-4d75-99c1-dbaedbd36d7d` — bound the next USB research milestone [queued, low]
 - `8a7a5ee1-b646-4f0b-83b2-8380c7f259e6` — bound the next HDMI/shared-fabric milestone [queued, low]
 
