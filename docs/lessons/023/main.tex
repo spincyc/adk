@@ -1,380 +1,203 @@
 \documentclass[11pt]{article}
-
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage[margin=0.68in]{geometry}
-\usepackage{booktabs}
-\usepackage{enumitem}
-\usepackage{fancyhdr}
-\usepackage{graphicx}
-\usepackage[table]{xcolor}
+\usepackage[letterpaper,margin=0.72in,headheight=15pt]{geometry}
+\usepackage{amsmath,booktabs,enumitem,fancyhdr,graphicx,listings,microtype,tabularx,xcolor}
 \usepackage[hidelinks]{hyperref}
-\usepackage{listings}
-\usepackage{microtype}
-\usepackage{tabularx}
-\usepackage{tikz}
-\usepackage{titlesec}
-\usetikzlibrary{arrows.meta,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
-
-\definecolor{Ink}{gray}{0}
-\definecolor{CodeGray}{gray}{0.96}
-\definecolor{Soft}{gray}{0.90}
-\hypersetup
-{
-    pdftitle={ADK Lesson 023: Inert Load Interlock},
-    pdfauthor={Kevin Shanahan},
-    pdfsubject={Bounded simulated load intent with distinct request, application, and fault evidence},
-    pdflang={en-US}
-}
-\pagestyle{fancy}
-\fancyhf{}
-\lhead{\textsc{ADK Lesson 023}}
-\rhead{Inert Load Interlock}
-\cfoot{\thepage}
-\setlength{\headheight}{14pt}
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{5pt}
+\definecolor{codebg}{gray}{0.97}
+\pagestyle{fancy}\fancyhf{}\lhead{\textsc{ADK lesson 023}}
+\rhead{The three-lamp interlock}\cfoot{\thepage}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
 \setlist{nosep,leftmargin=1.45em}
-\titleformat{\section}{\Large\bfseries\color{Ink}}{\thesection}{0.5em}{}
-\titleformat{\subsection}{\large\bfseries\color{Ink}}{\thesubsection}{0.5em}{}
-\lstdefinestyle{adkcpp}
-{
-    language=C++,
-    backgroundcolor=\color{CodeGray},
-    basicstyle=\ttfamily\small,
-    keywordstyle=\color{Ink}\bfseries,
-    commentstyle=\color{Ink},
-    columns=fullflexible,
-    keepspaces=true,
-    showstringspaces=false,
-    frame=single,
-    rulecolor=\color{Ink},
-    breaklines=true,
-    tabsize=4
-}
-\newcommand{\checkbox}{\(\square\)}
-\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
-\newcommand{\lessonbox}[1]{%
-  \begin{center}
-  \fcolorbox{Ink}{white}{\parbox{0.92\linewidth}{#1}}
-  \end{center}}
-
+\renewcommand{\arraystretch}{1.16}
+\lstdefinestyle{adkcpp}{language=C++,basicstyle=\ttfamily\small,
+backgroundcolor=\color{codebg},frame=single,columns=fullflexible,
+keepspaces=true,showstringspaces=false,breaklines=true}
+\hypersetup{
+pdftitle={ADK Lesson 023: The Three-Lamp Interlock},
+pdfauthor={Kevin Shanahan},
+pdfsubject={A fast visible adventure through mutually exclusive inert load intent},
+pdflang={en-US}}
 \begin{document}
 
 \begin{center}
-  {\Huge\bfseries Inert Load Interlock}\\[4pt]
-  {\Large Requested, applied, and fault are different facts}\\[8pt]
-  \textit{Five LEDs make a bounded software policy visible without energizing a load.}
+{\Huge\bfseries The three-lamp interlock}\\[4pt]
+{\Large Lesson 023 --- ask, admit, light exactly one}\\[6pt]
+\textit{A deliberate failure makes every load lamp go dark; then the circuit recovers.}
 \end{center}
 
-\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
-Lesson & 023 --- component & Time & 150--210 minutes\\
-Prerequisites & Lessons 001--022 & Board & Arduino Mega 2560\\
-Primary evidence & D13, D38, D40, D41, D12 & Status & physical acceptance open\\
-Energy class & E1: USB and resistor-limited LEDs only\\
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}lX>{\bfseries}lX@{}}
+Time & about 35 minutes & Board & Arduino Mega 2560\\
+Payoffs & chase, fail-closed scene, recovery & Energy & E1, USB only\\
+Physical parts & four LEDs, three 220 \(\Omega\), one 1 k\(\Omega\) & Loads & names only\\
 \end{tabularx}
 
-\lessonbox{\textbf{Hard boundary.} Fan, pump, and heater are names for three
-LED channels. Do not connect a relay, motor, pump, heater, transistor board,
-external load supply, or mains circuit. Command admission is a software fact,
-not power evidence. ADK is not a functional safety controller.}
+This is a three-lamp policy machine. ``Fan,'' ``pump,'' and ``heater'' are
+names for three ordinary LEDs. The sketch never connects or controls a relay,
+driver, motor, pump, heater, external supply, or mains circuit. D13 blinks
+before each request; D40, D38, and D41 show the one admitted choice; D12 shows
+the deliberate fault.
 
-\section{Mission}
+\textbf{Hard boundary.} Keep every relay module, transistor board, motor,
+external supply, and energetic load off the table. An LED demonstrates
+software intent, not isolation or safe load power. Unplug USB before moving a
+wire. Stop for heat, smell, smoke, repeated USB resets, two load lamps glowing
+together, or any disagreement between the plate and the circuit.
 
-Build an observable chain with no energetic load:
-\[
-\text{request}\rightarrow\text{admission policy}\rightarrow
-\text{one applied intent}\rightarrow\text{LED evidence}.
-\]
-At the end you should be able to explain why these statements differ:
-
-\begin{enumerate}
-  \item a channel was requested;
-  \item policy admitted one active intent;
-  \item an indicator was commanded;
-  \item the indicator visibly responded; and
-  \item a real load received power.
-\end{enumerate}
-
-This lesson can establish the first four only. The fifth is deliberately
-outside the circuit.
-
-\section{Orientation and wiring}
+\section*{Adventure map}
 
 \begin{center}
-\includegraphics[width=0.94\linewidth]{023-inert-load-pencil.png}
+\includegraphics[width=\linewidth]{023-progress-pencil.png}
 \end{center}
-\textit{Alternative text: a pencil-style Mega 2560 orientation drawing. D13
-shows a request pulse; D40, D38, and D41 show applied fan, pump, and heater
-intent; D12 shows a latched fault. Each external LED returns through its own
-resistor to the common ground. No load or relay is connected.}
+\textbf{Plate 1: four dependent visible wins.} First the three applied lamps
+chase. Next a rejected fan request makes all three dark while D12 stays on for
+two seconds. Explicit shutdown and initialization clear that sticky software
+fault, so the chase succeeds again. At 15 seconds every lamp goes dark, stays
+inactive for 250 ms, releases its pin, and waits for Reset. No input can extend
+that deadline.
+
+\section*{Stage 1: build one literal breadboard}
+
+Gather a Mega 2560, USB cable, breadboard, four ordinary LEDs, three
+220 \(\Omega\) resistors, one 1 k\(\Omega\) resistor, and jumpers. Identify
+each LED's anode and cathode from the actual part; do not infer polarity from
+color. The built-in D13 LED needs no wire.
+
+\begin{center}
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]
+{023-inert-load-pencil.png}
+\end{center}
+\textbf{Plate 2: actual header pairs, breadboard rows, and component legs.}
+The paired Mega header puts even D38 and D40 in one physical row and odd D41
+beside D40. D12 is on the top digital header. Breadboard holes a--e in one
+numbered row are connected; f--j form a separate group across the center gap.
+The two negative rails are joined at the far end and return to one Mega GND.
 
 \begin{tabularx}{\linewidth}{@{}l l X@{}}
 \toprule
-Meaning & Pin & Connection\\
-\midrule
-Requested intent & D13 & Built-in LED; no external wire\\
-Applied pump & D38 & D38 to 220 \(\Omega\), LED anode; cathode to GND\\
-Applied fan & D40 & D40 to 220 \(\Omega\), LED anode; cathode to GND\\
-Applied heater & D41 & D41 to 220 \(\Omega\), LED anode; cathode to GND\\
-Latched fault & D12 & D12 to 1 k\(\Omega\), LED anode; cathode to GND\\
+Lamp & Mega pin & Exact breadboard path\\\midrule
+Pump & D38 & jumper to a5; 220 \(\Omega\) a5--e8; LED e8 anode/e10 cathode;
+row 10 to negative rail\\
+Fan & D40 & jumper to a14; 220 \(\Omega\) a14--e17; LED e17 anode/e19 cathode;
+row 19 to negative rail\\
+Heater & D41 & jumper to f5; 220 \(\Omega\) f5--j8; LED j8 anode/j10 cathode;
+row 10 to negative rail\\
+Fault & D12 & jumper to f14; 1 k\(\Omega\) f14--j17; LED j17 anode/j19
+cathode; row 19 to negative rail\\
+Return & GND & Mega GND to negative rail; bridge the two negative rails\\
 \bottomrule
 \end{tabularx}
 
-\textbf{Unpowered inspection.} Remove USB. Confirm LED polarity, one resistor
-per LED, a common Mega GND, and no connection to a relay or powered load.
-Record resistor measurements: D38 \blank{.55in}, D40 \blank{.55in},
-D41 \blank{.55in}, D12 \blank{.55in}.
+Build the pump branch first. Compare a5, e8, e10, and the negative rail with
+Plate 2. Add fan, heater, then fault one branch at a time. This order keeps a
+mistake local and makes the finished layout easy to compare hole by hole.
 
-\section{The object story}
+\section*{Stage 2: watch mutual exclusion}
+
+Restore USB and upload the canonical
+\texttt{Lesson023InertLoadInterlock} sketch. Within a third of a second D13
+blinks and the fan lamp on D40 lights. The visible sequence is:
 
 \begin{center}
-\begin{tikzpicture}[
-  node distance=7mm and 9mm,
-  box/.style={draw,rounded corners,align=center,minimum height=10mm},
-  arrow/.style={-{Latex[length=2mm]},thick}
-]
-  \node[box] (gate) {\texttt{PowerDomain}\\command admission};
-  \node[box,right=of gate] (policy) {\texttt{InertLoadInterlock}\\requested/active/status};
-  \node[box,right=of policy] (panel) {\texttt{InertLoadPanel}\\break before make};
-  \node[box,below=of panel] (leds) {D38/D40/D41\\applied evidence};
-  \draw[arrow] (gate) -- (policy);
-  \draw[arrow] (policy) -- (panel);
-  \draw[arrow] (panel) -- (leds);
-\end{tikzpicture}
+D40 fan \(\rightarrow\) D38 pump \(\rightarrow\) D41 heater
+\(\rightarrow\) all off.
 \end{center}
 
-\texttt{InertLoadInterlock} owns no pin. It records one requested selection
-and at most one active intent. Each \texttt{IndicatorPump} owns one indicator
-endpoint. \texttt{InertLoadPanel} borrows the three outputs in fan, pump,
-heater order and renders the applied selection; it cannot outlive them. These
-relationships are not evidence that a real load is safe.
+Each change begins with a short D13 pulse. One applied lamp turns off before
+the next turns on. If a lamp is missing, unplug and inspect only its named pin,
+resistor holes, LED legs, and ground return. If two glow together, unplug
+immediately and compare every occupied hole with Plate 2.
 
-\subsection{Lifecycle}
+This win depends on the complete path:
+\[
+\text{request pulse}\rightarrow\text{selection}\rightarrow
+\text{admission}\rightarrow\text{panel}\rightarrow\text{one LED}.
+\]
+Serial output is not needed.
 
-Construction is inert. Initialization establishes \texttt{None}. Repeated
-initialization is idempotent. Shutdown selects all-off and releases owned
-endpoints. Destruction calls shutdown and remains safe during caller exception
-unwinding, although ADK itself does not throw.
+\section*{Stage 3: enjoy the fail-closed scene}
 
-A revoked admission causes \texttt{HardwareFailure}, clears active intent, and
-leaves the failure sticky. Restoring admission does not silently retry.
-Recovery is explicit: shutdown, correct the external condition, initialize,
-then issue a new request.
+After the first all-off moment, the sketch deliberately revokes its
+\emph{software} command admission and asks for fan again. D13 still blinks,
+but D40, D38, and D41 remain dark. D12 lights for about two seconds.
 
-\subsection{One bounded status value}
+That disagreement is the point: a request happened, policy refused to apply
+it, and a distinct lamp made the fault visible. The scene supports a
+fail-closed software decision in this inert circuit. It does not prove
+galvanic isolation, relay-contact position, stored-energy removal, or safe
+control of a real load.
+
+\section*{Stage 4: recovery earns the second chase}
+
+Restoring admission alone cannot erase the sticky fault. The sketch explicitly
+shuts down the panel and interlock, restores admission, initializes both, and
+clears D12. Only then does the fan--pump--heater chase run a second time.
 
 \begin{lstlisting}[style=adkcpp]
-const adk::Status status = interlock.select (requestedLoad);
+panel.shutdown ();
+interlock.shutdown ();
+admission.admit ();
 
-if (!status.ok ())
+if (interlock.initialize ().ok () &&
+    panel.initialize ().ok ())
 {
-    observeFailure (status);
+    faultEvidence.off ();
 }
 \end{lstlisting}
 
-Pass the complete value to the observation boundary. Use \texttt{error()} only
-when policy needs the underlying code. \texttt{transient()} classifies a cause;
-it never authorizes an unbounded retry.
+The second chase is therefore a dependent reward: it appears only if
+acquisition, the first chase, deliberate rejection, all-off application,
+sticky-fault handling, and explicit lifecycle recovery all worked.
 
-\section{Read the snapshot}
+\section*{Stage 5: discover the fixed ending}
 
-\begin{tabularx}{\linewidth}{@{}l l l X@{}}
+At 15 seconds, regardless of the active stage, the sketch revokes admission,
+selects every simulated output inactive, turns D13 and D12 off, holds the
+observable inactive state for 250 ms, releases the indicator resources, and
+waits. Press Reset to play again.
+
+\begin{tabularx}{\linewidth}{@{}p{0.28\linewidth}X@{}}
 \toprule
-Requested & Active & Status & Meaning\\
-\midrule
-Pump & Pump & Ok & Pump indicator intent was admitted\\
-Heater & Heater & Ok & Prior channel cleared before heater applied\\
-None & None & Ok & Deliberately inactive\\
-Pump & None & HardwareFailure & Request recorded; admission failed closed\\
-Invalid value & unchanged & InvalidArgument & Prior valid state preserved\\
+What you see & What it supports\\\midrule
+D13 then exactly one load lamp & a request preceded one admitted inert intent\\
+D13, three dark load lamps, D12 on & a recorded request failed closed visibly\\
+D12 clears, chase repeats & explicit lifecycle recovery completed\\
+all lamps dark at 15 seconds & fixed inactive hold and shutdown began\\
 \bottomrule
 \end{tabularx}
 
-The request pulse on D13 establishes that a selection attempt occurred.
-Exactly one of D38, D40, and D41 renders \texttt{active}. D12 renders a
-reported fault. Do not collapse those observations into a single ``working''
-light.
+Darkness is circuit-native evidence. Building, uploading, and watching this
+story still does not claim separately recorded physical verification.
 
-\section{Experiment A: mutual exclusion}
+\section*{Under the hood}
 
-\textbf{Predict.} Write the expected applied LED after each request.
+\texttt{InertLoadInterlock} owns no pin. It records requested and active
+intent separately and admits at most one active value.
+\texttt{InertLoadPanel} borrows three \texttt{IndicatorPump} objects and
+renders the active value break-before-make. Construction is inert;
+\texttt{initialize()} acquires resources; \texttt{shutdown()} is idempotent
+and selects inactive before release.
 
-\begin{tabularx}{\linewidth}{@{}c l l l X@{}}
-\toprule
-Step & Request & D13 & Applied LED & Prediction\\
-\midrule
-1 & Fan & pulse & D40 & \blank{1.3in}\\
-2 & Pump & pulse & D38 & \blank{1.3in}\\
-3 & Heater & pulse & D41 & \blank{1.3in}\\
-4 & None & pulse & none & \blank{1.3in}\\
-\bottomrule
-\end{tabularx}
-
-\textbf{Observe.} Watch the request pulse before the applied channel changes.
-At no instant should two applied indicators remain illuminated.
-
-Record one complete sequence: \blank{3.2in}.
-
-\textbf{Interpret.} Does the sequence support break-before-make? Why?
-
-\blank{4.1in}.
-
-\section{Experiment B: admission fault}
-
-The deterministic host test revokes the borrowed domain while an intent is
-active. The Mega teaching sketch may expose the same scenario only through a
-fixed, documented simulation; no power path is interrupted.
-
-\begin{enumerate}
-  \item Predict the next requested, active, and status fields.
-  \item Observe D13, all three applied LEDs, and D12 separately.
-  \item Confirm requested may name a load while active remains \texttt{None}.
-  \item Restore admission without restarting. Confirm the fault stays sticky.
-  \item Restart the lifecycle before making a fresh request.
-\end{enumerate}
-
-\begin{tabularx}{\linewidth}{@{}l l l X@{}}
-\toprule
-Moment & Requested evidence & Applied evidence & Fault evidence\\
-\midrule
-Before revoke & \blank{.8in} & \blank{.8in} & \blank{.8in}\\
-After revoke & \blank{.8in} & \blank{.8in} & \blank{.8in}\\
-Admission restored & \blank{.8in} & \blank{.8in} & \blank{.8in}\\
-After lifecycle restart & \blank{.8in} & \blank{.8in} & \blank{.8in}\\
-\bottomrule
-\end{tabularx}
-
-\lessonbox{\textbf{Interpretation limit.} All-off LEDs support fail-closed
-software intent. They do not establish galvanic isolation, contact position,
-load voltage, or removal of stored energy.}
-
-\section{Fault laboratory}
-
-\begin{tabularx}{\linewidth}{@{}p{0.25\linewidth} X X@{}}
-\toprule
-Injected condition & Expected public result & Expected evidence\\
-\midrule
-Selection before initialize & NotInitialized & no applied LED\\
-Unknown enum value & InvalidArgument & prior valid selection unchanged\\
-Admission revoked & transient HardwareFailure & active all-off; D12 latched\\
-Old channel cannot turn off & HardwareFailure & best-effort all-off\\
-New channel cannot turn on & HardwareFailure & best-effort all-off\\
-Repeated shutdown & Ok cleanup behavior & every applied LED off\\
-Destruction while active & no throw, no retained claim & pins released\\
-\bottomrule
-\end{tabularx}
-
-For each row, distinguish the returned \texttt{Status}, the snapshot, the
-recorded endpoint trace, and the physical observation. One cannot substitute
-for another.
-
-\section{Shutdown proof}
-
-Resource acquisition and safe electrical state are separate checks.
-
-\begin{enumerate}
-  \item \textbf{Acquire:} predict a busy indicator pin causes transactional
-        rollback. Host evidence should show every earlier claim released.
-  \item \textbf{Inactive:} predict each applied LED is dark before release.
-  \item \textbf{High impedance:} with the circuit and meter arranged
-        unpowered, observe D38/D40/D41 after shutdown relative to named GND.
-  \item \textbf{Reset:} do not infer safe state from a destructor. Remove USB
-        power before touching the circuit.
-\end{enumerate}
-
-\section{Deterministic proof}
-
-The host suite should exhaust transitions among \texttt{None}, \texttt{Fan},
-\texttt{Pump}, and \texttt{Heater}; initialization failures at every endpoint;
-old-off and new-on failures; invalid input; asynchronous admission revocation;
-sticky faults; explicit recovery; repeated shutdown; and destruction.
-
-The key trace property is:
+The automated repository suite stays behind the scenes. It exhausts all
+selection transitions, invalid values, endpoint acquisition failures,
+old-off and new-on failures, admission revocation, sticky faults, explicit
+recovery, repeated shutdown, destruction, and deterministic replay. Its core
+trace property is
 \[
-\forall t,\quad
 [\mathrm{fan}(t)]+[\mathrm{pump}(t)]+[\mathrm{heater}(t)]\leq1.
 \]
-Replay the same admission and request trace twice. Requested, active, status,
-and endpoint records must match exactly.
+Those tests protect the lesson without turning the learner's visible adventure
+into a test procedure.
 
-\section{Exercises}
+\section*{Make it yours}
 
-\begin{enumerate}
-  \item Draw a state table that distinguishes \texttt{requested} from
-        \texttt{active}. Why is one field insufficient?
-  \item Explain why \texttt{transient()} must not automatically restart a
-        failed selection.
-  \item Add a host-only fault at each panel write. Prove the all-off pass is
-        attempted without claiming that it succeeds.
-  \item Design a two-LED code for requested versus applied without using
-        color. State which information is lost.
-  \item Explain why a real relay adapter belongs to a different energy class
-        and needs independent power-removal evidence.
-  \item Explain how \texttt{PanelPumpOutput} borrows
-        \texttt{InertLoadPanel}, adapts only its pump channel, and why it must
-        not outlive the panel in Lesson 024.
-\end{enumerate}
+Change one harmless presentation detail at a time: reorder the three simulated
+names, make D13 pulse twice before the fault scene, shorten the ordinary chase
+interval, or place paper fan/pump/heater labels beside the LEDs. Keep the
+circuit USB-powered and resistor-limited. Never substitute a real load.
 
-\section{CLI workflow}
-
-\begin{lstlisting}[style=adkcpp]
-make host-test
-make arduino-Lesson023InertLoadInterlock
-make size-Lesson023InertLoadInterlock
-make lessons
-make lessons-check
-make site-check
-\end{lstlisting}
-
-Compilation, deterministic replay, and PDF generation are software evidence.
-They leave every physical row below open.
-
-\section{Physical acceptance record --- intentionally blank}
-
-\begin{tabularx}{\linewidth}{@{}l X@{}}
-\toprule
-Field & Record\\
-\midrule
-Date, person, commit & \\
-Mega board/revision & \\
-Arduino CLI/core versions & \\
-USB supply and measured rail & \\
-Instrument and identifier & \\
-Measured resistor values & \\
-Unpowered wiring inspection & \\
-Acquisition prediction/observation & \\
-Normal sequence prediction/observation & \\
-Mutual-exclusion observation & \\
-Fault prediction/observation & \\
-Shutdown LED observation & \\
-High-impedance observation & \\
-Reset and power-removal observation & \\
-Deviation and stop condition & \\
-\bottomrule
-\end{tabularx}
-
-\textbf{Result:} \checkbox\ pass \quad \checkbox\ fail \quad
-\checkbox\ not run. Until a named person fills this record from a real bench,
-the lesson remains host verified at most.
-
-\section{References and next step}
-
-\begin{itemize}
-  \item \href{https://github.com/spincyc/adk/tree/main/examples/Lesson023InertLoadInterlock}
-  {Canonical Lesson 023 example}
-  \item Interface and tests:
-  \url{https://github.com/spincyc/adk/blob/main/src/inert_load_interlock.h}
-  and
-  \url{https://github.com/spincyc/adk/blob/main/tests/test_inert_load_interlock.cpp}
-  \item ATmega2560:
-  \url{https://www.microchip.com/en-us/product/atmega2560}
-  \item ADK safety model:
-  \url{https://github.com/spincyc/adk/blob/main/docs/SAFETY_MODEL.md}
-\end{itemize}
-
-Lesson 024 composes this bounded inert output with calibrated moisture samples
-and deterministic watering time. It still uses an LED as the reference pump.
-
+\vfill\small
+\textbf{Companion material.} The HTML page carries searchable pin and timing
+tables plus source links. This printable lesson carries the literal wiring
+plate, staged visible progression, and the honest inert-load boundary. Lesson
+024 reuses the pump \emph{indicator} in an inert greenhouse story.
 \end{document}

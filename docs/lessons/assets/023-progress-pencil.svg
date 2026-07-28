@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="650" viewBox="0 0 1500 650">
+  <style>
+    .box{fill:#fafafa;stroke:#222;stroke-width:4}
+    .ink{fill:none;stroke:#222;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+    .on{fill:#333;stroke:#111;stroke-width:3}
+    .off{fill:#fff;stroke:#555;stroke-width:3}
+    .title{font-family:Open Sans,sans-serif;font-size:27px;font-style:italic;fill:#111}
+    .label{font-family:Open Sans,sans-serif;font-size:21px;fill:#222}
+    .small{font-family:Open Sans,sans-serif;font-size:14px;fill:#333}
+  </style>
+  <rect width="1500" height="650" fill="#fafafa"/>
+  <text x="40" y="42" class="title">The visible adventure — each panel depends on the last</text>
+  <g transform="translate(30,75)">
+    <rect width="335" height="520" rx="18" class="box"/>
+    <text x="25" y="45" class="title">1. one lamp at a time</text>
+    <circle cx="75" cy="135" r="28" class="on"/><text x="125" y="142" class="label">fan</text>
+    <circle cx="75" cy="225" r="28" class="off"/><text x="125" y="232" class="label">pump</text>
+    <circle cx="75" cy="315" r="28" class="off"/><text x="125" y="322" class="label">heater</text>
+    <path d="M75 365 V430 M55 410 L75 430 L95 410" class="ink"/>
+    <text x="25" y="475" class="small">D13 blinks before every change.</text>
+    <text x="25" y="502" class="small">Never two filled circles together.</text>
+  </g>
+  <g transform="translate(395,75)">
+    <rect width="335" height="520" rx="18" class="box"/>
+    <text x="25" y="45" class="title">2. policy says no</text>
+    <circle cx="75" cy="135" r="28" class="off"/><text x="125" y="142" class="label">fan off</text>
+    <circle cx="75" cy="225" r="28" class="off"/><text x="125" y="232" class="label">pump off</text>
+    <circle cx="75" cy="315" r="28" class="off"/><text x="125" y="322" class="label">heater off</text>
+    <circle cx="75" cy="405" r="28" class="on"/><text x="125" y="412" class="label">fault on</text>
+    <text x="25" y="475" class="small">The fan request is visible, but the</text>
+    <text x="25" y="502" class="small">applied channels fail closed.</text>
+  </g>
+  <g transform="translate(760,75)">
+    <rect width="335" height="520" rx="18" class="box"/>
+    <text x="25" y="45" class="title">3. automatic recovery</text>
+    <circle cx="75" cy="135" r="28" class="on"/><text x="125" y="142" class="label">fan</text>
+    <circle cx="75" cy="225" r="28" class="off"/><text x="125" y="232" class="label">pump</text>
+    <circle cx="75" cy="315" r="28" class="off"/><text x="125" y="322" class="label">heater</text>
+    <circle cx="75" cy="405" r="28" class="off"/><text x="125" y="412" class="label">fault clears</text>
+    <text x="25" y="475" class="small">Shutdown + initialize is explicit;</text>
+    <text x="25" y="502" class="small">restoring admission alone is not enough.</text>
+  </g>
+  <g transform="translate(1125,75)">
+    <rect width="335" height="520" rx="18" class="box"/>
+    <text x="25" y="45" class="title">4. fixed dark ending</text>
+    <circle cx="75" cy="135" r="28" class="off"/><text x="125" y="142" class="label">fan off</text>
+    <circle cx="75" cy="225" r="28" class="off"/><text x="125" y="232" class="label">pump off</text>
+    <circle cx="75" cy="315" r="28" class="off"/><text x="125" y="322" class="label">heater off</text>
+    <circle cx="75" cy="405" r="28" class="off"/><text x="125" y="412" class="label">fault off</text>
+    <text x="25" y="475" class="small">At 15 seconds: inactive, hold 250 ms,</text>
+    <text x="25" y="502" class="small">release pins, wait for Reset.</text>
+  </g>
+</svg>

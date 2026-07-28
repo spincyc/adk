@@ -1,0 +1,114 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usetikzlibrary{decorations.pathmorphing}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm,line cap=round,line join=round,
+  board/.style={draw,line width=.8pt,rounded corners=2mm,fill=black!2},
+  hole/.style={circle,draw,line width=.3pt,inner sep=.55pt},
+  pin/.style={circle,fill=black,inner sep=.9pt},
+  wire/.style={preaction={draw=white,line width=2.2pt},line width=.8pt},
+  tiny/.style={font=\fontsize{4.8}{5.2}\selectfont},
+  small/.style={font=\scriptsize}]
+
+\node[font=\bfseries\large] at (150,126)
+  {Lesson 024: the literal USB-only trainer};
+
+% Mega, with the real paired odd/even header relationship.
+\draw[board] (3,8) rectangle (82,118);
+\node[font=\bfseries] at (31,111) {MEGA 2560};
+\draw (52,33) rectangle (75,101);
+\foreach \r in {0,...,7}
+{
+  \pgfmathsetmacro{\yy}{95-\r*8}
+  \node[pin] at (58,\yy) {};
+  \node[pin] at (69,\yy) {};
+}
+\foreach \p/\x/\y in {30/58/63,31/69/63,32/58/55,33/69/55,34/58/47,35/69/47,
+38/58/31,39/69/31,40/58/23,41/69/23}
+  \node[tiny,anchor=east] at (\x-1.7,\y) {D\p};
+\node[pin] at (13,96) {};\node[pin] at (22,96) {};\node[pin] at (31,96) {};
+\node[tiny] at (13,101) {D5};\node[tiny] at (22,101) {D6};\node[tiny] at (31,101) {D7};
+\node[pin] at (12,17) {};\node[pin] at (24,17) {};\node[pin] at (36,17) {};
+\node[tiny] at (12,12) {5 V};\node[tiny] at (24,12) {GND};\node[tiny] at (36,12) {A0};
+\node[small,align=center] at (28,75) {D13 record evidence\\is built into the Mega};
+
+% Literal breadboard field and named holes.
+\draw[board] (88,8) rectangle (292,118);
+\node[small,font=\bfseries] at (190,112) {BREADBOARD: numbered rows and center trench};
+\foreach \c/\x in {a/99,b/104,c/109,d/114,e/119,f/135,g/140,h/145,i/150,j/155}
+  \node[tiny] at (\x,105) {\c};
+\draw[dashed] (127,18)--(127,101);
+\foreach \r in {1,...,35}
+{
+  \pgfmathsetmacro{\yy}{101-\r*2.25}
+  \foreach \x in {99,104,109,114,119,135,140,145,150,155}
+    \node[hole] at (\x,\yy) {};
+}
+\foreach \r in {3,4,5,10,15,20,25,30,35}
+{
+  \pgfmathsetmacro{\yy}{101-\r*2.25}
+  \node[tiny,anchor=east] at (96,\yy) {\r};
+}
+\draw[double] (168,17)--(282,17);
+\node[small,anchor=west] at (282,17) {$-$ GND rail};
+\foreach \x in {172,178,...,280}\node[hole] at (\x,17) {};
+
+% Potentiometer at rows 3/4/5.
+\draw[line width=.8pt] (109,92) circle (3.7);
+\draw (109,92)--(111,94);
+\draw[wire] (104,94.25)--(104,98);
+\draw[wire] (109,92)--(109,91.9);
+\draw[wire] (114,94.25)--(114,89.75);
+\node[tiny,anchor=west] at (168,97) {10 k$\Omega$: row 3e to 5 V};
+\node[tiny,anchor=west] at (168,92) {row 4e wiper to Mega A0};
+\node[tiny,anchor=west] at (168,87) {row 5e to Mega GND};
+\draw[wire] (12,17)--(84,17)--(84,98)--(104,98);
+\draw[wire] (36,17)--(80,17)--(80,92)--(109,92);
+\draw[wire] (24,17)--(76,17)--(76,89.75)--(114,89.75);
+
+% Three LED-only inert load paths.
+\foreach \p/\mx/\my/\r/\next/\name in {40/58/23/10/11/fan,38/58/31/15/16/pump,41/69/23/20/21/heater}
+{
+  \pgfmathsetmacro{\yy}{101-\r*2.25}
+  \pgfmathsetmacro{\ynext}{101-\next*2.25}
+  \draw[wire] (\mx,\my)--(84,\my)--(84,\yy)--(99,\yy);
+  \draw[wire,decorate,decoration={zigzag,segment length=1.1mm,amplitude=.5mm}]
+    (109,\yy)--(135,\yy);
+  \draw[fill=white] (145,\yy-1.1) circle (2);
+  \draw[wire] (145,\yy)--(145,\yy-1.1);
+  \draw[wire] (145,\yy-2.2)--(145,\ynext)--(162,\ynext)--(162,17)--(172,17);
+  \node[tiny,anchor=west] at (168,\yy+1)
+    {\name: D\p $\rightarrow$ row \r a; 220 $\Omega$ \r c--\r f};
+  \node[tiny,anchor=west] at (168,\yy-2)
+    {LED anode \r h; cathode \next h $\rightarrow$ GND rail};
+}
+
+% RGB paths on rows 25, 27, 29; one common cathode.
+\foreach \p/\mx/\r/\leg in {5/13/25/red,6/22/27/green,7/31/29/blue}
+{
+  \pgfmathsetmacro{\yy}{101-\r*2.25}
+  \draw[wire] (\mx,96)--(\mx,103)--(86,103)--(86,\yy)--(99,\yy);
+  \draw[wire,decorate,decoration={zigzag,segment length=1.1mm,amplitude=.5mm}]
+    (109,\yy)--(135,\yy);
+  \draw[wire] (135,\yy)--(146,\yy);
+  \node[tiny,anchor=west] at (168,\yy)
+    {D\p $\rightarrow$ 330 $\Omega$ $\rightarrow$ RGB \leg\ leg};
+}
+\draw[fill=white] (150,38) circle (5);
+\draw[wire] (146,44.75)--(147,43);
+\draw[wire] (146,40.25)--(145,40);
+\draw[wire] (146,35.75)--(146,36);
+\draw[wire] (154,34)--(154,31.25)--(164,31.25)--(164,17);
+\node[tiny,anchor=west] at (168,31)
+  {RGB common cathode in distinct row 31 $\rightarrow$ GND rail};
+
+% LCD connector: pin-order callout and exact signal mapping.
+\draw[board] (92,2) rectangle (286,14);
+\node[tiny,font=\bfseries] at (189,11) {16x2 parallel LCD connector};
+\node[tiny] at (189,7)
+  {VSS GND; VDD 5 V; VO contrast; RS D30; RW GND; E D31; D4--D7 D32--D35};
+\node[tiny] at (189,4)
+  {A uses the module-rated backlight resistor; K GND. Verify the exact module pin order.};
+\end{tikzpicture}
+\end{document}
