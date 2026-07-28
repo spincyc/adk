@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-28T00:48:26Z"
-updated_at: "2026-07-28T10:34:00Z"
+updated_at: "2026-07-28T10:43:32Z"
 ---
 
 # Goal
@@ -112,3 +112,14 @@ connects no motor, driver, or external supply. Learner-facing cards,
 instructor/signoff fields, and manual test chores are absent while automated
 repository gates remain intact. No physical observation is claimed. The next
 repair unit is Lessons 021--022.
+
+Lessons 021--022 are software-prepared and independently reviewed. Lesson 021
+is a USB-only six-lamp route with three dependent visible wins, literal
+Mega/breadboard wiring, and input-independent 12-second shutdown; motors,
+drivers, and external power remain excluded. Lesson 022 uses only an A0
+potentiometer, D12 LED, and recording models for a four-stage visible record
+journey with fixed 120-second shutdown and 250-millisecond inactive hold. It
+makes no RTC, removable-storage, soil, or physical-bus claim. Learner-facing
+cards, instructor/signoff fields, CLI work, and manual test chores are absent
+while automated repository verification remains intact. No physical
+observation is claimed. The next repair unit is Lessons 023--024.

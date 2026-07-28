@@ -4,10 +4,10 @@ task_uuid: "ba1ed653-0cb2-4275-ae36-16c88591ce35"
 agent_instance_uuid: "145d0ab8-c97b-4d75-bfec-9677327b5348"
 status: "active"
 acquired_at: "2026-07-28T00:49:06Z"
-last_checkpoint_at: "2026-07-28T10:34:00Z"
+last_checkpoint_at: "2026-07-28T10:43:32Z"
 ---
 
 # Durable execution lease
 
-This agent owns numeric lesson remediation. Lessons 001--020 are checkpointed;
-Lessons 021--022 are next.
+This agent owns numeric lesson remediation. Lessons 001--022 are checkpointed;
+Lessons 023--024 are next.
