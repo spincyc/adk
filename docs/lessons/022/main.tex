@@ -1,591 +1,204 @@
 \documentclass[11pt]{article}
-
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage[margin=0.68in]{geometry}
-\usepackage{booktabs}
-\usepackage{enumitem}
-\usepackage{fancyhdr}
-\usepackage{graphicx}
-\usepackage[table]{xcolor}
+\usepackage[letterpaper,margin=0.72in,headheight=15pt]{geometry}
+\usepackage{amsmath,booktabs,enumitem,fancyhdr,graphicx,listings,microtype,tabularx,xcolor}
 \usepackage[hidelinks]{hyperref}
-\usepackage{listings}
-\usepackage{microtype}
-\usepackage{tabularx}
-\usepackage{tikz}
-\usepackage{titlesec}
-\usetikzlibrary{arrows.meta,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
-
-\definecolor{Ink}{gray}{0}
-\definecolor{CodeGray}{gray}{0.96}
-\definecolor{Soft}{gray}{0.90}
-\hypersetup
-{
-    pdftitle={ADK Lesson 022: Moisture Evidence and Owned Bus Transactions},
-    pdfauthor={Kevin Shanahan},
-    pdfsubject={Calibrated moisture samples and deterministic owned bus transactions},
-    pdflang={en-US}
-}
-\pagestyle{fancy}
-\fancyhf{}
-\lhead{\textsc{ADK Lesson 022}}
-\rhead{Moisture and Owned Buses}
-\cfoot{\thepage}
-\setlength{\headheight}{14pt}
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{5pt}
+\definecolor{codebg}{gray}{0.97}
+\pagestyle{fancy}\fancyhf{}\lhead{\textsc{ADK lesson 022}}
+\rhead{The memory trail}\cfoot{\thepage}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
 \setlist{nosep,leftmargin=1.45em}
-\titleformat{\section}{\Large\bfseries\color{Ink}}{\thesection}{0.5em}{}
-\titleformat{\subsection}{\large\bfseries\color{Ink}}{\thesubsection}{0.5em}{}
-\lstdefinestyle{adkcpp}
-{
-    language=C++,
-    backgroundcolor=\color{CodeGray},
-    basicstyle=\ttfamily\small,
-    keywordstyle=\color{Ink}\bfseries,
-    commentstyle=\color{Ink},
-    columns=fullflexible,
-    keepspaces=true,
-    showstringspaces=false,
-    frame=single,
-    rulecolor=\color{Ink},
-    breaklines=true,
-    tabsize=4
-}
-\newcommand{\checkbox}{\(\square\)}
-\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
-\newcommand{\lessonbox}[1]{%
-  \begin{center}
-  \fcolorbox{Ink}{white}{\parbox{0.92\linewidth}{#1}}
-  \end{center}}
-
+\renewcommand{\arraystretch}{1.16}
+\lstdefinestyle{adkcpp}{language=C++,basicstyle=\ttfamily\small,
+backgroundcolor=\color{codebg},frame=single,columns=fullflexible,
+keepspaces=true,showstringspaces=false,breaklines=true}
+\hypersetup{
+pdftitle={ADK Lesson 022: The Memory Trail},
+pdfauthor={Kevin Shanahan},
+pdfsubject={A fast visible adventure through analog samples and deterministic records},
+pdflang={en-US}}
 \begin{document}
 
 \begin{center}
-  {\Huge\bfseries Moisture and Owned Buses}\\[4pt]
-  {\Large Observe a calibrated sample; preserve it as a bounded record}\\[8pt]
-  \textit{A potentiometer supplies repeatable moisture evidence while
-  recording drivers isolate ownership from the landed Mega bus backends.}
+{\Huge\bfseries The memory trail}\\[4pt]
+{\Large Lesson 022 --- turn a knob, leave a visible record}\\[6pt]
+\textit{Each successful software step earns a pulse you can see.}
 \end{center}
 
-\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
-Lesson & 022 --- component & Time & 150--210 minutes\\
-Prerequisites & Lessons 001--021 & Board & Arduino Mega 2560\\
-Primary evidence & TP-M/A0, D13 pulse, D12 fault & Status & host verified; bench open\\
-Energy class & E1: USB and resistor-limited LEDs only\\
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}lX>{\bfseries}lX@{}}
+Time & about 45 minutes & Board & Arduino Mega 2560\\
+Payoffs & live pulse length, eighth-record flourish & Energy & E1, USB only\\
+Physical parts & potentiometer, LED, 1 k\(\Omega\) resistor & Storage & model only\\
 \end{tabularx}
 
-\lessonbox{\textbf{Scope.} This lesson exercises the current pure
-\texttt{I2cBus}, \texttt{I2cDevice}, \texttt{SpiBus}, and
-\texttt{SpiDevice} interfaces with sketch-local recording drivers. Every
-transfer receives a bounded timeout value. The lesson generates no SDA, SCL,
-MOSI, MISO, or SCK waveform and communicates with no physical device.
-\texttt{MegaI2cDriver}, \texttt{MegaSpiDriver}, and their direct AVR backends
-now own the fixed pins and restore chip select in deterministic tests. This
-recording-driver sketch deliberately keeps their physical bench evidence open.}
+This lesson is a small record-making machine. Turn a 10 k\(\Omega\)
+potentiometer. The Mega samples A0, combines that value with a simulated clock,
+runs the bytes through recording-only I2C and SPI software, synchronizes a
+fixed in-memory model, then lights D13. A drier setting makes a short pulse; a
+wetter setting makes a longer one. Every eighth record earns an unmistakable
+1.2-second pulse.
 
-\section{Mission}
+\textbf{Honest boundary.} There is no RTC module, storage card, soil probe, or
+physical I2C/SPI peripheral in this build. The authorized Elegoo set contains
+no removable-storage specimen. D20, D21, D49, D50, D51, and D52 remain empty.
+The sketch generates no bus waveform and proves no physical clock or durable
+media behavior. A future RTC stage requires the exact module revision,
+markings, voltage, address, primary datasheet, and electrical review first.
 
-Build a repeatable transaction story:
-\[
-\text{TP-M}\rightarrow\texttt{MoistureSample}\rightarrow
-\text{bounded record}\rightarrow\text{visible acknowledgement}.
-\]
-Turn a 10 k\(\Omega\) potentiometer to create a controlled analog voltage.
-\texttt{MoistureSensor} maps the configured dry and wet readings to
-0--1000 permille while keeping validity separate from the number.
-\texttt{SimulatedRtc} supplies explicit clock state, a synthetic I2C device
-exercises owned addressing, and a SPI recording transaction carries the same
-11-byte record into \texttt{FixedStorage}. Only a successful \texttt{sync()}
-advances its durable prefix.
+\textbf{Stop rule.} Unplug USB before moving wires. Stop for heat, smell,
+smoke, repeated USB resets, or any disagreement between the drawing and the
+part in hand.
 
-The exercise separates five ideas that are often hidden behind global
-\texttt{Wire} and \texttt{SPI} objects:
+\section*{Adventure map}
 
-\begin{enumerate}
-  \item a physical observation and its interpreted sample are distinct;
-  \item a bus owner has one explicit lifetime;
-  \item a transaction has bounded, caller-owned buffers;
-  \item a driver performs transport but does not decide application policy;
-  \item an observation must say exactly what it proves.
-\end{enumerate}
+\begin{center}
+build the input \(\rightarrow\) see pulse length \(\rightarrow\) count eight
+records\\
+\(\downarrow\)\\
+see the software restart reward \(\rightarrow\) see the fixed safe ending
+\end{center}
 
-D13 pulses after a valid moisture sample receives a valid clock reading,
-passes both recording drivers, appends, and synchronizes. Its duration ranges
-from 100 ms at 0 permille to 900 ms at 1000 permille. D12 latches on an
-invalid sample, invalid clock state, transport failure, append failure, sync
-failure, or capacity exhaustion. The pulse proves the deterministic software
-path and in-memory durability model. TP-M is the independent electrical
-observation; neither proves a physical bus transaction or durable SD media.
+Use the canonical \texttt{Lesson022OwnedBuses} sketch throughout. It has a
+fixed two-minute deadline. At that deadline both indicators go dark, stay
+inactive for 250 ms, release their resources, and wait for Reset. Turning the
+knob cannot postpone the ending.
 
-\section{Parts, limits, and wiring}
+\section*{Stage 1: wire one literal circuit}
 
-\begin{tabularx}{\linewidth}{@{}l X@{}}
-\toprule
-Part & Requirement\\
-\midrule
-Arduino Mega 2560 & USB-powered board\\
-Moisture simulator & 10 k\(\Omega\) linear potentiometer\\
-Fault LED & external LED with one 1 k\(\Omega\) series resistor\\
-Activity LED & built-in D13 LED; no external connection\\
-Optional meter & D12 safe-state check relative to a named GND point\\
-\bottomrule
-\end{tabularx}
+Gather a Mega 2560, USB cable, breadboard, 10 k\(\Omega\) linear
+potentiometer, ordinary LED, 1 k\(\Omega\) resistor, and jumpers. The built-in
+D13 LED is the activity light; do not build another D13 branch.
+
+\begin{center}
+\includegraphics[width=\linewidth,height=0.48\textheight,keepaspectratio]
+{022-owned-buses-pencil.png}
+\end{center}
+\textbf{Plate 1: actual headers and breadboard paths.} The potentiometer's two
+outer legs go to 5 V and GND; its center wiper goes to A0. D12 goes through
+the 1 k\(\Omega\) resistor to the external LED anode; the cathode returns to
+the same GND. Verify the potentiometer's center wiper from its own drawing or
+with a meter before power.
 
 \begin{tabularx}{\linewidth}{@{}l l X@{}}
 \toprule
-Signal & Mega pin & Lesson connection\\
-\midrule
-Moisture input / TP-M & A0 / D54 & potentiometer wiper\\
-Potentiometer rails & 5 V, GND & one outer terminal to each rail\\
-Activity evidence & D13 & built-in LED; 100--900 ms accepted-sample pulse\\
-Fault evidence & D12 & D12 \(\rightarrow\) 1 k\(\Omega\)
-  \(\rightarrow\) LED anode; cathode \(\rightarrow\) GND\\
-Logical chip select & D49 & resource identifier only; leave physically open\\
-SDA/SCL & D20/D21 & leave physically open; no waveform is generated\\
-MISO/MOSI/SCK & D50/D51/D52 & leave physically open; no waveform is generated\\
-Reference & GND & named reference for a meter on D12\\
+Name & Mega pin & Exact path\\\midrule
+TP-M & A0 / D54 & potentiometer center wiper\\
+Pot rails & 5 V, GND & one outer leg to each rail\\
+Activity & D13 & built-in LED only\\
+Fault & D12 & D12 \(\rightarrow\) 1 k\(\Omega\) \(\rightarrow\) LED anode;
+cathode \(\rightarrow\) GND\\
+Model labels & D20/D21, D49--D52 & leave every pin physically empty\\
 \bottomrule
 \end{tabularx}
 
-At a conservative 2 V LED drop from a measured 5 V rail, a 1 k\(\Omega\)
-resistor bounds the external indicator near 3 mA. Remove USB power before
-wiring or moving probe clips. Stop on heat, an unstable USB connection,
-unexpected illumination, or disagreement between the table and breadboard.
+Restore USB and upload. After the first 1.5 seconds, D13 should pulse. D12
+stays dark. If D12 lights, unplug and inspect only the four physical paths in
+Plate 1. Adding an RTC or card cannot repair this circuit and is not allowed.
+
+\section*{Stage 2: play the pulse instrument}
+
+The lesson calibration uses raw ADC counts 200 and 800 as its two chosen
+endpoints. Counts between them map to 0--1000 permille. This number is a
+repeatable teaching scale, not soil moisture.
+
+\begin{tabularx}{\linewidth}{@{}c c c@{}}
+\toprule
+Approximate raw count & Model value & D13 reward\\\midrule
+200 & 0 permille & about 0.1 s\\
+500 & 500 permille & about 0.5 s\\
+800 & 1000 permille & about 0.9 s\\
+\bottomrule
+\end{tabularx}
+
+Turn the shaft slowly from one side to the other. The changing pulse length is
+the feedback: A0 must be connected, the sample must be valid, the simulated
+clock state must be valid, both recording transactions must complete, and
+\texttt{sync()} must succeed before D13 turns on.
+
+If the pulse never changes, unplug and check the center wiper at A0 and both
+outer legs. If it changes backward from your preferred story, swap only the
+two outer potentiometer legs. Never move the center wiper.
+
+\section*{Stage 3: follow one record}
 
 \begin{center}
-\includegraphics[width=0.96\linewidth]{022-owned-buses-pencil.png}
-
-\small\textit{Alternative text: graphite orientation plate showing a Mega
-2560, a 10 kilohm potentiometer whose wiper is TP-M/A0, activity and fault
-evidence, and a probe at logical D49. Above it, the sample joins simulated
-clock state in an 11-byte record; abstract I2C and SPI owners feed that record,
-append stages it, sync advances a fixed in-memory durable prefix, and restart
-discards an unsynchronized suffix. No soil probe, RTC module, storage card,
-peripheral, or physical bus wiring is present. The table above is electrically
-authoritative.}
+\includegraphics[width=\linewidth]{022-record-journey-pencil.png}
 \end{center}
+\textbf{Plate 2: the software journey.} It deliberately depicts no RTC board,
+SD card, or bus wires because none exists in this lesson.
 
-\section{From voltage to a valid sample}
+The simulated clock begins at a fixed Unix-seconds value. The 11-byte record
+contains four clock bytes, one explicit clock-state byte, two raw ADC bytes,
+two moisture-scale bytes, one sample-state byte, and one synthetic metadata
+byte. \texttt{append()} stages the bytes. Only \texttt{sync()} advances the
+model's committed prefix.
 
-The reference calibration is:
+Count the ordinary pulses. The eighth is replaced by a 1.2-second flourish.
+Before that flourish, the sketch shuts down and reinitializes its
+\texttt{FixedStorage} owner and confirms that its committed byte count is
+unchanged. That is a software-session restart inside one running sketch. It
+does not survive Reset or unplugging and must never be described as SD-card or
+power-loss evidence.
 
-\begin{lstlisting}[style=adkcpp]
-const adk::MoistureCalibration moistureCalibration = {200, 800, 32};
-\end{lstlisting}
+\section*{Stage 4: discover the ending}
 
-A raw reading of 200 represents the chosen dry endpoint and maps to
-0 permille. A raw reading of 800 represents the chosen wet endpoint and maps
-to 1000 permille. Values within 32 counts beyond either endpoint are clamped;
-larger excursions become \texttt{InputBelowRange} or
-\texttt{InputAboveRange}. The names describe electrical range direction, not
-a diagnosis of soil.
+Keep turning the knob if you like. Exactly two minutes after startup, D13 and
+D12 become inactive. They remain inactive for a quarter second; then the
+lesson releases its resources and waits. Press Reset to start a new run.
 
-\begin{tabularx}{\linewidth}{@{}l l X@{}}
+This ending is independent of input. A stuck potentiometer, rapid turning, or
+the eighth-record reward cannot extend it. The visible result therefore
+depends on the same lifetime policy exercised by the automated tests behind
+the scenes.
+
+\section*{What the lights actually mean}
+
+\begin{tabularx}{\linewidth}{@{}p{0.25\linewidth}X@{}}
 \toprule
-State & Numeric field & Meaning\\
-\midrule
-\texttt{Unavailable} & not usable & no accepted update or sensor shut down\\
-\texttt{Valid} & 0--1000 permille & calibrated reading accepted\\
-\texttt{InputBelowRange} & zero & reading below the guarded electrical range\\
-\texttt{InputAboveRange} & zero & reading above the guarded electrical range\\
-\texttt{Stale} & retained value & last valid observation is older than policy\\
+What you see & What it supports\\\midrule
+changing D13 pulses & A0 sampling plus the complete deterministic model path\\
+1.2-second eighth pulse & in-memory owner restart preserved the committed size\\
+D12 latched on & a software status failed; power down and inspect the base circuit\\
+both dark at two minutes & fixed inactive hold and shutdown began\\
 \bottomrule
 \end{tabularx}
 
-The potentiometer is a repeatable voltage source, not a soil model. ADC counts
-are ratios to the measured reference rail. Record TP-M relative to GND and do
-not call an unmeasured count a voltage. A future soil probe needs exact module
-identity, supply and output limits, source impedance, common ground, corrosion
-policy, and a separate bench card.
+None of those observations supports an I2C acknowledgement, SPI clock edge,
+RTC oscillator state, SD-card write, media durability, or power-loss
+retention. Those claims require exact authorized hardware and measurements
+that this lesson does not contain.
 
-\subsection{Integer mapping}
+\section*{Under the hood}
 
-\[
-m=\operatorname{round}\left(
-\frac{(\mathrm{raw}-\mathrm{dry})1000}{\mathrm{wet}-\mathrm{dry}}
-\right).
-\]
-
-The implementation uses signed comparisons around the guarded endpoints,
-integer-only nearest rounding, and clamping after validity checks. Ascending
-and descending calibration both work. Calling \texttt{sample(now, staleAfter)}
-does not mutate the stored result; repeated observation is idempotent.
-
-\section{Ownership before transport}
-
-\begin{center}
-\begin{tikzpicture}[>=Latex,
-    box/.style={draw,minimum width=31mm,minimum height=9mm,fill=white}]
-  \node[box] (registry) {ResourceRegistry};
-  \node[box,right=14mm of registry,yshift=8mm] (i2c) {I2cBus owner};
-  \node[box,right=14mm of registry,yshift=-8mm] (spi) {SpiBus owner};
-  \node[box,right=14mm of i2c] (idriver) {I2cDriver};
-  \node[box,right=14mm of spi] (sdriver) {SpiDriver};
-  \draw[->] (registry)--(i2c);
-  \draw[->] (registry)--(spi);
-  \draw[->] (i2c)--(idriver);
-  \draw[->] (spi)--(sdriver);
-\end{tikzpicture}
-\end{center}
-
-Construction is inert. \texttt{initialize()} claims the named bus resource,
-then configures its driver. If configuration fails, the owner disables the
-driver and releases the claim. Repeated initialization is idempotent.
-\texttt{shutdown()} disables transport, releases the claim, and may be called
-again. Destruction calls shutdown, making cleanup safe during a caller's
-exception-driven unwinding even though ADK throws no exceptions.
-
-\subsection{Why the driver is injected}
-
-The same owner can use a deterministic host fake, this lesson's recording
-driver, or the direct Mega adapter. The owner controls lifetime and request
-validation. The driver controls platform effects. Neither owns application
-meaning such as ``read a clock'' or ``append a record.''
-
-The recording drivers deliberately return computed bytes. That makes repeated
-runs observable to code without pretending the bytes came from hardware.
-
-\section{Request boundaries}
-
-\begin{tabularx}{\linewidth}{@{}l X@{}}
-\toprule
-Owner & Current validation\\
-\midrule
-\texttt{I2cBus} & initialized; address 0x08--0x77; at least one direction;
-  each buffer at most 32 bytes; nonzero sizes require non-null buffers\\
-\texttt{SpiBus} & initialized; nonzero clock; mode 0--3; 1--256 bytes;
-  at least one buffer; chip-select pin must be claimable\\
-\bottomrule
-\end{tabularx}
-
-The caller retains every buffer and may reuse or discard it after
-\texttt{transfer()} returns. The bus stores no callback and starts no hidden
-queue. Every call includes a nonzero \texttt{Duration} timeout. A physical
-driver must honor that bound: ``synchronous'' must not mean ``wait forever.''
-
-\subsection{Status is policy input}
+Construction is inert. \texttt{initialize()} claims each owner before use,
+and failure rolls earlier claims back. Every transfer has a bounded timeout.
+The caller owns each buffer for the whole synchronous call. Shutdown is
+idempotent and releases owners in reverse order.
 
 \begin{lstlisting}[style=adkcpp]
-const adk::Status status =
-    metadataDevice.transfer (writeData, writeSize, readData, readSize,
-                             adk::Duration (20));
-
-if (!status.ok ())
+if (observeMoisture (now, sample) &&
+    persistMoisture (now, sample))
 {
-    observeFailure (status);
+    acknowledgeMoisture (now, sample);
 }
 \end{lstlisting}
 
-Pass the complete \texttt{Status} to the observation boundary. Use
-\texttt{error()} only when a named policy needs the underlying
-\texttt{StatusCode}. \texttt{transient()} classifies a potentially recoverable
-cause; it is not permission to retry blindly. A retry policy belongs above the
-bus and must be bounded and observable.
+The host suite retains the exhaustive work: invalid addresses and lengths,
+claim conflicts, injected configure and transfer failures, chip-select
+restoration, partial append at every byte, failed sync, exact restart
+recovery, capacity exhaustion, every clock state, repeated shutdown,
+destruction, and deterministic replay. Those checks protect the implementation
+without interrupting the visible adventure.
 
-\section{Clock state and durability}
+\section*{Make it yours}
 
-\texttt{Rtc::read()} returns \texttt{Result<ClockReading>}. Transport status
-and clock state answer different questions. A successful transport may still
-report \texttt{NotSet} or \texttt{OscillatorStopped}; neither is acceptable as
-a trustworthy record timestamp.
+Try one change at a time: make the ordinary interval one second, change the
+eighth-record flourish to a two-pulse rhythm, reverse the chosen dry/wet
+endpoints in software, or draw a paper ``memory trail'' beside the LEDs.
+Keep all changes inside this USB-powered, resistor-limited circuit.
 
-\begin{tabularx}{\linewidth}{@{}l X@{}}
-\toprule
-Clock state & Record policy\\
-\midrule
-\texttt{Valid} & serialize raw Unix seconds; civil-time formatting stays out\\
-\texttt{NotSet} & reject timestamp and show fault\\
-\texttt{OscillatorStopped} & reject timestamp and preserve diagnostic state\\
-\texttt{TransportFault} & propagate complete failure status\\
-\bottomrule
-\end{tabularx}
-
-The sketch uses a clearly named \texttt{SimulatedRtc}: it starts at a fixed
-Unix-seconds value and advances deterministically on reads. It is not an I2C
-RTC adapter and survives no power interruption.
-
-\texttt{Storage::append()} stages bytes. It does not claim durability.
-\texttt{Storage::sync()} is the commit boundary. \texttt{FixedStorageMedium}
-holds a bounded 512-byte in-memory medium while \texttt{FixedStorage} owns one
-session. Shutting down and reinitializing the owner discards any unsynchronized
-suffix and resumes at the exact durable prefix. A failed sync leaves the staged
-suffix available for a bounded retry without re-appending; restarting instead
-discards it.
-
-\begin{center}
-\begin{tikzpicture}[>=Latex,
-    box/.style={draw,minimum width=29mm,minimum height=9mm,fill=white}]
-  \node[box] (sample) {MoistureSample};
-  \node[box,right=9mm of sample] (clock) {ClockReading};
-  \node[box,right=9mm of clock] (append) {append};
-  \node[box,right=9mm of append] (sync) {sync};
-  \draw[->] (sample)--(clock);
-  \draw[->] (clock)--node[above]{11 bytes}(append);
-  \draw[->] (append)--node[above]{staged}(sync);
-  \draw[->] (sync)--node[above]{durable prefix}++(25mm,0);
-\end{tikzpicture}
-\end{center}
-
-The record layout is fixed and endian-explicit:
-
-\begin{tabularx}{\linewidth}{@{}l l X@{}}
-\toprule
-Bytes & Field & Meaning\\
-\midrule
-0--3 & Unix seconds & unsigned, most-significant byte first\\
-4 & clock state & explicit \texttt{ClockState}\\
-5--6 & raw ADC & unsigned, most-significant byte first\\
-7--8 & moisture & permille, most-significant byte first\\
-9 & sample state & explicit \texttt{MoistureSampleState}\\
-10 & metadata token & deterministic I2C recording-driver response\\
-\bottomrule
-\end{tabularx}
-
-Every eighth committed record, the sketch restarts the \texttt{FixedStorage}
-owner and compares its staged size with the medium's durable size. This proves
-session restart against the in-memory model, not board reset or power-loss
-retention. At fixed capacity, the next append fails visibly rather than
-overwriting an earlier record.
-
-\section{Narrative sketch}
-
-\begin{lstlisting}[style=adkcpp]
-void loop ()
-{
-    const adk::TimePoint now (millis ());
-
-    clearAcknowledgement (now);
-
-    if (sampleIsDue (now))
-    {
-        adk::MoistureSample sample;
-
-        observeMoisture     (now, sample);
-        persistMoisture     (now, sample);
-        acknowledgeMoisture (now, sample);
-    }
-}
-\end{lstlisting}
-
-The canonical example names the high-level actions before recording mechanics.
-Setup acquires the evidence LEDs, bus and device owners, moisture sensor,
-simulated RTC, and storage session. Each scheduled cycle observes TP-M, rejects
-a non-valid sample or clock, obtains one deterministic I2C metadata token,
-sends the 11-byte record through the SPI recording driver, appends and
-synchronizes the same bytes, then pulses D13.
-
-The implementation uses elapsed unsigned time and no blocking
-\texttt{delay()}. A recorded input trace produces the same samples, records,
-statuses, and pulse durations on every replay.
-
-\section{Experiment A: calibrate TP-M}
-
-\textbf{Predict.} At raw 200, the sample is valid at 0 permille and D13 pulses
-for about 100 ms. At raw 500, it is near 500 permille and the pulse is near
-500 ms. At raw 800, it is 1000 permille and the pulse is near 900 ms.
-
-\textbf{Observe.} With USB removed, place meter clips between TP-M and GND.
-Restore USB, turn the shaft, and record raw count, TP-M, sample state,
-permille, and D13 pulse duration. Serial may reveal the count during a
-diagnostic continuation but is not required to see TP-M or the pulse.
-
-\textbf{Interpret.} Increasing pulse duration supports the calibrated mapping.
-TP-M supports the electrical input. D13 supports accepted interpretation and
-record-path completion. It does not prove soil moisture.
-
-\begin{tabularx}{\linewidth}{@{}l l l l l@{}}
-\toprule
-Raw target & TP-M & State & Permille & D13 duration\\
-\midrule
-200 & \blank{18mm} & \blank{18mm} & \blank{18mm} & \blank{22mm}\\
-500 & \blank{18mm} & \blank{18mm} & \blank{18mm} & \blank{22mm}\\
-800 & \blank{18mm} & \blank{18mm} & \blank{18mm} & \blank{22mm}\\
-\bottomrule
-\end{tabularx}
-
-\section{Experiment B: predict ownership}
-
-\textbf{Predict.} With D12 already claimed by another component,
-\texttt{faultEvidence.initialize()} fails before the two bus owners are
-started. With all resources free, both owners initialize.
-
-\textbf{Observe.} Use the deterministic host tests for claim conflicts. On the
-Mega example, observe whether the normal transaction acknowledgement begins.
-
-\textbf{Interpret.} A missing pulse can reject the hypothesis that the whole
-path completed. A pulse supports the software path only. The landed Mega
-drivers own D20/D21 for I2C and D50--D53 for SPI, but this recording-driver
-experiment does not exercise those pins.
-
-\begin{tabularx}{\linewidth}{@{}l l l l@{}}
-\toprule
-Condition & Prediction & Observation & Interpretation\\
-\midrule
-Resources free & \blank{22mm} & \blank{22mm} & \blank{32mm}\\
-Bus busy & \blank{22mm} & \blank{22mm} & \blank{32mm}\\
-Driver failure & \blank{22mm} & \blank{22mm} & \blank{32mm}\\
-\bottomrule
-\end{tabularx}
-
-\section{Experiment C: inspect a transaction}
-
-\textbf{Predict.} Every successful cycle records I2C address 0x50, one written
-byte, and one synthetic metadata token. SPI then records mode 0, 1 MHz,
-most-significant-bit first, D49 as the logical chip-select identifier, and 11
-bytes. Append advances only the staged size; sync advances the durable size.
-
-\textbf{Observe.} Run the host test and inspect the recording driver's exact
-fields. Run it twice from a clean fixture.
-
-\textbf{Interpret.} Equal records support deterministic request construction.
-They do not establish I2C acknowledgement, SPI edge timing, voltage
-compatibility, or chip-select restoration on a Mega.
-
-\begin{tabularx}{\linewidth}{@{}l l l@{}}
-\toprule
-Recorded fact & First replay & Second replay\\
-\midrule
-I2C address and sizes & \blank{35mm} & \blank{35mm}\\
-SPI settings and size & \blank{35mm} & \blank{35mm}\\
-Exact 11-byte record & \blank{35mm} & \blank{35mm}\\
-Ordered status results & \blank{35mm} & \blank{35mm}\\
-\bottomrule
-\end{tabularx}
-
-\section{Experiment D: distinguish two proofs}
-
-\textbf{Resource proof.} A successful first transaction supports that both bus
-owners and persistent D49 device claim were available to this software path.
-
-\textbf{Safe-state proof.} Host tests show the landed Mega adapters restore
-their bus pins and chip select to documented inactive states after shutdown
-and injected failure. The recording driver has no physical pins, so this lesson
-cannot turn that trace into a measurement. D12 and D13 can demonstrate their
-own LED endpoint cleanup only.
-
-\begin{tabularx}{\linewidth}{@{}l X X@{}}
-\toprule
-Question & Available evidence & Still open\\
-\midrule
-Did software acquire the owners? & status and completed D13 pulse &
-  conflict and rollback replay\\
-Did I2C move electrically? & none & SDA/SCL logic-analyzer trace\\
-Did SPI restore chip select? & none & TP-CS transition and inactive level\\
-Did LED cleanup become safe? & endpoint shutdown trace & Mega pin measurement\\
-\bottomrule
-\end{tabularx}
-
-\section{Fault laboratory}
-
-Work through these cases with recording fakes before attaching a peripheral:
-
-\begin{enumerate}
-  \item reject I2C reserved addresses 0x00 and 0x78;
-  \item reject null data with a nonzero size;
-  \item accept the exact maximum sizes and reject one byte beyond;
-  \item inject driver-configuration failure and prove claim rollback;
-  \item inject transfer failure and preserve its complete \texttt{Status};
-  \item conflict on D49 and prove the SPI driver is not called;
-  \item inject append failure at every byte and retain only the exact prefix;
-  \item fail sync, restart the owner, and discard the unsynchronized suffix;
-  \item fill the fixed capacity and reject the next record without overwrite;
-  \item replay every \texttt{ClockState} separately from transport status;
-  \item call shutdown twice and then reuse each released resource;
-  \item destroy initialized owners and prove the same reuse.
-\end{enumerate}
-
-\lessonbox{\textbf{Design question.} \texttt{SpiDevice} owns D49 and asks its
-driver to configure and release that chip select. What recording operations
-must the Mega driver expose so tests prove ``assert, transfer, restore'' across
-success, partial failure, shutdown, and destruction?}
-
-\section{Physical adapter acceptance card}
-
-This card stays blank until the landed Mega adapters are exercised with exact
-devices and the named electrical observations are recorded.
-
-\begin{tabularx}{\linewidth}{@{}l X@{}}
-\toprule
-Field & Record\\
-\midrule
-Date, revision, commit & \hrulefill\\
-Mega board and USB supply & \hrulefill\\
-Measured 5 V reference and TP-M range & \hrulefill\\
-Potentiometer marking and endpoint counts & \hrulefill\\
-Exact I2C specimen, voltage, address & \hrulefill\\
-Exact SPI specimen, voltage, CS polarity & \hrulefill\\
-Logic analyzer and firmware tool versions & \hrulefill\\
-SDA/SCL prediction and observation & \hrulefill\\
-MOSI/MISO/SCK/CS prediction and observation & \hrulefill\\
-Timeout/fault injection & \hrulefill\\
-Shutdown and reset safe state & \hrulefill\\
-Reviewer and interpretation & \hrulefill\\
-\bottomrule
-\end{tabularx}
-
-\begin{itemize}
-  \item[\checkbox] Wiring was inspected with USB removed.
-  \item[\checkbox] TP-M remained within GND and the measured reference rail.
-  \item[\checkbox] Dry/wet endpoints and guarded faults matched the prediction.
-  \item[\checkbox] Device logic voltage and common ground match primary data.
-  \item[\checkbox] Acquisition and electrical safe state were proved separately.
-  \item[\checkbox] No back-power path exists when either side is unpowered.
-  \item[\checkbox] The transaction has a bounded completion or timeout.
-  \item[\checkbox] SPI chip select is inactive after success, failure, and reset.
-  \item[\checkbox] Observations, deviations, and stop conditions are recorded.
-\end{itemize}
-
-\section{Exercises}
-
-\begin{enumerate}
-  \item Reverse the dry and wet calibration endpoints. Predict the three
-  sample values and pulse durations before replaying them.
-  \item Draw the owner, driver, device, and application-policy lifetimes. Mark
-  every borrowed relationship.
-  \item Add a fake-driver failure at the first byte and state which facts may
-  still be claimed.
-  \item Propose a timeout value object without reading a global clock inside
-  the pure bus owner.
-  \item Design a non-owning I2C device relationship that cannot outlive its
-  owner. Compare generation tokens, scoped transactions, and explicit
-  registration.
-  \item Write the SPI restoration invariant for success, invalid input,
-  resource conflict, partial transport failure, shutdown, and destruction.
-\end{enumerate}
-
-\section{CLI record}
-
-\begin{lstlisting}[style=adkcpp]
-make host-test
-make arduino-Lesson022OwnedBuses
-make upload-Lesson022OwnedBuses PORT=/dev/ttyACM0
-make hardware-card LESSON=022 BOARD=mega2560
-make evidence LESSON=022 SIGNAL=D13
-make lessons
-make lessons-check
-make site-check
-\end{lstlisting}
-
-The lesson-specific Make targets become release claims only after the
-integrator registers the package. A successful compile remains firmware
-evidence, not physical bus evidence.
-
-\section{References and next work}
-
-\begin{itemize}
-  \item Arduino Mega 2560 Rev3 documentation and pinout:
-  \href{https://docs.arduino.cc/hardware/mega-2560/}{docs.arduino.cc}.
-  \item NXP I2C-bus specification and user manual UM10204:
-  \href{https://www.nxp.com/docs/en/user-guide/UM10204.pdf}{nxp.com}.
-  \item Microchip ATmega640/1280/1281/2560/2561 datasheet:
-  \href{https://www.microchip.com/en-us/product/atmega2560}{microchip.com}.
-\end{itemize}
-
-Next, select exact RTC and storage specimens and run the landed Mega adapters
-through the blank electrical acceptance card. Host restoration tests remain
-software evidence until those observations are recorded. Lesson 023 consumes
-the pure foundation through inert, visibly bounded load intent.
-
+\vfill\small
+\textbf{Companion material.} The HTML page carries searchable pin and model
+tables plus source links. This printable lesson carries the literal wiring
+plates, staged visible adventure, and honest model-only hardware boundary.
 \end{document}
