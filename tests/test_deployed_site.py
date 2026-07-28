@@ -1,11 +1,15 @@
+import contextlib
+import io
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from scripts.check_deployed_site import canonical_example
 from scripts.check_deployed_site import check_deployment
 from scripts.check_deployed_site import configured_publication
 from scripts.check_deployed_site import deployment_checks
+from scripts.check_deployed_site import main
 from scripts.check_deployed_site import normalize_base_url
 
 
@@ -130,6 +134,58 @@ class DeployedSiteTest(unittest.TestCase):
             normalize_base_url("https://user@example.test/adk")
         with self.assertRaisesRegex(ValueError, "query or fragment"):
             normalize_base_url("https://example.test/adk?draft=1")
+
+    def test_unreadable_configuration_is_a_concise_cli_error(self):
+        with tempfile.TemporaryDirectory() as directory:
+            missing = Path(directory) / "missing-config.mk"
+            errors = io.StringIO()
+            with patch("scripts.check_deployed_site.BUILD_CONFIG", missing):
+                with contextlib.redirect_stderr(errors):
+                    result = main(["https://example.test/adk"])
+
+        self.assertEqual(result, 2)
+        self.assertIn(
+            "deployment check: cannot read lesson configuration:",
+            errors.getvalue(),
+        )
+        self.assertNotIn("Traceback", errors.getvalue())
+
+    def test_invalid_utf8_configuration_is_a_concise_cli_error(self):
+        with tempfile.TemporaryDirectory() as directory:
+            config = Path(directory) / "config.mk"
+            config.write_bytes(b"\xff")
+            errors = io.StringIO()
+            with patch("scripts.check_deployed_site.BUILD_CONFIG", config):
+                with contextlib.redirect_stderr(errors):
+                    result = main(["https://example.test/adk"])
+
+        self.assertEqual(result, 2)
+        self.assertIn(
+            "deployment check: cannot read lesson configuration:",
+            errors.getvalue(),
+        )
+        self.assertNotIn("Traceback", errors.getvalue())
+
+    def test_unsupported_make_configuration_is_a_concise_cli_error(self):
+        with tempfile.TemporaryDirectory() as directory:
+            config = Path(directory) / "config.mk"
+            config.write_text(
+                "include hostile.mk\n"
+                "LESSONS := 001\n"
+                "EXAMPLES := Lesson001First\n",
+                encoding="utf-8",
+            )
+            errors = io.StringIO()
+            with patch("scripts.check_deployed_site.BUILD_CONFIG", config):
+                with contextlib.redirect_stderr(errors):
+                    result = main(["https://example.test/adk"])
+
+        self.assertEqual(result, 2)
+        self.assertIn(
+            "deployment check: configuration contains unsupported Make syntax",
+            errors.getvalue(),
+        )
+        self.assertNotIn("Traceback", errors.getvalue())
 
 
 if __name__ == "__main__":

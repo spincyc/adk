@@ -8,9 +8,33 @@ import re
 from dataclasses import dataclass
 
 
-ASSIGNMENT = re.compile(r"^\s*(LESSONS|EXAMPLES)\s*([:+?]?=)\s*(.*)$")
+ASSIGNMENT = re.compile(r"^([A-Z][A-Z0-9_]*)\s*(\?=|:=|\+=)\s*(.*)$")
 EXAMPLE = re.compile(r"Lesson([0-9]{3})[A-Za-z0-9_]*")
 LESSON = re.compile(r"[0-9]{3}")
+SIMPLE_REFERENCE = re.compile(r"\$\([A-Z][A-Z0-9_]*\)")
+SAFE_RULES = {"$(BUILD_MARKER):"}
+SAFE_RECIPES = {'mkdir -p "$(BUILD_DIR)"', 'touch "$@"'}
+SAFE_ASSIGNMENTS = {
+    "ARDUINO_CLI": {"?="},
+    "CXX": {"?="},
+    "PDFLATEX": {"?="},
+    "BUILD_DIR": {"?="},
+    "BUILD_MARKER": {":="},
+    "BOARD_FQBN": {"?="},
+    "ARDUINO_AVR_CORE": {"?="},
+    "LESSONS": {":="},
+    "EXAMPLES": {":="},
+    "PORT": {"?="},
+    "BAUD": {"?="},
+    "SERIAL_LOG": {"?="},
+    "HOST_CPPFLAGS": {"+="},
+    "HOST_CXXFLAGS": {"+="},
+    "HOST_LDFLAGS": {"+="},
+}
+SAFE_REFERENCES = {
+    "BUILD_MARKER": {"BUILD_DIR"},
+    "SERIAL_LOG": {"BUILD_DIR"},
+}
 
 
 class PublicationConfigError(ValueError):
@@ -37,55 +61,95 @@ class PublishedLesson:
         return f"downloads/sketches/{self.example}.ino"
 
 
-def _configured_tokens(source: str, variable: str) -> list[str]:
-    assignments: list[list[str]] = []
+def _parse_assignments(source: str) -> dict[str, list[tuple[str, list[str]]]]:
+    assignments: dict[str, list[tuple[str, list[str]]]] = {}
     lines = source.splitlines()
     index = 0
 
     while index < len(lines):
-        line = lines[index]
+        physical = lines[index]
         index += 1
-        match = ASSIGNMENT.match(line)
-        if match is None or match.group(1) != variable:
-            continue
-        if match.group(2) != ":=":
+        stripped = physical.strip()
+        if "#" in physical and "\\" in physical.partition("#")[2]:
             raise PublicationConfigError(
-                f"{variable} must use a single literal := assignment"
+                "configuration contains unsupported comment continuation"
             )
+        if not stripped or stripped.startswith("#"):
+            continue
+        if physical.startswith("\t"):
+            if stripped not in SAFE_RECIPES:
+                raise PublicationConfigError("configuration contains unsupported recipe")
+            continue
+        if stripped in SAFE_RULES:
+            continue
 
         value_parts: list[str] = []
-        remainder = match.group(3)
+        logical = physical
         while True:
-            uncommented = remainder.partition("#")[0].rstrip()
+            if "#" in logical and "\\" in logical.partition("#")[2]:
+                raise PublicationConfigError(
+                    "configuration contains unsupported comment continuation"
+                )
+            uncommented = logical.partition("#")[0].rstrip()
             continued = uncommented.endswith("\\")
             if continued:
                 uncommented = uncommented[:-1].rstrip()
-            if "\\" in uncommented or "$" in uncommented:
-                raise PublicationConfigError(
-                    f"{variable} contains unsupported Make syntax"
-                )
             value_parts.append(uncommented)
             if not continued:
                 break
             if index >= len(lines):
-                raise PublicationConfigError(
-                    f"{variable} has an unterminated continuation"
-                )
-            remainder = lines[index]
+                raise PublicationConfigError("configuration has an unterminated continuation")
+            logical = lines[index]
             index += 1
 
-        assignments.append(" ".join(value_parts).split())
+        joined = " ".join(value_parts)
+        match = ASSIGNMENT.fullmatch(joined.strip())
+        if match is None:
+            raise PublicationConfigError(
+                "configuration contains unsupported Make syntax"
+            )
+        variable, operator, value = match.groups()
+        if operator not in SAFE_ASSIGNMENTS.get(variable, set()):
+            raise PublicationConfigError(
+                f"configuration assignment to {variable} is unsupported"
+            )
+        references = set(SIMPLE_REFERENCE.findall(value))
+        references_removed = SIMPLE_REFERENCE.sub("", value)
+        if "$" in references_removed or "\\" in references_removed:
+            raise PublicationConfigError(
+                f"{variable} contains unsupported Make expansion"
+            )
+        allowed_references = {
+            f"$({name})" for name in SAFE_REFERENCES.get(variable, set())
+        }
+        if not references.issubset(allowed_references):
+            raise PublicationConfigError(
+                f"{variable} contains unsupported Make reference"
+            )
+        assignments.setdefault(variable, []).append((operator, value.split()))
 
-    if len(assignments) != 1:
+    return assignments
+
+
+def _inventory_tokens(
+    assignments: dict[str, list[tuple[str, list[str]]]],
+    variable: str,
+) -> list[str]:
+    configured = assignments.get(variable, [])
+    if len(configured) != 1 or configured[0][0] != ":=":
         raise PublicationConfigError(
             f"{variable} must have exactly one literal := assignment"
         )
-    return assignments[0]
+    tokens = configured[0][1]
+    if any("$" in token for token in tokens):
+        raise PublicationConfigError(f"{variable} must be literal")
+    return tokens
 
 
 def resolve_latest_publication(config_source: str) -> PublishedLesson:
     """Return the newest lesson and its unique example from literal Make text."""
-    lessons = _configured_tokens(config_source, "LESSONS")
+    assignments = _parse_assignments(config_source)
+    lessons = _inventory_tokens(assignments, "LESSONS")
     if not lessons:
         raise PublicationConfigError("LESSONS contains no lesson numbers")
     malformed_lessons = [lesson for lesson in lessons if LESSON.fullmatch(lesson) is None]
@@ -96,7 +160,7 @@ def resolve_latest_publication(config_source: str) -> PublishedLesson:
     if len(set(lessons)) != len(lessons):
         raise PublicationConfigError("LESSONS contains duplicate lesson numbers")
 
-    examples = _configured_tokens(config_source, "EXAMPLES")
+    examples = _inventory_tokens(assignments, "EXAMPLES")
     malformed_examples = [
         example for example in examples if EXAMPLE.fullmatch(example) is None
     ]
