@@ -23,8 +23,8 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	2	Lesson022OwnedBuses	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	7134	32768	797	1536
 1	1	Lesson023InertLoadInterlock	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5040	24576	209	1024
 1	1	Lesson024GreenhouseTrainer	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	15574	32768	1512	2048
-1	1	Lesson025InfraredEvidence	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	12414	32768	2564	3072
-1	1	Lesson026TelemetryPacket	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	4292	16384	128	512
+1	1	Lesson025InfraredEvidence	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	12400	32768	2537	3072
+1	1	Lesson026TelemetryPacket	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	4402	16384	136	512
 1	1	Lesson027TelemetryConsole	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	12738	24576	797	1024
 1	1	Lesson028InertChannelAssessment	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	4692	16384	395	768
 1	1	Lesson029InertCueSchedule	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	10704	24576	1826	2048

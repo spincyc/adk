@@ -10,6 +10,7 @@ namespace {
 
     constexpr adk::PinId capturePin  = 2;
     constexpr adk::PinId evidencePin = 45;
+    constexpr uint32_t   adventureDurationMilliseconds = 120000;
 
     const adk::PulseCaptureConfig captureConfig = {adk::MicrosecondDuration (12000),
                                                    adk::MicrosecondDuration (100),
@@ -18,7 +19,10 @@ namespace {
     enum struct EvidenceSignal : uint8_t
     {
         Waiting,
-        Valid,
+        FirstValid,
+        SecondValid,
+        Celebration,
+        Repeat,
         Unknown,
         Fault
     };
@@ -35,8 +39,10 @@ namespace {
     adk::InfraredRecordEncoder recordEncoder;
 
     adk::TimePoint signalStarted;
-    EvidenceSignal signal  = EvidenceSignal::Waiting;
-    bool           running = false;
+    adk::TimePoint adventureStarted;
+    EvidenceSignal signal     = EvidenceSignal::Waiting;
+    uint8_t        validFrames = 0;
+    bool           running    = false;
 
     bool acquireInfraredEvidence ();
     bool observeInfrared         (adk::MicrosecondTimePoint now);
@@ -63,13 +69,22 @@ void loop ()
         return;
     }
 
+    const adk::TimePoint now (millis ());
+
+    if (now.elapsedSince (adventureStarted).milliseconds () >=
+        adventureDurationMilliseconds)
+    {
+        stopSafely ();
+        return;
+    }
+
     if (!observeInfrared (adk::MicrosecondTimePoint (micros ())))
     {
         stopSafely ();
         return;
     }
 
-    if (!showFrameEvidence (adk::TimePoint (millis ())))
+    if (!showFrameEvidence (now))
     {
         stopSafely ();
     }
@@ -106,7 +121,8 @@ namespace {
             return false;
         }
 
-        signalStarted = adk::TimePoint (millis ());
+        signalStarted    = adk::TimePoint (millis ());
+        adventureStarted = signalStarted;
 
         const adk::Status acquisitionOnStatus = acquisitionEvidence.on ();
 
@@ -181,7 +197,20 @@ namespace {
     {
         switch (frame.validity)
         {
-            case adk::FrameValidity::Valid: signal = EvidenceSignal::Valid; break;
+            case adk::FrameValidity::Valid:
+                if (validFrames < 3)
+                {
+                    ++validFrames;
+                }
+
+                signal = validFrames == 1 ? EvidenceSignal::FirstValid
+                         : validFrames == 2
+                             ? EvidenceSignal::SecondValid
+                             : EvidenceSignal::Celebration;
+                break;
+            case adk::FrameValidity::Repeat:
+                signal = EvidenceSignal::Repeat;
+                break;
             case adk::FrameValidity::UnknownProtocol:
                 signal = EvidenceSignal::Unknown;
                 break;
@@ -214,7 +243,15 @@ namespace {
         switch (signal)
         {
             case EvidenceSignal::Waiting: active = false; break;
-            case EvidenceSignal::Valid: active = phase < 1000; break;
+            case EvidenceSignal::FirstValid: active = phase < 650; break;
+            case EvidenceSignal::SecondValid:
+                active = phase < 250 || (phase >= 500 && phase < 750);
+                break;
+            case EvidenceSignal::Celebration:
+                active = phase < 150 || (phase >= 300 && phase < 450) ||
+                         (phase >= 600 && phase < 750);
+                break;
+            case EvidenceSignal::Repeat: active = phase < 150; break;
             case EvidenceSignal::Unknown:
                 active = phase < 150 || (phase >= 300 && phase < 450);
                 break;

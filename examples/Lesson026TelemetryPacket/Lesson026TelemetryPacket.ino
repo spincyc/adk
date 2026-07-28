@@ -8,6 +8,7 @@
 namespace {
 
     constexpr adk::PinId evidencePin = 45;
+    const adk::Duration  adventureDuration (120000);
 
     const adk::ObservationTrackerConfig trackerConfig = {adk::Duration (2000),
                                                          adk::Duration (5000)};
@@ -21,6 +22,7 @@ namespace {
     adk::TelemetryEvidenceModel   evidenceModel;
 
     adk::TimePoint               signalStarted;
+    adk::TimePoint               adventureStarted;
     adk::PacketValidity          packetValidity = adk::PacketValidity::Valid;
     adk::TelemetryEvidenceSignal signal         = adk::TelemetryEvidenceSignal::Fresh;
     bool                         running        = false;
@@ -50,6 +52,12 @@ void loop ()
 
     if (!running)
     {
+        return;
+    }
+
+    if (now.elapsedSince (adventureStarted) >= adventureDuration)
+    {
+        stopSafely ();
         return;
     }
 
@@ -108,7 +116,8 @@ namespace {
             return false;
         }
 
-        signalStarted = now;
+        signalStarted    = now;
+        adventureStarted = now;
         return true;
     }
 
