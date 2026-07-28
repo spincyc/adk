@@ -6,6 +6,10 @@ namespace {
     constexpr adk::ShiftRegisterPins displayPins = {22, 23, 24};
     constexpr adk::PinId            diagnosticPin = 13;
     constexpr uint32_t              countIntervalMs = 1000;
+    constexpr uint32_t              acquisitionPulseMs = 250;
+    constexpr uint32_t              separatorMs = 750;
+    constexpr uint32_t              runLimitMs = 120000;
+    constexpr uint32_t              inactiveEvidenceMs = 250;
 
     adk::Runtime             runtime;
     adk::SevenSegmentDisplay display (runtime.resources (),
@@ -13,19 +17,28 @@ namespace {
                                       adk::SevenSegmentPolarity::CommonCathode);
     adk::MonoLed             diagnosticLed (runtime.resources (), diagnosticPin);
 
+    adk::TimePoint acquiredAt;
     adk::TimePoint lastCount;
+    adk::TimePoint inactiveAt;
     uint8_t        count = 0;
     bool           ready = false;
+    bool           acquisitionPulseOn = false;
+    bool           counting = false;
+    bool           stopping = false;
 
     bool acquireCircuit ();
 
     bool showReady ();
+
+    bool acquisitionIsComplete (adk::TimePoint now);
 
     bool countIsDue (adk::TimePoint now);
 
     adk::SevenSegmentGlyph chooseDigit ();
 
     void showDigit (adk::SevenSegmentGlyph digit);
+
+    bool finishIfDue (adk::TimePoint now);
 
     void stopSafely ();
 
@@ -38,7 +51,11 @@ void setup ()
     if (!ready)
     {
         stopSafely ();
+        return;
     }
+
+    acquiredAt = adk::TimePoint (millis ());
+    lastCount  = acquiredAt;
 }
 
 void loop ()
@@ -49,6 +66,16 @@ void loop ()
     }
 
     const adk::TimePoint now (millis ());
+
+    if (finishIfDue (now))
+    {
+        return;
+    }
+
+    if (!acquisitionIsComplete (now))
+    {
+        return;
+    }
 
     if (!countIsDue (now))
     {
@@ -80,7 +107,37 @@ namespace {
 
     bool showReady ()
     {
-        return diagnosticLed.on ().ok ();
+        if (!diagnosticLed.on ().ok ())
+        {
+            return false;
+        }
+
+        acquisitionPulseOn = true;
+        return true;
+    }
+
+    bool acquisitionIsComplete (adk::TimePoint now)
+    {
+        const uint32_t elapsedMs = now.elapsedSince (acquiredAt).milliseconds ();
+
+        if (acquisitionPulseOn && elapsedMs >= acquisitionPulseMs)
+        {
+            if (!diagnosticLed.off ().ok ())
+            {
+                stopSafely ();
+                return false;
+            }
+
+            acquisitionPulseOn = false;
+        }
+
+        if (!counting && elapsedMs >= acquisitionPulseMs + separatorMs)
+        {
+            counting  = true;
+            lastCount = now;
+        }
+
+        return counting;
     }
 
     bool countIsDue (adk::TimePoint now)
@@ -108,11 +165,39 @@ namespace {
         }
     }
 
+    bool finishIfDue (adk::TimePoint now)
+    {
+        if (!stopping
+            && now.elapsedSince (acquiredAt).milliseconds () >= runLimitMs)
+        {
+            if (!display.blank ().ok () || !diagnosticLed.off ().ok ())
+            {
+                stopSafely ();
+                return true;
+            }
+
+            inactiveAt = now;
+            stopping   = true;
+        }
+
+        if (stopping
+            && now.elapsedSince (inactiveAt).milliseconds ()
+                   >= inactiveEvidenceMs)
+        {
+            stopSafely ();
+        }
+
+        return stopping;
+    }
+
     void stopSafely ()
     {
         display      .shutdown ();
         diagnosticLed.shutdown ();
-        ready = false;
+        ready              = false;
+        acquisitionPulseOn = false;
+        counting           = false;
+        stopping           = false;
     }
 
 } // namespace

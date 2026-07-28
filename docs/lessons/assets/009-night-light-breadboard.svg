@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="850" viewBox="0 0 1500 850">
+  <style>
+    text{font-family:"DejaVu Sans";fill:#191919}.title{font-size:29px}.label{font-size:23px}.small{font-size:19px}
+    .board{fill:#faf9f4;stroke:#222;stroke-width:4}.strip{fill:#eee;stroke:#555;stroke-width:2}
+    .part{fill:white;stroke:#222;stroke-width:4}.wire{fill:none;stroke:#333;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+  </style>
+  <rect width="1500" height="850" fill="#fbfaf5"/>
+  <text x="750" y="42" text-anchor="middle" class="title">Plate B - breadboard close-up and exact coordinates (top view)</text>
+  <rect x="90" y="75" width="1320" height="705" rx="25" class="board"/>
+  <rect x="145" y="115" width="1210" height="55" class="strip"/>
+  <text x="115" y="150" class="label">+</text><text x="1380" y="150" class="label">5 V</text>
+  <rect x="145" y="185" width="1210" height="55" class="strip"/>
+  <text x="115" y="220" class="label">-</text><text x="1368" y="220" class="label">GND</text>
+  <rect x="145" y="285" width="1210" height="170" class="strip"/>
+  <text x="115" y="365" class="label">a-e</text>
+  <rect x="145" y="475" width="1210" height="170" class="strip"/>
+  <text x="115" y="555" class="label">f-j</text>
+  <rect x="145" y="685" width="1210" height="55" class="strip"/>
+  <text x="115" y="720" class="label">-</text><text x="1368" y="720" class="label">GND</text>
+  <text x="750" y="470" text-anchor="middle" class="small">center trench: e and f are not connected</text>
+
+  <g class="label" text-anchor="middle">
+    <text x="300" y="275">10</text><text x="430" y="275">14</text>
+    <text x="710" y="275">22</text><text x="815" y="275">25</text>
+    <text x="1010" y="275">28</text><text x="1070" y="275">29</text><text x="1130" y="275">30</text>
+    <text x="1190" y="275">32</text><text x="1240" y="275">33</text><text x="1290" y="275">34</text><text x="1340" y="275">35</text>
+  </g>
+
+  <!-- Divider -->
+  <path class="wire" d="M300 142 V310"/><circle cx="300" cy="350" r="30" class="part"/>
+  <path class="wire" d="M300 380 H430"/><circle cx="430" cy="380" r="10" class="part"/>
+  <path class="wire" d="M430 380 V410 H500"/><text x="505" y="418" class="label">A0 / TP1</text>
+  <path class="wire" d="M430 390 V520"/><rect x="405" y="520" width="50" height="80" class="part"/>
+  <path class="wire" d="M430 600 V712"/><text x="230" y="337" class="label">LDR</text><text x="465" y="565" class="label">10 kohm</text>
+
+  <!-- White LED path -->
+  <path class="wire" d="M615 330 H710"/><text x="560" y="338" class="label">D9</text>
+  <rect x="710" y="305" width="105" height="50" class="part"/><text x="762" y="338" text-anchor="middle" class="small">330</text>
+  <path class="wire" d="M815 330 V410"/><path class="part" d="M780 410 Q815 360 850 410 V445 H780 Z"/>
+  <path class="wire" d="M815 445 V712"/>
+  <text x="735" y="430" text-anchor="end" class="small">white LED</text>
+  <text x="735" y="455" text-anchor="end" class="small">anode e25</text>
+  <text x="835" y="500" class="small">cathode f25</text>
+
+  <!-- RGB paths are separated into three resistor lanes and four named terminals. -->
+  <text x="925" y="305" class="label">D5</text><path class="wire" d="M970 298 H1040"/>
+  <rect x="1040" y="273" width="145" height="50" class="part"/><text x="1112" y="306" text-anchor="middle" class="small">330 red</text>
+  <path class="wire" d="M1185 298 H1200 V390"/>
+
+  <text x="925" y="365" class="label">D6</text><path class="wire" d="M970 358 H1040"/>
+  <rect x="1040" y="333" width="145" height="50" class="part"/><text x="1112" y="366" text-anchor="middle" class="small">330 green</text>
+  <path class="wire" d="M1185 358 H1300 V390"/>
+
+  <text x="925" y="595" class="label">D7</text><path class="wire" d="M970 588 H1040"/>
+  <rect x="1040" y="563" width="145" height="50" class="part"/><text x="1112" y="596" text-anchor="middle" class="small">330 blue</text>
+  <path class="wire" d="M1185 588 H1350 V520"/>
+
+  <g class="part">
+    <rect x="1175" y="390" width="50" height="130"/><rect x="1225" y="390" width="50" height="130"/>
+    <rect x="1275" y="390" width="50" height="130"/><rect x="1325" y="390" width="50" height="130"/>
+  </g>
+  <g class="small" text-anchor="middle">
+    <text x="1200" y="448">R</text><text x="1200" y="480">e32</text>
+    <text x="1250" y="448">K</text><text x="1250" y="480">e33</text>
+    <text x="1300" y="448">G</text><text x="1300" y="480">e34</text>
+    <text x="1350" y="448">B</text><text x="1350" y="480">e35</text>
+  </g>
+  <path class="wire" d="M1250 520 V712"/>
+  <text x="1275" y="548" text-anchor="middle" class="small">verified specimen terminals</text>
+
+  <text x="150" y="815" class="small">Check continuity and values unpowered. If RGB order is not R-K-G-B, stop and revise this plate.</text>
+</svg>

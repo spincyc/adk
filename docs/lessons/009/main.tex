@@ -155,15 +155,28 @@ Hysteresis & Has light crossed the appropriate boundary for the current mode? & 
 \bottomrule
 \end{tabularx}
 
-\section{Orientation drawing}
+\section{Authoritative pencil build plate}
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=\linewidth]{009-night-light-pencil.png}
-  \caption{Pencil orientation showing the sensing area, Mega, indicator area,
-  and meter probes. It is not an authoritative wiring diagram; positions,
-  breadboard connectivity, and lead order are simplified. Build only from the
-  literal schematic and connection table below.}
+  \includegraphics[width=\linewidth]{009-mega-header-locator.png}
+  \caption{Plate 0 locates the used sockets in their physical Mega 2560 header
+  groups and order. Orient the board with USB at left and still confirm the
+  printed silkscreen before inserting a jumper.}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\linewidth]{009-night-light-overview.png}
+  \caption{Plate A separates every used physical Mega header from its named
+  breadboard net. D13 is the built-in LED and has no external jumper.}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=\linewidth]{009-night-light-breadboard.png}
+  \caption{Plate B enlarges breadboard topology, coordinates, polarity, and
+  resistor placement. Cross-check both plates against the manifest below.}
 \end{figure}
 
 \section{Parts and literal wiring}
@@ -182,20 +195,44 @@ Quantity & Part & Requirement\\
 \bottomrule
 \end{tabularx}
 
-\textbf{Connections.}
+\textbf{Specimen gate.} The authorized Elegoo family listing proves that an
+LDR, white LED, and RGB LED belong to the kit; it does not prove the selected
+specimen's electrical identity. Before wiring, record the LDR package/photo and
+measured dark/light resistance; white LED package, anode/cathode, and
+\(V_f\); and RGB package/photo, viewing orientation, individual lead numbers,
+common-cathode lead, each color lead, and each color's \(V_f\). The build plate
+uses the verified left-to-right RGB order R--K--G--B at e32--e35, viewed from
+the flat/package reference recorded on the card. If the specimen differs,
+stop: revise both the build plate and manifest before applying USB power.
 
-\begin{tabularx}{\linewidth}{@{}l X l@{}}
+\textbf{Coordinate net manifest.} The breadboard's a--e holes in one numbered
+column are connected; f--j form a separate group across the center trench.
+Power-rail breaks vary by board. Test continuity unpowered and add only the
+rail bridge required for the used segment.
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
 \toprule
-Function & Literal path & Observation\\
+Net & Exact build-plate path & Cross-check\\
 \midrule
-sensor & 5\,V \(\rightarrow\) LDR \(\rightarrow\) A0 junction
-       \(\rightarrow10\,\text{k}\Omega\rightarrow\) GND & A0 to GND: 0--5\,V\\
-lamp & D9 \(\rightarrow330\,\Omega\rightarrow\) white LED anode;
-       cathode \(\rightarrow\) GND & D9 PWM test point\\
-RGB red & D5 \(\rightarrow330\,\Omega\rightarrow\) red anode & red fault pattern\\
-RGB green & D6 \(\rightarrow330\,\Omega\rightarrow\) green anode & green active pattern\\
-RGB blue & D7 \(\rightarrow330\,\Omega\rightarrow\) blue anode & blue ready pattern\\
-RGB return & common cathode \(\rightarrow\) GND & unpowered continuity to GND\\
+rails & Mega 5\,V to used top \(+\) rail; Mega GND to used top \(-\)
+      rail; join used bottom \(-\) rail to the same GND & continuity to named
+      Mega header; no 5\,V--GND continuity\\
+sensor & \(+\) rail to LDR e10; other LDR lead e14; A0 to a14/TP1;
+       10\,k\(\Omega\) from b14 to \(-\) rail & e14/a14/b14 are one junction;
+       TP1 is measured only to GND\\
+lamp & D9 to a22; 330\,\(\Omega\) e22--e25; white anode a25;
+       white cathode f25 to bottom \(-\) rail & LED straddles trench; TP-LAMP
+       is a25 to GND\\
+RGB red & D5 to a28; 330\,\(\Omega\) e28--e32; verified red lead e32 &
+       resistor measured unpowered\\
+RGB return & verified common cathode e33 to bottom \(-\) rail & continuity to
+       Mega GND\\
+RGB green & D6 to b29; 330\,\(\Omega\) d29--d34; verified green lead e34 &
+       resistor measured unpowered\\
+RGB blue & D7 to c30; 330\,\(\Omega\) c30--c35; verified blue lead e35 &
+       resistor measured unpowered\\
+D13 evidence & Mega built-in LED only; no external breadboard jumper &
+       250\,ms pulse, then 750\,ms dark separator\\
 \bottomrule
 \end{tabularx}
 
@@ -243,6 +280,24 @@ every ATmega2560 pin, port-group, and package operating limit; absolute maximum
 ratings are not design targets. This lesson additionally requires the calculated
 and measured current to remain at or below 15\,mA per channel.
 
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l X X X@{}}
+\toprule
+Channel & measured \(V_f\) & calculated worst current & measured active current\\
+\midrule
+white / D9 & & &\\
+red / D5 & & &\\
+green / D6 & & &\\
+blue / D7 & & &\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Worst simultaneous case named: \blank{1.5in}. Calculated total:
+\blank{.7in}\,mA. Measured total: \blank{.7in}\,mA. Record the actual
+combination observed; do not add four single-channel measurements if the
+firmware never commands that combination.
+
 D9 uses the Mega's Timer2 PWM resource. D5, D6, and D7 use other PWM timers.
 Do not add \texttt{PiezoSounder} without resolving its exclusive Timer2 claim:
 the conflict must fail during initialization, before an active waveform.
@@ -267,7 +322,9 @@ nightLight.update (observation);
 const adk::NightLightSnapshot decision = nightLight.snapshot ();
 \end{lstlisting}
 
-\texttt{NightLight} starts \texttt{Off}. A valid value strictly below 350
+\texttt{NightLight} starts \texttt{Off}. After successful acquisition the
+built-in D13 LED pulses for 250\,ms and stays dark for a 750\,ms separator;
+normal behavior never drives it. A valid value strictly below 350
 permille changes it to \texttt{On}; it remains on through the middle band and
 changes off only strictly above 450. Equality does not cross either boundary.
 This memory is hysteresis, not filtering.
@@ -333,16 +390,20 @@ missing fresh value & \texttt{Stale} & duty 0 & red\\
 450 exactly while on & strict boundary does not turn off & active & green\\
 D9 already claimed & initialization fails before operation & high impedance & unavailable or inactive\\
 Timer2 exclusively claimed & initialization fails before PWM & high impedance & inactive\\
-reset or shutdown & endpoint releases ownership & high impedance & high impedance\\
+fixed 120\,s deadline & outputs inactive for 250\,ms, then reverse shutdown &
+high impedance & high impedance\\
+reset or shutdown & reset repeats acquisition; shutdown releases ownership &
+high impedance & high impedance\\
 \bottomrule
 \end{tabularx}
 
 \evidencebox{\textbf{Do not overclaim the RGB evidence.} Blue proves that all
 objects initialized and the controller selected \texttt{Ready}. It does not
 prove D9 is electrically safe. Measure D9 to GND separately: zero duty while
-initialized should be near 0\,V; after shutdown the endpoint contract is high
-impedance, which needs a resistance or externally biased voltage test with the
-board in the documented test condition.}
+initialized should be near 0\,V. For high impedance, remove USB, install the
+one-at-a-time 10\,k\(\Omega\)/10\,k\(\Omega\) midpoint fixture described below,
+inspect it, restore USB, and measure the midpoint. Never use an ohmmeter on a
+powered circuit.}
 
 \section{CLI-only workflow}
 
@@ -352,6 +413,10 @@ No IDE is required. From the repository root:
 make bootstrap
 make host-test
 make arduino-Lesson009AdaptiveNightLight
+arduino-cli compile --fqbn arduino:avr:mega --library . \
+  --build-property \
+  compiler.cpp.extra_flags=-DADK_LESSON009_ACCEPTANCE_TELEMETRY=1 \
+  examples/Lesson009AdaptiveNightLight
 make upload EXAMPLE=Lesson009AdaptiveNightLight PORT=/dev/ttyACM0
 make monitor-describe PORT=/dev/ttyACM0
 make monitor PORT=/dev/ttyACM0 BAUD=115200
@@ -362,8 +427,10 @@ make site
 \end{lstlisting}
 
 The circuit supplies the acceptance evidence even if \texttt{monitor} is never
-run. Serial is useful only for optional raw and filtered numeric context. The
-canonical example contains no required Serial protocol.
+run. The compile-time acceptance build emits only \texttt{raw=} ADC counts,
+bounded to one record per 250\,ms and by the fixed 120\,s deadline. It is
+supporting evidence for the TP1 voltage observation, never the acquisition or
+safe-state proof. The default build has telemetry disabled.
 
 \section{Bench procedure: predict, observe, interpret}
 
@@ -371,11 +438,14 @@ canonical example contains no required Serial protocol.
 
 \begin{enumerate}
   \item \checkbox\ Confirm the exact Mega pins, every 330\(\Omega\) resistor,
-        RGB common cathode, and LDR divider orientation.
+        recorded RGB R--K--G--B specimen orientation, LDR divider orientation,
+        and every build-plate coordinate.
   \item \checkbox\ Measure the divider's lower resistor:
         expected \(\blank{.7in}\), observed \(\blank{.8in}\).
   \item \checkbox\ Confirm no continuity from 5\,V directly to GND and no LED
         die lacks its series resistor.
+  \item \checkbox\ Cross-check each manifest net with a second person or a
+        second pass; mark every row only after continuity agrees.
   \item \checkbox\ Predict the A0 voltage in bright and covered conditions.
 \end{enumerate}
 
@@ -385,7 +455,10 @@ Power from USB. Do not upload until the unpowered checks pass.
 
 \begin{enumerate}
   \item \checkbox\ Build and upload with the CLI targets above.
-  \item \checkbox\ Predict: valid moderate light selects blue and lamp off.
+  \item \checkbox\ Predict: D13 lights for 250\,ms, remains dark for the
+        750\,ms separator, then valid moderate light selects blue.
+  \item \checkbox\ Observe D13 timing: on \blank{.6in}\,ms; separator
+        \blank{.6in}\,ms.
   \item \checkbox\ Observe RGB: \blank{1.7in}.
   \item \checkbox\ Interpret: \blank{4.4in}.
 \end{enumerate}
@@ -394,14 +467,19 @@ Power from USB. Do not upload until the unpowered checks pass.
 
 \begin{enumerate}
   \item \checkbox\ Measure A0 to GND under bright light:
-        \blank{.7in}\,V. Cover the LDR and measure: \blank{.7in}\,V.
+        predicted \blank{.55in}\,V / \blank{.55in} counts; observed
+        \blank{.55in}\,V / \blank{.55in} counts. Cover the LDR:
+        predicted \blank{.55in}\,V / \blank{.55in} counts; observed
+        \blank{.55in}\,V / \blank{.55in} counts. Interpret whether count
+        direction and measured rail ratio agree: \blank{2.0in}.
   \item \checkbox\ Move light slowly through the on boundary. Record A0 voltage
         when the lamp becomes active: \blank{.7in}\,V.
   \item \checkbox\ Reverse direction. Record voltage when it becomes ready:
         \blank{.7in}\,V. Explain the different boundaries:
         \blank{3.0in}.
   \item \checkbox\ Observe green with the lamp waveform. At D9, record PWM
-        high level \blank{.6in}\,V and approximate duty \blank{.6in}\%.
+        high level \blank{.6in}\,V; predicted duty \blank{.6in}\%;
+        observed duty \blank{.6in}\%. Interpret: \blank{1.5in}.
 \end{enumerate}
 
 \subsection{Stage D --- fault and safe-state evidence}
@@ -410,17 +488,31 @@ Remove USB before changing the sensor connection. Simulate only one fault at a
 time, then restore wiring unpowered.
 
 \begin{enumerate}
-  \item \checkbox\ Open the LDR's 5\,V leg while leaving A0 joined to the fixed
-        lower resistor. Predict red and lamp duty zero.
+  \item \checkbox\ With USB removed, move only the \(+\)-rail jumper from LDR
+        e10 to an unused insulated row, leaving e14/a14/b14 and the 10\,k\(\Omega\)
+        lower leg intact. Restore USB. Predict red and lamp duty zero.
         Observe: \blank{2.4in}.
-  \item \checkbox\ Restore, then short only the LDR terminals so A0 approaches
-        5\,V through the identified topology. Predict red and duty zero.
+  \item \checkbox\ Remove USB. Restore e10, then place one jumper e10--e14
+        across only the LDR terminals. Inspect, restore USB, and predict red
+        with duty zero.
         Observe: \blank{2.4in}.
   \item \checkbox\ Restore normal wiring. Confirm recovery goes through blue
         before darkness can select green.
-  \item \checkbox\ Record D9 initialized at zero duty: \blank{.8in}\,V.
-        Run a controlled shutdown build or acceptance fixture, then measure the
-        documented high-impedance condition: \blank{2.0in}.
+  \item \checkbox\ Record D9 initialized at zero duty: \blank{.8in}\,V. Let the
+        fixed 120\,s deadline expire. Observe lamp and RGB inactive for at
+        least 250\,ms before release: \blank{1.5in}.
+  \item \checkbox\ Remove USB. Disconnect the white LED/resistor path from D9.
+        Install two 10\,k\(\Omega\) resistors in series from 5\,V to GND and
+        connect their midpoint to D9 only. Inspect, restore USB, and after the
+        fixed deadline record midpoint voltage \blank{.7in}\,V. A value near
+        half the measured rail supports high impedance; near a rail does not.
+        Remove USB before removing the fixture.
+  \item \checkbox\ Repeat the midpoint test one output at a time for D5, D6,
+        and D7, never with an LED path attached. Record:
+        D5 \blank{.55in}\,V; D6 \blank{.55in}\,V; D7 \blank{.55in}\,V.
+  \item \checkbox\ Press reset after restoring the normal circuit unpowered.
+        Record the repeated D13 pulse/separator and Ready recovery:
+        \blank{2.0in}.
 \end{enumerate}
 
 This procedure detects the named open and short simulations because the fixed
@@ -467,10 +559,11 @@ unexpected reset & disconnect power and inspect shorts/current budget & software
 Field & Record & Field & Record\\
 \midrule
 Board/revision & & Date &\\
-USB supply & & Reviewer &\\
+USB source/cable and measured 5\,V rail & & Reviewer &\\
 Arduino CLI/core & & ADK revision &\\
-Multimeter & & LDR identity &\\
-White LED \(V_f\) & & RGB identity &\\
+Multimeter make/model/asset ID & & LDR package/photo/resistance &\\
+Acceptance sketch artifact/hash & & Logic probe/scope make/model/asset ID &\\
+White LED package/polarity/\(V_f\) & & RGB package/photo/R--K--G--B pin map &\\
 Flash bytes & & Static RAM bytes &\\
 \bottomrule
 \end{tabularx}
@@ -483,6 +576,9 @@ Flash bytes & & Static RAM bytes &\\
   \item \checkbox\ Open and short sensor tests forced lamp duty zero.
   \item \checkbox\ Resource acquisition and D9 safe state were proven separately.
   \item \checkbox\ Reset, shutdown, and power removal observations were recorded.
+  \item \checkbox\ Measured rail, TP1 light extremes, each 330\,\(\Omega\)
+        resistor, each active-channel current, and worst simultaneous current
+        total were recorded.
 \end{itemize}
 
 Observed deviations and unresolved checks:
