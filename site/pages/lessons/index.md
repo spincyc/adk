@@ -47,6 +47,9 @@ third lesson for a deterministic integration project.
 | [Lesson 040 — Reflective and interrupted light](040.md) | Source-specific optical evidence | Calibration, timing, transitions, and faults remain explicit |
 | [Lesson 041 — Presence and passage](041.md) | PIR, beam, and range evidence | Eligibility, validity, age, and disagreement compose without hidden resampling |
 | [Lesson 042 — Tabletop course marshal](042.md) | Ordered checkpoint evidence | Explicit button authorization produces replayable timed runs |
+| [Lesson 043 — Copied inertial observations](043.md) | Revision-neutral six-axis values | Provenance, freshness, saturation, and faults remain explicit |
+| [Lesson 044 — Board-frame orientation](044.md) | Gravity-relative pitch and roll | Fixed-point orientation becomes bounded light and tone intent |
+| [Lesson 045 — Stationary balance instrument](045.md) | Copied inertial and control evidence | Button-authorized freeze and sensitivity compose into replayable E0 frames |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance
@@ -60,7 +63,6 @@ They remain planned—not published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 043–045 | Balance-table instrument |
 | 046–048 | Kinetic sculpture |
 | 049–051 | Inert parts carousel |
 | 052–054 | IR command translator |

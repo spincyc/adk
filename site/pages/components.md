@@ -69,7 +69,9 @@ Status meanings:
 | Optical observation policy | `ReflectiveObservationPolicy`, `BeamObservationPolicy` | Host verified; powered adapter and bench open | [Lesson 040](lessons/040.md) |
 | Presence composition | `PresenceModel` | Host verified; powered adapter and bench open | [Lesson 041](lessons/041.md) |
 | Course-marshal project | `CourseMarshal` | Host verified; powered adapter and bench open | [Lesson 042](lessons/042.md) |
-| Planned balance arc | Inertial samples and orientation presentation | Queued | Lessons 043–045 |
+| Inertial observation policy | `InertialObservationPolicy` | Host verified; E0 replay only | [Lesson 043](lessons/043.md) |
+| Orientation presentation | `OrientationPolicy`, `BalancePresentationPolicy` | Host verified; E0 replay only | [Lesson 044](lessons/044.md) |
+| Balance-table project | `BalanceInstrument` | Host verified; E0 replay only | [Lesson 045](lessons/045.md) |
 | Planned kinetic arc | Authorized tactile/directional inputs and bounded stepper motion | Queued | Lessons 046–048 |
 | Planned carousel arc | Identity records and homing | Queued | Lessons 049–051 |
 | Planned IR arc | Known-family capture and bounded emission | Queued; exact emitter gated | Lessons 052–054 |
@@ -139,6 +141,17 @@ PIR motion to authorize a run. `CourseMarshal` starts only from a debounced
 explicit button action and produces fixed-capacity, replayable checkpoint and
 finish evidence. Powered adapters, exact wiring, and every E1 bench record
 remain open.
+
+Lessons 043--045 keep copied inertial values, gravity-relative orientation,
+and balance-table composition independent of sensors and output hardware.
+`InertialObservationPolicy` preserves source, range, revision, readiness,
+sequence, age, saturation, and producer status. `OrientationPolicy` maps an
+explicit right-handed board frame into fixed-point pitch and roll, while
+`BalancePresentationPolicy` returns bounded light and tone intent.
+`BalanceInstrument` atomically composes copied inertial, joystick, and button
+records; only a qualified button event can freeze evidence. These E0 policies
+own no bus, pin, clock, sensor, actuator, or presentation endpoint. Their Mega
+sketches are compile-only memory replays, not powered or physical evidence.
 
 - [Exact API](api-supported.md)
 - [Full component catalog](docs/COMPONENTS.md)

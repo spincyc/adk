@@ -144,6 +144,7 @@ namespace {
                left.freshnessContractRevision ==
                    right.freshnessContractRevision &&
                left.sequenceGap == right.sequenceGap &&
+               left.latestDataReady == right.latestDataReady &&
                left.status == right.status;
     }
 
@@ -156,6 +157,7 @@ namespace {
 
                      observation.age == adk::Duration (0) &&
                      observation.sequenceGap == 0 &&
+                     !observation.latestDataReady &&
 
                      observation.status.error () ==
                          adk::StatusCode::NotInitialized,
@@ -592,6 +594,9 @@ namespace {
                      policy.snapshot ().age == adk::Duration (0),
                  "zero age is current");
 
+        require (policy.snapshot ().latestDataReady,
+                 "accepted ready sample records latest readiness");
+
         require (policy.update (adk::TimePoint (110), input).ok (),
                  "semantic replay at freshness boundary accepted");
 
@@ -600,7 +605,9 @@ namespace {
 
                      policy.snapshot ().age == adk::Duration (10) &&
 
-                     policy.snapshot ().sequenceGap == 0,
+                     policy.snapshot ().sequenceGap == 0 &&
+
+                     policy.snapshot ().latestDataReady,
                  "maximum age is inclusive and replay emits no gap");
 
         require (policy.update (adk::TimePoint (111), input).ok (),
@@ -810,23 +817,48 @@ namespace {
         require (policy.update (adk::TimePoint (100), current).ok (),
                  "recovery base accepted");
 
+        require (policy.snapshot ().latestDataReady,
+                 "ready base publishes explicit readiness");
 
-        adk::InertialSample notReady = sample (101, 2);
+        adk::InertialSample notReady = current;
 
         notReady.dataReady = false;
+
+        adk::InertialSample prematureNotReady = notReady;
+
+        prematureNotReady.sequence = 2;
+
+        require (
+            policy.update (adk::TimePoint (101), prematureNotReady).error () ==
+                adk::StatusCode::InvalidArgument,
+            "not-ready evidence cannot advance the accepted sequence");
+
+        require (!policy.snapshot ().latestDataReady &&
+                     sampleEqual (policy.snapshot ().sample, current),
+                 "rejected readiness clears latest evidence but retains payload");
+
+        require (policy.update (adk::TimePoint (101), current).ok (),
+                 "exact ready replay restores readiness");
+
+        require (policy.snapshot ().latestDataReady,
+                 "accepted ready replay publishes readiness");
 
         require (policy.update (adk::TimePoint (101), notReady).ok (),
                  "not-ready input is stale evidence");
 
         require (policy.snapshot ().quality ==
-                     adk::InertialSampleQuality::Stale,
-                 "not-ready input cannot be classified current");
+                         adk::InertialSampleQuality::Stale &&
+                     !policy.snapshot ().latestDataReady,
+                 "not-ready input records explicit stale readiness evidence");
 
         require (policy.snapshot ().age == adk::Duration (1),
                  "not-ready age derives from retained accepted observation time");
 
         require (sampleEqual (policy.snapshot ().sample, current),
                  "not-ready evidence retains last accepted sample");
+
+        const adk::InertialObservation retainedNotReady = policy.snapshot ();
+
 
         adk::InertialSample foreignNotReady = notReady;
 
@@ -837,12 +869,62 @@ namespace {
                 adk::StatusCode::InvalidArgument,
             "different-domain not-ready evidence is rejected");
 
+        const adk::InertialObservation foreignRejected = policy.snapshot ();
+
         require (policy.snapshot ().quality ==
                          adk::InertialSampleQuality::Invalid &&
                      policy.snapshot ().status.error () ==
-                         adk::StatusCode::InvalidArgument &&
-                     sampleEqual (policy.snapshot ().sample, current),
+                         adk::StatusCode::InvalidArgument,
                  "different-domain not-ready rejection cannot relabel history");
+
+        require (!foreignRejected.latestDataReady,
+                 "invalid domain preserves latest readiness evidence");
+
+        require (sampleEqual (foreignRejected.sample, current),
+                 "invalid domain preserves accepted payload");
+
+        require (policy.snapshot ().age == retainedNotReady.age,
+                 "invalid not-ready domain preserves retained age");
+
+        adk::InertialSample changedTimestamp = notReady;
+
+        changedTimestamp.observedAt = adk::TimePoint (101);
+
+        require (
+            policy.update (adk::TimePoint (102), changedTimestamp).error () ==
+                adk::StatusCode::InvalidArgument,
+            "not-ready evidence cannot replace the accepted timestamp");
+
+        adk::InertialSample changedAxis = notReady;
+
+        changedAxis.accelerationMicroG.x = 1;
+
+        require (policy.update (adk::TimePoint (102), changedAxis).error () ==
+                     adk::StatusCode::InvalidArgument,
+                 "not-ready evidence cannot replace accepted axes");
+
+
+        const uint32_t invalidSequences[] = {0, 2, 0x80000001UL};
+
+
+        for (uint32_t sequence : invalidSequences)
+
+        {
+
+            adk::InertialSample wrongSequence = notReady;
+
+            wrongSequence.sequence = sequence;
+
+
+            require (
+                policy.update (adk::TimePoint (102), wrongSequence).error () ==
+                    adk::StatusCode::InvalidArgument,
+                "not-ready evidence requires exact accepted sequence");
+
+            require (!policy.snapshot ().latestDataReady &&
+                         sampleEqual (policy.snapshot ().sample, current),
+                     "invalid not-ready sequence preserves retained evidence");
+        }
 
 
         adk::InertialSample malformed = sample (102, 2);
@@ -856,6 +938,9 @@ namespace {
         require (sampleEqual (policy.snapshot ().sample, current),
                  "malformed frame retains accepted sample");
 
+        require (!policy.snapshot ().latestDataReady,
+                 "malformed frame preserves latest no-ready evidence");
+
         adk::InertialSample producerFault =
 
             sample (103, 2, adk::StatusCode::HardwareFailure);
@@ -868,6 +953,9 @@ namespace {
         require (sampleEqual (policy.snapshot ().sample, current),
                  "producer fault retains accepted sample");
 
+        require (!policy.snapshot ().latestDataReady,
+                 "producer fault preserves latest no-ready evidence");
+
 
         adk::InertialSample recovered = sample (104, 2);
 
@@ -878,8 +966,36 @@ namespace {
         require (policy.snapshot ().quality ==
                      adk::InertialSampleQuality::Current &&
 
-                     policy.snapshot ().sample.sequence == 2,
+                     policy.snapshot ().sample.sequence == 2 &&
+
+                     policy.snapshot ().latestDataReady,
                  "recovery advances from last accepted history");
+
+
+        adk::InertialSample agedNoReady = recovered;
+
+        agedNoReady.dataReady = false;
+
+        require (policy.update (adk::TimePoint (115), agedNoReady).ok (),
+                 "same-sequence no-ready evidence can age retained sample");
+
+        const adk::InertialObservation aged = policy.snapshot ();
+
+        require (policy.snapshot ().quality ==
+                         adk::InertialSampleQuality::Stale &&
+                     policy.snapshot ().age == adk::Duration (11),
+                 "aged no-ready evidence is explicitly stale");
+
+        require (!aged.latestDataReady,
+                 "aged no-ready evidence records readiness");
+
+        require (sampleEqual (aged.sample, recovered),
+                 "aged no-ready evidence retains payload");
+
+        policy.reset ();
+
+        requireCanonicalInvalid (policy.snapshot (),
+                                 "reset clears latest readiness evidence");
     }
 
 

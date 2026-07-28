@@ -160,7 +160,7 @@ architectural layers.
 | Sound sensor | Relative ADC envelope and optional qualified threshold input | 038 published against an external reference; Elegoo substitution open |
 | HC-SR04 | `UltrasonicRanger` | 019 |
 | PIR module | `PirSensor` | 019 |
-| MPU6050 / QMI8658 | One exact adapter behind a revision-neutral inertial sample | 043--045; normalized records 067--069 |
+| MPU6050 / QMI8658 | `InertialObservationPolicy` accepts synthetic E0 fixtures; one future exact adapter remains gated behind the revision-neutral copied sample | 043--045 host verified; normalized records 067--069 |
 | DS1307/DS3231 | `Rtc` | 022--024 |
 | MicroSD module | `SpiDevice` + `SdCard` | 022--024 |
 | Membrane keypad | `Keypad` | 016 |

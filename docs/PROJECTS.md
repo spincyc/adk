@@ -20,12 +20,15 @@ hardware-neutral optical, presence, and course-marshal policy under the
 [implementation-depth brief](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md).
 A debounced button is the sole run authorization; PIR supplies eligibility
 only. Powered adapters, exact specimens, and E1 acceptance remain open.
-Lessons 043--045 are active under an
+Lessons 043--045 are host verified under an
 [implementation-depth E0 replay-first plan](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md):
-copied samples and inputs, pure orientation and presentation policy, and a
-stationary hand-operated tabletop composition. No powered adapter, I2C
-transaction, wiring, schematic, or physical claim is authorized; exact
-MPU6050 and QMI8658 variants remain independently gated.
+`InertialObservationPolicy`, `OrientationPolicy`,
+`BalancePresentationPolicy`, and `BalanceInstrument` consume copied samples
+and inputs in a stationary hand-operated tabletop composition. Their
+deterministic host suites, compile-only Mega replays, lesson packages, and
+size gates pass. No powered adapter, I2C transaction, wiring, schematic, or
+physical claim is authorized; exact MPU6050 and QMI8658 variants remain
+independently gated.
 See the [authoritative work
 queue](WORK_QUEUE.md) for the complete ledger.
 
@@ -109,7 +112,7 @@ explicit open item.
 | 036 | Host verified; bench open | Passage, bounce, direction, recovery, and record traces | Raw contacts, accepted passage, and count |
 | 039 | Host verified; bench/incoming conformance open | Sequencer core, attribution, atomic admission, replay, indexed-hit evidence, and exact external reference publication complete | Canonical Mega schematic/example, visible pattern evidence, and E1 acceptance card; incoming conformance remains open |
 | 042 | Host verified; powered adapter and bench open | Calibration, source identity, eligibility, explicit authorization, checkpoint-order, range, timeout, and invalid-run traces | Powered exact-specimen checkpoints and E1 acceptance remain open |
-| [045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Active integration; E0 replay-first | Copied-sample validation, stationary orientation, sensitivity, freeze, health, simultaneous-event, and byte-identical replay traces | Host result cells only; powered indicators, controls, bus points, wiring, schematic, and E1 acceptance remain gated |
+| [045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Host verified; powered composition and bench open | Copied-sample validation, stationary orientation, sensitivity, freeze, health, simultaneous-event, and byte-identical replay traces | Host result cells only; powered indicators, controls, bus points, wiring, schematic, and E1 acceptance remain gated |
 | 048 | Queued; detailed plan required | Authorized tactile/directional input, coil-frame, stop, and power-loss traces | Shift-register intent mirror and independent stop |
 | 051 | Queued; detailed plan required | Identity, homing, confirmation, and interruption traces | Position, home, gate-intent, and stop evidence |
 | 054 | Queued; detailed plan required | Encode/decode, malformed-frame, policy, and cancellation traces | Separate transmit/receive/fault indications |

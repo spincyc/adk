@@ -143,15 +143,29 @@ doc/lessons/041.pdf: docs/lessons/041/main.tex \
 doc/lessons/042.pdf: docs/lessons/042/main.tex \
 		docs/lessons/assets/042-course-layout-pencil.png \
 		docs/lessons/assets/042-run-timeline-pencil.png
+doc/lessons/043.pdf: docs/lessons/043/main.tex \
+		docs/lessons/assets/043-inertial-provenance-pencil.png \
+		docs/lessons/assets/043-inertial-timeline-pencil.png
+doc/lessons/044.pdf: docs/lessons/044/main.tex \
+		docs/lessons/assets/044-board-frame-gravity-pencil.png \
+		docs/lessons/assets/044-orientation-poses-pencil.png \
+		docs/lessons/assets/044-presentation-intent-pencil.png \
+		docs/lessons/assets/044-replay-worksheet-pencil.png
+doc/lessons/045.pdf: docs/lessons/045/main.tex \
+		docs/lessons/assets/045-live-frozen-pencil.png \
+		docs/lessons/assets/045-state-flow-pencil.png \
+		docs/lessons/assets/045-tabletop-replay-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons
 	SOURCE_DATE_EPOCH=1785160800 \
 		$(PDFLATEX) -halt-on-error -interaction=nonstopmode \
-		-output-directory="$(BUILD_DIR)/lessons/$(basename $(notdir $@))" "$<"
+		-output-directory="$(BUILD_DIR)/lessons/$(basename $(notdir $@))" \
+		"docs/lessons/$(basename $(notdir $@))/main.tex"
 	SOURCE_DATE_EPOCH=1785160800 \
 		$(PDFLATEX) -halt-on-error -interaction=nonstopmode \
-		-output-directory="$(BUILD_DIR)/lessons/$(basename $(notdir $@))" "$<"
+		-output-directory="$(BUILD_DIR)/lessons/$(basename $(notdir $@))" \
+		"docs/lessons/$(basename $(notdir $@))/main.tex"
 	cp "$(BUILD_DIR)/lessons/$(basename $(notdir $@))/main.pdf" "$@"
 
 lessons-check: lessons

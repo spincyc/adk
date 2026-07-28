@@ -613,6 +613,49 @@ RAM for Lesson 040, 8,818 / 226 for Lesson 041, and 15,596 / 901 for Lesson
 042. These compile measurements are software evidence, not powered or physical
 acceptance.
 
+## Copied inertial, orientation, and balance-table policy
+
+`InertialObservationPolicy` accepts caller-supplied six-axis fixed-point
+values and preserves their provenance, revisions, ranges, timestamp, sequence,
+readiness, saturation, age, and complete producer status. It classifies copied
+evidence as current, stale, saturated, or invalid without owning a sensor, bus,
+endpoint, callback, or clock.
+
+`OrientationPolicy` validates that complete observation, applies one of the 24
+right-handed `BoardFrame` mappings, and returns bounded fixed-point pitch and
+roll. `BalancePresentationPolicy` maps the estimate and caller-supplied
+sensitivity to light and tone intent; neither policy actuates hardware.
+
+`BalanceInstrument` atomically composes copied inertial, joystick, button,
+time, and sequence evidence. A qualified button press is the sole freeze
+authority. The project retains separate live and frozen evidence, latches
+producer and skew faults, and requires an acknowledged recovery sequence
+before returning to live presentation.
+
+[Lessons 043](lessons/043.md), [044](lessons/044.md), and
+[045](lessons/045.md) provide the deterministic replay and open acceptance
+procedures. Their host gates and compile-only Mega examples are verified at
+E0. They do not provide MPU6050 or QMI8658 adapters, I2C transactions, wiring,
+powered presentation, or physical measurements.
+
+- Inertial policy: [source](https://github.com/spincyc/adk/blob/main/src/inertial_observation.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_inertial_observation.cpp),
+  [Mega replay](downloads/sketches/Lesson043InertialObservation.ino), and
+  [Lesson 043](lessons/043.md)
+- Orientation policy: [source](https://github.com/spincyc/adk/blob/main/src/orientation_presentation.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_orientation_presentation.cpp),
+  [Mega replay](downloads/sketches/Lesson044OrientationPresentation.ino), and
+  [Lesson 044](lessons/044.md)
+- Balance instrument: [source](https://github.com/spincyc/adk/blob/main/src/balance_table_instrument.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_balance_table_instrument.cpp),
+  [Mega replay](downloads/sketches/Lesson045BalanceTableInstrument.ino), and
+  [Lesson 045](lessons/045.md)
+
+The canonical Mega 2560 builds measure 6,682 bytes flash / 949 bytes static
+RAM for Lesson 043, 13,740 / 748 for Lesson 044, and 26,398 / 1,898 for Lesson
+045. These compile measurements are software evidence, not powered or physical
+acceptance.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.

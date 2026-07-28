@@ -23,6 +23,7 @@ namespace adk {
                      InertialSaturation::None,
                      StatusCode::NotInitialized},
                     InertialSampleQuality::Invalid,
+                    false,
                     Duration (),
                     Duration (),
                     0,
@@ -74,6 +75,21 @@ namespace adk {
                    left.dataReady == right.dataReady &&
                    left.saturation == right.saturation &&
                    left.status == right.status;
+        }
+
+        bool sameReadinessPayload (const InertialSample& poll,
+                                   const InertialSample& accepted) noexcept
+        {
+            return sameSource (poll.source, accepted.source) &&
+                   sameVector (poll.accelerationMicroG,
+                               accepted.accelerationMicroG) &&
+                   sameVector (poll.angularRateMilliDegreesPerSecond,
+                               accepted.angularRateMilliDegreesPerSecond) &&
+                   poll.observedAt == accepted.observedAt &&
+                   poll.sequence == accepted.sequence &&
+                   accepted.dataReady && !poll.dataReady &&
+                   poll.saturation == accepted.saturation &&
+                   poll.status == accepted.status;
         }
 
         uint32_t magnitude (int32_t value) noexcept
@@ -200,6 +216,8 @@ namespace adk {
     Status InertialObservationPolicy::update (
         TimePoint now, const InertialSample& sample) noexcept
     {
+        observation_.latestDataReady = false;
+
         if (!initialized_)
         {
             observation_.quality = InertialSampleQuality::Invalid;
@@ -251,7 +269,7 @@ namespace adk {
         if (!sample.dataReady)
         {
             if (!hasSample_ ||
-                !sameSource (sample.source, observation_.sample.source))
+                !sameReadinessPayload (sample, observation_.sample))
             {
                 observation_.quality = InertialSampleQuality::Invalid;
                 observation_.status  = StatusCode::InvalidArgument;
@@ -268,12 +286,13 @@ namespace adk {
                 return observation_.status;
             }
 
-            observation_.quality     = InertialSampleQuality::Stale;
-            observation_.age         = Duration (acceptedAge);
-            observation_.sequenceGap = 0;
-            observation_.status      = StatusCode::Ok;
-            lastUpdateAt_            = now;
-            hasUpdate_               = true;
+            observation_.quality         = InertialSampleQuality::Stale;
+            observation_.latestDataReady = false;
+            observation_.age             = Duration (acceptedAge);
+            observation_.sequenceGap     = 0;
+            observation_.status          = StatusCode::Ok;
+            lastUpdateAt_                = now;
+            hasUpdate_                   = true;
             return observation_.status;
         }
 
@@ -295,8 +314,9 @@ namespace adk {
                     return observation_.status;
                 }
 
-                observation_.age         = Duration (sampleAge);
-                observation_.sequenceGap = 0;
+                observation_.age             = Duration (sampleAge);
+                observation_.latestDataReady = true;
+                observation_.sequenceGap     = 0;
 
                 if (!observation_.sample.status.ok ())
                 {
@@ -347,10 +367,11 @@ namespace adk {
             return observation_.status;
         }
 
-        observation_.sample                    = sample;
-        observation_.age                       = Duration (sampleAge);
-        observation_.sequenceGap = sequenceGap;
-        observation_.status      = StatusCode::Ok;
+        observation_.sample          = sample;
+        observation_.latestDataReady = true;
+        observation_.age             = Duration (sampleAge);
+        observation_.sequenceGap     = sequenceGap;
+        observation_.status          = StatusCode::Ok;
 
         if (sample.saturation != InertialSaturation::None)
         {

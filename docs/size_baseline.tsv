@@ -41,3 +41,6 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	1	Lesson040OpticalObservation	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5112	16384	300	512
 1	1	Lesson041PresenceModel	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	8818	16384	226	512
 1	1	Lesson042CourseMarshal	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	15596	24576	901	1536
+1	1	Lesson043InertialObservation	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6682	16384	949	1024
+1	1	Lesson044OrientationPresentation	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	13740	16384	748	1024
+1	2	Lesson045BalanceTableInstrument	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	26398	28672	1898	2048
