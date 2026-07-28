@@ -626,84 +626,19 @@ Planned specimen coverage: four-digit seven-segment display, MAX7219 matrix,
 buttons, SPI, and status LEDs. PCF8574 LCD backpacks remain inventory-gated
 planning work and are not claimed by this arc.
 
-## Lessons 073--075: pressure and analog acquisition station
+## Lessons 073--078: authorized-family replacements pending
 
-### 073 — Owned three-wire clock observations
+The prior cadence assigned DS1302, BMP180, PCF8591, and a color sensor to these
+numbers. The official Elegoo Mega Most Complete plus Upgraded 37-in-1 union
+does not list those families. They came from comparison taxonomies and are not
+authorized specimens.
 
-Add a bounded three-wire transaction endpoint and DS1302 adapter without
-pretending it is I2C or the lesson 022 RTC device. Clock, data direction,
-chip-enable, burst limits, write protection, oscillator validity, calendar
-validation, and backup-power state remain explicit.
-
-### 074 — Pressure and external analog conversion
-
-Add BMP180 and PCF8591 adapters over owned I2C transactions. The pressure
-adapter retains identity, calibration coefficients, conversion deadlines,
-compensated units, range, and invalid arithmetic. The converter retains
-channel, mode, stale-first-read behavior, DAC code, reference/supply
-assumptions, and bounded settle time. Neither is a precision or safety
-instrument.
-
-### 075 — Project: pressure and analog acquisition station
-
-The station records pressure plus one controlled potentiometer channel, shows
-trend direction and data age locally, and optionally drives the PCF8591 DAC
-only into a documented high-impedance measurement point. RTC/SD records allow
-the exact decision trace to be replayed.
-
-Deterministic evidence includes DS1302 bit and burst traces, invalid calendar
-and write protection, datasheet pressure-compensation vectors, bad
-coefficients, conversion timeout, I2C NACK, stale first conversion, channel
-switch settling, DAC bounds, trend hysteresis, and record interruption.
-Three-wire clock/data/enable, SDA/SCL, analog input, DAC, and sensor-rail test
-points accompany acquisition, trend, and fault LEDs.
-
-The specimen gate records DS1302 identity, crystal and backup source, BMP180
-identity rather than a look-alike pressure sensor, board regulators and
-pull-ups, PCF8591 marking, supply/reference, analog-source range, and DAC load.
-No unknown register device is probed by trial writes.
-
-Planned specimen coverage: DS1302 variants, BMP180, PCF8591, potentiometer, LCD, SD,
-and LEDs.
-
-## Lessons 076--078: color classification trainer
-
-### 076 — Identified color observations
-
-Add a device adapter only after identifying the kit's color-sensor mechanism.
-Frequency-output devices own scaling/filter pins and consume bounded pulse
-counts; register devices use the existing owned bus. Both may produce one
-device-neutral raw-channel observation while retaining mechanism, integration
-window, saturation, and validity.
-
-### 077 — Calibrated color classification
-
-Map supplied raw color and clear/reference channels through dark and white
-calibration into bounded normalized features and an explicit confidence.
-Unknown, too-dark, saturated, and ambiguous samples are first-class outcomes;
-labels and thresholds are fixed configuration rather than learned hidden state.
-
-### 078 — Project: tabletop color sorting trainer
-
-The learner presents labeled paper swatches. The station predicts one of a
-small configured set, shows raw and classified state, and moves only a paper
-pointer after confirmation. Incorrect and ambiguous results remain visible and
-enter a fixed-capacity confusion record.
-
-Deterministic evidence includes dark/white calibration, channel permutations,
-pulse-count and register fixtures, saturation, ambient drift, boundary colors,
-confidence ties, confirmation cancellation, and replayed pointer intent.
-Illumination/activity and accepted-class LEDs are distinct; LCD or matrix
-shows unknown explicitly; frequency/bus and servo-intent test points work with
-motion power removed.
-
-The specimen gate records the sensor IC, optical filter/LED population, lens or
-package, interface type, supply and logic levels, and cited integration limits.
-Illumination is current limited; no unidentified laser is used as a light
-source.
-
-Planned specimen coverage: identified color-sensor variants, LCD or matrix, RGB
-LED, buttons, servo pointer, and pulse or I2C transport.
+Retain lesson numbers 073--078, but do not implement the former subjects.
+Before activation, select replacement families from the
+[authorized Elegoo set](../inventory/AUTHORIZED_ELEGOO_SET.md), then expand
+each three-lesson arc to the same interface, deterministic-evidence, circuit,
+safety, and publication depth as lessons 031--033. Record that selection as a
+curriculum decision rather than silently restoring a different vendor's kit.
 
 ## Lessons 079--081: low-energy component qualification bench
 
@@ -782,8 +717,8 @@ individually identified retail boards.
 | Analog/comparator module variants | 057 | inventory acceptance |
 | DS18B20 and single-wire variants | 069 | thermal records |
 | Four-digit display, MAX7219 matrix | 072 | timing presentation |
-| DS1302, BMP180, PCF8591 | 075 | clock/pressure/analog records |
-| Identified color-sensor variants | 078 | classification records |
+| Authorized replacements for former 073--075 subjects | pending re-scope | no unlisted specimen |
+| Authorized replacements for former 076--078 subjects | pending re-scope | no unlisted specimen |
 | PN2222/S8050, diode, indicator variants | 081 inert loads only | inventory acceptance |
 | Laser emitter | none until classified | optional disabled optical fixture |
 
