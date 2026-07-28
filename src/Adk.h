@@ -47,6 +47,7 @@
 #include "percussion_sequencer.h"
 #include "piezo_sounder.h"
 #include "power_domain.h"
+#include "presence_model.h"
 #include "pump_output.h"
 #include "pulse_input.h"
 #include "pulse_capture.h"
