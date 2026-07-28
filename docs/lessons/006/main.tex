@@ -289,8 +289,8 @@ if (!game.initialize ().ok ())
 The object stores a copy of \texttt{SimonConfig} and a non-owning relationship
 to the cue source, which must outlive it. No heap, exception, RTTI, callback, or
 hidden clock is involved. The current engine is host verified. The complete
-four-button/RGB/sound hardware adapter remains experimental until its Mega
-acceptance record is complete.
+four-button/RGB/sound hardware adapter remains experimental pending the
+controlled physical campaign.
 
 \subsection{Input is a complete observation}
 
@@ -483,126 +483,18 @@ The engine does not encode colors or musical notes. \texttt{CueId} is neutral,
 so another adapter can use vibration, a display, larger protected drivers, or
 accessible multimodal feedback without changing game correctness.
 
-\section{Mega 2560 acceptance}
+\section{Build Simon in visible stages}
 
-\warningbox{Physical acceptance is pending. Do not fill an observation from a
-host trace, successful compile, expected LED state, or this worksheet. A named
-operator and independent reviewer must observe the retained specimens on the
-identified bench.}
+Begin with the four Lesson 002 button paths and verify one release-gated event
+per press. Add the Lesson 004 cue and RGB outputs and replay the visible
+One--Three sequence without sound. Add the Lesson 005 sounder last, then run
+the complete fixed replay and observe that cue light, color, and tone agree.
+The full payoff is available only after every earlier component stage works.
 
-\begin{enumerate}
-  \item Record repository commit, Arduino CLI and AVR core versions, operator,
-        reviewer, exact board, retained specimens, primary sources, supply and
-        current limit, meter, and logic-analyzer model if used.
-  \item Disconnect power. Build one branch at a time from the exact schematics.
-        Verify seven 330\(\Omega\) resistors, RGB common cathode, four button
-        contact pairs, passive piezo, and common ground.
-  \item Compile the supported Simon engine and adapter example for
-        \texttt{arduino:avr:mega} with the fixed-replay fixture enabled, using
-        the exact command in the golden-replay section. Record the define,
-        flash, and static RAM.
-  \item Reset that artifact, whose bounded source is exactly One, Three.
-        Predict D13 off before
-        acquisition, on for 250\,ms, then off through the 750\,ms separator.
-        Observe it separately
-        from every cue, RGB, and sound behavior.
-  \item Verify each button's raw and debounced diagnostic state separately.
-        Then verify cue-to-button mapping One through Four.
-  \item Play the golden two-cue game. Observe cue LED, RGB state, tone, and
-        serial snapshot at every transition.
-  \item Press two buttons as nearly simultaneously as practical and record only
-        a physical chord observation. Use the two-bit host replay---not hand
-        timing---for the exact-simultaneity claim.
-  \item Verify mismatch, timeout, round success, game success, terminal restart,
-        and a button held through reset.
-  \item Run the same recorded seed twice. Compare the displayed sequence, not
-        just the final score.
-  \item Arrange separate runs so the 120-second deadline expires during
-        PlaybackOn, AwaitPress, and sound. At each expiry, measure all behavior
-        outputs and D13 inactive throughout the 250 ms interval, then confirm
-        shutdown releases the pins and the loop remains halted. Reset between
-        trials and record the expected reacquisition indication.
-  \item Prove high impedance on D5--D7, D11, D13, and D30--D33 with a reviewed
-        10\,k\(\Omega\)/10\,k\(\Omega\) midpoint fixture installed on one pin
-        at a time while unpowered. Calculate driven and released ranges from
-        measured rail, resistor tolerance, and DMM input resistance. Record D6
-        separately. Never move the fixture while powered.
-  \item Remove USB and every other source. Verify the rail is de-energized
-        before teardown.
-\end{enumerate}
-
-\subsection{Identity, configuration, and review card}
-
-\begin{center}
-\begin{tabularx}{\linewidth}{@{}l X l X@{}}
-\toprule
-Field & Record & Field & Record\\
-\midrule
-Commit / sketch & & Operator / date &\\[7pt]
-Independent reviewer / date & & Result: pass / fail / open &\\[7pt]
-Mega make / model / revision / ID & & USB supply / measured rail / limit &\\[7pt]
-Board schematic / D13 branch & & D13 predicted / measured load &\\[7pt]
-CLI / AVR core / upload command / port & & Meter / analyzer / probe reference &\\[7pt]
-Four switch IDs / source & & Four cue LED IDs / polarity source &\\[7pt]
-RGB ID / topology / pinout source & & Piezo ID / passive rating / source &\\[7pt]
-Seven measured resistors & & Series piezo resistor &\\[7pt]
-Flash / static RAM & & Algorithm / normalized seed &\\[7pt]
-Deviations / uncertainty & & Final power-removal check &\\[7pt]
-\bottomrule
-\end{tabularx}
-\end{center}
-
-\subsection{Prediction / observation / interpretation record}
-
-\begin{center}
-\small
-\begin{tabularx}{\linewidth}{@{}p{0.19\linewidth}X X X@{}}
-\toprule
-Stage / location / timing & Prediction & Observation & Interpretation\\
-\midrule
-Unpowered continuity and polarity & No shorts; values and pinouts match sources & &\\[13pt]
-D13 after setup & 250\,ms pulse then 750\,ms dark; game outputs inactive & &\\[13pt]
-D22--D25 raw, then debounced & Each released high and pressed low; one event per press & &\\[13pt]
-Fixed replay behavior & Cue/RGB/tone sequence matches published timestamps & &\\[13pt]
-Near-simultaneous hand press & Physical chord only; no exact timing claim & &\\[13pt]
-Reset with one button held & Reacquires resources; no press event until release/repress & &\\[13pt]
-120 s deadline / 250 ms interval & Tone and all lights inactive, then reverse shutdown and halt & &\\[13pt]
-Physical power removal & Rail de-energized before teardown & &\\[13pt]
-\bottomrule
-\end{tabularx}
-\end{center}
-
-\subsection{Current and per-pin safe-state record}
-
-\begin{center}
-\small
-\begin{tabularx}{\linewidth}{@{}l X X X@{}}
-\toprule
-Item & Prediction / method & Observation & Interpretation\\
-\midrule
-Each of 7 LED branches & rail, resistor drop, \(I=V_R/R\) & &\\[12pt]
-Normal commanded total & D13 + cue + RGB; compare pin/port/package limits & &\\[12pt]
-Seven-die fault bound & minimum \(V_f\); compare pin/port/package limits & &\\[12pt]
-Piezo D11 & identified rating and bounded command & &\\[12pt]
-D5 / D6 / D7 after shutdown & 10 k\(\Omega\)/10 k\(\Omega\) midpoint trial & &\\[12pt]
-D11 / D13 after shutdown & 10 k\(\Omega\)/10 k\(\Omega\) midpoint trial & &\\[12pt]
-D30 / D31 / D32 / D33 after shutdown & 10 k\(\Omega\)/10 k\(\Omega\) midpoint trial & &\\[12pt]
-D22 / D23 / D24 / D25 after shutdown & pulls released; midpoint trial & &\\[12pt]
-\bottomrule
-\end{tabularx}
-\end{center}
-
-\textbf{Stop conditions.} Stop immediately, record the incomplete stage, and
-remove USB for heat, odor, reset, painful or distorted sound, unexpected
-brightness, a specimen identity or pinout mismatch, measured current above the
-reviewed aggregate bound, or any observation inconsistent with the predicted
-safe state. Do not continue by revising the prediction after observing the
-result.
-
-\textbf{Status language.} Until this checklist is signed, report ``Simon engine
-host verified; hardware adapter experimental.'' Compilation alone is not
-hardware verification.
-
+\paragraph{Physical acceptance boundary.}
+Measured bench acceptance remains a separately controlled campaign; this
+learner project does not include identity, operator, reviewer, or sign-off
+paperwork.
 \section{Diagnose from evidence}
 
 \begin{tabularx}{\linewidth}{@{}p{0.24\linewidth}X X@{}}
@@ -673,14 +565,9 @@ claim. Separate host evidence from hardware observation.\\[3pt]
         \href{https://www.jstatsoft.org/article/view/v008i14}{Journal of Statistical Software}
 \end{itemize}
 
-\textbf{Final sign-off}\\
-Wiring checked unpowered: \checkbox{}\quad
-Golden replay passed twice: \checkbox{}\quad
-Chord rejected: \checkbox{}\quad
-Current calculated: \checkbox{}\quad
-Shutdown measured: \checkbox{}\quad
-Power removed: \checkbox{}\quad
-Independent review: \checkbox{}
+\textbf{Review the evidence.}
+Explain how the golden replay, chord rejection, current calculation, and safe
+shutdown support distinct claims.
 
 \vfill
 \begin{center}

@@ -93,7 +93,7 @@ You need & Mega 2560, USB cable, breadboard, 10\,k\(\Omega\) linear
 potentiometer, LED, resistor of at least 220\,\(\Omega\), jumpers, multimeter,
 and logic analyzer or oscilloscope with a 10\,k\(\Omega\)/10\,k\(\Omega\)
 midpoint fixture\\
-Evidence & TP-A0 voltage, raw and transformed worksheet, D6 duty/brightness,
+Evidence & TP-A0 voltage, raw and transformed trace, D6 duty/brightness,
 D13 acquisition witness, safe-state record\\
 Safety class & E1: USB-powered Mega and passive low-current parts only\\
 Status & Host verified; physical acceptance pending\\
@@ -335,30 +335,11 @@ Write deterministic tests before interpreting the breadboard:
     \item repeated shutdown and destruction from an active circuit.
 \end{enumerate}
 
-\begin{lstlisting}[style=adkcpp]
-make host-test
-make quality-fast
-make arduino-Lesson008SampledSignal
-\end{lstlisting}
 
 Compilation and simulation do not establish physical acceptance.
 
 \section*{8. Upload and observe without depending on Serial}
 
-Record the exact specimen before upload: Mega board marking, board serial or
-lab asset ID, USB supply identity, potentiometer marking and measured
-end-to-end resistance, LED color/package, measured series-resistor value, and
-jumper/breadboard identifier. Record the meter and analyzer manufacturer,
-model, asset or serial ID, probe or lead identity, and last-calibration date.
-Identify the board and port, compile the one canonical sketch, upload it, and
-optionally capture the CSV transformation trace:
-
-\begin{lstlisting}[style=adkcpp]
-make boards
-make arduino-Lesson008SampledSignal
-make upload EXAMPLE=Lesson008SampledSignal PORT=/dev/ttyACM0
-make monitor PORT=/dev/ttyACM0 BAUD=115200
-\end{lstlisting}
 
 The required evidence is circuit-native:
 
@@ -398,15 +379,9 @@ fixture while powered, never test two pins at once, and never open the ground
 connection while powered. LED darkness alone is not high-impedance evidence.
 
 \textbf{Reset and acquisition rollback.} Press reset once after a completed
-run. Record a new 250\,ms acquisition pulse and confirm the CSV column order
-and response repeat from an identical knob position. Then compile a separate
-fault-injection artifact:
-\begin{lstlisting}[style=adkcpp]
-arduino-cli compile --fqbn arduino:avr:mega --library . \
-  --build-property \
-  compiler.cpp.extra_flags=-DADK_LESSON008_INJECT_D6_CONFLICT \
-  examples/Lesson008SampledSignal
-\end{lstlisting}
+run. Confirm a new 250\,ms acquisition pulse and repeat the response from an
+identical knob position. The automated suite also runs a deterministic
+D6-conflict artifact.
 Upload that artifact only for the rollback run. It deterministically claims D6
 before normal acquisition. The subsequent D6 acquisition must fail; the sketch
 must emit no acquisition pulse and must roll back the already acquired A0 and
@@ -442,7 +417,7 @@ D13 stays off & inspect status path and unpowered wiring & acquisition failed;
 not which owner failed without recorded status\\
 D13 on, TP-A0 fixed & measure wiper and both pot ends to GND & distinguishes
 source wiring from later transforms\\
-TP-A0 moves, D6 fixed & inspect expected mapped/average/deadband worksheet;
+TP-A0 moves, D6 fixed & inspect expected mapped/average/deadband trace;
 probe TP-D6 & separates decision from LED wiring\\
 D6 waveform changes, LED fixed & remove power; inspect polarity and resistor &
 the command reached the pin but the load path is suspect\\
@@ -469,32 +444,9 @@ input can float plausibly\\
           reconsideration for Lesson 009?
 \end{enumerate}
 
-\section*{Bench acceptance record}
-
-\begin{tabularx}{\linewidth}{@{}>{\bfseries}lX@{}}
-Board and supply & \\
-Board marking, serial / asset ID & \\
-USB supply and cable identity & \\
-Pot, LED, resistor, breadboard / jumpers & \\
-Meter make, model, ID, calibration date & \\
-Analyzer / scope, probe, ID, calibration date & \\
-Measured 5 V reference & \\
-Source rating; LED identity and \(V_f\) & \\
-Measured pot and LED resistor & \\
-Calculated worst-case LED current / \(\leq15\) mA go/no-go & \\
-Observed calibration bounds & \\
-D13 acquisition observation & \\
-CSV raw / calibrated / average / held file & \\
-TP-A0 observations & \\
-TP-D6 / brightness observations & \\
-120 s deadline and 250 ms window & \\
-D6 and A0 midpoint-fixture evidence & \\
-Reset repeat and injected D6 rollback evidence & \\
-Lesson 007 configuration-restoration evidence & \\
-Power removal P / O / I & \\
-Deviations, reviewer, date & \\
-\end{tabularx}
-
+\paragraph{Physical acceptance boundary.}
+Measured bench acceptance remains a separately controlled campaign; this
+learner lesson does not include a bench form.
 \begin{checkpoint}{exit}
 \checkbox\ source circuit checked unpowered \quad
 \checkbox\ every transformation predicted \quad
@@ -508,8 +460,8 @@ Deviations, reviewer, date & \\
 \textbf{Companion material.}
 Use the HTML lesson for current API signatures, canonical source links, errata,
 and searchable procedures. Use this PDF for predictions, hand calculations,
-stage-by-stage diagnosis, and the physical acceptance record. Until that record
-is completed by a person at the named bench, this lesson remains host-verified.
+stage-by-stage diagnosis. Physical acceptance remains in the controlled
+campaign; this lesson remains host-verified.
 
 \href{https://docs.arduino.cc/hardware/mega-2560/}
 {Arduino Mega 2560 documentation}\quad

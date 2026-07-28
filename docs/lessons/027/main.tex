@@ -312,19 +312,9 @@ different second replay & hidden clock, mutable fixture, uninitialized padding, 
 
 \section{Automated verification}
 
-\begin{lstlisting}[style=adkcpp]
-make host-test
-make host-test-sanitize
-make arduino-Lesson027TelemetryConsole
-make size-check
-make doc/lessons/027.pdf
-make lessons-check
-make site-check
-\end{lstlisting}
-
-These targets verify code and publication. They do not establish physical
-verification. There is intentionally no transmit, replay, clone, brute-force,
-scan, or protocol-export target.
+Repository automation verifies code and publication behind the learner
+exercise. It does not establish physical verification. There is intentionally
+no transmit, replay, clone, brute-force, scan, or protocol-export path.
 
 \section*{Package status}
 

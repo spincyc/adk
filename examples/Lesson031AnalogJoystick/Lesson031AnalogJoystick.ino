@@ -12,6 +12,7 @@ namespace {
     constexpr adk::PinId selectPin      = 22;
     constexpr uint32_t   readyPulseMs   = 750;
     constexpr uint32_t   selectPulseMs  = 200;
+    constexpr uint32_t   adventureDurationMs = 120000;
     constexpr uint8_t    minimumPreview = 16;
 
     const adk::JoystickAxisConfig xAxisConfig      (xAxisPin, 512, 0, 1023, 48);
@@ -32,6 +33,7 @@ namespace {
     adk::TimePoint startedAt;
     adk::TimePoint selectPulseStartedAt;
     bool           selectPulseActive = false;
+    uint8_t        adventureStage = 0;
     bool           running = false;
 
     bool                         acquireJoystickCircuit ();
@@ -71,6 +73,12 @@ void loop ()
     }
 
     const adk::TimePoint now (millis ());
+
+    if (now.elapsedSince (startedAt).milliseconds () >= adventureDurationMs)
+    {
+        stopSafely ();
+        return;
+    }
 
     const adk::AnalogJoystickSnapshot observation = observeJoystick (now);
 
@@ -135,6 +143,20 @@ namespace {
         {
             selectPulseStartedAt = now;
             selectPulseActive    = true;
+
+            if (adventureStage == 2)
+            {
+                adventureStage = 3;
+            }
+        }
+
+        if (adventureStage == 0 && observation.x.position < 0)
+        {
+            adventureStage = 1;
+        }
+        else if (adventureStage == 1 && observation.x.position > 0)
+        {
+            adventureStage = 2;
         }
 
         if (selectPulseActive)
@@ -146,6 +168,11 @@ namespace {
             }
 
             selectPulseActive = false;
+        }
+
+        if (adventureStage == 3)
+        {
+            return adk::Rgb (96, 96, 96);
         }
 
         const uint8_t brightness = yBrightness (observation.y.position);

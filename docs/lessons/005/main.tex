@@ -429,95 +429,9 @@ exact schematic:
 Do not short D6, omit the resistor as a ``fault,'' substitute a speaker, or probe
 the powered circuit with a meter in current mode.
 
-\section{Mega 2560 acceptance}
-
-\textbf{Physical work remains pending.} Leave every field blank until the named
-observation is made on the retained bench assembly.
-
-Date/time: \blank{1.5in}\quad Operator: \blank{1.5in}\\
-Reviewer/date: \blank{1.8in}\\
-Board maker/model/revision/serial or asset ID: \blank{3.4in}\\
-Port/FQBN: \blank{2.3in}\quad ADK/sketch commit: \blank{2.3in}\\
-\texttt{arduino-cli}/AVR core versions: \blank{3.5in}\\
-Upload command: \blank{4.8in}\\
-USB source/cable/current limit and removal point: \blank{3.3in}\\
-DMM model/range/input resistance: \blank{2.9in}\\
-Scope/analyzer model, probe, attenuation, bandwidth, and reference:
-\blank{2.5in}\\
-Exact board schematic/revision and D13 branch topology:
-\blank{3.0in}\\
-D13 resistor/LED/buffer identities, values, tolerances, and sources:
-\blank{2.2in}\\
-Calculated D13 branch current/method/margin: \blank{3.0in}\\
-Piezo maker/part/markings/passive-identity evidence:
-\blank{3.2in}\\
-Piezo rated voltage and capacitance/impedance: \blank{2.4in}\\
-Primary source and revision: \blank{3.8in}\\
-100\,\(\Omega\) measured value/tolerance/rating: \blank{2.5in}\\
-10\,k\(\Omega\) fixture measured value/tolerance/rating:
-\blank{2.4in}\\
-Measured 5\,V rail: \blank{1.3in}\\
-Calculated worst-case D6 current/method/margin: \blank{3.1in}\\
-Mega per-pin, grouped-pin, and total-device limits checked: \checkbox\\
-Flash: \blank{0.8in} bytes\quad SRAM: \blank{0.8in} bytes
-
-\begin{center}
-\begin{tabularx}{\linewidth}{@{}p{0.18\linewidth}XXX@{}}
-\toprule
-Evidence & Predict & Observe & Interpret\\
-\midrule
-Acquisition &
-D13 pulse/separator; sounder silent &
-\rule{0pt}{3.5ex} &
-\\[9ex]
-Primary cue at TP-SND/D6 &
-levels, 440\,Hz, 250\,ms &
-&
-\\[9ex]
-Current/limits &
-D6 edge and D13 branch margins &
-&
-\\[9ex]
-Controlled shutdown &
-tone stop; D6 and D13 released &
-&
-\\[9ex]
-Weak-pull D6 safe state &
-driven/released voltage ranges &
-&
-\\[9ex]
-D13 safe state &
-board-specific bias ranges &
-&
-\\[9ex]
-Reset &
-complete sequence repeats &
-&
-\\[9ex]
-Power removal &
-5\,V, D13, D6 unpowered ranges &
-&
-\\
-\bottomrule
-\end{tabularx}
-\end{center}
-
-Unpowered continuity map and TP labels confirmed: \checkbox\quad
-Initialization status recorded independently: \checkbox\\
-Host trace records tone stop/D6 input and D13 LOW/input: \checkbox\quad
-D6 weak pull installed and removed only while unpowered: \checkbox\\
-D13 fixture resistor/value/rail: \blank{2.5in}\quad
-opposite-drive worst-case current safe: \checkbox\\
-D13 driven-LOW/released predicted ranges: \blank{2.6in}\\
-D13 driven-LOW/released observed values: \blank{2.8in}\\
-D13 fixture installed and removed only while unpowered: \checkbox\\
-Reset completed: \checkbox\quad USB physically removed before handling:
-\checkbox\\
-Deviation and stop action: \blank{4.2in}\\
-Remaining uncertainty: \blank{4.5in}\\
-Result: \checkbox\ draft \quad \checkbox\ rejected \quad
-\checkbox\ hardware verified \quad Reviewer initials: \blank{1.0in}
-
+\paragraph{Physical acceptance boundary.}
+Measured bench acceptance remains a separately controlled campaign; this
+learner lesson does not include a bench form.
 \section{Explain and extend}
 
 \textbf{Claim:} Does the evidence support nonblocking, deadline-controlled sound?\\[8pt]

@@ -122,9 +122,9 @@ Lesson 029 TP29 & selected cue output & Mega-pin side of resistor, relative to G
 
 \textbf{Unpowered prediction.} Verify polarity, one resistor per LED channel,
 five switch-to-ground paths, common ground, and no connection outside the
-USB-powered fixture. Record resistor values: \blank{1.5in}.
+USB-powered fixture.
 
-\section{Current and resource worksheet}
+\section{Current and resource bound}
 
 The sketch commands at most one cue channel and one RGB channel. A deliberately
 conservative zero-forward-voltage bound gives
@@ -133,17 +133,6 @@ I_{\mathrm{channel}}\leq\frac{5.0\ \mathrm{V}}{1000\ \Omega}=5.0\ \mathrm{mA},
 \qquad I_{\mathrm{LED,total}}\leq10.0\ \mathrm{mA}.
 \]
 This is a design bound, not a bench measurement.
-
-\begin{tabularx}{\linewidth}{@{}X l l l X@{}}
-\toprule
-Quantity & Predicted & Measured & Calculated & Interpretation\\
-\midrule
-USB/5 V rail & at most 5.0 V & \blank{.7in} & --- & \blank{1.0in}\\
-selected cue resistor & 1 k\(\Omega\) & \blank{.7in} & \(I=(V-V_f)/R\) & \blank{1.0in}\\
-active RGB resistor & 1 k\(\Omega\) & \blank{.7in} & \(I=(V-V_f)/R\) & \blank{1.0in}\\
-worst simultaneous LED load & at most 10 mA & \blank{.7in} & \blank{.8in} & \blank{1.0in}\\
-\bottomrule
-\end{tabularx}
 
 D5--D7 use PWM-capable pins, but the example selects one fixed channel at a
 time. D22--D34 are ordinary digital endpoints. No bus, interrupt, radio, motor,

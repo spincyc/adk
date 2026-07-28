@@ -41,7 +41,7 @@
 {
     pdftitle={ADK Lesson 003: Deterministic Reaction Timer},
     pdfauthor={Kevin Shanahan},
-    pdfsubject={Button, DigitalOutput, deterministic debounce, replay, and Mega 2560 acceptance},
+    pdfsubject={Button, DigitalOutput, deterministic debounce, replay, and visible evidence},
     pdflang={en-US}
 }
 \pagestyle{fancy}
@@ -122,7 +122,7 @@ By the end, you can:
   \item explain why time is supplied to \texttt{update()} instead of read secretly;
   \item replay a bounce trace and predict its single stable press event;
   \item test premature presses, timeout, rollover-safe elapsed time, and shutdown;
-  \item collect a Mega 2560 acceptance record without calling observation proof of timing accuracy.
+  \item distinguish visible circuit evidence from host timing proof.
 \end{itemize}
 
 \warningbox{Disconnect USB and every other power source before changing wiring.
@@ -500,123 +500,18 @@ been claimed and configured. Write the expected cleanup operations in order:\\[3
 button snapshot rather than read D22 itself:\\[3pt]
 \blank{0.98\linewidth}.
 
-\section{Mega 2560 procedure}
+\section{Build the project in visible stages}
 
-This is an E1 experiment. Before creating a physical run record, an operator
-and an independent reviewer must accept the exact identity card, schematic,
-current calculation, meter method, and stop limits below. Host replay and
-compilation remain valid while physical acceptance remains pending.
+First reuse Lesson 001: acquire D8 and make its safe inactive state visible.
+Then reuse Lesson 002: add D22 and confirm raw released and pressed levels
+without timing a reaction. Finally initialize \texttt{Button} and
+\texttt{ReactionTimer}; predict the cue transition, press once, and observe one
+terminal result. Each stage must work before the next owner is introduced.
 
-\begin{enumerate}
-  \item Record the complete identity card: repository commit, sketch hash,
-        Arduino CLI and AVR core versions, FQBN, exact Mega board specimen,
-        USB source/current limit, switch specimen, LED part/color/polarity and
-        rating source, measured resistor value, jumper set, meter and probe,
-        operator, reviewer, date, and bench-run ID.
-  \item Disconnect power. Build the exact schematic and check every row in the
-        connection table. Confirm the external LED resistor with a meter and
-        record the accepted resistance range. Calculate the expected LED current
-        from the accepted rail and LED forward-voltage bounds; accept it against
-        the LED, per-pin, port, board, and USB-source limits before power.
-  \item Compile the unmodified \texttt{examples/Lesson003ReactionTimer}. Record
-        flash and static RAM. Compilation proves only that the program fits and
-        type-checks.
-  \item With probes fixed at the named test points, compile and upload the
-        unmodified canonical sketch. Keep the button released through reset.
-        Verify that TP-ACQ/D13 gives one 250\,ms acquisition pulse independent
-        of the D8 timer indication. Verify TP-CUE/D8 pulses during Ready, remains
-        LOW during Wait, and becomes HIGH for Cue.
-  \item Press once after the cue. Verify exactly one result is reported and the
-        cue changes according to the documented terminal state.
-  \item Run three trials. Then deliberately press early; verify false-start
-        indication and release gating.
-  \item Hold the button through reset. Verify no immediate valid reaction.
-  \item Run one trial without pressing after the cue. Record the visible
-        timeout terminal state and its elapsed bound.
-  \item Before the shutdown run, remove USB and install one fixture at a time.
-        For D8, disconnect the LED branch and connect measured 10\,k\(\Omega\)
-        resistors as 5\,V--10\,k\(\Omega\)--TP-CUE--10\,k\(\Omega\)--GND.
-        Measure TP-CUE to GND and calculate driven-LOW, driven-HIGH, and
-        released midpoint ranges using resistor tolerance, measured rail, and
-        DMM input resistance. Repeat for D13 only after recording the exact
-        board LED circuit and including its loading in the calculation. For
-        D22, leave the switch released and connect the named DMM
-        TP-BUTTON-to-GND; calculate the pull-up-active and post-shutdown ranges.
-        Never install, move, or remove a fixture while powered.
-  \item Hold D22 continuously for at least three seconds. Observe D8 and D13 LOW
-        for the controlled 250\,ms interval. Without moving the fixed probes,
-        use the accepted high-impedance test fixture to distinguish high
-        impedance from a driven LOW at TP-CUE and TP-ACQ; record both results.
-        At TP-BUTTON, release the switch after shutdown and use the same accepted
-        weak-bias method to prove that D22 is high impedance with its internal
-        pull-up disabled. Never use a low-resistance forced-voltage test.
-  \item Press reset and repeat the acquisition and nominal-cue observations.
-        Reach controlled shutdown again and repeat all three safe-state
-        measurements; reset is a new run, not proof that the prior shutdown
-        persisted.
-  \item Remove USB power without moving wiring. Record 0\,V at TP-CUE,
-        TP-ACQ, TP-BUTTON, and the 5\,V rail relative to GND. Only then inspect
-        or reconfigure the circuit and record the final component disposition.
-\end{enumerate}
-
-\begin{center}
-\small
-\begin{tabularx}{\linewidth}{@{}p{0.20\linewidth}X p{0.20\linewidth}X@{}}
-\toprule
-Field & Record & Field & Record\\
-\midrule
-Bench-run ID / date & & Commit / sketch hash &\\[7pt]
-Operator & & Independent reviewer &\\[7pt]
-Mega specimen / revision & & FQBN &\\[7pt]
-Port / upload command & & Reviewer sign-off / date &\\[7pt]
-CLI / AVR core & & Flash / static RAM bytes &\\[7pt]
-USB source / current limit & & Meter / probe IDs &\\[7pt]
-Switch specimen & & LED part / color / polarity &\\[7pt]
-LED rating source / limits & & Resistor ID / measured value &\\[7pt]
-Expected current range & & Measured rail / total current &\\[7pt]
-Jumper set / fixture & & Final disposition &\\[7pt]
-Deviations & & Remaining uncertainty &\\[7pt]
-\bottomrule
-\end{tabularx}
-\end{center}
-
-\begin{center}
-\small
-\begin{tabularx}{\linewidth}{@{}p{0.16\linewidth}p{0.25\linewidth}p{0.25\linewidth}X@{}}
-\toprule
-Stage & Prediction & Observation & Interpretation / action\\
-\midrule
-Acquisition & TP-ACQ HIGH for 250\,ms, then LOW; TP-CUE is independent & &\\[9pt]
-Ready / Wait / Cue & TP-CUE pulse, LOW, then HIGH in that order & &\\[9pt]
-Nominal press & one debounced result; no duplicate transition & &\\[9pt]
-False start & early press produces failure and requires release & &\\[9pt]
-Timeout & no post-cue press produces the bounded timeout state & &\\[9pt]
-Reset & one new TP-ACQ pulse; held D22 cannot produce a valid reaction & &\\[9pt]
-Controlled shutdown & D8/D13 LOW for 250\,ms, then TP-CUE, TP-ACQ, and released TP-BUTTON test high impedance & &\\[11pt]
-Power removed & all named points and 5\,V rail measure 0\,V & &\\[9pt]
-\bottomrule
-\end{tabularx}
-\end{center}
-
-\begin{center}
-\begin{tabular}{@{}c c c c c@{}}
-\toprule
-Trial & configured wait (ms) & cue time & press time & reaction (ms)\\
-\midrule
-1 &&&&\\[7pt]
-2 &&&&\\[7pt]
-3 &&&&\\[7pt]
-\bottomrule
-\end{tabular}
-\end{center}
-
-\textbf{Status language.} If only the host tests and Mega compile pass, write
-``host verified; Mega compiled.'' Write ``hardware verified'' only after the
-physical checklist and measurements are complete.
-
-\textbf{Reviewed result:} \checkbox\ draft \quad \checkbox\ rejected \quad
-\checkbox\ hardware verified \quad Reviewer/date: \blank{1.5in}
-
+\paragraph{Physical acceptance boundary.}
+Measured bench acceptance remains a separately controlled campaign; this
+learner project does not include identity, operator, reviewer, or sign-off
+paperwork.
 \section{Diagnose from evidence}
 
 \begin{tabularx}{\linewidth}{@{}p{0.26\linewidth}X X@{}}
@@ -685,14 +580,9 @@ state transition timestamps, resource ownership, and high-impedance cleanup.\\[2
         \url{https://spincyc.github.io/adk/}
 \end{itemize}
 
-\textbf{Final sign-off}\\
-Wiring checked unpowered: \checkbox{}\quad
-Replay passed twice: \checkbox{}\quad
-False start tested: \checkbox{}\quad
-D8 shutdown measured: \checkbox{}\quad
-TP-ACQ independent: \checkbox{}\quad
-D22 shutdown measured: \checkbox{}\quad
-Power removed before teardown: \checkbox{}
+\textbf{Review the evidence.}
+Explain how the replay, false-start behavior, independent TP-ACQ signal, and
+safe shutdown support distinct claims.
 
 \vfill
 \begin{center}

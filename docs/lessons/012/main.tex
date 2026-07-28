@@ -185,7 +185,7 @@ blocks while a traffic phase elapses.
   % ADK visual: pencil
   \includegraphics[width=0.94\linewidth]{012-traffic-junction-pencil.png}
   \caption{Four complementary pencil plates: physical Mega header locator,
-  74HC595 placement worksheet, physical signal breadboard coordinates, and
+  74HC595 placement guide, physical signal breadboard coordinates, and
   specimen-gated display mapping. Match the selected display's identified
   package pins to the named a--g/DP nets before inserting it.}
 \end{figure}
@@ -280,20 +280,6 @@ After two minutes every lamp and the display go dark as the sketch releases
 its pins. Press reset and look for the short D13 acquisition pulse to play
 again. These wins are the learner path; deterministic traces and failure
 injection remain automated repository checks.
-
-\section{Build and run from the CLI}
-
-\begin{lstlisting}[style=adkcpp]
-make arduino-Lesson012TrafficJunction
-make upload-Lesson012TrafficJunction PORT=/dev/ttyACM0
-make monitor-describe PORT=/dev/ttyACM0
-make serial-log PORT=/dev/ttyACM0 \
-    SERIAL_LOG=build/evidence/lesson012-optional.log
-\end{lstlisting}
-
-Serial capture is optional context. The required proof is the visible and
-electrical evidence below. Build and upload targets must remain the canonical
-path; no IDE-specific step is part of the lesson.
 
 \subsection{The narrative run loop}
 
