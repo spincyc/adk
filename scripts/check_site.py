@@ -11,6 +11,13 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
+if __package__:
+    from scripts.publication import PublicationConfigError
+    from scripts.publication import resolve_latest_publication
+else:
+    from publication import PublicationConfigError
+    from publication import resolve_latest_publication
+
 
 MAX_PDF_SIZE = 50 * 1024 * 1024
 MIN_PDF_SIZE = 1024
@@ -218,27 +225,12 @@ def newest_configured_lesson(errors: list[str]) -> tuple[str, str] | None:
         errors.append(f"{BUILD_CONFIG}: cannot read lesson configuration: {exception}")
         return None
 
-    lesson_match = re.search(r"(?m)^LESSONS\s*:=\s*(.+)$", source)
-    if lesson_match is None:
-        errors.append(f"{BUILD_CONFIG}: cannot find LESSONS configuration")
+    try:
+        publication = resolve_latest_publication(source)
+    except PublicationConfigError as exception:
+        errors.append(f"{BUILD_CONFIG}: {exception}")
         return None
-
-    lessons = re.findall(r"\b[0-9]{3}\b", lesson_match.group(1))
-    if not lessons:
-        errors.append(f"{BUILD_CONFIG}: LESSONS contains no lesson numbers")
-        return None
-    newest = max(lessons, key=int)
-
-    examples_match = re.search(
-        rf"\b(Lesson{re.escape(newest)}[A-Za-z0-9_]*)\b",
-        source,
-    )
-    if examples_match is None:
-        errors.append(
-            f"{BUILD_CONFIG}: no configured example found for lesson {newest}"
-        )
-        return None
-    return newest, examples_match.group(1)
+    return publication.number, publication.example
 
 
 def has_reference(

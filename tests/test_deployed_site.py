@@ -2,9 +2,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.check_deployed_site import CHECKS
-from scripts.check_deployed_site import CANONICAL_EXAMPLE
+from scripts.check_deployed_site import canonical_example
 from scripts.check_deployed_site import check_deployment
+from scripts.check_deployed_site import configured_publication
+from scripts.check_deployed_site import deployment_checks
 from scripts.check_deployed_site import normalize_base_url
 
 
@@ -12,20 +13,23 @@ class DeployedSiteTest(unittest.TestCase):
     def test_file_url_fixture_passes(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            canonical_example = CANONICAL_EXAMPLE.read_bytes()
+            publication = configured_publication()
+            canonical_sketch = canonical_example(publication).read_bytes()
             contents = {
                 "index.html": (
                     b"<!doctype html><title>ADK</title>"
-                    b"Lessons 001\xe2\x80\x93036 Planned course"
+                    b"Lessons 001\xe2\x80\x93"
+                    + publication.number.encode()
+                    + b" Planned course"
                 ),
-                "lessons/036/index.html": (
+                f"lessons/{publication.number}/index.html": (
                     b"<!doctype html><title>036</title>"
-                    b"Lesson 036 magnetic passage logger"
+                    b"Lesson "
+                    + publication.number.encode()
+                    + b" Status: Energy class: Safety boundary:"
                 ),
-                "downloads/lessons/036.pdf": b"%PDF-1.7\nfixture",
-                "downloads/sketches/Lesson036MagneticPassageLogger.ino": (
-                    canonical_example
-                ),
+                f"downloads/lessons/{publication.number}.pdf": b"%PDF-1.7\nfixture",
+                f"downloads/sketches/{publication.example}.ino": canonical_sketch,
             }
             for relative, data in contents.items():
                 path = root / relative
@@ -33,7 +37,11 @@ class DeployedSiteTest(unittest.TestCase):
                 path.write_bytes(data)
 
             self.assertEqual(
-                check_deployment(root.as_uri(), retries=0),
+                check_deployment(
+                    root.as_uri(),
+                    retries=0,
+                    publication=publication,
+                ),
                 [],
             )
 
@@ -46,6 +54,7 @@ class DeployedSiteTest(unittest.TestCase):
             self.assertEqual(timeout, 3.0)
             raise OSError("fixture unavailable")
 
+        publication = configured_publication()
         errors = check_deployment(
             "https://example.invalid/adk",
             retries=1,
@@ -53,14 +62,17 @@ class DeployedSiteTest(unittest.TestCase):
             retry_delay=0.0,
             fetch=fail,
             sleep=delays.append,
+            publication=publication,
         )
 
-        self.assertEqual(len(errors), len(CHECKS))
-        self.assertEqual(len(calls), len(CHECKS) * 2)
-        self.assertEqual(delays, [0.0] * len(CHECKS))
+        checks = deployment_checks(publication)
+        self.assertEqual(len(errors), len(checks))
+        self.assertEqual(len(calls), len(checks) * 2)
+        self.assertEqual(delays, [0.0] * len(checks))
         self.assertTrue(all("after 2 attempt(s)" in error for error in errors))
 
     def test_validation_failure_can_recover_on_retry(self):
+        publication = configured_publication()
         attempts: dict[str, int] = {}
 
         def eventually_valid(url: str, timeout: float) -> bytes:
@@ -70,10 +82,18 @@ class DeployedSiteTest(unittest.TestCase):
             if url.endswith(".pdf"):
                 return b"%PDF-1.7\n"
             if url.endswith(".ino"):
-                return CANONICAL_EXAMPLE.read_bytes()
-            if url.endswith("lessons/036/"):
-                return b"Lesson 036 magnetic passage logger"
-            return b"Lessons 001\xe2\x80\x93036 Planned course"
+                return canonical_example(publication).read_bytes()
+            if url.endswith(publication.lesson_page):
+                return (
+                    b"Lesson "
+                    + publication.number.encode()
+                    + b" Status: Energy class: Safety boundary:"
+                )
+            return (
+                b"Lessons 001\xe2\x80\x93"
+                + publication.number.encode()
+                + b" Planned course"
+            )
 
         self.assertEqual(
             check_deployment(
@@ -82,21 +102,20 @@ class DeployedSiteTest(unittest.TestCase):
                 retry_delay=0.0,
                 fetch=eventually_valid,
                 sleep=lambda delay: None,
+                publication=publication,
             ),
             [],
         )
         self.assertEqual(set(attempts.values()), {2})
 
     def test_checks_follow_newest_published_lesson(self):
-        repository = Path(__file__).resolve().parents[1]
-        latest = max(
-            path.stem
-            for path in (repository / "site/pages/lessons").glob("[0-9][0-9][0-9].md")
-        )
+        publication = configured_publication()
+        checks = deployment_checks(publication)
 
-        self.assertEqual(CHECKS[1].path, f"lessons/{latest}/")
-        self.assertEqual(CHECKS[2].path, f"downloads/lessons/{latest}.pdf")
-        self.assertTrue(CANONICAL_EXAMPLE.parent.name.startswith(f"Lesson{latest}"))
+        self.assertEqual(checks[1].path, publication.lesson_page)
+        self.assertEqual(checks[2].path, publication.pdf_path)
+        self.assertEqual(checks[3].path, publication.sketch_path)
+        self.assertEqual(canonical_example(publication).parent.name, publication.example)
 
     def test_base_url_validation(self):
         self.assertEqual(
