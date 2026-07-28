@@ -2,8 +2,9 @@
 
 Status: active integration, 2026-07-28. Lessons 037--039 E0 cores, tests, and
 hardware-independent drafts are complete. The linked exact-specimen Mega
-example, authoritative schematic, promotion, and E1 physical acceptance remain
-open behind specimen qualification. No
+example and authoritative schematic may now proceed against the documented
+reference fixtures below. Incoming conformance and E1 physical acceptance
+remain open. No
 powered specimen, sound-pressure measurement, or physical acceptance is
 claimed.
 
@@ -26,10 +27,38 @@ when used, distinct threshold output are traced and qualified. “Big” and
 
 The
 [sensor evidence report](../research/LESSONS_037_039_SENSOR_EVIDENCE_REPORT.md)
-records the official-source research, including the unresolved `HDX HDX`
-photograph versus bundled Light Country AT-family data and the unidentified
-sound-module circuitry. It narrows the inspection but closes none of the
-exact-specimen gates.
+records the official-source research, including the `HDX HDX`/Light Country
+source contradiction and the unresolved kit sound-board circuitry. It
+also selects exact documented reference fixtures so canonical work no longer
+depends on misidentifying an unknown kit specimen.
+
+The canonical contact reference is C&K/Littelfuse `RB-220-07A R`. Use an
+external 10 kΩ pull-up from Mega 5 V to `TP-C` and the switch from `TP-C` to
+ground; the nominal closed current is 0.5 mA, between the manufacturer's
+10 µA minimum rated-load point and 1 mA maximum. Configure `DigitalInput` with
+`Pull::None` and `activeLevel = Level::Low`. The terminals are electrically
+nonpolar, but installed orientation and closure still require mapping. E1
+measures the actual rail/resistor and proves worst-case current at or below
+1 mA. Lesson 037 uses one;
+Lesson 039's four-lane fixture uses four identical parts.
+
+The canonical acoustic reference is SparkFun `SEN-12642`, visibly identified
+by silkscreen `V10` (hardware V1.0) and matched to hardware commit
+`a456d9e5e916aa3cfe656a48f5670cb73323f696`. Power it from the common 5 V
+domain, route `ENVELOPE` to the assigned analog input and active-high `GATE`
+to the optional threshold input, and leave `AUDIO` disconnected. This maps
+directly to `AcousticEnvelope` without changing its API. Configure no input
+pull-up for the driven push-pull `GATE`, sample `ENVELOPE` against AVcc, and
+measure both output ranges at E1.
+The module and Mega must share the same powered/unpowered state; never leave a
+module output driven while the Mega is unpowered.
+
+These are documented design references, not physical-verification claims.
+Incoming revision inspection, unpowered conformance, powered characterization,
+and E1 bench acceptance remain open. A kit contact or sound board is a
+substitution and must satisfy its preserved specimen requirements before use.
+The references are external, non-Elegoo fixtures; they do not silently
+satisfy coverage of any authorized Elegoo kit family.
 
 Use these terms throughout:
 

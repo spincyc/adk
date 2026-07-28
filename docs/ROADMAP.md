@@ -72,7 +72,8 @@ is experimental rather than hardware supported.
 ## Next slice
 
 Lessons 034--036 are host verified and published with their bench and exact
-specimen gates open. Lesson 037 is the next planned component boundary.
+specimen gates open. Lessons 037--039 are active against documented external
+reference fixtures; their incoming conformance and bench gates remain open.
 Development follows the canonical lessons 037--081 kit expansion, one
 implementation-depth three-lesson brief at a time.
 

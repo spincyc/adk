@@ -136,6 +136,9 @@ Physical RTC and removable-media adapters remain deferred.
 The complete interface, fixture, experiment, resource, specimen, publication,
 and acceptance contract is in the
 [percussion laboratory plan](../design/LESSONS_037_039_PERCUSSION_PLAN.md).
+Canonical teaching uses external C&K/Littelfuse and SparkFun reference
+fixtures. Authorized Elegoo Tilt/Tap/Shock/Big/Small Sound families remain
+planned substitution coverage and require their own conformance evidence.
 
 ### 037 — Contact dynamics
 

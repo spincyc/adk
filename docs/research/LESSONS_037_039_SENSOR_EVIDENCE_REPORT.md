@@ -2,7 +2,62 @@
 
 Status: research evidence, 2026-07-28. This report narrows the contact and
 acoustic specimen search. It does not identify the user's physical specimens,
-authorize a circuit, close an E1 gate, or record bench acceptance.
+close an E1 gate, or record bench acceptance. Its documented external
+reference-design route authorizes design and host-verified publication work
+only; the unidentified kit-family research does not authorize a circuit.
+
+## Solved reference-design route
+
+The curriculum does not need to claim that an unknown loose kit part matches
+an undocumented circuit. It can name a documented reference design and treat
+kit parts as substitutions that must prove conformance. Research selected:
+
+- C&K/Littelfuse `RB-220-07A R` (`HARB0002`) for the contact. The
+  [manufacturer RB-series datasheet](https://www.ckswitches.com/media/1317/rb.pdf)
+  specifies a 1P1T rolling-ball contact with a 5 VDC, 1 mA maximum resistive
+  load and a 1 VDC, 10 µA minimum rated load point. A 10 kΩ pull-up from the
+  Mega 5 V rail to the named contact
+  test point and the switch from that test point to ground produces 0.5 mA
+  nominally when closed. Configure `DigitalInput` with `Pull::None` and the
+  copied contact as active-low. Treat the terminals as electrically nonpolar,
+  while still mapping installed orientation and closure. E1 must measure the
+  actual rail and resistor tolerance and prove worst-case closed current no
+  greater than 1 mA. The
+  [Littelfuse product page](https://www.littelfuse.com/products/switches/detect-switches/rb/rb-220-07a-r)
+  currently says SPDT, conflicting with the formal PDF drawing; the PDF's
+  exact `RB-220-07A R` drawing and 1P1T designation control.
+- SparkFun `SEN-12642` Sound Detector, visibly matching silkscreen `V10`
+  (hardware V1.0) and the
+  immutable [V1.0 hardware source at commit
+  `a456d9e`](https://github.com/sparkfun/Sound_Detector/tree/a456d9e5e916aa3cfe656a48f5670cb73323f696),
+  for the acoustic source. At a common 5 V supply, connect `ENVELOPE` to the
+  named analog input and active-high `GATE` to the optional threshold input;
+  leave `AUDIO` disconnected. `GATE` is a driven push-pull output, so configure
+  no input pull-up; sample `ENVELOPE` against the Mega AVcc ADC reference. E1
+  must measure both output ranges. The
+  [product page](https://www.sparkfun.com/sparkfun-sound-detector.html) and
+  [hookup guide](https://learn.sparkfun.com/tutorials/sound-detector-hookup-guide)
+  define those roles, while the pinned schematic and
+  [TI LMV324 datasheet](https://www.ti.com/lit/ds/symlink/lmv324.pdf) provide
+  design authority.
+
+The reference module and Mega must share the same powered/unpowered state. No
+module output may remain driven while the Mega is unpowered, which would risk
+back-powering through an input pin.
+
+This closes the online identity, schematic, interface, and output-semantics
+gap for the canonical reference design. It does not claim that a delivered
+part is undamaged or the promised revision. Incoming photographs, visible
+revision matching, unpowered conformance, bounded powered characterization,
+and bench acceptance remain physical gates. The six requirements below remain
+applicable to a user-provided kit substitution, not as blockers to writing and
+host-verifying the reference-design examples and lessons.
+
+Both selected fixtures are external, non-Elegoo references. They do not
+satisfy coverage of the authorized Elegoo Tilt-Switch, Tap, Shock, Big Sound,
+Small Sound, or generic sound-module specimens. Those remain substitutions
+requiring their own identity and conformance evidence. Lesson 039's physical
+four-lane fixture requires four conforming reference contacts.
 
 ## Evidence rules
 
