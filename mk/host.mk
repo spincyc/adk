@@ -62,6 +62,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_greenhouse_health_pattern \
 	$(BUILD_DIR)/host/test_night_light \
 	$(BUILD_DIR)/host/test_observation_tracker \
+	$(BUILD_DIR)/host/test_optical_observation \
 	$(BUILD_DIR)/host/test_packet_receiver \
 	$(BUILD_DIR)/host/test_passage_ledger \
 	$(BUILD_DIR)/host/test_magnetic_passage_logger \
@@ -208,6 +209,13 @@ $(BUILD_DIR)/host/test_acoustic_envelope: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/acoustic_envelope.cpp \
 		tests/test_acoustic_envelope.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_optical_observation: $(HOST_CORE_SOURCES) \
+		src/optical_observation.cpp tests/test_optical_observation.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/optical_observation.cpp \
+		tests/test_optical_observation.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_analog_input: $(HOST_CORE_SOURCES) \
 		src/analog_input.cpp src/board.cpp src/digital_output.cpp \
