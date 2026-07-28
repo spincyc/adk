@@ -117,7 +117,8 @@ source ID, and configuration revision.
 `InteractionIntentPolicy` is a narrow facade for one accepted tactile action
 and one copied directional observation. It privately composes the existing
 `ContactDynamics`; it does not duplicate qualification, release, refractory,
-stuck-active, timing-fault, or count policy. It derives a bounded directional
+stuck-active, or count policy. Structural chronology faults reject before
+commit rather than publishing a timing-fault quality. It derives a bounded directional
 sector and magnitude from copied joystick evidence and publishes one coherent
 interaction snapshot.
 
@@ -156,6 +157,8 @@ enum struct InteractionQuality : uint8_t
     TimingFault,
     StuckActive
 };
+
+// TimingFault is reserved; structural chronology faults reject at preview.
 
 struct InteractionIntentConfig
 {
@@ -237,6 +240,11 @@ struct InteractionIntentPolicy
 };
 ```
 
+`InteractionQuality::TimingFault` is reserved for ABI stability and is not
+published by this boundary. Future-time, regression, rollover-ambiguity, and
+other structural chronology faults reject atomically during `preview()` and
+leave the committed interaction snapshot unchanged.
+
 `reset()` returns the pure policy to its initialized, event-free baseline. It
 is not endpoint shutdown. The opaque preview contains validated copied contact
 input and derived directional state; owner/generation binding rejects foreign,
@@ -297,8 +305,9 @@ only while engaged. Returning below the release threshold publishes
 `Neutral` and one direction event. A source-domain change begins a fresh
 direction baseline and cannot fabricate an event from the prior domain.
 
-Status precedence is structural invalidity, timing fault, source fault,
-stuck-active, stale, then current. A contact source fault cannot be hidden by
+Status precedence among admitted snapshots is source fault, stuck-active,
+stale, then current. Structural invalidity, including chronology faults,
+rejects before publication. A contact source fault cannot be hidden by
 a current joystick, and a directional fault cannot be hidden by a touch
 event. No faulted update emits a usable touch or direction event.
 
@@ -687,7 +696,7 @@ Each update:
 9. when that snapshot is healthy and current, commits the already-preflighted
    sequence candidate; project-exclusive ownership and no intervening sequence
    mutation guarantee this commit cannot fail or become stale;
-10. when interaction instead admits `Stale`, `TimingFault`, `StuckActive`, or
+10. when interaction instead admits `Stale`, `StuckActive`, or
     source fault, does not commit the motion candidate; it calls the sequence's
     idempotent stop/cancel at the already validated project time, which is
     contractually infallible after preflight, consumes zero steps and zero
@@ -782,7 +791,7 @@ Simultaneous precedence is:
 1. valid independent stop active/event;
 2. malformed stop evidence (fail-closed fault);
 3. unrelated structural invalidity (atomic rejection while stop is inactive);
-4. child/source/timing fault;
+4. admitted child/source semantic fault;
 5. command expiry;
 6. completion;
 7. freshly committed touch queued for next-frame authorization;
@@ -836,8 +845,9 @@ wraps, clamps a partially executed motif, or calls the bound a physical stop.
   pending/accepted/inhibited/bound-rejected dispositions, no repeat or loss,
   refractory touch, direction hysteresis, completion, and fresh
   reauthorization;
-- structurally rejected frames proving zero child/project mutation before
-  preflight, plus admitted stale/timing/stuck/source faults proving interaction
+- structurally rejected frames, including every chronology fault, proving zero
+  child/project mutation before preflight, plus admitted stale/stuck/source
+  faults proving interaction
   evidence commits, the motion candidate does not commit, stop/cancel cannot
   fail, zero step/travel/count is consumed, output remains all-off, and no
   intermediate child state is observable;
