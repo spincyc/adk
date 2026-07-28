@@ -295,3 +295,9 @@ movement after reset.
   measured aggregate proof remain open
 - E0 implementation permitted: yes
 - Promotion permitted: no
+
+The implementation-admission replay decision is conservative: every repeated
+frame sequence rejects atomically, even when the frame is otherwise
+identical. Retaining the complete prior frame and command would exceed the
+128-byte AVR policy gate, while a fingerprint would weaken exact identity.
+This rejection creates no event and preserves the complete snapshot.

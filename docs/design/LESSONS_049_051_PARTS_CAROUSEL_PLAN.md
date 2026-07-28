@@ -81,6 +81,12 @@ time and sequence. Same-domain sequence deltas `1..INT32_MAX` move forward,
 replay may age but cannot create an event. A changed payload at the same
 sequence is malformed and must not mutate accepted history.
 
+Lesson 050 takes the conservative bounded form: every repeated frame sequence
+is rejected atomically, including an otherwise identical replay. Exact
+idempotent acceptance would require retaining the complete prior frame and
+command beyond the reviewed 128-byte policy ceiling; a fingerprint would
+weaken exact identity. Rejection preserves the snapshot and creates no event.
+
 Time admission is directional. Compare `now` to each occurrence time first:
 a modular delta `0..INT32_MAX` is present/past, `0x80000000` is ambiguous, and
 a larger delta is future/regressed. Only present/past evidence is tested for
