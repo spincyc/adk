@@ -181,10 +181,14 @@ following project-specific evidence.
 | 024 | Greenhouse controller | E1 | LEDs simulate loads; schedules and faults cannot enable an unsafe combination |
 | 027 | Telemetry console | E1 | Receive-only or synthetic radio; stale data is explicit; no safety dispatch claim |
 | 030 | Show-cue simulator | E0/E1 | Inert outputs only; no launcher/initiator connection; complete deterministic fault and audit trace |
+| 045 | Balance-table instrument | E0/E1 | Stationary hand-operated tabletop tilt/orientation demonstrator; E0 replay has no hardware side effect; stale, saturated, or unsteady evidence forces a distinct visible ineligible diagnostic and silent tone; qualify the exact E1 circuit before using indicators or controls; remove physical power to stop |
 
 Project 018 does not secure property. Project 021 carries no person, animal,
 hot item, sharp tool, or hazardous material. Project 027 does not monitor a
-safety-critical condition. Project 030 does not operate a real show.
+safety-critical condition. Project 030 does not operate a real show. Project
+045 is not an actuator, navigation, stabilization, interlock, or safety-control
+system. Any eventual physical platform is lightweight, stable on the tabletop,
+free of sharp edges, and carries no loose or rolling load.
 
 ## Lesson release record
 

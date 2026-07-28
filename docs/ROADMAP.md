@@ -81,9 +81,19 @@ incoming-conformance gates. Earlier Elegoo exact-specimen questions are
 superseded as canonical-publication blockers, not answered; they remain
 historical optional substitution-conformance work. Lessons 040--042 publish
 pure policy and replay evidence; powered optical/PIR adapters, exact specimens,
-and E1 acceptance remain open. Development then follows lessons 043--081, one
-implementation-depth three-lesson brief at a time. That future arc is
-engagement-first: balance leads into kinetic motion,
+and E1 acceptance remain open.
+
+Lessons 043--045 are the active
+[implementation-depth E0 replay-first slice](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md):
+copied synthetic inertial samples, pure orientation and presentation policies,
+and a stationary hand-operated tabletop balance instrument. This status is not
+host verification. No powered adapter, I2C transaction, wiring table, formal
+schematic, or physical claim is authorized. Exact MPU6050 and QMI8658 variants
+remain independently gated. Lessons 067--069 retain inertial normalization,
+source qualification, cross-device comparison, and motion-recorder scope.
+
+Development then follows lessons 046--081, one implementation-depth
+three-lesson brief at a time. That future arc remains engagement-first: kinetic motion,
 carousel, IR, escape-console, and display projects before the more methodical
 environmental, 18B20, motion-recording, and characterization blocks.
 Authorization, prerequisite, exact-specimen, safety, and evidence gates still

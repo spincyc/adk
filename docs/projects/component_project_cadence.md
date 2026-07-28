@@ -262,42 +262,58 @@ unless a later source decision admits it.
 ## Lessons 043--045: balance-table instrument
 
 This engagement-first block brings visible, responsive motion sensing forward
-without changing its specimen gate or revision-neutral design.
+without changing its specimen gate or revision-neutral design. Its
+[implementation-depth plan](../design/LESSONS_043_045_BALANCE_TABLE_PLAN.md)
+authorizes E0 replay only: copied synthetic inertial values, pure policies,
+deterministic composition, and presentation intent. It does not authorize a
+powered adapter, I2C transaction, wiring table, formal schematic, or E1
+acceptance claim. Exact MPU6050 and QMI8658 variants remain independently
+gated.
 
 ### 043 — Revision-neutral inertial samples
 
-Add separately identified MPU6050 and QMI8658 I2C adapters behind one
-revision-neutral accelerometer/gyroscope sample value. Validated units, device
-identity, range, transport failure, stale data, and physical saturation remain
-distinct. Only the adapter matching the inventoried specimen is built.
+Validate one copied, explicitly identified six-axis sample. Source and sample
+identity, configured range, conversion and calibration revisions, data-ready
+state, producer failure, age, and saturation remain distinct. The E0
+implementation accepts only synthetic-fixture provenance. Separate future
+MPU6050 and QMI8658 adapters require their own exact-specimen, primary-source,
+electrical, and register-contract gates.
 
 ### 044 — Orientation presentation
 
-Map supplied inertial samples into bounded pitch/roll intent and an RGB/LED
-direction presentation. Board orientation is explicit configuration.
-Presentation and tone intent depend only on samples, calibration, and supplied
-time.
+Map supplied inertial samples into bounded pitch/roll and light/tone
+presentation intent. Board orientation is explicit configuration. Presentation
+depends only on copied samples, project configuration, and supplied time; it
+owns no endpoint, bus, or clock and makes no heading, position, stabilization,
+or navigation claim.
 
 ### 045 — Project: balance-table instrument
 
-A handheld instrument maps tilt to an RGB/LED direction display, uses the
-joystick to adjust sensitivity, and freezes one measurement for comparison.
+A stationary, hand-operated tabletop instrument maps copied tilt evidence to
+light and tone intent, uses copied joystick events to adjust sensitivity, and
+uses an explicit copied button event to freeze one measurement for comparison.
+It is not handheld, moving, actuated, or safety relevant.
 
 ```text
-joystick events ----+
-                    +--> calibration --> orientation --> LED frame
-inertial samples ---+                         |       --> tone intent
-explicit time --------------------------------+
+copied joystick events ----+
+                            +--> sensitivity --> orientation --> light intent
+copied inertial samples ----+                         |       --> tone intent
+copied button events -------+-------------------------+       --> freeze state
+explicit time ----------------------------------------+
 ```
 
-Evidence includes stationary, tilt, rotation, saturation, dropout, I2C NACK,
-stale-sample, axis-permutation, timestamp-wrap, and byte-identical replay
-fixtures. LED self-test, RGB health, SDA/SCL test points, and joystick-axis
-test points provide the non-Serial path.
+E0 evidence includes level, tilt, unsteady, saturation, stale, producer-fault,
+axis-permutation, sensitivity, freeze, timestamp-wrap, simultaneous-event, and
+byte-identical replay fixtures. The host harness records distinct
+acquisition/health, orientation, freeze, light-intent, and tone-intent result
+cells as the non-Serial-independent evidence surface. Compile-only Mega
+examples add no physical observation claim.
 
-Planned specimen coverage: revision-dependent MPU6050 or QMI8658, joystick,
-RGB LED, passive buzzer, button, potentiometer, I2C bus, and shift-register
-LEDs.
+Future E1 specimen coverage may include one exactly qualified MPU6050 or
+QMI8658 variant plus the joystick, RGB LED, passive buzzer, button, and
+shift-register LEDs. Until those independent gates close, the block contains
+no powered sensor, I2C transaction, pin assignment, wiring table, schematic,
+or physical acceptance.
 
 ## Lessons 046--048: tactile kinetic sculpture
 

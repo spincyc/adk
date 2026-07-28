@@ -20,6 +20,12 @@ hardware-neutral optical, presence, and course-marshal policy under the
 [implementation-depth brief](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md).
 A debounced button is the sole run authorization; PIR supplies eligibility
 only. Powered adapters, exact specimens, and E1 acceptance remain open.
+Lessons 043--045 are active under an
+[implementation-depth E0 replay-first plan](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md):
+copied samples and inputs, pure orientation and presentation policy, and a
+stationary hand-operated tabletop composition. No powered adapter, I2C
+transaction, wiring, schematic, or physical claim is authorized; exact
+MPU6050 and QMI8658 variants remain independently gated.
 See the [authoritative work
 queue](WORK_QUEUE.md) for the complete ledger.
 
@@ -67,7 +73,7 @@ may claim hardware verification until its measured record is published.
 | 034--036 | Magnetic/contact sensing and passage policy | Magnetic passage logger |
 | 037--039 | Contact dynamics and acoustic envelopes | Percussion sequencer |
 | 040--042 | Optical observations and presence policy | Tabletop course marshal |
-| 043--045 | Revision-neutral inertial samples and orientation | Balance-table instrument |
+| [043--045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | E0 copied inertial samples and pure orientation/presentation intent | Stationary hand-operated tabletop balance instrument |
 | 046--048 | Authorized tactile/directional inputs and bounded stepper motion | Kinetic light sculpture |
 | 049--051 | Local identity records and bounded homing | Tabletop parts carousel |
 | 052--054 | Known-kit IR capture and exactly qualified transmission | IR command translator |
@@ -103,7 +109,7 @@ explicit open item.
 | 036 | Host verified; bench open | Passage, bounce, direction, recovery, and record traces | Raw contacts, accepted passage, and count |
 | 039 | Host verified; bench/incoming conformance open | Sequencer core, attribution, atomic admission, replay, indexed-hit evidence, and exact external reference publication complete | Canonical Mega schematic/example, visible pattern evidence, and E1 acceptance card; incoming conformance remains open |
 | 042 | Host verified; powered adapter and bench open | Calibration, source identity, eligibility, explicit authorization, checkpoint-order, range, timeout, and invalid-run traces | Powered exact-specimen checkpoints and E1 acceptance remain open |
-| 045 | Queued; detailed plan required | Revision-specific inertial, orientation, and freeze traces | Existing LED/tone health and bus test points |
+| [045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Active integration; E0 replay-first | Copied-sample validation, stationary orientation, sensitivity, freeze, health, simultaneous-event, and byte-identical replay traces | Host result cells only; powered indicators, controls, bus points, wiring, schematic, and E1 acceptance remain gated |
 | 048 | Queued; detailed plan required | Authorized tactile/directional input, coil-frame, stop, and power-loss traces | Shift-register intent mirror and independent stop |
 | 051 | Queued; detailed plan required | Identity, homing, confirmation, and interruption traces | Position, home, gate-intent, and stop evidence |
 | 054 | Queued; detailed plan required | Encode/decode, malformed-frame, policy, and cancellation traces | Separate transmit/receive/fault indications |
