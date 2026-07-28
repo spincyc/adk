@@ -65,6 +65,7 @@ doc/lessons/030.pdf: docs/lessons/030/main.tex \
 		docs/lessons/assets/030-inert-show-pencil.png
 doc/lessons/031.pdf: docs/lessons/031/main.tex \
 		docs/lessons/assets/031-analog-joystick-pencil.png
+doc/lessons/032.pdf: docs/lessons/032/main.tex
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons
