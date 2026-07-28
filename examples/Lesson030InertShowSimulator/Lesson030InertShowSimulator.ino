@@ -6,8 +6,10 @@
 
 namespace {
 
-    constexpr uint8_t channelCount  = adk::InertChannelAssessor::capacity;
-    constexpr uint8_t auditCapacity = 96;
+    constexpr uint8_t  channelCount       = adk::InertChannelAssessor::capacity;
+    constexpr uint8_t  auditCapacity      = 96;
+    constexpr uint32_t startupDurationMs  = 2000;
+    constexpr uint32_t sessionDurationMs  = 120000;
 
     const adk::ButtonConfig reviewButtonConfig    (30);
     const adk::ButtonConfig runButtonConfig       (31);
@@ -62,16 +64,18 @@ namespace {
     adk::InertObservation        selectedPrimary   = adk::InertObservation::Closed;
     adk::InertObservation        selectedRedundant = adk::InertObservation::Closed;
     adk::TimePoint               lastSampleAt;
+    adk::TimePoint               startedAt;
     bool                         hasLastSample = false;
     bool                         running       = false;
 
     bool acquireSimulatorPanel  ();
-    bool configureClosedFrame   (adk::TimePoint now);
-    void startSimulatorPanel    ();
+    void configureClosedFrame   (adk::TimePoint now);
+    void startSimulatorPanel    (adk::TimePoint now);
     void observeSimulatorInput  (adk::TimePoint now);
     bool decideInertShow        (adk::TimePoint now);
     bool actuateInertCues       ();
     bool actuateSimulatorState  (adk::TimePoint now);
+    bool showStartupProgress    (adk::TimePoint now);
     bool setStateColor          (const adk::Rgb& color);
     bool statePulse             (adk::TimePoint now, uint16_t onMilliseconds,
                                  uint16_t periodMilliseconds);
@@ -83,9 +87,10 @@ void setup ()
 {
     const adk::TimePoint now (millis ());
 
-    if (acquireSimulatorPanel () && configureClosedFrame (now))
+    if (acquireSimulatorPanel ())
     {
-        startSimulatorPanel ();
+        configureClosedFrame (now);
+        startSimulatorPanel  (now);
     }
 }
 
@@ -97,6 +102,22 @@ void loop ()
     }
 
     const adk::TimePoint now (millis ());
+
+    if (now.elapsedSince (startedAt).milliseconds () >= sessionDurationMs)
+    {
+        stopSafely ();
+        return;
+    }
+
+    if (now.elapsedSince (startedAt).milliseconds () < startupDurationMs)
+    {
+        if (!showStartupProgress (now))
+        {
+            stopSafely ();
+        }
+
+        return;
+    }
 
     if (hasLastSample && now == lastSampleAt)
     {
@@ -151,23 +172,20 @@ namespace {
         return true;
     }
 
-    bool configureClosedFrame (adk::TimePoint now)
+    void configureClosedFrame (adk::TimePoint now)
     {
         for (uint8_t channel = 0; channel < channelCount; ++channel)
         {
             observations[channel] = {channel, adk::InertObservation::Closed,
                                      adk::InertObservation::Closed, now};
         }
-
-        const adk::CueOperatorInput noOperatorInput = {};
-        const adk::InertShowInput input = {observations, channelCount, noOperatorInput};
-
-        return simulator.update (now, input).ok ();
     }
 
-    void startSimulatorPanel ()
+    void startSimulatorPanel (adk::TimePoint now)
     {
-        running = true;
+        startedAt      = now;
+        hasLastSample  = false;
+        running        = true;
     }
 
     void observeSimulatorInput (adk::TimePoint now)
@@ -272,6 +290,22 @@ namespace {
         }
 
         return false;
+    }
+
+    bool showStartupProgress (adk::TimePoint now)
+    {
+        const uint8_t completedChannels = static_cast<uint8_t> (
+            now.elapsedSince (startedAt).milliseconds () / 250U);
+
+        for (uint8_t channel = 0; channel < channelCount; ++channel)
+        {
+            if (!cueLeds[channel].set (channel <= completedChannels).ok ())
+            {
+                return false;
+            }
+        }
+
+        return stateLed.set (adk::Rgb (0, 0, 96)).ok ();
     }
 
     bool setStateColor (const adk::Rgb& color)

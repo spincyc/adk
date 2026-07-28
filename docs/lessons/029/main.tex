@@ -184,6 +184,23 @@ Run, Confirm, Skip, and Cancel are debounced edges; Review is a level. More than
 one non-cancel edge is invalid. Cancel has absolute priority. Releasing Review
 blanks an active cue and enters Held. Review alone does not resume; press Run.
 
+\subsection{Three dependent wins}
+
+The opening journey advances only in order:
+
+\begin{enumerate}
+  \item Hold Review and observe the steady blue Review state.
+  \item While Review remains held, press Run and observe the first cue enter
+        Confirmation with the fast red cadence.
+  \item While that confirmation is still open, press Confirm and observe only
+        cue LED index 0 with the steady green state.
+\end{enumerate}
+
+Run before Review and Confirm before an open confirmation cannot unlock a
+later win. The first two wins keep every cue output inactive; the third depends
+on both earlier transitions and exposes one inert indicator. The panel always
+shuts down two minutes after startup, independent of every button.
+
 \begin{tabularx}{\linewidth}{@{}l X X@{}}
 \toprule
 Phase & Valid intent & Visible evidence\\
@@ -256,8 +273,9 @@ when \texttt{phase == Active \&\& hasCue}, using \texttt{cueIndex}. Opaque
   \item Observe TP29 and LED identity. Interpret agreement only as evidence for
         snapshot-to-inert-display mapping.
   \item Release Review while Active. Predict immediate blanking and Held.
-  \item Invoke shutdown separately; record immediate darkness and inactive
-        TP29, then remove USB power.
+  \item Leave the buttons untouched and observe immediate darkness and
+        released indicator endpoints at the fixed two-minute ending; then
+        remove USB power.
 \end{enumerate}
 
 A dark LED and inactive voltage do not alone establish high impedance.
@@ -280,57 +298,22 @@ hot part or unstable USB & remove USB immediately; do not troubleshoot powered\\
 \bottomrule
 \end{tabularx}
 
-\section{Open hardware acceptance record}
+\section{Verification boundary}
 
-\textbf{Software evidence already established:} deterministic host tests,
-strict headers/style, Mega compile, measured size, monochrome PDF, and site
-package. None is a physical result.
-
-\begin{tabularx}{\linewidth}{@{}l X l X@{}}
-\toprule
-Board/revision & \blank{1.4in} & Commit & \blank{1.25in}\\
-LED specimens/polarity & \blank{1.4in} & Resistors & \blank{1.25in}\\
-Supply/instrument & \blank{1.4in} & Tool versions & \blank{1.25in}\\
-Operator/date & \blank{1.4in} & Deviations & \blank{1.25in}\\
-\bottomrule
-\end{tabularx}
-
-\begin{itemize}
-  \item[\checkbox] unpowered circuit, polarity, resistors, and prohibited
-        external connections inspected;
-  \item[\checkbox] acquisition evidence predicted, observed, interpreted;
-  \item[\checkbox] TP29 confirmation and exact visibility boundary measured;
-  \item[\checkbox] hold, resume, timeout, skip, cancel, fault, and audit-full
-        cases observed;
-  \item[\checkbox] shutdown inactive state and resource release recorded as
-        separate claims;
-  \item[\checkbox] reset and power-removal outcomes recorded.
-\end{itemize}
-
-Prediction: \blank{5.8in}\\[8pt]
-Observation: \blank{5.7in}\\[8pt]
-Interpretation and limits: \blank{4.9in}
+Deterministic host tests, strict headers and style, Mega compilation, measured
+size, monochrome PDF, and site packaging establish the software boundary.
+They do not establish a physical result. Bench acceptance remains open until
+the repository's controlled acceptance campaign records the exact board,
+parts, instruments, predictions, observations, interpretations, and shutdown
+evidence.
 
 \lessonbox{\textbf{Stop rule.} Remove USB power for a hot part, unstable
 supply, wrong polarity, missing resistor, unexpected indicator, out-of-rail
 TP29, or schematic/breadboard disagreement. Software shutdown is lifecycle
 behavior, never an emergency stop.}
 
-\section{Reproduce the software evidence}
-
-\begin{lstlisting}[style=adkcpp]
-make host-test
-make host-test-exceptions
-make arduino-Lesson029InertCueSchedule
-make size-check
-make lessons
-make lessons-check
-make site-check
-make hardware-card LESSON=029 BOARD=mega2560
-\end{lstlisting}
-
 Measured with Arduino AVR core 1.8.8 and avr-gcc 7.3.0, the canonical sketch
-uses 10,704 bytes of flash and 1,826 bytes of static RAM on the Mega 2560.
+uses 10,952 bytes of flash and 1,832 bytes of static RAM on the Mega 2560.
 Budgets are 24,576 and 2,048 bytes respectively. Re-measure when source or
 toolchain identity changes.
 

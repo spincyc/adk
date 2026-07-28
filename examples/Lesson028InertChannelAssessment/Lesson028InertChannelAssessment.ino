@@ -10,17 +10,17 @@ namespace {
     constexpr uint32_t rewardDurationMs  = 1500;
     constexpr uint32_t sessionDurationMs = 120000;
 
-    const adk::ButtonConfig channelButtonConfig (30);
-    const adk::ButtonConfig primaryButtonConfig (31);
+    const adk::ButtonConfig channelButtonConfig   (30);
+    const adk::ButtonConfig primaryButtonConfig   (31);
     const adk::ButtonConfig redundantButtonConfig (32);
-    const adk::ButtonConfig applyButtonConfig (33);
+    const adk::ButtonConfig applyButtonConfig     (33);
 
     adk::Runtime runtime;
 
-    adk::Button channelButton (runtime.resources (), channelButtonConfig);
-    adk::Button primaryButton (runtime.resources (), primaryButtonConfig);
+    adk::Button channelButton   (runtime.resources (), channelButtonConfig);
+    adk::Button primaryButton   (runtime.resources (), primaryButtonConfig);
     adk::Button redundantButton (runtime.resources (), redundantButtonConfig);
-    adk::Button applyButton (runtime.resources (), applyButtonConfig);
+    adk::Button applyButton     (runtime.resources (), applyButtonConfig);
 
     adk::MonoLed channelLeds[channelCount] = {
         {runtime.resources (), 22}, {runtime.resources (), 23},
@@ -40,18 +40,18 @@ namespace {
     bool                         running         = false;
 
     bool acquireAssessmentPanel ();
-    void configureOpenChannels (adk::TimePoint now);
-    void startAssessmentPanel (adk::TimePoint now);
-    void observeOperator (adk::TimePoint now);
-    bool decideAssessments (adk::TimePoint now);
-    bool showAssessments (adk::TimePoint now);
-    bool showStartup (adk::TimePoint now);
-    bool showReward (adk::TimePoint now);
-    bool showChannelState (uint8_t channel, adk::InertChannelState state,
-                           adk::TimePoint now);
-    bool patternActive (adk::InertChannelState state, uint32_t phase);
-    bool stageComplete ();
-    void stopSafely ();
+    void configureOpenChannels  (adk::TimePoint now);
+    void startAssessmentPanel   (adk::TimePoint now);
+    void observeOperator        (adk::TimePoint now);
+    bool decideAssessments      (adk::TimePoint now);
+    bool showAssessments        (adk::TimePoint now);
+    bool showStartup            (adk::TimePoint now);
+    bool showReward             (adk::TimePoint now);
+    bool showChannelState       (uint8_t channel, adk::InertChannelState state,
+                                 adk::TimePoint now);
+    bool patternActive          (adk::InertChannelState state, uint32_t phase);
+    bool stageComplete          ();
+    void stopSafely             ();
 
 } // namespace
 
@@ -62,7 +62,7 @@ void setup ()
     if (acquireAssessmentPanel ())
     {
         configureOpenChannels (now);
-        startAssessmentPanel (now);
+        startAssessmentPanel  (now);
     }
 }
 
@@ -104,7 +104,7 @@ namespace {
     bool acquireAssessmentPanel ()
     {
         if (!assessor.initialize ().ok () || !channelButton.initialize ().ok () ||
-            !primaryButton.initialize ().ok () ||
+            !primaryButton.initialize   ().ok () ||
             !redundantButton.initialize ().ok () || !applyButton.initialize ().ok ())
         {
             stopSafely ();
@@ -150,10 +150,10 @@ namespace {
 
     void observeOperator (adk::TimePoint now)
     {
-        channelButton.update (now);
-        primaryButton.update (now);
+        channelButton.update   (now);
+        primaryButton.update   (now);
         redundantButton.update (now);
-        applyButton.update (now);
+        applyButton.update     (now);
 
         if (channelButton.pressEvent ())
         {
@@ -311,10 +311,10 @@ namespace {
             channelLeds[channel - 1].shutdown ();
         }
 
-        applyButton.shutdown ();
+        applyButton.shutdown     ();
         redundantButton.shutdown ();
-        primaryButton.shutdown ();
-        channelButton.shutdown ();
-        assessor.shutdown ();
+        primaryButton.shutdown   ();
+        channelButton.shutdown   ();
+        assessor.shutdown        ();
     }
 } // namespace
