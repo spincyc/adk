@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-07-28T00:48:57Z"
+generated_at: "2026-07-28T00:49:28Z"
 task_count: 19
 ---
 
@@ -10,11 +10,10 @@ This file is a rebuildable view. Task `state.md` files are authoritative.
 
 ## Active
 
-None.
+- `ba1ed653-0cb2-4275-ae36-16c88591ce35` — repair pre-bench acceptance blockers [active, high]
 
 ## Queued
 
-- `ba1ed653-0cb2-4275-ae36-16c88591ce35` — repair pre-bench acceptance blockers [queued, high]
 - `35f3ab7c-b93b-4d75-99c1-dbaedbd36d7d` — bound the next USB research milestone [queued, low]
 - `8a7a5ee1-b646-4f0b-83b2-8380c7f259e6` — bound the next HDMI/shared-fabric milestone [queued, low]
 
