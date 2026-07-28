@@ -58,7 +58,9 @@ Status meanings:
 | Behavior | `InertCueScheduler` | Host verified | Supplied time, confirmation, holds, and inert snapshots |
 | Behavior | `InertShowSimulator` | Host verified | Borrowed assessor, scheduler, audit, complete observation frames, and supplied time |
 | Input expansion | `AnalogJoystick`, `QuadratureEncoder`, `CalibrationConsole` | Host verified; bench open | Lessons 031–033 |
-| Queued layers | Lesson 034 and later curriculum components | Queued | See catalog and work queue |
+| Magnetic observation | `LinearHall`, `MagneticContact` | Host verified; exact specimen and bench open | Lesson 034 |
+| Passage policy | `PassageQualifier` | Host verified; exact specimen and bench open | Lesson 035 |
+| Queued layers | Lesson 036 and later curriculum components | Queued | See catalog and work queue |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.
 Behavior engines expose output intent rather than hiding hardware callbacks.

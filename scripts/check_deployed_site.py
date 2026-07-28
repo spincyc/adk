@@ -33,28 +33,28 @@ CHECKS = (
     Check(
         "",
         "landing page",
-        markers=(b"Lessons 001\xe2\x80\x93033", b"Planned course"),
+        markers=(b"Lessons 001\xe2\x80\x93035", b"Planned course"),
     ),
     Check(
-        "lessons/033/",
-        "Lesson 033 page",
+        "lessons/035/",
+        "Lesson 035 page",
         markers=(
-            b"Lesson 033",
-            b"calibration console",
+            b"Lesson 035",
+            b"passage qualification",
         ),
     ),
-    Check("downloads/lessons/033.pdf", "Lesson 033 PDF", b"%PDF-"),
+    Check("downloads/lessons/035.pdf", "Lesson 035 PDF", b"%PDF-"),
     Check(
-        "downloads/sketches/Lesson033CalibrationConsole.ino",
-        "Lesson 033 Arduino example",
-        markers=(b"#include <Adk.h>", b"CalibrationConsole console"),
+        "downloads/sketches/Lesson035PassageQualifier.ino",
+        "Lesson 035 Arduino example",
+        markers=(b"#include <Adk.h>", b"PassageQualifier qualifier"),
     ),
 )
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 CANONICAL_EXAMPLE = (
     REPOSITORY_ROOT
-    / "examples/Lesson033CalibrationConsole/Lesson033CalibrationConsole.ino"
+    / "examples/Lesson035PassageQualifier/Lesson035PassageQualifier.ino"
 )
 
 

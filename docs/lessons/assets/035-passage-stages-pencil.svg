@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="850"
+     viewBox="0 0 1600 850" role="img" aria-labelledby="title description">
+  <title id="title">Passage qualification stages and visible evidence</title>
+  <desc id="description">Five pencil stages move from idle through boundary A
+  dwell, awaiting boundary B, accepted A-to-B record, and duplicate
+  suppression. A separate panel maps accepted, direction, and ready fault
+  states to resistor-limited LEDs.</desc>
+  <defs>
+    <filter id="pencil" x="-4%" y="-6%" width="108%" height="112%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.013 0.08"
+        numOctaves="2" seed="35" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.3"/>
+    </filter>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4"
+      orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#303030"/></marker>
+    <style>
+      .ink{fill:none;stroke:#303030;stroke-width:4;stroke-linecap:round;
+        stroke-linejoin:round;filter:url(#pencil)}
+      .dash{fill:none;stroke:#555;stroke-width:3;stroke-dasharray:11 9;
+        filter:url(#pencil)}
+      .label{fill:#202020;font-family:"Open Sans";font-size:25px;font-weight:700}
+      .text{fill:#202020;font-family:"Open Sans";font-size:21px}
+      .small{fill:#202020;font-family:"Open Sans";font-size:18px}
+    </style>
+  </defs>
+  <rect width="1600" height="850" fill="#fff"/>
+  <text x="45" y="45" class="label">DEPENDENT VISIBLE STAGES — SOFTWARE FIXTURE, E0</text>
+
+  <g>
+    <rect x="40" y="90" width="260" height="360" rx="22" class="ink"/>
+    <text x="65" y="130" class="label">1  IDLE</text>
+    <circle cx="115" cy="235" r="40" class="ink"/>
+    <circle cx="225" cy="235" r="40" class="ink"/>
+    <text x="103" y="243" class="label">A</text><text x="213" y="243" class="label">B</text>
+    <text x="65" y="315" class="text">both inactive</text>
+    <text x="65" y="350" class="small">no record</text>
+    <text x="65" y="380" class="small">accepted count unchanged</text>
+
+    <path d="M305 270h55" class="ink" marker-end="url(#arrow)"/>
+    <rect x="365" y="90" width="260" height="360" rx="22" class="ink"/>
+    <text x="390" y="130" class="label">2  FIRST A</text>
+    <circle cx="440" cy="235" r="40" class="ink"/>
+    <circle cx="550" cy="235" r="40" class="dash"/>
+    <text x="428" y="243" class="label">A</text><text x="538" y="243" class="label">B</text>
+    <text x="390" y="315" class="text">A active continuously</text>
+    <text x="390" y="350" class="small">boundaryDwell running</text>
+    <text x="390" y="380" class="small">chatter returns to idle</text>
+
+    <path d="M630 270h55" class="ink" marker-end="url(#arrow)"/>
+    <rect x="690" y="90" width="260" height="360" rx="22" class="ink"/>
+    <text x="715" y="130" class="label">3  AWAITS B</text>
+    <circle cx="765" cy="235" r="40" class="ink"/>
+    <circle cx="875" cy="235" r="40" class="dash"/>
+    <text x="753" y="243" class="label">A</text><text x="863" y="243" class="label">B</text>
+    <text x="715" y="315" class="text">A dwell complete</text>
+    <text x="715" y="350" class="small">firstBoundary = A</text>
+    <text x="715" y="380" class="small">passageTimeout running</text>
+
+    <path d="M955 270h55" class="ink" marker-end="url(#arrow)"/>
+    <rect x="1015" y="90" width="260" height="360" rx="22" class="ink"/>
+    <text x="1040" y="130" class="label">4  ACCEPT</text>
+    <circle cx="1090" cy="235" r="40" class="ink"/>
+    <circle cx="1200" cy="235" r="40" class="ink"/>
+    <text x="1078" y="243" class="label">A</text><text x="1188" y="243" class="label">B</text>
+    <text x="1040" y="315" class="text">B dwell complete</text>
+    <text x="1040" y="350" class="small">one AToB record</text>
+    <text x="1040" y="380" class="small">accepted count +1</text>
+
+    <path d="M1280 270h55" class="ink" marker-end="url(#arrow)"/>
+    <rect x="1340" y="90" width="220" height="360" rx="22" class="ink"/>
+    <text x="1365" y="130" class="label">5  SUPPRESS</text>
+    <text x="1365" y="205" class="text">both inactive</text>
+    <path d="M1370 245h155" class="dash"/>
+    <text x="1365" y="295" class="small">duplicate window</text>
+    <text x="1365" y="325" class="small">must expire</text>
+    <text x="1365" y="370" class="small">new activation:</text>
+    <text x="1365" y="400" class="small">suppressed, not accepted</text>
+  </g>
+
+  <rect x="40" y="510" width="1520" height="285" rx="22" class="ink"/>
+  <text x="70" y="555" class="label">EVIDENCE PANEL — THREE SEPARATE 1 kOhm LED PATHS</text>
+  <path d="M95 630h50l15-16 24 32 24-32 24 32 24-16h45" class="ink"/>
+  <circle cx="345" cy="630" r="32" class="ink"/>
+  <text x="400" y="638" class="text">D30 ACCEPTED — on for the one-record snapshot</text>
+  <path d="M95 705h50l15-16 24 32 24-32 24 32 24-16h45" class="ink"/>
+  <circle cx="345" cy="705" r="32" class="ink"/>
+  <text x="400" y="713" class="text">D31 DIRECTION — on only for accepted A-to-B</text>
+  <path d="M900 630h50l15-16 24 32 24-32 24 32 24-16h45" class="ink"/>
+  <circle cx="1150" cy="630" r="32" class="ink"/>
+  <text x="1205" y="638" class="text">D32 READY / FAULT</text>
+  <text x="900" y="730" class="small">LED state is interpreted evidence; fixture frames are TP-A / TP-B raw evidence.</text>
+  <text x="900" y="765" class="small">Dark LEDs after shutdown do not prove released output pins.</text>
+</svg>

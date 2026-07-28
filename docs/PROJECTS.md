@@ -11,8 +11,8 @@ are complete.
 
 ## Current status
 
-Lessons 001--033 are host verified with their bench cards open. Lesson 034
-is the next queued curriculum boundary. See the [authoritative work
+Lessons 001--035 are host verified with their bench cards open. Lesson 036
+is the active planned project boundary. See the [authoritative work
 queue](WORK_QUEUE.md) for the complete ledger.
 
 Every API and lesson remains experimental. Mega 2560 bench acceptance is open
@@ -92,7 +92,7 @@ explicit open item.
 | 027 | Host verified; bench open | Configured packet fixtures, stale-data handling, scheduler order, and byte-stable record replay | Selection, health, acknowledgement, and storage states visible without Serial |
 | 030 | Host verified; bench open | Immutable cue schedule, arming order, simulated continuity, simultaneous-event policy, stop dominance, restart lockout, and audit replay | Inert channel lamps, redundant armed/fault/stop states, and no energizing output path |
 | 033 | Host verified; bench open | Input and commit/cancel traces | Preview, committed, and fault indications |
-| 036 | Queued; detailed plan required | Passage, bounce, direction, and record traces | Raw contacts, accepted passage, and count |
+| 036 | Active integration; Lessons 034--035 complete | Passage, bounce, direction, and record traces | Raw contacts, accepted passage, and count |
 | 039 | Queued; detailed plan required | Contact, envelope, quantization, and playback traces | Accepted-hit LEDs, step display, and silent shutdown |
 | 042 | Queued; detailed plan required | Calibration, checkpoint-order, range, and timeout traces | Local checkpoints and invalid-run state |
 | 045 | Queued; detailed plan required | Probe, thermal, radiant, latch, and record traces | Health/fault display and inert alarm lamp |

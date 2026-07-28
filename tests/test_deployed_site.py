@@ -16,14 +16,14 @@ class DeployedSiteTest(unittest.TestCase):
             contents = {
                 "index.html": (
                     b"<!doctype html><title>ADK</title>"
-                    b"Lessons 001\xe2\x80\x93033 Planned course"
+                    b"Lessons 001\xe2\x80\x93035 Planned course"
                 ),
-                "lessons/033/index.html": (
-                    b"<!doctype html><title>033</title>"
-                    b"Lesson 033 calibration console"
+                "lessons/035/index.html": (
+                    b"<!doctype html><title>035</title>"
+                    b"Lesson 035 passage qualification"
                 ),
-                "downloads/lessons/033.pdf": b"%PDF-1.7\nfixture",
-                "downloads/sketches/Lesson033CalibrationConsole.ino": (
+                "downloads/lessons/035.pdf": b"%PDF-1.7\nfixture",
+                "downloads/sketches/Lesson035PassageQualifier.ino": (
                     canonical_example
                 ),
             }
@@ -71,9 +71,9 @@ class DeployedSiteTest(unittest.TestCase):
                 return b"%PDF-1.7\n"
             if url.endswith(".ino"):
                 return CANONICAL_EXAMPLE.read_bytes()
-            if url.endswith("lessons/033/"):
-                return b"Lesson 033 calibration console"
-            return b"Lessons 001\xe2\x80\x93033 Planned course"
+            if url.endswith("lessons/035/"):
+                return b"Lesson 035 passage qualification"
+            return b"Lessons 001\xe2\x80\x93035 Planned course"
 
         self.assertEqual(
             check_deployment(

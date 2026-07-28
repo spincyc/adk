@@ -1,10 +1,11 @@
+#define private public
 #include <passage_qualifier.h>
+#undef private
 
 #include <cstdlib>
 #include <iostream>
 #include <limits>
 
-// clang-format off
 namespace {
     void require (bool condition, const char* message)
     {
@@ -49,10 +50,43 @@ namespace {
             {adk::Duration (5), adk::Duration (20), adk::Duration (10)});
     }
 
+    bool samePosition (const adk::PassagePositionEvidence& left,
+                       const adk::PassagePositionEvidence& right)
+    {
+        return left.present == right.present && left.reliable == right.reliable &&
+               left.saturated == right.saturated &&
+               left.onsetPosition == right.onsetPosition &&
+               left.endPosition == right.endPosition && left.delta == right.delta;
+    }
+
+    bool sameRecord (const adk::PassageRecord& left, const adk::PassageRecord& right)
+    {
+        return left.sequence == right.sequence && left.direction == right.direction &&
+               left.disposition == right.disposition && left.onset == right.onset &&
+               left.end == right.end && left.elapsed == right.elapsed &&
+               left.onsetPolarity == right.onsetPolarity &&
+               left.endPolarity == right.endPolarity &&
+               samePosition (left.position, right.position) &&
+               left.acceptedCount == right.acceptedCount &&
+               left.suppressedCount == right.suppressedCount &&
+               left.status == right.status;
+    }
+
+    bool sameSnapshot (const adk::PassageSnapshot& left,
+                       const adk::PassageSnapshot& right)
+    {
+        return left.phase == right.phase && left.firstBoundary == right.firstBoundary &&
+               left.elapsed == right.elapsed &&
+               left.nextSequence == right.nextSequence &&
+               left.acceptedCount == right.acceptedCount &&
+               left.suppressedCount == right.suppressedCount &&
+               left.hasRecord == right.hasRecord &&
+               sameRecord (left.record, right.record) && left.status == right.status;
+    }
+
     void testLifecycleAndDirections ()
     {
         auto passage = qualifier ();
-
 
         passage.update (input (0, false, false));
 
@@ -62,7 +96,6 @@ namespace {
         require (passage.initialize ().ok (), "initialize succeeds");
 
         require (passage.initialize ().ok (), "initialize is idempotent");
-
 
         passage.update (input (0, true, false, true, 10));
 
@@ -74,7 +107,6 @@ namespace {
         passage.update (input (6, true, true, true, 12));
 
         passage.update (input (11, true, true, true, 20));
-
 
         const auto accepted = passage.snapshot ();
 
@@ -93,13 +125,11 @@ namespace {
                      accepted.record.position.delta == 10,
                  "agreeing position copied");
 
-
         passage.update (input (11, true, true, true, 20));
 
         require (passage.snapshot ().hasRecord &&
                      passage.snapshot ().record.sequence == accepted.record.sequence,
                  "identical same-time terminal frame preserves record");
-
 
         passage.update (input (12, true, true));
 
@@ -116,7 +146,6 @@ namespace {
 
         require (passage.snapshot ().phase == adk::PassagePhase::Idle,
                  "rearms at exact expiry with both inactive");
-
 
         passage.update (input (30, false, true, true, 20));
 
@@ -139,7 +168,6 @@ namespace {
 
         require (passage.initialize ().ok (), "policy initialize");
 
-
         passage.update (input (0, true, true));
 
         passage.update (input (5, true, true));
@@ -147,7 +175,6 @@ namespace {
         require (passage.snapshot ().record.disposition ==
                      adk::PassageDisposition::Ambiguous,
                  "simultaneous dwell is ambiguous");
-
 
         passage.reset ();
 
@@ -160,7 +187,6 @@ namespace {
         require (passage.snapshot ().record.disposition ==
                      adk::PassageDisposition::TimedOut,
                  "late opposite boundary times out before completion");
-
 
         passage.reset ();
 
@@ -180,7 +206,6 @@ namespace {
 
         require (passage.snapshot ().phase == adk::PassagePhase::Idle,
                  "retreat rearms only when both inactive");
-
 
         passage.update (input (20, true, false));
 
@@ -221,13 +246,11 @@ namespace {
 
         require (passage.initialize ().ok (), "fault initialize");
 
-
         passage.update (input (10, true, false));
 
         passage.update (input (15, true, false));
 
-
-        auto mismatch                 = input (16, true, false);
+        auto mismatch = input (16, true, false);
 
         mismatch.boundaryB.observedAt = adk::TimePoint (15);
 
@@ -240,7 +263,6 @@ namespace {
         require (passage.snapshot ().phase == adk::PassagePhase::Fault,
                  "fault phase entered");
 
-
         passage.update (input (17, true, false));
 
         require (passage.snapshot ().phase == adk::PassagePhase::Fault,
@@ -252,7 +274,6 @@ namespace {
                      !passage.snapshot ().hasRecord,
                  "later healthy inactive frame recovers silently");
 
-
         passage.update (input (19, false, false));
 
         const auto stable = passage.snapshot ();
@@ -263,12 +284,10 @@ namespace {
                      !passage.snapshot ().hasRecord,
                  "identical same-time frame is idempotent");
 
-
         passage.update (input (19, true, false));
 
         require (passage.snapshot ().phase == adk::PassagePhase::Fault,
                  "changed same-time frame faults");
-
 
         passage.reset ();
 
@@ -280,7 +299,6 @@ namespace {
 
         require (passage.snapshot ().phase == adk::PassagePhase::Fault,
                  "changed same-time position faults");
-
 
         passage.reset ();
 
@@ -313,7 +331,6 @@ namespace {
 
         passage.reset ();
 
-
         passage.update (input (100, true, false, true, 30));
 
         auto faulty              = input (101, true, false, true, 31);
@@ -327,7 +344,6 @@ namespace {
                      passage.snapshot ().record.onset == adk::TimePoint (100) &&
                      passage.snapshot ().record.position.onsetPosition == 0,
                  "pre-dwell fault uses current canonical metadata after reset");
-
 
         passage.reset ();
 
@@ -358,14 +374,12 @@ namespace {
                      adk::StatusCode::InvalidConfiguration,
                  "zero duration rejected");
 
-
         adk::PassageQualifier shortTimeout (
             {adk::Duration (5), adk::Duration (4), adk::Duration (10)});
 
         require (shortTimeout.initialize ().error () ==
                      adk::StatusCode::InvalidConfiguration,
                  "timeout below dwell rejected");
-
 
         auto passage = qualifier ();
 
@@ -384,9 +398,8 @@ namespace {
             input (11, true, true, true, std::numeric_limits<int32_t>::max ()));
 
         require (passage.snapshot ().record.position.saturated &&
-                     !passage.snapshot ().record.position.reliable,
+                     passage.snapshot ().record.position.reliable == false,
                  "widened delta clamps and marks saturation");
-
 
         passage.reset ();
 
@@ -402,7 +415,6 @@ namespace {
                      passage.snapshot ().record.position.delta == 0,
                  "missing position is canonical");
 
-
         passage.reset ();
 
         passage.update (input (0, true, false));
@@ -414,9 +426,8 @@ namespace {
         passage.update (input (11, true, true, true, 10));
 
         require (!passage.snapshot ().record.position.present &&
-                     !passage.snapshot ().record.position.reliable,
+                     passage.snapshot ().record.position.reliable == false,
                  "missing onset position remains canonical");
-
 
         passage.reset ();
 
@@ -430,12 +441,11 @@ namespace {
 
         passage.update (input (11, true, true, true, 10));
 
-        require ( passage.snapshot ().record.position.present &&
-                  passage.snapshot ().record.position.onsetPosition == 4 &&
-                  passage.snapshot ().record.position.endPosition == 10 &&
-                 !passage.snapshot ().record.position.reliable,
+        require (passage.snapshot ().record.position.present &&
+                     passage.snapshot ().record.position.onsetPosition == 4 &&
+                     passage.snapshot ().record.position.endPosition == 10 &&
+                     passage.snapshot ().record.position.reliable == false,
                  "onset position source fault retains values but is unreliable");
-
 
         passage.reset ();
 
@@ -448,11 +458,146 @@ namespace {
         passage.update (
             input (11, true, true, true, 10, adk::StatusCode::HardwareFailure));
 
-        require ( passage.snapshot ().record.position.present &&
-                  passage.snapshot ().record.position.onsetPosition == 4 &&
-                  passage.snapshot ().record.position.endPosition == 10 &&
-                 !passage.snapshot ().record.position.reliable,
+        require (passage.snapshot ().record.position.present &&
+                     passage.snapshot ().record.position.onsetPosition == 4 &&
+                     passage.snapshot ().record.position.endPosition == 10 &&
+                     passage.snapshot ().record.position.reliable == false,
                  "end position source fault retains values but is unreliable");
+    }
+
+    void testExactEdgesAndChatter ()
+    {
+        auto passage = qualifier ();
+
+        require (passage.initialize ().ok (), "edge initialize");
+
+        passage.update (input (0, true, false));
+
+        passage.update (input (4, true, false));
+
+        require (passage.snapshot ().phase == adk::PassagePhase::FirstBoundary,
+                 "boundary remains pending one tick before dwell");
+
+        passage.update (input (5, true, false));
+
+        require (passage.snapshot ().phase == adk::PassagePhase::AwaitingSecond,
+                 "boundary qualifies at exact dwell");
+
+        passage.update (input (20, true, true));
+
+        passage.update (input (25, true, true));
+
+        require (passage.snapshot ().hasRecord &&
+                     passage.snapshot ().record.disposition ==
+                         adk::PassageDisposition::Accepted &&
+                     passage.snapshot ().record.elapsed == adk::Duration (20),
+                 "opposite boundary accepts at exact timeout");
+
+        passage.reset ();
+
+        passage.update (input (0, true, false));
+
+        passage.update (input (5, true, false));
+
+        passage.update (input (21, true, true));
+
+        passage.update (input (26, true, true));
+
+        require (passage.snapshot ().record.disposition ==
+                     adk::PassageDisposition::TimedOut,
+                 "completion one tick after timeout is rejected");
+
+        passage.reset ();
+
+        passage.update (input (0, true, false));
+
+        passage.update (input (4, false, false));
+
+        passage.update (input (5, true, false));
+
+        passage.update (input (9, true, false));
+
+        require (passage.snapshot ().phase == adk::PassagePhase::FirstBoundary,
+                 "chatter restarts continuous dwell");
+
+        passage.update (input (10, true, false));
+
+        require (passage.snapshot ().phase == adk::PassagePhase::AwaitingSecond,
+                 "continuous dwell qualifies after chatter");
+    }
+
+    void testSaturatingSequenceAndCounts ()
+    {
+        auto passage = qualifier ();
+
+        require (passage.initialize ().ok (), "saturation initialize");
+
+        const uint32_t maximum = std::numeric_limits<uint32_t>::max ();
+
+        passage.snapshot_.nextSequence    = maximum;
+        passage.snapshot_.acceptedCount   = maximum;
+        passage.snapshot_.suppressedCount = maximum;
+
+        passage.update (input (0, true, false));
+
+        passage.update (input (5, true, false));
+
+        passage.update (input (6, true, true));
+
+        passage.update (input (11, true, true));
+
+        const auto accepted = passage.snapshot ();
+
+        require (accepted.record.sequence == maximum &&
+                     accepted.nextSequence == maximum &&
+                     accepted.acceptedCount == maximum &&
+                     accepted.record.acceptedCount == maximum,
+                 "sequence and accepted count saturate without wrapping");
+
+        passage.update (input (12, false, false));
+
+        passage.update (input (13, true, false));
+
+        const auto suppressed = passage.snapshot ();
+
+        require (suppressed.record.disposition ==
+                         adk::PassageDisposition::DuplicateSuppressed &&
+                     suppressed.suppressedCount == maximum &&
+                     suppressed.record.suppressedCount == maximum,
+                 "suppressed count saturates without wrapping");
+    }
+
+    void testDeterministicReplay ()
+    {
+        const adk::PassageInput trace[] = {
+            input (0, false, false, true, 0), input (1, true, false, true, 0),
+            input (6, true, false, true, 0),  input (7, true, true, true, 2),
+            input (12, true, true, true, 4),  input (13, false, false, true, 4),
+            input (22, false, false, true, 4)};
+        adk::PassageSnapshot first[sizeof (trace) / sizeof (trace[0])];
+        adk::PassageSnapshot second[sizeof (trace) / sizeof (trace[0])];
+        auto                 firstPass  = qualifier ();
+        auto                 secondPass = qualifier ();
+
+        require (firstPass.initialize ().ok () && secondPass.initialize ().ok (),
+                 "replay qualifiers initialize");
+
+        for (size_t index = 0; index < sizeof (trace) / sizeof (trace[0]); ++index)
+        {
+            firstPass.update (trace[index]);
+
+            first[index] = firstPass.snapshot ();
+        }
+
+        for (size_t index = 0; index < sizeof (trace) / sizeof (trace[0]); ++index)
+        {
+            secondPass.update (trace[index]);
+
+            second[index] = secondPass.snapshot ();
+
+            require (sameSnapshot (first[index], second[index]),
+                     "identical trace reproduces every observable field");
+        }
     }
 } // namespace
 
@@ -467,7 +612,12 @@ int main ()
     testResetFaultMetadataAndHealthyRearm ();
 
     testPositionAndConfiguration ();
+
+    testExactEdgesAndChatter ();
+
+    testSaturatingSequenceAndCounts ();
+
+    testDeterministicReplay ();
     std::cout << "passage qualifier tests passed\n";
     return EXIT_SUCCESS;
 }
-// clang-format on

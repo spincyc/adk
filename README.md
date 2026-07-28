@@ -10,12 +10,12 @@ the Arduino Mega 2560.
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–033 are published, host verified, and
+> **Current boundary:** Lessons 001–035 are published, host verified, and
 > compiled for the Mega 2560. All lessons remain experimental, physical
 > acceptance remains open, and the exact electrical revisions used by Lessons
-> 031–033 are not yet qualified. Lesson 034 is the next queued implementation
-> boundary; planned rows below are commitments, not links or support claims.
-> [Lesson 033](lessons/033.md) is the current published project.
+> 031–035 are not yet qualified. Lesson 036 is the active planned project
+> boundary; planned rows below are commitments, not support claims.
+> [Lesson 035](lessons/035.md) is the newest published component.
 
 ## What ADK provides
 
@@ -46,6 +46,7 @@ a printable PDF companion. Each row links to the first lesson in its arc.
 | 025–027 · [start at 025](https://spincyc.github.io/adk/lessons/025/) | Receive-only evidence and telemetry console | Bounded captures, exact packets, freshness, and acknowledgement |
 | 028–030 · [start at 028](https://spincyc.github.io/adk/lessons/028/) | Fault evidence and inert cue simulation | Injectable channel states, confirmation, stop dominance, and audit replay |
 | 031–033 · [start at 031](https://spincyc.github.io/adk/lessons/031/) | Joystick, encoder, and calibration console | Calibrated input, Gray-code transitions, and explicit commit or cancel |
+| 034–035 · [start at 034](https://spincyc.github.io/adk/lessons/034/) · [continue at 035](lessons/035.md) | Magnetic observations and passage qualification | Qualified magnetic evidence, bounded direction, timeout, and suppression |
 
 [View the complete lesson index](https://spincyc.github.io/adk/lessons/) or the
 [supported API](https://spincyc.github.io/adk/api-supported/).
@@ -58,7 +59,7 @@ HTML reference, and PDF lesson exist.
 
 | Lessons | Planned subjects | Planned project |
 |---:|---|---|
-| 034–036 | Magnetic/contact observations; qualified passage events | Magnetic passage logger |
+| 036 | Active planned composition | Magnetic passage logger |
 | 037–039 | Contact dynamics; acoustic envelopes | Percussion sequencer |
 | 040–042 | Reflective/interrupted light; presence and passage | Tabletop course marshal |
 | 043–045 | Resistive environmental probes; thermal/radiant observations | Museum-case monitor |

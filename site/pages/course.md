@@ -29,8 +29,10 @@ lesson number divisible by three is project-bearing.
 | 031 | Calibrated joystick | — | Host verified; E1 bench open |
 | 032 | Quadrature encoder | — | Host verified; E1 bench open |
 | 033 | Calibration policy | Calibration console | Host verified; E1 bench open |
+| 034 | Magnetic observations | Qualified analog/contact evidence | Host verified; exact specimen and E1 bench open |
+| 035 | Passage qualification | Bounded direction and passage evidence | Host verified; exact specimen and E1 bench open |
 
-Lessons 034–081 are retained canonical work;
+Lessons 036–081 are retained canonical work;
 each later three-lesson arc requires an implementation-depth brief before code
 begins.
 

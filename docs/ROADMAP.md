@@ -57,7 +57,11 @@ publication ledger.
 31. deterministic quadrature decoding with invalid-transition evidence in
     lesson 032; and
 32. atomic calibration preview, trim, commit, and cancel composition in lesson
-    033.
+    033;
+33. qualified analog and contact magnetic observations with distinct specimen,
+    dwell, hysteresis, and fault evidence in lesson 034; and
+34. deterministic passage qualification with direction, timeout, duplicate
+    suppression, and optional position corroboration in lesson 035.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
@@ -65,9 +69,9 @@ is experimental rather than hardware supported.
 
 ## Next slice
 
-Lesson 033 is host verified and published with its E1 bench card open. Lesson
-034 is the next queued implementation boundary and first requires its
-implementation-depth brief. Development follows the canonical lessons 034--081 kit expansion, one
+Lessons 034 and 035 are host verified and published with their bench and exact
+specimen gates open. Lesson 036 is the active planned project boundary.
+Development follows the canonical lessons 036--081 kit expansion, one
 implementation-depth three-lesson brief at a time.
 
 Every component requires lifecycle tests, deterministic fakes, a canonical Mega
