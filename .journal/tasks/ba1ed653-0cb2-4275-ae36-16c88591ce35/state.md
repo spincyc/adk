@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-28T00:48:26Z"
-updated_at: "2026-07-28T01:58:55Z"
+updated_at: "2026-07-28T02:15:09Z"
 ---
 
 # Goal
@@ -71,3 +71,11 @@ supporting raw/analyzer evidence; exact Mega, breadboard, and 74HC595 wiring;
 safe fixture changes; and complete current/provenance fields. Exact LDR, RGB,
 and seven-segment specimens remain unpowered inventory gates. The next repair
 unit is Lessons 011--012.
+
+Lessons 011--012 are software-prepared and independently reviewed under the
+clarified learner-flow policy. Their canonical examples provide safe ordered
+outputs and bounded shutdown. Actual Mega-header locators, exact breadboard
+coordinates, staged visible payoffs, corrected parts/resistor counts, size
+baselines, and publication artifacts agree. Learner-facing acceptance cards
+are absent; automated gates remain behind the scenes. The next repair unit is
+Lessons 013--014.

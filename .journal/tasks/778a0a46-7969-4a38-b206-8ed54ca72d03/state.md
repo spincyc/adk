@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-28T01:25:42Z"
-updated_at: "2026-07-28T01:25:42Z"
+updated_at: "2026-07-28T02:02:23Z"
 ---
 
 # Goal
@@ -33,6 +33,15 @@ Ensure every published lesson has enough accurate pencil-style drawings to repro
   unresolved; never make a drawing imply an electrically qualified pinout.
 - Add the same illustration-accuracy gate to future lessons as they are
   implemented.
+- Audit all hands-on projects, with the potato launcher first, and add multiple
+  useful pencil drawings wherever they materially improve assembly or
+  understanding.
+- Treat visual progress indicators as first-class instruction: show the
+  expected visible state after each meaningful build stage so learners know
+  when they are ready for the next payoff.
+- Prefer complementary overview, exact wiring, staged assembly, checkpoint,
+  and troubleshooting plates; “more” must add information rather than repeat
+  decoration.
 - Build and visually inspect affected PDFs, and keep HTML/download references
   consistent.
 
@@ -40,7 +49,9 @@ Ensure every published lesson has enough accurate pencil-style drawings to repro
 
 Apply the audit to published Lessons 001--033 first. Lessons 034--081 receive
 the gate when their implementation boundary creates canonical circuits; do not
-invent present-day wiring for lessons that do not yet exist.
+invent present-day wiring for lessons that do not yet exist. Audit buildable
+projects in parallel, beginning with the potato launcher. Add research-track
+visuals only when they clarify a real assembly or signal path.
 
 ## Original request
 

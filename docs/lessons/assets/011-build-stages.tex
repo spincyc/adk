@@ -1,0 +1,31 @@
+\begin{tikzpicture}[
+  x=1mm,y=1mm,
+  plate/.style={draw=black!80,rounded corners=2mm,fill=black!2},
+  lamp/.style={draw=black!85,circle,minimum size=7mm,inner sep=0},
+  lit/.style={lamp,fill=black!55},
+  note/.style={font=\scriptsize,align=center}]
+  \draw[plate] (0,0) rectangle (49,59);
+  \node[font=\bfseries\small] at (24.5,54) {1. Main head};
+  \node[lamp] at (13,42) {R};
+  \node[lamp] at (24.5,42) {Y};
+  \node[lit]  at (36,42) {G};
+  \node[note] at (24.5,31) {D30 / D31 / D32\\rows 10--18};
+  \draw[->,line width=0.45mm] (8,20) -- (40,20);
+  \node[note] at (24.5,11) {PAYOFF\\green \(\to\) yellow \(\to\) red};
+
+  \draw[plate] (53,0) rectangle (102,59);
+  \node[font=\bfseries\small] at (77.5,54) {2. Side interlock};
+  \node[lit]  at (64,42) {R};
+  \node[lamp] at (77.5,42) {Y};
+  \node[lamp] at (91,42) {G};
+  \node[note] at (77.5,31) {D33 / D34 / D35\\rows 19--27};
+  \node[note] at (77.5,14) {PAYOFF\\one road green;\\the other stays red};
+
+  \draw[plate] (106,0) rectangle (155,59);
+  \node[font=\bfseries\small] at (130.5,54) {3. Walk request};
+  \node[lamp] at (120,42) {W};
+  \node[lit]  at (141,42) {S};
+  \node[note] at (130.5,31) {D36 / D37: rows 28--33\\D22 button: row 40};
+  \draw[->,line width=0.45mm] (116,22) -- (145,22);
+  \node[note] at (130.5,11) {PAYOFF\\press now; WALK waits\\until both reds};
+\end{tikzpicture}
