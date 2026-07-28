@@ -3,10 +3,10 @@ schema_version: 1
 repository_uuid: "51e8871e-d671-4f8b-9e07-505dbc2090e8"
 primary_remote: "https://github.com/spincyc/adk.git"
 branch: "main"
-head_observed: "aec5ac0"
-working_tree_state: "pre-bench-remediation-005-006"
+head_observed: "bba8f8f"
+working_tree_state: "pre-bench-remediation-009-010"
 active_tasks: ["ba1ed653-0cb2-4275-ae36-16c88591ce35"]
-updated_at: "2026-07-28T01:15:12Z"
+updated_at: "2026-07-28T01:32:17Z"
 ---
 
 # Repository recovery state
@@ -31,5 +31,5 @@ active; no physical observation is claimed.
 The physical campaign preparation audit is complete. Child creation is blocked
 on named human and equipment prerequisites; its discovered software
 remediation remains runnable.
-Numeric pre-bench remediation has checkpointed Lessons 001--004 and advances
-to Lessons 005--006.
+Numeric pre-bench remediation has checkpointed Lessons 001--008 and advances
+to Lessons 009--010.

@@ -2,53 +2,132 @@
 
 namespace {
 
+    constexpr unsigned long acquisitionEvidenceMs = 250;
+    constexpr unsigned long separationMs          = 750;
     constexpr adk::PinId                   sounderPin = 6;
     constexpr adk::PiezoSounder::Frequency cueHz      = 440;
     const adk::Duration                    cueLength   (250);
 
-    adk::Runtime      runtime;
-    adk::PiezoSounder sounder (runtime.resources (), sounderPin);
-    bool              halted = false;
+    enum class Phase : uint8_t
+    {
+        AcquisitionEvidence,
+        Separation,
+        Cue,
+        Shutdown
+    };
 
-    bool playWelcomeTone ();
+    adk::Runtime      runtime;
+    adk::PiezoSounder sounder             (runtime.resources (), sounderPin);
+    adk::MonoLed      acquisitionEvidence (runtime.resources (), LED_BUILTIN);
+
+    bool          ready          = false;
+    Phase         phase          = Phase::Shutdown;
+    unsigned long phaseStartedAt = 0;
+
+    bool phaseElapsed (unsigned long now, unsigned long duration);
+    void enterPhase   (Phase next, unsigned long now);
+    void stopSafely   ();
 
 } // namespace
 
 void setup ()
 {
-    halted = !playWelcomeTone ();
+    ready = sounder.initialize ().ok ();
+    if (ready)
+    {
+        ready = acquisitionEvidence.initialize ().ok ();
+    }
+
+    if (ready)
+    {
+        phaseStartedAt = millis ();
+
+        enterPhase (Phase::AcquisitionEvidence, phaseStartedAt);
+    }
+    else
+    {
+        stopSafely ();
+    }
 }
 
 void loop ()
 {
-    if (halted)
+    if (!ready)
     {
         return;
     }
 
-    const adk::TimePoint now (millis ());
+    const unsigned long now = millis ();
+    switch (phase)
+    {
+        case Phase::AcquisitionEvidence:
+            if (phaseElapsed (now, acquisitionEvidenceMs))
+            {
+                enterPhase (Phase::Separation, now);
+            }
+            break;
+        case Phase::Separation:
+            if (phaseElapsed (now, separationMs))
+            {
+                enterPhase (Phase::Cue, now);
+            }
+            break;
+        case Phase::Cue:
+            sounder.update (adk::TimePoint (now));
 
-    sounder.update (now);
+            if (!sounder.sounding ())
+            {
+                enterPhase (Phase::Shutdown, now);
+            }
+            break;
+        case Phase::Shutdown:
+            stopSafely ();
+            break;
+    }
 }
 
 namespace {
 
-    bool playWelcomeTone ()
+    bool phaseElapsed (unsigned long now, unsigned long duration)
     {
-        if (!sounder.initialize ().ok ())
+        return now - phaseStartedAt >= duration;
+    }
+
+    void enterPhase (Phase next, unsigned long now)
+    {
+        phase          = next;
+        phaseStartedAt = now;
+
+        adk::Status status;
+        switch (phase)
         {
-            return false;
+            case Phase::AcquisitionEvidence:
+                status = acquisitionEvidence.on ();
+                break;
+            case Phase::Separation:
+                status = acquisitionEvidence.off ();
+                break;
+            case Phase::Cue:
+                status = sounder.play (cueHz, cueLength, adk::TimePoint (now));
+                break;
+            case Phase::Shutdown:
+                stopSafely ();
+                return;
         }
 
-        const adk::TimePoint now (millis ());
-
-        if (sounder.play (cueHz, cueLength, now).ok ())
+        if (!status.ok ())
         {
-            return true;
+            stopSafely ();
         }
+    }
+
+    void stopSafely ()
+    {
+        acquisitionEvidence.shutdown ();
 
         sounder.shutdown ();
-        return false;
+        ready = false;
+        phase = Phase::Shutdown;
     }
 
 } // namespace

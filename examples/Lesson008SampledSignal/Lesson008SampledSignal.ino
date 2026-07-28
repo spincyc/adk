@@ -8,6 +8,10 @@ namespace {
     constexpr adk::PinId diagnosticPin    = 13;
 
     constexpr uint32_t sampleIntervalMs = 20;
+    constexpr uint32_t experimentDurationMs = 120000;
+    constexpr uint32_t acquisitionPulseMs  = 250;
+    constexpr uint32_t observationGapMs    = 750;
+    constexpr uint32_t shutdownWitnessMs   = 250;
 
     const adk::LinearCalibrationConfig calibrationConfig =
     {
@@ -18,39 +22,73 @@ namespace {
     adk::AnalogInput       potentiometer  (runtime.resources (), potentiometerPin);
     adk::PwmOutput         brightnessLed  (runtime.resources (), brightnessPin);
     adk::MonoLed           diagnosticLed  (runtime.resources (), diagnosticPin);
+#if defined(ADK_LESSON008_INJECT_D6_CONFLICT)
+    adk::PwmOutput         acquisitionBlocker (runtime.resources (), brightnessPin);
+#endif
     adk::LinearCalibration calibration    (calibrationConfig);
     adk::MovingAverage     average        (8);
     adk::Deadband          brightnessHold (4);
 
     uint32_t nextSampleMs = 0;
+    uint32_t stopAtMs     = 0;
     bool     ready        = false;
+    bool     halted       = false;
 
     bool acquireCircuit ();
 
-    bool showReady ();
+    bool showAcquisition ();
 
     bool observationDue   (uint32_t now);
 
     bool chooseBrightness (adk::PwmOutput::Duty& brightness);
 
+    void reportStages     (uint16_t raw,
+                           uint16_t calibrated,
+                           uint16_t smoothed,
+                           uint16_t stable);
+
     void stopSafely ();
+
+    void haltSafely ();
 
 } // namespace
 
 void setup ()
 {
+    Serial.begin (115200);
+
+#if defined(ADK_LESSON008_INJECT_D6_CONFLICT)
+    acquisitionBlocker.initialize ();
+#endif
+
     ready        = acquireCircuit                                               () &&
-                   showReady                                                    ();
+                   showAcquisition                                              ();
     nextSampleMs = millis                                                       ();
+    stopAtMs     = nextSampleMs + experimentDurationMs;
 
     if (!ready)
     {
         stopSafely ();
+#if defined(ADK_LESSON008_INJECT_D6_CONFLICT)
+        acquisitionBlocker.shutdown ();
+#endif
     }
 }
 
 void loop ()
 {
+    if (halted)
+    {
+        return;
+    }
+
+    if (ready &&
+        static_cast<int32_t> (millis () - stopAtMs) >= 0)
+    {
+        haltSafely ();
+        return;
+    }
+
     if (!ready || !observationDue (millis ()))
     {
         return;
@@ -101,9 +139,22 @@ namespace {
         return true;
     }
 
-    bool showReady ()
+    bool showAcquisition ()
     {
-        return diagnosticLed.on ().ok ();
+        if (!diagnosticLed.on ().ok ())
+        {
+            return false;
+        }
+
+        delay (acquisitionPulseMs);
+
+        if (!diagnosticLed.off ().ok ())
+        {
+            return false;
+        }
+
+        delay (observationGapMs);
+        return true;
     }
 
     bool observationDue (uint32_t now)
@@ -119,8 +170,10 @@ namespace {
 
     bool chooseBrightness (adk::PwmOutput::Duty& brightness)
     {
-        const adk::Result<uint16_t> calibrated = calibration.map              (
-            potentiometer.read ());
+        const uint16_t raw = potentiometer.read ();
+
+        const adk::Result<uint16_t> calibrated = calibration.map (raw);
+
         if (!calibrated.ok ())
         {
             return false;
@@ -135,7 +188,22 @@ namespace {
 
         const uint16_t stable = brightnessHold.addSample (smoothed.value ());
         brightness            = static_cast<adk::PwmOutput::Duty> (stable);
+        reportStages (raw, calibrated.value (), smoothed.value (), stable);
         return true;
+    }
+
+    void reportStages (uint16_t raw,
+                       uint16_t calibrated,
+                       uint16_t smoothed,
+                       uint16_t stable)
+    {
+        Serial.print   (raw);
+        Serial.print   (',');
+        Serial.print   (calibrated);
+        Serial.print   (',');
+        Serial.print   (smoothed);
+        Serial.print   (',');
+        Serial.println (stable);
     }
 
     void stopSafely ()
@@ -144,6 +212,14 @@ namespace {
         potentiometer.shutdown ();
         diagnosticLed.shutdown ();
         ready = false;
+    }
+
+    void haltSafely ()
+    {
+        stopSafely ();
+
+        delay (shutdownWitnessMs);
+        halted = true;
     }
 
 } // namespace

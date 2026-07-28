@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-28T00:48:26Z"
-updated_at: "2026-07-28T01:15:12Z"
+updated_at: "2026-07-28T01:32:17Z"
 ---
 
 # Goal
@@ -48,4 +48,19 @@ Lessons 003--004 are also software-prepared and independently reviewed.
 Canonical pins, acquisition-only D13 evidence, finite shutdown, current and
 physical weak-bias measurements, full cards, project documentation, size
 baselines, and publication artifacts agree. Physical acceptance remains open.
-The next repair unit is Lessons 005--006.
+
+Lessons 005--006 are software-prepared and independently reviewed. Their
+canonical examples now provide bounded acquisition evidence and finite
+input-independent shutdown; the Lesson 006 fixed replay is an executable
+compile-time artifact. Board-specific D13 load and physical weak-bias methods,
+full cards, project documentation, size baselines, and publication artifacts
+agree. Physical acceptance remains open. The next repair unit is Lessons
+007--008.
+
+Lessons 007--008 are software-prepared and independently reviewed. Their
+canonical examples provide bounded acquisition and input-independent
+shutdown, exact raw and intermediate records, deterministic rollback, reset,
+and power-removal procedures. Exact circuit nets, timing and weak-bias
+instrumentation, current gates, size baselines, and publication artifacts
+agree. Physical acceptance remains open. The next repair unit is Lessons
+009--010.

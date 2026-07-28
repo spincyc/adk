@@ -1,7 +1,7 @@
 ---
 schema_version: 1
-generated_at: "2026-07-28T01:15:20Z"
-task_count: 19
+generated_at: "2026-07-28T01:32:54Z"
+task_count: 20
 ---
 
 # Work queue
@@ -14,6 +14,7 @@ This file is a rebuildable view. Task `state.md` files are authoritative.
 
 ## Queued
 
+- `778a0a46-7969-4a38-b206-8ed54ca72d03` — audit and complete lesson wiring illustrations [queued, normal]
 - `35f3ab7c-b93b-4d75-99c1-dbaedbd36d7d` — bound the next USB research milestone [queued, low]
 - `8a7a5ee1-b646-4f0b-83b2-8380c7f259e6` — bound the next HDMI/shared-fabric milestone [queued, low]
 

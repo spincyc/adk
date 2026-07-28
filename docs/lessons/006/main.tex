@@ -141,7 +141,10 @@ then presents one immutable \texttt{SimonInput}. Output adapters consume one
 snapshot after the update. \texttt{RgbLed} composes three supported
 \texttt{PwmOutput}s and records the three channel/resistor specifications.
 \texttt{PiezoSounder} owns its pin and timer claim. The canonical
-\texttt{examples/Lesson006Simon} sketch uses this complete composition.
+\texttt{examples/Lesson006Simon} sketch uses this complete composition. A
+separate \texttt{MonoLed} on D13 pulses for 250\,ms after every resource is
+acquired, followed by 750\,ms with D13 and all game outputs dark. Button
+sampling and game behavior begin only after that separator.
 
 \section{Orientation drawing}
 
@@ -161,16 +164,18 @@ snapshot after the update. \texttt{RgbLed} composes three supported
 \textbf{Pin assignment.}
 
 \begin{center}
-\begin{tabular}{@{}llll@{}}
+\small
+\begin{tabularx}{\linewidth}{@{}l l X l@{}}
 \toprule
 Function & Mega pins & Connection & Policy\\
 \midrule
+acquisition & D13 & built-in LED & 250\,ms pulse after successful initialization\\
 buttons 1--4 & D22--D25 & pin \(\rightarrow\) switch \(\rightarrow\) GND & internal pull-up\\
 cue LEDs 1--4 & D30--D33 & pin \(\rightarrow330\,\Omega\rightarrow\) anode; cathode \(\rightarrow\) GND & active-high\\
 RGB R/G/B & D5/D6/D7 & pin \(\rightarrow330\,\Omega\rightarrow\) anode; common cathode \(\rightarrow\) GND & PWM\\
 passive piezo & D11 & pin \(\rightarrow100\,\Omega\rightarrow\) piezo \(+\); piezo \(-\rightarrow\) GND & tone\\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{center}
 
 \begin{center}
@@ -216,6 +221,15 @@ different wiring and inverted duty semantics. Four-pin tactile switches often
 join same-side legs internally; find the contacts that change with a continuity
 meter while unpowered. All ground symbols join Mega GND.
 
+\textbf{Finite shutdown.} Successful resource acquisition simultaneously
+begins the D13 pulse and an input-independent 120-second deadline. Game behavior
+therefore begins 1 second into that interval. At expiry the sketch stops the
+tone and commands every light inactive, preserves that observable inactive
+state for 250 ms, then shuts down endpoints in reverse acquisition order.
+D5--D7, D11, D13, D22--D25, and D30--D33 are then inputs/high impedance; the
+loop remains halted until upload or reset. Buttons never control this deadline,
+so a near-simultaneous press remains chord evidence only.
+
 \subsection{Current budget}
 
 For each LED channel,
@@ -229,9 +243,14 @@ worst commanded simultaneous current, then compare it with every applicable
 per-pin, port-group, and package limit in the ATmega2560 datasheet:
 
 \[
- I_{\rm worst}=I_{\rm cue}+I_R+I_G+I_B
+ I_{\rm worst}=I_{\rm D13}+I_{\rm cue}+I_R+I_G+I_B
  =\blank{1.5in}\ {\rm mA}.
 \]
+
+Derive \(I_{\rm D13}\) from the exact retained Mega board revision's primary
+schematic and measured rail; clone boards may not implement the built-in LED
+branch identically. Include the bounded acquisition pulse in the per-pin,
+port-group, package, and aggregate review.
 
 Also calculate the wiring-fault/software-fault bound with all seven dies
 commanded on. Use each die's minimum datasheet \(V_f\), not one typical red
@@ -373,8 +392,22 @@ expected \texttt{Timeout}.
 \newpage
 \section{Golden replay with a fixed source}
 
-Use the configuration and source from the API listing. Each row is one call;
-do not invent intermediate ticks.
+Use the configuration and source from the API listing. The canonical Mega
+adapter contains the same bounded fixture behind
+\texttt{ADK\_LESSON006\_FIXED\_REPLAY}. Build that exact artifact with:
+
+\begin{lstlisting}[style=adkcpp]
+arduino-cli compile --fqbn arduino:avr:mega \
+  --build-property compiler.cpp.extra_flags=-DADK_LESSON006_FIXED_REPLAY=1 \
+  examples/Lesson006Simon
+\end{lstlisting}
+
+The default value is zero and retains the seeded demonstration. Value one
+selects only the two-entry \texttt{One}, \texttt{Three} source and the published
+100/50/500/100\,ms configuration with maximum length two. Record the define
+and resulting binary size with the bench evidence. Each replay-table row is
+one engine call; do not invent intermediate ticks when reproducing the host
+trace.
 
 \begin{center}
 \small
@@ -440,7 +473,7 @@ same PRNG seed twice & identical cues and snapshots & \checkbox{}\\
 different seeds & recorded, deterministic vectors; difference not assumed at every draw & \checkbox{}\\
 zero seed & normalized seed and vector are stable & \checkbox{}\\
 press mismatch & \texttt{GameFailure}/\texttt{Mismatch}; observed cue retained & \checkbox{}\\
-two simultaneous presses & \texttt{InvalidInput}; no order dependence & \checkbox{}\\
+exact two-bit host frame & \texttt{InvalidInput}; no order dependence & \checkbox{}\\
 input bit 4 & update returns \texttt{InvalidArgument} & \checkbox{}\\
 press at timeout & \texttt{Timeout} wins & \checkbox{}\\
 held correct button & remains \texttt{AwaitRelease} & \checkbox{}\\
@@ -486,45 +519,119 @@ accessible multimodal feedback without changing game correctness.
 
 \section{Mega 2560 acceptance}
 
+\warningbox{Physical acceptance is pending. Do not fill an observation from a
+host trace, successful compile, expected LED state, or this worksheet. A named
+operator and independent reviewer must observe the retained specimens on the
+identified bench.}
+
 \begin{enumerate}
-  \item Record repository commit, Arduino CLI and AVR core versions, board ID,
-        supply, meter, and logic-analyzer model if used.
+  \item Record repository commit, Arduino CLI and AVR core versions, operator,
+        reviewer, exact board, retained specimens, primary sources, supply and
+        current limit, meter, and logic-analyzer model if used.
   \item Disconnect power. Build one branch at a time from the exact schematics.
         Verify seven 330\(\Omega\) resistors, RGB common cathode, four button
         contact pairs, passive piezo, and common ground.
   \item Compile the supported Simon engine and adapter example for
-        \texttt{arduino:avr:mega}. Record flash and static RAM separately.
-  \item Initialize with the fixed sequence One, Three. Verify all outputs are
-        inactive before successful initialization and after shutdown.
+        \texttt{arduino:avr:mega} with the fixed-replay fixture enabled, using
+        the exact command in the golden-replay section. Record the define,
+        flash, and static RAM.
+  \item Reset that artifact, whose bounded source is exactly One, Three.
+        Predict D13 off before
+        acquisition, on for 250\,ms, then off through the 750\,ms separator.
+        Observe it separately
+        from every cue, RGB, and sound behavior.
   \item Verify each button's raw and debounced diagnostic state separately.
         Then verify cue-to-button mapping One through Four.
   \item Play the golden two-cue game. Observe cue LED, RGB state, tone, and
         serial snapshot at every transition.
-  \item Press two buttons as nearly simultaneously as practical. Verify a
-        deterministic invalid-input failure; use a host replay for exact
-        simultaneity.
+  \item Press two buttons as nearly simultaneously as practical and record only
+        a physical chord observation. Use the two-bit host replay---not hand
+        timing---for the exact-simultaneity claim.
   \item Verify mismatch, timeout, round success, game success, terminal restart,
         and a button held through reset.
   \item Run the same recorded seed twice. Compare the displayed sequence, not
         just the final score.
-  \item Invoke shutdown during PlaybackOn, AwaitPress, and sound. Measure cue,
-        RGB, and piezo pins inactive/high impedance. Remove power before teardown.
+  \item Arrange separate runs so the 120-second deadline expires during
+        PlaybackOn, AwaitPress, and sound. At each expiry, measure all behavior
+        outputs and D13 inactive throughout the 250 ms interval, then confirm
+        shutdown releases the pins and the loop remains halted. Reset between
+        trials and record the expected reacquisition indication.
+  \item Prove high impedance on D5--D7, D11, D13, and D30--D33 with a reviewed
+        10\,k\(\Omega\)/10\,k\(\Omega\) midpoint fixture installed on one pin
+        at a time while unpowered. Calculate driven and released ranges from
+        measured rail, resistor tolerance, and DMM input resistance. Record D6
+        separately. Never move the fixture while powered.
+  \item Remove USB and every other source. Verify the rail is de-energized
+        before teardown.
 \end{enumerate}
+
+\subsection{Identity, configuration, and review card}
 
 \begin{center}
 \begin{tabularx}{\linewidth}{@{}l X l X@{}}
 \toprule
 Field & Record & Field & Record\\
 \midrule
-Commit & & Mega board ID &\\[7pt]
-CLI / core & & Supply &\\[7pt]
-Flash / RAM & & Meter / analyzer &\\[7pt]
-Algorithm & & Normalized seed &\\[7pt]
-Worst LED current & & Shutdown measurements &\\[7pt]
-Seven-die fault bound & & Piezo part / rating &\\[7pt]
+Commit / sketch & & Operator / date &\\[7pt]
+Independent reviewer / date & & Result: pass / fail / open &\\[7pt]
+Mega make / model / revision / ID & & USB supply / measured rail / limit &\\[7pt]
+Board schematic / D13 branch & & D13 predicted / measured load &\\[7pt]
+CLI / AVR core / upload command / port & & Meter / analyzer / probe reference &\\[7pt]
+Four switch IDs / source & & Four cue LED IDs / polarity source &\\[7pt]
+RGB ID / topology / pinout source & & Piezo ID / passive rating / source &\\[7pt]
+Seven measured resistors & & Series piezo resistor &\\[7pt]
+Flash / static RAM & & Algorithm / normalized seed &\\[7pt]
+Deviations / uncertainty & & Final power-removal check &\\[7pt]
 \bottomrule
 \end{tabularx}
 \end{center}
+
+\subsection{Prediction / observation / interpretation record}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.19\linewidth}X X X@{}}
+\toprule
+Stage / location / timing & Prediction & Observation & Interpretation\\
+\midrule
+Unpowered continuity and polarity & No shorts; values and pinouts match sources & &\\[13pt]
+D13 after setup & 250\,ms pulse then 750\,ms dark; game outputs inactive & &\\[13pt]
+D22--D25 raw, then debounced & Each released high and pressed low; one event per press & &\\[13pt]
+Fixed replay behavior & Cue/RGB/tone sequence matches published timestamps & &\\[13pt]
+Near-simultaneous hand press & Physical chord only; no exact timing claim & &\\[13pt]
+Reset with one button held & Reacquires resources; no press event until release/repress & &\\[13pt]
+120 s deadline / 250 ms interval & Tone and all lights inactive, then reverse shutdown and halt & &\\[13pt]
+Physical power removal & Rail de-energized before teardown & &\\[13pt]
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Current and per-pin safe-state record}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}l X X X@{}}
+\toprule
+Item & Prediction / method & Observation & Interpretation\\
+\midrule
+Each of 7 LED branches & rail, resistor drop, \(I=V_R/R\) & &\\[12pt]
+Normal commanded total & D13 + cue + RGB; compare pin/port/package limits & &\\[12pt]
+Seven-die fault bound & minimum \(V_f\); compare pin/port/package limits & &\\[12pt]
+Piezo D11 & identified rating and bounded command & &\\[12pt]
+D5 / D6 / D7 after shutdown & 10 k\(\Omega\)/10 k\(\Omega\) midpoint trial & &\\[12pt]
+D11 / D13 after shutdown & 10 k\(\Omega\)/10 k\(\Omega\) midpoint trial & &\\[12pt]
+D30 / D31 / D32 / D33 after shutdown & 10 k\(\Omega\)/10 k\(\Omega\) midpoint trial & &\\[12pt]
+D22 / D23 / D24 / D25 after shutdown & pulls released; midpoint trial & &\\[12pt]
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\textbf{Stop conditions.} Stop immediately, record the incomplete stage, and
+remove USB for heat, odor, reset, painful or distorted sound, unexpected
+brightness, a specimen identity or pinout mismatch, measured current above the
+reviewed aggregate bound, or any observation inconsistent with the predicted
+safe state. Do not continue by revising the prediction after observing the
+result.
 
 \textbf{Status language.} Until this checklist is signed, report ``Simon engine
 host verified; hardware adapter experimental.'' Compilation alone is not
@@ -606,7 +713,8 @@ Golden replay passed twice: \checkbox{}\quad
 Chord rejected: \checkbox{}\quad
 Current calculated: \checkbox{}\quad
 Shutdown measured: \checkbox{}\quad
-Power removed: \checkbox{}
+Power removed: \checkbox{}\quad
+Independent review: \checkbox{}
 
 \vfill
 \begin{center}
