@@ -24,6 +24,13 @@ microphone board enters Lesson 038 only after its analog envelope output and,
 when used, distinct threshold output are traced and qualified. “Big” and
 “small” remain inventory labels, not interchangeable revisions.
 
+The
+[sensor evidence report](../research/LESSONS_037_039_SENSOR_EVIDENCE_REPORT.md)
+records the official-source research, including the unresolved `HDX HDX`
+photograph versus bundled Light Country AT-family data and the unidentified
+sound-module circuitry. It narrows the inspection but closes none of the
+exact-specimen gates.
+
 Use these terms throughout:
 
 ```text

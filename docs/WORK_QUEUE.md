@@ -23,6 +23,9 @@ not promote work or replace this ledger.
   downloads, and navigation. Its E1 physical acceptance card remains open.
 - Lessons 034--036 are complete through their non-hardware gates. Lessons
   037--039 have complete E0 cores, tests, and hardware-independent drafts.
+  Their [sensor evidence report](research/LESSONS_037_039_SENSOR_EVIDENCE_REPORT.md)
+  narrows the contact and acoustic candidates from official sources while
+  preserving all six exact-specimen requirements.
   Their linked exact-specimen Mega example, authoritative schematic,
   promotion, and all E1 bench gates remain open.
 - The USB research track has a deterministic product-native `Cau`/`Pau`
