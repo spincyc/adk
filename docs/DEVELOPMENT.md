@@ -202,6 +202,30 @@ policy, packaging promise, canonical-source relationship, or several existing
 consumers, stop promotion and discuss bounded alternatives with the user.
 Record the consequential decision and migration impact before remediation.
 
+## Noncanonical lesson drafts
+
+Review material may live under `docs/design/drafts/` while a lesson is still
+being designed. That directory is the only lesson-draft area. Its contents are
+noncanonical working material: they are not lesson pages, downloads, examples,
+schematics, acceptance records, publication candidates, or support claims.
+
+Every Markdown and TeX draft places a conspicuous noncanonical,
+not-published notice near the beginning of its rendered body. Draft prose must
+not link to a lesson download, canonical lesson route, canonical sketch, or
+previous/next lesson navigation, and must not describe another draft as an
+accessible published alternative. It may identify governing design and policy
+records as review inputs while stating the gates that remain open.
+
+Promotion is relocation, not discovery. Move reviewed material into
+`docs/lessons/`, `site/pages/lessons/`, `examples/`, and the configured lesson
+inventory only as one explicit integration boundary. Complete every applicable
+source, correctness, Arduino, hardware, publication, and release gate; a draft
+path, filename, locally built PDF, or passing host test grants no promotion.
+Explicit staging allowlists are the primary isolation boundary. As a
+conservative backstop, site staging also rejects unchanged draft artifacts,
+even when copied or renamed outside the draft directory. Promotion must modify
+or relocate the draft deliberately; an identical canonical copy is rejected.
+
 ## Exact acceptance gates
 
 Run these gates in order. Record the commands, tool versions, board, result, and

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import shutil
 import subprocess
 import sys
@@ -19,6 +20,31 @@ CONFIG = ROOT / "mkdocs.yml"
 
 class SiteError(RuntimeError):
     """A site input or tool problem that requires attention."""
+
+
+def reject_draft_leaks(
+    draft_root: Path | None = None,
+    staged_root: Path | None = None,
+) -> None:
+    """Reject exact draft artifacts copied or renamed into the staged site."""
+    draft_root = draft_root or ROOT / "docs/design/drafts"
+    staged_root = staged_root or SOURCE_ROOT
+    if not draft_root.is_dir():
+        return
+
+    draft_digests: dict[bytes, Path] = {}
+    for source in sorted(path for path in draft_root.rglob("*") if path.is_file()):
+        digest = hashlib.sha256(source.read_bytes()).digest()
+        draft_digests[digest] = source
+
+    for staged in sorted(path for path in staged_root.rglob("*") if path.is_file()):
+        digest = hashlib.sha256(staged.read_bytes()).digest()
+        source = draft_digests.get(digest)
+        if source is not None:
+            raise SiteError(
+                "noncanonical draft entered staged site: "
+                f"{source} -> {staged}"
+            )
 
 
 def copy_tree(source: Path, destination: Path, *, required: bool = True) -> None:
@@ -190,6 +216,7 @@ def stage() -> None:
             page.unlink()
     copy_tree(ROOT / "site/assets", SOURCE_ROOT / "assets")
     copy_lesson_materials()
+    reject_draft_leaks()
 
 
 def mkdocs(*arguments: str) -> None:

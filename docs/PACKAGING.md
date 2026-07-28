@@ -118,6 +118,19 @@ documentation formats. HTML should carry links, API details, corrections, and
 searchable code. PDFs should emphasize bench procedure, worksheets, diagrams,
 and printable observations; they need not duplicate the HTML prose.
 
+Lesson design drafts are isolated under `docs/design/drafts/`. Packaging and
+site discovery must never recurse into that directory or infer publication
+from a lesson number or familiar filename there. Drafts do not enter
+`doc/lessons/`, `site/pages/lessons/`, `examples/`, configured `LESSONS` or
+`EXAMPLES`, release archives, downloads, navigation, or supported API
+surfaces.
+
+Promotion requires moving the reviewed sources into those canonical locations,
+adding the lesson and its one canonical example to the literal configuration,
+and passing the complete acceptance sequence in `DEVELOPMENT.md`. Copying a
+draft into a publishable tree, linking it from a canonical page, or building a
+local PDF is not promotion.
+
 ## Local gates
 
 Install the AVR core once:
