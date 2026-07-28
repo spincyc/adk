@@ -80,6 +80,7 @@ qualified.
 | [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Host verified; powered adapter/bench open | Preserve the pure-policy publication; qualify exact specimens before powered adapters, wiring, schematics, or E1 acceptance |
 | [043--045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Host verified; powered adapter/bench open | Preserve the E0 synthetic-replay publication; qualify exact MPU/QMI specimens independently before powered adapters, wiring, schematics, or E1 acceptance |
 | [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Host verified; powered input/motion bench open | Preserve the E0 copied-evidence and logical-intent publication; qualify exact inputs at E1 and the exact restrained stepper system independently at E2 |
+| [049--051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Active integration; implementation-ready plan | Implement and verify the admitted E0 synthetic identity, bounded homing, and inert carousel policies; retain exact powered endpoints/media at E1 and restrained motion at E2 as separate open gates |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -120,7 +121,7 @@ work; retail kit names are not electrical identities.
 | [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Host verified; powered adapter/bench open | Optical observations, presence, and tabletop course marshal are published as pure policy; explicit button authorization is fixed, while powered exact-specimen and bench gates remain open |
 | [043--045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Host verified; powered adapter/bench open | Copied inertial samples, pure orientation/presentation intent, and stationary hand-operated tabletop balance instrument are published as E0 replay; no powered adapter, I2C, wiring, schematic, or E1 claim |
 | [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Host verified; powered input/motion bench open | `InteractionIntentPolicy`, `BoundedStepperSequence`, and `KineticLightSculpture` publish copied tactile/directional evidence, bounded logical coil intent, transactional authorization, independent stop precedence, and semantic light intent at E0; powered inputs remain E1-gated and energized motion remains E2-gated |
-| [049--051](projects/component_project_cadence.md) | Active integration | Local identity records, bounded homing policy, and inert parts carousel |
+| [049--051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Active integration; implementation-ready plan | Local identity records, bounded homing policy, and inert parts carousel |
 | [052--054](projects/component_project_cadence.md) | Queued; exact emitter gated | Known-kit IR capture, bounded listed IR-emission family, command translator |
 | [055--057](projects/component_project_cadence.md) | Queued | Constraint model, fault-aware panel, inert escape-room console |
 | [058--060](projects/component_project_cadence.md) | Queued | Multiplexed digits, MAX7219 display transport, timing desk |
@@ -177,13 +178,33 @@ ULN2003 identities, winding and clamp topology, separate current-limited
 supply, coil current and thermal limits, mechanical restraint, independent
 stop and power removal, and measured motion acceptance remain E2-gated.
 Lessons 049--081 remain canonical subjects and retained work in the engagement
-order above, but their cadence entries are not implementation-ready lesson
-plans. Before code begins for each later three-lesson
-arc, expand it to the same depth as 031--033: public values and interfaces,
-resource and pin budgets, deterministic fixture and failure matrices,
-narrative example flow, staged circuit-native experiments, HTML/PDF division,
-specimen gates, and explicit bench acceptance. “Planned specimen coverage”
-never means that an exact kit module is supported.
+order above. Lessons 049--051 are the sole exception to the later-arc planning
+hold: their
+[implementation-depth plan](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md)
+and the Lesson
+[049 identity](design/LESSON_049_IDENTITY_STRESS_PASS.md),
+[050 homing](design/LESSON_050_HOMING_STRESS_PASS.md), and
+[051 carousel](design/LESSON_051_CAROUSEL_STRESS_PASS.md) stress passes
+durably admit implementation, but do not claim that implementation exists.
+Their E0 boundary is simulated: copied synthetic identity and key evidence,
+fixed caller-owned record images, pure bounded homing and logical position,
+deterministic reconstruction, and inert actuator and presentation intent.
+This is not a nonvolatile-media durability claim. E1 remains separately gated
+on exact RFID, keypad, home, stop,
+indicator, display, and nonvolatile-media endpoints; their primary evidence,
+pin and resource maps, authoritative schematics, rollback, safe-state, and
+bench records remain open. E2 remains separately gated on exact
+stepper/driver and servo identities, independently switchable current-limited
+actuator power, restraint, stop and power removal, and measured homing,
+position, gate, current, thermal, and motion acceptance.
+
+Cadence entries for Lessons 052--081 are not implementation-ready lesson
+plans. Before code begins for each later three-lesson arc, expand it to the
+same depth as 031--033: public values and interfaces, resource and pin budgets,
+deterministic fixture and failure matrices, narrative example flow, staged
+circuit-native experiments, HTML/PDF division, specimen gates, and explicit
+bench acceptance. “Planned specimen coverage” never means that an exact kit
+module is supported.
 
 The PCF8574 LCD backpack, gas-response experiments, unidentified emitters,
 physiological claims, and prototype/power construction variants still require

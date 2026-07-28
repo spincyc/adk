@@ -182,9 +182,9 @@ supplies the shortest planned path through the library.
 | 046 | Component | Authorized tactile and directional inputs | Listed Metal Touch, contact, and joystick observations retain noise and explicit validity without capacitive or heartbeat claims |
 | 047 | Component | Bounded stepper motion | Coil frames, rate, travel, cancellation, and de-energized shutdown are explicit |
 | 048 | Project-bearing | Kinetic light sculpture | Existing indicators mirror bounded motion intent before motor power is used |
-| 049 | Component | Identity records | RFID observations and keypad entries form bounded local identifiers, not authentication |
-| 050 | Component | Positioning and homing | Position remains unknown until bounded homing succeeds |
-| 051 | Project-bearing | Tabletop parts carousel | Identity, confirmation, homing, and inert gate intent compose safely |
+| 049 | Component | Local identity records | Copied UID-shaped evidence forms bounded local identifiers, not authentication; caller-owned record images deterministically model interrupted writes and recovery without claiming physical-media durability |
+| 050 | Component | Bounded logical homing and positioning | Copied home and stop evidence establishes only a volatile session home, logical position, and inert coil intent; physical home and motion remain unproved |
+| 051 | Project-bearing | Inert tabletop parts carousel | Copied identity, key, home, and stop evidence composes with deterministic audit-image recovery and acknowledged durable-start admission before logical motion or gate intent; E1 reserves exact inputs, storage, and display, while E2 reserves powered stepper and servo motion |
 | 052 | Component | Captured IR pulse trains | Known, repeated, unknown, and malformed receive evidence remain distinct |
 | 053 | Component | Known-code IR transmission | Only documented learner-created codes use a bounded, cancellable emitter |
 | 054 | Project-bearing | IR command translator | Adjacent, exactly qualified transmitter and receiver fixtures replay known harmless commands |
@@ -320,8 +320,13 @@ Every component lesson publishes:
 
 - a clean public header and mostly out-of-line implementation;
 - a host fake, deterministic examples, and correctness tests;
-- a Mega 2560 sketch with wiring table and exact schematic;
-- a pencil-style orientation drawing that never substitutes for a schematic;
+- a Mega 2560 sketch matched to the lesson's supported evidence level;
+- for a pure E0 lesson with zero endpoints, pins, or powered resources, no
+  wiring table or formal electrical schematic; its teaching, orientation, and
+  replay visuals use pencil-drawing presentation;
+- for an E1 or E2 lesson that supports exact powered adapters, the exact wiring
+  table and electrically authoritative formal schematic for that qualified
+  circuit, plus pencil-drawing presentation for every non-schematic visual;
 - flash and static-RAM measurements;
 - an HTML reference page and a printable lesson PDF;
 - source links, datasheets, electrical limits, and a hardware acceptance card;

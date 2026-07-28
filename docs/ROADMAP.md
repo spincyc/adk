@@ -107,12 +107,21 @@ logical coil intent. Mega replays measure 6,956/733, 8,068/1,053, and
 22,216/1,470 bytes of flash/static SRAM. Powered inputs and indicators remain
 E1-open; the exact 28BYJ-48/ULN2003 and energized sculpture remain E2-open.
 
-Development then follows lessons 049--081, one implementation-depth
-three-lesson brief at a time. That future arc remains engagement-first: carousel,
-IR, escape-console, and display projects before the more methodical
-environmental, 18B20, motion-recording, and characterization blocks.
-Authorization, prerequisite, exact-specimen, safety, and evidence gates still
-control activation; the ordering is not a support claim.
+Lessons 049--051 are the active next
+[implementation-depth E0 plan](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md):
+fixed local identity records over copied evidence, bounded logical homing, and
+an inert parts-carousel composition. The plan claims no implementation or
+support exists yet; its E0 boundary is permitted and implementation-ready.
+RFID/keypad/home inputs, powered indicators, and nonvolatile storage remain
+E1-gated; exact stepper/driver and servo hardware, powered motion, restraint,
+independent stop and power removal, and measured acceptance remain E2-gated.
+
+Development then follows lessons 052--081, one implementation-depth
+three-lesson brief at a time. That future arc remains engagement-first: IR,
+escape-console, and display projects before the more methodical environmental,
+18B20, motion-recording, and characterization blocks. Authorization,
+prerequisite, exact-specimen, safety, and evidence gates still control
+activation; the ordering is not a support claim.
 
 Every component requires lifecycle tests, deterministic fakes, a canonical Mega
 example, size evidence, terse HTML, a rich complementary PDF, and recorded

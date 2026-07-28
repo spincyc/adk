@@ -172,7 +172,7 @@ architectural layers.
 | DC motor/fan | Load behind `MotorDriver`; never direct from a pin | 020--021 |
 | Relay module | `Relay` + inert test load and isolation review | 023--024 |
 | IR receiver/remote | `InfraredReceiver` + decoder | 025--027 |
-| RFID module | SPI device + identity record | 049--051 queued |
+| RFID module | Planned `LocalIdentityRegistry` (049), `BoundedHomingPolicy` (050), and `InertPartsCarousel` (051) are zero-resource E0 surfaces; exact RFID, input, and storage adapters remain E1-gated, and powered motion remains E2-gated | 049--051 planned; no implementation claim |
 | Listed IR-emission module | Exact-specimen output + known local-code encoder | 052--054 queued; identity gated |
 | Receive-capable RF module | Inventory-gated future adapter | Deferred |
 
