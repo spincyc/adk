@@ -1,6 +1,7 @@
 #pragma once
 
 #include "access_trainer.h"
+#include "acoustic_envelope.h"
 #include "analog_input.h"
 #include "analog_joystick.h"
 #include "board.h"
@@ -9,6 +10,7 @@
 #include "calibration_console.h"
 #include "character_display.h"
 #include "climate_sensor.h"
+#include "contact_dynamics.h"
 #include "cue_audit.h"
 #include "digital.h"
 #include "digital_input.h"

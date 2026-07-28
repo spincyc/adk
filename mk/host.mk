@@ -26,6 +26,7 @@ HOST_PIEZO_SOURCES := \
 HOST_TESTS := \
 	$(BUILD_DIR)/host/test_core \
 	$(BUILD_DIR)/host/test_access_trainer \
+	$(BUILD_DIR)/host/test_acoustic_envelope \
 	$(BUILD_DIR)/host/test_analog_input \
 	$(BUILD_DIR)/host/test_analog_joystick \
 	$(BUILD_DIR)/host/test_bus \
@@ -50,6 +51,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_button \
 	$(BUILD_DIR)/host/test_character_display \
 	$(BUILD_DIR)/host/test_climate_sensor \
+	$(BUILD_DIR)/host/test_contact_dynamics \
 	$(BUILD_DIR)/host/test_dht11_sensor \
 	$(BUILD_DIR)/host/test_environmental_station \
 	$(BUILD_DIR)/host/test_greenhouse_controller \
@@ -189,6 +191,13 @@ $(BUILD_DIR)/host/test_access_trainer: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/access_trainer.cpp src/keypad.cpp \
 		tests/test_access_trainer.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_acoustic_envelope: $(HOST_CORE_SOURCES) \
+		src/acoustic_envelope.cpp tests/test_acoustic_envelope.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/acoustic_envelope.cpp \
+		tests/test_acoustic_envelope.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_analog_input: $(HOST_CORE_SOURCES) \
 		src/analog_input.cpp src/board.cpp src/digital_output.cpp \
@@ -365,6 +374,13 @@ $(BUILD_DIR)/host/test_climate_sensor: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/climate_sensor.cpp \
 		tests/test_climate_sensor.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_contact_dynamics: $(HOST_CORE_SOURCES) \
+		src/contact_dynamics.cpp tests/test_contact_dynamics.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/contact_dynamics.cpp \
+		tests/test_contact_dynamics.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_dht11_sensor: $(HOST_CORE_SOURCES) \
 		src/board.cpp src/climate_sensor.cpp src/dht11_sensor.cpp \
