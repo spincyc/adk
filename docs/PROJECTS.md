@@ -62,15 +62,15 @@ may claim hardware verification until its measured record is published.
 | 043--045 | Resistive, thermal, and radiant observations | Museum-case monitor |
 | 046--048 | Touch/pulse observations and bounded stepper motion | Kinetic light sculpture |
 | 049--051 | Local identity records and bounded homing | Tabletop parts carousel |
-| 052--054 | Owned IR capture and known-code transmission | IR command translator |
+| 052--054 | Known-kit IR capture and exactly qualified transmission | IR command translator |
 | 055--057 | Identified threshold descriptors and sweeps | Module characterization bench |
 | 058--060 | Constraint model and fault-aware panel | Inert escape-room console |
 | 061--063 | Revision-neutral inertial samples and orientation | Balance-table instrument |
 | 064--066 | Inertial records and source qualification | Interchangeable motion recorder |
 | 067--069 | Single-wire transport and qualified probes | Thermal gradient mapper |
 | 070--072 | Multiplexed digits and MAX7219 presentation | Dual-display timing desk |
-| 073--075 | Three-wire clock, pressure, and external ADC | Pressure and analog station |
-| 076--078 | Identified color observations and calibration | Color sorting trainer |
+| 073--075 | Authorized-family replacements pending | Project pending re-scope |
+| 076--078 | Authorized-family replacements pending | Project pending re-scope |
 | 079--081 | Low-side driver and indicator semantics | Component qualification bench |
 
 The exact sensor model may follow the kit inventory, but changing a part must

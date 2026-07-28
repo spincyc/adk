@@ -2,7 +2,7 @@
 schema_version: 1
 task_uuid: "fb9510ee-13cf-4bb7-a7ad-7b6f7bfce3df"
 title: "complete exact kit inventory"
-status: "active"
+status: "done"
 priority: "normal"
 priority_reason: "Recovered audit prompt 12; ordered by the repository recovery audit."
 parent: null
@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-27T23:53:20Z"
+updated_at: "2026-07-27T23:59:49Z"
 ---
 
 # Goal
@@ -50,3 +50,12 @@ official Elegoo 37-in-1 Sensor Modules Kit listing. Listing membership
 establishes curriculum inventory scope, but retail names do not establish
 revision-specific electrical facts. Photographs are requested only when a
 lesson needs an unresolved physical pinout, polarity, marking, or rating.
+
+## Result
+
+The revisioned Mega packing list and official Upgraded 37-in-1 inventory image
+now define a cited, source-specific, deduplicated authorized product-family
+set. The audit separates family authorization, electrical identity, host
+verification, and bench acceptance. It also removed DS1302, BMP180, PCF8591,
+and color-sensor assumptions imported from unrelated vendor taxonomies while
+preserving curriculum numbers 073--078 for later authorized replacements.

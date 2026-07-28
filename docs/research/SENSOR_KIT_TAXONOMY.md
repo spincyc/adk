@@ -190,7 +190,7 @@ manufacturer datasheet and reconcile it with the actual board circuit.
 [ks0487]: https://docs.keyestudio.com/projects/KS0487/en/latest/ks0487.html
 [ks0399]: https://docs.keyestudio.com/projects/KS0399-KS0400-KS0401/en/latest/KS0399%2C0400%2C0401.html
 [sun-components]: https://docs.sunfounder.com/projects/sensorkit-v2-arduino/en/latest/components.html
-[elegoo]: https://www.elegoo3dprinters.com/product/elegoo-upgraded-37-in-1-sensor-modules-kit-with-tutorial-compatible-with-arduino-ide-uno-r3-mega-nano/
+[elegoo]: https://www.elegoo.com/products/elegoo-37-in-1-sensor-kit
 [hall-linear]: https://docs.sunfounder.com/projects/sensorkit-v2-arduino/en/latest/lesson_2.html
 [hall-switch]: https://docs.sunfounder.com/projects/sensorkit-v2-arduino/en/latest/lesson_3.html
 [reed]: https://docs.sunfounder.com/projects/sensorkit-v2-arduino/en/latest/lesson_18.html

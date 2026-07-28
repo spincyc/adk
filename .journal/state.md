@@ -3,10 +3,10 @@ schema_version: 1
 repository_uuid: "51e8871e-d671-4f8b-9e07-505dbc2090e8"
 primary_remote: "https://github.com/spincyc/adk.git"
 branch: "main"
-head_observed: "4727afdc877f8ab2fb73b24216e47a6eec90e0b6"
-working_tree_state: "authorized-elegoo-union-audit-active"
-active_tasks: ["fb9510ee-13cf-4bb7-a7ad-7b6f7bfce3df"]
-updated_at: "2026-07-27T23:53:20Z"
+head_observed: "ff41d955678c707f1abf3730888dd2ce0d20d7fd"
+working_tree_state: "authorized-elegoo-union-audit-complete"
+active_tasks: []
+updated_at: "2026-07-27T23:59:49Z"
 ---
 
 # Repository recovery state
@@ -18,7 +18,8 @@ reconciliation and the independent lesson 029 core review are complete.
 Lessons 029 and 030 are promoted and host verified with physical acceptance
 open. Native C++ consumer packaging and release/Arduino Lint policy
 reconciliation and the full clean release-readiness evidence run are complete.
-The official Elegoo Mega Most Complete and 37-in-1 Sensor Modules listings now
-define the authorized inventory-family scope. Their web-source audit and
-deduplicated union are active; revision-specific electrical claims still
-require markings or primary-source evidence where the listing is insufficient.
+The official Elegoo Mega Most Complete and Upgraded 37-in-1 sources define the
+authorized inventory-family scope. Their revisioned manifests, deduplicated
+union rules, electrical-evidence boundary, and curriculum reconciliation are
+complete. Revision-specific electrical claims still require markings or
+primary-source evidence where the listing is insufficient.
