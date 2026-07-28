@@ -28,15 +28,26 @@ Ten of the 12 pencil assets are RGB PNG files:
 006-simon-pencil.png
 007-analog-input-pencil.png
 008-sampled-signal-pencil.png
-009-night-light-pencil.png
 010-shift-register-pencil.png
 011-timed-traffic-pencil.png
 012-traffic-junction-pencil.png
 ```
 
-Assets 001 and 004 are already grayscale PNGs. An RGB file can happen to contain
-only gray pixels, so file metadata alone is a useful gate but not sufficient
-proof.
+Lesson 009 now uses three grayscale plates instead of the rejected single
+orientation image:
+
+```text
+009-mega-header-locator.png
+009-night-light-overview.png
+009-night-light-breadboard.png
+```
+
+They deliberately separate physical Mega header location, logical
+header-to-net mapping, and enlarged breadboard coordinates. This keeps the
+labels and endpoints legible at final PDF size while preserving a
+cross-checkable net manifest. Assets 001 and 004 are also grayscale PNGs. An
+RGB file can happen to contain only gray pixels, so file metadata alone is a
+useful gate but not sufficient proof.
 
 ## Mechanical enforcement
 

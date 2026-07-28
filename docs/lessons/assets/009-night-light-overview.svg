@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="650" viewBox="0 0 1500 650">
+  <style>
+    text{font-family:"DejaVu Sans";fill:#191919}
+    .title{font-size:30px}.pin{font-size:25px}.net{font-size:23px}.note{font-size:20px}
+    .box{fill:#faf9f4;stroke:#222;stroke-width:4}
+    .wire{fill:none;stroke:#333;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+  </style>
+  <rect width="1500" height="650" fill="#fbfaf5"/>
+  <text x="750" y="42" text-anchor="middle" class="title">Plate A - Mega 2560 header-to-net overview (power removed)</text>
+  <rect x="70" y="85" width="520" height="510" rx="25" class="box"/>
+  <text x="330" y="130" text-anchor="middle" class="title">Arduino Mega 2560</text>
+  <rect x="115" y="160" width="130" height="95" class="box"/><text x="180" y="215" text-anchor="middle" class="pin">USB</text>
+  <g class="box">
+    <rect x="450" y="155" width="92" height="52"/><rect x="450" y="220" width="92" height="52"/>
+    <rect x="450" y="285" width="92" height="52"/><rect x="450" y="350" width="92" height="52"/>
+    <rect x="450" y="415" width="92" height="52"/><rect x="450" y="480" width="92" height="52"/>
+  </g>
+  <g class="pin" text-anchor="end">
+    <text x="430" y="190">5V</text><text x="430" y="255">GND</text><text x="430" y="320">A0</text>
+    <text x="430" y="385">D5</text><text x="430" y="450">D6</text><text x="430" y="515">D7</text>
+  </g>
+  <rect x="280" y="540" width="92" height="42" class="box"/><text x="326" y="570" text-anchor="middle" class="pin">D9</text>
+  <rect x="115" y="540" width="92" height="42" class="box"/><text x="161" y="570" text-anchor="middle" class="pin">D13</text>
+  <circle cx="161" cy="500" r="22" class="box"/><text x="85" y="474" class="note">built-in LED only</text>
+
+  <rect x="900" y="85" width="530" height="510" rx="25" class="box"/>
+  <text x="1165" y="130" text-anchor="middle" class="title">Breadboard named nets</text>
+  <g class="box">
+    <rect x="945" y="155" width="435" height="52"/><rect x="945" y="220" width="435" height="52"/>
+    <rect x="945" y="285" width="435" height="52"/><rect x="945" y="350" width="435" height="52"/>
+    <rect x="945" y="415" width="435" height="52"/><rect x="945" y="480" width="435" height="52"/>
+    <rect x="945" y="540" width="435" height="42"/>
+  </g>
+  <g class="net" text-anchor="middle">
+    <text x="1162" y="190">+5 V rail / LDR e10</text><text x="1162" y="255">GND rails / all cathodes</text>
+    <text x="1162" y="320">TP1 / divider junction column 14</text>
+    <text x="1162" y="385">red path: columns 28 to 32</text><text x="1162" y="450">green path: columns 29 to 34</text>
+    <text x="1162" y="515">blue path: columns 30 to 35</text><text x="1162" y="570">lamp path: columns 22 to 25</text>
+  </g>
+  <g class="wire">
+    <path d="M542 181 H760 V181 H945"/><path d="M542 246 H780 V246 H945"/>
+    <path d="M542 311 H800 V311 H945"/><path d="M542 376 H820 V376 H945"/>
+    <path d="M542 441 H840 V441 H945"/><path d="M542 506 H860 V506 H945"/>
+    <path d="M372 561 H900 V561 H945"/>
+  </g>
+  <text x="750" y="626" text-anchor="middle" class="note">D13 has no external jumper. Plate B gives every breadboard coordinate and component orientation.</text>
+</svg>

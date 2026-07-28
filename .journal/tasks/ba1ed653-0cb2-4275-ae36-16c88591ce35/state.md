@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-28T00:48:26Z"
-updated_at: "2026-07-28T01:32:17Z"
+updated_at: "2026-07-28T01:58:55Z"
 ---
 
 # Goal
@@ -64,3 +64,10 @@ and power-removal procedures. Exact circuit nets, timing and weak-bias
 instrumentation, current gates, size baselines, and publication artifacts
 agree. Physical acceptance remains open. The next repair unit is Lessons
 009--010.
+
+Lessons 009--010 are software-prepared and independently reviewed. Their
+canonical examples provide bounded acquisition, behavior, and shutdown;
+supporting raw/analyzer evidence; exact Mega, breadboard, and 74HC595 wiring;
+safe fixture changes; and complete current/provenance fields. Exact LDR, RGB,
+and seven-segment specimens remain unpowered inventory gates. The next repair
+unit is Lessons 011--012.

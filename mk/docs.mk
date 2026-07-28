@@ -20,7 +20,9 @@ doc/lessons/007.pdf: docs/lessons/007/main.tex \
 doc/lessons/008.pdf: docs/lessons/008/main.tex \
 		docs/lessons/assets/008-sampled-signal-pencil.png
 doc/lessons/009.pdf: docs/lessons/009/main.tex \
-		docs/lessons/assets/009-night-light-pencil.png
+		docs/lessons/assets/009-mega-header-locator.png \
+		docs/lessons/assets/009-night-light-overview.png \
+		docs/lessons/assets/009-night-light-breadboard.png
 doc/lessons/010.pdf: docs/lessons/010/main.tex \
 		docs/lessons/assets/010-shift-register-pencil.png
 doc/lessons/011.pdf: docs/lessons/011/main.tex \
