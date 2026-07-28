@@ -41,6 +41,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_infrared_record \
 	$(BUILD_DIR)/host/test_keypad \
 	$(BUILD_DIR)/host/test_matrix_keypad \
+	$(BUILD_DIR)/host/test_magnetic_observation \
 	$(BUILD_DIR)/host/test_mega_avr_bus_io \
 	$(BUILD_DIR)/host/test_mega_bus_driver \
 	$(BUILD_DIR)/host/test_mono_led \
@@ -215,6 +216,14 @@ $(BUILD_DIR)/host/test_quadrature_encoder: $(HOST_IO_SOURCES) src/board.cpp \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_IO_SOURCES) src/board.cpp src/quadrature_encoder.cpp \
 		tests/test_quadrature_encoder.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_magnetic_observation: $(HOST_IO_SOURCES) \
+		src/analog_input.cpp src/board.cpp src/magnetic_observation.cpp \
+		tests/test_magnetic_observation.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_IO_SOURCES) src/analog_input.cpp src/board.cpp \
+		src/magnetic_observation.cpp tests/test_magnetic_observation.cpp \
+		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_inert_load_interlock: $(HOST_CORE_SOURCES) \
 		src/inert_load_interlock.cpp src/power_domain.cpp \
