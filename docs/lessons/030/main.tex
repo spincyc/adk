@@ -48,7 +48,6 @@
   breaklines=true,
   tabsize=4
 }
-\newcommand{\checkbox}{\(\square\)}
 \newcommand{\blank}[1]{\rule{#1}{0.4pt}}
 \newcommand{\lessonbox}[1]{%
   \begin{center}\fcolorbox{Ink}{white}{\parbox{0.92\linewidth}{#1}}\end{center}}
@@ -202,7 +201,10 @@ const adk::InertShowSnapshot view = simulator.snapshot();
 The pointed-to observations are consumed synchronously; no pointer survives
 \texttt{update()}. An identical complete frame repeated at the same timestamp
 is idempotent. A changed frame at that timestamp is invalid. The example
-samples and decides once per distinct \texttt{millis()} value.
+samples and decides once per distinct \texttt{millis()} value. It does not
+submit a setup-time frame: its first update occurs only after the visible
+startup progression, so a same-timestamp button edge cannot be cleared by a
+duplicate update.
 
 \subsection{Evidence gate}
 
@@ -280,17 +282,12 @@ coordinator does not duplicate records. The ledger never overwrites old
 evidence and reserves room for Shutdown before a run begins. If a required
 transition cannot be recorded, no corresponding visible transition occurs.
 
-\begin{lstlisting}[style=adkcpp]
-make inert-show-test
-make inert-show-replay TRACE=tests/fixtures/inert_show_happy.trace
-make inert-show-audit TRACE=tests/fixtures/inert_show_happy.trace
-\end{lstlisting}
-
 The versioned trace contains supplied ticks, eight synthetic observation
 tokens, and debounced operator values. Replay emits stable snapshots; audit
 mode emits the stable Lesson 029 audit grammar. The 32-bit trace digest detects
 accidental replay differences. It is neither authentication nor a security
-control.
+control. Repository automation replays the public fixture and checks exact
+snapshots and audit records behind the lesson.
 
 \subsection{Trace prediction exercise}
 
@@ -317,10 +314,10 @@ void loop ()
 {
     const adk::TimePoint now (millis ());
 
-    readSimulatorInput (now);
-    updateSimulator    (now);
-    showInertCues      ();
-    showSimulatorState (now);
+    observeSimulatorInput (now);
+    decideInertShow       (now);
+    actuateInertCues      ();
+    actuateSimulatorState (now);
 }
 \end{lstlisting}
 
@@ -328,8 +325,11 @@ Objects appear in dependency order: runtime and claims, buttons, cue and state
 LEDs, synthetic source and assessor, plan and audit storage, scheduler, then
 simulator. Setup reads as acquire, configure, start. The loop reads as observe,
 decide, actuate. Presentation consumes one snapshot and cannot call back into
-the simulator. Serial replay is optional supporting evidence, never the only
-observation path.
+the simulator. Only after every endpoint and the simulator acquire
+successfully does the cue row fill from left to right for two seconds.
+Simulator updates begin only after that dependent progression. At two minutes,
+an input-independent shutdown makes every output inactive. Serial replay is
+optional supporting evidence, never the only observation path.
 
 \section{Predict, observe, interpret}
 
@@ -345,7 +345,8 @@ observation path.
         Closed, renew review, and confirm again.
   \item Inject Contradictory. Predict latched Fault, inactive TP29, and no
         restart until reinitialization.
-  \item Invoke shutdown and record darkness separately. Only then remove USB.
+  \item Let the fixed two-minute session expire without pressing a control.
+        Observe immediate darkness; only then remove USB.
 \end{enumerate}
 
 \section{Troubleshooting tree}
@@ -365,82 +366,20 @@ hot part or unstable USB & remove USB immediately; troubleshoot unpowered\\
 \bottomrule
 \end{tabularx}
 
-\section{Claim--evidence--reasoning worksheet}
-
-\begin{tabularx}{\linewidth}{@{}X X X@{}}
-\toprule
-Claim & Evidence to record & What it cannot prove\\
-\midrule
-mapped cue is permitted & TP28, assessment, snapshot & external continuity\\
-presentation is correct & cue identity and TP29 interval & resource release\\
-decision is replayable & trace, audit bytes, digest & authenticity\\
-shutdown requests inactivity & snapshot and inactive outputs & power removal\\
-endpoint ownership released & named release fixture or test & emergency stop\\
-\bottomrule
-\end{tabularx}
-
-Chosen claim: \blank{2.0in}\\[7pt]
-Evidence: \blank{5.7in}\\[7pt]
-Reasoning and limits: \blank{4.9in}
-
-\section{Open hardware acceptance record}
-
-\textbf{Software gates do not constitute a physical result.} Keep this record
-open until the named board, circuit, instruments, measurements, date, and
-reviewer are present.
-
-\begin{tabularx}{\linewidth}{@{}l X l X@{}}
-\toprule
-Board/revision & \blank{1.35in} & Commit & \blank{1.2in}\\
-LEDs and polarity & \blank{1.35in} & Resistors & \blank{1.2in}\\
-Supply/instrument & \blank{1.35in} & Tool versions & \blank{1.2in}\\
-Operator/date & \blank{1.35in} & Reviewer & \blank{1.2in}\\
-\bottomrule
-\end{tabularx}
-
-\begin{itemize}
-  \item[\checkbox] unpowered circuit, polarity, resistors, and prohibited
-        external connections inspected;
-  \item[\checkbox] startup acquisition evidence predicted, observed, and
-        interpreted separately from safe-state evidence;
-  \item[\checkbox] all eight synthetic states and explicit cue-channel mapping
-        checked at TP28 and TP29;
-  \item[\checkbox] Permit, every Hold condition, contradiction, precedence,
-        delayed update, cancel, and audit-full cases observed;
-  \item[\checkbox] replay snapshots, audit bytes, and digest reconciled;
-  \item[\checkbox] shutdown inactive state and resource release recorded as
-        separate claims;
-  \item[\checkbox] USB power-removal result recorded.
-\end{itemize}
-
-Prediction: \blank{5.8in}\\[8pt]
-Observation: \blank{5.7in}\\[8pt]
-Interpretation and limits: \blank{4.9in}
-
 \lessonbox{\textbf{Stop rule.} Remove USB power for a hot part, unstable
 supply, wrong polarity, missing resistor, unexpected indicator, out-of-rail
 TP28 or TP29, or schematic/breadboard disagreement. Do not attach an external
 load or real show-control connector. Software shutdown is never the physical
 stop.}
 
-\section{Reproduce the software evidence}
+\section{Evidence status}
 
-\begin{lstlisting}[style=adkcpp]
-make inert-show-test
-make host-test-exceptions
-make inert-show-replay
-make inert-show-audit
-make arduino-Lesson030InertShowSimulator
-make size-check
-make lessons
-make lessons-check
-make site-check
-make hardware-card LESSON=030 BOARD=mega2560
-\end{lstlisting}
-
-Record the exact AVR core, compiler, measured flash, and static RAM with the
-canonical sketch. Re-measure whenever source or toolchain identity changes.
-Do not substitute a budget or a host binary size for measured Mega evidence.
+Automated host replay, exception, Mega compilation, measured-size, PDF, and
+site checks remain behind this lesson. They do not constitute a physical
+result. The repository also retains the formal bench record until a named
+board, circuit, instruments, measurements, operator, date, and independent
+review are present; the learner is not assigned a command-line workflow or
+acceptance card.
 
 \section{Reference trail}
 

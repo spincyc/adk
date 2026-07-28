@@ -8,6 +8,7 @@ namespace {
 
     constexpr uint8_t cueLedCount = 8;
     constexpr uint8_t auditCapacity = 64;
+    constexpr uint32_t sessionDurationMs = 120000;
 
     const adk::ButtonConfig reviewButtonConfig  (30);
     const adk::ButtonConfig runButtonConfig     (31);
@@ -53,12 +54,13 @@ namespace {
     adk::InertCueScheduler scheduler (schedulerConfig, audit);
 
     adk::TimePoint lastSampleAt;
+    adk::TimePoint startedAt;
     bool           hasLastSample = false;
     bool           running = false;
 
     bool acquireCuePanel   ();
     bool configureCuePanel ();
-    void startCuePanel     ();
+    void startCuePanel     (adk::TimePoint now);
     void observeOperator   (adk::TimePoint now);
     bool decideCueSchedule (adk::TimePoint now);
     bool presentCueSnapshot
@@ -78,7 +80,7 @@ void setup ()
 {
     if (acquireCuePanel () && configureCuePanel ())
     {
-        startCuePanel ();
+        startCuePanel (adk::TimePoint (millis ()));
     }
 }
 
@@ -90,6 +92,12 @@ void loop ()
     }
 
     const adk::TimePoint now (millis ());
+
+    if (now.elapsedSince (startedAt).milliseconds () >= sessionDurationMs)
+    {
+        stopSafely ();
+        return;
+    }
 
     if (hasLastSample && now == lastSampleAt)
     {
@@ -152,8 +160,9 @@ namespace {
         return stateLed.off ().ok ();
     }
 
-    void startCuePanel ()
+    void startCuePanel (adk::TimePoint now)
     {
+        startedAt = now;
         running = true;
     }
 
