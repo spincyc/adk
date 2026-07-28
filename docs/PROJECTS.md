@@ -413,19 +413,24 @@ chosen output transport.
 
 ## Lesson 015 — Environmental station
 
-**Build:** A scheduled station samples temperature, humidity, and light,
-presents current and min/max values on an LCD, and emits a stable serial record
-format with sensor-health flags.
+**Build:** A scheduled station turns validated temperature/humidity samples
+into numbered LCD records and an RGB climate color. Missing DATA produces a
+visible fault and restoring it recovers the complete story. A fixed two-minute
+run ends in an automatic all-off shutdown; RESET replays it.
 
-**Builds on:** Analog sampling, filters, displays, shared buses, scheduled
-tasks, and explicit validity.
+**Builds on:** The conditional DHT11-module path, parallel character display,
+stable records, RGB presentation, scheduled tasks, and explicit validity.
 
-**Kit:** Supported temperature/humidity sensor, photoresistor, 16×2 LCD
-(parallel or I²C backpack), buttons.
+**Kit:** An independently identified 5 V DHT11 module, independently identified
+parallel LCD1602 with pins 1--16 documented, 10 kΩ contrast potentiometer,
+common-cathode RGB LED, and three 330 Ω channel resistors. Family listings do
+not establish an exact specimen or pin order. LCD A/K remain open until the
+exact backlight is qualified.
 
-**Evidence:** Fixture streams cover valid samples, CRC or transport errors,
-missing data, implausible changes, min/max reset, and display pagination.
-Golden records verify locale-independent serialization.
+**Learner progression:** Climate color, LCD hello, first numbered record,
+humidity-reactive color, reversible missing-DATA fault, and automatic recovery.
+Repository-only fixtures cover valid samples, transport and validation errors,
+stale data, timing rollover, lifecycle rollback, and deterministic replay.
 
 **Safety:** Check each module's voltage and pinout rather than relying on wire
 color. Do not expose hobby sensors to condensation or use readings for

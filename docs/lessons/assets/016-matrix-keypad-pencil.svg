@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1024" viewBox="0 0 1536 1024">
+  <style>text { display: none; }</style>
+  <rect width="1536" height="1024" fill="#faf9f4"/>
+  <g fill="none" stroke="#262626" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M90 125 Q85 100 120 92 L650 92 Q680 98 674 130 L674 900 Q668 930 638 925 L112 925 Q84 920 90 890 Z"/>
+    <path d="M125 165 L570 165 L570 850 L125 850 Z"/>
+    <path d="M168 215 L430 215 L430 330 L168 330 Z"/>
+    <path d="M475 220 L548 220 L548 315 L475 315 Z"/>
+    <path d="M706 160 L798 160 L798 850 L706 850 Z"/>
+    <path d="M1070 90 Q1050 80 1038 110 L940 835 Q936 865 970 875 L1402 930 Q1432 934 1438 900 L1510 175 Q1514 145 1482 138 Z"/>
+  </g>
+  <g font-family="sans-serif" fill="#222">
+    <text x="105" y="70" font-size="42" font-weight="bold">MEGA 2560 — paired side header</text>
+    <text x="1010" y="65" font-size="42" font-weight="bold">AUTHORIZED 4×4 KEYPAD</text>
+    <text x="145" y="200" font-size="30">USB</text>
+    <text x="165" y="385" font-size="32">No breadboard:</text>
+    <text x="165" y="425" font-size="32">seven direct signal wires</text>
+    <text x="165" y="475" font-size="27">D22/D23, then D24/D25,</text>
+    <text x="165" y="510" font-size="27">D26/D27, then D28/D29</text>
+  </g>
+  <g fill="#fff" stroke="#222" stroke-width="4">
+    <circle cx="730" cy="220" r="16"/><circle cx="774" cy="220" r="16"/>
+    <circle cx="730" cy="300" r="16"/><circle cx="774" cy="300" r="16"/>
+    <circle cx="730" cy="380" r="16"/><circle cx="774" cy="380" r="16"/>
+    <circle cx="730" cy="460" r="16"/><circle cx="774" cy="460" r="16"/>
+  </g>
+  <g font-family="sans-serif" font-size="28" fill="#222">
+    <text x="680" y="228">22</text><text x="805" y="228">23</text>
+    <text x="680" y="308">24</text><text x="805" y="308">25</text>
+    <text x="680" y="388">26</text><text x="805" y="388">27</text>
+    <text x="680" y="468">28</text><text x="805" y="468">29</text>
+    <text x="708" y="515">leave D29 empty</text>
+  </g>
+  <g fill="#fff" stroke="#222" stroke-width="4" font-family="sans-serif" font-size="38" text-anchor="middle">
+    <rect x="1025" y="170" width="100" height="100"/><text x="1075" y="235" fill="#222">1</text>
+    <rect x="1135" y="170" width="100" height="100"/><text x="1185" y="235" fill="#222">2</text>
+    <rect x="1245" y="170" width="100" height="100"/><text x="1295" y="235" fill="#222">3</text>
+    <rect x="1355" y="170" width="100" height="100"/><text x="1405" y="235" fill="#222">A</text>
+    <rect x="1025" y="280" width="100" height="100"/><text x="1075" y="345" fill="#222">4</text>
+    <rect x="1135" y="280" width="100" height="100"/><text x="1185" y="345" fill="#222">5</text>
+    <rect x="1245" y="280" width="100" height="100"/><text x="1295" y="345" fill="#222">6</text>
+    <rect x="1355" y="280" width="100" height="100"/><text x="1405" y="345" fill="#222">B</text>
+    <rect x="1025" y="390" width="100" height="100"/><text x="1075" y="455" fill="#222">7</text>
+    <rect x="1135" y="390" width="100" height="100"/><text x="1185" y="455" fill="#222">8</text>
+    <rect x="1245" y="390" width="100" height="100"/><text x="1295" y="455" fill="#222">9</text>
+    <rect x="1355" y="390" width="100" height="100"/><text x="1405" y="455" fill="#222">C</text>
+    <rect x="1025" y="500" width="100" height="100"/><text x="1075" y="565" fill="#222">*</text>
+    <rect x="1135" y="500" width="100" height="100"/><text x="1185" y="565" fill="#222">0</text>
+    <rect x="1245" y="500" width="100" height="100"/><text x="1295" y="565" fill="#222">#</text>
+    <rect x="1355" y="500" width="100" height="100"/><text x="1405" y="565" fill="#222">D</text>
+  </g>
+  <g fill="none" stroke="#333" stroke-width="5">
+    <path d="M730 220 C900 220 890 650 1030 650"/><path d="M774 220 C910 230 900 680 1060 680"/>
+    <path d="M730 300 C900 310 920 710 1090 710"/><path d="M774 300 C900 330 940 740 1120 740"/>
+    <path d="M730 380 C900 390 960 770 1150 770"/><path d="M774 380 C920 420 980 800 1180 800"/>
+    <path d="M730 460 C930 480 1000 830 1210 830"/>
+    <path stroke-dasharray="12 12" d="M1450 650 C1390 700 1360 820 1320 875"/>
+    <rect x="1270" y="870" width="150" height="65"/>
+  </g>
+  <g font-family="sans-serif" font-size="25" fill="#222">
+    <text x="1010" y="662">R0</text><text x="1040" y="692">R1</text><text x="1070" y="722">R2</text><text x="1100" y="752">R3</text>
+    <text x="1130" y="782">C0</text><text x="1160" y="812">C1</text><text x="1190" y="842">C2</text>
+    <text x="1280" y="910">C3 taped alone</text>
+    <text x="980" y="970" font-size="28">Identify every tail conductor unpowered; tail order varies.</text>
+  </g>
+</svg>
