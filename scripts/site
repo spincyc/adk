@@ -145,6 +145,7 @@ def stage() -> None:
         "LESSONS_025_027_TELEMETRY.md",
         "LESSONS_028_030.md",
         "LESSONS_031_033_INPUT_EXPANSION_PLAN.md",
+        "LESSONS_034_036_MAGNETIC_PASSAGE_PLAN.md",
     )
     for name in design_documents:
         source = ROOT / "docs/design" / name

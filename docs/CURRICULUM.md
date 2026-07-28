@@ -123,7 +123,7 @@ supplies the shortest planned path through the library.
 | 031 | Component | Calibrated analog joystick | Raw axes, dead zones, saturation, and switch events remain visible |
 | 032 | Component | Quadrature encoder | Valid Gray-code edges produce a bounded count while invalid transitions remain visible |
 | 033 | Project-bearing | Calibration console | Joystick selection, encoder trim, commit, and cancel replay exactly |
-| 034 | Component | Magnetic and contact sensing | Hall, reed, and ball-switch observations retain polarity, hysteresis, and faults |
+| 034 | Component | Magnetic and contact sensing | Listed Linear Hall and Magnetic Spring evidence, qualification, and ambiguity stay distinct |
 | 035 | Component | Qualified passage events | Dwell, direction, duplicate suppression, and timeout produce stable records |
 | 036 | Project-bearing | Magnetic passage logger | Contact and encoder evidence produce RTC-stamped counts without a later identity driver |
 | 037 | Component | Contact dynamics | Tilt, vibration, knock, tap, and shock retain pulse and refractory evidence |

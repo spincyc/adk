@@ -126,8 +126,10 @@ Circuit-native observation:
 - the encoder A/B pins are named logic-analyzer points; and
 - storage success/fault has a persistent LED pattern.
 
-Planned specimen coverage: analog Hall, digital Hall, linear Hall, reed switch,
-magnet, rotary encoder, RTC, buttons, SD module, and seven-segment display.
+Planned family coverage: listed Linear Hall and Magnetic Spring families,
+optional encoder, deterministic RTC/ledger fixtures, display, and LEDs. No
+separate digital Hall, kit magnet, or removable-storage specimen is claimed.
+Physical RTC and removable-media adapters remain deferred.
 
 ## Lessons 037--039: vibration and sound laboratory
 
@@ -698,7 +700,7 @@ individually identified retail boards.
 | DHT, LCD | 015 | 045 |
 | Keypad, servo | 018 | 051, 054, 060 |
 | Ultrasonic, PIR, DC motor/driver | 021 | 042 |
-| RTC, SD, relay | 024 | 036, 045, 060 |
+| RTC and deterministic durable records; physical RTC/media deferred | 024 | 036, 045, 060 |
 | IR receiver and remote | 027 | 054 |
 | Receive-capable RF | 027 passive only | no transmit project |
 | Continuity and cue panel | 030 inert only | 060 fault model |
