@@ -1,7 +1,9 @@
 #include <Adk.h>
 
-// Mega 2560, USB 5 V: HC-SR04 Trigger D40, Echo D41/TP-E.
-// D45, D46, and D47 each drive one LED through its own 220 ohm resistor.
+// Mega 2560, USB 5 V: an exact identified HC-SR04 uses Trigger D40 and
+// Echo D41/TP-E. D45, D46, and D47 each drive one LED through its own
+// 220 ohm resistor. The range hunt ends and releases every pin after two
+// minutes, whether or not the sensor ever returns an Echo.
 
 namespace {
 
@@ -37,6 +39,7 @@ namespace {
     };
 
     adk::MicrosecondTimePoint lastRequest;
+    adk::MicrosecondTimePoint startedAt;
     bool                      running         = false;
     bool                      startupEvidence = true;
 
@@ -63,6 +66,12 @@ void loop ()
     }
 
     const adk::MicrosecondTimePoint now (micros ());
+
+    if (now.elapsedSince (startedAt).microseconds () >= 120000000U)
+    {
+        stopSafely ();
+        return;
+    }
 
     if (startupEvidence)
     {
@@ -120,6 +129,7 @@ namespace {
         }
 
         lastRequest = adk::MicrosecondTimePoint (micros ());
+        startedAt   = lastRequest;
 
         return valid.on ().ok () && outside.on ().ok () && fault.on ().ok ();
     }

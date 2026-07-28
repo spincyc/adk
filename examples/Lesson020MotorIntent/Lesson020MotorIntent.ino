@@ -27,6 +27,7 @@ namespace {
     uint8_t           scriptStep = 0;
     bool              running    = false;
     bool              requestDue = false;
+    bool              shutdownDue = false;
 
     bool initializeSimulation ();
 
@@ -55,7 +56,7 @@ void loop ()
 
     observeOperatorRequest (now);
 
-    if (!decideMotorIntent (now) || !actuateMotorEvidence ())
+    if (!decideMotorIntent (now) || (running && !actuateMotorEvidence ()))
     {
         stopSafely ();
     }
@@ -93,29 +94,65 @@ namespace {
         const uint32_t elapsed = now.elapsedSince (scriptStarted).milliseconds ();
 
         requestDue = false;
+        shutdownDue = false;
 
-        if (scriptStep == 0 && elapsed >= 1000)
+        if (scriptStep == 0 && elapsed >= 750)
         {
-            observedRequest = adk::MotorCommand (adk::MotorDirection::Forward, 96);
+            observedRequest = adk::MotorCommand (adk::MotorDirection::Forward, 72);
             requestDue      = true;
             ++scriptStep;
         }
-        else if (scriptStep == 1 && elapsed >= 3000)
+        else if (scriptStep == 1 && elapsed >= 1750)
+        {
+            observedRequest = adk::MotorCommand (adk::MotorDirection::Forward, 180);
+            requestDue      = true;
+            ++scriptStep;
+        }
+        else if (scriptStep == 2 && elapsed >= 2750)
         {
             observedRequest = adk::MotorCommand (adk::MotorDirection::Reverse, 160);
             requestDue      = true;
             ++scriptStep;
         }
-        else if (scriptStep == 2 && elapsed >= 5000)
+        else if (scriptStep == 3 && elapsed >= 4500)
         {
             observedRequest = adk::MotorCommand ();
             requestDue      = true;
+            ++scriptStep;
+        }
+        else if (scriptStep == 4 && elapsed >= 5500)
+        {
+            observedRequest = adk::MotorCommand (adk::MotorDirection::Forward, 180);
+            requestDue      = true;
+            ++scriptStep;
+        }
+        else if (scriptStep == 5 && elapsed >= 6500)
+        {
+            observedRequest = adk::MotorCommand (adk::MotorDirection::Reverse, 180);
+            requestDue      = true;
+            ++scriptStep;
+        }
+        else if (scriptStep == 6 && elapsed >= 8000)
+        {
+            observedRequest = adk::MotorCommand ();
+            requestDue      = true;
+            ++scriptStep;
+        }
+        else if (scriptStep == 7 && elapsed >= 10000)
+        {
+            shutdownDue = true;
             ++scriptStep;
         }
     }
 
     bool decideMotorIntent (adk::TimePoint now)
     {
+        if (shutdownDue)
+        {
+            stopSafely ();
+            return true;
+        }
+
         if (requestDue && !motorIntent.command (observedRequest, now).ok ())
         {
             return false;

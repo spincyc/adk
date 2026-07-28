@@ -48,7 +48,6 @@
     frame=single,
     breaklines=true
 }
-\newcommand{\checkbox}{\(\square\)}
 \newcommand{\blank}[1]{\rule{#1}{0.4pt}}
 \newcommand{\lessonbox}[1]{%
   \begin{center}
@@ -64,19 +63,25 @@
 \end{center}
 
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
-Lesson & 019 --- component & Time & 120--180 minutes\\
+Lesson & 019 --- component & Time & 25--40 minutes\\
 Prerequisites & Lessons 001--018 & Board & Arduino Mega 2560\\
-Evidence & Echo/TP-E and D45--D47 & Status & host verified; bench open\\
+Evidence & Echo/TP-E and D45--D47 & Claim & software prepared; specimen gated\\
 Safety & E1: USB-powered low-voltage circuit only\\
 \end{tabularx}
 
-\section{Mission}
+\section{Mission: the range hunt}
 
-Build an evidence chain:
+Make the three result lights answer a quick physical puzzle:
 \[
 \text{Trigger}\rightarrow\text{Echo width}\rightarrow
 \texttt{RangeState}\rightarrow\text{visible classification}.
 \]
+First earn the green \texttt{Valid} light with a flat card. Then rotate or move
+the card until the red \texttt{Timeout} light wins. If the identified module
+and available space can produce a complete but excluded pulse, hunt for the
+amber \texttt{OutOfRange} light too. Each later result depends on the same
+wiring and timing path as the earlier one.
+
 The ranger never turns ``no pulse'' into zero distance. A complete Echo outside
 the configured interval is \texttt{OutOfRange}; no accepted Echo is
 \texttt{Timeout}; only \texttt{Valid} carries a usable distance.
@@ -107,8 +112,8 @@ the module label and this table.
 label, lot, or revision for the learner's module. The wiring below is therefore
 a conditional circuit for the Elegoo EL-SM-001, whose manufacturer product
 page specifies a 5 V DC supply. If the specimen cannot be matched to that
-identity and its primary documentation, stop with the bench card open. Do not
-infer clone ratings from the HC-SR04-shaped board.}
+identity and its primary documentation, do not power it. Do not infer clone
+ratings from the HC-SR04-shaped board.}
 
 \begin{tabularx}{\linewidth}{@{}l l X@{}}
 \toprule
@@ -116,9 +121,9 @@ Signal & Mega & Connection\\
 \midrule
 Trigger & D40 & module Trigger\\
 Echo / TP-E & D41 & module Echo and probe tip\\
-Valid evidence & D45 & LED plus resistor to GND\\
-Outside evidence & D46 & LED plus resistor to GND\\
-Timeout evidence & D47 & LED plus resistor to GND\\
+Valid evidence & D45 & jumper to a6; LED anode a6, cathode a8; 220 \(\Omega\) a8 to GND rail\\
+Outside evidence & D46 & jumper to a12; LED anode a12, cathode a14; 220 \(\Omega\) a14 to GND rail\\
+Timeout evidence & D47 & jumper to a18; LED anode a18, cathode a20; 220 \(\Omega\) a20 to GND rail\\
 Supply & 5 V, GND & module VCC and GND; probe ground to Mega GND\\
 \bottomrule
 \end{tabularx}
@@ -126,9 +131,11 @@ Supply & 5 V, GND & module VCC and GND; probe ground to Mega GND\\
 \begin{center}
 \includegraphics[width=\linewidth]{019-ultrasonic-range-pencil.png}
 
-\small\textit{Alternative text: pencil orientation plate showing a Mega,
-breadboard with three resistor-limited LEDs, ultrasonic module, flat target,
-Trigger D40, Echo D41/TP-E, and probe ground. The table is authoritative.}
+\small\textit{Alternative text: four-stage pencil plate. Stage 1 locates the
+actual paired Mega digital header and power header. Stage 2 gives exact
+breadboard rows for three LEDs and individual resistors. Stage 3 connects the
+identified module's VCC, Trigger, Echo, and GND pins. Stage 4 shows the flat
+card positions that produce visible Valid, OutOfRange, or Timeout results.}
 \end{center}
 
 \section{Deterministic model boundary}
@@ -196,33 +203,34 @@ if (!showRangeSignal (signal))
 \end{lstlisting}
 
 Objects appear as runtime, endpoints, evidence LEDs, then ranger. Setup
-acquires them in that order. The three LEDs illuminate together for 150 ms as
-resource-acquisition evidence. The loop then observes, decides, actuates, and
-requests a new reading no sooner than every 60 ms. Idle, valid, timeout, and
-out-of-range are all eligible for that next request; a valid distance cannot
-stop the measurement cadence and become silently stale.
+acquires them in that order. The three LEDs illuminate together for 150 ms:
+an immediate ``the adventure started'' sparkle that also exposes a dead or
+backwards LED before ranging begins. The loop then observes, decides, actuates,
+and requests a new reading no sooner than every 60 ms. Idle, valid, timeout,
+and out-of-range are all eligible for that next request; a valid distance
+cannot stop the measurement cadence and become silently stale.
 
 The 10 \(\mu\)s Trigger pulse uses one explicit bounded delay. Echo timing and
-the measurement cadence remain nonblocking. No library behavior allocates,
-throws, or reads wall-clock time.
+the measurement cadence remain nonblocking. After two minutes, an
+input-independent deadline drives Trigger low and releases every endpoint even
+if Echo is stuck or absent. No library behavior allocates, throws, or reads
+wall-clock time.
 
-\section{Predict, observe, interpret}
+\section{Four visible wins}
 
-\subsection{Experiment A: acquire separately}
+\subsection{Win 1: all three lights sparkle}
 
-\textbf{Predict.} D45--D47 illuminate together briefly only after their claims
-succeed.
+Upload, then watch D45--D47 illuminate together for 150 ms. If one is missing,
+fix its polarity, row, or resistor before moving on. The sparkle proves only
+that the visible path started; the next win must come from a real Echo.
 
-\textbf{Observe:} \blank{38mm}.
-
-\textbf{Interpret.} This supports LED and endpoint acquisition; it proves
-neither Echo timing nor shutdown state.
-
-\subsection{Experiment B: Trigger and Echo}
+\subsection{Win 2: make green follow the card}
 
 Attach probes while unpowered. For a specimen whose primary documentation
-calls for it, predict a 10 \(\mu\)s Trigger pulse on D40 and a later high
-interval on D41/TP-E. Record:
+calls for it, place the flat card about 200 mm away and perpendicular to the
+transducers. Green D45 should follow only after a 10 \(\mu\)s Trigger pulse on
+D40 and a later high interval on D41/TP-E. Move the card to roughly 500 mm and
+1000 mm; the light should stay green while Echo becomes wider.
 
 \begin{tabularx}{\linewidth}{@{}l l l l@{}}
 \toprule
@@ -234,27 +242,32 @@ Target & Trigger width & Echo width & LED result\\
 \bottomrule
 \end{tabularx}
 
-Estimate distance using
+Estimate one distance using
 \[
 d_{\mathrm{mm}}\approx
 \frac{t_{\mathrm{echo},\mu s}\times343}{2000}.
 \]
-Division by two accounts for the outward and return path. Compare the estimate
-with the LED category and ruler distance. Do not call this calibration.
+Division by two accounts for the outward and return path. A plausible estimate
+unlocks the reason behind the light; it is not calibration.
 
-\subsection{Experiment C: distinct invalid results}
+\subsection{Win 3: make red win without rewiring}
 
 Turn the flat target away without touching the powered circuit. A missing
-accepted Echo should select D47. Move a complete target deliberately outside
-the documented interval only if the bench permits it; that should select D46.
-Record what was observed, not what software was expected to do.
+accepted Echo should select red D47. Return the card face-on and green should
+recover by itself. That recovery is the proof: the same wiring distinguishes
+``no accepted Echo'' from a usable measurement.
 
-\subsection{Experiment D: safe state}
+\subsection{Win 4: hunt amber, then watch the finale}
 
-Invoke the shutdown exercise. D40 must be low before it becomes input/high
-impedance; TP-E is no longer sampled; all evidence LEDs are inactive. Check
-Trigger electrically. An LED being off does not prove Trigger safe state or
-claim release.
+Only when space and the identified specimen's documentation permit it, seek a
+complete Echo whose calculated distance falls outside 20--4000 mm. That selects
+amber D46; failure to find one is not a reason to invent evidence or exceed the
+module's documented setup.
+
+At two minutes all three LEDs turn off automatically. D40 is driven low before
+it becomes input/high impedance, TP-E is no longer sampled, and every claim is
+released. Check Trigger electrically if a probe is already attached. An LED
+being off does not by itself prove the pin's safe state.
 
 \section{Diagnosis}
 
@@ -271,24 +284,12 @@ Trigger remains driven after stop & safe-state failure; remove USB and record th
 \bottomrule
 \end{tabularx}
 
-\section{CLI and bench record}
+\section{Keep exploring}
 
-\begin{verbatim}
-make host-test
-make arduino-Lesson019UltrasonicRange
-make firmware-size EXAMPLE=Lesson019UltrasonicRange
-make upload EXAMPLE=Lesson019UltrasonicRange PORT=/dev/ttyACM0
-make lessons
-make lessons-check
-make site-check
-\end{verbatim}
-
-\textbf{Use with.} The
-\href{https://spincyc.github.io/adk/lessons/019.html}{HTML reference} carries
-searchable API notes, corrections, and direct downloads. This PDF is the
-printable experiment, prediction worksheet, diagnosis table, and acceptance
-record. Shared safety limits, pins, prerequisites, and API facts appear in
-both.
+The \href{https://spincyc.github.io/adk/lessons/019.html}{HTML reference}
+carries searchable API notes, corrections, and the canonical sketch. The
+learner adventure remains the visible sparkle, green/red recovery, optional
+amber hunt, and automatic finale.
 
 \begin{itemize}
   \item
@@ -302,34 +303,12 @@ both.
     \href{https://github.com/spincyc/adk/blob/main/src/pulse_input.cpp}
          {implementation}
   \item
-    \href{https://github.com/spincyc/adk/blob/main/tests/test_ultrasonic_ranger.cpp}
-         {deterministic host tests} and
     \href{https://github.com/spincyc/adk/blob/main/examples/Lesson019UltrasonicRange/Lesson019UltrasonicRange.ino}
-         {canonical Mega 2560 example}
+         {canonical Mega 2560 sketch}
 \end{itemize}
 
-\textbf{Software:} commit \blank{34mm}; Arduino CLI \blank{26mm};
-AVR core \blank{26mm}; flash \blank{20mm}; RAM \blank{20mm}.
-
-\textbf{Bench acceptance---open until measured}
-
-\begin{itemize}
-  \item \checkbox\ Exact Mega and ultrasonic module recorded.
-  \item \checkbox\ Unpowered wiring and each LED resistor checked.
-  \item \checkbox\ 5 V rail and module supply measured.
-  \item \checkbox\ D40 Trigger width measured.
-  \item \checkbox\ D41/TP-E widths recorded for three ruler distances.
-  \item \checkbox\ Valid, out-of-range, and no-Echo evidence distinguished.
-  \item \checkbox\ Reset, shutdown, resource reuse, and USB removal observed.
-  \item \checkbox\ Trigger safe state checked separately from LEDs.
-\end{itemize}
-
-Supply \blank{20mm}; instrument \blank{34mm}; target \blank{28mm};
-date \blank{22mm}; reviewer \blank{30mm}. Deviations: \blank{65mm}.
-
-\lessonbox{\textbf{Current result: host verified; hardware acceptance open.}
-Deterministic tests, compilation, and blank worksheets are not physical
-verification.}
+\lessonbox{\textbf{Publication boundary.} No physical observation is claimed;
+the exact specimen gate remains in force.}
 
 \section{Primary references}
 
@@ -349,14 +328,15 @@ verification.}
          connector identities.
 \end{itemize}
 
-\section{Extend the evidence}
+\section{More range games}
 
 \begin{enumerate}
-  \item Record how angled cardboard changes Echo validity without changing code.
-  \item Replay the same timestamp and level trace twice and compare readings.
-  \item Explain why clamping an invalid distance would erase useful evidence.
-  \item Design a fourth diagnostic that adds information not already present at
-        TP-E or the three result LEDs.
+  \item Make a hand-drawn map of where green survives as the card rotates.
+  \item Compare a book, a soft cloth, and corrugated cardboard without changing
+        wiring or code.
+  \item Race to predict which light appears before each target move.
+  \item Explain why turning every invalid result into ``zero'' would ruin the
+        game.
 \end{enumerate}
 
 \end{document}

@@ -43,9 +43,11 @@ doc/lessons/017.pdf: docs/lessons/017/main.tex \
 doc/lessons/018.pdf: docs/lessons/018/main.tex \
 		docs/lessons/assets/018-access-trainer-pencil.png
 doc/lessons/019.pdf: docs/lessons/019/main.tex \
-		docs/lessons/assets/019-ultrasonic-range-pencil.png
+		docs/lessons/assets/019-ultrasonic-range-pencil.png \
+		docs/lessons/assets/019-ultrasonic-range-pencil.tex
 doc/lessons/020.pdf: docs/lessons/020/main.tex \
-		docs/lessons/assets/020-motor-intent-pencil.png
+		docs/lessons/assets/020-motor-intent-layout.tex \
+		docs/lessons/assets/020-motor-intent-layout.png
 doc/lessons/021.pdf: docs/lessons/021/main.tex \
 		docs/lessons/assets/021-rover-pencil.png
 doc/lessons/022.pdf: docs/lessons/022/main.tex \
