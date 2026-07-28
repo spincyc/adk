@@ -17,7 +17,7 @@ recorded in
 Its findings must be reconciled through bounded tasks; the audit itself does
 not promote work or replace this ledger.
 
-- Lessons 001--045 are promoted and host verified; physical cards remain open.
+- Lessons 001--048 are promoted and host verified; physical cards remain open.
 - Lesson 030 has an independently reviewed composition core, canonical Mega
   example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
@@ -79,6 +79,7 @@ qualified.
 | [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Host verified; bench/incoming conformance open | Preserve the canonical reference publication; complete incoming conformance and each E1 acceptance record |
 | [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Host verified; powered adapter/bench open | Preserve the pure-policy publication; qualify exact specimens before powered adapters, wiring, schematics, or E1 acceptance |
 | [043--045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Host verified; powered adapter/bench open | Preserve the E0 synthetic-replay publication; qualify exact MPU/QMI specimens independently before powered adapters, wiring, schematics, or E1 acceptance |
+| [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Host verified; powered input/motion bench open | Preserve the E0 copied-evidence and logical-intent publication; qualify exact inputs at E1 and the exact restrained stepper system independently at E2 |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -118,8 +119,8 @@ work; retail kit names are not electrical identities.
 | [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Host verified; bench/incoming conformance open | Contact dynamics, acoustic envelopes, and percussion sequencer published against documented external references; E1 and incoming conformance open |
 | [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Host verified; powered adapter/bench open | Optical observations, presence, and tabletop course marshal are published as pure policy; explicit button authorization is fixed, while powered exact-specimen and bench gates remain open |
 | [043--045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Host verified; powered adapter/bench open | Copied inertial samples, pure orientation/presentation intent, and stationary hand-operated tabletop balance instrument are published as E0 replay; no powered adapter, I2C, wiring, schematic, or E1 claim |
-| [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Active integration; E0 policy only | Copied tactile/directional evidence, bounded logical stepper intent, and transactional kinetic-sculpture composition; powered inputs remain E1-gated and energized stepper motion remains E2-gated |
-| [049--051](projects/component_project_cadence.md) | Queued | Local identity records, homing, inert parts carousel |
+| [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Host verified; powered input/motion bench open | `InteractionIntentPolicy`, `BoundedStepperSequence`, and `KineticLightSculpture` publish copied tactile/directional evidence, bounded logical coil intent, transactional authorization, independent stop precedence, and semantic light intent at E0; powered inputs remain E1-gated and energized motion remains E2-gated |
+| [049--051](projects/component_project_cadence.md) | Active integration | Local identity records, bounded homing policy, and inert parts carousel |
 | [052--054](projects/component_project_cadence.md) | Queued; exact emitter gated | Known-kit IR capture, bounded listed IR-emission family, command translator |
 | [055--057](projects/component_project_cadence.md) | Queued | Constraint model, fault-aware panel, inert escape-room console |
 | [058--060](projects/component_project_cadence.md) | Queued | Multiplexed digits, MAX7219 display transport, timing desk |
@@ -141,7 +142,7 @@ payoff rather than inventory taxonomy alone. The
 inputs. Coverage is not complete until every claimed module has an exact
 inventory record and the relevant block passes its gates.
 
-Lessons 031--045 have complete implementation-ready design briefs and are host
+Lessons 031--048 have complete implementation-ready design briefs and are host
 verified. Lessons 037--039 are published against exact external reference
 fixtures; incoming conformance and E1 physical acceptance remain open. The six
 earlier Elegoo exact-specimen requirements are preserved as historical
@@ -160,10 +161,21 @@ published boundary preserves exact MPU6050 and QMI8658 variants as independent
 future adapter gates; exact-specimen qualification, powered adapters,
 authoritative schematics, and E1 bench acceptance remain open. The later
 067--069 normalization, qualification, comparison, and recorder scope remains
-intact. Lessons 046--048 now have an independently reviewed implementation-
-depth E0 plan and pre-implementation stress passes. The boundary owns no
-powered endpoint: exact tactile/directional adapters remain E1-gated, while
-the exact 28BYJ-48/ULN2003 system and kinetic sculpture remain E2-gated.
+intact. Lessons 046--048 publish the `InteractionIntentPolicy`
+`initialize`/`reset`/`preview`/`canCommit`/`commit`/`snapshot` transaction,
+the `BoundedStepperSequence`
+`initialize`/`reset`/`preview`/`canCommit`/`commit`/`stop`/`snapshot`
+transaction, and the composing `KineticLightSculpture`
+`initialize`/`shutdown`/`update`/`snapshot` API. The publication includes
+deterministic host replay, compile-only Mega sketches, measured size
+baselines, HTML references, and pencil-drawing PDF lessons. E0 owns zero
+pins, ADC channels, timers, interrupts, buses, resource-registry entries,
+endpoints, supplies, or moving hardware. Exact tactile, contact, joystick,
+stop, and indicator endpoints, their authoritative schematic, and their
+resource and safe-state evidence remain E1-gated. Exact 28BYJ-48 motor and
+ULN2003 identities, winding and clamp topology, separate current-limited
+supply, coil current and thermal limits, mechanical restraint, independent
+stop and power removal, and measured motion acceptance remain E2-gated.
 Lessons 049--081 remain canonical subjects and retained work in the engagement
 order above, but their cadence entries are not implementation-ready lesson
 plans. Before code begins for each later three-lesson
@@ -228,8 +240,8 @@ out of scope. Controller high availability remains explicitly deferred.
 The landing page now uses one canonical source, a compact top navigation,
 linked published arcs, and linkless planned rows through Lesson 081 plus the
 retained research tracks. Preserve that scan-first hierarchy as work advances.
-The newest published lesson is Lesson 045. The post-deploy verifier follows
-Lesson 045 and has a regression check that
+The newest published lesson is Lesson 048. The post-deploy verifier follows
+Lesson 048 and has a regression check that
 must advance with the newest published lesson.
 
 At the next clean hierarchy boundary:

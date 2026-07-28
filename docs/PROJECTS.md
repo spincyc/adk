@@ -11,7 +11,7 @@ are complete.
 
 ## Current status
 
-Lessons 001--042 are host verified with their bench cards open. Lessons
+Lessons 001--048 are host verified with their bench cards open. Lessons
 037--039 use documented external reference fixtures; incoming conformance and
 E1 acceptance remain open. The earlier Elegoo exact-specimen requirements
 were superseded only as blockers for canonical publication and remain
@@ -29,6 +29,14 @@ deterministic host suites, compile-only Mega replays, lesson packages, and
 size gates pass. No powered adapter, I2C transaction, wiring, schematic, or
 physical claim is authorized; exact MPU6050 and QMI8658 variants remain
 independently gated.
+Lessons 046--048 are host verified under the
+[implementation-depth E0 plan](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md).
+`InteractionIntentPolicy`, `BoundedStepperSequence`, and
+`KineticLightSculpture` provide copied-input, logical-motion, and
+transactional composition evidence. Their Mega replays measure 6,956/733,
+8,068/1,053, and 22,216/1,470 bytes of flash/static SRAM. Powered inputs and
+indicators remain E1-open; the exact 28BYJ-48/ULN2003 and sculpture remain
+E2-open.
 See the [authoritative work
 queue](WORK_QUEUE.md) for the complete ledger.
 
@@ -77,7 +85,7 @@ may claim hardware verification until its measured record is published.
 | 037--039 | Contact dynamics and acoustic envelopes | Percussion sequencer |
 | 040--042 | Optical observations and presence policy | Tabletop course marshal |
 | [043--045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | E0 copied inertial samples and pure orientation/presentation intent | Stationary hand-operated tabletop balance instrument |
-| 046--048 | Authorized tactile/directional inputs and bounded stepper motion | Kinetic light sculpture |
+| [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | E0 copied tactile/directional evidence and bounded logical stepper intent | Transactional kinetic light sculpture |
 | 049--051 | Local identity records and bounded homing | Tabletop parts carousel |
 | 052--054 | Known-kit IR capture and exactly qualified transmission | IR command translator |
 | 055--057 | Constraint model and fault-aware panel | Inert escape-room console |
@@ -113,7 +121,7 @@ explicit open item.
 | 039 | Host verified; bench/incoming conformance open | Sequencer core, attribution, atomic admission, replay, indexed-hit evidence, and exact external reference publication complete | Canonical Mega schematic/example, visible pattern evidence, and E1 acceptance card; incoming conformance remains open |
 | 042 | Host verified; powered adapter and bench open | Calibration, source identity, eligibility, explicit authorization, checkpoint-order, range, timeout, and invalid-run traces | Powered exact-specimen checkpoints and E1 acceptance remain open |
 | [045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Host verified; powered composition and bench open | Copied-sample validation, stationary orientation, sensitivity, freeze, health, simultaneous-event, and byte-identical replay traces | Host result cells only; powered indicators, controls, bus points, wiring, schematic, and E1 acceptance remain gated |
-| 048 | Queued; detailed plan required | Authorized tactile/directional input, coil-frame, stop, and power-loss traces | Shift-register intent mirror and independent stop |
+| [048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Host verified; powered composition open | Copied-input authorization, logical coil-frame, cancellation, stop-dominance, fault, and byte-identical replay traces | E0 light-intent cells only; powered indicators and inputs remain E1-open, while energized stepper motion and sculpture acceptance remain E2-open |
 | 051 | Queued; detailed plan required | Identity, homing, confirmation, and interruption traces | Position, home, gate-intent, and stop evidence |
 | 054 | Queued; detailed plan required | Encode/decode, malformed-frame, policy, and cancellation traces | Separate transmit/receive/fault indications |
 | 057 | Queued; detailed plan required | Clue, permutation, fault, reset, and stop traces | Raw/accepted/fault clue states and inert intent |

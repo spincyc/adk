@@ -656,6 +656,51 @@ RAM for Lesson 043, 13,740 / 748 for Lesson 044, and 26,398 / 1,898 for Lesson
 045. These compile measurements are software evidence, not powered or physical
 acceptance.
 
+## Copied interaction, bounded logical motion, and kinetic-light policy
+
+`InteractionIntentPolicy` transactionally combines caller-supplied
+`ContactSample` and `DirectionalEvidence` values. Its
+`preview()` / `canCommit()` / `commit()` seam preserves source identity,
+configuration revision, time, sequence, age, saturation, status, directional
+hysteresis, and qualified touch events without owning an input endpoint.
+
+`BoundedStepperSequence` accepts explicit `StepperCommand` values and supplied
+time. The same transactional seam advances a bounded logical position and
+four-bit coil intent while enforcing command age, interval, position, cancel,
+replacement, and stop rules. Logical position and coil intent are replayable
+policy outputs; they are not measured shaft position or energized coils.
+
+`KineticLightSculpture` owns both policies by value and accepts complete
+`SculptureInput` frames. It binds qualified interaction authorization to one
+bounded motif, keeps an independent stop path dominant, and publishes
+`SculptureSnapshot` with semantic light intent. Malformed frames reject
+atomically; admitted producer or motion faults latch an all-off fault state.
+
+[Lessons 046](lessons/046.md), [047](lessons/047.md), and
+[048](lessons/048.md) provide deterministic host replay and compile-only Mega
+examples at E0. Exact tactile and directional adapters, powered GPIO, and
+indicator acceptance remain E1-gated. The exact stepper and driver, coil
+power, restraint, independent power removal, moving mechanism, and physical
+acceptance remain E2-gated.
+
+- Interaction policy: [source](https://github.com/spincyc/adk/blob/main/src/interaction_intent_policy.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_interaction_intent_policy.cpp),
+  [Mega replay](downloads/sketches/Lesson046InteractionIntent.ino), and
+  [Lesson 046](lessons/046.md)
+- Logical step policy: [source](https://github.com/spincyc/adk/blob/main/src/bounded_stepper_sequence.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_bounded_stepper_sequence.cpp),
+  [Mega replay](downloads/sketches/Lesson047BoundedStepperSequence.ino), and
+  [Lesson 047](lessons/047.md)
+- Kinetic-light project: [source](https://github.com/spincyc/adk/blob/main/src/kinetic_sculpture.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_kinetic_sculpture.cpp),
+  [Mega replay](downloads/sketches/Lesson048KineticLightSculpture.ino), and
+  [Lesson 048](lessons/048.md)
+
+The canonical Mega 2560 builds measure 6,956 bytes flash / 733 bytes static
+RAM for Lesson 046, 8,068 / 1,053 for Lesson 047, and 22,216 / 1,470 for Lesson
+048. These compile measurements are software evidence, not powered or physical
+acceptance.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.

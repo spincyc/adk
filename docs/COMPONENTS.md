@@ -156,7 +156,7 @@ architectural layers.
 | Water Level | `AnalogInput` + corrosion-aware sampling policy | 061--063 queued; exact board open |
 | Digital Temperature | Adapter pending exact specimen identity; not assumed to be 18B20 | 061--063 queued; unidentified |
 | 18B20 Temp | Exact-specimen single-wire transport + qualified thermal value | 064--066 queued |
-| Metal Touch | Exact-specimen input semantics, with contact or joystick fallback | 046--048 queued; identity gated |
+| Metal Touch | `InteractionIntentPolicy` accepts copied E0 tactile/directional evidence; exact powered input adapters remain gated | 046--048 host verified; E1 adapter open |
 | Sound sensor | Relative ADC envelope and optional qualified threshold input | 038 published against an external reference; Elegoo substitution open |
 | HC-SR04 | `UltrasonicRanger` | 019 |
 | PIR module | `PirSensor` | 019 |
@@ -167,7 +167,7 @@ architectural layers.
 | Analog joystick | `AnalogJoystick` | 031 |
 | Rotary encoder | `QuadratureEncoder` | 032 |
 | SG90 servo | `ServoOutput` + `Servo` + external supply boundary | 017--018 |
-| 28BYJ-48 + ULN2003 | Four outputs + bounded stepper sequencer | 020--021 extension |
+| 28BYJ-48 + ULN2003 | `BoundedStepperSequence` publishes logical coil intent without owning outputs | 046--048 host verified E0; exact energized system remains E2-open |
 | L293D/L298N driver | `MotorDriver` + external supply boundary | 020--021 |
 | DC motor/fan | Load behind `MotorDriver`; never direct from a pin | 020--021 |
 | Relay module | `Relay` + inert test load and isolation review | 023--024 |

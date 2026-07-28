@@ -72,7 +72,7 @@ Deterministic evidence:
 - fault recovery only through explicit reinitialization; and
 - byte-identical replay of snapshots and presentation intents.
 
-Circuit-native observation:
+Future circuit-native observation:
 
 - joystick axes have named analog test points;
 - encoder phases have named logic test points;
@@ -333,23 +333,38 @@ or physical acceptance.
 
 ## Lessons 046--048: tactile kinetic sculpture
 
+This host-verified block publishes E0 copied-evidence and logical-intent
+policy under the
+[implementation-depth plan](../design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md).
+The public sequence is `InteractionIntentPolicy`,
+`BoundedStepperSequence`, then `KineticLightSculpture`. Canonical Mega
+compile-only replays measure 6,956/733, 8,068/1,053, and 22,216/1,470 bytes
+of flash/static SRAM for Lessons 046, 047, and 048. Static stack proofs are
+263, 212, and 687 bytes respectively. These are E0 capacity results, not
+powered or physical verification.
+
 ### 046 — Touch and gesture-like switches
 
-Add only listing-authorized metal-touch and gesture-like switch observations.
-Preserve polarity, chatter, hold duration, and source validity without
-generalizing them into an unsupported proximity or physiological interface.
+`InteractionIntentPolicy` validates copied contact and joystick evidence,
+preserving source identity, polarity-derived contact state, chatter, hold
+duration, direction, saturation, age, and explicit validity. Powered exact
+tactile/directional adapters and their independent indicators remain E1-open;
+no capacitive, gesture, proximity, or physiological interface is claimed.
 
 ### 047 — Bounded stepper motion
 
-Add the 28BYJ-48/ULN2003 as four owned outputs plus a deterministic coil-frame
-sequencer. Direction, phase, rate, travel budget, cancellation, and
-de-energized shutdown are explicit.
+`BoundedStepperSequence` is a pure logical-intent policy with explicit
+direction, phase, rate, travel budget, cancellation, stop, and de-energized
+shutdown intent. It owns no output, timer, or clock. Powered indicators remain
+E1-open; the exact 28BYJ-48/ULN2003 electrical system and energized motion
+remain E2-open.
 
 ### 048 — Project: kinetic light sculpture
 
-Touch selects a pattern, the joystick or tilt sensor changes direction, and a
-stepper rotates a lightweight paper element while RGB and shift-register LEDs
-mirror the commanded phase.
+`KineticLightSculpture` transactionally composes one copied contact action,
+copied directional evidence, logical motion, and light intent. E0 replay
+proves authorization binding, cancellation, stop dominance, fault handling,
+and byte-identical outcomes without powered endpoints.
 
 ```text
 touch/tilt -----> gesture model --> bounded motion intent --> stepper
@@ -363,21 +378,25 @@ Deterministic evidence:
 - touch chatter, long hold, invalid source, and tilt transitions;
 - exact coil vectors, direction reversal, cancellation, and wrap boundaries;
 - stop dominance at every state and no queued motion after shutdown;
-- external-power loss and driver-fault injection; and
 - frame-for-frame light and motion-intent replay.
 
-Circuit-native observation:
+Future E1/E2 acceptance:
 
-- shift-register LEDs mirror commanded coil phase before motor power is used;
-- independent stop LED is active whenever motion is inhibited;
-- each ULN2003 channel LED exposes coil intent;
-- external motor power is physically separable from logic power; and
-- the motor is de-energized on shutdown.
+- E1 must show shift-register LEDs mirroring logical coil intent and an
+  independent stop LED whenever motion is inhibited;
+- E2 must show each ULN2003 channel indicator exposing applied coil state;
+- E2 must inject driver fault and external-power loss with the exact powered
+  system;
+- E2 must prove external motor power is physically separable from logic
+  power; and
+- E2 must prove the motor is de-energized on stop, fault, and shutdown.
 
-Planned specimen coverage: the listed Metal Touch family, contact or
-tilt/ball switches, joystick, stepper, ULN2003, RGB LED,
-shift-register LEDs, and stop button. Capacitive-touch and heartbeat modules
-are not claimed because they are outside the authorized specimen union.
+Future E1 coverage may qualify listed tactile/contact and joystick inputs,
+stop input, and independent RGB/shift-register indicators. Future E2 coverage
+may qualify the exact 28BYJ-48/ULN2003, separable motor power, and lightweight
+sculpture. Until those gates close, no powered endpoint, wiring table,
+authoritative schematic, energized motion, or physical acceptance is claimed.
+Capacitive-touch and heartbeat modules remain excluded.
 
 ## Lessons 049--051: identity-controlled parts carousel
 

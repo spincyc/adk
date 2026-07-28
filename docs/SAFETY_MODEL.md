@@ -182,6 +182,7 @@ following project-specific evidence.
 | 027 | Telemetry console | E1 | Receive-only or synthetic radio; stale data is explicit; no safety dispatch claim |
 | 030 | Show-cue simulator | E0/E1 | Inert outputs only; no launcher/initiator connection; complete deterministic fault and audit trace |
 | 045 | Balance-table instrument | E0/E1 | Stationary hand-operated tabletop tilt/orientation demonstrator; E0 replay has no hardware side effect; stale, saturated, or unsteady evidence forces a distinct visible ineligible diagnostic and silent tone; qualify the exact E1 circuit before using indicators or controls; remove physical power to stop |
+| 048 | Kinetic sculpture | E0/E1/E2 | E0 uses memory-only intent and has no hardware side effect; E1 qualifies the exact inert inputs and indicators with the motor absent; E2 requires the exact restrained motor, ULN driver, separate current-limited load supply, and independent physical load-power removal before motion |
 
 Project 018 does not secure property. Project 021 carries no person, animal,
 hot item, sharp tool, or hazardous material. Project 027 does not monitor a
@@ -189,6 +190,10 @@ safety-critical condition. Project 030 does not operate a real show. Project
 045 is not an actuator, navigation, stabilization, interlock, or safety-control
 system. Any eventual physical platform is lightweight, stable on the tabletop,
 free of sharp edges, and carries no loose or rolling load.
+Project 048 makes no emergency-stop or position-feedback claim. Its software
+state, input controls, and indicators do not replace independent physical
+load-power removal, and commanded steps do not prove that the mechanism moved
+or reached a position.
 
 ## Lesson release record
 
