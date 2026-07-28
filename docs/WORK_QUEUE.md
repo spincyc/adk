@@ -72,6 +72,16 @@ example and size evidence, lesson package, shared indexes, then the consuming
 project. Open physical cards do not pause later host work. A failed software,
 safety, packaging, or publication gate does.
 
+Every component, endpoint, and composing project also requires the
+[architecture stress pass](templates/component-design-stress-pass.md) before
+its public shape is fixed and again before promotion. Architectural strain
+cannot be hidden inside a lesson boundary: record affected prior decisions and
+downstream consumers, discuss materially broad remediation, and make a durable
+decision before changing shared contracts. The first recorded pass identifies
+[canonical-publication coupling](design/CANONICAL_PUBLICATION_COUPLING_STRESS_PASS.md);
+its publication-authority/resolver choice remains a separate decision and must
+not be folded opportunistically into Lessons 037--039 publication.
+
 Deferred but retained: physical RTC and removable-media adapters require exact
 specimen selection, primary datasheets, electrical qualification, and their
 own failure and bench evidence. Lesson 022 supports deterministic RTC state and
