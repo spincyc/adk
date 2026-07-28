@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-28T00:48:26Z"
-updated_at: "2026-07-28T02:37:50Z"
+updated_at: "2026-07-28T02:44:55Z"
 ---
 
 # Goal
@@ -85,3 +85,10 @@ learner flow gives immediate visible payoff, reversible visible faults, and
 automatic recovery. Conditional specimen wording, actual Mega and breadboard
 geometry, LCD no-connects, staged drawings, size baselines, and publication
 artifacts agree. The next repair unit is Lessons 015--016.
+
+Lessons 015--016 are software-prepared and independently reviewed. Lesson 015
+uses one breadboard with conditional DHT11-module/LCD identities, staged
+payoffs, fault recovery, and bounded shutdown. Lesson 016 uses the authorized
+4x4 keypad as a documented 12-key submatrix, parks the unused column, and
+produces exact key-count pulses. Drawings, size baselines, and publication
+artifacts agree. The next repair unit is Lessons 017--018.

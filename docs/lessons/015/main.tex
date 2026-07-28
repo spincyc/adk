@@ -1,12 +1,9 @@
 \documentclass[11pt]{article}
-
-\usepackage{amsmath}
-\usepackage{amssymb}
 \usepackage[margin=0.68in]{geometry}
 \usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{fancyhdr}
-\usepackage{graphicx}
+\usepackage{float}
 \usepackage[hidelinks]{hyperref}
 \usepackage{listings}
 \usepackage{microtype}
@@ -15,17 +12,13 @@
 \usepackage{titlesec}
 \usepackage[table]{xcolor}
 \usetikzlibrary{arrows.meta,positioning}
-\graphicspath{{docs/lessons/assets/}{../assets/}}
 
-\definecolor{AdkBlack}{gray}{0}
-\definecolor{AdkDark}{gray}{0.20}
 \definecolor{CodeGray}{gray}{0.96}
-\hypersetup
-{
-    pdftitle={ADK Lesson 015: Environmental Station},
-    pdfauthor={Kevin Shanahan},
-    pdfsubject={Deterministic climate scheduling, stable records, LCD presentation, and observable health},
-    pdflang={en-US}
+\hypersetup{
+  pdftitle={ADK Lesson 015: Build an Environmental Station},
+  pdfauthor={Kevin Shanahan},
+  pdfsubject={A staged Arduino Mega climate station with LCD and RGB feedback},
+  pdflang={en-US}
 }
 \pagestyle{fancy}
 \fancyhf{}
@@ -36,363 +29,361 @@
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt}
 \setlist{nosep,leftmargin=1.45em}
-\titleformat{\section}{\Large\bfseries\color{AdkBlack}}{\thesection}{0.5em}{}
-\titleformat{\subsection}{\large\bfseries\color{AdkBlack}}{\thesubsection}{0.5em}{}
-\lstdefinestyle{adkcpp}
-{
-    language=C++,
-    backgroundcolor=\color{CodeGray},
-    basicstyle=\ttfamily\footnotesize,
-    keywordstyle=\color{AdkBlack}\bfseries,
-    commentstyle=\color{AdkDark},
-    columns=fullflexible,
-    keepspaces=true,
-    showstringspaces=false,
-    frame=single,
-    rulecolor=\color{black!20},
-    breaklines=true,
-    tabsize=4
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.5em}{}
+\lstdefinestyle{adkcpp}{
+  language=C++,
+  backgroundcolor=\color{CodeGray},
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\bfseries,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  frame=single,
+  breaklines=true
 }
-\newcommand{\checkbox}{\(\square\)}
-\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
-\newcommand{\warningbox}[1]{%
-  \begin{center}
-  \fcolorbox{black}{white}{\parbox{0.91\linewidth}{\textbf{Safety checkpoint.} #1}}
-  \end{center}}
-\newcommand{\evidencebox}[1]{%
-  \begin{center}
-  \fcolorbox{black}{white}{\parbox{0.91\linewidth}{#1}}
-  \end{center}}
+\newcommand{\safetybox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{%
+  \textbf{Build safely.} #1}}\end{center}}
+\newcommand{\winbox}[1]{\begin{center}\fbox{\parbox{0.88\linewidth}{%
+  \textbf{You unlocked:} #1}}\end{center}}
 
 \begin{document}
 
 \begin{center}
-  {\Huge\bfseries Environmental Station}\\[4pt]
-  {\Large Schedule observations; preserve evidence; present health}\\[8pt]
-  \textit{The LCD explains the record. The RGB cadence proves the station is alive.}
+  {\Huge\bfseries Build an Environmental Station}\\[4pt]
+  {\Large Sensor light \(\rightarrow\) hello screen \(\rightarrow\) live station
+  \(\rightarrow\) fault and recovery}\\[7pt]
+  \textit{Keep each win. Add only the wires that unlock the next one.}
 \end{center}
 
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
-Lesson & 015 --- integration project & Time & 180--240 minutes\\
-Prerequisites & Lessons 001--014 & Board & Arduino Mega 2560\\
-Evidence & LCD age/status, D5--D7 health LED, TP13 DATA &
-Status & host verified; physical acceptance open\\
-Safety & E1; USB-powered low-current circuit only\\
+Lesson & 015 --- project & Time & about 75 minutes\\
+You need & Lessons 013 and 014 & Board & Arduino Mega 2560\\
+Visible story & D13, LCD, RGB & Power & USB only\\
+Finish & two-minute rest, then RESET replays everything\\
 \end{tabularx}
 
-\warningbox{This is a learning instrument, not a calibrated weather station,
-alarm, or life-safety monitor. Disconnect USB before wiring. Identify the exact
-DHT11 part or module before adding its DATA pull-up. Every RGB channel needs
-its own resistor. Check LCD pin numbering against its datasheet. Stop for heat,
-odor, resets, an out-of-rail DATA voltage, a blank display after contrast
-adjustment, or disagreement between the wiring table and the actual part.
-Remove USB power to stop the experiment.}
+\safetybox{Unplug USB before every wiring change. This project conditionally
+uses two independently identified parts: a labeled 5 V DHT11 module and a
+parallel 16-pin LCD1602 whose pins are documented as VSS, VDD, VO, RS, RW, E,
+D0--D7, A, K. A retail family listing does not establish either pin order.
+Leave LCD A and K open unless the exact backlight rating and resistor are
+known. Use a common-cathode RGB LED with one 330 \(\Omega\) resistor per die.
+Stop for heat, odor, resets, or a wire that disagrees with a printed label.}
 
-\section{Mission}
+\section{The four-win plan}
 
-Compose the previous two component boundaries into one reproducible station:
-
-\[
-\text{DHT11}\rightarrow\texttt{ClimateSensor}\rightarrow
-\texttt{EnvironmentalStation}\rightarrow
-\{\text{stable record},\text{LCD},\text{health LED}\}.
-\]
-
-The project is deliberately strict about the evidence chain. A scheduled
-transaction produces a numbered record even when the sensor reports a
-checksum, range, timeout, or stale-data fault. The LCD presents that record;
-it does not decide whether the record is trustworthy. The RGB LED supplies a
-continuous non-Serial health path. TP13 exposes the DATA transaction itself.
-
-By the end, you can:
-
-\begin{itemize}
-  \item distinguish acquisition, transaction, validation, freshness, and
-        presentation;
-  \item explain why a caller-supplied timestamp makes the project replayable;
-  \item predict exactly when a new record is due;
-  \item interpret a numbered fault record without replacing it with old data;
-  \item prove resource acquisition separately from safe shutdown;
-  \item replay identical sensor frames and obtain identical station records.
-\end{itemize}
-
-\section{Composition and ownership}
-
-\begin{center}
-\begin{tikzpicture}[
-    node distance=8mm and 11mm,
-    box/.style={draw,rounded corners,minimum height=9mm,align=center},
-    >=Latex]
-  \node[box] (wire) {D22 / TP13\\DHT11 transaction};
-  \node[box,right=of wire] (sensor) {\texttt{Dht11Sensor}\\owns D22};
-  \node[box,right=of sensor] (station) {\texttt{EnvironmentalStation}\\schedule + record};
-  \node[box,below left=of station] (lcd) {\texttt{CharacterDisplay}\\two stable rows};
-  \node[box,below right=of station] (health) {\texttt{RgbLed}\\D5--D7 health};
-  \draw[->] (wire) -- node[above]{observe} (sensor);
-  \draw[->] (sensor) -- node[above]{sample} (station);
-  \draw[->] (station) -- node[left]{present} (lcd);
-  \draw[->] (station) -- node[right]{indicate} (health);
-\end{tikzpicture}
-\end{center}
-
-\texttt{EnvironmentalStation} receives an explicit non-owning
-\texttt{ClimateSensor} relationship. During \texttt{initialize()} it validates
-the period and freshness policy, then initializes the sensor. Failure rolls
-the sensor back. Repeated initialization does not reacquire it. Shutdown
-releases the sensor, clears the schedule and record, and is idempotent; the
-destructor repeats this cleanup safely.
-
-The LCD and RGB evidence are owned by the sketch because they are presentation
-choices, not part of the station's decision engine. Setup therefore acquires
-in dependency order and rolls back in reverse order:
+Start from the climate light in lesson 013 and the LCD wiring knowledge from
+lesson 014. The final sketch does the quiet engineering work, but the build
+feels like a sequence of visible rewards:
 
 \begin{enumerate}
-  \item sensor and station;
-  \item LCD;
-  \item RGB evidence;
-  \item initial blank/fault-safe presentation.
+  \item the existing DHT11 and RGB light produce a valid climate color;
+  \item D13 flashes, then the correctly wired LCD says
+        \texttt{STATION STARTING};
+  \item the first complete sensor frame becomes a numbered LCD record and the
+        RGB color reacts to humidity;
+  \item lifting DATA while unpowered creates a red fault rhythm; restoring it
+        lets the next good frame recover automatically.
 \end{enumerate}
 
-\section{The deterministic record contract}
+After two minutes the screen says \texttt{STATION RESTING}, then every owned
+pin is released. Press RESET to replay the whole story. There is no worksheet
+or terminal ritual between those wins.
 
-\begin{tabularx}{\linewidth}{@{}l X@{}}
-\toprule
-Field & Meaning\\
-\midrule
-\texttt{sample} & temperature, humidity, observation time, and exact sample state\\
-\texttt{health} & starting, healthy, sensor fault, stale, or timing fault\\
-\texttt{sensorStatus} & transport/update status without replacing sample detail\\
-\texttt{recordedAt} & caller time at which the station recorded the observation\\
-\texttt{sequence} & monotonically increasing record number since initialize/reset\\
-\bottomrule
-\end{tabularx}
+\section{Plate 1 --- Find every Mega socket}
 
-The first \texttt{update(now)} is due immediately. After a record, the next
-deadline is \(\texttt{now}+\texttt{samplePeriod}\). An early update is a no-op.
-A late update takes one observation and schedules from the supplied time; it
-does not burst through missed transactions. This prevents a blocked sensor
-from turning one late loop into a long catch-up loop.
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.76cm,y=0.70cm,line width=0.55pt]
+  \draw[rounded corners] (0,0) rectangle (14,6);
+  \node[font=\large] at (6.8,3.0) {Arduino Mega 2560 --- top view};
+  \draw (1.2,5.15) rectangle (8.9,5.75);
+  \foreach \x/\lab in {4.7/7,5.15/6,5.6/5,6.05/4,6.5/3,6.95/2}
+    {\draw (\x,5.45) circle (0.09); \node[below,font=\tiny] at (\x,5.32) {\lab};}
+  \draw (11.4,0.7) rectangle (12.65,5.35);
+  \foreach \y/\a/\b in {5.0/22/23,4.45/24/25,3.9/26/27,3.35/28/29,
+                         2.8/30/31,2.25/32/33,1.7/34/35}
+    {\draw (11.75,\y) circle (0.09); \draw (12.3,\y) circle (0.09);
+     \node[left,font=\tiny] at (11.58,\y) {\a};
+     \node[right,font=\tiny] at (12.47,\y) {\b};}
+  \draw (3.0,0.4) rectangle (8.8,0.85);
+  \foreach \x/\lab in {5.0/3.3V,5.7/5V,6.45/GND,7.25/GND,8.05/VIN}
+    {\draw (\x,0.64) circle (0.10); \node[below,font=\tiny] at (\x,0.42) {\lab};}
+  \draw[->] (15.1,5.35) -- (6.05,5.45);
+  \node[right,font=\small] at (15.1,5.35) {D5--D7: RGB};
+  \draw[->] (15.1,4.35) -- (12.28,5.0);
+  \node[right,font=\small] at (15.1,4.35) {D22: DHT DATA};
+  \draw[->] (15.1,3.25) -- (11.75,2.8);
+  \draw[->] (15.1,3.25) -- (12.3,2.8);
+  \draw[->] (15.1,3.25) -- (11.75,2.25);
+  \draw[->] (15.1,3.25) -- (12.3,2.25);
+  \draw[->] (15.1,3.25) -- (11.75,1.7);
+  \draw[->] (15.1,3.25) -- (12.3,1.7);
+  \node[right,font=\small] at (15.1,3.25) {D30--D35: LCD};
+  \draw[->] (15.1,1.0) -- (6.45,0.64);
+  \node[right,font=\small] at (15.1,1.0) {labeled 5V and GND};
+\end{tikzpicture}
+\caption{Mega locator plate. D22 and D30--D35 are sockets in the paired
+vertical digital header; D5--D7 are in the top digital header. D13 is the
+built-in acquisition LED.}
+\end{figure}
 
-\texttt{recordReady} is an event snapshot. It is true only for the update that
-created a record and remains readable until the next update. The record itself
-remains stable between deadlines. Unsigned time works across
-\texttt{millis()} rollover while distances remain within the half-range.
-Ambiguous reverse time becomes \texttt{TimingFault} and cancels the deadline
-until explicit reset.
+Touch each printed socket label with USB unplugged. In particular, do not
+mistake D22 for the top-header socket marked 2.
 
-\begin{lstlisting}[style=adkcpp]
-void loop ()
-{
-    const adk::TimePoint             now      (millis ());
-    const adk::Status                status   = station.update (now);
-    const adk::EnvironmentalSnapshot evidence = station.snapshot ();
+\section{Plate 2 --- Keep the working climate light}
 
-    if (evidence.recordReady)
-    {
-        presentRecord (evidence.record);
-    }
-
-    showHealth (evidence.record.health, status);
-    display.update (now);
-}
-\end{lstlisting}
-
-\section{Parts, wiring, and current}
-
-\begin{tabularx}{\linewidth}{@{}l l X@{}}
-\toprule
-Quantity & Part & Requirement\\
-\midrule
-1 & Mega 2560 & USB powered\\
-1 & DHT11 & exact bare part or documented module identified\\
-1 & 16x2 HD44780 LCD & 5\,V-compatible module, 4-bit interface\\
-1 & 10\,k\(\Omega\) potentiometer & LCD contrast between 5\,V and GND\\
-1 & DATA pull-up & value required by identified sensor; omit when module supplies it\\
-1 & common-cathode RGB LED & three known channel pins plus common cathode\\
-3 & 330\,\(\Omega\) resistors & one per RGB channel\\
-1 & LCD backlight resistor & only if the identified module does not include one\\
-1 & multimeter & continuity and rail checks\\
-\bottomrule
-\end{tabularx}
-
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=0.96\linewidth]{015-environmental-station-pencil.png}
-  \caption{Pencil orientation of the Mega, DHT11, LCD, RGB health indicator,
-  and TP13. It is not an authoritative schematic. Alternative text: Mega D22
-  reaches DHT11 DATA and TP13; a 16x2 LCD uses a separate six-wire 4-bit
-  interface; D5, D6, and D7 each reach one resistor-limited RGB channel; all
-  parts share 5\,V and GND, and DHT11 NC remains open.}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.57cm,y=0.52cm,line width=0.5pt]
+  \draw[rounded corners] (0,0) rectangle (25,11);
+  \draw (0.8,10.3) -- (24.2,10.3);
+  \draw (0.8,9.7) -- (24.2,9.7);
+  \node[left,font=\scriptsize] at (0.8,10.3) {\(+\)};
+  \node[left,font=\scriptsize] at (0.8,9.7) {\(-\)};
+  \foreach \y/\l in {8.5/A,7.9/B,7.3/C,6.7/D,6.1/E,4.9/F,4.3/G,3.7/H,3.1/I,2.5/J}
+    {\node[left,font=\tiny] at (0.8,\y) {\l};
+     \foreach \x in {1,...,24} {\draw (\x,\y) circle (0.052);}}
+  \draw[double distance=5pt] (0.8,5.5) -- (24.2,5.5);
+  \foreach \x/\n in {7/8,8/9,9/10,17/18,18/19,19/20,20/21}
+    {\node[font=\tiny] at (\x,9.15) {\n};}
+  \draw[rounded corners] (6.2,6.35) rectangle (10.6,8.9);
+  \node[font=\scriptsize] at (8.4,8.62) {identified DHT11 module};
+  \foreach \x/\lab in {7/+,8/S,9/-}
+    {\draw (\x,6.35) -- (\x,6.1); \node[below,font=\tiny] at (\x,6.02) {\lab};}
+  \draw (7,6.1) -- (7,10.3);
+  \draw (9,6.1) -- (9,9.7);
+  \draw (8,6.1) -- (8,5.82) -- (3.4,5.82)
+    node[left,font=\scriptsize]{to Mega D22};
+  \draw[rounded corners] (16.3,6.4) arc[start angle=180,end angle=0,
+    x radius=2.2,y radius=1.75] -- (20.7,6.4);
+  \foreach \x/\lab in {17/R,18/C,19/G,20/B}
+    {\draw (\x,6.4) -- (\x,6.1); \node[below,font=\tiny] at (\x,6.02) {\lab};}
+  \draw (18,6.1) -- (18,9.7);
+  \foreach \x/\pin in {17/5,19/6,20/7}
+    {\draw (\x,6.1) -- (\x,5.85) -- (\x-.18,5.65) -- (\x+.18,5.35)
+      -- (\x-.18,5.05) -- (\x,4.85) -- (\x,2.5);
+     \node[rotate=90,font=\tiny] at (\x+.34,5.5) {330 \(\Omega\)};
+     \draw (\x,2.5) -- (\x,1.55) node[below,font=\scriptsize]{D\pin};}
+  \node[anchor=east,font=\scriptsize] at (24.2,10.55) {to Mega 5V};
+  \node[anchor=east,font=\scriptsize] at (24.2,9.45) {to Mega GND};
+\end{tikzpicture}
+\caption{Literal first breadboard. Columns run left to right; A--E and F--J
+are separate five-hole groups. The module's \emph{named} \(+\), S/DATA, and
+\(-\) leads land at E8--E10 even if its physical lead order requires short
+re-routing jumpers. The identified common-cathode RGB legs land at E18--E21.}
 \end{figure}
 
 \begin{tabularx}{\linewidth}{@{}l l X@{}}
 \toprule
-Endpoint & Connection & Evidence\\
+From & To & Purpose\\
 \midrule
-DHT11 VDD/GND & Mega 5\,V/GND & rail measurement at the sensor\\
-DHT11 DATA & D22, pull-up if required & TP13 pulse transaction\\
-DHT11 NC & no connection & continuity check while unpowered\\
-LCD RS, E & D30, D31 & command/data strobes\\
-LCD D4--D7 & D32--D35 & 4-bit data path\\
-LCD RW & GND & write-only operation\\
-LCD VO & contrast potentiometer wiper & readable cells after adjustment\\
-RGB R/G/B & D5/D6/D7 through 330\,\(\Omega\) each & health cadence\\
-RGB common cathode & GND & shared return\\
+Mega 5V / GND & breadboard \(+\) / \(-\) rails & one supply and return\\
+module \(+\), DATA, \(-\) & E8 to \(+\), E9 to D22, E10 to \(-\) &
+route by printed names, not guessed order\\
+RGB red, green, blue & E18/E20/E21 through 330 \(\Omega\) to D5/D6/D7 &
+three bounded color channels\\
+RGB common cathode & E19 to \(-\) rail & common return\\
 \bottomrule
 \end{tabularx}
 
-Use the actual LED forward voltages to calculate each channel current:
+Replay lesson 013's climate-light sketch now. The RGB light should settle into
+a climate color after a valid frame. Keep USB unplugged after that win while
+you add the LCD; upload the lesson 015 project only after Plate 3 is complete.
 
-\[
-I=\frac{V_{\mathrm{rail}}-V_f}{R}.
-\]
+\winbox{the DHT11 can produce a complete frame and the RGB LED can show it.}
 
-Record each value and the worst simultaneous total. Do not infer current from
-brightness. If the LCD module exposes a raw backlight LED, use its documented
-series resistance rather than assuming resistance is on the board.
+\section{Plate 3 --- Add the LCD on the right half}
 
-\section{Predict, observe, interpret}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=0.55cm,line width=0.5pt]
+  \draw[rounded corners] (0,0) rectangle (28,11);
+  \foreach \y/\l in {8.4/A,7.8/B,7.2/C,6.6/D,6.0/E,4.8/F,4.2/G,3.6/H,3.0/I,2.4/J}
+    {\node[left,font=\tiny] at (0.7,\y) {\l};
+     \foreach \x in {1,...,27} {\draw (\x,\y) circle (0.05);}}
+  \draw[double distance=5pt] (0.7,5.4) -- (27.4,5.4);
+  \draw (0.7,10.2) -- (13.6,10.2);
+  \draw (14.4,10.2) -- (27.4,10.2);
+  \draw (0.7,9.6) -- (13.6,9.6);
+  \draw (14.4,9.6) -- (27.4,9.6);
+  \draw[dashed] (13.4,10.2) arc[start angle=180,end angle=0,
+    x radius=0.6,y radius=0.42];
+  \draw[dashed] (13.4,9.6) arc[start angle=180,end angle=0,
+    x radius=0.6,y radius=-0.42];
+  \node[font=\tiny] at (14,8.9) {bridge only if rail is split};
+  \node[left,font=\scriptsize] at (0.7,10.2) {\(+\)};
+  \node[left,font=\scriptsize] at (0.7,9.6) {\(-\)};
+  \foreach \x/\n in {1/31,5/35,10/40,15/45,20/50,25/55,27/57}
+    {\node[font=\tiny] at (\x,9.1) {\n};}
+  \draw[rounded corners] (4.0,8.65) rectangle (24.0,10.95);
+  \node[font=\scriptsize] at (14,10.65) {LCD1602 facing you; identified pin 1 at left};
+  \foreach \x/\lab in {5/1,6/2,7/3,8/4,9/5,10/6,11/7,12/8,
+                        13/9,14/10,15/11,16/12,17/13,18/14,19/15,20/16}
+    {\draw (\x,8.65) -- (\x,8.4); \node[below,font=\tiny] at (\x,8.35) {\lab};}
+  \draw (5,8.4) -- (5,9.6);
+  \draw (6,8.4) -- (6,10.2);
+  \draw (9,8.4) -- (9,9.6);
+  \foreach \x/\pin in {8/30,10/31,15/32,16/33,17/34,18/35}
+    {\draw (\x,8.4) -- (\x,7.9) -- (\x,6.0) node[below,font=\tiny]{Mega D\pin};}
+  \foreach \x in {11,12,13,14,19,20}
+    {\draw[very thick] (\x,8.35) -- (\x,7.95);
+     \node[below,font=\tiny,rotate=90] at (\x,7.85) {open};}
+  \draw[rounded corners] (3.2,1.3) rectangle (8.8,4.7);
+  \node[font=\scriptsize] at (6,4.35) {10 k\(\Omega\) contrast pot};
+  \draw (4.4,1.3) -- (4.4,0.8) -- (2.0,0.8) -- (2.0,9.6);
+  \draw (7.6,1.3) -- (7.6,0.8) -- (10.0,0.8) -- (10.0,10.2);
+  \draw (6,1.3) -- (6,0.4) -- (7,0.4) -- (7,8.4);
+  \node[anchor=east,font=\scriptsize] at (27.2,10.45) {to Mega 5V};
+  \node[anchor=east,font=\scriptsize] at (27.2,9.35) {to Mega GND};
+\end{tikzpicture}
+\caption{Literal close-up of columns 31--57 on the \emph{same} 830-point
+breadboard. LCD pins 1, 2, 3, 4, 5, 6, and 11--14 connect; pins 7--10 remain
+open in four-bit mode; pins 15--16 remain open because this lesson makes no
+backlight assumption. The contrast potentiometer ends reach the rails and its
+center wiper reaches LCD pin 3. Dashed jumpers bridge a rail split only when
+an unpowered continuity check finds one.}
+\end{figure}
 
-\subsection{Acquisition evidence}
-
-\textbf{Predict:} after all resources initialize, the LCD shows a starting
-record and the RGB indicator begins the slow starting cadence. If any claim
-fails, the LCD is blanked and all RGB channels turn off.
-
-\textbf{Observe:} power the checked circuit. Watch the complete startup
-sequence rather than a single final LED state. Confirm that the first numbered
-record appears only after the scheduled observation.
-
-\textbf{Interpret:} the sequence proves that software acquired its objects and
-advanced the loop. It does not prove electrical output levels or climate
-accuracy.
-
-\subsection{Healthy and fault records}
-
-\textbf{Predict:} a valid fresh sample displays temperature/humidity and a
-record number while the indicator gives the healthy cadence. A timeout,
-checksum failure, invalid range, or stale sample remains visible as a named
-fault record; old valid values are not relabeled as new.
-
-\textbf{Observe:} record both LCD rows and the LED cadence. With power removed,
-disconnect only DATA to create a controlled transport fault, recheck the
-wiring, then power again. Restore DATA only with power removed.
-
-\textbf{Interpret:} a fault record demonstrates explicit uncertainty. A
-healthy record demonstrates accepted digital data, not calibration against a
-reference instrument.
-
-\subsection{Electrical safe state}
-
-\textbf{Predict:} after commanded shutdown, D22 and every owned display or RGB
-pin reach their documented inactive/high-impedance state. The LCD and RGB LED
-are off.
-
-\textbf{Observe:} invoke the lesson shutdown path, then measure the named pins
-relative to GND. Separately remove USB power and confirm the circuit is
-de-energized.
-
-\textbf{Interpret:} pin measurements support the safe-state claim. Merely
-seeing a dark LED does not: a reversed or failed LED can also appear dark.
-
-\section{Host replay and CLI workflow}
-
-The host test injects a recorded sensor rather than waiting for a room to
-change. Its trace covers immediate first sampling, exact deadlines, early
-no-ops, late updates without catch-up bursts, healthy/fault/stale recovery,
-initialization rollback, restart, destruction, rollover, ambiguous time, and
-byte-for-byte replay.
-
-\begin{verbatim}
-make test-environmental-station
-make test-sanitize
-make compile-Lesson015EnvironmentalStation
-make size-Lesson015EnvironmentalStation
-make lesson-015
-make lessons-check
-make upload-Lesson015EnvironmentalStation PORT=/dev/ttyACM0
-make monitor PORT=/dev/ttyACM0
-\end{verbatim}
-
-Serial monitoring is optional supporting context. The LCD, RGB cadence, and
-TP13 remain the required evidence paths.
-
-The canonical Mega 2560 build uses 14,134 bytes of flash and 912 bytes of
-static RAM with the current Arch Arduino AVR toolchain. These are compile-size
-measurements, not runtime-stack or physical-current measurements.
-
-\section{Diagnosis}
-
-\begin{tabularx}{\linewidth}{@{}p{0.22\linewidth} X X@{}}
+\begin{tabularx}{\linewidth}{@{}l l l@{}}
 \toprule
-Observation & Likely boundary & Next check with power removed\\
+LCD pin & Name & Literal connection\\
 \midrule
-No LCD, no RGB sequence & acquisition or supply & rail polarity, shorts, pin claims\\
-RGB healthy, LCD blank & presentation & LCD pin 1 orientation, VO contrast, RW to GND\\
-Fault record, TP13 quiet & sensor power/DATA & sensor identity, pull-up, D22 continuity\\
-Fault record, TP13 active & transport/validation & timing capture, checksum/range state\\
-Same sequence repeats & scheduling loop stalled & visible cadence and caller time path\\
-Plausible but wrong values & environment or accuracy & compare with a documented reference; do not recalibrate by guess\\
-LED dark after shutdown & inconclusive alone & measure D5--D7 and D22 relative to GND\\
+1, 2, 3 & VSS, VDD, VO & GND, 5 V, contrast-pot wiper\\
+4, 5, 6 & RS, RW, E & Mega D30, GND, Mega D31\\
+7--10 & D0--D3 & leave open\\
+11--14 & D4--D7 & Mega D32, D33, D34, D35 in order\\
+15--16 & A, K & leave open unless independently qualified later\\
+rail split & \(+\) and \(-\) & same-polarity bridges only if continuity shows
+a break\\
 \bottomrule
 \end{tabularx}
 
-\section{Exercises}
+Keep the climate light in the left-side columns from Plate 2 and place this LCD
+close-up in right-side columns 31--57 of the same 830-point board. With USB
+unplugged, check continuity along both power rails. If either rail is split,
+fit the two dashed same-polarity bridges shown; never bridge \(+\) to \(-\).
+Set contrast near its midpoint. Inspect every numbered path, plug in USB, and
+press RESET.
 
-\begin{enumerate}
-  \item Predict the record sequence and deadlines for updates at 0, 1999,
-        2000, 9000, and 9001\,ms with a 2000\,ms period. Explain the lack of
-        catch-up records.
-  \item Extend a recorded host trace with checksum failure, stale sample, and
-        recovery. List every expected health value before running it.
-  \item Design two LCD rows that fit exactly 16 columns and retain sample state,
-        age, and sequence. Explain which numeric detail you omit and why.
-  \item Explain why the station owns the sensor lifecycle but does not own the
-        presentation objects.
-  \item Measure the RGB channel currents and compare them with the calculated
-        values. Record rail voltage, \(V_f\), resistor value, and uncertainty.
-  \item Inject a display failure in a host fake. Specify the station record
-        that must remain preserved even though presentation failed.
-\end{enumerate}
+\winbox{D13 flashes, then the LCD says \texttt{STATION STARTING} and
+\texttt{WAIT FOR RECORD}. That screen requires all sensor, LCD, RGB, and D13
+resources to have been acquired.}
 
-\section{Bench acceptance record}
+\section{Plate 4 --- Watch the station tell its story}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.72cm,y=0.72cm,line width=0.55pt,>=Latex]
+  \foreach \x/\top/\bottom in
+    {2/{STATION STARTING}/{WAIT FOR RECORD},
+     8/{HEALTHY \#000001}/{T+21.50 H0480},
+     14/{SENSOR \#000002}/{T+00.00 H0000},
+     20/{HEALTHY \#000003}/{T+21.60 H0485}}
+  {
+    \draw[rounded corners] (\x-2.5,0) rectangle (\x+2.5,3.6);
+    \draw (\x-2.1,0.8) rectangle (\x+2.1,2.8);
+    \node[font=\ttfamily\scriptsize] at (\x,2.15) {\top};
+    \node[font=\ttfamily\scriptsize] at (\x,1.45) {\bottom};
+  }
+  \draw[->,thick] (4.7,1.8) -- (5.3,1.8);
+  \draw[->,thick] (10.7,1.8) -- (11.3,1.8);
+  \draw[->,thick] (16.7,1.8) -- (17.3,1.8);
+  \node[font=\tiny] at (11,0.35) {unplug, lift DATA, repower};
+  \node[font=\tiny] at (17,0.35) {unplug, restore DATA, repower};
+\end{tikzpicture}
+\caption{Visible state progression. Exact values vary, but success requires a
+numbered healthy record and a climate color. Missing DATA produces an
+explicit fault instead of counterfeit values; restoring DATA permits a later
+healthy record.}
+\end{figure}
+
+The RGB LED is part of the story:
 
 \begin{tabularx}{\linewidth}{@{}l X@{}}
 \toprule
-Item & Record\\
+Light & Meaning\\
 \midrule
-Board and USB supply & \blank{0.70\linewidth}\\
-DHT11 part/module source & \blank{0.62\linewidth}\\
-LCD part/source and backlight limit & \blank{0.52\linewidth}\\
-Measured 5\,V rail & \blank{0.68\linewidth}\\
-RGB resistors and channel currents & \blank{0.53\linewidth}\\
-Unpowered continuity/polarity check & \checkbox\ pass \quad \checkbox\ stop\\
-Startup/acquisition sequence & \blank{0.57\linewidth}\\
-Healthy record and cadence & \blank{0.58\linewidth}\\
-Controlled DATA fault record & \blank{0.55\linewidth}\\
-Reset/recovery observation & \blank{0.59\linewidth}\\
-Shutdown pin measurements & \blank{0.57\linewidth}\\
-Power-removed observation & \blank{0.59\linewidth}\\
-Instrument, date, reviewer & \blank{0.61\linewidth}\\
-Deviation or stop reason & \blank{0.63\linewidth}\\
+blue pulse & waiting for a first complete frame\\
+steady green & valid humidity below 55\% RH\\
+steady cyan & valid humidity from 55\% through 69.9\% RH\\
+steady amber & valid humidity at least 70\% RH\\
+two red pulses & sensor transaction or validation fault\\
+three red pulses & impossible caller time; RESET starts a new bounded run\\
 \bottomrule
 \end{tabularx}
 
-\evidencebox{\textbf{Release status: host verified; physical acceptance open.}
-Compilation, host replay, generated PDF, and firmware size are not physical
-evidence. Do not mark this lesson hardware accepted until the completed record
-contains measured startup, normal, fault, reset, shutdown, and power-removed
-observations on the named Mega 2560 circuit.}
+Cup your hands loosely near the sensor or breathe gently across it from several
+inches away. Do not wet or touch the vents. Watch the displayed humidity and
+color move together. A complete frame, checksum, range check, and freshness
+rule stand between a wire twitch and a healthy record.
 
-\section{Further reading}
+For the reversible surprise, unplug USB, lift only the D22-to-DATA jumper, and
+repower. The station keeps running but shows a named sensor fault with red
+pulses. Unplug, restore that jumper, and repower. The hello, first record, and
+climate color return. This proves recovery by producing the cool result, not
+by filling out a test card.
 
-\begin{itemize}
-  \item Arduino Mega 2560 Rev3 documentation:
-        \url{https://docs.arduino.cc/hardware/mega-2560/}
-  \item DHT11 product documentation from the exact identified manufacturer or
-        module supplier
-  \item HD44780U controller datasheet from Hitachi/Renesas
-  \item ADK development, testing, safety, and PDF policies in the repository
-\end{itemize}
+\section{What the code protects}
+
+\begin{lstlisting}[style=adkcpp]
+const adk::Status                status   = station.update (now);
+const adk::EnvironmentalSnapshot evidence = station.snapshot ();
+
+presentEnvironment (evidence);
+showHealth (evidence.record.health, now);
+\end{lstlisting}
+
+\texttt{EnvironmentalStation} owns the sensor lifecycle and samples only when
+its caller time says a record is due. A late loop makes one observation, not a
+burst of stale transactions. A record keeps its values, sample state, sensor
+status, timestamp, and sequence together. Invalid or missing sensor data stays
+explicit; this is a learning instrument, not a calibrated monitor or alarm.
+
+The LCD and RGB LED are separate presentation objects. A blank LCD cannot
+rewrite sensor truth, and an old good sample cannot masquerade as a new one.
+After 120 seconds, the station displays its rest message for 1.5 seconds, turns
+off the indicators, shuts down the LCD and sensor, and releases D13, D5--D7,
+D22, and D30--D35. RESET begins another run.
+
+Behind the scenes, automated host checks still replay exact deadlines,
+transport faults, stale data, recovery, resource conflicts, rollback,
+timestamp rollover, restart, repeated shutdown, and identical traces. Those
+checks keep the code sturdy; they are not learner chores.
+
+\section{If a win does not appear}
+
+\begin{tabularx}{\linewidth}{@{}p{0.22\linewidth} X X@{}}
+\toprule
+What you see & Likely boundary & Next move with USB unplugged\\
+\midrule
+no D13 flash & acquisition or power & inspect all named pins for duplicates or shorts\\
+D13 flash, blank LCD & LCD supply, contrast, or pin order & verify pins 1--6 and 11--14 by number; turn contrast gently\\
+garbled text & D4--D7 order & trace LCD 11, 12, 13, 14 to D32, D33, D34, D35\\
+hello forever & DHT path & verify named module leads, D22, supply, and documented pull-up\\
+record but RGB dark & LED identity or channel path & verify common cathode and all three 330 \(\Omega\) resistors\\
+red pulses & missing or rejected sensor frame & restore DATA and shorten/check the identified module wiring\\
+plausible but surprising values & sensor limitations or environment & treat them as educational indications, not calibrated facts\\
+\bottomrule
+\end{tabularx}
+
+\section{Make it yours}
+
+\begin{enumerate}
+  \item Change the two starting lines to a family station name, keeping each
+        line at 16 printable characters or fewer.
+  \item Choose three different low-duty RGB colors for dry, comfortable, and
+        humid air, then predict which one appears before RESET.
+  \item Add a tiny arrow or face to the second LCD row without hiding the
+        record number or the explicit fault word.
+  \item Press RESET near the two-minute boundary and watch the complete
+        acquisition-to-record story begin again.
+\end{enumerate}
+
+\section{Next}
+
+Keep the delight: one correctly connected subsystem unlocks the next visible
+state. Lesson 016 changes the input side of that pattern by turning a keypad
+matrix into explicit operator events.
 
 \end{document}
