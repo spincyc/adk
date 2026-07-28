@@ -809,21 +809,23 @@ The canonical sequencer configuration uses a 60--250 ms interval range,
 2000 ms maximum command age, logical bounds `[-256, 256]`, and no holding at
 rest. The project publishes this fixed table:
 
-| Direction | Logical direction | Steps | Interval | Light bits |
-|---|---|---:|---:|---:|
-| North | Forward | 8 | 120 ms | `0x81` |
-| NorthEast | Forward | 12 | 100 ms | `0xC3` |
-| East | Forward | 16 | 80 ms | `0x42` |
-| SouthEast | Forward | 12 | 100 ms | `0x66` |
-| South | Reverse | 8 | 120 ms | `0x18` |
-| SouthWest | Reverse | 12 | 100 ms | `0x3C` |
-| West | Reverse | 16 | 80 ms | `0x24` |
-| NorthWest | Reverse | 12 | 100 ms | `0x99` |
+| Direction | Logical direction | Steps | Interval |
+|---|---|---:|---:|
+| North | Forward | 8 | 120 ms |
+| NorthEast | Forward | 12 | 100 ms |
+| East | Forward | 16 | 80 ms |
+| SouthEast | Forward | 12 | 100 ms |
+| South | Reverse | 8 | 120 ms |
+| SouthWest | Reverse | 12 | 100 ms |
+| West | Reverse | 16 | 80 ms |
+| NorthWest | Reverse | 12 | 100 ms |
 
-The light byte is project-local semantic intent for eight learner-visible
-points; it is not a `ShiftRegisterOutput` frame or electrical contract. A
-future E1 adapter may present it through an existing qualified output. Motifs
-contain no arbitrary script, heap storage, or externally supplied coil frames.
+The light byte is project-local mirror intent: its low four bits exactly equal
+the committed `motion.coilIntent`, and its high four bits are zero. Stop,
+fault, reset, and shutdown publish zero. It is not a `ShiftRegisterOutput`
+frame or electrical contract. A future E1 adapter may present it through an
+existing qualified output. Motifs contain no arbitrary script, heap storage,
+or externally supplied coil frames.
 The longest motif defines the maximum authorized composition pressure.
 E2 may reduce these bounds after measured pull-in, thermal, fixture, and supply
 evidence; it may not silently increase them.
