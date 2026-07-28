@@ -92,7 +92,8 @@ bits. The sketch reads in the same order as the circuit:
 \text{serialize bits}\rightarrow\text{latch once}\rightarrow\text{stable glyph}.
 \]
 
-The D13 diagnostic LED proves that both components acquired their pins. The
+The D13 diagnostic LED's 250\,ms pulse proves that both components acquired
+their pins. A 750\,ms dark separator follows before counting begins. The
 display proves the current glyph. TP-DATA, TP-CLOCK, and TP-LATCH expose the
 electrical transfer to a logic probe or oscilloscope. These observations prove
 different claims; none alone proves the entire chain.
@@ -108,8 +109,12 @@ You will be able to:
   \item separate acquisition, behavior, and safe-state evidence.
 \end{itemize}
 
-\warningbox{Identify the exact 74HC595 and display part numbers before wiring.
-Seven-segment package pinouts vary. A common-anode display wired as
+\warningbox{The software target is a TI SN74HC595N in PDIP-16. The Elegoo
+inventory identifies the display only by family, not by marking or pinout.
+Photograph and record the actual display marking, then establish its package
+pins from a primary datasheet or an unpowered, resistor-limited continuity
+map before connecting any Q output. Seven-segment package pinouts vary. A
+common-anode display wired as
 common-cathode gives misleading results and can exceed an LED rating. Remove
 USB power before moving wires or meter clips.}
 
@@ -120,11 +125,13 @@ USB power before moving wires or meter clips.}
 Quantity & Part & Requirement\\
 \midrule
 1 & Arduino Mega 2560 & USB-powered reference board\\
-1 & 74HC595 & 5 V HC-family eight-bit serial-in/parallel-out register\\
-1 & Seven-segment display & One digit, common cathode, known pinout\\
+1 & Shift register & TI SN74HC595N, PDIP-16, marking and lot code recorded\\
+1 & Seven-segment display & One digit, common cathode, exact marking and pinout recorded\\
 8 & 470 \(\Omega\) resistors & One per segment, including decimal point\\
+1 & 100 nF ceramic capacitor & Register supply bypass at pins 16 and 8\\
 1 & Breadboard and jumpers & Short, inspectable connections\\
-1 & Logic probe or oscilloscope & Optional; multimeter still verifies static levels\\
+1 & Analyzer or oscilloscope & Required: at least three digital channels and 1 MHz sampling\\
+1 & USB cable and supply & Exact cable and supply identities recorded\\
 \bottomrule
 \end{tabularx}
 
@@ -132,10 +139,14 @@ For each lit segment, calculate
 \[
 I_{\mathrm{segment}}=\frac{V_{\mathrm{CC}}-V_F}{470\ \Omega}.
 \]
-Record the actual LED forward-voltage specification. The lesson limit is
+Record the display datasheet's forward-voltage range and absolute maximum.
+Measure the voltage across each active 470\,\(\Omega\) resistor and calculate
+\(I=V_R/R_{\mathrm{measured}}\); do not infer current from brightness. The lesson limit is
 8\,mA per segment and 40\,mA total display current; increase the resistor value
 if either calculation exceeds its limit. These conservative lesson limits do
-not replace the register and display datasheets.
+not replace the register and display datasheets. Also record USB supply
+identity, unloaded and loaded 5\,V rail, and total USB current with glyph 8.
+Stop if the rail leaves 4.75--5.25\,V or total USB current exceeds 100\,mA.
 
 \newpage
 \section{Authoritative wiring}
@@ -169,15 +180,22 @@ not replace the register and display datasheets.
   \item D24 / TP-LATCH \(\rightarrow\) STCP, pin 12.
   \item 5 V \(\rightarrow\) VCC pin 16 and active-low clear pin 10.
   \item GND \(\rightarrow\) GND pin 8 and active-low output-enable pin 13.
-  \item Q0 through Q6 \(\rightarrow\) segments a through g; Q7
+  \item Q0 (pin 15), Q1--Q6 (pins 1--6) \(\rightarrow\) segments a through g;
+        Q7 (pin 7)
         \(\rightarrow\) decimal point. Every path has its own 470 \(\Omega\)
         resistor.
-  \item Both display common-cathode pins \(\rightarrow\) GND. Use the display
-        datasheet to locate them.
+  \item Both qualified display common-cathode pins \(\rightarrow\) GND, using
+        the package-pin numbers established on Build Plate B.
 \end{itemize}
 
-Place a 100\,nF ceramic bypass capacitor directly between pins 16 and 8. The
-pencil plate helps with physical orientation only. In this introductory
+Place a 100\,nF ceramic bypass capacitor directly between pins 16 and 8.
+Orient the PDIP notch upward and count pins counterclockwise: pin 1 is upper
+left, pin 8 lower left, pin 9 lower right, and pin 16 upper right. Straddle the
+breadboard center trench so opposite IC pins never share a contact strip. The
+pencil plate shows every register connection and resistor path, but the
+display outline is deliberately marking-neutral: write its verified segment
+terminal numbers into the eight boxes before placement. Do not power a display
+whose marking and common-cathode pinout are unresolved. In this introductory
 three-wire circuit, active-low OE is tied to GND, so the output drivers are
 enabled before the sketch runs. The 74HC595 storage register's power-up state
 is not specified; reset or power-up can therefore show an arbitrary, possibly
@@ -191,11 +209,66 @@ control signal is required when blank output during power-up is part of the
 circuit contract.
 
 \begin{center}
-\includegraphics[width=0.89\linewidth]{010-shift-register-pencil.png}
+\begin{tikzpicture}[x=0.75cm,y=0.52cm,
+    wire/.style={draw,very thick},
+    part/.style={draw,rounded corners,fill=white}]
+  \node[part,minimum width=3.2cm,minimum height=8.2cm] (mega) at (0,0) {};
+  \node[font=\bfseries] at (0,3.5) {MEGA 2560};
+  \node[font=\scriptsize,align=left] at (0,1.4)
+    {D22 / TP-DATA $\rightarrow$ 14\\
+     D23 / TP-CLOCK $\rightarrow$ 11\\
+     D24 / TP-LATCH $\rightarrow$ 12};
+  \node[font=\scriptsize,align=left] at (0,-1.3)
+    {5 V $\rightarrow$ 16, 10\\GND $\rightarrow$ 8, 13};
+  \node[part,minimum width=8.6cm,minimum height=8.2cm] at (7.6,0) {};
+  \draw[double,thick] (3.5,0)--(11.7,0);
+  \node[part,minimum width=3.1cm,minimum height=5.9cm] (ic) at (6.2,0) {};
+  \draw[thick] (5.8,2.95) arc (180:360:0.4);
+  \node[font=\bfseries,rotate=90] at (6.2,0) {SN74HC595N};
+  \node[font=\scriptsize] at (4.9,2.65) {pin-1 dot};
+  \foreach \y/\p/\n in {2.2/1/Q1,1.55/2/Q2,.9/3/Q3,.25/4/Q4,
+                        -.4/5/Q5,-1.05/6/Q6,-1.7/7/Q7,-2.35/8/GND}
+  {
+    \draw (4.65,\y)--(5.0,\y);
+    \node[anchor=e,font=\scriptsize] at (4.6,\y) {\p\ \n};
+  }
+  \foreach \y/\p/\n in {2.2/16/VCC,1.55/15/Q0,.9/14/DS,.25/13/{/OE},
+                        -.4/12/STCP,-1.05/11/SHCP,-1.7/10/{/MR},-2.35/9/{Q7' NC}}
+  {
+    \draw (7.4,\y)--(7.75,\y);
+    \node[anchor=west,font=\scriptsize] at (7.8,\y) {\p\ \n};
+  }
+\end{tikzpicture}
 
-\small\textit{Alternative text: a Mega, breadboard, 74HC595, eight resistors,
-and one-digit display arranged left to right; the exact list above is authoritative.}
+\small\textit{Build Plate A is an orientation plate, not a netlist: it fixes
+the notch, pin-1 dot, counterclockwise numbering, and placement across the
+breadboard trench. The pin-by-pin list above is authoritative for every
+control, supply, clear, enable, test-point, and bypass net. Place the 100 nF
+capacitor physically beside the IC between pins 16 and 8.}
 \end{center}
+
+\textbf{Build Plate B --- unpowered display specimen map}
+
+\begin{tabularx}{\linewidth}{@{}l X l X@{}}
+Marking/photo & \blank{1.7in} & Primary source & \blank{1.45in}\\[6pt]
+Common type & \blank{1.2in} & Cathode package pins & \blank{1.1in}, \blank{1.1in}\\
+\end{tabularx}
+\begin{center}
+\begin{tabular}{c*{8}{c}}
+\toprule
+Logical path & Q0/a & Q1/b & Q2/c & Q3/d & Q4/e & Q5/f & Q6/g & Q7/dp\\
+\midrule
+595 pin & 15 & 1 & 2 & 3 & 4 & 5 & 6 & 7\\
+470 \(\Omega\) & \checkbox & \checkbox & \checkbox & \checkbox &
+  \checkbox & \checkbox & \checkbox & \checkbox\\
+Display pin & \blank{0.25in} & \blank{0.25in} & \blank{0.25in} &
+  \blank{0.25in} & \blank{0.25in} & \blank{0.25in} &
+  \blank{0.25in} & \blank{0.25in}\\
+\bottomrule
+\end{tabular}
+\end{center}
+Both qualified common-cathode pins go to GND. Until every Plate B blank is
+resolved from the actual specimen, stop: the powered circuit is not authorized.
 
 \newpage
 \section{Interface and ownership}
@@ -247,9 +320,12 @@ not prove clock timing margins; TP-CLOCK and TP-LATCH supply that evidence.}
 \section{Narrative run loop}
 
 The canonical sketch declares the runtime, display, and diagnostic LED in
-dependency order. \texttt{setup()} reads ``acquire circuit, show ready.''
-\texttt{loop()} reads ``observe time, decide whether the count is due, choose
-the digit, show the digit.'' No \texttt{delay()} blocks observation.
+dependency order. \texttt{setup()} reads ``acquire circuit, pulse ready.''
+\texttt{loop()} observes the acquisition, separator, count, and shutdown
+deadlines before choosing and showing a digit. At 120 seconds it blanks the
+display and D13, holds that inactive evidence for 250\,ms, releases D22--D24
+then D13, and halts. Reset starts the same bounded sequence again. No
+\texttt{delay()} blocks observation.
 
 \begin{lstlisting}[style=adkcpp]
 void loop ()
@@ -281,6 +357,8 @@ targets; no particular IDE is required.
 
 \begin{lstlisting}[style=adkcpp,language=bash]
 make bootstrap
+arduino-cli core list
+git rev-parse HEAD
 make arduino-Lesson010ShiftRegisterDisplay
 make upload-Lesson010ShiftRegisterDisplay PORT=/dev/ttyACM0
 make observe-new LESSON=010
@@ -301,12 +379,12 @@ log therefore says nothing about display correctness.
 \toprule
 Place & Prediction & Interpretation\\
 \midrule
-D13 & Steady on after setup & All four output pins were acquired; not proof of segment wiring\\
-Display & 0, then one increment each second & Glyph selection and latched outputs agree visibly\\
-TP-DATA & Eight data levels per update & Serialized value is present; probe with GND reference\\
+D13 & 250 ms on, then a 750 ms dark separator & All four output pins were acquired; not proof of segment wiring\\
+Display & Zero during the evidence prelude, then one increment each second & Glyph selection and latched outputs agree visibly\\
+TP-DATA & Eight sampled levels per update, most significant bit first & Decode and compare the byte with the shown glyph\\
 TP-CLOCK & Exactly eight pulses per update & Eight bits were shifted\\
 TP-LATCH & One pulse after the eight clocks & The visible output changes atomically\\
-D22--D24 after shutdown & High impedance & Endpoint safe state; measure rather than infer from blank display\\
+D22--D24 after shutdown & Each preserves a 10 k\(\Omega\)/10 k\(\Omega\) midpoint near half rail & Endpoint safe state; test one pin at a time\\
 \bottomrule
 \end{tabularx}
 
@@ -318,9 +396,26 @@ D22--D24 after shutdown & High impedance & Endpoint safe state; measure rather t
   \item Predict the first three glyphs and the CLOCK:LATCH pulse count.
   \item Attach probes with power removed. Reference every measurement to Mega
         GND. Apply USB power only after a second inspection.
-  \item Confirm D13 first, then the visible 0--9 sequence.
-  \item Observe TP-DATA, TP-CLOCK, and TP-LATCH. Save one annotated capture.
-  \item Remove USB power. Do not move bare probes around the live breadboard.
+  \item Confirm the 250\,ms D13 pulse and 750\,ms dark separator, then the
+        visible 0--9 sequence.
+  \item A three-or-more-channel, 1\,MHz-or-faster analyzer or oscilloscope is
+        required. With USB removed, connect CH0 to TP-DATA/D22,
+        CH1 to TP-CLOCK/D23, CH2 to TP-LATCH/D24, and analyzer ground to Mega
+        GND. Inspect the clips, repower, use a rising-edge TP-LATCH trigger,
+        and save a capture with the preceding eight clocks. Decode TP-DATA MSB
+        first and compare that byte with the displayed glyph.
+  \item At the fixed 120-second deadline, confirm that the display and D13 are
+        inactive for 250\,ms before the pins release. Remove USB. Install the
+        10\,k\(\Omega\)/10\,k\(\Omega\) midpoint fixture on D22 only, inspect
+        it, repower, and record the midpoint; then remove USB before removing
+        the fixture. Repeat that complete remove/install/inspect/repower/
+        measure/remove sequence separately for D23, D24, and D13. Never move
+        the fixture while powered. A high-impedance pin leaves the midpoint
+        near half the measured rail.
+  \item Press reset and record the OE-low transient duration from reset edge
+        to the first software latch. Confirm the pulse, separator, zero, and
+        count sequence repeat. Remove USB and verify all parts are dark and
+        cool before moving probes.
 \end{enumerate}
 
 \textbf{Host-verified is the current release status.} Do not fill the measured
@@ -380,12 +475,40 @@ Chip or resistor hot & unsafe current or wiring & remove USB immediately; rechec
 
 \begin{tabularx}{\linewidth}{@{}l X l X@{}}
 Date & \blank{1.25in} & Reviewer & \blank{1.35in}\\[7pt]
-Board & Mega 2560 revision: \blank{1.0in} & USB supply & \blank{1.05in}\\[7pt]
+Sketch commit & \blank{1.3in} & Sketch path & \blank{1.4in}\\[7pt]
+Firmware artifact/hash & \blank{1.1in} & Source tree state & \blank{1.15in}\\[7pt]
+CLI version & \blank{1.35in} & AVR core version & \blank{1.2in}\\[7pt]
+Board & Mega 2560 revision: \blank{1.0in} & USB cable & \blank{1.05in}\\[7pt]
+USB supply/model & \blank{1.3in} & Supply current limit & \blank{1.05in}\\[7pt]
 74HC595 marking & \blank{1.4in} & Display marking & \blank{1.15in}\\[7pt]
 Display polarity & \blank{1.2in} & Resistors & \blank{1.15in}\\[7pt]
-Measured 5 V & \blank{1.2in} & Segment \(V_F\) & \blank{1.15in}\\[7pt]
-Segment current & \blank{1.05in} & Maximum total & \blank{1.15in}\\
+Unloaded 5 V & \blank{1.2in} & Loaded 5 V, glyph 8 & \blank{1.05in}\\[7pt]
+USB current, glyph 8 & \blank{1.05in} & Display-current total & \blank{1.15in}\\
 \end{tabularx}
+
+\subsection{Glyph-8 resistor and current worksheet}
+
+\begin{center}
+\begin{tabular}{c*{8}{c}}
+\toprule
+Path & a/Q0 & b/Q1 & c/Q2 & d/Q3 & e/Q4 & f/Q5 & g/Q6 & dp/Q7\\
+\midrule
+\(R\), \(\Omega\) & \blank{0.25in} & \blank{0.25in} & \blank{0.25in} &
+  \blank{0.25in} & \blank{0.25in} & \blank{0.25in} &
+  \blank{0.25in} & \blank{0.25in}\\
+\(V_R\), V & \blank{0.25in} & \blank{0.25in} & \blank{0.25in} &
+  \blank{0.25in} & \blank{0.25in} & \blank{0.25in} &
+  \blank{0.25in} & dark\\
+\(I=V_R/R\), mA & \blank{0.25in} & \blank{0.25in} & \blank{0.25in} &
+  \blank{0.25in} & \blank{0.25in} & \blank{0.25in} &
+  \blank{0.25in} & 0\\
+\bottomrule
+\end{tabular}
+\end{center}
+Glyph 8 lights a--g and leaves dp dark. Sum the seven calculated currents and
+compare that value with the 40\,mA display limit; separately record total USB
+current, which also includes the board and register. Attach a signed worksheet
+if the available instrument log provides these same eight path fields.
 
 \subsection{Required observations}
 
@@ -394,14 +517,16 @@ Segment current & \blank{1.05in} & Maximum total & \blank{1.15in}\\
 Check & Pass & Recorded evidence\\
 \midrule
 Unpowered wiring matches both datasheets & \checkbox & \\
-D13 separately proves successful acquisition & \checkbox & \\
+D13 gives a 250 ms acquisition pulse and 750 ms separator & \checkbox & \\
 Digits 0--9 are stable and correctly mapped & \checkbox & \\
-TP-CLOCK shows eight pulses per update & \checkbox & \\
-TP-LATCH shows one later pulse per update & \checkbox & \\
+Analyzer record names channels, sample rate, trigger, and decoded TP-DATA byte & \checkbox & \\
+TP-CLOCK shows eight pulses before one TP-LATCH edge & \checkbox & \\
+All eight resistor values/drops/currents and glyph-8 total are recorded & \checkbox & \\
+Loaded/unloaded rail and glyph-8 total USB current meet limits & \checkbox & \\
 Startup transient with OE tied low is observed and recorded & \checkbox & \\
 First software latch establishes the documented zero & \checkbox & \\
 Reset returns to the documented initial sequence & \checkbox & \\
-Shutdown blanks, then D22--D24 become high impedance & \checkbox & \\
+Each unpowered-installed midpoint fixture passes after 120 s shutdown & \checkbox & \\
 Power removal leaves every part cool and dark & \checkbox & \\
 \bottomrule
 \end{tabularx}
