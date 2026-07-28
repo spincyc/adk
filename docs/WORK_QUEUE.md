@@ -78,6 +78,7 @@ qualified.
 | [001--036](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
 | [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Host verified; bench/incoming conformance open | Preserve the canonical reference publication; complete incoming conformance and each E1 acceptance record |
 | [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Host verified; powered adapter/bench open | Preserve the pure-policy publication; qualify exact specimens before powered adapters, wiring, schematics, or E1 acceptance |
+| [043--045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Active integration; E0 replay-first | Implement copied inertial values, pure orientation/presentation policies, and the stationary hand-operated tabletop composition; keep exact MPU/QMI adapters and all powered work gated |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -116,7 +117,7 @@ work; retail kit names are not electrical identities.
 | [034--036](design/LESSONS_034_036_MAGNETIC_PASSAGE_PLAN.md) | Host verified; bench open | Magnetic observations, passage qualification, magnetic passage logger |
 | [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Host verified; bench/incoming conformance open | Contact dynamics, acoustic envelopes, and percussion sequencer published against documented external references; E1 and incoming conformance open |
 | [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Host verified; powered adapter/bench open | Optical observations, presence, and tabletop course marshal are published as pure policy; explicit button authorization is fixed, while powered exact-specimen and bench gates remain open |
-| [043--045](projects/component_project_cadence.md) | Queued | Revision-neutral inertial samples, orientation presentation, balance-table instrument |
+| [043--045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Active integration; E0 replay-first | Copied inertial samples, pure orientation/presentation intent, and stationary hand-operated tabletop balance instrument; no powered adapter, I2C, wiring, schematic, or E1 claim |
 | [046--048](projects/component_project_cadence.md) | Queued; authorized specimens only | Authorized tactile/directional inputs, bounded stepper motion, kinetic sculpture; excluded or unidentified pulse/gesture modules are not claimed |
 | [049--051](projects/component_project_cadence.md) | Queued | Local identity records, homing, inert parts carousel |
 | [052--054](projects/component_project_cadence.md) | Queued; exact emitter gated | Known-kit IR capture, bounded listed IR-emission family, command translator |
@@ -151,9 +152,14 @@ and pencil-drawing PDFs. A debounced explicit button action is the sole start
 authorization; PIR evidence may establish eligibility but can never start a
 run. Powered adapters, wiring, formal schematics, and E1 claims remain gated
 by exact-specimen qualification.
-Lessons 043--081 are canonical subjects and retained work in the engagement
-order above, but their cadence entries are not implementation-ready lesson
-plans. Before code begins for each three-lesson
+Lessons 043--045 have an implementation-depth E0 replay-first
+[design brief](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) and are active,
+not host verified. The brief preserves exact MPU6050 and QMI8658 variants as
+independent future adapter gates and leaves the later 067--069 normalization,
+qualification, comparison, and recorder scope intact. Lessons 046--081 remain
+canonical subjects and retained work in the engagement order above, but their
+cadence entries are not implementation-ready lesson plans. Before code begins
+for each later three-lesson
 arc, expand it to the same depth as 031--033: public values and interfaces,
 resource and pin budgets, deterministic fixture and failure matrices,
 narrative example flow, staged circuit-native experiments, HTML/PDF division,

@@ -19,6 +19,14 @@ hardware-neutral optical, presence, and course-marshal policy. A debounced
 button is the sole start authorization; PIR may establish eligibility but
 cannot start a run. Powered adapters, exact specimens, and physical acceptance
 remain open.
+Lessons 043--045 are active under an
+[implementation-depth E0 replay-first plan](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md).
+They authorize copied synthetic inertial values, pure orientation and
+presentation policies, and a stationary hand-operated tabletop composition,
+not a powered adapter, I2C transaction, wiring table, schematic, or physical
+claim. Exact MPU6050 and QMI8658 variants remain independently gated, and
+Lessons 067--069 retain normalization, qualification, comparison, and recorder
+scope.
 The later blocks are ordered for early learner engagement while retaining
 prerequisite, authorization, safety, and evidence gates: interactive motion
 and display projects precede the more methodical environmental and
@@ -96,6 +104,9 @@ For every lesson, the queued implementation order is:
 | 040 | Host verified; powered adapter and bench open | Qualified optical observations | Raw values, source identity, calibration revision, timing, transitions, and faults |
 | 041 | Host verified; powered adapter and bench open | Presence and passage composition | PIR eligibility, beam and range validity, age, and disagreement |
 | 042 | Host verified; powered adapter and bench open | Tabletop course marshal | Explicit button authorization, ordered checkpoints, invalid-run state, and replayable timing |
+| 043 | Active integration; E0 replay-first | Copied inertial observation validation | Source/configuration identity, producer status, sequence, age, saturation, and synthetic-fixture provenance |
+| 044 | Active integration; E0 replay-first | Pure board-frame orientation and presentation intent | Stationarity, bounded pitch/roll, health, light intent, and tone intent from copied samples |
+| 045 | Active integration; E0 replay-first | Stationary hand-operated tabletop balance instrument | Sensitivity, freeze, health, and presentation replay without powered endpoints |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation
@@ -153,9 +164,9 @@ supplies the shortest planned path through the library.
 | 040 | Component | Reflective and interrupted light | Optical observations retain calibration, ambient effects, and crosstalk |
 | 041 | Component | Presence and passage | PIR, beam, and range observations retain validity, age, and disagreement |
 | 042 | Project-bearing | Tabletop course marshal | Ordered checkpoints and finish evidence produce a replayable timed run |
-| 043 | Component | Revision-neutral inertial samples | Identified MPU6050 or QMI8658 adapters produce one validated sample value |
+| 043 | Component | Revision-neutral copied inertial samples | Synthetic fixtures produce one validated sample value; exact MPU6050 and QMI8658 adapters remain independently gated |
 | 044 | Component | Orientation presentation | Supplied samples produce bounded pitch/roll and existing LED/tone intent |
-| 045 | Project-bearing | Balance-table instrument | Tilt, sensitivity, freeze, health, and presentation replay without a later display driver |
+| 045 | Project-bearing | Stationary tabletop balance instrument | Hand-operated tilt, sensitivity, freeze, health, and presentation intent replay without powered endpoints or a later display driver |
 | 046 | Component | Authorized tactile and directional inputs | Listed Metal Touch, contact, and joystick observations retain noise and explicit validity without capacitive or heartbeat claims |
 | 047 | Component | Bounded stepper motion | Coil frames, rate, travel, cancellation, and de-energized shutdown are explicit |
 | 048 | Project-bearing | Kinetic light sculpture | Existing indicators mirror bounded motion intent before motor power is used |
