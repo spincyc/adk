@@ -186,11 +186,18 @@ project's pitched replay.
 
 ## Lessons 040--042: optical course marshal
 
+Provisional implementation-depth planning is recorded in the
+[optical course marshal plan](../design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md).
+Implementation and canonical publication remain blocked until Lessons 037--039
+complete with status `done`, final reconciliation is recorded, the Lesson 042
+arming decision is resolved, and exact specimens are qualified.
+
 ### 040 — Reflective and interrupted light
 
-Unify line-tracking, obstacle-avoidance, photo-interrupter, and light-cup
-modules as explicit optical observations. Teach ambient rejection, threshold
-calibration, hysteresis, crosstalk, and surface dependence.
+Treat listing-authorized line-tracking, obstacle-avoidance, photo-interrupter,
+and photoresistor evidence as explicit optical observations without asserting
+one universal hardware sensor. Teach ambient rejection, threshold calibration,
+hysteresis, crosstalk limits, and surface dependence.
 
 ### 041 — Presence and passage
 
@@ -202,11 +209,15 @@ observable result, not silently voted away.
 
 A hand-moved card or unpowered model vehicle passes checkpoints. Reflective
 markers identify lanes, an obstacle sensor guards the finish, PIR arms the
-course, and ultrasonic range confirms the finish approach. The project times
-runs and rejects impossible checkpoint order.
+course only under the final reviewed arming policy, and ultrasonic range
+confirms the finish approach. The provisional plan recommends an existing
+button start with PIR as eligibility evidence; PIR-only start authority remains
+an explicit user-decision gate. The project times runs and rejects impossible
+checkpoint order.
 
 ```text
-PIR --------> armed
+PIR --------> eligibility
+reviewed start policy -> armed
 line gates --> checkpoint order --+
 obstacle --------------------------+--> marshal state --> light/display
 range ------> approach validity ---+                 --> timing record
@@ -228,8 +239,10 @@ Circuit-native observation:
 - trigger, echo, and sensor digital outputs are named test points; and
 - the project functions without a serial terminal.
 
-Planned specimen coverage: line tracker, obstacle detector, photo-interrupter,
-light-cup/light-blocking module, PIR, HC-SR04, LDR, displays.
+Planned family coverage: listing-authorized Tracking, Avoidance,
+Photo-Interrupter, Photo-Resistor, HC-SR501, HC-SR04, and existing displays.
+The light-cup alias is not in the authorized Elegoo union and is excluded
+unless a later source decision admits it.
 
 ## Lessons 043--045: leak and thermal alarm trainer
 
@@ -714,7 +727,7 @@ individually identified retail boards.
 | MPU6050 or QMI8658 revision | 063 | 066 normalized records |
 | Hall variants, reed | 036 | 051, 060 |
 | Tilt, knock, vibration, shock, sound | 039 | 048, 060 |
-| Line, obstacle, interrupter, light cup | 042 | 057, 060 |
+| Tracking, Avoidance, Photo-Interrupter | 042 | 057, 060 |
 | Water, rain, soil | 045 | 057 |
 | Thermistor, analog/digital temperature | 045 | 057 |
 | Flame/radiant detector | 045, controlled IR only | 057 |

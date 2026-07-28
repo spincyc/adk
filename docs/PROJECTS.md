@@ -15,6 +15,10 @@ Lessons 001--036 are host verified with their bench cards open. Lessons
 037--039 have complete E0 cores, tests, and hardware-independent drafts. Their
 linked exact-specimen Mega example, authoritative schematic, promotion, and E1
 acceptance remain open.
+Lessons 040--042 have a
+[provisional implementation-depth brief](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md)
+and remain queued behind completion of 037--039 with status `done`, final
+reconciliation, the Lesson 042 arming decision, and exact-specimen gates.
 See the [authoritative work
 queue](WORK_QUEUE.md) for the complete ledger.
 
@@ -97,7 +101,7 @@ explicit open item.
 | 033 | Host verified; bench open | Input and commit/cancel traces | Preview, committed, and fault indications |
 | 036 | Host verified; bench open | Passage, bounce, direction, recovery, and record traces | Raw contacts, accepted passage, and count |
 | 039 | Active integration | E0 sequencer core, attribution, atomic admission, replay, and indexed-hit evidence complete | Linked exact-specimen Mega schematic/example, promotion, and E1 acceptance open |
-| 042 | Queued; detailed plan required | Calibration, checkpoint-order, range, and timeout traces | Local checkpoints and invalid-run state |
+| 042 | [Queued; provisional implementation-depth plan complete](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Calibration, checkpoint-order, range, and timeout traces; implementation remains gated | Local checkpoints and invalid-run state |
 | 045 | Queued; detailed plan required | Probe, thermal, radiant, latch, and record traces | Health/fault display and inert alarm lamp |
 | 048 | Queued; detailed plan required | Gesture, coil-frame, stop, and power-loss traces | Shift-register intent mirror and independent stop |
 | 051 | Queued; detailed plan required | Identity, homing, confirmation, and interruption traces | Position, home, gate-intent, and stop evidence |

@@ -10,7 +10,10 @@ use the first-class RAII interfaces.
 
 Lessons 001--036 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
-bench cards remain open. Lesson 037 is the next planned component boundary.
+bench cards remain open. Lessons 037--039 are the active integration boundary.
+Lessons 040--042 have a provisional implementation-depth brief and remain
+queued behind completion and final reconciliation of 037--039, the Lesson 042
+arming decision, and exact-specimen gates.
 The input families used in 031--036 are in the
 [authorized Elegoo set](inventory/AUTHORIZED_ELEGOO_SET.md); exact electrical
 revision and bench evidence remain open. The
