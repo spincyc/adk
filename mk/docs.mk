@@ -32,7 +32,9 @@ doc/lessons/012.pdf: docs/lessons/012/main.tex \
 doc/lessons/013.pdf: docs/lessons/013/main.tex \
 		docs/lessons/assets/013-dht11-climate-pencil.png
 doc/lessons/014.pdf: docs/lessons/014/main.tex \
-		docs/lessons/assets/014-character-display-pencil.png
+		docs/lessons/assets/014-mega-lcd-pin-map.png \
+		docs/lessons/assets/014-lcd-breadboard.png \
+		docs/lessons/assets/014-lcd-visible-states.png
 doc/lessons/015.pdf: docs/lessons/015/main.tex \
 		docs/lessons/assets/015-environmental-station-pencil.png
 doc/lessons/016.pdf: docs/lessons/016/main.tex \

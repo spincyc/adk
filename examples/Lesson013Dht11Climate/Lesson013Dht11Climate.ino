@@ -7,11 +7,13 @@ namespace {
 
     constexpr adk::PinId dataPin = 22;
 
-    const adk::Rgb waitingColor (0, 0, 48);
-    const adk::Rgb validColor   (0, 48, 0);
-    const adk::Rgb faultColor   (64, 0, 0);
-    const adk::Rgb staleColor   (48, 20, 0);
-    const adk::Rgb offColor     (0, 0, 0);
+    const adk::Rgb waitingColor   (0, 0, 48);
+    const adk::Rgb validColor     (0, 48, 0);
+    const adk::Rgb humidColor     (0, 24, 48);
+    const adk::Rgb veryHumidColor (40, 24, 0);
+    const adk::Rgb faultColor     (64, 0, 0);
+    const adk::Rgb staleColor     (48, 20, 0);
+    const adk::Rgb offColor       (0, 0, 0);
 
     const adk::Duration freshFor (5000);
 
@@ -33,6 +35,7 @@ namespace {
                                               adk::TimePoint            now);
     adk::Rgb           faultPattern          (adk::ClimateSampleState state,
                                               adk::TimePoint           now);
+    adk::Rgb           climateColor          (const adk::ClimateSample& observation);
     bool               pulseOn               (adk::TimePoint now,
                                               uint8_t        pulseCount);
     void               haltClimateCircuit    ();
@@ -105,7 +108,7 @@ namespace {
                 return statusLed.set (pulseOn (now, 1) ? waitingColor : offColor).ok ();
 
             case adk::ClimateSampleState::Valid:
-                return statusLed.set (validColor).ok ();
+                return statusLed.set (climateColor (observation)).ok ();
 
             case adk::ClimateSampleState::Stale:
                 return statusLed.set (staleColor).ok ();
@@ -139,6 +142,21 @@ namespace {
         }
 
         return pulseOn (now, pulseCount) ? faultColor : offColor;
+    }
+
+    adk::Rgb climateColor (const adk::ClimateSample& observation)
+    {
+        if (observation.humidityPermille >= 700U)
+        {
+            return veryHumidColor;
+        }
+
+        if (observation.humidityPermille >= 550U)
+        {
+            return humidColor;
+        }
+
+        return validColor;
     }
 
     bool pulseOn (adk::TimePoint now, uint8_t pulseCount)

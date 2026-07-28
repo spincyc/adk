@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <defs>
+    <filter id="pencil"><feTurbulence baseFrequency=".018" numOctaves="2" seed="14" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale=".7"/></filter>
+    <style>
+      .paper{fill:#faf9f4}.ink{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+      .wire{fill:none;stroke:#444;stroke-width:2.4}.pin{fill:#fff;stroke:#222;stroke-width:2}
+      .label{font-size:25px;font-family:"Go";fill:#222}.small{font-size:20px;font-family:"Go";fill:#222}
+    </style>
+  </defs>
+  <rect class="paper" width="1200" height="720"/>
+  <g filter="url(#pencil)">
+    <rect class="ink" x="55" y="45" width="440" height="620" rx="18"/>
+    <text class="label" x="120" y="90">MEGA 2560 — RIGHT-END HEADER</text>
+    <text class="small" x="90" y="126">Paired sockets as viewed from above, USB at left</text>
+    <text class="small" x="190" y="170">inner</text><text class="small" x="320" y="170">outer edge</text>
+    <g>
+      <circle class="pin" cx="245" cy="215" r="12"/><circle class="pin" cx="355" cy="215" r="12"/>
+      <circle class="pin" cx="245" cy="280" r="12"/><circle class="pin" cx="355" cy="280" r="12"/>
+      <circle class="pin" cx="245" cy="345" r="12"/><circle class="pin" cx="355" cy="345" r="12"/>
+      <text class="label" x="180" y="224">22</text><text class="label" x="375" y="224">23</text>
+      <text class="label" x="180" y="289">24</text><text class="label" x="375" y="289">25</text>
+      <text class="label" x="180" y="354">26</text><text class="label" x="375" y="354">27</text>
+    </g>
+    <text class="small" x="95" y="410">The header continues 28/29 through 52/53 below.</text>
+    <text class="small" x="515" y="205">D22 → RS (pin 4)</text>
+    <text class="small" x="515" y="242">D23 → E (pin 6)</text>
+    <text class="small" x="515" y="275">D24 → D4 (pin 11)</text>
+    <text class="small" x="515" y="307">D25 → D5 (pin 12)</text>
+    <text class="small" x="515" y="340">D26 → D6 (pin 13)</text>
+    <text class="small" x="515" y="372">D27 → D7 (pin 14)</text>
+    <rect class="ink" x="745" y="145" width="400" height="300" rx="12"/>
+    <text class="label" x="830" y="188">IDENTIFIED PARALLEL LCD</text>
+    <text class="small" x="780" y="230">1 VSS    2 VDD    3 VO    4 RS</text>
+    <text class="small" x="780" y="268">5 RW     6 E      7 D0    8 D1</text>
+    <text class="small" x="780" y="306">9 D2    10 D3    11 D4   12 D5</text>
+    <text class="small" x="780" y="344">13 D6   14 D7    15 A    16 K</text>
+    <text class="small" x="780" y="395">Pins 15/16: NO CONNECT in this lesson</text>
+    <text class="small" x="90" y="520">5 V and GND come from the POWER header, not this digital pair.</text>
+    <text class="small" x="90" y="570">D13 acquisition uses the board's built-in LED; add no wire.</text>
+    <text class="small" x="90" y="620">Printed board labels are the authority if orientation differs.</text>
+  </g>
+</svg>

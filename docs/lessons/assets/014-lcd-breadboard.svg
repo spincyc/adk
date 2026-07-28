@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="820" viewBox="0 0 1200 820">
+  <defs>
+    <filter id="pencil"><feTurbulence baseFrequency=".02" numOctaves="2" seed="15" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale=".55"/></filter>
+    <pattern id="holes" width="50" height="32" patternUnits="userSpaceOnUse"><circle cx="25" cy="16" r="4" fill="#fff" stroke="#777"/></pattern>
+    <style>
+      .paper{fill:#faf9f4}.ink{fill:none;stroke:#222;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+      .wire{fill:none;stroke:#333;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+      .label{font-size:24px;font-family:"Go";fill:#222}.small{font-size:18px;font-family:"Go";fill:#222}.tiny{font-size:14px;font-family:"Go";fill:#222}
+      .junction{fill:#222}.nc{fill:none;stroke:#222;stroke-width:3}
+    </style>
+  </defs>
+  <rect class="paper" width="1200" height="820"/>
+  <g filter="url(#pencil)">
+    <text class="label" x="265" y="42">BREADBOARD COORDINATES — LCD HEADER IN ROW F</text>
+    <rect class="ink" x="90" y="90" width="1020" height="650" rx="18"/>
+    <text class="small" x="118" y="125">+ rail</text><rect x="190" y="100" width="850" height="30" fill="url(#holes)"/>
+    <text class="small" x="118" y="164">− rail</text><rect x="190" y="140" width="850" height="30" fill="url(#holes)"/>
+    <rect x="190" y="205" width="850" height="160" fill="url(#holes)"/>
+    <rect x="190" y="415" width="850" height="160" fill="url(#holes)"/>
+    <text class="small" x="155" y="232">A</text><text class="small" x="155" y="264">B</text><text class="small" x="155" y="296">C</text><text class="small" x="155" y="328">D</text><text class="small" x="155" y="360">E</text>
+    <text class="small" x="155" y="442">F</text><text class="small" x="155" y="474">G</text><text class="small" x="155" y="506">H</text><text class="small" x="155" y="538">I</text><text class="small" x="155" y="570">J</text>
+    <text class="small" x="175" y="397">center gap: E and F are not connected</text>
+    <rect class="ink" x="255" y="600" width="800" height="90" rx="10"/>
+    <text class="label" x="505" y="635">LCD1602 FRONT</text>
+    <text class="small" x="280" y="670">header pins 1–16 rise into F5–F20; pin 1 is at the left</text>
+    <g class="tiny">
+      <text x="218" y="615">F5</text><text x="268" y="615">F6</text><text x="318" y="615">F7</text><text x="368" y="615">F8</text>
+      <text x="418" y="615">F9</text><text x="463" y="615">F10</text><text x="513" y="615">F11</text><text x="563" y="615">F12</text>
+      <text x="613" y="615">F13</text><text x="663" y="615">F14</text><text x="713" y="615">F15</text><text x="763" y="615">F16</text>
+      <text x="813" y="615">F17</text><text x="863" y="615">F18</text><text x="913" y="615">F19</text><text x="963" y="615">F20</text>
+    </g>
+    <g class="tiny">
+      <text x="220" y="593">1</text><text x="270" y="593">2</text><text x="320" y="593">3</text><text x="370" y="593">4</text>
+      <text x="420" y="593">5</text><text x="470" y="593">6</text><text x="520" y="593">7</text><text x="570" y="593">8</text>
+      <text x="620" y="593">9</text><text x="666" y="593">10</text><text x="716" y="593">11</text><text x="766" y="593">12</text>
+      <text x="816" y="593">13</text><text x="866" y="593">14</text><text x="916" y="593">15</text><text x="966" y="593">16</text>
+    </g>
+    <path class="wire" d="M225 432 V155"/><text class="small" x="195" y="196">F5 VSS → −</text>
+    <path class="wire" d="M275 432 V115"/><text class="small" x="245" y="190">F6 VDD → +</text>
+    <path class="wire" d="M425 432 V155"/><text class="small" x="395" y="196">F9 RW → −</text>
+    <circle class="junction" cx="225" cy="432" r="5"/><circle class="junction" cx="275" cy="432" r="5"/><circle class="junction" cx="425" cy="432" r="5"/>
+    <circle class="ink" cx="325" cy="280" r="40"/><text class="small" x="295" y="286">10 kΩ</text>
+    <circle class="junction" cx="275" cy="248" r="5"/><circle class="junction" cx="325" cy="248" r="5"/><circle class="junction" cx="375" cy="248" r="5"/>
+    <path class="wire" d="M275 248 V115 M375 248 V155 M325 248 V432"/>
+    <text class="small" x="235" y="335">pot legs A6/A7/A8; A7 wiper crosses gap to F7 VO</text>
+    <path class="wire" d="M375 432 H105"/><text class="small" x="105" y="415">F8 RS → D22</text>
+    <path class="wire" d="M475 432 V470 H105"/><text class="small" x="105" y="492">F10 E → D23</text>
+    <path class="wire" d="M725 432 V185 H1080"/><text class="small" x="900" y="178">F15 D4 → D24</text>
+    <path class="wire" d="M775 432 V225 H1080"/><text class="small" x="900" y="218">F16 D5 → D25</text>
+    <path class="wire" d="M825 432 V265 H1080"/><text class="small" x="900" y="258">F17 D6 → D26</text>
+    <path class="wire" d="M875 432 V305 H1080"/><text class="small" x="900" y="298">F18 D7 → D27</text>
+    <circle class="junction" cx="375" cy="432" r="5"/><circle class="junction" cx="475" cy="432" r="5"/>
+    <circle class="junction" cx="725" cy="432" r="5"/><circle class="junction" cx="775" cy="432" r="5"/><circle class="junction" cx="825" cy="432" r="5"/><circle class="junction" cx="875" cy="432" r="5"/>
+    <rect class="nc" x="500" y="415" width="200" height="160" stroke-dasharray="8 7"/>
+    <text class="small" x="505" y="390">F11–F14: LCD D0–D3 unused</text>
+    <path class="nc" d="M910 420 l22 22 m0-22 l-22 22 M960 420 l22 22 m0-22 l-22 22"/>
+    <text class="small" x="880" y="475">F19/F20 A/K: no connect</text>
+    <text class="small" x="145" y="785">Rails are separate: jumper + to Mega 5 V and − to Mega GND. Wire colors carry no meaning.</text>
+  </g>
+</svg>
