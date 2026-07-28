@@ -10,6 +10,7 @@ namespace {
     constexpr adk::PinId nextButtonPin        = 30;
     constexpr adk::PinId acknowledgeButtonPin = 31;
     constexpr adk::PinId recordEvidencePin    = LED_BUILTIN;
+    constexpr uint32_t   runDurationMs         = 18000;
 
     const adk::ButtonConfig nextButtonConfig        (nextButtonPin);
     const adk::ButtonConfig acknowledgeButtonConfig (acknowledgeButtonPin);
@@ -262,8 +263,9 @@ namespace {
                                                  records);
 
     adk::ConsoleSource observations[3] = {};
-    uint8_t            observationCount = 0;
-    bool               running          = false;
+    uint32_t           startedAtMilliseconds = 0;
+    uint8_t            observationCount      = 0;
+    bool               running               = false;
 
     bool acquireConsole          ();
     void observeTelemetrySources (adk::TimePoint now);
@@ -285,6 +287,11 @@ namespace {
 void setup ()
 {
     running = acquireConsole ();
+
+    if (running)
+    {
+        startedAtMilliseconds = millis ();
+    }
 }
 
 void loop ()
@@ -295,8 +302,16 @@ void loop ()
     }
 
     const adk::TimePoint now (millis ());
+    const uint32_t elapsedMilliseconds =
+        now.milliseconds () - startedAtMilliseconds;
 
-    observeTelemetrySources (now);
+    if (elapsedMilliseconds >= runDurationMs)
+    {
+        stopSafely ();
+        return;
+    }
+
+    observeTelemetrySources (adk::TimePoint (elapsedMilliseconds));
     decideConsoleState      (now);
     presentConsoleState     ();
     recordConsoleEvidence   ();

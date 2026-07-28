@@ -49,8 +49,6 @@
     breaklines=true,
     tabsize=4
 }
-\newcommand{\checkbox}{\(\square\)}
-\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
 \newcommand{\lessonbox}[1]{%
   \begin{center}
   \fcolorbox{Ink}{white}{\parbox{0.92\linewidth}{#1}}
@@ -67,7 +65,7 @@
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
 Lesson & 028 --- component & Time & 180--240 minutes\\
 Prerequisites & Lessons 001, 002, 007 & Board & Arduino Mega 2560\\
-Evidence & eight LED cadences; TP28 and TP29 & Status & host verified; bench open\\
+Evidence & startup sweep, three staged wins, state cadences & Status & host verified\\
 Energy class & E1: USB, passive buttons, resistor-limited LEDs\\
 \end{tabularx}
 
@@ -123,10 +121,9 @@ TP29 & selected indicator pin & meter or logic probe relative to Mega GND\\
 \bottomrule
 \end{tabularx}
 
-\textbf{Unpowered prediction.} Check one resistor per LED, LED polarity,
-switch-to-ground wiring, and common ground. Confirm nothing leaves the
-USB-powered low-voltage teaching circuit. Record measured resistor values:
-\blank{1.2in}.
+\textbf{Unpowered check.} Confirm one resistor per LED, LED polarity,
+switch-to-ground wiring, and common ground. Nothing leaves the USB-powered
+low-voltage teaching circuit.
 
 \section{Truth table before code}
 
@@ -140,19 +137,6 @@ short-simulated & short-simulated & short-simulated & same synthetic selection\\
 two different usable values & --- & contradictory & evidence disagrees\\
 either unavailable & any & unavailable & one required observation is absent\\
 either older than threshold & any & stale & age dominates classification\\
-\bottomrule
-\end{tabularx}
-
-Complete the predictions:
-
-\begin{tabularx}{\linewidth}{@{}X l l X@{}}
-\toprule
-Input & Predicted state & Observed cadence & Interpretation\\
-\midrule
-open / closed & \blank{.8in} & \blank{1.0in} & \blank{1.5in}\\
-unavailable / closed & \blank{.8in} & \blank{1.0in} & \blank{1.5in}\\
-closed / closed at 5000 ms & \blank{.8in} & \blank{1.0in} & \blank{1.5in}\\
-closed / closed at 5001 ms & \blank{.8in} & \blank{1.0in} & \blank{1.5in}\\
 \bottomrule
 \end{tabularx}
 
@@ -179,17 +163,9 @@ clock, callback, or hardware owner appears in the assessor.
 Only after all entries pass does it replace slots. Therefore a bad final entry
 cannot partly overwrite earlier channels.
 
-\subsection{Transaction worksheet}
-
-Start with channel 0 closed and channel 1 open. Submit channel 0 as open, then
-include an invalid duplicate channel 1.
-
-\begin{enumerate}
-  \item Expected update status: \blank{1.4in}
-  \item Channel 0 after rejection: \blank{1.4in}
-  \item Why must validation precede mutation? \blank{3.0in}
-  \item Does omitting channel 7 erase its prior observation? \blank{1.0in}
-\end{enumerate}
+For example, if a submitted set ends with a duplicate channel, the entire set
+is rejected and every preceding channel keeps its earlier assessment. An
+omitted channel likewise retains its last accepted observation.
 
 \section{Recorded evidence source}
 
@@ -209,15 +185,9 @@ missed set as a burst. Repeated snapshots expose the same pointers and values
 until another set becomes due. The caller must keep the immutable storage alive
 longer than the source.
 
-\subsection{Replay exercise}
-
-Sets are due at 100, 200, and 300 ms. Calls arrive at 90, 250, 250, and 400 ms.
-Write the selected due time after each call:
-\blank{.7in}, \blank{.7in}, \blank{.7in}, \blank{.7in}.
-
-Explain why the 100 ms set is not surfaced at 250 ms:
-
-\blank{3.8in}.
+For sets due at 100, 200, and 300 ms, calls at 90, 250, 250, and 400 ms expose
+no set, the 200 ms set, the same 200 ms set, and the 300 ms set. The delayed
+250 ms call coalesces rather than replaying the missed 100 ms set.
 
 \section{Narrative Mega example}
 
@@ -232,9 +202,29 @@ then observation values. Setup acquires every owner, configures all channels
 open, and starts the panel. The loop observes debounced events, decides only
 when Apply submits a complete set, then presents all assessments.
 
-Channel selects 0--7. Primary and Redundant cycle open, closed,
-short-simulated, unavailable. Apply timestamps and submits the selected
-channel while preserving the other seven entries.
+At startup, one light travels across all eight indicators for two seconds.
+That response proves that acquisition reached the presentation stage; it is
+not a continuity claim. Channel selects 0--7. Primary and Redundant cycle
+open, closed, short-simulated, unavailable. Apply timestamps and submits the
+selected channel while preserving the other seven entries.
+
+\subsection{Three dependent wins}
+
+The short opening journey makes each new idea depend on the preceding one:
+
+\begin{enumerate}
+  \item On channel 0, submit Closed/Closed. One steady reward lamp confirms
+        matching usable evidence.
+  \item On channel 1, submit Open/Closed. Two reward lamps confirm that
+        disagreement is distinct from either usable state.
+  \item On channel 2, submit Unavailable/Closed. All eight lamps pulse for the
+        final reward, confirming that missing evidence dominates disagreement.
+\end{enumerate}
+
+Submitting a later answer early produces its ordinary state cadence but does
+not unlock a reward. Each reward lasts 1.5 seconds, then the panel returns to
+the channel assessments. The panel always shuts down two minutes after startup,
+independent of button input.
 
 \begin{tabularx}{\linewidth}{@{}l l X@{}}
 \toprule
@@ -252,19 +242,20 @@ unavailable & two 120 ms pulses per 2 s & one observation unavailable\\
 \section{Predict, observe, interpret}
 
 \begin{enumerate}
-  \item Predict Open/Open leaves the selected indicator off. Apply it, observe
-        TP29, and interpret only against the model.
-  \item Predict Closed/Closed is steady. Apply and compare the LED with TP29.
-  \item Predict Open/Closed produces the fast contradictory cadence.
-  \item Predict either Unavailable selection produces two pulses.
+  \item Predict the startup sweep, then power the panel and observe it.
+  \item Complete the three ordered wins above, predicting each reward before
+        Apply.
+  \item After a reward clears, compare its channel cadence with the truth
+        table and interpret only against the synthetic model.
   \item Stop applying. Predict and observe stale after five seconds.
-  \item Press Channel, change another pair, and verify the first channel keeps
-        its prior accepted observation until it ages.
+  \item Leave the buttons untouched and observe every indicator release at the
+        fixed two-minute ending.
 \end{enumerate}
 
 \lessonbox{\textbf{Two separate checks.} A successful startup response supports
-the claim that resources were acquired. It does not prove shutdown. Invoke
-shutdown, then measure TP29 for high impedance; a dark LED is insufficient.}
+the claim that resources were acquired. It does not prove shutdown. The fixed
+ending releases every indicator; a dark LED alone is not electrical proof of
+high impedance.}
 
 \section{Diagnosis}
 
@@ -281,52 +272,14 @@ shutdown LED dark but pin driven & light is not high-impedance proof & measure T
 \bottomrule
 \end{tabularx}
 
-\section{Exercises}
+\section{Go further}
 
-\begin{enumerate}
-  \item Derive all sixteen primary/redundant pairs before running the sketch.
-  \item Add a host trace around \texttt{UINT32\_MAX} that crosses the stale
-        boundary without changing its elapsed result.
-  \item Prove a duplicate channel in the final array position leaves every
-        previous slot unchanged.
-  \item Explain why a callback named for a generic output would violate the
-        inert boundary even if the canonical sketch used LEDs.
-  \item Design a presentation adapter that accepts assessment values but owns
-        no source and cannot mutate the assessor.
-\end{enumerate}
-
-\section{CLI and acceptance record}
-
-\begin{lstlisting}[style=adkcpp]
-make host-test
-make arduino-Lesson028InertChannelAssessment
-make size-Lesson028InertChannelAssessment
-make upload-Lesson028InertChannelAssessment PORT=/dev/ttyACM0
-make serial-log PORT=/dev/ttyACM0
-make lessons
-make lessons-check
-make site-check
-make hardware-card LESSON=028 BOARD=mega2560
-\end{lstlisting}
-
-Serial is optional supporting evidence and the sketch emits none. Compilation
-and host replay do not close this physical record.
-
-\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X@{}}
-Board and revision & \hrulefill\\
-Exact buttons, LEDs, resistors & \hrulefill\\
-Supply and instrument & \hrulefill\\
-Tool versions and commit & \hrulefill\\
-Unpowered inspection & \hrulefill\\
-Acquisition prediction / observation & \hrulefill\\
-Six state predictions / observations & \hrulefill\\
-TP28 and TP29 readings & \hrulefill\\
-Shutdown high-impedance evidence & \hrulefill\\
-Reset and power-removal observation & \hrulefill\\
-Deviation and disposition & \hrulefill\\
-\end{tabularx}
-
-\textbf{Status after software gates:} host verified; hardware acceptance open.
+After the three wins, try Short-simulated/Short-simulated and wait for it to
+become stale. Then explain why a generic output callback would violate the
+inert boundary even if this particular sketch connected only LEDs. The
+repository's automated tests cover rejected transactions, rollover, lifecycle,
+deterministic replay, compilation, and publication without turning those
+release checks into learner chores.
 
 \section{Reference trail}
 
