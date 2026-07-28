@@ -128,6 +128,11 @@ struct ContactDynamics
 };
 ```
 
+`ContactDynamics` is a non-owning pure policy. It owns only copied state,
+claims no resource, performs no hardware I/O, has no `shutdown()`, and has a
+trivial destructor. `reset()` is policy-state reset, not electrical cleanup;
+the sketch must shut down its endpoint owners separately.
+
 Construction is inert. Configuration requires nonzero `qualify`, `release`,
 and `refractory`, all durations below unsigned half-range, plus nonzero
 `stuckActive` below unsigned half-range. No relationship with the independent
@@ -141,6 +146,20 @@ the adapter deliberately ignores that sample and does not submit it to the
 pure behavior. Each loop then performs exactly one endpoint update before
 copying its level. A non-Ok sample status propagates without manufacturing an
 event and reports `SourceFault`.
+
+`ContactSample::rawLevel` must be exactly `Level::Low` or `Level::High`.
+Validation order is time first, then raw-level enum, then source status, then
+raw candidate processing. An invalid raw level therefore wins over a
+simultaneous non-Ok source status, latches `SourceFault` with
+`InvalidArgument`, clears one-update events, preserves counts and last
+qualified state, and requires `reset()` before qualification resumes.
+
+In E0 tests, a non-Ok `ContactSample::status` is injected evidence at the pure
+policy seam. The current `DigitalInput::update()` returns `void`, so a sketch
+using only that endpoint cannot infer a runtime read failure and must not claim
+one. An electrically specific future adapter must either use a qualified
+status-producing input owner or narrow runtime-failure claims to the evidence
+its exact specimen and endpoint can actually expose.
 
 An attack candidate must remain continuously active for `qualify`. Its event
 timestamp is the update that completes qualification. A qualified release
@@ -167,11 +186,12 @@ or a changed frame at the same time, reports `TimingFault` and
 sample is idempotent. Natural `uint32_t` rollover remains valid.
 
 Contact transition precedence is: uninitialized/invalid configuration;
-timestamp mismatch or invalid time; non-Ok source sample; raw candidate update;
-qualified release; stuck-active boundary; refractory suppression; accepted
-attack. A non-Ok sample publishes `SourceFault`, preserves counts and last
-qualified state, clears one-update events, and requires `reset()` before
-qualification resumes. Collision fixtures exercise every adjacent pair.
+timestamp mismatch or invalid time; invalid raw-level enum; non-Ok source
+sample; raw candidate update; qualified release; stuck-active boundary;
+refractory suppression; accepted attack. A non-Ok sample publishes
+`SourceFault`, preserves counts and last qualified state, clears one-update
+events, and requires `reset()` before qualification resumes. Collision
+fixtures exercise every adjacent pair.
 
 `attackEvent`, `releaseEvent`, and `disposition` describe exactly the current
 update and clear on the next later update. Every field has a canonical value:
@@ -194,9 +214,11 @@ Host fixtures cover:
   counters;
 - repeated time, changed same-time evidence, natural rollover, exact
   half-range, and backward apparent time;
+- invalid raw-level enum alone and colliding with invalid time/source status,
+  including latched fault and reset recovery;
 - invalid enum values, zero/overflowing durations, unsupported, duplicate, and
   busy pins before hardware access;
-- endpoint initialization failure, repeated initialization/shutdown,
+- adapter endpoint initialization failure, repeated initialization/shutdown,
   destruction while active, claim reuse, and input mode after shutdown;
 - one input sample per update and byte-identical snapshots/operation traces
   for identical timestamped raw-level fixtures; and
@@ -431,7 +453,9 @@ Acoustic transition precedence is: uninitialized/invalid configuration;
 timestamp mismatch or invalid time; analog source failure; configured
 threshold source failure; clipping; calibration; sustained threshold
 disagreement; event close; event open; baseline update. A winning fault makes
-no lower transition and preserves the last completed event evidence.
+no lower transition. `TimingFault` preserves the last completed event evidence;
+clipping, source failure, threshold disagreement, and invalid runtime
+headroom clear event/intensity fields to their canonical zero values.
 
 The only legal nested snapshot combinations are:
 
