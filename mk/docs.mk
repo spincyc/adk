@@ -55,9 +55,12 @@ doc/lessons/022.pdf: docs/lessons/022/main.tex \
 		docs/lessons/assets/022-owned-buses-pencil.png \
 		docs/lessons/assets/022-record-journey-pencil.png
 doc/lessons/023.pdf: docs/lessons/023/main.tex \
-		docs/lessons/assets/023-inert-load-pencil.png
+		docs/lessons/assets/023-inert-load-pencil.png \
+		docs/lessons/assets/023-progress-pencil.png
 doc/lessons/024.pdf: docs/lessons/024/main.tex \
-		docs/lessons/assets/024-greenhouse-pencil.png
+		docs/lessons/assets/024-greenhouse-pencil.png \
+		docs/lessons/assets/024-lcd-closeup.png \
+		docs/lessons/assets/024-greenhouse-progress.png
 doc/lessons/025.pdf: docs/lessons/025/main.tex \
 		docs/lessons/assets/025-infrared-evidence-pencil.png
 doc/lessons/026.pdf: docs/lessons/026/main.tex \

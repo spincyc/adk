@@ -21,8 +21,8 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	1	Lesson020MotorIntent	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5914	24576	155	1024
 1	1	Lesson021BenchRover	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	12186	32768	633	1536
 1	2	Lesson022OwnedBuses	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	7134	32768	797	1536
-1	1	Lesson023InertLoadInterlock	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5598	24576	217	1024
-1	1	Lesson024GreenhouseTrainer	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	16448	32768	1552	2048
+1	1	Lesson023InertLoadInterlock	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5040	24576	209	1024
+1	1	Lesson024GreenhouseTrainer	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	15574	32768	1512	2048
 1	1	Lesson025InfraredEvidence	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	12414	32768	2564	3072
 1	1	Lesson026TelemetryPacket	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	4292	16384	128	512
 1	1	Lesson027TelemetryConsole	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	12738	24576	797	1024

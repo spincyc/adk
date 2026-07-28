@@ -1,4 +1,4 @@
-// Mega 2560, USB only: D38/D40/D41 use 220R LEDs; D12 uses a 1k fault LED.
+// Mega 2560, USB only: D38/D40/D41 and D12 drive resistor-limited LEDs.
 // D13 is the built-in request pulse. No relay or powered load is connected.
 #include <inert_load_interlock.h>
 #include <inert_load_panel.h>
@@ -14,12 +14,18 @@ namespace {
     constexpr adk::PinId fanEvidencePin    = 40;
     constexpr adk::PinId heaterEvidencePin = 41;
 
-    constexpr uint32_t selectionIntervalMilliseconds = 2000;
-    constexpr uint32_t requestPulseMilliseconds      = 200;
+    constexpr uint32_t requestPulseMilliseconds = 180;
+    constexpr uint32_t shutdownAtMilliseconds   = 15000;
+    constexpr uint32_t inactiveHoldMilliseconds = 250;
 
-    adk::Runtime                 runtime;
+    constexpr uint32_t stepTimesMilliseconds[] =
+    {
+        300, 1800, 3300, 4800, 6300, 8300, 9800, 11300, 12800
+    };
+
+    adk::Runtime            runtime;
     adk::ExternalPowerDomainGate admission;
-    adk::InertLoadInterlock      interlock (admission);
+    adk::InertLoadInterlock interlock (admission);
 
     adk::MonoLed requestEvidence (runtime.resources (), LED_BUILTIN);
     adk::MonoLed faultEvidence   (runtime.resources (), faultEvidencePin);
@@ -29,29 +35,34 @@ namespace {
     adk::IndicatorPump  heaterIndicator (runtime.resources (), heaterEvidencePin);
     adk::InertLoadPanel panel           (fanIndicator, pumpIndicator, heaterIndicator);
 
-    adk::SimulatedLoad requestedLoad  = adk::SimulatedLoad::None;
-    uint32_t           lastSelection  = 0;
-    uint32_t           requestStarted = 0;
-    bool               requestVisible = false;
-    bool               faultTrial     = false;
-    bool               running        = false;
+    uint32_t startedAt        = 0;
+    uint32_t requestStartedAt = 0;
+    uint32_t shutdownStartedAt = 0;
+    uint8_t  nextStep         = 0;
+    bool     requestVisible   = false;
+    bool     running          = false;
+    bool     stopping         = false;
 
     bool acquireCircuit       ();
     bool clearRequestEvidence (uint32_t now);
-    bool requestNextIntent    (uint32_t now);
-    bool applyAdmittedIntent  ();
-    void observeFailure       (adk::Status status);
-    void stopSafely           ();
+    bool playStep             (uint8_t step, uint32_t now);
+    bool selectVisibleIntent  (adk::SimulatedLoad load, uint32_t now);
+    bool showFailClosed       (uint32_t now);
+    bool recoverExplicitly    ();
+    void observeFailure       ();
+    void beginShutdown        (uint32_t now);
+    void finishShutdown       ();
 
 } // namespace
 
 void setup ()
 {
-    running = acquireCircuit ();
+    running   = acquireCircuit ();
+    startedAt = millis         ();
 
     if (!running)
     {
-        stopSafely ();
+        beginShutdown (startedAt);
         return;
     }
 
@@ -60,62 +71,67 @@ void setup ()
 
 void loop ()
 {
+    const uint32_t now = millis ();
+
+    if (stopping)
+    {
+        if (static_cast<uint32_t> (now - shutdownStartedAt) >=
+            inactiveHoldMilliseconds)
+        {
+            finishShutdown ();
+        }
+
+        return;
+    }
+
     if (!running)
     {
         return;
     }
 
-    const uint32_t now = millis ();
+    if (static_cast<uint32_t> (now - startedAt) >= shutdownAtMilliseconds)
+    {
+        beginShutdown (now);
+        return;
+    }
 
     if (!clearRequestEvidence (now))
     {
-        stopSafely ();
+        beginShutdown (now);
         return;
     }
 
-    if (static_cast<uint32_t> (now - lastSelection) < selectionIntervalMilliseconds)
+    if (nextStep >= sizeof (stepTimesMilliseconds) /
+                    sizeof (stepTimesMilliseconds[0]) ||
+        static_cast<uint32_t> (now - startedAt) <
+            stepTimesMilliseconds[nextStep])
     {
         return;
     }
 
-    if (!requestNextIntent (now) || !applyAdmittedIntent ())
+    if (!playStep (nextStep, now))
     {
-        stopSafely ();
+        observeFailure ();
+        beginShutdown  (now);
+        return;
     }
+
+    ++nextStep;
 }
 
 namespace {
 
     bool acquireCircuit ()
     {
-        const adk::Status requestStatus = requestEvidence.initialize ();
-
-        if (!requestStatus.ok ())
+        if (!requestEvidence.initialize ().ok ())
         {
             return false;
         }
 
-        const adk::Status faultStatus = faultEvidence.initialize ();
-
-        if (!faultStatus.ok ())
+        if (!faultEvidence.initialize ().ok () ||
+            !interlock.initialize      ().ok () ||
+            !panel.initialize          ().ok ())
         {
-            observeFailure (faultStatus);
-            return false;
-        }
-
-        const adk::Status interlockStatus = interlock.initialize ();
-
-        if (!interlockStatus.ok ())
-        {
-            observeFailure (interlockStatus);
-            return false;
-        }
-
-        const adk::Status panelStatus = panel.initialize ();
-
-        if (!panelStatus.ok ())
-        {
-            observeFailure (panelStatus);
             return false;
         }
 
@@ -125,110 +141,130 @@ namespace {
     bool clearRequestEvidence (uint32_t now)
     {
         if (!requestVisible ||
-            static_cast<uint32_t> (now - requestStarted) < requestPulseMilliseconds)
+            static_cast<uint32_t> (now - requestStartedAt) <
+                requestPulseMilliseconds)
         {
             return true;
         }
 
-        const adk::Status status = requestEvidence.off ();
-
         requestVisible = false;
+        return requestEvidence.off ().ok ();
+    }
 
-        if (!status.ok ())
+    bool playStep (uint8_t step, uint32_t now)
+    {
+        switch (step)
         {
-            observeFailure (status);
+            case 0:
+                return selectVisibleIntent (adk::SimulatedLoad::Fan, now);
+            case 1:
+            case 6:
+                return selectVisibleIntent (adk::SimulatedLoad::Pump, now);
+            case 2:
+            case 7:
+                return selectVisibleIntent (adk::SimulatedLoad::Heater, now);
+            case 3:
+            case 8:
+                return selectVisibleIntent (adk::SimulatedLoad::None, now);
+            case 4:
+                return showFailClosed (now);
+            case 5:
+                return recoverExplicitly () &&
+                       selectVisibleIntent (adk::SimulatedLoad::Fan, now);
+            default:
+                return false;
+        }
+    }
+
+    bool selectVisibleIntent (adk::SimulatedLoad load, uint32_t now)
+    {
+        const adk::Status requestStatus = requestEvidence.on ();
+
+        requestVisible   = requestStatus.ok ();
+        requestStartedAt = now;
+
+        if (!requestStatus.ok () || !interlock.select (load).ok ())
+        {
             return false;
         }
 
-        return true;
+        const adk::Status            updateStatus = interlock.update   ();
+        const adk::InertLoadSnapshot snapshot     = interlock.snapshot ();
+
+        return updateStatus.ok      () &&
+               snapshot.status.ok   () &&
+               panel.select         (snapshot.active).ok ();
     }
 
-    bool requestNextIntent (uint32_t now)
+    bool showFailClosed (uint32_t now)
     {
-        switch (requestedLoad)
-        {
-            case adk::SimulatedLoad::None:
-                requestedLoad = adk::SimulatedLoad::Fan;
-                break;
-            case adk::SimulatedLoad::Fan:
-                requestedLoad = adk::SimulatedLoad::Pump;
-                break;
-            case adk::SimulatedLoad::Pump:
-                requestedLoad = adk::SimulatedLoad::Heater;
-                break;
-            case adk::SimulatedLoad::Heater:
-                requestedLoad = adk::SimulatedLoad::None;
-                faultTrial    = true;
-                break;
-        }
+        admission.revoke ();
 
-        if (faultTrial && requestedLoad == adk::SimulatedLoad::Fan)
-        {
-            admission.revoke ();
-        }
+        const adk::Status requestStatus = requestEvidence.on ();
 
-        const adk::Status requestStatus = requestEvidence.on      ();
-        const adk::Status selectStatus  = interlock.select        (requestedLoad);
-
-        lastSelection  = now;
-        requestStarted = now;
-        requestVisible = requestStatus.ok ();
+        requestVisible   = requestStatus.ok ();
+        requestStartedAt = now;
 
         if (!requestStatus.ok ())
         {
-            observeFailure (requestStatus);
             return false;
         }
 
-        if (!selectStatus.ok ())
+        const adk::Status            selectStatus = interlock.select   (
+            adk::SimulatedLoad::Fan);
+        const adk::Status            updateStatus = interlock.update   ();
+        const adk::InertLoadSnapshot snapshot     = interlock.snapshot ();
+
+        if (selectStatus.ok () ||
+            selectStatus.error    () != adk::StatusCode::HardwareFailure ||
+            updateStatus.ok       () ||
+            updateStatus.error    () != adk::StatusCode::HardwareFailure ||
+            snapshot.status.ok    () ||
+            snapshot.status.error () != adk::StatusCode::HardwareFailure ||
+            snapshot.active != adk::SimulatedLoad::None ||
+            !panel.select         (snapshot.active).ok () ||
+            !faultEvidence.on     ().ok ())
         {
-            observeFailure (selectStatus);
+            return false;
         }
 
         return true;
     }
 
-    bool applyAdmittedIntent ()
+    bool recoverExplicitly ()
     {
-        const adk::Status            updateStatus = interlock.update   ();
-        const adk::InertLoadSnapshot snapshot     = interlock.snapshot ();
-        const adk::Status            status       = panel.select       (snapshot.active);
+        panel.shutdown     ();
+        interlock.shutdown ();
+        admission.admit    ();
 
-        if (!status.ok ())
-        {
-            observeFailure (status);
-            return false;
-        }
-
-        if (!updateStatus.ok ())
-        {
-            observeFailure (updateStatus);
-            return false;
-        }
-
-        return snapshot.status.ok ();
+        return interlock.initialize   ().ok () &&
+               panel.initialize       ().ok () &&
+               faultEvidence.off      ().ok ();
     }
 
-    void observeFailure (adk::Status status)
+    void observeFailure ()
     {
-        (void)status;
         faultEvidence.on ();
     }
 
-    void stopSafely ()
+    void beginShutdown (uint32_t now)
     {
-        admission.revoke   ();
-        interlock.shutdown ();
-        panel.shutdown     ();
+        admission.revoke      ();
+        interlock.shutdown    ();
+        panel.shutdown        ();
+        requestEvidence.off   ();
+        faultEvidence.off     ();
 
-        requestEvidence.off      ();
-        requestEvidence.shutdown ();
-
-        if (!faultEvidence.on ().ok ())
-        {
-            faultEvidence.shutdown ();
-        }
-
-        running = false;
+        shutdownStartedAt = now;
+        running           = false;
+        stopping          = true;
     }
+
+    void finishShutdown ()
+    {
+        requestEvidence.shutdown ();
+        faultEvidence.shutdown   ();
+        stopping = false;
+    }
+
 } // namespace
