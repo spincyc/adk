@@ -3,10 +3,10 @@ schema_version: 1
 repository_uuid: "51e8871e-d671-4f8b-9e07-505dbc2090e8"
 primary_remote: "https://github.com/spincyc/adk.git"
 branch: "main"
-head_observed: "71225cb"
-working_tree_state: "lesson-remediation-019-020"
+head_observed: "5aa20b0"
+working_tree_state: "lesson-remediation-021-022"
 active_tasks: ["ba1ed653-0cb2-4275-ae36-16c88591ce35"]
-updated_at: "2026-07-28T02:57:24Z"
+updated_at: "2026-07-28T10:34:00Z"
 ---
 
 # Repository recovery state
@@ -31,7 +31,7 @@ active; no physical observation is claimed.
 The physical campaign preparation audit is complete. Child creation is blocked
 on named human and equipment prerequisites; its discovered software
 remediation remains runnable.
-Numeric lesson remediation has checkpointed Lessons 001--018 and advances to
-Lessons 019--020. The clarified policy removes learner-facing physical
+Numeric lesson remediation has checkpointed Lessons 001--020 and advances to
+Lessons 021--022. The clarified policy removes learner-facing physical
 acceptance cards and instructor records while retaining all automated
 repository verification behind the scenes.

@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-28T00:48:26Z"
-updated_at: "2026-07-28T02:57:24Z"
+updated_at: "2026-07-28T10:34:00Z"
 ---
 
 # Goal
@@ -102,3 +102,13 @@ visible trainer, and keeps the exact parallel LCD optional. Accurate staged
 wiring drawings, size baselines, publication artifacts, and automated gates
 agree. No physical observation is claimed. The next repair unit is Lessons
 019--020.
+
+Lessons 019--020 are software-prepared and independently reviewed. Lesson 019
+uses a conditional exact ultrasonic specimen, literal Mega and breadboard
+wiring, quick visible range and fault/recovery stages, and an input-independent
+120-second shutdown. Lesson 020 is an inert USB-only three-LED direction chase
+with visible dead time and automatic 10-second shutdown; it depicts and
+connects no motor, driver, or external supply. Learner-facing cards,
+instructor/signoff fields, and manual test chores are absent while automated
+repository gates remain intact. No physical observation is claimed. The next
+repair unit is Lessons 021--022.
