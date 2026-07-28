@@ -11,15 +11,15 @@ are complete.
 
 ## Current status
 
-Lessons 001--039 are host verified with their bench cards open. Lessons
+Lessons 001--042 are host verified with their bench cards open. Lessons
 037--039 use documented external reference fixtures; incoming conformance and
 E1 acceptance remain open. The earlier Elegoo exact-specimen requirements
 were superseded only as blockers for canonical publication and remain
-historical optional substitution-conformance work. Lessons 040--042 are the
-next queued block and have a
-[provisional implementation-depth brief](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md)
-that remains gated by the Lesson 042 arming decision and its own
-exact-specimen requirements.
+historical optional substitution-conformance work. Lessons 040--042 publish
+hardware-neutral optical, presence, and course-marshal policy under the
+[implementation-depth brief](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md).
+A debounced button is the sole run authorization; PIR supplies eligibility
+only. Powered adapters, exact specimens, and E1 acceptance remain open.
 See the [authoritative work
 queue](WORK_QUEUE.md) for the complete ledger.
 
@@ -102,7 +102,7 @@ explicit open item.
 | 033 | Host verified; bench open | Input and commit/cancel traces | Preview, committed, and fault indications |
 | 036 | Host verified; bench open | Passage, bounce, direction, recovery, and record traces | Raw contacts, accepted passage, and count |
 | 039 | Host verified; bench/incoming conformance open | Sequencer core, attribution, atomic admission, replay, indexed-hit evidence, and exact external reference publication complete | Canonical Mega schematic/example, visible pattern evidence, and E1 acceptance card; incoming conformance remains open |
-| 042 | [Queued; provisional implementation-depth plan complete](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Calibration, checkpoint-order, range, and timeout traces; implementation remains gated | Local checkpoints and invalid-run state |
+| 042 | Host verified; powered adapter and bench open | Calibration, source identity, eligibility, explicit authorization, checkpoint-order, range, timeout, and invalid-run traces | Powered exact-specimen checkpoints and E1 acceptance remain open |
 | 045 | Queued; detailed plan required | Revision-specific inertial, orientation, and freeze traces | Existing LED/tone health and bus test points |
 | 048 | Queued; detailed plan required | Authorized tactile/directional input, coil-frame, stop, and power-loss traces | Shift-register intent mirror and independent stop |
 | 051 | Queued; detailed plan required | Identity, homing, confirmation, and interruption traces | Position, home, gate-intent, and stop evidence |

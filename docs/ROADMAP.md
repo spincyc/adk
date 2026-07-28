@@ -63,7 +63,11 @@ publication ledger.
 34. deterministic passage qualification with direction, timeout, duplicate
     suppression, and optional position corroboration in lesson 035; and
 35. durable magnetic passage logging with explicit clock, two-slot recovery,
-    retry, and post-commit presentation evidence in lesson 036.
+    retry, and post-commit presentation evidence in lesson 036;
+36. qualified contact and acoustic evidence with deterministic percussion
+    sequencing in lessons 037--039; and
+37. source-specific optical observations, bounded presence composition, and
+    explicitly authorized course-marshal timing in lessons 040--042.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
@@ -71,14 +75,15 @@ is experimental rather than hardware supported.
 
 ## Next slice
 
-Lessons 034--039 are host verified and published with their bench gates open.
+Lessons 034--042 are host verified and published with their bench gates open.
 Lessons 037--039 use documented external reference fixtures and retain open
 incoming-conformance gates. Earlier Elegoo exact-specimen questions are
 superseded as canonical-publication blockers, not answered; they remain
-historical optional substitution-conformance work. Lessons 040--042 are the
-next queued block. Development then follows the canonical lessons 040--081 kit
-expansion, one implementation-depth three-lesson brief at a time. That future
-arc is engagement-first: optical play leads into balance, kinetic motion,
+historical optional substitution-conformance work. Lessons 040--042 publish
+pure policy and replay evidence; powered optical/PIR adapters, exact specimens,
+and E1 acceptance remain open. Development then follows lessons 043--081, one
+implementation-depth three-lesson brief at a time. That future arc is
+engagement-first: balance leads into kinetic motion,
 carousel, IR, escape-console, and display projects before the more methodical
 environmental, 18B20, motion-recording, and characterization blocks.
 Authorization, prerequisite, exact-specimen, safety, and evidence gates still

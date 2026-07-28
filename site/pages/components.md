@@ -66,7 +66,9 @@ Status meanings:
 | Contact policy | `ContactDynamics` | Host verified; incoming conformance and bench open | [Lesson 037](lessons/037.md) |
 | Acoustic policy | `AcousticEnvelope` | Host verified; incoming conformance and bench open | [Lesson 038](lessons/038.md) |
 | Percussion project | `PercussionSequencer` | Host verified; incoming conformance and bench open | [Lesson 039](lessons/039.md) |
-| Planned optical arc | Optical observation and presence policy | Queued | Lessons 040–042 |
+| Optical observation policy | `ReflectiveObservationPolicy`, `BeamObservationPolicy` | Host verified; powered adapter and bench open | [Lesson 040](lessons/040.md) |
+| Presence composition | `PresenceModel` | Host verified; powered adapter and bench open | [Lesson 041](lessons/041.md) |
+| Course-marshal project | `CourseMarshal` | Host verified; powered adapter and bench open | [Lesson 042](lessons/042.md) |
 | Planned balance arc | Inertial samples and orientation presentation | Queued | Lessons 043–045 |
 | Planned kinetic arc | Authorized tactile/directional inputs and bounded stepper motion | Queued | Lessons 046–048 |
 | Planned carousel arc | Identity records and homing | Queued | Lessons 049–051 |
@@ -127,6 +129,16 @@ optional threshold observations without owning the microphone board.
 returns deterministic pattern and cue intent; it owns no pins or sounder.
 Their documented external reference fixtures make the Mega circuits
 reproducible, but incoming conformance and every E1 bench record remain open.
+
+Lessons 040--042 keep source qualification, presence composition, and run
+policy independent of pins and specimens. `ReflectiveObservationPolicy` and
+`BeamObservationPolicy` retain source identity, calibration revision,
+transitions, and faults.
+`PresenceModel` combines copied PIR, beam, and range evidence without allowing
+PIR motion to authorize a run. `CourseMarshal` starts only from a debounced
+explicit button action and produces fixed-capacity, replayable checkpoint and
+finish evidence. Powered adapters, exact wiring, and every E1 bench record
+remain open.
 
 - [Exact API](api-supported.md)
 - [Full component catalog](docs/COMPONENTS.md)

@@ -17,7 +17,7 @@ recorded in
 Its findings must be reconciled through bounded tasks; the audit itself does
 not promote work or replace this ledger.
 
-- Lessons 001--039 are promoted and host verified; physical cards remain open.
+- Lessons 001--042 are promoted and host verified; physical cards remain open.
 - Lesson 030 has an independently reviewed composition core, canonical Mega
   example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
@@ -77,7 +77,7 @@ qualified.
 |---|---|---|
 | [001--036](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
 | [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Host verified; bench/incoming conformance open | Preserve the canonical reference publication; complete incoming conformance and each E1 acceptance record |
-| [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Active integration | Implement the reconciled E0 pure-policy brief in dependency order; explicit button authorization with PIR eligibility is fixed, while powered adapters and E1 publication remain exact-specimen gated |
+| [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Host verified; powered adapter/bench open | Preserve the pure-policy publication; qualify exact specimens before powered adapters, wiring, schematics, or E1 acceptance |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -115,7 +115,7 @@ work; retail kit names are not electrical identities.
 | [031--033](design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md) | Host verified; bench open | Analog joystick, quadrature encoder, calibration console |
 | [034--036](design/LESSONS_034_036_MAGNETIC_PASSAGE_PLAN.md) | Host verified; bench open | Magnetic observations, passage qualification, magnetic passage logger |
 | [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Host verified; bench/incoming conformance open | Contact dynamics, acoustic envelopes, and percussion sequencer published against documented external references; E1 and incoming conformance open |
-| [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Active integration | Reconciled optical observations, presence, and tabletop course marshal; explicit button authorization is fixed and E0 policy work is active, while powered exact-specimen and bench gates remain open |
+| [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Host verified; powered adapter/bench open | Optical observations, presence, and tabletop course marshal are published as pure policy; explicit button authorization is fixed, while powered exact-specimen and bench gates remain open |
 | [043--045](projects/component_project_cadence.md) | Queued | Revision-neutral inertial samples, orientation presentation, balance-table instrument |
 | [046--048](projects/component_project_cadence.md) | Queued; authorized specimens only | Authorized tactile/directional inputs, bounded stepper motion, kinetic sculpture; excluded or unidentified pulse/gesture modules are not claimed |
 | [049--051](projects/component_project_cadence.md) | Queued | Local identity records, homing, inert parts carousel |
@@ -140,17 +140,16 @@ payoff rather than inventory taxonomy alone. The
 inputs. Coverage is not complete until every claimed module has an exact
 inventory record and the relevant block passes its gates.
 
-Lessons 031--039 have complete implementation-ready design briefs and are host
+Lessons 031--042 have complete implementation-ready design briefs and are host
 verified. Lessons 037--039 are published against exact external reference
 fixtures; incoming conformance and E1 physical acceptance remain open. The six
 earlier Elegoo exact-specimen requirements are preserved as historical
 optional substitution-conformance work and were superseded as canonical
-publication blockers rather than answered. Lessons 040--042 are the active
-block and their implementation-depth brief is reconciled against the
-published 037--039 boundary. A debounced explicit button action is the sole
-start authorization; PIR evidence may establish eligibility but can never
-start a run. Pure E0 policy implementation proceeds in dependency order,
-while powered adapters, wiring, formal schematics, and E1 claims remain gated
+publication blockers rather than answered. Lessons 040--042 publish their
+reconciled pure-policy interfaces, deterministic traces, Mega replays, HTML,
+and pencil-drawing PDFs. A debounced explicit button action is the sole start
+authorization; PIR evidence may establish eligibility but can never start a
+run. Powered adapters, wiring, formal schematics, and E1 claims remain gated
 by exact-specimen qualification.
 Lessons 043--081 are canonical subjects and retained work in the engagement
 order above, but their cadence entries are not implementation-ready lesson
@@ -216,7 +215,7 @@ out of scope. Controller high availability remains explicitly deferred.
 The landing page now uses one canonical source, a compact top navigation,
 linked published arcs, and linkless planned rows through Lesson 081 plus the
 retained research tracks. Preserve that scan-first hierarchy as work advances.
-The post-deploy verifier follows Lesson 039 and has a regression check that
+The post-deploy verifier follows Lesson 042 and has a regression check that
 must advance with the newest published lesson.
 
 At the next clean hierarchy boundary:

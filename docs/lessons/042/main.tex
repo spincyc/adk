@@ -1,0 +1,202 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.68in]{geometry}
+\usepackage{booktabs,enumitem,fancyhdr,graphicx,overpic,tabularx,titlesec}
+\usepackage[table]{xcolor}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{docs/lessons/assets/}{../assets/}}
+\hypersetup{pdftitle={ADK Lesson 042: Tabletop Course Marshal},
+ pdfauthor={Kevin Shanahan},
+ pdfsubject={Explicit start authority, ordered checkpoints, and bounded volatile records},
+ pdflang={en-US}}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\textsc{ADK Lesson 042}}\rhead{Tabletop Course Marshal}
+\cfoot{\thepage}\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.5em}{}
+\newcommand{\lessonbox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{#1}}\end{center}}
+
+\begin{document}
+\begin{center}
+ {\Huge\bfseries Tabletop Course Marshal}\\[4pt]
+ {\Large Authorize once, cross in order, freeze the evidence}\\[8pt]
+ \textit{E0 host verified; powered fixture and bench acceptance open}
+\end{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 042 --- project & Time & 150--210 minutes\\
+Prerequisites & Lessons 040--041 & Board & deterministic Mega replay\\
+Evidence & checkpoint LEDs, heartbeat, all-red, display &
+Boundary & hand-moved card; no actuator\\
+\end{tabularx}
+
+\lessonbox{\textbf{Authority rule.} PIR motion can make a start eligible, but
+it can never start a run. Only a debounced press from the configured button,
+in the same course-clock frame as fresh valid PIR Motion evidence, emits the
+start event. A press outside that frame is not remembered.}
+
+\section{A course made from semantic evidence}
+\begin{center}
+% ADK visual: pencil
+\begin{overpic}[width=0.96\linewidth]{042-course-layout-pencil.png}
+ \put(4,62){\small explicit button}
+ \put(7,39){\small PIR eligibility}
+ \put(26,61){\small checkpoint 1}
+ \put(44,62){\small checkpoint 2}
+ \put(61,56){\small checkpoint 3}
+ \put(77,50){\small checkpoint 4}
+ \put(87,38){\small finish}
+ \put(15,5){\small 4 checkpoints + all-red}
+ \put(64,5){\small bounded display}
+\end{overpic}
+
+\small\textit{Alternative text: a pencil drawing shows a finger pressing the
+separate start button, a nearby PIR eligibility witness, a hand-moved card
+crossing four ordered gates and a finish, then checkpoint LEDs, an all-red
+indicator, and a display. The policy supports four checkpoints; the canonical
+replay configures three.}
+\end{center}
+
+The project consumes qualified copied values rather than pins or retail
+modules. Configuration maps one through four unique checkpoint IDs to optical
+source kind, source ID, and calibration revision. That semantic binding, not
+input-array or pin order, defines the course.
+
+\texttt{CourseStartPolicy} receives the copied button edge and PIR state in
+one frame. \texttt{CourseMarshal} receives its start event, one immutable
+\texttt{PresenceSnapshot}, and at most four qualified checkpoint events. It
+validates the entire frame before mutation. Changed same-time, backward, and
+half-range-invalid frames fault without accepting a partial checkpoint.
+
+\section{Walk the evidence timeline}
+\begin{center}
+% ADK visual: pencil
+\begin{overpic}[width=0.98\linewidth]{042-run-timeline-pencil.png}
+ \put(3,53){\small eligible}
+ \put(23,53){\small authorize}
+ \put(43,53){\small ordered checkpoints}
+ \put(76,53){\small finish agreement}
+ \put(89,48){\small frozen record}
+ \put(24,3){\small simultaneous edges reject; array order cannot decide}
+\end{overpic}
+
+\small\textit{Alternative text: a pencil timeline separates PIR eligibility
+from the required button press, continues through the configured checkpoints
+and finish agreement to a record, and branches to all-red when gates collide.
+The policy supports four checkpoints; the canonical replay configures three.}
+\end{center}
+
+Start in \texttt{Disarmed}. A structurally valid frame enters
+\texttt{Arming}; fresh valid PIR Motion evidence makes the marshal
+\texttt{Ready}. PIR alone leaves it there. Only a same-frame explicit start
+event enters \texttt{Running}. A press before or after eligibility does
+nothing and is never latched.
+
+Each accepted checkpoint advances one semantic slot. Two distinct legal
+events whose timestamps are inside the inclusive simultaneity window reject
+as ambiguous. A repeated identity is idempotent, while a distinct event for an
+already accepted checkpoint rejects as duplicate.
+
+Finish acceptance requires the complete checkpoint prefix, a fresh valid
+finish-guard activation event, and fresh valid approach-range evidence within
+the agreement window. The resulting terminal record stays immutable until
+\texttt{acknowledgeRecord()} or reconstruction.
+
+\section{Fixed storage is an architectural choice}
+The original monolithic design measured 653 bytes for the marshal and 432
+bytes for its presenter on AVR, exceeding the 128-byte largest-object ceiling.
+The remediated design uses six explicit caller-owned fixed storages:
+
+\begin{tabularx}{\linewidth}{@{}X r@{}}
+\toprule
+Budget item & AVR bytes\\
+\midrule
+run, trigger, trigger-presence, and three replay storages & 456\\
+six storages plus marshal & 525\\
+storages plus marshal, start policy, and presenter & 639\\
+\bottomrule
+\end{tabularx}
+
+Every individual public type and policy object now measures at most 128 bytes.
+The marshal retains references to all six storages for its full lifetime;
+input-view pointers are borrowed only for \texttt{update()}. There is no heap,
+RTC, SD card, or persistence claim. Reconstruction begins a new volatile
+identity epoch. Sequence exhaustion is permanent for one object lifetime.
+
+These are E0 policy subtotals, not a complete Mega budget. The canonical
+replay sketch measures 15,596 bytes of flash and 901 bytes of static SRAM on
+the Mega 2560. Powered composition still requires aggregate current, pin,
+cadence, and stack evidence.
+
+\section{Observe without Serial}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Visible path & Prediction and interpretation\\
+\midrule
+three checkpoint LEDs & canonical replay evidence; policy supports four\\
+ready/heartbeat & eligible readiness and supplied-time progress\\
+all-red & rejected or faulted run; inspect the retained trigger\\
+four-digit display & one bounded cell per update; elapsed or fault code\\
+\bottomrule
+\end{tabularx}
+
+\texttt{CourseMarshalPresenter} copies only the compact marshal snapshot. It
+advances at most one display cell per later timestamp, so a sparse update
+cannot monopolize the loop. Display or renderer failure cannot alter course
+phase, order, elapsed time, or the frozen record.
+
+\section{Predict, observe, interpret}
+\begin{enumerate}
+ \item Supply valid PIR Motion evidence without a button press. Predict
+       \texttt{Ready}, not \texttt{Running}.
+ \item Press the configured button in the same eligible frame. Predict exactly
+       one start event. Repeat a held input and predict no second event.
+ \item Cross checkpoint IDs in configured order. Predict one additional local
+       LED after each accepted event.
+ \item Present two distinct checkpoint events within the simultaneity window.
+       Permute their array positions; predict the same rejection and all-red.
+ \item Reach the finish guard early or without fresh approach evidence.
+       Predict rejection with trigger evidence preserved.
+ \item Complete the ordered course and agreeing finish. Predict a stable
+       accepted record and elapsed display until acknowledgment.
+ \item Inject failed source status or malformed time. Predict a fault without
+       partially advancing the accepted prefix.
+\end{enumerate}
+
+\section{Powered boundary and shutdown}
+Lesson 042 publishes no wiring table and no electrically authoritative
+schematic. Exact optical, PIR, HC-SR04, button, display, and indicator
+specimens must first close identity, pin order, voltage, output-rail, polarity,
+pull-up, emitter, current, resource, timing, stack, and aggregate SRAM gates.
+Only then may a separately reviewed E1 composition add pin-by-pin prose and a
+formal schematic.
+
+The physical model is moved only by hand. There is no motor, powered gate,
+vehicle control, launcher control, or stored-energy command. Disconnect USB
+before wiring changes and stop for heat, odor, reset, unstable rail, or
+unexpected output.
+
+Resource acquisition and electrical safe state are separate evidence. A
+future qualified fixture must prove claims and rollback independently from
+inactive indicators and high-impedance sensor endpoints after shutdown.
+
+\lessonbox{\textbf{Physical acceptance remains open.} Compilation, replay,
+object-size measurements, pencil drawings, and documentation do not prove a
+sensor, current budget, display, timing cadence, stack peak, or safe shutdown
+on a bench. Leave the acceptance card blank until those observations exist.}
+
+\section{Software evidence}
+Host tests cover authorization timing, eligibility phases, checkpoint order,
+simultaneity, replay identity, finish agreement, timeout, sequence exhaustion,
+record acknowledgment, presenter pacing, rollover, reset, and source faults.
+The canonical Mega sketch is a deterministic copied-evidence replay; it is not
+a claim that any powered module is qualified.
+
+\begin{itemize}
+ \item ADK Lessons 040--042 optical course marshal design record.
+ \item ADK deterministic testing contract and safety model.
+ \item ADK component architecture stress-pass template.
+\end{itemize}
+
+This untagged print edition has a searchable HTML alternative.
+It makes no PDF/UA or physical accessibility claim.
+\end{document}

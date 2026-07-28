@@ -2,7 +2,7 @@
 
 This is the planning map for first-class ADK interfaces. It complements
 `CURRICULUM.md`: that file defines teaching order; this file defines ownership,
-composition, resources, and test seams. The lesson 033 slice is implemented,
+composition, resources, and test seams. The lesson 042 slice is implemented,
 host verified, and experimental. A catalog name is still a target unless a
 matching public header has landed; in particular, lesson 009 models its
 photoresistor through `AnalogInput` and does not yet publish a
@@ -118,6 +118,24 @@ that configuration into domain meaning.
 | `CueAuditBuffer` / `CueAuditEncoder` | Caller-owned fixed storage | Append-only decisions and byte-stable records | 029 |
 | `InertCueScheduler` | Supplied time and operator values | Confirmation-gated inert visual intervals | 029 |
 | `InertShowSimulator` | Borrowed assessor, scheduler, and audit | Complete canonical observation frames gate mapped inert cues | 030 |
+| `ReflectiveObservationPolicy`, `BeamObservationPolicy` | Copied optical samples | Source-specific qualification retains provenance, calibration revision, transitions, and faults | 042 |
+| `PirObservationPolicy`, `PresenceModel` | Copied PIR, beam, reflective, and range evidence | Eligibility, freshness, validity, and disagreement remain explicit | 042 |
+| `CourseStartPolicy`, `CourseMarshal`, `CourseMarshalPresenter` | Copied start, presence, checkpoint, and time values plus caller-owned storage | Only an explicit button with PIR eligibility starts a fixed-capacity replayable run | 042 |
+
+The Lessons 040--042 contracts are published in
+[`optical_observation.h`](https://github.com/spincyc/adk/blob/main/src/optical_observation.h),
+[`presence_model.h`](https://github.com/spincyc/adk/blob/main/src/presence_model.h),
+and
+[`course_marshal.h`](https://github.com/spincyc/adk/blob/main/src/course_marshal.h).
+Their deterministic seams are exercised by the matching
+[optical](https://github.com/spincyc/adk/blob/main/tests/test_optical_observation.cpp),
+[presence](https://github.com/spincyc/adk/blob/main/tests/test_presence_model.cpp),
+and
+[course](https://github.com/spincyc/adk/blob/main/tests/test_course_marshal.cpp)
+tests and canonical `Lesson040OpticalObservation`,
+`Lesson041PresenceModel`, and `Lesson042CourseMarshal` Mega replays. These are
+E0 hardware-neutral policies: no powered optical or PIR adapter, exact wiring,
+formal electrical schematic, or E1 acceptance is claimed.
 
 ### Kit module adapters
 
