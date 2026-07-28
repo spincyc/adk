@@ -167,13 +167,19 @@ out of scope. Controller high availability remains explicitly deferred.
 
 ## Publication and release
 
+The landing page now uses one canonical source, a compact top navigation,
+linked published arcs, and linkless planned rows through Lesson 081 plus the
+retained research tracks. Preserve that scan-first hierarchy as work advances.
+The post-deploy verifier follows Lesson 033 and has a regression check that
+must advance with the newest published lesson.
+
 At the next clean hierarchy boundary:
 
 1. reconcile curriculum, component, project, roadmap, site, size, and changelog
    claims;
 2. run the complete host, unwind, sanitizer, style, header, Mega, size, lesson,
    monochrome-PDF, site, package-consumer, lint, and link gates;
-3. finish the concise landing-page hierarchy and verify every lesson exposes
+3. preserve the concise landing-page hierarchy and verify every lesson exposes
    complementary HTML, black-and-white PDF, source, and next-step links;
 4. retain every open physical card and research limitation in release notes;
 5. create a coherent release commit and tag only after the tree is clean;
