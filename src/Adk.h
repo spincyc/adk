@@ -43,6 +43,7 @@
 #include "packet_receiver.h"
 #include "passage_ledger.h"
 #include "passage_qualifier.h"
+#include "percussion_sequencer.h"
 #include "piezo_sounder.h"
 #include "power_domain.h"
 #include "pump_output.h"

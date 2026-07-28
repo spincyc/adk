@@ -11,10 +11,10 @@ are complete.
 
 ## Current status
 
-Lessons 001--036 are host verified with their bench cards open. Lesson 037
-is the next planned component boundary. Its 037--039 E0 core and
-hardware-independent documentation brief is ready; electrically specific Mega
-examples/schematics await exact specimens, and E1 acceptance remains separate.
+Lessons 001--036 are host verified with their bench cards open. Lessons
+037--039 have complete E0 cores, tests, and hardware-independent drafts. Their
+linked exact-specimen Mega example, authoritative schematic, promotion, and E1
+acceptance remain open.
 See the [authoritative work
 queue](WORK_QUEUE.md) for the complete ledger.
 
@@ -96,7 +96,7 @@ explicit open item.
 | 030 | Host verified; bench open | Immutable cue schedule, arming order, simulated continuity, simultaneous-event policy, stop dominance, restart lockout, and audit replay | Inert channel lamps, redundant armed/fault/stop states, and no energizing output path |
 | 033 | Host verified; bench open | Input and commit/cancel traces | Preview, committed, and fault indications |
 | 036 | Host verified; bench open | Passage, bounce, direction, recovery, and record traces | Raw contacts, accepted passage, and count |
-| 039 | Queued; E0 core brief complete | Contact, envelope, quantization, pending association, and skip-to-current playback traces | Hardware-independent publication ready; exact-specimen Mega schematic/example gated; E1 acceptance open |
+| 039 | Active integration | E0 sequencer core, attribution, atomic admission, replay, and indexed-hit evidence complete | Linked exact-specimen Mega schematic/example, promotion, and E1 acceptance open |
 | 042 | Queued; detailed plan required | Calibration, checkpoint-order, range, and timeout traces | Local checkpoints and invalid-run state |
 | 045 | Queued; detailed plan required | Probe, thermal, radiant, latch, and record traces | Health/fault display and inert alarm lamp |
 | 048 | Queued; detailed plan required | Gesture, coil-frame, stop, and power-loss traces | Shift-register intent mirror and independent stop |

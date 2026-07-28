@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="860"
+ viewBox="0 0 1500 860" role="img" aria-labelledby="title description">
+ <title id="title">Draft: quantized percussion pattern and playback evidence</title>
+ <desc id="description">A pencil-drawn sixteen-step grid shows attacks rounded
+ to nearest steps, two surfaces sharing a step, silent frames, a current-step
+ cursor, visible surface and heartbeat intents, and a bounded tone intent.
+ Sparse updates skip past cues instead of replaying them late.</desc>
+ <defs>
+  <filter id="pencil" x="-4%" y="-8%" width="108%" height="116%">
+   <feTurbulence type="fractalNoise" baseFrequency="0.011 0.085"
+    numOctaves="2" seed="139" result="grain"/>
+   <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.1"/>
+  </filter>
+  <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4"
+   orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#303030"/></marker>
+  <style>
+   .ink{fill:none;stroke:#303030;stroke-width:4;stroke-linecap:round;
+    stroke-linejoin:round;filter:url(#pencil)}
+   .light{fill:none;stroke:#777;stroke-width:2.5;filter:url(#pencil)}
+   .label,.text,.small{display:none}
+  </style>
+ </defs>
+ <rect width="1500" height="860" fill="#fff"/>
+ <text x="45" y="48" class="label">NEAREST STEP → CURRENT FRAME → BOUNDED INTENTS</text>
+ <text x="45" y="78" class="small">The grid is a deterministic model, not a performed or recorded physical rhythm</text>
+
+ <g transform="translate(75 125)">
+  <text x="0" y="30" class="text">lane 0</text>
+  <text x="0" y="100" class="text">lane 1</text>
+  <text x="0" y="170" class="text">lane 2</text>
+  <text x="0" y="240" class="text">lane 3</text>
+  <path d="M135 0v270M205 0v270M275 0v270M345 0v270M415 0v270M485 0v270M555 0v270M625 0v270M695 0v270M765 0v270M835 0v270M905 0v270M975 0v270M1045 0v270M1115 0v270M1185 0v270M1255 0v270" class="light"/>
+  <path d="M135 0h1120M135 70h1120M135 140h1120M135 210h1120M135 270h1120" class="light"/>
+  <circle cx="205" cy="35" r="20" class="ink"/>
+  <circle cx="415" cy="105" r="20" class="ink"/>
+  <circle cx="415" cy="245" r="20" class="ink"/>
+  <circle cx="835" cy="175" r="20" class="ink"/>
+  <circle cx="1185" cy="35" r="20" class="ink"/>
+  <rect x="555" y="-18" width="10" height="305" fill="#303030"/>
+  <path d="M530 -18l30-34 30 34z" fill="#303030"/>
+  <text x="515" y="315" class="small">current step</text>
+  <text x="135" y="345" class="small">0</text>
+  <text x="395" y="345" class="small">4</text>
+  <text x="675" y="345" class="small">8</text>
+  <text x="935" y="345" class="small">12</text>
+  <text x="1215" y="345" class="small">15</text>
+ </g>
+
+ <path d="M250 540h150" class="ink" marker-end="url(#arrow)"/>
+ <text x="75" y="525" class="text">supplied attack time</text>
+ <text x="75" y="555" class="small">nearest; exact half rounds forward</text>
+ <rect x="420" y="475" width="330" height="160" rx="20" class="ink"/>
+ <text x="445" y="515" class="label">FRAME</text>
+ <text x="445" y="555" class="text">surface mask + intensity[4]</text>
+ <text x="445" y="590" class="small">silent step: frequency and duration are zero</text>
+
+ <path d="M760 547h90v-18l35 26-35 26v-18h-90z" fill="#303030"/>
+ <rect x="905" y="455" width="500" height="255" rx="20" class="ink"/>
+ <text x="930" y="495" class="label">PRESENTATION INTENTS</text>
+ <text x="930" y="540" class="text">surface LEDs: current frame mask</text>
+ <text x="930" y="580" class="text">step display: current grid position</text>
+ <text x="930" y="620" class="text">heartbeat: toggles once per beat</text>
+ <text x="930" y="660" class="text">tone: strongest hit; low lane wins ties</text>
+ <text x="930" y="692" class="small">fault or shutdown clears every cue intent</text>
+
+ <path d="M75 770h1330" class="ink"/>
+ <text x="75" y="805" class="text">Sparse update? Jump to the current frame. Never emit missed light or tone cues late.</text>
+</svg>

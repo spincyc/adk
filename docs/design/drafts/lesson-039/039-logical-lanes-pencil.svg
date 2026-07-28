@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="820"
+ viewBox="0 0 1500 820" role="img" aria-labelledby="title description">
+ <title id="title">Draft: four logical percussion lanes become one bounded group</title>
+ <desc id="description">Pencil-drawn logical traces show four surface attacks,
+ a simultaneous grouping window, one later completed acoustic window, and
+ deterministic surface-ordered hits. The drawing represents supplied host
+ records, not physical sensors or wiring.</desc>
+ <defs>
+  <filter id="pencil" x="-4%" y="-8%" width="108%" height="116%">
+   <feTurbulence type="fractalNoise" baseFrequency="0.012 0.09"
+    numOctaves="2" seed="39" result="grain"/>
+   <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.2"/>
+  </filter>
+  <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4"
+   orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#303030"/></marker>
+  <style>
+   .ink{fill:none;stroke:#303030;stroke-width:4;stroke-linecap:round;
+    stroke-linejoin:round;filter:url(#pencil)}
+   .dash{fill:none;stroke:#555;stroke-width:3;stroke-dasharray:12 9;
+    filter:url(#pencil)}
+   .label,.text,.small{display:none}
+  </style>
+ </defs>
+ <rect width="1500" height="820" fill="#fff"/>
+ <text x="45" y="48" class="label">SUPPLIED RECORDS: GROUP FIRST, ASSOCIATE ONCE</text>
+ <text x="45" y="78" class="small">Logical timing only — no specimen, pin, force, or sound-pressure claim</text>
+
+ <g>
+  <text x="55" y="155" class="text">surface 0</text>
+  <path d="M190 150h145v-46h30v46h725" class="ink"/>
+  <text x="55" y="240" class="text">surface 1</text>
+  <path d="M190 235h195v-46h30v46h675" class="ink"/>
+  <text x="55" y="325" class="text">surface 2</text>
+  <path d="M190 320h725v-46h30v46h145" class="ink"/>
+  <text x="55" y="410" class="text">surface 3</text>
+  <path d="M190 405h230v-46h30v46h640" class="ink"/>
+  <path d="M350 92v350M470 92v350"
+   style="fill:none;stroke:#303030;stroke-width:7;stroke-dasharray:16 12"/>
+  <path d="M350 108v-28h120v28" class="ink"/>
+  <path d="M350 455h120" class="ink" marker-end="url(#arrow)"/>
+  <text x="288" y="490" class="small">inclusive simultaneous window</text>
+  <text x="895" y="455" class="small">later attack: suppressed while group waits</text>
+ </g>
+
+ <rect x="55" y="535" width="560" height="225" rx="22" class="ink"/>
+ <text x="80" y="575" class="label">PENDING GROUP</text>
+ <text x="80" y="620" class="text">first attack supplies the group time</text>
+ <text x="80" y="655" class="text">one attack per surface</text>
+ <text x="80" y="690" class="text">surface order: 0, 1, 3</text>
+ <text x="80" y="725" class="small">one closed group may wait; no hidden queue</text>
+
+ <path d="M625 642h72v-18l33 26-33 26v-18h-72z" fill="#303030"/>
+ <rect x="745" y="535" width="700" height="225" rx="22" class="ink"/>
+ <text x="770" y="575" class="label">ONE ASSOCIATION RESULT</text>
+ <path d="M790 642c55-80 110-80 165 0s110 80 165 0 110-80 165 0" class="ink"/>
+ <text x="770" y="690" class="text">eligible completed window → shared relative intensity</text>
+ <text x="770" y="725" class="small">timeout wins at its boundary and finalizes intensity zero</text>
+</svg>
