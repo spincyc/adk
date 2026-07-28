@@ -14,6 +14,13 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlsplit
 from urllib.request import Request, urlopen
 
+if __package__:
+    from scripts.publication import PublishedLesson
+    from scripts.publication import resolve_latest_publication
+else:
+    from publication import PublishedLesson
+    from publication import resolve_latest_publication
+
 
 DEFAULT_TIMEOUT_SECONDS = 10.0
 DEFAULT_RETRIES = 2
@@ -29,33 +36,56 @@ class Check:
     markers: tuple[bytes, ...] = ()
 
 
-CHECKS = (
-    Check(
-        "",
-        "landing page",
-        markers=(b"Lessons 001\xe2\x80\x93036", b"Planned course"),
-    ),
-    Check(
-        "lessons/036/",
-        "Lesson 036 page",
-        markers=(
-            b"Lesson 036",
-            b"magnetic passage logger",
-        ),
-    ),
-    Check("downloads/lessons/036.pdf", "Lesson 036 PDF", b"%PDF-"),
-    Check(
-        "downloads/sketches/Lesson036MagneticPassageLogger.ino",
-        "Lesson 036 Arduino example",
-        markers=(b"#include <Adk.h>", b"MagneticPassageLogger logger"),
-    ),
-)
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-CANONICAL_EXAMPLE = (
-    REPOSITORY_ROOT
-    / "examples/Lesson036MagneticPassageLogger/Lesson036MagneticPassageLogger.ino"
-)
+BUILD_CONFIG = REPOSITORY_ROOT / "mk/config.mk"
+
+
+def configured_publication() -> PublishedLesson:
+    """Resolve the repository's current publication boundary."""
+    source = BUILD_CONFIG.read_text(encoding="utf-8")
+    return resolve_latest_publication(source)
+
+
+def deployment_checks(publication: PublishedLesson) -> tuple[Check, ...]:
+    """Build stable artifact checks for one resolved publication."""
+    lesson = publication.number.encode()
+    return (
+        Check(
+            "",
+            "landing page",
+            markers=(b"Lessons 001\xe2\x80\x93" + lesson, b"Planned course"),
+        ),
+        Check(
+            publication.lesson_page,
+            f"Lesson {publication.number} page",
+            markers=(
+                b"Lesson " + lesson,
+                b"Status:",
+                b"Energy class:",
+                b"Safety boundary:",
+            ),
+        ),
+        Check(
+            publication.pdf_path,
+            f"Lesson {publication.number} PDF",
+            b"%PDF-",
+        ),
+        Check(
+            publication.sketch_path,
+            f"Lesson {publication.number} Arduino example",
+            markers=(b"#include <Adk.h>",),
+        ),
+    )
+
+
+def canonical_example(publication: PublishedLesson) -> Path:
+    """Return the audited checkout path for a publication's sketch."""
+    return (
+        REPOSITORY_ROOT
+        / "examples"
+        / publication.example
+        / f"{publication.example}.ino"
+    )
 
 
 def normalize_base_url(raw_base_url: str) -> str:
@@ -97,7 +127,11 @@ def read_url(url: str, timeout: float) -> bytes:
     return data
 
 
-def validate_response(check: Check, data: bytes) -> str | None:
+def validate_response(
+    check: Check,
+    data: bytes,
+    canonical_sketch: Path,
+) -> str | None:
     if not data:
         return "response is empty"
     if check.prefix is not None and not data.startswith(check.prefix):
@@ -111,7 +145,7 @@ def validate_response(check: Check, data: bytes) -> str | None:
         except UnicodeDecodeError:
             return "Arduino example is not valid UTF-8"
         try:
-            canonical = CANONICAL_EXAMPLE.read_bytes()
+            canonical = canonical_sketch.read_bytes()
         except OSError as exception:
             return f"cannot read canonical Arduino example: {exception}"
         if data != canonical:
@@ -127,6 +161,7 @@ def check_deployment(
     retry_delay: float = DEFAULT_RETRY_DELAY_SECONDS,
     fetch: Callable[[str, float], bytes] = read_url,
     sleep: Callable[[float], None] = time.sleep,
+    publication: PublishedLesson | None = None,
 ) -> list[str]:
     """Return deterministic, human-readable failures for the deployed site."""
     if retries < 0:
@@ -137,14 +172,18 @@ def check_deployment(
         raise ValueError("retry delay must be nonnegative")
 
     normalized = normalize_base_url(base_url)
+    if publication is None:
+        publication = configured_publication()
+    checks = deployment_checks(publication)
+    canonical_sketch = canonical_example(publication)
     errors: list[str] = []
-    for check in CHECKS:
+    for check in checks:
         url = urljoin(normalized, check.path)
         failure = ""
         for attempt in range(retries + 1):
             try:
                 data = fetch(url, timeout)
-                validation_error = validate_response(check, data)
+                validation_error = validate_response(check, data, canonical_sketch)
                 if validation_error is None:
                     failure = ""
                     break
