@@ -62,6 +62,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_passage_ledger \
 	$(BUILD_DIR)/host/test_magnetic_passage_logger \
 	$(BUILD_DIR)/host/test_passage_qualifier \
+	$(BUILD_DIR)/host/test_percussion_sequencer \
 	$(BUILD_DIR)/host/test_reaction_timer \
 	$(BUILD_DIR)/host/test_record_sink \
 	$(BUILD_DIR)/host/test_pwm_output \
@@ -134,6 +135,11 @@ host-test-exceptions: | $(BUILD_DIR)/host
 		tests/test_inert_show_simulator.cpp $(HOST_LDFLAGS) \
 		-o "$(BUILD_DIR)/host/test_inert_show_simulator_exceptions"
 	$(BUILD_DIR)/host/test_inert_show_simulator_exceptions
+	$(CXX) $(HOST_CPPFLAGS) $(filter-out -fno-exceptions,$(HOST_CXXFLAGS)) \
+		$(HOST_CORE_SOURCES) src/percussion_sequencer.cpp \
+		tests/test_percussion_sequencer.cpp $(HOST_LDFLAGS) \
+		-o "$(BUILD_DIR)/host/test_percussion_sequencer_exceptions"
+	$(BUILD_DIR)/host/test_percussion_sequencer_exceptions
 
 $(BUILD_DIR)/host/test_core: $(HOST_CORE_SOURCES) tests/test_core.cpp \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
@@ -242,6 +248,13 @@ $(BUILD_DIR)/host/test_passage_ledger: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/passage_ledger.cpp \
 		tests/test_passage_ledger.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_percussion_sequencer: $(HOST_CORE_SOURCES) \
+		src/percussion_sequencer.cpp tests/test_percussion_sequencer.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/percussion_sequencer.cpp \
+		tests/test_percussion_sequencer.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_magnetic_passage_logger: $(HOST_IO_SOURCES) \
 		src/board.cpp src/magnetic_passage_logger.cpp src/passage_ledger.cpp \

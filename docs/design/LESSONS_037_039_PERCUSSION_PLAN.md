@@ -1,11 +1,11 @@
 # Lessons 037–039 percussion laboratory plan
 
-Status: E0 core implementation-depth planning complete, 2026-07-28. The
-hardware-independent implementation and documentation contract is ready.
-Electrically specific Mega examples and authoritative schematics wait for
-exact specimen qualification; E1 physical acceptance remains a separate open
-gate. No first-class code, powered specimen, sound-pressure measurement, or
-physical acceptance is claimed.
+Status: active integration, 2026-07-28. Lessons 037--039 E0 cores, tests, and
+hardware-independent drafts are complete. The linked exact-specimen Mega
+example, authoritative schematic, promotion, and E1 physical acceptance remain
+open behind specimen qualification. No
+powered specimen, sound-pressure measurement, or physical acceptance is
+claimed.
 
 ## Scope and specimen boundary
 
@@ -481,12 +481,15 @@ The only legal nested snapshot combinations are:
 | `Fault` | `ThresholdDisagreement` | `HardwareFailure`; event/intensity fields canonical zero |
 | `Fault` | `SourceFault` | propagated non-Ok endpoint status or `InvalidArgument` for an invalid runtime level; event/intensity fields canonical zero |
 | `Fault` | `TimingFault` | `InvalidArgument`; last completed evidence retained |
-| `Fault` | `Unqualified` | `InvalidArgument` for invalid runtime headroom/configuration |
+| `Fault` | `Unqualified` | `InvalidArgument` for an out-of-range raw ADC sample or insufficient runtime headroom |
 
 No other phase/quality/status tuple is valid. Sequencer association eligibility
 is exactly `Refractory + ValidEvent + Ok + eventCompleted=true`, with nonzero
 event duration and the published start/end interval. It is eligible for that
 one update only.
+
+Invalid configuration fails `initialize()` with `InvalidArgument` and leaves
+the policy uninitialized; it does not publish or mutate a `Fault` snapshot.
 
 ### Deterministic fixture and failure matrix
 
@@ -585,12 +588,26 @@ enum struct PercussionMode : uint8_t
     Fault
 };
 
+enum struct PercussionFaultSource : uint8_t
+{
+    None, Surface0, Surface1, Surface2, Surface3,
+    Acoustic, Timing, Tempo, Input
+};
+
+enum struct PercussionAssociation : uint8_t
+{
+    None,
+    AcousticCompletion,
+    AssociationTimeout
+};
+
 struct PercussionHit
 {
-    uint8_t  surface;
-    uint8_t  step;
-    uint16_t intensity;
-    uint32_t ordinal;
+    uint8_t               surface;
+    uint8_t               step;
+    uint16_t              intensity;
+    uint32_t              ordinal;
+    PercussionAssociation association;
 };
 
 struct PercussionSequencerConfig
@@ -608,15 +625,28 @@ struct PercussionSequencerConfig
     Duration acousticAssociationTimeout;
 };
 
+struct PercussionAcousticCompletion
+{
+    PercussionAcousticCompletion () noexcept;
+
+    bool      present;
+    TimePoint eventStartedAt;
+    Duration  eventDuration;
+    uint16_t  intensity;
+};
+
 struct PercussionSequencerInput
 {
-    TimePoint           observedAt;
-    ContactObservation contacts[4];
-    AcousticObservation acoustic;
-    uint16_t            tempoPosition;
-    bool                playEvent;
-    bool                clearEvent;
-    bool                inputValid;
+    PercussionSequencerInput () noexcept;
+
+    TimePoint                    observedAt;
+    uint8_t                      attackMask;
+    Status                       surfaceStatus[4];
+    Status                       acousticStatus;
+    PercussionAcousticCompletion acousticCompletion;
+    uint16_t                     tempoPosition;
+    bool                         playEvent;
+    bool                         clearEvent;
 };
 
 struct PercussionFrame
@@ -631,18 +661,20 @@ struct PercussionFrame
 
 struct PercussionSequencerSnapshot
 {
-    PercussionMode mode;
-    uint16_t       tempoBpm;
-    uint8_t        currentStep;
-    uint8_t        hitCount;
-    uint32_t       nextOrdinal;
-    bool           hitAccepted;
-    bool           hitSuppressed;
-    bool           patternFull;
-    bool           frameValid;
-    PercussionHit  lastHit;
-    PercussionFrame frame;
-    Status         status;
+    PercussionMode        mode;
+    uint16_t              tempoBpm;
+    uint8_t               currentStep;
+    uint8_t               hitCount;
+    uint32_t              nextOrdinal;
+    bool                  hitAccepted;
+    bool                  hitSuppressed;
+    bool                  patternFull;
+    bool                  frameValid;
+    PercussionFaultSource faultSource;
+    PercussionAssociation lastAssociation;
+    PercussionHit         lastHit;
+    PercussionFrame       frame;
+    Status                status;
 };
 
 struct PercussionSequencer
@@ -665,15 +697,28 @@ struct PercussionSequencer
 
     bool                        initialized () const noexcept;
     PercussionSequencerSnapshot snapshot    () const noexcept;
-    const PercussionHit*        hits        () const noexcept;
+    Result<PercussionHit>       hit         (uint8_t index) const noexcept;
 };
 ```
 
+These are project-owned narrow DTOs. The Lesson 039 adapter translates contact
+and acoustic policies into `attackMask`, four source statuses, one acoustic
+status, and an optional canonical completion. The engine neither accepts nor
+reconstructs nested `ContactObservation`/`AcousticObservation` tuples and has
+no `inputValid` escape hatch. `PercussionFaultSource` attributes the winning
+status without importing source-specific quality enums.
+
+When `acousticCompletion.present=false`, its start, duration, and intensity
+are canonical zero. When present, duration is nonzero, its interval is below
+unsigned half-range, and it cannot begin in the apparent future. Invalid
+completion fields fault atomically as
+`Acoustic`; no pending group or pattern state changes.
+
 `steps` is `4..16`; tempo is bounded within `30..240 BPM`;
 the configured range is ordered; simultaneous window is nonzero and below
-half-range. `acousticAssociationTimeout` is at least the configured Lesson 038
-event window, is strictly below half-range, and is longer than the
-simultaneous window. `tempoPosition` is `0..1000` and maps linearly to the configured
+half-range. `acousticAssociationTimeout` is strictly below half-range and
+longer than the simultaneous window. The adapter separately ensures it can
+cover the selected acoustic event policy. `tempoPosition` is `0..1000` and maps linearly to the configured
 tempo using widened integer arithmetic. The step period is
 `60000 / tempoBpm / 4` milliseconds: every stored step is a sixteenth-note
 grid position. Remainder is deliberately truncated and documented.
@@ -691,25 +736,23 @@ Exactly one four-lane group may be pending. After closure it remains pending
 until the first completed acoustic
 window whose inclusive
 `[eventStartedAt, eventStartedAt + eventDuration]` contains the first attack.
-That completed `relativeIntensity` applies to every hit in the group. At
+That completion intensity applies to every hit in the group. At
 `firstAttack + acousticAssociationTimeout`, timeout wins over a newly supplied
 window and finalizes the group with intensity zero. A completed acoustic
 snapshot is eligible only on its one update; each completion can satisfy at
 most the oldest pending group. Thus later acoustic completion can qualify
-earlier contact without rewriting an already published hit. Contact and
-acoustic status/quality remain prerequisites.
+earlier contact without rewriting an already published hit. Each stored hit
+retains `AcousticCompletion` or `AssociationTimeout` provenance; zero
+intensity alone never implies which path finalized it.
 New attacks while that closed group awaits association set
 `hitSuppressed=true` and are not queued. Pending timers use unsigned elapsed
 subtraction, never ordering of wrapped endpoint timestamps.
 
-Only Ok `ContactQuality::Valid` attacks are consumable. Non-attacking
-`Unqualified` lanes during startup are ignored; `StuckActive`, `SourceFault`,
-or `TimingFault` faults the engine. Before association, the engine accepts
-only the legal Ok acoustic tuples `Calibrating + Unqualified`,
-`Quiet + ValidQuiet`, `EventOpen + ValidEvent`, and post-completion
-`Refractory + ValidQuiet`. Association consumes only
-`Refractory + ValidEvent + Ok + eventCompleted=true`. Every legal `Fault`
-tuple faults the engine; every unlisted tuple is `InternalInvariant`.
+The adapter alone decides when a contact policy yields an attack bit and when
+an acoustic policy yields a completion DTO. The engine validates only the
+four `surfaceStatus` values, `acousticStatus`, mask bounds, and canonical
+completion fields. Undefined status codes are `InternalInvariant`; the first
+non-Ok surface in index order wins before acoustic status.
 
 Surface order `0..3` is semantic and independent of pins. Attacks inside
 `simultaneousWindow` quantize against one shared timestamp and are stored in
@@ -717,10 +760,11 @@ ascending surface order, regardless of input array evaluation order. A second
 attack from the same surface at the same quantized step is suppressed.
 Different surfaces may share a step. Hits are stored by step, then surface,
 then bounded ordinal. The one pending group does not reserve finalized
-capacity. On finalization its surface-ordered hits fill remaining slots; the
-first hit that would exceed 32 enters `Full`, sets `patternFull` and
-`hitSuppressed`, and that hit plus later members of the group are discarded.
-Existing hits never change.
+capacity. Group admission is atomic: after duplicate removal, every accepted
+surface must fit. If the whole group does not fit, none of it is stored,
+`hitSuppressed=true`, and all existing hits/ordinals/provenance remain
+unchanged. A group that exactly fills capacity commits in surface order and
+enters `Full`.
 
 `playEvent` toggles Recording/Playing. Starting playback with no hits is an
 idempotent no-op. `clearEvent` dominates play and all attacks at the same
@@ -756,24 +800,53 @@ intensity by lowest surface. Fixed surface tones are 262, 330, 392, and
 A frame with no hit has frequency and duration zero. Heartbeat toggles once per
 beat and remains independent of whether the pattern is silent.
 
-Update precedence is: uninitialized/configuration fault; top-level or nested
-timestamp mismatch and invalid time; `inputValid`/contact/acoustic source or
-quality fault; invalid tempo; `clearEvent`; pending-group timeout; eligible
-acoustic completion; play toggle; contact attacks (including an attack exactly
-at the simultaneous boundary); pending-group closure; capacity/full transition;
-tempo application; playback boundary. A higher result prevents partial
+Update precedence is: uninitialized/configuration fault; observed-time
+validation; attack-mask/status/completion DTO validation; invalid tempo;
+`clearEvent`; pending-group timeout; eligible acoustic completion; play
+toggle; contact attacks (including an attack exactly at the simultaneous
+boundary); pending-group closure; atomic capacity/full transition; tempo
+application; playback boundary. A higher result prevents partial
 mutation by lower rules. Clear therefore dominates valid controls, but never
 hides invalid evidence.
 
-Same-time identity compares every top-level field and every value/status in all
-four contact snapshots and the acoustic snapshot. An identical complete frame
-is idempotent; any changed field is a timing fault.
+Same-time identity is semantic and fieldwise across the project DTO:
+`observedAt`, mask, four statuses, acoustic status, canonical completion
+fields, tempo, play, and clear. It never compares padding or source-policy
+objects. An identical semantic input is idempotent; any changed semantic field
+is a timing fault.
 
-Shutdown clears the pending group, transient/frame state, and every output intent,
-returns to inert Recording, and retains only finalized hits as inspectable
-evidence with `NotInitialized`. Reinitialize retains those finalized hits and
-starts a fresh time epoch. Only `clear()` erases them. No EEPROM, RTC, removable media, randomness, or
-dynamic allocation is introduced.
+Shutdown clears the pending group, timing epochs, transient association and
+frame/output intent, sets `NotInitialized`, and retains finalized indexed hits,
+hit count, next ordinal, and `lastHit`. Reinitialize retains that pattern,
+returns to `Full` at capacity or `Recording` otherwise, and starts fresh time
+epochs. Only `clear()` erases retained hits. `hit(index)` returns
+`Result<PercussionHit>`: each in-range value includes association provenance;
+an out-of-range index returns `InvalidArgument` plus the canonical zero/None
+hit. No EEPROM, RTC, removable media, randomness, or dynamic allocation is
+introduced.
+
+`lastHit` changes only when an entire group finalizes successfully and is the
+last surface-ordered hit admitted from that group. `lastAssociation` reports
+that group provenance for the finalization update and otherwise returns to
+`None`; indexed hits retain their own provenance permanently. Healthy
+snapshots use `faultSource=None`, and absent frame/completion values use their
+documented canonical zeros.
+
+Measured layouts for the final declaration are:
+
+| Type | x86-64 host | ATmega2560 AVR |
+|---|---:|---:|
+| `PercussionSequencerConfig` | 16 B | 13 B |
+| `PercussionAcousticCompletion` | 16 B | 11 B |
+| `PercussionSequencerInput` | 32 B | 25 B |
+| `PercussionHit` | 12 B | 9 B |
+| `PercussionFrame` | 20 B | 17 B |
+| `PercussionSequencerSnapshot` | 56 B | 42 B |
+| `PercussionSequencer` | 400 B | 371 B |
+
+These measurements use the repository host compiler and Arduino AVR GCC
+7.3.0-atmel3.6.1. They are layout evidence, not the still-open linked-example
+flash/static-RAM baseline or full-circuit SRAM proof.
 
 ### Deterministic project matrix
 
@@ -799,15 +872,15 @@ Core and adapter fixtures cover:
   boundary;
 - intensity zero, every clamp edge, highest-intensity selection, equal
   tie-break, silent frames, tone-duration clamp, and heartbeat cadence;
-- invalid contact/acoustic evidence, mismatched timestamps, invalid tempo
-  position, invalid configuration/enums, and shutdown/reinitialization from
-  every mode;
+- invalid mask/status/completion DTO evidence, invalid tempo position,
+  invalid configuration/enums, and shutdown/reinitialization from every mode;
 - frame-for-frame adapter replay including LED, display, and piezo intents;
   D6 pin/Timer2 conflict before any cue plus initialization failure and reverse
   rollback in the example owner;
   and
-- byte-identical patterns, snapshots, and presentation traces for repeated
-  seed-free fixtures.
+- versioned fieldwise golden replay of every snapshot field, `lastHit`, and
+  every indexed `hit(index)` value/provenance, without struct-memory or padding
+  comparison.
 
 ### Narrative example and resource budget
 
