@@ -1,7 +1,7 @@
 #include <Adk.h>
 
-// Mega 2560, USB 5 V: D30-D35 vehicle LEDs, D36-D37 pedestrian LEDs,
-// and D13 ready LED, each through 330 Ohm; D22 button to GND uses INPUT_PULLUP.
+// Mega 2560, USB 5 V: D30-D35 vehicle LEDs and D36-D37 pedestrian LEDs,
+// each through 330 Ohm. D13 is the built-in LED; D22 to GND uses INPUT_PULLUP.
 
 namespace {
 
@@ -24,29 +24,57 @@ namespace {
     adk::TrafficConfig  trafficConfig;
     adk::TrafficJunction traffic (trafficConfig);
 
-    bool running = false;
+    enum class DemoStage
+    {
+        Acquiring,
+        Separating,
+        Running,
+        AllRed,
+        Halted
+    };
+
+    const adk::Duration readyPulseDuration (250);
+    const adk::Duration readySeparator     (750);
+    const adk::Duration demoDuration       (120000);
+    const adk::Duration allRedDuration     (1000);
+
+    DemoStage      demoStage    = DemoStage::Halted;
+    adk::TimePoint stageStarted;
 
     bool              initializeCircuit  ();
+    void              advanceDemo        (adk::TimePoint now);
     adk::TrafficInput observeRequest     (adk::TimePoint now);
     adk::Status       decideSignals      (adk::TimePoint now,
                                           const adk::TrafficInput& observation);
     bool              showSignals        (const adk::TrafficSignals& signals);
+    void              setSignal          (adk::MonoLed& signal, bool on,
+                                          bool& succeeded);
     void              stopSafely         ();
 } // namespace
 
 void setup ()
 {
-    running = initializeCircuit ();
+    if (initializeCircuit ())
+    {
+        stageStarted = adk::TimePoint (millis ());
+        demoStage    = DemoStage::Acquiring;
+    }
 }
 
 void loop ()
 {
-    if (!running)
+    if (demoStage == DemoStage::Halted)
     {
         return;
     }
 
     const adk::TimePoint now (millis ());
+    advanceDemo              (now);
+
+    if (demoStage != DemoStage::Running)
+    {
+        return;
+    }
 
     const adk::TrafficInput observation = observeRequest (now);
     const adk::Status       decision    = decideSignals  (now, observation);
@@ -93,6 +121,53 @@ namespace {
         return true;
     }
 
+    void advanceDemo (adk::TimePoint now)
+    {
+        const adk::Duration elapsed = now.elapsedSince (stageStarted);
+
+        if (demoStage == DemoStage::Acquiring &&
+            elapsed >= readyPulseDuration)
+        {
+            if (!ready.off ().ok ())
+            {
+                stopSafely ();
+                return;
+            }
+
+            stageStarted = now;
+            demoStage    = DemoStage::Separating;
+        }
+        else if (demoStage == DemoStage::Separating &&
+                 elapsed >= readySeparator)
+        {
+            stageStarted = now;
+            demoStage    = DemoStage::Running;
+        }
+        else if (demoStage == DemoStage::Running &&
+                 elapsed >= demoDuration)
+        {
+            const adk::TrafficSignals allRed = {
+                true, false, false,
+                true, false, false,
+                true, false
+            };
+
+            if (!showSignals (allRed))
+            {
+                stopSafely ();
+                return;
+            }
+
+            stageStarted = now;
+            demoStage    = DemoStage::AllRed;
+        }
+        else if (demoStage == DemoStage::AllRed &&
+                 elapsed >= allRedDuration)
+        {
+            stopSafely ();
+        }
+    }
+
     adk::TrafficInput observeRequest (adk::TimePoint now)
     {
         pedestrianButton.update (now);
@@ -108,14 +183,46 @@ namespace {
 
     bool showSignals (const adk::TrafficSignals& signals)
     {
-        return mainRed.set    (signals.mainRed).ok        () &&
-               mainYellow.set (signals.mainYellow).ok     () &&
-               mainGreen.set  (signals.mainGreen).ok      () &&
-               sideRed.set    (signals.sideRed).ok        () &&
-               sideYellow.set (signals.sideYellow).ok     () &&
-               sideGreen.set  (signals.sideGreen).ok      () &&
-               walk.set       (signals.pedestrianWalk).ok () &&
-               stop.set       (signals.pedestrianStop).ok ();
+        bool safe = true;
+
+        setSignal (mainGreen,  false, safe);
+        setSignal (mainYellow, false, safe);
+        setSignal (sideGreen,  false, safe);
+        setSignal (sideYellow, false, safe);
+        setSignal (walk,       false, safe);
+        setSignal (mainRed,     true, safe);
+        setSignal (sideRed,     true, safe);
+        setSignal (stop,        true, safe);
+
+        if (!safe)
+        {
+            return false;
+        }
+
+        bool shown = true;
+        setSignal (mainYellow, signals.mainYellow, shown);
+        setSignal (mainGreen,  signals.mainGreen, shown);
+        setSignal (sideYellow, signals.sideYellow, shown);
+        setSignal (sideGreen,  signals.sideGreen, shown);
+        setSignal (walk,       signals.pedestrianWalk, shown);
+
+        if (!shown)
+        {
+            return false;
+        }
+
+        setSignal (mainRed, signals.mainRed, shown);
+        setSignal (sideRed, signals.sideRed, shown);
+        setSignal (stop,    signals.pedestrianStop, shown);
+        return shown;
+    }
+
+    void setSignal (adk::MonoLed& signal, bool on, bool& succeeded)
+    {
+        if (!signal.set (on).ok ())
+        {
+            succeeded = false;
+        }
     }
 
     void stopSafely ()
@@ -132,6 +239,6 @@ namespace {
         mainRed.shutdown    ();
 
         pedestrianButton.shutdown ();
-        running = false;
+        demoStage = DemoStage::Halted;
     }
 } // namespace

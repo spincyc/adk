@@ -2,7 +2,8 @@
 
 // Mega 2560, USB 5 V: D22/D23/D24 drive a 74HC595 and common-cathode
 // seven-segment display. D25 is a pull-up request button. D30-D37 drive
-// current-limited tabletop signal LEDs. D13 confirms full acquisition.
+// current-limited tabletop signal LEDs. D13 pulses after full acquisition.
+// The two-minute run ends with every owned pin released; reset replays it.
 // This is not a road controller.
 
 namespace {
@@ -29,7 +30,10 @@ namespace {
     adk::TrafficConfig   junctionConfig;
     adk::TrafficJunction junction (junctionConfig);
 
-    bool halted = false;
+    constexpr uint32_t runDurationMs = 120000U;
+
+    adk::TimePoint runStartedAt;
+    bool           halted = false;
 
     bool                 acquireJunction  ();
     adk::TrafficInput    observeJunction  (adk::TimePoint now);
@@ -50,6 +54,11 @@ namespace {
 void setup ()
 {
     halted = !acquireJunction ();
+
+    if (!halted)
+    {
+        runStartedAt = adk::TimePoint (millis ());
+    }
 }
 
 void loop ()
@@ -60,6 +69,14 @@ void loop ()
     }
 
     const adk::TimePoint       now                             (millis ());
+
+    if (now.milliseconds () - runStartedAt.milliseconds () >= runDurationMs)
+    {
+        shutdownJunction ();
+        halted = true;
+        return;
+    }
+
     const adk::TrafficInput    observation = observeJunction   (now);
     const adk::Status          status      = decideJunction    (now, observation);
     const adk::TrafficSnapshot decision    = junction.snapshot ();
@@ -105,6 +122,14 @@ namespace {
         }
 
         if (!acquisitionIndicator.on ().ok ())
+        {
+            shutdownJunction ();
+            return false;
+        }
+
+        delay (250);
+
+        if (!acquisitionIndicator.off ().ok ())
         {
             shutdownJunction ();
             return false;

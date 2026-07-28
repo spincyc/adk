@@ -1,0 +1,57 @@
+\begin{tikzpicture}[
+  x=1mm,y=1mm,
+  socket/.style={draw=black!85,circle,minimum size=3.5mm,inner sep=0},
+  used/.style={socket,fill=black!18,line width=0.5mm},
+  tiny/.style={font=\tiny},
+  note/.style={font=\scriptsize,align=center}]
+  \draw[line width=0.7mm,rounded corners=2mm] (0,0) rectangle (154,67);
+  \draw[line width=0.6mm] (-8,20) rectangle (8,45);
+  \node[note] at (0,32.5) {USB};
+  \node[font=\bfseries] at (77,61) {MEGA 2560 --- TOP VIEW};
+
+  \node[note,anchor=west] at (14,53) {printed DIGITAL 22--53 double header};
+  \draw[rounded corners=1mm] (14,25) rectangle (137,50);
+  \foreach \col in {0,...,15}
+  {
+    \pgfmathtruncatemacro{\even}{22+2*\col}
+    \pgfmathtruncatemacro{\odd}{23+2*\col}
+    \pgfmathsetmacro{\xx}{19+7.2*\col}
+    \node[socket] at (\xx,43) {};
+    \node[socket] at (\xx,32) {};
+    \node[tiny] at (\xx,47) {\even};
+    \node[tiny] at (\xx,28) {\odd};
+  }
+  \foreach \col in {0,4,5,6,7}
+  {
+    \pgfmathsetmacro{\xx}{19+7.2*\col}
+    \node[used] at (\xx,43) {};
+  }
+  \foreach \col in {4,5,6,7}
+  {
+    \pgfmathsetmacro{\xx}{19+7.2*\col}
+    \node[used] at (\xx,32) {};
+  }
+  \node[note,anchor=west] at (14,20)
+    {outlined: D22 button; D30--D37 signals};
+
+  \draw[rounded corners=1mm] (14,7) rectangle (53,16);
+  \node[socket] at (19,11.5) {};
+  \node[tiny] at (19,4.5) {13};
+  \foreach \xx/\pin in {25/12,31/11,37/10,43/9,49/8}
+  {
+    \node[socket] at (\xx,11.5) {};
+    \node[tiny] at (\xx,4.5) {\pin};
+  }
+  \node[used] at (143,11.5) {};
+  \node[note,anchor=east] at (139,11.5) {built-in L (D13)};
+
+  \draw[rounded corners=1mm] (72,7) rectangle (132,16);
+  \foreach \xx/\name in {77/IOREF,85/RST,93/3V3,101/5V,109/GND,117/GND,125/VIN}
+  {
+    \node[socket] at (\xx,11.5) {};
+    \node[tiny,rotate=55,anchor=east] at (\xx,5.5) {\name};
+  }
+  \node[used] at (109,11.5) {};
+  \node[used] at (117,11.5) {};
+  \node[note,anchor=west] at (72,19) {use either outlined GND};
+\end{tikzpicture}

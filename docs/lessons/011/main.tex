@@ -74,9 +74,9 @@
 \end{center}
 
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
-Lesson & 011 --- deterministic behavior & Time & 150--210 minutes\\
+Lesson & 011 --- deterministic behavior & Time & 60--90 minutes\\
 Prerequisites & Lessons 001--010 & Board & Arduino Mega 2560\\
-Evidence & nine LEDs, button, named lamp test points & Status & host verified; Mega compiled; bench open\\
+Build & eight signal LEDs, one button, built-in D13 & Run & about two minutes\\
 Safety & E1: USB-powered, resistor-limited LEDs only\\
 \end{tabularx}
 
@@ -101,9 +101,9 @@ By the end, you can:
   \item distinguish elapsed-time decisions from blocking delays;
   \item supply all time and input events explicitly to \texttt{TrafficJunction};
   \item explain request latching and the release-gated \texttt{Button};
-  \item predict every phase and deadline from a recorded trace;
-  \item interpret ready, signal, and meter evidence without relying on Serial;
-  \item inject an unhealthy-circuit input and explain the latched fault.
+  \item predict the next phase from the lamps;
+  \item make a button press wait for a safe walk phase;
+  \item explain why conflicting greens never appear.
 \end{itemize}
 
 \warningbox{Disconnect USB before wiring. Every LED needs its own
@@ -163,15 +163,33 @@ Fault & both vehicle reds, pedestrian stop & latched until explicit reset\\
 \bottomrule
 \end{tabularx}
 
-\section{Orientation drawing}
+\section{Exact build drawing}
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=\linewidth]{011-timed-traffic-pencil.png}
-  \caption{Pencil orientation showing two vehicle lamp groups, a pedestrian
-  lamp pair, request button, ready indicator, Mega, and breadboard. This is not
-  an authoritative wiring diagram; build only from the literal connection
-  table below.}
+  \resizebox{\linewidth}{!}{\input{docs/lessons/assets/011-mega-header-locator.tex}}
+  \caption{Physical Mega header locator, top view with USB at left. Read the
+  board's printed numbers before inserting each lead: D30--D37 alternate
+  between the two rows of the long double header. D13 is the built-in
+  acquisition light; use either outlined power-header GND socket.}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \resizebox{\linewidth}{!}{\input{docs/lessons/assets/011-timed-traffic-layout.tex}}
+  \caption{Authoritative coordinate layout. Each LED consumes three different
+  breadboard rows: Mega lead at A\(n\), resistor A\(n\)--A\(n+1\), LED
+  C\(n+1\)--C\(n+2\), then A\(n+2\) to GND. The button coordinates identify
+  all four legs. A--E holes with the same row number are one common strip;
+  F--J are the separate strip across the trench. Match these labels before
+  applying USB power.}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \resizebox{\linewidth}{!}{\input{docs/lessons/assets/011-build-stages.tex}}
+  \caption{Three visible wins. Each plate names only the new pins and the
+  behavior that becomes possible after that stage is wired correctly.}
 \end{figure}
 
 \section{Parts and literal wiring}
@@ -181,10 +199,10 @@ Fault & both vehicle reds, pedestrian stop & latched until explicit reset\\
 Quantity & Part & Requirement\\
 \midrule
 1 & Mega 2560 & USB powered\\
-4 & red LEDs & identified polarity and forward-voltage range\\
+3 & red LEDs & main red, side red, pedestrian stop\\
 2 & yellow LEDs & identified polarity and forward-voltage range\\
-3 & green LEDs & two vehicle, one pedestrian/ready as assigned below\\
-9 & resistors & 330\(\Omega\) or larger, one per LED\\
+3 & green LEDs & main green, side green, pedestrian walk\\
+8 & resistors & 330\(\Omega\) or larger, one per external LED\\
 1 & momentary button & normally open, used with internal pull-up\\
 1 & multimeter & DC voltage and unpowered continuity\\
 \bottomrule
@@ -202,15 +220,17 @@ main red / yellow / green & D30 / D31 / D32 & main signal head\\
 side red / yellow / green & D33 / D34 / D35 & side signal head\\
 pedestrian walk / stop & D36 / D37 & pedestrian signal head\\
 request button & D22 to GND & press event; pending state appears later as walk\\
-resource ready & D13 & on only after all objects initialize\\
+resource ready & built-in D13 ``L'' LED & 250 ms pulse after acquisition\\
 electrical test point & selected lamp pin to GND & near 0\,V off; near 5\,V on\\
 \bottomrule
 \end{tabularx}
 
 With a conservative 2.0\,V LED forward voltage, a 330\(\Omega\) resistor
-permits about \((5-2)/330=9.1\) mA. The normal truth table lights four LEDs at
-most when D13 ready is included. Record actual forward voltages and currents;
-do not substitute assumed values for bench evidence.
+permits about \((5-2)/330=9.1\) mA. The normal truth table lights three
+external LEDs at most: about 27.3 mA total LED current, with no pin above
+9.1 mA. Use identified ordinary indicator LEDs whose stated continuous
+current permits that value. Power this build only from the Mega's USB
+connector; do not attach an external supply.
 
 \section{Read the public model}
 
@@ -277,125 +297,63 @@ canonical source is
 \href{https://github.com/spincyc/adk/tree/main/examples/Lesson011TimedTraffic}
 {Lesson011TimedTraffic}.
 
-\section{CLI experiment}
+\section{Build the show in four quick wins}
 
-\begin{enumerate}
-  \item With USB disconnected, check every LED path and confirm no short from
-        5\,V to GND.
-  \item Predict the startup lamps and the first four deadlines.
-  \item Build with \texttt{make arduino-Lesson011TimedTraffic}.
-  \item Upload with
-        \texttt{make upload-Lesson011TimedTraffic PORT=/dev/ttyACM0}.
-  \item Observe D13 ready separately from the eight policy lamps.
-  \item Press D22 briefly during \texttt{MainGreen}. Continue watching: the
-        request is retained, not served by interrupting a vehicle phase.
-  \item Measure D32 to GND during main green and all-red; record both voltages.
-  \item Optional supporting evidence:
-        \texttt{make serial-log PORT=/dev/ttyACM0}. The sketch needs no Serial
-        log to prove its state.
-\end{enumerate}
+\textbf{1. Make the main road chase.} With USB disconnected, wire rows
+10--18 and the GND rail exactly as drawn. The first
+reward is a recognizable main green, main yellow, all-red rhythm. If a lamp is
+dark, turn USB off and flip only that LED; the code cannot make the next
+pattern convincing while one path is wrong.
 
-\evidencebox{\textbf{Predict.} A request during main green cannot immediately
-turn on walk. \textbf{Observe.} Main completes, side completes, both vehicle
-reds appear, then walk appears. \textbf{Interpret.} The event was latched and
-served only at a designed boundary. This evidence does not by itself prove the
-pin voltages or resource cleanup.}
+\textbf{2. Add the side road.} Wire rows 19--27. Now the green permission moves
+from main to side only after yellow and all-red. Watch the two green LEDs:
+they must never overlap. This interlock is the point of the stage, not a form
+to fill out.
 
-\section{Deterministic trace worksheet}
+\textbf{3. Add the tiny pedestrian signal.} Wire rows 28--33. STOP stays on
+during vehicle movement. WALK can appear only while both vehicle reds are on.
+The three-head picture therefore explains whether the wiring and phase logic
+agree.
 
-Use shortened test durations on the host, not on an unexplained bench circuit:
-startup all-red 100 ms, vehicle all-red 50 ms, main green 300 ms, main yellow
-100 ms, side green 200 ms, side yellow 100 ms, walk 250 ms, clearance 150 ms.
+\textbf{4. Give it a request button.} Place the button across the breadboard
+center trench and connect D22 to one side and GND to the opposite side. Press
+it during main green. Nothing jumps dangerously: the current vehicle sequence
+finishes, both reds appear, and then WALK gets its turn. Try a second press;
+the release-gated button creates one event per deliberate click.
 
-\begin{tabularx}{\linewidth}{@{}r l l X@{}}
-\toprule
-Time & Input event & Predicted phase & Snapshot evidence\\
-\midrule
-0 ms & none & \blank{2.7cm} & deadline \blank{2.5cm}\\
-100 ms & none & \blank{2.7cm} & transition count \blank{1.5cm}\\
-220 ms & request & \blank{2.7cm} & pending \blank{1.5cm}\\
-400 ms & none & \blank{2.7cm} & lamps \blank{3.0cm}\\
-500 ms & none & \blank{2.7cm} & deadline \blank{2.5cm}\\
-700 ms & none & \blank{2.7cm} & lamps \blank{3.0cm}\\
-800 ms & none & \blank{2.7cm} & pending \blank{1.5cm}\\
-850 ms & none & \blank{2.7cm} & lamps \blank{3.0cm}\\
-\bottomrule
-\end{tabularx}
+Build, then upload:
 
-Replay the table twice. Compare every snapshot field, not merely the final
-phase. Then shift the request to the startup all-red interval and explain why
-the service order changes without becoming nondeterministic.
+\begin{lstlisting}[style=adkcpp]
+make arduino-Lesson011TimedTraffic
+make upload-Lesson011TimedTraffic PORT=/dev/ttyACM0
+\end{lstlisting}
 
-\section{Faults, diagnosis, and safe evidence}
+D13 flashes for 250 ms when all resources are acquired, stays dark for 750 ms,
+and then the signals begin. After two minutes the controller shows all-red for
+one second and releases every pin. Press Mega RESET to play again; remove USB
+before moving any wire.
 
-Passing \texttt{TrafficInput(false, false)} enters \texttt{Fault}, selects both
-vehicle reds and pedestrian stop, returns a failure status, and latches that
-condition. Repeated \texttt{initialize()} deliberately preserves this latch;
-only \texttt{reset()} begins a new run. The adapter presents the all-red fault
-signals and turns D13 off. It treats an output-write failure more
-conservatively: it shuts down the state engine and every \texttt{MonoLed},
-making each owned output high impedance.
+\evidencebox{\textbf{The satisfying moment:} press during main green, call out
+the remaining phases, and watch WALK arrive exactly where you predicted.
+Because WALK depends on both vehicle reds and the button event, the payoff
+only appears when the whole chain is working.}
 
-\begin{tabularx}{\linewidth}{@{}l X X@{}}
-\toprule
-Observation & Likely layer & Next evidence\\
-\midrule
-D13 never lights & acquisition or wiring & unpowered continuity; inspect pin claims\\
-D13 lights, one head dark & LED path or actuation & measure the named pin and resistor\\
-request never served & input wiring or event timing & observe D22 and button debounce\\
-walk interrupts green & policy defect & stop; preserve timestamp/input trace\\
-both greens appear & invariant violation or wiring & remove USB immediately\\
-lamps freeze but loop runs & timestamp/configuration & inspect deadlines with host trace\\
-all lamps extinguish after failure & application safe shutdown & measure high impedance\\
-\bottomrule
-\end{tabularx}
-
-\textbf{Resource evidence} is D13 turning on only after ten pin owners and the
-state engine initialize. \textbf{Policy evidence} is the truth-table lamp
-pattern. \textbf{Safe-state evidence} after an application failure is the
-measured high-impedance output, not merely a dark LED. These are three separate
-claims.
-
-\section{Exercises}
-
-\begin{enumerate}
-  \item Draw the exact phase reached at every default deadline for one complete
-        cycle with no request.
-  \item Record two request events during one cycle. Explain why one pending bit
-        is sufficient for this lesson and what information it intentionally
-        does not count.
-  \item Add a circuit-native pending indicator in a host-only design. State its
-        extra pin and current cost before changing hardware.
-  \item Inject decreasing time, a zero duration, and an unhealthy circuit into
-        deterministic tests. Predict the returned \texttt{Status}.
-  \item Explain why a blinking pedestrian-clearance display belongs in a
-        presentation adapter rather than hidden timing inside the engine.
-  \item Propose a power-on lamp test that does not weaken the all-red invariant.
-\end{enumerate}
-
-\section{Bench acceptance record}
-
-Do not mark this lesson hardware verified until every blank is measured.
+\section{If the picture is wrong}
 
 \begin{tabularx}{\linewidth}{@{}l X@{}}
 \toprule
-Record & Observation\\
+What you see & Fastest useful move\\
 \midrule
-Board and supply & Mega 2560 revision \blank{2cm}; USB supply \blank{2cm}\\
-Resistors & D13, D30--D37 measured values \blank{7cm}\\
-Startup & D13 sequence \blank{2cm}; initial signal pattern \blank{3cm}\\
-Normal cycle & observed phase order and durations \blank{6cm}\\
-Request & press phase \blank{2cm}; served phase/time \blank{3cm}\\
-Electrical & D32 on \blank{1.5cm} V; off \blank{1.5cm} V; reference GND \blank{2cm}\\
-Reset & observed startup all-red behavior \blank{5cm}\\
-Shutdown & selected output high-impedance measurement \blank{4cm}\\
-Current & maximum simultaneous LED current \blank{2cm} mA\\
-Tools & meter/model \blank{3cm}; CLI/core versions \blank{3cm}\\
-Result & \checkbox\ pass \quad \checkbox\ deviation attached \quad date/reviewer \blank{3cm}\\
+D13 never flashes & remove USB; compare the exact pin labels and GND rail\\
+one lamp never lights & remove USB; flip that LED and inspect its 330\(\Omega\) path\\
+wrong lamp lights & move that row's Mega lead to the pin printed in the drawing\\
+button does nothing & use opposite button legs across the center trench\\
+both greens appear & remove USB immediately and recheck D30--D37 row by row\\
 \bottomrule
 \end{tabularx}
 
-\textbf{Current status: host verified and Mega 2560 firmware compiled; physical
-bench acceptance remains open until the completed record is published.}
+The library's timing, rollover, fault, and resource-release checks remain in
+the automated host suite. They protect this playful build without turning the
+lesson into a test worksheet.
 
 \end{document}
