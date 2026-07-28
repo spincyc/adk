@@ -32,6 +32,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_balance_table_instrument_lifecycle \
 	$(BUILD_DIR)/host/test_balance_table_instrument_evidence \
 	$(BUILD_DIR)/host/test_balance_table_instrument_boundaries \
+	$(BUILD_DIR)/host/test_bounded_stepper_sequence \
 	$(BUILD_DIR)/host/test_bus \
 	$(BUILD_DIR)/host/test_calibration_console \
 	$(BUILD_DIR)/host/test_io \
@@ -42,6 +43,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_inert_cue_scheduler \
 	$(BUILD_DIR)/host/test_inert_show_simulator \
 	$(BUILD_DIR)/host/test_inertial_observation \
+	$(BUILD_DIR)/host/test_interaction_intent_policy \
 	$(BUILD_DIR)/host/test_orientation_presentation \
 	$(BUILD_DIR)/host/test_infrared_decoder \
 	$(BUILD_DIR)/host/test_infrared_record \
@@ -223,6 +225,20 @@ $(BUILD_DIR)/host/test_balance_table_instrument_boundaries: $(HOST_CORE_SOURCES)
 		src/inertial_observation.cpp src/orientation_presentation.cpp \
 		src/balance_table_instrument.cpp tests/test_balance_table_instrument.cpp \
 		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_bounded_stepper_sequence: $(HOST_CORE_SOURCES) \
+		src/bounded_stepper_sequence.cpp \
+		tests/test_bounded_stepper_sequence.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/bounded_stepper_sequence.cpp \
+		tests/test_bounded_stepper_sequence.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_interaction_intent_policy: $(HOST_CORE_SOURCES) \
+		src/contact_dynamics.cpp src/interaction_intent_policy.cpp \
+		tests/test_interaction_intent_policy.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/contact_dynamics.cpp src/interaction_intent_policy.cpp \
+		tests/test_interaction_intent_policy.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/inert_show_trace_runner: $(HOST_CORE_SOURCES) \
 		src/inert_channel_assessor.cpp src/cue_audit.cpp \
