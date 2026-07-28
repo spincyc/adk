@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820">
+  <rect width="1400" height="820" fill="#faf9f5"/>
+  <g fill="none" stroke="#292929" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="55" y="90" width="430" height="650" rx="36"/>
+    <rect x="105" y="145" width="245" height="300"/>
+    <rect x="375" y="150" width="64" height="510"/>
+    <circle cx="402" cy="220" r="14"/><circle cx="402" cy="300" r="14"/>
+    <circle cx="402" cy="380" r="14"/><circle cx="402" cy="500" r="14"/>
+    <circle cx="402" cy="580" r="14"/>
+
+    <rect x="560" y="125" width="770" height="540" rx="28"/>
+    <line x1="600" y1="585" x2="1290" y2="585"/>
+
+    <!-- D5 -> resistor -> RGB red leg -->
+    <line x1="416" y1="220" x2="545" y2="220"/>
+    <path d="M545 220 l14 -14 l20 28 l20 -28 l20 28 l14 -14"/>
+    <line x1="633" y1="220" x2="730" y2="310"/>
+
+    <!-- D6 -> resistor -> RGB green leg -->
+    <line x1="416" y1="300" x2="545" y2="300"/>
+    <path d="M545 300 l14 -14 l20 28 l20 -28 l20 28 l14 -14"/>
+    <line x1="633" y1="300" x2="745" y2="310"/>
+
+    <!-- D7 -> resistor -> RGB blue leg -->
+    <line x1="416" y1="380" x2="545" y2="380"/>
+    <path d="M545 380 l14 -14 l20 28 l20 -28 l20 28 l14 -14"/>
+    <line x1="633" y1="380" x2="760" y2="310"/>
+
+    <!-- RGB package and confirmed common cathode only to ground -->
+    <circle cx="752" cy="275" r="34"/><circle cx="752" cy="275" r="12"/>
+    <line x1="730" y1="310" x2="730" y2="345"/>
+    <line x1="745" y1="310" x2="745" y2="345"/>
+    <line x1="760" y1="310" x2="760" y2="345"/>
+    <line x1="777" y1="305" x2="777" y2="585"/>
+
+    <!-- D30 -> resistor -> ordinary LED anode -->
+    <line x1="416" y1="500" x2="900" y2="500"/>
+    <path d="M900 500 l14 -14 l20 28 l20 -28 l20 28 l14 -14"/>
+    <line x1="988" y1="500" x2="1040" y2="310"/>
+
+    <!-- ordinary LED, short cathode leg only to ground -->
+    <circle cx="1055" cy="275" r="34"/>
+    <line x1="1040" y1="310" x2="1040" y2="345"/>
+    <line x1="1070" y1="310" x2="1070" y2="585"/>
+
+    <!-- Mega ground to negative rail -->
+    <line x1="416" y1="580" x2="600" y2="585"/>
+  </g>
+  <g font-family="Open Sans,sans-serif" fill="#292929">
+    <text x="65" y="55" font-size="28">MEGA 2560 PAIRED SIDE HEADER</text>
+    <text x="595" y="55" font-size="28">BREADBOARD: FOUR SERIES RESISTORS</text>
+    <text x="112" y="185" font-size="25">MEGA 2560</text>
+    <text x="305" y="228" font-size="24">D5</text>
+    <text x="305" y="308" font-size="24">D6</text>
+    <text x="305" y="388" font-size="24">D7</text>
+    <text x="292" y="508" font-size="24">D30</text>
+    <text x="292" y="588" font-size="24">GND</text>
+
+    <text x="545" y="190" font-size="19">220 Ω</text>
+    <text x="545" y="270" font-size="19">220 Ω</text>
+    <text x="545" y="350" font-size="19">220 Ω</text>
+    <text x="905" y="470" font-size="19">220 Ω</text>
+
+    <text x="672" y="415" font-size="22">common-cathode RGB</text>
+    <text x="675" y="445" font-size="18">D5/D6/D7 each enter through</text>
+    <text x="675" y="470" font-size="18">their own series resistor</text>
+    <text x="600" y="535" font-size="18">RGB common cathode</text>
+    <text x="650" y="560" font-size="18">→ − rail</text>
+
+    <text x="995" y="220" font-size="22">D30 LED</text>
+    <text x="1085" y="400" font-size="18">long leg / anode</text>
+    <text x="1085" y="500" font-size="18">short leg / cathode</text>
+    <text x="1120" y="525" font-size="18">→ − rail</text>
+
+    <text x="605" y="625" font-size="22">− rail → Mega GND</text>
+    <text x="70" y="790" font-size="23">Every signal path is series: Mega pin → resistor → LED color/anode. No resistor is connected as a pull-down.</text>
+  </g>
+</svg>

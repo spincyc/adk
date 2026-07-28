@@ -1,9 +1,5 @@
 \documentclass[11pt]{article}
-
-\usepackage{amsmath}
-\usepackage{amssymb}
 \usepackage[letterpaper,margin=0.68in,headheight=15pt]{geometry}
-\usepackage{array}
 \usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{fancyhdr}
@@ -11,299 +7,178 @@
 \usepackage{listings}
 \usepackage{microtype}
 \usepackage{tabularx}
-\usepackage{tikz}
 \usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
 
 \hypersetup
 {
-    pdftitle={ADK Lesson 017: Bounded servo intent},
-    pdfauthor={Kevin Shanahan},
-    pdfsubject={Bounded servo commands, Timer5 ownership, and external-power evidence},
-    pdflang={en-US}
+  pdftitle={ADK Lesson 017: Make a servo pointer move},
+  pdfauthor={Kevin Shanahan},
+  pdfsubject={A quick paper-pointer progression for bounded servo motion},
+  pdflang={en-US}
 }
-
-\usetikzlibrary{arrows.meta,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
-
 \definecolor{ink}{gray}{0}
-\definecolor{soft}{gray}{0.92}
-\definecolor{codebg}{gray}{0.96}
-
+\definecolor{soft}{gray}{0.94}
 \pagestyle{fancy}
 \fancyhf{}
-\lhead{\textsc{ADK field lesson 017}}
-\rhead{Bounded servo intent}
+\lhead{\textsc{ADK Lesson 017}}
+\rhead{Servo pointer}
 \cfoot{\thepage}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt}
-\setlist{nosep,leftmargin=1.45em}
-\renewcommand{\arraystretch}{1.18}
-
-\lstdefinestyle{adkcpp}
+\setlist{nosep,leftmargin=1.4em}
+\renewcommand{\arraystretch}{1.15}
+\lstset
 {
-    language=C++,
-    basicstyle=\ttfamily\small,
-    backgroundcolor=\color{codebg},
-    frame=single,
-    rulecolor=\color{ink},
-    columns=fullflexible,
-    keepspaces=true,
-    showstringspaces=false,
-    keywordstyle=\bfseries,
-    breaklines=true,
-    tabsize=4
+  language=C++,
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{soft},
+  frame=single,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  breaklines=true
 }
-
-\newcommand{\checkbox}{\(\square\)}
-\newcommand{\blankline}{\rule{0.96\linewidth}{0.35pt}}
-\newenvironment{checkpoint}[1]
-{\begin{center}\begin{minipage}{0.94\linewidth}\textbf{Check --- #1}\par}
-{\end{minipage}\end{center}}
+\newcommand{\adventure}[1]{%
+  \begin{center}\fbox{\parbox{0.93\linewidth}{\textbf{#1}}}\end{center}}
 
 \begin{document}
 
 \begin{center}
-    {\Huge\bfseries Separate command from motion}\\[3pt]
-    {\Large Lesson 017: bounded servo intent}\\[7pt]
-    \textit{Admit $\rightarrow$ command $\rightarrow$ measure
-    $\rightarrow$ energize $\rightarrow$ observe}
+  {\Huge\bfseries Give a Paper Pointer a Mind}\\[4pt]
+  {\Large Build the marker lights, predict the move, then watch it happen}\\[7pt]
+  \textit{Every press earns a visible result: center, low, middle, high.}
 \end{center}
 
-\begin{center}
-\includegraphics[width=\linewidth,height=0.31\textheight,keepaspectratio]
-    {017-bounded-servo-pencil.png}
-\end{center}
-
-\textbf{Orientation plate alternative text.}
-Pencil view of a Mega, three resistor-limited command-marker LEDs, a separately
-powered servo carrying a paper pointer over a card, a physical supply switch,
-and meter probes at the load supply. Use the schematic and table below for
-exact connections.
-
-\begin{tabularx}{\linewidth}{@{}>{\bfseries}lX@{}}
-Mission & Issue one bounded command while keeping logic intent, signal,
-external power, and physical position independently observable\\
-Time & 120--180 minutes plus a separate reviewed bench session\\
-Prerequisites & Lessons 001--016; current measurement; timer/resource ownership\\
-Energy class & E2: one restrained, externally powered micro servo with no load\\
-Status & Host verified and Mega compiled; physical acceptance open\\
-Primary evidence & D13, D30--D32, TP-S/D44, TP-V, supply current, paper pointer\\
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}lX>{\bfseries}lX@{}}
+Lesson & 017 --- component & Board & Arduino Mega 2560\\
+Payoff & a paper pointer follows three command lights & Control & button on D22\\
+Energy & E2, exact separately powered servo & Run & two minutes, then quiet\\
 \end{tabularx}
 
-\section*{1. Admit the exact physical system}
-
-This lesson does not admit a generic ``SG90-compatible'' servo. Before
-selecting a supply or pulse range, record the exact unit:
+\section*{The four-picture build}
 
 \begin{center}
-\begin{tabularx}{0.96\linewidth}{@{}>{\bfseries}lX>{\bfseries}lX@{}}
-Marking & & Manufacturer & \\
-Primary source & & Pin order & \\
-Voltage range & & Pulse range & \\
-Idle/running current & & Brief start/stall limit & \\
-Supply model & & Current limit & \\
-\end{tabularx}
+\includegraphics[width=\linewidth]{017-bounded-servo-pencil.png}
+
+\small\textit{Four pencil plates show the actual build order. Plate 1 makes a
+paper pointer and low/middle/high card with all power off. Plate 2 shows the
+Mega paired D30/D31, D32/D33, D34/D35 header geometry and three separately
+resistor-limited LEDs on a breadboard. Plate 3 joins Mega D44 to servo signal
+and Mega GND to supply negative while the servo-positive switch stays open.
+Plate 4 shows the pointer and D30--D32 markers at low, middle, and high.}
 \end{center}
 
-The first fixture carries only a soft paper pointer over a flat, taped-down
-card. It has no linkage, latch, hard stop, spring, useful load, or pinch point.
-The permitted software range is narrower than observed mechanical travel.
-Never discover a pulse endpoint by driving into a stop.
+\section*{One short safety boundary}
 
-\textbf{Stop immediately} for unexpected or reversed motion, chatter, stall,
-heat, odor, current-limit operation, supply sag, reset, lost common ground,
-malformed TP-S waveform, contact with the marked envelope, or disagreement
-between command marker and pointer. Open the physical servo-positive switch;
-do not investigate with load power present.
+This moving part needs an \textbf{identified servo}, its own
+\textbf{rated current-limited supply}, a \textbf{common ground}, and a
+\textbf{reachable switch or connector in servo positive}. The servo does not
+take power from Mega 5 V, VIN, USB 5 V, or an I/O pin. Use only the soft paper
+pointer: no load, linkage, latch, spring, hard stop, or pinch point.
 
-\section*{2. Keep the power domains explicit}
+Choose voltage, current limit, pin order, and pulse range from the markings and
+primary documentation for the servo actually in hand. A kit label or visual
+resemblance does not turn it into a TowerPro SG90. If identity or ratings are
+unknown, enjoy the marker-light stage and leave servo positive disconnected.
 
-Servo positive comes from a separately regulated, current-limited supply
-through a reachable physical switch or removable connector. It never connects
-to Mega 5 V, VIN, USB 5 V, or an I/O pin. Join supply negative and Mega GND at
-one named star point. Common ground joins signal references; it does not join
-positive rails.
+\adventure{Open servo-positive power before wiring, upload, reset, or touching
+the pointer. Open it immediately for unexpected motion, chatter, stall, heat,
+odor, supply sag, current limiting, or contact with the marked arc.}
 
-\begin{center}
-\begin{tikzpicture}[>=Latex,
-    terminal/.style={draw,rounded corners,fill=soft,minimum width=20mm,
-                     minimum height=8mm},
-    part/.style={draw,minimum width=20mm,minimum height=8mm}]
-    \node[terminal] (mega) at (0,2.4) {Mega D44};
-    \node[part] (tps) at (3.2,2.4) {TP-S};
-    \node[part] (servo) at (7.2,1.2) {servo};
-    \draw[very thick,->] (mega)--(tps)--(servo);
+\section*{Adventure 1: make the prediction machine}
 
-    \node[terminal] (supply) at (0,0) {admitted supply +};
-    \node[part] (switch) at (3.2,0) {physical disconnect};
-    \node[part] (tpv) at (5.4,0) {TP-V / current};
-    \draw[very thick,->] (supply)--(switch)--(tpv)--(servo);
+Cut a light paper arrow. With every source off, place it over a flat card and
+draw LOW, MIDDLE, and HIGH around a generous clear arc. Do not fit it to a
+powered servo. The card is already useful: point the loose arrow at a label
+and have someone predict which marker LED should light.
 
-    \node[terminal] (negative) at (0,-1.3) {supply --};
-    \node[part] (star) at (3.2,-1.3) {common star};
-    \node[terminal] (gnd) at (7.2,-1.3) {Mega GND};
-    \draw[very thick] (negative)--(star)--(gnd);
-    \draw[very thick] (star)--(servo);
-
-    \node[below=7mm of star,text width=12cm,align=center] {
-        connect common ground first, signal second, servo positive last;
-        remove servo positive first};
-\end{tikzpicture}
-\end{center}
+Now build the three-light breadboard from plate 2. The Mega's long side header
+is paired: D30 sits beside D31, D32 beside D33, and D34 beside D35. Use D30,
+D31, and D32---not three visually adjacent holes. Each LED gets its own
+220~\(\Omega\) or larger resistor and returns to GND.
 
 \begin{center}
-\begin{tabularx}{\linewidth}{@{}lllX@{}}
+\begin{tabularx}{0.96\linewidth}{@{}lllX@{}}
 \toprule
-Evidence & Connection & Inactive state & Meaning\\
+Part & Mega connection & Other connection & What it says\\
 \midrule
-LogicReady & D13 built-in LED & off & logic resources acquired only\\
-Low/Middle/High & D30/D31/D32 through 220 \(\Omega\) LEDs & all off &
-accepted command range\\
-TP-S & D44/OC5C relative to Mega GND & high impedance & pulse command\\
-TP-V & servo positive to supply negative & switch open & load voltage\\
-Current point & series in servo-positive lead & zero with switch open &
-load-domain energy\\
-Pointer & soft paper on horn & unobstructed & observed shaft position\\
+Button & D22 & GND & next position\\
+Low marker & D30 & resistor, LED, GND & low requested\\
+Middle marker & D31 & resistor, LED, GND & middle requested\\
+High marker & D32 & resistor, LED, GND & high requested\\
+Ready light & built-in D13 & no wire & startup succeeded\\
 \bottomrule
 \end{tabularx}
 \end{center}
 
-Attach meter and probe clips while all power is off. Put the current meter in
-series only through the documented current point and with the correct fused
-input/range. Never place a current-mode meter directly across TP-V.
+Upload with servo positive still physically open. D13 and the middle marker
+appear. Each button press advances center, low, middle, and high. Use the
+loose paper arrow to act out each lit prediction. You now have the complete
+control story before anything moves.
 
-\section*{3. Separate the claims}
+\section*{Adventure 2: add a command signal}
+
+Turn USB off. Identify the servo connector from its own documentation, not
+wire color alone. Join Mega GND to supply negative first. Join D44/OC5C to
+servo signal second. Keep servo positive disconnected.
 
 \begin{center}
-\begin{tikzpicture}[>=Latex,node distance=7mm,
-    stage/.style={draw,minimum width=31mm,minimum height=9mm}]
-    \node[stage] (input) {button request};
-    \node[stage,right=of input] (intent) {bounded intent};
-    \node[stage,right=of intent] (pulse) {TP-S pulse};
-    \node[stage,below=of pulse] (power) {TP-V + current};
-    \node[stage,left=of power] (pointer) {paper pointer};
-    \draw[->] (input)--(intent);
-    \draw[->] (intent)--(pulse);
-    \draw[->] (pulse)--(power);
-    \draw[->] (power)--(pointer);
-\end{tikzpicture}
+\begin{tabularx}{0.96\linewidth}{@{}llX@{}}
+\toprule
+Net & Exact connection & Physical layout\\
+\midrule
+TP-S & Mega D44/OC5C to servo signal & D44 is in the D44/D45 paired header row\\
+Reference & Mega GND to supply negative & one named common point\\
+Servo positive & rated supply through switch & open until Adventure 3\\
+TP-V & servo positive to supply negative & optional clipped voltmeter\\
+\bottomrule
+\end{tabularx}
 \end{center}
 
-\begin{itemize}
-    \item A lit marker proves the program accepted a command; it does not prove
-    a pulse or motion.
-    \item TP-S proves an electrical waveform; it does not prove load power.
-    \item TP-V and current prove external energy; they do not prove position.
-    \item The pointer shows position but supplies no controller feedback.
-\end{itemize}
+The sketch owns D44 and Timer5. It starts at the 1500~\(\mu\)s middle command;
+presses request 1500, 1000, 1500, then 2000~\(\mu\)s. The marker is the easy
+prediction. TP-S is optional deeper evidence. Neither one proves motion.
 
-``Commanded middle'' and ``observed at the middle mark'' are separate record
-fields. A hobby servo normally cannot report actual shaft position. Detaching
-the pulse does not mechanically lock the horn. Holding a position may draw
-current and is not de-energized.
+\section*{Adventure 3: let the pointer move}
 
-\section*{4. Read the pure bounded model}
+With all power off, secure the servo so it cannot walk across the table. Fit
+the light pointer only after the horn is clear of obstructions. Set the supply
+to the documented voltage and current limit. Make sure the physical
+servo-positive disconnect is within reach without crossing the pointer arc.
 
-The pure model owns no pin, timer, or clock. Its position domain is 0--1000
-permille; the reviewed example maps it to 1000--2000 microseconds and selects
-500 as the safe position.
+Power Mega logic first. The middle marker appears. Stay outside the arc, close
+servo positive, and let the pointer settle at center. Mark that observed
+position. Press through low, middle, and high, marking the observed positions
+only when the servo moves freely. A marker predicts a destination; the pointer
+is the satisfying answer.
 
-\begin{lstlisting}[style=adkcpp]
+Do not hunt mechanical endpoints. The code's bounded 1000--2000~\(\mu\)s range
+is a software range, not permission to touch a hard stop. If the exact servo
+requires a narrower documented range, change the compiled calibration before
+powering it.
+
+\adventure{The sketch turns its logic outputs off after two minutes. That is a
+tidy ending, not a power disconnect. Open servo-positive power yourself before
+resetting or changing the build.}
+
+\section*{What the code is doing}
+
+The pure model maps positions 0--1000 to a reviewed pulse interval and rejects
+commands outside it.
+
+\begin{lstlisting}
 const adk::BoundedServoConfig servoConfig =
 {
     {0, 1000, 1000, 2000},
     500
 };
-
-adk::BoundedServo servo (servoConfig);
 \end{lstlisting}
 
-\texttt{initialize()} validates the calibration and safe position but leaves
-the intent \texttt{Inactive}. \texttt{command(position)} produces a
-\texttt{Position} intent or rejects the position without changing the previous
-accepted intent, position, or pulse. \texttt{snapshot()} returns complete
-status, intent, position, and microseconds. \texttt{shutdown()} returns to
-\texttt{Inactive}, \texttt{NotInitialized}, safe position, and zero pulse.
+The run loop remains a small story:
 
-The integer interpolation is deterministic:
-\[
-p = p_{\min}+
- \frac{(x-x_{\min})(p_{\max}-p_{\min})}
-      {(x_{\max}-x_{\min})}.
-\]
-The first-class record requires increasing position and pulse endpoints. The
-admitted lesson record must also agree with the pointer's named direction.
-
-\section*{5. Validate configuration without pretending storage is solved}
-
-\texttt{ServoConfigurationRecord} has a 20-byte versioned encoding in 24 bytes
-of fixed capacity. It includes calibration, safe position, generation, magic,
-version, length, and CRC. It rejects erased, truncated,
-future-version, checksum-failed, and semantically invalid input. It does not
-silently clamp, repair, or widen a configuration.
-
-\begin{lstlisting}[style=adkcpp]
-adk::ServoConfigurationRecord record;
-
-adk::Status status = record.save (configuration);
-if (status.ok ())
-{
-    adk::Result<adk::ServoConfiguration> loaded = record.load ();
-}
-\end{lstlisting}
-
-An empty record is \texttt{NotInitialized}; an unknown version is
-\texttt{Unsupported}; corruption is \texttt{HardwareFailure}. The canonical
-bench sketch encodes its reviewed compiled configuration, then decodes and
-compares the complete result before acquiring any hardware resource. This
-in-memory exercise defines portable bytes but does not claim EEPROM durability;
-storage transport and torn-write recovery belong to the later storage lesson.
-
-\section*{6. Own D44 and Timer5}
-
-\texttt{MegaTimer5ServoPulseIo} is a first-class direct AVR adapter. It does
-not hide Arduino's global Servo library behind the registry.
-
-\begin{lstlisting}[style=adkcpp]
-adk::ExternalPowerDomainGate powerGate;
-adk::MegaTimer5ServoPulseIo  pulseIo;
-adk::ServoOutput             pulseOutput (
-    runtime.resources (),
-    pulseIo,
-    powerGate,
-    adk::MegaTimer5ServoPulseIo::signalPin,
-    1000,
-    2000,
-    adk::MegaTimer5ServoPulseIo::timer);
-\end{lstlisting}
-
-Initialization transactionally claims D44 and Timer5, then attaches an inert
-endpoint. The adapter uses a 20 ms frame and writes the bounded high time to
-OC5C. Timer5 ownership conflicts with PWM on D44, D45, and D46.
-
-\texttt{ExternalPowerDomainGate::admit()} permits a command; it does not sense
-or switch external voltage. That distinction lets the learner verify TP-S
-while the physical servo-positive switch remains open.
-
-Any compare-register or output-connect failure completely disables Timer5,
-drives D44 low, makes D44 high impedance, and leaves the endpoint detached.
-Further commands report \texttt{NotInitialized} until an explicit
-shutdown/reinitialize cycle.
-
-\section*{7. Read the canonical run loop}
-
-The example's button advances center, low, center, and high. Its high-level
-flow appears before mechanics:
-
-\begin{lstlisting}[style=adkcpp]
-const adk::TimePoint now (millis ());
-
-if (!commandRequested (now))
-{
-    return;
-}
-
+\begin{lstlisting}
 const uint16_t position = positions[nextPosition];
 
 if (!commandPosition (position))
@@ -313,168 +188,67 @@ if (!commandPosition (position))
 }
 \end{lstlisting}
 
-\texttt{commandPosition()} admits the command path, asks
-\texttt{BoundedServo} for a pulse, sends it through \texttt{ServoOutput}, then
-lights exactly one independent command marker. A fault revokes command
-admission and stops the logic outputs. \texttt{stopLogic()} is intentionally
-not named ``emergency stop'': the operator must still open physical servo
-power.
+\texttt{commandPosition()} asks \texttt{BoundedServo} for one bounded intent,
+writes its pulse through \texttt{ServoOutput}, and then lights the matching
+marker. The endpoint owns D44 and Timer5 together, so a conflict changes
+nothing. A partial startup failure releases earlier resources. A command
+failure revokes admission, stops Timer5, makes D44 high impedance, and turns
+off the lights.
 
-\section*{8. Stage the first run}
+The configuration record is checked before hardware acquisition. Its
+fixed-size version, length, calibration, generation, and CRC reject erased,
+truncated, future, corrupt, or nonsensical bytes. This lesson demonstrates the
+record format in memory; it does not pretend EEPROM persistence has been built.
 
-\begin{enumerate}
-    \item With every source off, identify the servo pins from its primary
-    documentation. Mount the servo and paper pointer; mark a keep-clear arc.
-    \item Connect common ground first and D44 second. Leave servo positive
-    physically open. Inspect every net and probe clip.
-    \item Upload and reset with servo power open. The sketch first validates
-    its record, acquires D44 and Timer5, then starts the 1500 \(\mu\)s safe
-    waveform and middle marker.
-    \item D13 on supports completion of that startup sequence. Observe the
-    TP-S high time and 20 ms frame before pressing the button and before adding
-    load power.
-    \item Set the exact documented voltage and current limit. Clear the arc,
-    then deliberately close the physical load-power switch.
-    \item Record TP-V, current, middle marker, and pointer. Press through low,
-    middle, and high while remaining outside the arc.
-    \item Open load power first and verify zero current. Only then stop the
-    logic and verify TP-S absent and D44 high impedance.
-\end{enumerate}
+\section*{When the picture does not match}
 
-\begin{checkpoint}{before closing servo power}
-\checkbox\ exact servo admitted \quad
-\checkbox\ supply voltage/current limit recorded \quad
-\checkbox\ pointer arc clear \quad
-\checkbox\ D13 on \quad
-\checkbox\ TP-S bounded \quad
-\checkbox\ physical disconnect reachable
-\end{checkpoint}
-
-\section*{9. CLI-only workflow}
-
-\begin{lstlisting}[style=adkcpp,language=bash]
-make host-test
-make arduino-Lesson017BoundedServo
-make size-check
-make upload EXAMPLE=Lesson017BoundedServo PORT=/dev/ttyACM0
-make lessons
-make lessons-check
-make site
-make site-check
-\end{lstlisting}
-
-Use \texttt{make boards} to find the port. Open load power before upload,
-reset, or reconnect. The sketch emits no Serial data. Optional
-\texttt{make monitor} and \texttt{make serial-log} records cannot replace the
-marker, TP-S, TP-V, current, and pointer evidence.
-
-The current Mega build measures 6656 bytes of flash and 323 bytes of static
-RAM. Toolchain compilation is not hardware verification.
-
-\section*{10. Diagnose from left to right}
-
-\begin{center}
-\begin{tabularx}{\linewidth}{@{}p{0.22\linewidth}p{0.36\linewidth}X@{}}
+\begin{tabularx}{\linewidth}{@{}p{0.28\linewidth}X@{}}
 \toprule
-Observation & Next check & Separation\\
+What you see & Best next move\\
 \midrule
-D13 off & keep load power open; inspect resource/status trace & initialization
-from physical wiring\\
-Marker on, no TP-S & keep load power open; inspect command admission and
-Timer5 conflict & intent from pulse\\
-TP-S valid, TP-V zero & inspect physical disconnect and admitted supply &
-logic waveform from load power\\
-TP-V sags/current limits & open power immediately; verify exact servo,
-supply, polarity, and obstruction & energy source from software intent\\
-Marker and TP-S agree, pointer differs & open power; inspect horn attachment,
-direction, and admitted calibration & command from physical outcome\\
-Chatter or heat & open power immediately; do not retry in software & unsafe
-physical state from recoverable logic error\\
+D13 stays dark & leave servo power open; inspect button/LED wiring and pin use\\
+Wrong marker & compare D30/D31 and D32/D33 paired positions with plate 2\\
+Markers work, no motion & open power; verify exact connector order, common
+ground, rated supply, and the open/closed disconnect\\
+Pointer moves backward & open power; rename the card direction or use the
+exact servo's documented calibration; never force the horn\\
+Buzz, chatter, heat, sag & open servo-positive power immediately; remove any
+obstruction and recheck identity and ratings before another run\\
 \bottomrule
 \end{tabularx}
-\end{center}
 
-\section*{11. Deterministic proof}
-
-Host tests enumerate calibration endpoints and overflow-safe interpolation;
-invalid safe positions; record corruption at every byte; D44 and Timer5
-conflicts; claim rollback; admission closed; pulse boundaries; compare and
-connect failures; fail-closed teardown; repeated lifecycle calls; destruction;
-and resource reuse. Injected Timer5 registers record exact ordered operations.
-
-\begin{lstlisting}[style=adkcpp,language=bash]
-make host-test
-make host-test-exceptions
-make quality
-\end{lstlisting}
-
-These tests prove deterministic software behavior. They cannot identify a
-servo, set a supply limit, measure a pulse, or accept a physical fixture.
-
-\section*{12. Bench acceptance record}
-
-\begin{tabularx}{\linewidth}{@{}>{\bfseries}lX>{\bfseries}lX@{}}
-Board/revision & & Sketch revision & \\
-Servo identity & & Primary source & \\
-Supply/current limit & & Physical disconnect & \\
-Meter/probe & & Reviewer/date & \\
-\end{tabularx}
-
-\begin{center}
-\begin{tabularx}{\linewidth}{@{}p{0.23\linewidth}p{0.23\linewidth}p{0.27\linewidth}X@{}}
-\toprule
-Claim & Prediction & Observation & Interpretation\\
-\midrule
-Logic acquired & D13 on; load power open & & \\
-Center command & middle marker; TP-S 1500 \(\mu\)s & & \\
-Low/middle/high & marker, pulse, pointer agree separately & & \\
-Load power & TP-V in range; current below admitted limit & & \\
-Reset/upload & load power remains physically open & & \\
-Shutdown & load current zero first; TP-S absent; D44 high-Z & & \\
-No back-power & asymmetric power checks meet procedure & & \\
-\bottomrule
-\end{tabularx}
-\end{center}
-
-\textbf{Acceptance status:}
-\checkbox\ not run \quad \checkbox\ pass \quad \checkbox\ deviation attached
-
-\section*{Exercises and next composition}
-
-\begin{enumerate}
-    \item For commands 0, 250, 500, 750, and 1000, calculate the expected
-    pulse. Compare arithmetic with host snapshots before touching hardware.
-    \item Corrupt each field of an exported configuration record. Predict the
-    exact status and prove that no pulse intent results.
-    \item Claim Timer5 or D45 PWM first. Predict the resource error and the
-    unchanged TP-S state.
-    \item Design a fourth evidence channel for external power without allowing
-    software to switch that rail. State what it proves and what it cannot.
-    \item Carry the pure bounded intent into lesson 018's inert access trainer.
-    Preserve ``close requested'' separately from ``pointer observed closed.''
-\end{enumerate}
-
-Use the HTML page for maintained API links, errata, source, and copyable
-commands. Use this PDF for the staged experiment, worksheets, and signed bench
-record. Lesson 018 adds a keypad and display to an inert paper-pointer trainer;
-it is not a lock or security product.
-
-\section*{Primary references}
+\section*{Try one more cool thing}
 
 \begin{itemize}
-    \item \href{https://docs.arduino.cc/hardware/mega-2560}
-    {Arduino Mega 2560 Rev3 documentation and pinout}
-    \item \href{https://www.microchip.com/en-us/product/atmega2560}
-    {Microchip ATmega2560 Timer5 and electrical documentation}
-    \item \href{https://docs.arduino.cc/libraries/servo/}
-    {Arduino Servo library guidance for external power and common ground}
-    \item \href{https://towerpro.com.tw/product/sg90-7/}
-    {TowerPro SG90 manufacturer page---identity example, not clone authority}
+  \item Draw faces at LOW, MIDDLE, and HIGH and make a tiny mood meter.
+  \item Make a paper dial for ``sleepy / ready / excited.'' Keep it weightless.
+  \item Change only the order of the four bounded positions. Predict the
+  marker-and-pointer dance before uploading.
+  \item In Lesson 018, the same pointer becomes an inert tabletop story prop.
+  It never becomes a lock or a device that protects property.
 \end{itemize}
 
-\textbf{Deferred evidence.}
-No physical voltage, current, waveform, travel, reset, shutdown, or
-power-removal claim is accepted until a person completes this record for the
-exact named fixture.
+\section*{For the grown-up building alongside}
+
+The hidden host suite exercises endpoint bounds, interpolation, record
+corruption, Timer5 and D44 conflicts, rollback, failure teardown, repeated
+shutdown, destruction, and resource reuse. The Mega build and size budget are
+also checked automatically. Those checks keep the lesson dependable without
+turning a family build into homework.
+
+Current firmware size: 6480 bytes flash and 295 bytes static RAM with the
+repository toolchain. Physical behavior remains conditional on the exact
+servo and supply; no unrecorded bench result is claimed.
+
+\section*{Useful references}
+
+\begin{itemize}
+  \item \href{https://docs.arduino.cc/hardware/mega-2560}
+  {Arduino Mega 2560 documentation and pinout}
+  \item \href{https://www.microchip.com/en-us/product/atmega2560}
+  {ATmega2560 Timer5 documentation}
+  \item \href{https://docs.arduino.cc/libraries/servo/}
+  {Arduino servo external-power guidance}
+\end{itemize}
 
 \end{document}
