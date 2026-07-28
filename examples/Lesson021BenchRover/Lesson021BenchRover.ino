@@ -1,5 +1,5 @@
 // Mega 2560, USB logic only: D22-D27 each drive an LED through 1 kOhm.
-// The LEDs simulate two motor-driver inputs. Do not connect motors or a motor supply.
+// The fixed show ends automatically. Do not connect motors, a driver, or load power.
 #include <Adk.h>
 #include <motor_intent.h>
 #include <power_domain.h>
@@ -14,6 +14,7 @@ namespace {
     constexpr adk::PinId rightForwardPin = 25;
     constexpr adk::PinId rightReversePin = 26;
     constexpr adk::PinId rightEnablePin  = 27;
+    constexpr uint32_t   showDurationMs  = 12000;
 
     const adk::UltrasonicRangerConfig rangeConfig = {adk::MicrosecondDuration (30000),
                                                      adk::MicrosecondDuration (30000),
@@ -119,6 +120,12 @@ void loop ()
 
     const adk::MicrosecondTimePoint nowUs (micros ());
     const adk::TimePoint            now   (millis ());
+
+    if (now.elapsedSince (simulationStartedAt).milliseconds () >= showDurationMs)
+    {
+        stopSafely ();
+        return;
+    }
 
     if (!observeSimulatedRange (nowUs))
     {
@@ -270,7 +277,7 @@ namespace {
         const adk::TimePoint observedAt (now.microseconds () / 1000U);
         const uint32_t       elapsed =
             observedAt.elapsedSince (simulationStartedAt).milliseconds ();
-        const uint16_t distanceMm = elapsed >= 3000U && elapsed < 4000U ? 150 : 500;
+        const uint16_t distanceMm = elapsed >= 2500U && elapsed < 3500U ? 150 : 500;
 
         return static_cast<uint32_t> (distanceMm) * 2000U / 343U;
     }
@@ -285,9 +292,9 @@ namespace {
 
         remainder += command.duty;
 
-        while (remainder >= 320)
+        while (remainder >= 1600)
         {
-            remainder -= 320;
+            remainder -= 1600;
             ++edges;
         }
     }

@@ -17,6 +17,8 @@ namespace {
     constexpr uint32_t transactionIntervalMilliseconds  = 1500;
     constexpr uint32_t minimumActivityPulseMilliseconds = 100;
     constexpr uint32_t activityPulseRangeMilliseconds   = 800;
+    constexpr uint32_t adventureDurationMilliseconds    = 120000;
+    constexpr uint32_t safeHoldMilliseconds              = 250;
 
     const adk::Duration            transactionTimeout  (20);
     const adk::Duration            sampleStaleAfter    (3000);
@@ -85,9 +87,12 @@ namespace {
 
     adk::TimePoint lastTransaction;
     adk::TimePoint activityStarted;
+    adk::TimePoint adventureStarted;
+    adk::TimePoint safeHoldStarted;
 
     bool     running                   = false;
     bool     activityActive            = false;
+    bool     holdingSafeState           = false;
     uint8_t  recordsSinceRestart       = 0;
     uint32_t activityPulseMilliseconds = minimumActivityPulseMilliseconds;
 
@@ -98,6 +103,8 @@ namespace {
     bool acknowledgeMoisture  (adk::TimePoint now, const adk::MoistureSample& sample);
     bool clearAcknowledgement (adk::TimePoint now);
     void observeFailure       (adk::Status status);
+    void beginSafeEnding      (adk::TimePoint now);
+    void finishSafeEnding     ();
     void stopSafely           ();
 
 } // namespace
@@ -105,7 +112,8 @@ namespace {
 void setup ()
 {
     running         = acquireBusOwners ();
-    lastTransaction = adk::TimePoint   (millis ());
+    adventureStarted = adk::TimePoint  (millis ());
+    lastTransaction  = adventureStarted;
 
     if (!running)
     {
@@ -115,12 +123,28 @@ void setup ()
 
 void loop ()
 {
+    const adk::TimePoint now (millis ());
+
+    if (holdingSafeState)
+    {
+        if (now.elapsedSince (safeHoldStarted).milliseconds () >= safeHoldMilliseconds)
+        {
+            finishSafeEnding ();
+        }
+        return;
+    }
+
     if (!running)
     {
         return;
     }
 
-    const adk::TimePoint now (millis ());
+    if (now.elapsedSince (adventureStarted).milliseconds () >=
+        adventureDurationMilliseconds)
+    {
+        beginSafeEnding (now);
+        return;
+    }
 
     if (!clearAcknowledgement (now))
     {
@@ -346,6 +370,10 @@ namespace {
         activityPulseMilliseconds = minimumActivityPulseMilliseconds +
                                     static_cast<uint32_t> (sample.moisturePermille) *
                                         activityPulseRangeMilliseconds / 1000U;
+        if (recordsSinceRestart == 0)
+        {
+            activityPulseMilliseconds = 1200;
+        }
         activityStarted           = now;
         activityActive            = true;
         return true;
@@ -375,6 +403,23 @@ namespace {
     {
         (void)status;
         faultEvidence.on ();
+    }
+
+    void beginSafeEnding (adk::TimePoint now)
+    {
+        activityEvidence.off ();
+        faultEvidence   .off ();
+        safeHoldStarted  = now;
+        holdingSafeState = true;
+        running          = false;
+    }
+
+    void finishSafeEnding ()
+    {
+        stopSafely             ();
+        faultEvidence.off      ();
+        faultEvidence.shutdown ();
+        holdingSafeState = false;
     }
 
     void stopSafely ()
