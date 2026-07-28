@@ -35,6 +35,7 @@ third lesson for a deterministic integration project.
 | [Lesson 028 — Inert channel assessment](028.md) | Inert channel assessment | Recorded open, short, stale, and contradictory evidence |
 | [Lesson 029 — Inert cue scheduling and audit](029.md) | Inert cue scheduling and audit | Confirmation windows, inert intervals, and bounded replayable records |
 | [Lesson 030 — Inert show-cue simulator](030.md) | Inert show-cue simulator | Continuity-gated cues, stop dominance, and deterministic audit replay |
+| [Lesson 031 — Analog joystick](031.md) | Two-axis joystick | Calibrated axes, dead zone, and separate select events |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance
