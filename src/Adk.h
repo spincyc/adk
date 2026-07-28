@@ -42,6 +42,7 @@
 #include "pulse_input.h"
 #include "pulse_capture.h"
 #include "pwm_output.h"
+#include "quadrature_encoder.h"
 #include "reaction_timer.h"
 #include "record_sink.h"
 #include "rgb_led.h"

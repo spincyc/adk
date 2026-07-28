@@ -58,6 +58,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_reaction_timer \
 	$(BUILD_DIR)/host/test_record_sink \
 	$(BUILD_DIR)/host/test_pwm_output \
+	$(BUILD_DIR)/host/test_quadrature_encoder \
 	$(BUILD_DIR)/host/test_rgb_led \
 	$(BUILD_DIR)/host/test_rover_controller \
 	$(BUILD_DIR)/host/test_rtc_storage \
@@ -199,6 +200,13 @@ $(BUILD_DIR)/host/test_io: $(HOST_IO_SOURCES) tests/test_io.cpp \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_IO_SOURCES) tests/test_io.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_quadrature_encoder: $(HOST_IO_SOURCES) src/board.cpp \
+		src/quadrature_encoder.cpp tests/test_quadrature_encoder.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_IO_SOURCES) src/board.cpp src/quadrature_encoder.cpp \
+		tests/test_quadrature_encoder.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_inert_load_interlock: $(HOST_CORE_SOURCES) \
 		src/inert_load_interlock.cpp src/power_domain.cpp \
