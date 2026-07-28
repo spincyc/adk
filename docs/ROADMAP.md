@@ -67,7 +67,11 @@ publication ledger.
 36. qualified contact and acoustic evidence with deterministic percussion
     sequencing in lessons 037--039; and
 37. source-specific optical observations, bounded presence composition, and
-    explicitly authorized course-marshal timing in lessons 040--042.
+    explicitly authorized course-marshal timing in lessons 040--042;
+38. copied inertial evidence, pure orientation and presentation policy, and a
+    stationary balance-table composition in lessons 043--045; and
+39. copied tactile/directional evidence, bounded logical stepper intent, and
+    transactional kinetic-sculpture composition in lessons 046--048.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
@@ -95,9 +99,17 @@ QMI8658 variants remain independently gated. Lessons 067--069 retain inertial
 normalization, source qualification, cross-device comparison, and
 motion-recorder scope.
 
-Development then follows lessons 046--081, one implementation-depth
-three-lesson brief at a time. That future arc remains engagement-first: kinetic motion,
-carousel, IR, escape-console, and display projects before the more methodical
+Lessons 046--048 are the host-verified
+[implementation-depth E0 slice](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md):
+`InteractionIntentPolicy`, `BoundedStepperSequence`, and
+`KineticLightSculpture` process copied tactile/directional evidence and
+logical coil intent. Mega replays measure 6,956/733, 8,068/1,053, and
+22,216/1,470 bytes of flash/static SRAM. Powered inputs and indicators remain
+E1-open; the exact 28BYJ-48/ULN2003 and energized sculpture remain E2-open.
+
+Development then follows lessons 049--081, one implementation-depth
+three-lesson brief at a time. That future arc remains engagement-first: carousel,
+IR, escape-console, and display projects before the more methodical
 environmental, 18B20, motion-recording, and characterization blocks.
 Authorization, prerequisite, exact-specimen, safety, and evidence gates still
 control activation; the ordering is not a support claim.

@@ -8,7 +8,7 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--042 have first-class implementation work, deterministic host
+Lessons 001--048 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
 bench cards remain open. Lessons 037--039 use documented C&K and SparkFun
 reference fixtures; incoming conformance and physical acceptance remain open.
@@ -28,6 +28,14 @@ flash/SRAM ceilings, but remain E0 replays: no powered adapter, I2C
 transaction, wiring table, schematic, or physical claim is authorized. Exact
 MPU6050 and QMI8658 variants remain independently gated, and Lessons 067--069
 retain normalization, qualification, comparison, and recorder scope.
+Lessons 046--048 are host verified under the
+[implementation-depth E0 plan](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md).
+They publish `InteractionIntentPolicy`, `BoundedStepperSequence`, and
+`KineticLightSculpture` over copied tactile/directional evidence and logical
+coil intent. Their Mega replays measure 6,956/733, 8,068/1,053, and
+22,216/1,470 bytes of flash/static SRAM. Powered tactile and directional
+adapters and physical indicators remain E1-open; an energized
+28BYJ-48/ULN2003 and kinetic sculpture remain E2-open.
 The later blocks are ordered for early learner engagement while retaining
 prerequisite, authorization, safety, and evidence gates: interactive motion
 and display projects precede the more methodical environmental and
@@ -108,6 +116,9 @@ For every lesson, the queued implementation order is:
 | 043 | Host verified; powered adapter and bench open | `InertialObservationPolicy` copied-sample validation | Source/configuration identity, producer status, sequence, age, saturation, and synthetic-fixture provenance |
 | 044 | Host verified; powered endpoints and bench open | `OrientationPolicy` and `BalancePresentationPolicy` | Stationarity, bounded pitch/roll, health, light intent, and tone intent from copied samples |
 | 045 | Host verified; powered composition and bench open | `BalanceInstrument` stationary tabletop composition | Sensitivity, freeze, health, and presentation replay without powered endpoints |
+| 046 | Host verified; powered inputs and indicators open | `InteractionIntentPolicy` copied tactile/directional evidence | Source identity, contact timing, direction, validity, and atomic replay without powered endpoints |
+| 047 | Host verified; powered indicators and stepper open | `BoundedStepperSequence` logical coil intent | Exact logical coil frames, bounded travel, cancellation, stop, and shutdown replay |
+| 048 | Host verified; powered composition open | `KineticLightSculpture` transactional composition | Authorization, stop dominance, light intent, and frame-for-frame E0 replay without energized motion |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation

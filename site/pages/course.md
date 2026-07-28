@@ -41,13 +41,15 @@ lesson number divisible by three is project-bearing.
 | 043 | Copied six-axis values and provenance | Inertial observation policy | Host verified; E0 replay only |
 | 044 | Board-frame gravity orientation and presentation | Orientation policy | Host verified; E0 replay only |
 | 045 | Inertial and copied-control composition | Stationary balance-table instrument | Host verified; E0 replay only |
+| 046 | Copied tactile and directional evidence | Interaction intent policy | Host verified; E0 replay only |
+| 047 | Bounded logical step intent | Step sequence policy | Host verified; E0 replay only |
+| 048 | Transactional interaction and motion composition | Kinetic-light sculpture | Host verified; E0 replay only |
 
-The retained Lessons 046–081 sequence is front-loaded for learner engagement.
+The retained Lessons 049–081 sequence is front-loaded for learner engagement.
 This is planned work, not a support or bench-verification claim:
 
 | Lessons | Planned focus | Project |
 |---:|---|---|
-| 046–048 | Authorized tactile/directional inputs and bounded stepper motion | Kinetic sculpture |
 | 049–051 | Local identity records and homing | Inert parts carousel |
 | 052–054 | Known-family IR capture and bounded emission | IR command translator |
 | 055–057 | Constraint and fault-aware operator models | Inert escape-room console |

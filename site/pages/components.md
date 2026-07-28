@@ -72,7 +72,9 @@ Status meanings:
 | Inertial observation policy | `InertialObservationPolicy` | Host verified; E0 replay only | [Lesson 043](lessons/043.md) |
 | Orientation presentation | `OrientationPolicy`, `BalancePresentationPolicy` | Host verified; E0 replay only | [Lesson 044](lessons/044.md) |
 | Balance-table project | `BalanceInstrument` | Host verified; E0 replay only | [Lesson 045](lessons/045.md) |
-| Planned kinetic arc | Authorized tactile/directional inputs and bounded stepper motion | Queued | Lessons 046–048 |
+| Interaction intent policy | `InteractionIntentPolicy` | Host verified; E0 replay only | [Lesson 046](lessons/046.md) |
+| Bounded logical step sequencing | `BoundedStepperSequence` | Host verified; E0 replay only | [Lesson 047](lessons/047.md) |
+| Kinetic-light project | `KineticLightSculpture` | Host verified; E0 replay only | [Lesson 048](lessons/048.md) |
 | Planned carousel arc | Identity records and homing | Queued | Lessons 049–051 |
 | Planned IR arc | Known-family capture and bounded emission | Queued; exact emitter gated | Lessons 052–054 |
 | Planned escape-console arc | Constraint and fault-aware operator models | Queued | Lessons 055–057 |
@@ -152,6 +154,17 @@ explicit right-handed board frame into fixed-point pitch and roll, while
 records; only a qualified button event can freeze evidence. These E0 policies
 own no bus, pin, clock, sensor, actuator, or presentation endpoint. Their Mega
 sketches are compile-only memory replays, not powered or physical evidence.
+
+Lessons 046--048 keep copied interaction evidence, logical step intent, and
+kinetic-light composition independent of live inputs and energized motion.
+`InteractionIntentPolicy` transactionally combines copied contact and
+directional evidence. `BoundedStepperSequence` advances bounded logical
+position and coil intent from explicit commands and supplied time.
+`KineticLightSculpture` atomically composes both policies with an independent
+stop path and semantic light intent. These E0 policies own no GPIO, clock,
+timer, interrupt, motor driver, coil, supply, or physical position. Exact
+tactile and directional adapters remain E1-gated; exact stepper, ULN2003,
+power, restraint, and moving-sculpture acceptance remain E2-gated.
 
 - [Exact API](api-supported.md)
 - [Full component catalog](docs/COMPONENTS.md)

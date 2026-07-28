@@ -155,6 +155,15 @@ doc/lessons/045.pdf: docs/lessons/045/main.tex \
 		docs/lessons/assets/045-live-frozen-pencil.png \
 		docs/lessons/assets/045-state-flow-pencil.png \
 		docs/lessons/assets/045-tabletop-replay-pencil.png
+doc/lessons/046.pdf: docs/lessons/046/main.tex \
+		docs/lessons/046/046-copied-intent-pencil.png \
+		docs/lessons/046/046-qualification-hysteresis-pencil.png
+doc/lessons/047.pdf: docs/lessons/047/main.tex \
+		docs/lessons/assets/047-bounded-motion-pencil.png \
+		docs/lessons/assets/047-logical-phase-wheel-pencil.png
+doc/lessons/048.pdf: docs/lessons/048/main.tex \
+		docs/lessons/assets/048-staged-authorization-pencil.png \
+		docs/lessons/assets/048-stop-flow-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons

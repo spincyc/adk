@@ -50,6 +50,9 @@ third lesson for a deterministic integration project.
 | [Lesson 043 — Copied inertial observations](043.md) | Revision-neutral six-axis values | Provenance, freshness, saturation, and faults remain explicit |
 | [Lesson 044 — Board-frame orientation](044.md) | Gravity-relative pitch and roll | Fixed-point orientation becomes bounded light and tone intent |
 | [Lesson 045 — Stationary balance instrument](045.md) | Copied inertial and control evidence | Button-authorized freeze and sensitivity compose into replayable E0 frames |
+| [Lesson 046 — Copied tactile and directional intent](046.md) | Copied contact and directional evidence | Atomic qualification produces bounded interaction intent |
+| [Lesson 047 — Bounded logical step sequencing](047.md) | Explicit commands and supplied time | Logical position and coil intent remain bounded and replayable |
+| [Lesson 048 — Transactional kinetic light sculpture](048.md) | Interaction, logical motion, and light intent | Independent stop evidence dominates atomic E0 composition |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance
@@ -58,12 +61,11 @@ card is recorded. Historical preview lessons are preserved under
 
 ## Planned engagement-first sequence
 
-The next arcs deliberately lead with interactive sensing and visible motion.
-They remain planned—not published or bench-verified:
+The next arcs retain the engagement-first order. They remain planned—not
+published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 046–048 | Kinetic sculpture |
 | 049–051 | Inert parts carousel |
 | 052–054 | IR command translator |
 | 055–057 | Inert escape-room console |
