@@ -701,11 +701,13 @@ Each update:
     idempotent stop/cancel at the already validated project time, which is
     contractually infallible after preflight, consumes zero steps and zero
     logical travel, and does not increment `acceptedMotifCount`; and
-11. when healthy, records a usable freshly committed `touchEvent` and its
-    committed direction as authorization eligible only on the next
-    strictly-forward frame, then publishes the sole resulting project
-    snapshot; an admitted-fault frame instead publishes all-off with any
-    pending authorization inhibited.
+11. when no authorization was pending at frame start and the frame is healthy,
+    records a usable freshly committed `touchEvent` and its committed direction
+    as authorization eligible only on the next strictly-forward frame, then
+    publishes the sole resulting project snapshot; a frame that resolves an
+    older pending authorization cannot enqueue a replacement, and an
+    admitted-fault frame publishes all-off with pending authorization
+    inhibited.
 
 Step 10 is a controlled asymmetric admitted-fault protocol, not symmetric
 child-state atomicity. It is bounded because interaction fault evidence must
@@ -722,18 +724,23 @@ exact status, and disposition `Pending`. When
 `hasLastTerminalAuthorization`, `lastTerminalAuthorization` retains the same
 full provenance with exactly one terminal disposition: `Accepted`,
 `Inhibited`, or `BoundRejected`.
+The dual-record surface preserves distinct live and historical evidence; it
+does not assert that consumption and a replacement touch are reachable in one
+frame.
 An exact repeated frame cannot enqueue again. A strictly-forward frame consumes
 the entry exactly once only when both child commits succeed. Stop, source fault,
 shutdown, reset, or command expiry consumes it with an explicit inhibited/fault
 disposition and cannot replay it. A travel-bound rejection consumes it with
 `travelLimit == true`; recovery requires a new opposite-direction touch event.
 If no eligible authorization exists, the sequence preview advances an existing
-command or remains stopped. On every strictly-forward frame, an older pending
-authorization reaches exactly one terminal disposition before a newly
-committed touch event may be recorded as the next pending authorization.
-When both occur on the same frame, the snapshot publishes both records: the
-older event in `lastTerminalAuthorization` and the new event in
-`pendingAuthorization`, which survives for the next strictly-forward frame.
+command or remains stopped. On the next strictly-forward frame, an older
+pending authorization reaches exactly one terminal disposition. That
+resolving frame is ineligible to enqueue another authorization. Later
+strictly-forward frames must first carry the contact release and subsequent
+requalification; only the later frame that commits the new `touchEvent` may
+publish a new pending authorization. Reusing the same frame/sequence with a
+changed contact payload remains a structural rejection, never a shortcut to a
+second event.
 Thus an event is either pending, accepted once, or recorded with one terminal
 disposition; it is never repeated or silently lost.
 
@@ -854,10 +861,10 @@ wraps, clamps a partially executed motif, or calls the bound a physical stop.
   fail, zero step/travel/count is consumed, output remains all-off, and no
   intermediate child state is observable;
 - both authorization records' complete provenance/status for `None`,
-  `Pending`, `Accepted`, `Inhibited`, and `BoundRejected`; same-frame old
-  terminal plus new pending publication; terminal aging; canonical
-  initialization/power-loss clearing; stop/fault/shutdown terminalization; and
-  proof that an older pending entry resolves before a new event is recorded;
+  `Pending`, `Accepted`, `Inhibited`, and `BoundRejected`; proof that a
+  resolving frame cannot enqueue; later release and requalification before a
+  new pending frame; terminal aging; canonical initialization/power-loss
+  clearing; stop/fault/shutdown terminalization; and no event loss or repeat;
 - frame/source sequence exact repeat, gap, wrap, ambiguity, regression, domain
   change, future time, rollover, and stale evidence;
 - stop before start, during each logical frame, simultaneous with touch,

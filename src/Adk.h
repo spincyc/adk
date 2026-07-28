@@ -33,6 +33,7 @@
 #include "inert_load_panel.h"
 #include "inertial_observation.h"
 #include "interaction_intent_policy.h"
+#include "kinetic_sculpture.h"
 #include "keypad.h"
 #include "matrix_keypad.h"
 #include "magnetic_observation.h"
