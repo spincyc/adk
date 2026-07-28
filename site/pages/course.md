@@ -26,8 +26,11 @@ lesson number divisible by three is project-bearing.
 | 028 | Inert channel assessment | — | Host verified; E1 bench open |
 | 029 | Cue scheduling and logs | — | Host verified; E1 bench open |
 | 030 | Inert composition | Inert show-cue simulator | Host verified; E1 bench open |
+| 031 | Calibrated joystick | — | Host verified; E1 bench open |
+| 032 | Quadrature encoder | — | Host verified; E1 bench open |
+| 033 | Calibration policy | Calibration console | Host verified; E1 bench open |
 
-Lessons 031–033 are queued first. Lessons 034–081 are retained canonical work;
+Lessons 034–081 are retained canonical work;
 each later three-lesson arc requires an implementation-depth brief before code
 begins.
 

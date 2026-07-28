@@ -16,10 +16,10 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--030 use the first-class per-object
+ADK is early-stage software. Lessons 001--033 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
-Lesson 031 is the next queued implementation boundary.
+Lesson 034 is the next queued curriculum boundary.
 
 The hierarchy is developed in dependency order:
 
@@ -31,9 +31,8 @@ The per-object lifecycle uses transactional `initialize()`, idempotent
 `shutdown() noexcept`, and destructor-driven cleanup. The original
 global-registration preview is frozen under [Legacy](legacy/index.md).
 
-The latest promoted slice is lesson 030's physically inert show-cue simulator
-with continuity-gated cues and deterministic audit replay. Lesson 031's
-calibrated analog joystick is queued next. See
+The latest promoted slice is lesson 033's calibration console with explicit
+preview, trim, commit, cancel, and fault states. Lesson 034 is queued next. See
 the [roadmap](docs/ROADMAP.md) for the full sequence.
 
 ## Principles

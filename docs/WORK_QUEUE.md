@@ -17,13 +17,12 @@ recorded in
 Its findings must be reconciled through bounded tasks; the audit itself does
 not promote work or replace this ledger.
 
-- Lessons 001--030 are promoted and host verified; physical cards remain open.
+- Lessons 001--033 are promoted and host verified; physical cards remain open.
 - Lesson 030 has an independently reviewed composition core, canonical Mega
   example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
-- Lesson 031 is the next queued implementation boundary. Its component
-  families are in the [authorized Elegoo set](inventory/AUTHORIZED_ELEGOO_SET.md);
-  exact-revision electrical qualification and bench acceptance remain open.
+- Lesson 034 is the next queued curriculum boundary; its three-lesson arc
+  requires the queued implementation-depth brief before code begins.
 - The USB research track has a deterministic product-native `Cau`/`Pau`
   `ColdMove` model. It performs no USB action and makes no transparency claim.
 - The exact kit inventory template and honest planned-versus-supported coverage
@@ -53,8 +52,8 @@ qualification are not yet supported.
 
 | Boundary | State | Required next result |
 |---|---|---|
-| [001--030](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [031](design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md) | Queued; family authorized, bench open | Calibrated joystick contract with an exact-revision gate for physical wiring |
+| [001--033](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
+| [034](projects/component_project_cadence.md) | Queued; detailed brief required | Expand lessons 034--036 to implementation depth before code |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -79,7 +78,7 @@ work; retail kit names are not electrical identities.
 
 | Lessons | State | Block |
 |---:|---|---|
-| [031--033](design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md) | Queued first | Analog joystick, quadrature encoder, calibration console |
+| [031--033](design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md) | Host verified; bench open | Analog joystick, quadrature encoder, calibration console |
 | [034--036](projects/component_project_cadence.md) | Queued | Magnetic/contact observation, passage policy, passage logger |
 | [037--039](projects/component_project_cadence.md) | Queued | Contact dynamics, acoustic envelope, percussion sequencer |
 | [040--042](projects/component_project_cadence.md) | Queued | Optical observations, presence, tabletop course marshal |

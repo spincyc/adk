@@ -57,7 +57,8 @@ Status meanings:
 | Value codec | `CueAuditBuffer`, `CueAuditEncoder` | Host verified | Caller-owned bounded records and stable text |
 | Behavior | `InertCueScheduler` | Host verified | Supplied time, confirmation, holds, and inert snapshots |
 | Behavior | `InertShowSimulator` | Host verified | Borrowed assessor, scheduler, audit, complete observation frames, and supplied time |
-| Queued layers | Lesson 031 and later curriculum components | Queued | See catalog and work queue |
+| Input expansion | `AnalogJoystick`, `QuadratureEncoder`, `CalibrationConsole` | Host verified; bench open | Lessons 031–033 |
+| Queued layers | Lesson 034 and later curriculum components | Queued | See catalog and work queue |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.
 Behavior engines expose output intent rather than hiding hardware callbacks.

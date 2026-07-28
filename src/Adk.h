@@ -6,6 +6,7 @@
 #include "board.h"
 #include "bounded_span.h"
 #include "button.h"
+#include "calibration_console.h"
 #include "character_display.h"
 #include "climate_sensor.h"
 #include "cue_audit.h"

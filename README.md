@@ -3,7 +3,7 @@
 ADK is a deterministic, no-exception C++ component library and electronics
 course for the Arduino Mega 2560.
 
-The first-class API through lesson 030 is host verified and experimental.
+The first-class API through lesson 033 is host verified and experimental.
 Physical Mega 2560 acceptance is still open and tracked separately; a
 successful firmware build is not a bench result. The original preview is
 frozen under `legacy/`.
