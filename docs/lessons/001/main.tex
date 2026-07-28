@@ -304,13 +304,8 @@ compile target. Read the command before executing it. Confirm the fully
 qualified board name is \texttt{arduino:avr:mega}; never infer a connected
 board or port.
 
-\begin{lstlisting}[style=adkcpp]
-make check
-make arduino
-arduino-cli board list
-\end{lstlisting}
 
-Record the compiler result and reported flash/RAM use:
+The maintained gates retain compile and size evidence outside the learner activity.
 
 \begin{tabularx}{\linewidth}{@{}lX@{}}
 Host tests & \rule{0pt}{0.7cm}\\
@@ -354,63 +349,9 @@ unpowered.
           indicator is unpowered before handling the board.
 \end{enumerate}
 
-\begin{checkpoint}{bench card --- leave incomplete until a person performs it}
-Date/time: \rule{3.2cm}{0.35pt}\quad Observer: \rule{3.2cm}{0.35pt}\\
-Board/model/revision or ID: \rule{5.4cm}{0.35pt}\\
-Port and FQBN: \rule{5.7cm}{0.35pt}\\
-ADK revision: \rule{3.3cm}{0.35pt}\quad
-\texttt{arduino-cli}/AVR core: \rule{3.2cm}{0.35pt}\\
-Supply/source: \rule{3.6cm}{0.35pt}\quad
-USB port/cable: \rule{3.5cm}{0.35pt}\\
-USB current limit: \rule{2.8cm}{0.35pt}\quad
-measured board supply (if instrumented): \rule{2.2cm}{0.35pt}\\
-Instrument(s), model, and range (or visual only): \rule{5cm}{0.35pt}\\
-10\,k\(\Omega\) measured value/tolerance/rating: \rule{3.7cm}{0.35pt}\\
-DMM input resistance and TP-D13 voltage ranges: \rule{3.2cm}{0.35pt}\\
-Exact point: factory \texttt{LED\_BUILTIN}/D13 path \quad
-All-power-off inspection: \checkbox\\
-Factory LED path and weak-bias fixture identified: \checkbox\quad
-board documentation checked: \checkbox\\
-Initialization status recorded separately: \checkbox\quad
-250\,ms acquisition pulse: \checkbox\\
-Three 500/500\,ms behavior cycles: \checkbox\quad
-controlled shutdown reached: \checkbox\\
-Host trace ends in \texttt{INPUT}: \checkbox\quad
-physical TP-D13 weak-bias result recorded: \checkbox\\
-reset repeats full sequence: \checkbox\\
-USB removed; board unpowered: \checkbox\quad
-startup/failure state recorded: \checkbox\quad
-deviation or unexpected behavior: \checkbox
-\end{checkpoint}
-
-\textbf{Predict --- acquisition:} successful initialization permits one
-250\,ms pulse before the 750\,ms separator.
-\par\textbf{Observe --- acquisition:}
-\par\blankline
-\par\textbf{Interpret --- acquisition:}
-\par\blankline
-
-\textbf{Predict --- behavior:} exactly three slower high/low cycles occur only
-after acquisition evidence.
-\par\textbf{Observe --- behavior:}
-\par\blankline
-\par\textbf{Interpret --- behavior:}
-\par\blankline
-
-\textbf{Predict --- shutdown and reset:} after the final driven LOW,
-\texttt{shutdown()} returns D13 to \texttt{INPUT} and the identified weak
-pull-up moves TP-D13 into the calculated range; reset starts at acquisition.
-\par\textbf{Observe --- shutdown, reset, and power removal:}
-\par\blankline
-\par\textbf{Interpret --- shutdown, reset, and power removal:}
-\par\blankline
-
-\textbf{Deviation, stop action, reviewer, and review date:}
-\par\blankline\\[5pt]\blankline\par
-\textbf{Result:} \checkbox\ draft \quad \checkbox\ rejected\par
-\checkbox\ hardware verified\par
-Reviewer initials: \rule{1.5cm}{0.35pt}\par
-
+\paragraph{Physical acceptance boundary.}
+Measured bench acceptance remains a separately controlled campaign; this
+learner lesson does not ask the reader to create or review repository records.
 \section*{7. Debug with the smallest useful signal}
 
 Digital output comes first because one spare pin can expose control flow
@@ -496,7 +437,8 @@ Do not teach a generic pin that \texttt{High} always means ``on.''
 \small
 \textbf{Further reading.}
 Use the companion HTML API page for exact signatures, source links, current
-limitations, and searchable test names. Use this PDF as the bench worksheet.
+limitations, and searchable test names. Use this PDF for the guided circuit
+experiment and diagnosis.
 Arduino's Mega 2560 documentation supplies authoritative board limits; the ADK
 safety page supplies the project-wide stop conditions. Links are maintained in
 the HTML lesson to avoid stale printed URLs.

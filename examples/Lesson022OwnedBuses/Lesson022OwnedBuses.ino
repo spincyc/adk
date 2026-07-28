@@ -11,7 +11,7 @@
 namespace {
 
     constexpr adk::PinId faultEvidencePin = 12;
-    constexpr adk::PinId moistureInputPin = 54;
+    constexpr adk::PinId controlInputPin = 54;
     constexpr adk::PinId spiChipSelectPin = 49;
 
     constexpr uint32_t transactionIntervalMilliseconds  = 1500;
@@ -23,7 +23,7 @@ namespace {
     const adk::Duration            transactionTimeout  (20);
     const adk::Duration            sampleStaleAfter    (3000);
     const adk::SpiSettings         storageSettings     = {1000000, 0, true};
-    const adk::MoistureCalibration moistureCalibration = {200, 800, 32};
+    const adk::MoistureCalibration controlCalibration = {200, 800, 32};
 
     struct SimulatedRtc final : adk::Rtc
     {
@@ -76,8 +76,8 @@ namespace {
     adk::I2cDevice metadataDevice (i2cBus, 0x50);
     adk::SpiDevice recordDevice   (spiBus, spiChipSelectPin, storageSettings);
 
-    adk::AnalogInput    moistureInput  (runtime.resources (), moistureInputPin);
-    adk::MoistureSensor moistureSensor (moistureInput, moistureCalibration);
+    adk::AnalogInput    controlInput (runtime.resources (), controlInputPin);
+    adk::MoistureSensor controlScale (controlInput, controlCalibration);
 
     adk::FixedStorageMedium storageMedium (adk::FixedStorageMedium::maximumCapacity);
     adk::FixedStorage       storage       (storageMedium);
@@ -97,10 +97,10 @@ namespace {
     uint32_t activityPulseMilliseconds = minimumActivityPulseMilliseconds;
 
     bool acquireBusOwners     ();
-    bool observeMoisture      (adk::TimePoint now, adk::MoistureSample& sample);
-    bool persistMoisture      (adk::TimePoint now, const adk::MoistureSample& sample);
+    bool observeControl       (adk::TimePoint now, adk::MoistureSample& sample);
+    bool persistRecord        (adk::TimePoint now, const adk::MoistureSample& sample);
     bool proveStorageRestart  ();
-    bool acknowledgeMoisture  (adk::TimePoint now, const adk::MoistureSample& sample);
+    bool acknowledgeRecord    (adk::TimePoint now, const adk::MoistureSample& sample);
     bool clearAcknowledgement (adk::TimePoint now);
     void observeFailure       (adk::Status status);
     void beginSafeEnding      (adk::TimePoint now);
@@ -160,8 +160,8 @@ void loop ()
 
     adk::MoistureSample sample;
 
-    if (!observeMoisture (now, sample) || !persistMoisture (now, sample) ||
-        !acknowledgeMoisture (now, sample))
+    if (!observeControl (now, sample) || !persistRecord (now, sample) ||
+        !acknowledgeRecord (now, sample))
     {
         stopSafely ();
     }
@@ -218,11 +218,11 @@ namespace {
             return false;
         }
 
-        const adk::Status moistureStatus = moistureSensor.initialize ();
+        const adk::Status controlStatus = controlScale.initialize ();
 
-        if (!moistureStatus.ok ())
+        if (!controlStatus.ok ())
         {
-            observeFailure (moistureStatus);
+            observeFailure (controlStatus);
             return false;
         }
 
@@ -245,9 +245,9 @@ namespace {
         return true;
     }
 
-    bool observeMoisture (adk::TimePoint now, adk::MoistureSample& sample)
+    bool observeControl (adk::TimePoint now, adk::MoistureSample& sample)
     {
-        const adk::Status status = moistureSensor.update (now);
+        const adk::Status status = controlScale.update (now);
 
         if (!status.ok ())
         {
@@ -255,7 +255,7 @@ namespace {
             return false;
         }
 
-        sample = moistureSensor.sample (now, sampleStaleAfter);
+        sample = controlScale.sample (now, sampleStaleAfter);
 
         if (sample.state != adk::MoistureSampleState::Valid)
         {
@@ -266,7 +266,7 @@ namespace {
         return true;
     }
 
-    bool persistMoisture (adk::TimePoint now, const adk::MoistureSample& sample)
+    bool persistRecord (adk::TimePoint now, const adk::MoistureSample& sample)
     {
         const adk::Result<adk::ClockReading> clockResult = rtc.read ();
 
@@ -357,7 +357,7 @@ namespace {
         return true;
     }
 
-    bool acknowledgeMoisture (adk::TimePoint now, const adk::MoistureSample& sample)
+    bool acknowledgeRecord (adk::TimePoint now, const adk::MoistureSample& sample)
     {
         const adk::Status status = activityEvidence.on ();
 
@@ -426,7 +426,7 @@ namespace {
     {
         storage       .shutdown ();
         rtc           .shutdown ();
-        moistureSensor.shutdown ();
+        controlScale  .shutdown ();
         recordDevice  .shutdown ();
         metadataDevice.shutdown ();
         spiBus        .shutdown ();

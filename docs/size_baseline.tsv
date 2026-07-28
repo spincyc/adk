@@ -29,6 +29,6 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	1	Lesson028InertChannelAssessment	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5100	16384	404	768
 1	1	Lesson029InertCueSchedule	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	10952	24576	1832	2048
 1	2	Lesson030InertShowSimulator	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	16464	32768	2685	3072
-1	1	Lesson031AnalogJoystick	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6150	16384	272	512
-1	1	Lesson032QuadratureEncoder	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5752	16384	260	512
-1	1	Lesson033CalibrationConsole	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	13966	24576	762	1024
+1	1	Lesson031AnalogJoystick	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6250	16384	273	512
+1	1	Lesson032QuadratureEncoder	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5910	16384	265	512
+1	1	Lesson033CalibrationConsole	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	14114	24576	767	1024

@@ -269,26 +269,8 @@ The complete, compiled source is
 \texttt{examples/Lesson007AnalogInput/Lesson007AnalogInput.ino}. Do not maintain
 a second sketch copied from this page.
 
-\section*{5. Build, upload, and observe from the CLI}
+\section*{5. Observe the canonical sketch}
 
-No IDE is required. From the repository root:
-
-\begin{lstlisting}[style=adkcpp,language=bash]
-make bootstrap
-make arduino-Lesson007AnalogInput
-make upload EXAMPLE=Lesson007AnalogInput PORT=/dev/ttyACM0
-\end{lstlisting}
-
-Use \texttt{make boards} to discover the port. The LED and named test points
-remain the primary evidence. Optional records expose the exact raw-to-duty
-transformation:
-
-\begin{lstlisting}[style=adkcpp,language=bash]
-make monitor-describe PORT=/dev/ttyACM0
-make monitor PORT=/dev/ttyACM0 BAUD=115200
-make serial-log PORT=/dev/ttyACM0 BAUD=115200 \
-    SERIAL_LOG=build/serial/lesson007.log
-\end{lstlisting}
 
 Disconnect any monitor before uploading if the operating system cannot share
 the port. Serial is supporting evidence and cannot replace circuit
@@ -371,59 +353,14 @@ destruction while active; failed setup rollback; and pin reuse after release.
 The mapping table is pure integer arithmetic, so the same raw trace yields the
 same duties on every run.
 
-\begin{lstlisting}[style=adkcpp,language=bash]
-make host-test
-make host-test-exceptions
-make quality
-\end{lstlisting}
 
-These commands prove software contracts and compilation, not the physical
+Automated gates prove software contracts and compilation, not the physical
 Mega circuit.
 
-\section*{9. Bench acceptance card}
-
-\begin{tabularx}{\linewidth}{@{}>{\bfseries}lX@{}}
-Board / revision & \\
-USB source / port / stated current capability or limit & \\
-USB cable identity & \\
-Measured Mega 5 V rail & \\
-Arduino CLI / AVR core & \\
-Potentiometer markings / terminal order & \\
-LED package / color / polarity & \\
-Resistor marked / measured value & \\
-LED forward voltage / calculated active current & \\
-Meter make / model / mode & \\
-Analyzer or oscilloscope / probe & \\
-10 k\(\Omega\) fixture resistors, measured & \\
-Sketch revision & \\
-Reviewer / date & \\
-\end{tabularx}
-
-\begin{center}
-\begin{tabularx}{\linewidth}{@{}p{0.25\linewidth}p{0.21\linewidth}p{0.28\linewidth}X@{}}
-\toprule
-Claim & Prediction & Observation & Interpretation\\
-\midrule
-Resources acquired & D13 pulses 250 ms, then 750 ms dark & & \\
-Low input & TP-A0 near 0 V; record raw near 0; LED off & & \\
-Middle input & TP-A0 near half rail; record duty near 128 & & \\
-High input & TP-A0 near rail; record duty 255 & & \\
-PWM is switched & TP-D6 toggles at recorded middle duty & & \\
-LED current bounded & At duty 255, calculated current is at most 15 mA & & \\
-Timed shutdown & At 120 s, TP-D6 stops toggling; LEDs stay off & & \\
-A0 released & Separate midpoint fixture reads near half rail & & \\
-D6 released & Separate midpoint fixture reads near half rail & & \\
-Reset recovers & Reset restarts pulse, separator, and deadline & & \\
-Power removed & USB removal makes rail and test points 0 V & & \\
-Rollback proof & Host-injected D6 acquisition failure releases A0/D13 & & \\
-\bottomrule
-\end{tabularx}
-\end{center}
-
-\textbf{Acceptance status:}
-\checkbox\ not run \quad \checkbox\ pass \quad \checkbox\ deviation recorded
-
-\section*{10. Exercises}
+\paragraph{Physical acceptance boundary.}
+Measured bench acceptance remains a separately controlled campaign; this
+learner lesson does not include a bench form.
+\section*{9. Exercises}
 
 \begin{enumerate}
     \item Calculate expected raw readings from your measured supply and TP-A0
@@ -443,7 +380,7 @@ Rollback proof & Host-injected D6 acquisition failure releases A0/D13 & & \\
 
 Use the HTML lesson for maintained API links, errata, source downloads, and
 copyable commands. Use this PDF at the bench for prediction, measurement,
-diagnosis, and the signed acceptance record. Lesson 008 adds calibration,
+diagnosis. Lesson 008 adds calibration,
 dead bands, and deterministic filtering. Lesson 009 composes them into an
 adaptive night light with explicit sensor-fault states.
 
@@ -462,6 +399,6 @@ adaptive night light with explicit sensor-fault states.
 \textbf{Deferred evidence.}
 The repository records host and compile gates. No physical voltage, waveform,
 current, shutdown, reset, or power-removal claim becomes accepted until a
-person completes this card on the named Mega 2560 and publishes the result.
+the controlled physical campaign is completed on an identified Mega 2560.
 
 \end{document}

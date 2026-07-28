@@ -358,23 +358,8 @@ The complete, compile-authoritative sketch is
 targets; no particular IDE is required.
 
 \newpage
-\section{CLI experiment}
+\section{Observe the visible transfer}
 
-\begin{lstlisting}[style=adkcpp,language=bash]
-make bootstrap
-arduino-cli core list
-git rev-parse HEAD
-make arduino-Lesson010ShiftRegisterDisplay
-make upload-Lesson010ShiftRegisterDisplay PORT=/dev/ttyACM0
-make observe-new LESSON=010
-make observe-check CARD=hardware/acceptance/lesson-010.md
-\end{lstlisting}
-
-Serial is optional supporting evidence:
-\begin{lstlisting}[style=adkcpp,language=bash]
-make monitor PORT=/dev/ttyACM0 BAUD=115200
-make serial-log PORT=/dev/ttyACM0 BAUD=115200
-\end{lstlisting}
 The canonical sketch does not require or emit Serial messages. A missing serial
 log therefore says nothing about display correctness.
 
@@ -476,82 +461,9 @@ Chip or resistor hot & unsafe current or wiring & remove USB immediately; rechec
 \end{enumerate}
 
 \newpage
-\section{Bench acceptance record}
-
-\begin{tabularx}{\linewidth}{@{}l X l X@{}}
-Date & \blank{1.25in} & Reviewer & \blank{1.35in}\\[7pt]
-Sketch commit & \blank{1.3in} & Sketch path & \blank{1.4in}\\[7pt]
-Firmware artifact/hash & \blank{1.1in} & Source tree state & \blank{1.15in}\\[7pt]
-CLI version & \blank{1.35in} & AVR core version & \blank{1.2in}\\[7pt]
-Board & Mega 2560 revision: \blank{1.0in} & USB cable & \blank{1.05in}\\[7pt]
-USB supply/model & \blank{1.3in} & Supply current limit & \blank{1.05in}\\[7pt]
-74HC595 marking & \blank{1.4in} & Display marking & \blank{1.15in}\\[7pt]
-Display polarity & \blank{1.2in} & Resistors & \blank{1.15in}\\[7pt]
-Unloaded 5 V & \blank{1.2in} & Loaded 5 V, glyph 8 & \blank{1.05in}\\[7pt]
-USB current, glyph 8 & \blank{1.05in} & Display-current total & \blank{1.15in}\\
-\end{tabularx}
-
-\subsection{Glyph-8 resistor and current worksheet}
-
-\begin{center}
-\begin{tabular}{c*{8}{c}}
-\toprule
-Path & a/Q0 & b/Q1 & c/Q2 & d/Q3 & e/Q4 & f/Q5 & g/Q6 & dp/Q7\\
-\midrule
-\(R\), \(\Omega\) & \blank{0.25in} & \blank{0.25in} & \blank{0.25in} &
-  \blank{0.25in} & \blank{0.25in} & \blank{0.25in} &
-  \blank{0.25in} & \blank{0.25in}\\
-\(V_R\), V & \blank{0.25in} & \blank{0.25in} & \blank{0.25in} &
-  \blank{0.25in} & \blank{0.25in} & \blank{0.25in} &
-  \blank{0.25in} & dark\\
-\(I=V_R/R\), mA & \blank{0.25in} & \blank{0.25in} & \blank{0.25in} &
-  \blank{0.25in} & \blank{0.25in} & \blank{0.25in} &
-  \blank{0.25in} & 0\\
-\bottomrule
-\end{tabular}
-\end{center}
-Glyph 8 lights a--g and leaves dp dark. Sum the seven calculated currents and
-compare that value with the 40\,mA display limit; separately record total USB
-current, which also includes the board and register. Attach a signed worksheet
-if the available instrument log provides these same eight path fields.
-
-\subsection{Required observations}
-
-\begin{tabularx}{\linewidth}{@{}p{0.44\linewidth} c X@{}}
-\toprule
-Check & Pass & Recorded evidence\\
-\midrule
-Unpowered wiring matches both datasheets & \checkbox & \\
-D13 gives a 250 ms acquisition pulse and 750 ms separator & \checkbox & \\
-Digits 0--9 are stable and correctly mapped & \checkbox & \\
-Analyzer record names channels, sample rate, trigger, and decoded TP-DATA byte & \checkbox & \\
-TP-CLOCK shows eight pulses before one TP-LATCH edge & \checkbox & \\
-All eight resistor values/drops/currents and glyph-8 total are recorded & \checkbox & \\
-Loaded/unloaded rail and glyph-8 total USB current meet limits & \checkbox & \\
-Startup transient with OE tied low is observed and recorded & \checkbox & \\
-First software latch establishes the documented zero & \checkbox & \\
-Reset returns to the documented initial sequence & \checkbox & \\
-Each unpowered-installed midpoint fixture passes after 120 s shutdown & \checkbox & \\
-Power removal leaves every part cool and dark & \checkbox & \\
-\bottomrule
-\end{tabularx}
-
-\textbf{Instrument and capture identifiers:}
-\blank{4.2in}
-
-\textbf{Deviations or open questions:}
-\vspace{0.55in}
-
-\textbf{Stop conditions:} unexpected heat, unstable USB, a display current
-above the recorded budget, signal outside the rails, unexpected simultaneous
-segments, or disagreement between the actual part datasheet and this lesson.
-Remove USB power physically; software shutdown is not the emergency stop.
-
-\textbf{Deferred upgrade:} repeat the startup and reset observations after
-adding a pulled-up, software-owned OE signal. Record that outputs remain
-disabled until a blank byte has been shifted and latched; do not transfer that
-claim to the three-wire circuit above.
-
+\paragraph{Physical acceptance boundary.}
+Measured bench acceptance remains a separately controlled campaign; this
+learner lesson does not include a bench record.
 \section{What comes next}
 
 Lesson 011 keeps this display visible while a deterministic, nonblocking

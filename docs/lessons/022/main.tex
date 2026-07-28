@@ -27,6 +27,7 @@ pdflang={en-US}}
 
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}lX>{\bfseries}lX@{}}
 Time & about 45 minutes & Board & Arduino Mega 2560\\
+Prerequisites & Lessons 001--021 & Kind & component\\
 Payoffs & live pulse length, eighth-record flourish & Energy & E1, USB only\\
 Physical parts & potentiometer, LED, 1 k\(\Omega\) resistor & Storage & model only\\
 \end{tabularx}
@@ -128,7 +129,7 @@ SD card, or bus wires because none exists in this lesson.
 
 The simulated clock begins at a fixed Unix-seconds value. The 11-byte record
 contains four clock bytes, one explicit clock-state byte, two raw ADC bytes,
-two moisture-scale bytes, one sample-state byte, and one synthetic metadata
+two lesson-scale bytes, one sample-state byte, and one synthetic metadata
 byte. \texttt{append()} stages the bytes. Only \texttt{sync()} advances the
 model's committed prefix.
 
@@ -175,12 +176,17 @@ The caller owns each buffer for the whole synchronous call. Shutdown is
 idempotent and releases owners in reverse order.
 
 \begin{lstlisting}[style=adkcpp]
-if (observeMoisture (now, sample) &&
-    persistMoisture (now, sample))
+if (observeControl (now, sample) &&
+    persistRecord (now, sample))
 {
-    acknowledgeMoisture (now, sample);
+    acknowledgeRecord (now, sample);
 }
 \end{lstlisting}
+
+The reused library value types retain their historical
+\texttt{MoistureSample} names, but this lesson uses them only as a bounded
+analog calibration model. Its learner-facing input, scale, and record
+vocabulary is deliberately neutral; no soil or moisture observation occurs.
 
 The host suite retains the exhaustive work: invalid addresses and lengths,
 claim conflicts, injected configure and transfer failures, chip-select

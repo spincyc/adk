@@ -57,6 +57,11 @@ presentation; formal electrical schematics are the sole exception. The
 canonical PDF policy and automated classification gate apply the same rule to
 every future lesson.
 
+The [lesson progression and learner-flow audit](audits/LESSON_PROGRESSION_AUDIT.md)
+is also complete for Lessons 001--033. Learner artifacts use dependent visible
+stages and keep repository administration, command-line maintenance, and
+physical-acceptance paperwork outside the lesson flow.
+
 | Boundary | State | Required next result |
 |---|---|---|
 | [001--033](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |

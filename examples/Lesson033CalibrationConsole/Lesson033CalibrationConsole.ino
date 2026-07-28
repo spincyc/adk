@@ -10,6 +10,8 @@
 
 namespace {
 
+    constexpr uint32_t adventureDurationMilliseconds = 120000;
+
     const adk::JoystickAxisConfig joystickXConfig                                                            (54, 512, 0, 1023, 48);
     const adk::JoystickAxisConfig joystickYConfig                                                            (55, 512, 0, 1023, 48, true);
     const adk::ButtonConfig       joystickSelectConfig                                                       (22);
@@ -61,6 +63,8 @@ namespace {
     adk::QuadratureEncoderSnapshot encoderEvidence;
     bool                           inputValid = false;
     bool                           halted     = false;
+    adk::TimePoint                 adventureStartedAt;
+    uint8_t                        adventureStage = 0;
 
     bool acquireInputs                                     ();
     bool acquireIndicators                                 ();
@@ -85,6 +89,8 @@ namespace {
 
 void setup ()
 {
+    adventureStartedAt = adk::TimePoint (millis ());
+
     if (!acquireInputs () ||
         !acquireIndicators                           () ||
         !initializeConsole                           () ||
@@ -102,6 +108,13 @@ void loop ()
     }
 
     const adk::TimePoint now (millis ());
+
+    if (now.elapsedSince (adventureStartedAt).milliseconds () >=
+        adventureDurationMilliseconds)
+    {
+        stopSafely ();
+        return;
+    }
 
     observeControls                        (now);
     decideCalibration                      (now);
@@ -183,6 +196,24 @@ namespace {
         input.inputValid  = inputValid;
 
         console.update (now, input);
+
+        const adk::CalibrationConsoleState state = console.snapshot ().state;
+
+        if (adventureStage == 0 &&
+            state == adk::CalibrationConsoleState::Editing)
+        {
+            adventureStage = 1;
+        }
+        else if (adventureStage == 1 &&
+                 state == adk::CalibrationConsoleState::Committed)
+        {
+            adventureStage = 2;
+        }
+        else if (adventureStage == 2 &&
+                 state == adk::CalibrationConsoleState::Cancelled)
+        {
+            adventureStage = 3;
+        }
     }
 
     bool presentPreview (adk::TimePoint now)

@@ -4,7 +4,7 @@
 namespace {
 
     constexpr adk::ShiftRegisterPins displayPins = {22, 23, 24};
-    constexpr adk::PinId            diagnosticPin = 13;
+    constexpr adk::PinId            acquisitionPin = 13;
     constexpr uint32_t              countIntervalMs = 1000;
     constexpr uint32_t              acquisitionPulseMs = 250;
     constexpr uint32_t              separatorMs = 750;
@@ -15,7 +15,7 @@ namespace {
     adk::SevenSegmentDisplay display (runtime.resources (),
                                       displayPins,
                                       adk::SevenSegmentPolarity::CommonCathode);
-    adk::MonoLed             diagnosticLed (runtime.resources (), diagnosticPin);
+    adk::MonoLed             acquisitionLed (runtime.resources (), acquisitionPin);
 
     adk::TimePoint acquiredAt;
     adk::TimePoint lastCount;
@@ -91,14 +91,14 @@ namespace {
 
     bool acquireCircuit ()
     {
-        if (!diagnosticLed.initialize ().ok ())
+        if (!acquisitionLed.initialize ().ok ())
         {
             return false;
         }
 
         if (!display.initialize ().ok ())
         {
-            diagnosticLed.shutdown ();
+            acquisitionLed.shutdown ();
             return false;
         }
 
@@ -107,7 +107,7 @@ namespace {
 
     bool showReady ()
     {
-        if (!diagnosticLed.on ().ok ())
+        if (!acquisitionLed.on ().ok ())
         {
             return false;
         }
@@ -122,7 +122,7 @@ namespace {
 
         if (acquisitionPulseOn && elapsedMs >= acquisitionPulseMs)
         {
-            if (!diagnosticLed.off ().ok ())
+            if (!acquisitionLed.off ().ok ())
             {
                 stopSafely ();
                 return false;
@@ -170,7 +170,7 @@ namespace {
         if (!stopping
             && now.elapsedSince (acquiredAt).milliseconds () >= runLimitMs)
         {
-            if (!display.blank ().ok () || !diagnosticLed.off ().ok ())
+            if (!display.blank ().ok () || !acquisitionLed.off ().ok ())
             {
                 stopSafely ();
                 return true;
@@ -192,8 +192,8 @@ namespace {
 
     void stopSafely ()
     {
-        display      .shutdown ();
-        diagnosticLed.shutdown ();
+        display       .shutdown ();
+        acquisitionLed.shutdown ();
         ready              = false;
         acquisitionPulseOn = false;
         counting           = false;

@@ -47,8 +47,6 @@
   breaklines=true,
   tabsize=4
 }
-\newcommand{\checkbox}{\(\square\)}
-\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
 \newcommand{\lessonbox}[1]{%
   \begin{center}\fcolorbox{Ink}{white}{\parbox{0.92\linewidth}{#1}}\end{center}}
 
@@ -113,11 +111,10 @@ The four nibble LEDs show the low position bits. The RGB LED pulses green for
 a valid edge, remains amber for no edge, and pulses red for an invalid jump.
 Cadence and the nibble make the evidence interpretable without color alone.
 
-\textbf{Unpowered prediction.} Record the exact module markings and revision.\\[8pt]
-\blank{3.8in}\\
-Identify ground: \blank{0.8in}. Verify continuity from D24 and D25 to the intended contacts,
-the separate D26 switch path, common ground, polarity, and one resistor per LED
-channel.
+\textbf{Unpowered boundary.} The exact module markings, revision, ground
+contact, supply rating, and polarity must already be resolved. Continuity must
+associate D24 and D25 with the intended contacts and D26 with the separate
+switch path. Every LED channel retains its own resistor.
 
 \section{Gray-code timing drawing}
 
@@ -134,8 +131,9 @@ Samples: \textbf{00 \(\rightarrow\) 01 \(\rightarrow\) 11
 phase A falls, producing the sampled masks 00, 01, 11, 10, 00 and four
 clockwise edge decisions. Reverse traversal reports counterclockwise.}
 
-Before power, predict the TP-A and TP-B levels for one slow traversal.\\[8pt]
-\blank{5.8in}
+Before power, the expected TP-A and TP-B order is the printed Gray-code
+sequence. A different observed order is evidence to stop and reconcile the
+fixture, not a value to reinterpret silently.
 
 \section{Decoder contract}
 
@@ -201,7 +199,7 @@ snapshot, and presents its low nibble and diagnostic state.
 \begin{enumerate}
   \item Predict the complete TP-A/TP-B sequence before applying USB power.
   \item Rotate slowly through one full electrical sequence. Observe TP-A and
-        TP-B, then record four signed edges independent of mechanical detents.
+        TP-B, then observe four signed edges independent of mechanical detents.
   \item Compare the electrical sequence, low position nibble, and valid-edge
         pulse. Interpret agreement as decoder evidence.
   \item Reverse direction and deliberately include a small bounce reversal.
@@ -231,29 +229,14 @@ unidentified module contact & remain unpowered until primary evidence identifies
 Never move jumpers while powered. Software shutdown is lifecycle behavior, not
 an emergency stop; remove USB power for any unsafe or unexplained condition.
 
-\section{Open hardware acceptance record}
+\section{The two-minute encoder adventure}
 
-\begin{tabularx}{\linewidth}{@{}l X l X@{}}
-\toprule
-Board/revision & \blank{1.4in} & Commit & \blank{1.25in}\\
-Encoder markings & \blank{1.4in} & Pin source & \blank{1.25in}\\
-Supply/instrument & \blank{1.4in} & Tool versions & \blank{1.25in}\\
-Operator/date & \blank{1.4in} & Deviations & \blank{1.25in}\\
-\bottomrule
-\end{tabularx}
-
-\begin{itemize}
-  \item[\checkbox] unpowered identity, continuity, polarity, and resistor check;
-  \item[\checkbox] acquisition prediction, observation, and interpretation;
-  \item[\checkbox] both direction sequences and all four starting phases;
-  \item[\checkbox] repeated state, bounce reversal, invalid jump, and recovery;
-  \item[\checkbox] TP evidence and LED presentation compared independently;
-  \item[\checkbox] shutdown input release, reset, and power removal recorded.
-\end{itemize}
-
-Prediction: \blank{5.8in}\\[8pt]
-Observation: \blank{5.7in}\\[8pt]
-Interpretation and limits: \blank{4.9in}
+The RGB witness makes a dependent three-step story. Turn through a positive
+edge to unlock the first stage, turn through a negative edge to unlock the
+second, then press the encoder switch to reset the count and reach the steady
+white finish. The four position lamps continue to expose the low nibble
+throughout. At 120 seconds the sketch shuts every indicator down regardless of
+contact state or progress.
 
 \section{Exercises}
 
@@ -267,24 +250,13 @@ Interpretation and limits: \blank{4.9in}
         quadrature decoder.
 \end{enumerate}
 
-\section{Reproduce the software evidence}
-
-\begin{lstlisting}[style=adkcpp]
-make host-test
-make host-test-exceptions
-make arduino-Lesson032QuadratureEncoder
-make size-check
-make lessons
-make lessons-check
-make site-check
-make hardware-card LESSON=032 BOARD=mega2560
-\end{lstlisting}
+\section{Software evidence}
 
 Tests cover all starting phases, directions, reversal, partial turns, bounce,
 repeated states, every invalid jump and recovery, both saturations, reset,
 exact read order, transactional failures, lifecycle, traits, and replay.
-Compilation and deterministic tests are software evidence, not a physical
-module acceptance result.
+Repository automation runs those tests, Mega compilation, size, and publication
+gates. They are supporting evidence, not learner chores or physical acceptance.
 
 \section{Reference trail}
 

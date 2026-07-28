@@ -209,7 +209,7 @@ measured dark/light resistance; white LED package, anode/cathode, and
 \(V_f\); and RGB package/photo, viewing orientation, individual lead numbers,
 common-cathode lead, each color lead, and each color's \(V_f\). The build plate
 uses the verified left-to-right RGB order R--K--G--B at e32--e35, viewed from
-the flat/package reference recorded on the card. If the specimen differs,
+the fixed flat/package reference. If the specimen differs,
 stop: revise both the build plate and manifest before applying USB power.
 
 \textbf{Coordinate net manifest.} The breadboard's a--e holes in one numbered
@@ -363,7 +363,7 @@ old active command.
 \section{Deterministic trace exercise}
 
 Use an eight-sample moving average and an eight-permille deadband. For this
-short worksheet, the ``filtered'' column is supplied so the state-machine
+short trace, the ``filtered'' column is supplied so the state-machine
 reasoning remains visible.
 
 \begin{center}
@@ -414,29 +414,11 @@ one-at-a-time 10\,k\(\Omega\)/10\,k\(\Omega\) midpoint fixture described below,
 inspect it, restore USB, and measure the midpoint. Never use an ohmmeter on a
 powered circuit.}
 
-\section{CLI-only workflow}
+\section{Prepared workflow}
 
-No IDE is required. From the repository root:
 
-\begin{lstlisting}[style=adkcpp,language=bash]
-make bootstrap
-make host-test
-make arduino-Lesson009AdaptiveNightLight
-arduino-cli compile --fqbn arduino:avr:mega --library . \
-  --build-property \
-  compiler.cpp.extra_flags=-DADK_LESSON009_ACCEPTANCE_TELEMETRY=1 \
-  examples/Lesson009AdaptiveNightLight
-make upload EXAMPLE=Lesson009AdaptiveNightLight PORT=/dev/ttyACM0
-make monitor-describe PORT=/dev/ttyACM0
-make monitor PORT=/dev/ttyACM0 BAUD=115200
-make serial-log PORT=/dev/ttyACM0 BAUD=115200 \
-    SERIAL_LOG=build/serial/lesson009.log
-make lessons
-make site
-\end{lstlisting}
-
-The circuit supplies the acceptance evidence even if \texttt{monitor} is never
-run. The compile-time acceptance build emits only \texttt{raw=} ADC counts,
+The circuit supplies its evidence without a terminal. The optional telemetry
+build emits only \texttt{raw=} ADC counts,
 bounded to one record per 250\,ms and by the fixed 120\,s deadline. It is
 supporting evidence for the TP1 voltage observation, never the acquisition or
 safe-state proof. The default build has telemetry disabled.
@@ -561,48 +543,14 @@ unexpected reset & disconnect power and inspect shorts/current budget & software
         \texttt{Off}.
 \end{enumerate}
 
-\section{Acceptance record}
-
-\begin{tabularx}{\linewidth}{@{}l X l X@{}}
-\toprule
-Field & Record & Field & Record\\
-\midrule
-Board/revision & & Date &\\
-USB source/cable and measured 5\,V rail & & Reviewer &\\
-Arduino CLI/core & & ADK revision &\\
-Multimeter make/model/asset ID & & LDR package/photo/resistance &\\
-Acceptance sketch artifact/hash & & Logic probe/scope make/model/asset ID &\\
-White LED package/polarity/\(V_f\) & & RGB package/photo/R--K--G--B pin map &\\
-Flash bytes & & Static RAM bytes &\\
-\bottomrule
-\end{tabularx}
-
-\begin{itemize}
-  \item \checkbox\ Unpowered wiring and current calculations passed.
-  \item \checkbox\ Ready, Active, and SensorFault indications matched the table.
-  \item \checkbox\ A0 voltage supported the raw-sample interpretation.
-  \item \checkbox\ Hysteresis produced distinct on and off boundaries.
-  \item \checkbox\ Open and short sensor tests forced lamp duty zero.
-  \item \checkbox\ Resource acquisition and D9 safe state were proven separately.
-  \item \checkbox\ Reset, shutdown, and power removal observations were recorded.
-  \item \checkbox\ Measured rail, TP1 light extremes, each 330\,\(\Omega\)
-        resistor, each active-channel current, and worst simultaneous current
-        total were recorded.
-\end{itemize}
-
-Observed deviations and unresolved checks:
-\vspace{0.45in}
-
-\textbf{Release status.} Compilation, host replay, and a generated PDF do not
-constitute physical verification. Until a person completes this card on the
-named Mega 2560 and records measurements, this lesson remains host verified
-with hardware acceptance open.
-
+\paragraph{Physical acceptance boundary.}
+Measured bench acceptance remains a separately controlled campaign; this
+learner project does not include a bench record.
 \section{Use with}
 
 Use the maintained HTML lesson for searchable API links, errata, source
-downloads, and exact CLI targets. Use this PDF at the bench for predictions,
-schematics, worksheets, and recorded evidence. The canonical editable sketch
+downloads and maintained procedures. Use this PDF for predictions, schematics,
+and evidence interpretation. The canonical editable sketch
 is \texttt{examples/Lesson009AdaptiveNightLight/} rather than a duplicate in
 this document.
 

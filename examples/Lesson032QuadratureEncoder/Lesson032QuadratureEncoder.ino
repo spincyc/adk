@@ -15,6 +15,7 @@ namespace {
     constexpr uint8_t  positionLedCount            = 4;
     constexpr uint16_t readyPulseMilliseconds      = 500;
     constexpr uint16_t transitionPulseMilliseconds = 120;
+    constexpr uint32_t adventureDurationMilliseconds = 120000;
 
     enum struct TransitionEvidence : uint8_t
     {
@@ -42,6 +43,8 @@ namespace {
     uint16_t                       previousInvalidTransitions = 0;
     uint32_t                       readyStartedAt             = 0;
     uint32_t                       transitionStartedAt        = 0;
+    adk::TimePoint                 adventureStartedAt;
+    uint8_t                        adventureStage = 0;
     TransitionEvidence             transitionEvidence = TransitionEvidence::Idle;
     bool                           running            = false;
 
@@ -73,6 +76,13 @@ void loop ()
     }
 
     const adk::TimePoint now (millis ());
+
+    if (now.elapsedSince (adventureStartedAt).milliseconds () >=
+        adventureDurationMilliseconds)
+    {
+        stopSafely ();
+        return;
+    }
 
     if (!observeEncoder (now))
     {
@@ -134,6 +144,8 @@ namespace {
         observedEncoder            = encoder.snapshot ();
         previousInvalidTransitions = observedEncoder.invalidTransitions;
         readyStartedAt             = millis ();
+
+        adventureStartedAt         = adk::TimePoint (readyStartedAt);
         running                    = true;
     }
 
@@ -155,6 +167,11 @@ namespace {
         {
             encoder.resetPosition              ();
             observedEncoder = encoder.snapshot ();
+
+            if (adventureStage == 2)
+            {
+                adventureStage = 3;
+            }
         }
 
         if (observedEncoder.invalidTransitions != previousInvalidTransitions)
@@ -166,6 +183,15 @@ namespace {
         {
             transitionEvidence  = TransitionEvidence::Valid;
             transitionStartedAt = now.milliseconds ();
+
+            if (adventureStage == 0 && observedEncoder.delta > 0)
+            {
+                adventureStage = 1;
+            }
+            else if (adventureStage == 1 && observedEncoder.delta < 0)
+            {
+                adventureStage = 2;
+            }
         }
     }
 
@@ -199,6 +225,7 @@ namespace {
         const adk::Rgb red   (96, 0, 0);
         const adk::Rgb green (0, 96, 0);
         const adk::Rgb amber (80, 32, 0);
+        const adk::Rgb white (96, 96, 96);
 
         if (now.milliseconds () - readyStartedAt < readyPulseMilliseconds)
         {
@@ -208,6 +235,11 @@ namespace {
         if (now.milliseconds () - transitionStartedAt >= transitionPulseMilliseconds)
         {
             transitionEvidence = TransitionEvidence::Idle;
+        }
+
+        if (adventureStage == 3)
+        {
+            return stateLed.set (white).ok ();
         }
 
         if (transitionEvidence == TransitionEvidence::Invalid)

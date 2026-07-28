@@ -11,15 +11,15 @@ namespace {
     adk::Button             pedestrianButton       (runtime.resources (),
                                                      pedestrianButtonConfig);
 
-    adk::MonoLed mainRed    (runtime.resources (), 30);
-    adk::MonoLed mainYellow (runtime.resources (), 31);
-    adk::MonoLed mainGreen  (runtime.resources (), 32);
-    adk::MonoLed sideRed    (runtime.resources (), 33);
-    adk::MonoLed sideYellow (runtime.resources (), 34);
-    adk::MonoLed sideGreen  (runtime.resources (), 35);
-    adk::MonoLed walk       (runtime.resources (), 36);
-    adk::MonoLed stop       (runtime.resources (), 37);
-    adk::MonoLed ready      (runtime.resources (), LED_BUILTIN);
+    adk::MonoLed mainRed        (runtime.resources (), 30);
+    adk::MonoLed mainYellow     (runtime.resources (), 31);
+    adk::MonoLed mainGreen      (runtime.resources (), 32);
+    adk::MonoLed sideRed        (runtime.resources (), 33);
+    adk::MonoLed sideYellow     (runtime.resources (), 34);
+    adk::MonoLed sideGreen      (runtime.resources (), 35);
+    adk::MonoLed walk           (runtime.resources (), 36);
+    adk::MonoLed stop           (runtime.resources (), 37);
+    adk::MonoLed acquisitionLed (runtime.resources (), LED_BUILTIN);
 
     adk::TrafficConfig  trafficConfig;
     adk::TrafficJunction traffic (trafficConfig);
@@ -33,10 +33,10 @@ namespace {
         Halted
     };
 
-    const adk::Duration readyPulseDuration (250);
-    const adk::Duration readySeparator     (750);
-    const adk::Duration demoDuration       (120000);
-    const adk::Duration allRedDuration     (1000);
+    const adk::Duration acquisitionPulseDuration (250);
+    const adk::Duration acquisitionSeparator     (750);
+    const adk::Duration demoDuration             (120000);
+    const adk::Duration allRedDuration           (1000);
 
     DemoStage      demoStage    = DemoStage::Halted;
     adk::TimePoint stageStarted;
@@ -88,7 +88,7 @@ void loop ()
 
     if (!decision.ok ())
     {
-        ready.off ();
+        acquisitionLed.off ();
     }
 }
 
@@ -105,14 +105,14 @@ namespace {
             !sideGreen.initialize        ().ok () ||
             !walk.initialize             ().ok () ||
             !stop.initialize             ().ok () ||
-            !ready.initialize            ().ok () ||
+            !acquisitionLed.initialize   ().ok () ||
             !traffic.initialize          ().ok ())
         {
             stopSafely ();
             return false;
         }
 
-        if (!ready.on ().ok ())
+        if (!acquisitionLed.on ().ok ())
         {
             stopSafely ();
             return false;
@@ -126,9 +126,9 @@ namespace {
         const adk::Duration elapsed = now.elapsedSince (stageStarted);
 
         if (demoStage == DemoStage::Acquiring &&
-            elapsed >= readyPulseDuration)
+            elapsed >= acquisitionPulseDuration)
         {
-            if (!ready.off ().ok ())
+            if (!acquisitionLed.off ().ok ())
             {
                 stopSafely ();
                 return;
@@ -138,7 +138,7 @@ namespace {
             demoStage    = DemoStage::Separating;
         }
         else if (demoStage == DemoStage::Separating &&
-                 elapsed >= readySeparator)
+                 elapsed >= acquisitionSeparator)
         {
             stageStarted = now;
             demoStage    = DemoStage::Running;
@@ -227,16 +227,16 @@ namespace {
 
     void stopSafely ()
     {
-        traffic.shutdown    ();
-        ready.shutdown      ();
-        stop.shutdown       ();
-        walk.shutdown       ();
-        sideGreen.shutdown  ();
-        sideYellow.shutdown ();
-        sideRed.shutdown    ();
-        mainGreen.shutdown  ();
-        mainYellow.shutdown ();
-        mainRed.shutdown    ();
+        traffic       .shutdown ();
+        acquisitionLed.shutdown ();
+        stop          .shutdown ();
+        walk          .shutdown ();
+        sideGreen     .shutdown ();
+        sideYellow    .shutdown ();
+        sideRed       .shutdown ();
+        mainGreen     .shutdown ();
+        mainYellow    .shutdown ();
+        mainRed       .shutdown ();
 
         pedestrianButton.shutdown ();
         demoStage = DemoStage::Halted;

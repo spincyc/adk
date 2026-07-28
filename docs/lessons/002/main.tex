@@ -148,10 +148,8 @@ data cable, breadboard, normally-open momentary pushbutton, jumper wires, one
 measured 10\,k\(\Omega\) resistor, the board's built-in LED, and a DMM with
 documented input resistance and range.
 
-\textbf{Identity record:} board maker/model/revision \blank{1.3in}, board
-marking \blank{1.0in}, switch part or kit label \blank{1.1in},
-continuity-confirmed contact pair \blank{0.8in}, USB source identity and
-5\,V rating \blank{1.2in}, and cable identity \blank{0.9in}. Confirm that
+Before wiring, identify the board revision, switch contact pair, USB source,
+and cable. Confirm that
 \texttt{LED\_BUILTIN} names the on-board diagnostic LED for the selected Mega
 target. A visually similar four-leg switch is not identified until its open and
 closed contact pair has been measured with all power removed.
@@ -465,60 +463,9 @@ The only wiring fault used here is an open connection. A floating-input
 demonstration is brief, uses only D22 and the switch, and is restored to pull-up
 configuration before continuing.}
 
-\section{Mega 2560 acceptance checklist}
-
-Date/time: \blank{1.3in}\quad operator: \blank{1.3in}\quad
-reviewer/date: \blank{1.5in}\\
-Board maker/model/revision/ID: \blank{3.6in}\\
-Port: \blank{1.0in}\\
-ADK/sketch commit: \blank{1.4in}\quad upload command: \blank{2.7in}\\
-Arduino CLI: \blank{1.0in}\quad AVR core: \blank{1.0in}\quad
-FQBN: \blank{1.5in}\\
-USB source/cable/current limit: \blank{3.5in}\quad
-measured 5\,V rail: \blank{1.0in}\\
-Switch identity/contact map: \blank{3.0in}\quad
-10\,k\(\Omega\) measured value/rating: \blank{1.7in}\\
-DMM model/range/input resistance: \blank{3.6in}
-
-\begin{itemize}
-    \item[\checkbox] Clean build succeeds with warnings treated according to project policy.
-    \item[\checkbox] Sketch size is recorded: flash \blank{0.8in} bytes; SRAM \blank{0.8in} bytes.
-    \item[\checkbox] A distinct 250\,ms LED acquisition pulse and 750\,ms dark
-          separator occur before switch behavior.
-    \item[\checkbox] Released TP-IN voltage and LED-off agree in three trials.
-    \item[\checkbox] Pressed TP-IN voltage and LED-on agree in three trials.
-    \item[\checkbox] Diagnostic LED agrees with the same stored sample.
-    \item[\checkbox] Three press/release trials match the prediction table.
-    \item[\checkbox] Ground-wire-open fault is detected from evidence and restored.
-    \item[\checkbox] Reset while pressed reports the actual pressed state.
-    \item[\checkbox] A continuous three-second hold enters the passive state;
-          release produces no further LED response until reset.
-    \item[\checkbox] Host trace confirms controlled shutdown sets D22 and
-          \texttt{LED\_BUILTIN} to \texttt{INPUT} (high impedance).
-    \item[\checkbox] A named DMM is connected TP-IN-to-GND while unpowered;
-          its input resistance and the exact Mega pull-up limits are recorded.
-    \item[\checkbox] Released TP-IN voltage with the pull-up active and after
-          shutdown is recorded against calculated ranges, separately proving
-          the weak meter path controls the released pin after shutdown.
-    \item[\checkbox] The measured 10\,k\(\Omega\) weak pull-up is installed
-          D13-to-5\,V while unpowered. The exact board D13 path is included in
-          predicted driven-LOW and released-pin voltage ranges.
-    \item[\checkbox] The sketch holds D13 LOW for 250\,ms before shutdown;
-          its later weak-bias voltage separately supports D13 high impedance.
-    \item[\checkbox] Reset after shutdown reacquires both pins and restores the
-          released/pressed LED mapping.
-    \item[\checkbox] USB is disconnected before the circuit is dismantled.
-\end{itemize}
-
-Deviations and remaining uncertainty: \blank{4.4in}\\[8pt]
-Result: \checkbox\ draft \quad \checkbox\ rejected \quad
-\checkbox\ hardware verified \quad Reviewer initials: \blank{1.0in}
-
-\warningbox{High impedance is a software pin condition, not power isolation.
-Do not rewire after shutdown while USB or any other source remains connected.
-Stop for heat, odor, resets, damaged insulation, an unidentified switch, or
-evidence that disagrees with the prediction. Remove USB before investigating.}
-
+\paragraph{Physical acceptance boundary.}
+Measured bench acceptance remains a separately controlled campaign; this
+learner lesson does not include an operator or reviewer form.
 \section{Explain the result}
 
 \textbf{Claim:} In one sentence, state whether the pull-up input distinguishes the

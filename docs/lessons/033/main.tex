@@ -48,8 +48,6 @@
   breaklines=true,
   tabsize=4
 }
-\newcommand{\checkbox}{\(\square\)}
-\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
 \newcommand{\lessonbox}[1]{%
   \begin{center}\fcolorbox{Ink}{white}{\parbox{0.92\linewidth}{#1}}\end{center}}
 
@@ -225,7 +223,7 @@ state. A short piezo acknowledgement is optional supporting evidence.
 \section{Preview, trim, commit, and cancel experiment}
 
 \begin{enumerate}
-  \item With USB removed, record the exact joystick and encoder revisions.
+  \item With USB removed, inspect the exact joystick and encoder revisions.
         Compare every marking and pin label with their qualified records.
   \item Inspect supply and ground, TP-X, TP-Y, TP-A, TP-B, each LED resistor,
         RGB polarity, and common ground before applying power.
@@ -242,22 +240,15 @@ state. A short piezo acknowledgement is optional supporting evidence.
   \item Begin another edit and press the encoder button. Predict violet,
         nothing committed, and exact restoration of both preview values.
   \item Present Select and Cancel together. Predict Cancel precedence.
-  \item Invoke shutdown separately, record inactive presentation, check
+  \item Invoke shutdown separately, observe inactive presentation, check
         resource release with the named method, and then remove USB.
 \end{enumerate}
 
-\begin{tabularx}{\linewidth}{@{}X X X@{}}
-\toprule
-Step & Prediction & Observation and interpretation\\
-\midrule
-field threshold and center hold & \blank{1.35in} & \blank{1.9in}\\
-coarse Y endpoint & \blank{1.35in} & \blank{1.9in}\\
-one encoder trim & \blank{1.35in} & \blank{1.9in}\\
-atomic commit & \blank{1.35in} & \blank{1.9in}\\
-cancel rollback & \blank{1.35in} & \blank{1.9in}\\
-simultaneous cancel/select & \blank{1.35in} & \blank{1.9in}\\
-\bottomrule
-\end{tabularx}
+Each payoff depends on the previous state: center hold preserves the selected
+field, Y supplies the coarse preview, one valid encoder edge supplies one trim
+unit, Select atomically commits both fields, and Cancel restores both preview
+values. When Select and Cancel arrive together, Cancel wins and no value is
+committed.
 
 \section{Evidence chain and diagnosis}
 
@@ -288,47 +279,33 @@ field changes while X is centered & compare TP-X, calibration, and thresholds\\
 preview jumps by more than expected & separate Y coarse mapping from encoder trim\\
 encoder count changes on invalid jump & inspect TP-A/TP-B order and invalid counter\\
 only one value restores on Cancel & reject the adapter or engine evidence\\
-red state appears & record status; reinitialize only after correcting cause\\
+red state appears & inspect status; reinitialize only after correcting cause\\
 LED nibble disagrees with LCD & inspect snapshot-to-presentation mapping\\
 out-of-rail test point or hot part & remove USB and troubleshoot unpowered\\
 \bottomrule
 \end{tabularx}
 
-\section{Deterministic replay worksheet}
+\section{Deterministic replay evidence}
 
 Host tests supply every timestamp and input. They cover every state and
 transition, both fields, center stability, coarse endpoints, every clamp,
 encoder trim, atomic commit, rollback, simultaneous events, invalid ranges,
 input failure, acknowledgement boundaries, rollover, restart, and shutdown.
 
-\begin{lstlisting}[style=adkcpp]
-make calibration-console-test
-make host-test-exceptions
-make arduino-Lesson033CalibrationConsole
-make size-check
-\end{lstlisting}
+\section{The two-minute calibration adventure}
 
-\begin{tabularx}{\linewidth}{@{}l X X X@{}}
-\toprule
-Frame & Predicted state/value & Replay result & Reconciliation\\
-\midrule
-centered Selecting & \blank{1.0in} & \blank{1.0in} & \blank{1.0in}\\
-coarse Maximum edit & \blank{1.0in} & \blank{1.0in} & \blank{1.0in}\\
-one negative trim & \blank{1.0in} & \blank{1.0in} & \blank{1.0in}\\
-Select + Cancel & \blank{1.0in} & \blank{1.0in} & \blank{1.0in}\\
-invalid input & \blank{1.0in} & \blank{1.0in} & \blank{1.0in}\\
-\bottomrule
-\end{tabularx}
-
-Run the same recording twice. First final snapshot bytes:
-\blank{1.4in}; second: \blank{1.4in}. Explain any difference:
-\blank{2.0in}.
+The project turns Lessons 031 and 032 into one dependent visible story. Select
+a field with the joystick, enter Editing, commit one changed preview, begin a
+second edit, then cancel it with the encoder switch. The LCD preserves the
+committed and preview values while RGB distinguishes each state and the nibble
+lamps expose the selected preview. At 120 seconds the sketch shuts down every
+input and presentation owner regardless of the current state or held input.
 
 \section{Claim--evidence--reasoning}
 
 \begin{tabularx}{\linewidth}{@{}X X X@{}}
 \toprule
-Claim & Evidence to record & What it cannot prove\\
+Claim & Evidence & What it cannot prove\\
 \midrule
 field selection is correct & TP-X, raw X, field snapshot & endpoint release\\
 trim is one unit & TP-A/B sequence, delta, preview & electrical identity\\
@@ -338,63 +315,17 @@ shutdown is inactive & presentation and pin level & USB power removal\\
 \bottomrule
 \end{tabularx}
 
-Chosen claim: \blank{2.0in}\\[7pt]
-Evidence: \blank{5.7in}\\[7pt]
-Reasoning and limits: \blank{4.9in}
-
-\section{Open hardware acceptance record}
-
-\textbf{Software gates are not a physical result.} Keep this card open until
-the exact board, specimens, supply, instruments, measurements, date, and
-reviewer are present.
-
-\begin{tabularx}{\linewidth}{@{}l X l X@{}}
-\toprule
-Mega/revision & \blank{1.25in} & Commit & \blank{1.15in}\\
-Joystick/encoder & \blank{1.25in} & Markings & \blank{1.15in}\\
-Supply/instrument & \blank{1.25in} & Tool versions & \blank{1.15in}\\
-Operator/date & \blank{1.25in} & Reviewer & \blank{1.15in}\\
-\bottomrule
-\end{tabularx}
-
-\begin{itemize}
-  \item[\checkbox] unpowered identity, pinout, polarity, resistors, and common
-        ground inspected against qualified records;
-  \item[\checkbox] acquisition and rollback observed separately from safe state;
-  \item[\checkbox] TP-X/TP-Y raw axes and TP-A/TP-B phase evidence recorded;
-  \item[\checkbox] both fields, coarse mapping, trim, clamps, commit, cancel,
-        simultaneous-event precedence, and fault presentation reconciled;
-  \item[\checkbox] repeated replay produced identical snapshots;
-  \item[\checkbox] shutdown inactive state and resource release recorded as
-        separate claims;
-  \item[\checkbox] USB power-removal result recorded.
-\end{itemize}
-
-Prediction: \blank{5.8in}\\[8pt]
-Observation: \blank{5.7in}\\[8pt]
-Interpretation and limits: \blank{4.9in}
 
 \lessonbox{\textbf{Stop rule.} Remove USB power for a hot part, unstable
 supply, wrong polarity, missing resistor, out-of-rail TP-X/TP-Y/TP-A/TP-B,
 unexpected output, or disagreement between the qualified pin table and
 breadboard. Never discover an unknown module rating by experiment.}
 
-\section{Reproduce and reference}
+\section{Software evidence and reference}
 
-\begin{lstlisting}[style=adkcpp]
-make calibration-console-test
-make host-test-exceptions
-make host-test-sanitize
-make arduino-Lesson033CalibrationConsole
-make size-check
-make lessons
-make lessons-check
-make site-check
-make hardware-card LESSON=033 BOARD=mega2560
-\end{lstlisting}
-
-Record exact tool versions, board profile, flash, and static RAM with the
-canonical sketch. Report unavailable tools rather than substituting evidence.
+Repository automation owns deterministic replay, lifecycle, sanitizer, Mega,
+size, PDF, and site gates. These are supporting evidence rather than learner
+commands, and they do not substitute for physical acceptance.
 
 Reference the ADK \texttt{calibration\_console.h} interface, focused tests,
 canonical Lesson 033 sketch, Lessons 031 and 032, the input-expansion design

@@ -5,15 +5,15 @@ namespace {
 
     constexpr adk::PinId potentiometerPin = 54; // Mega A0
     constexpr adk::PinId brightnessPin    = 6;
-    constexpr adk::PinId diagnosticPin    = 13;
+    constexpr adk::PinId acquisitionPin   = 13;
     constexpr uint32_t   acquisitionOnMs  = 250;
     constexpr uint32_t   acquisitionGapMs = 750;
     constexpr uint32_t   runDurationMs    = 120000;
 
     adk::Runtime     runtime;
-    adk::AnalogInput potentiometer (runtime.resources (), potentiometerPin);
-    adk::PwmOutput   brightnessLed (runtime.resources (), brightnessPin);
-    adk::MonoLed     diagnosticLed (runtime.resources (), diagnosticPin);
+    adk::AnalogInput potentiometer  (runtime.resources (), potentiometerPin);
+    adk::PwmOutput   brightnessLed  (runtime.resources (), brightnessPin);
+    adk::MonoLed     acquisitionLed (runtime.resources (), acquisitionPin);
 
     bool     ready       = false;
     uint32_t startedAtMs = 0;
@@ -77,21 +77,21 @@ namespace {
 
     bool acquireCircuit ()
     {
-        if (!diagnosticLed.initialize ().ok ())
+        if (!acquisitionLed.initialize ().ok ())
         {
             return false;
         }
 
         if (!potentiometer.initialize ().ok ())
         {
-            diagnosticLed.shutdown ();
+            acquisitionLed.shutdown ();
             return false;
         }
 
         if (!brightnessLed.initialize ().ok ())
         {
-            potentiometer.shutdown ();
-            diagnosticLed.shutdown ();
+            potentiometer .shutdown ();
+            acquisitionLed.shutdown ();
             return false;
         }
 
@@ -100,13 +100,13 @@ namespace {
 
     bool showAcquisition ()
     {
-        if (!diagnosticLed.on ().ok ())
+        if (!acquisitionLed.on ().ok ())
         {
             return false;
         }
 
         delay                       (acquisitionOnMs);
-        if (!diagnosticLed.off      ().ok ())
+        if (!acquisitionLed.off     ().ok ())
         {
             return false;
         }
@@ -144,9 +144,9 @@ namespace {
 
     void stopSafely ()
     {
-        brightnessLed.shutdown ();
-        potentiometer.shutdown ();
-        diagnosticLed.shutdown ();
+        brightnessLed .shutdown ();
+        potentiometer .shutdown ();
+        acquisitionLed.shutdown ();
         ready = false;
     }
 
