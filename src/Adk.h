@@ -40,6 +40,7 @@
 #include "motor_intent.h"
 #include "night_light.h"
 #include "observation_tracker.h"
+#include "optical_observation.h"
 #include "packet_receiver.h"
 #include "passage_ledger.h"
 #include "passage_qualifier.h"
