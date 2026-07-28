@@ -29,6 +29,7 @@
 #include "inert_show_simulator.h"
 #include "inert_load_interlock.h"
 #include "inert_load_panel.h"
+#include "inertial_observation.h"
 #include "keypad.h"
 #include "matrix_keypad.h"
 #include "magnetic_observation.h"
