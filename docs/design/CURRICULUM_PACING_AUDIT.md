@@ -141,6 +141,13 @@ datasheet.
 
 The first six appended blocks preserve the every-third-lesson project cadence:
 
+Rows 034--042 below are retained as immutable historical audit evidence and
+are explicitly superseded. They must not be used for assignment or
+implementation: canonical 034--036 is the magnetic-passage arc, 037--039 is
+the percussion-laboratory arc, 040--042 is the optical-course-marshal arc, and
+the matrix/MAX7219 work is retained at 070--072. The current authorities are
+`CURRICULUM.md`, `WORK_QUEUE.md`, and `projects/component_project_cadence.md`.
+
 | Lesson | Kind | One substantive concept | Observable outcome |
 |---:|---|---|---|
 | 031 | Component | Two-axis joystick as calibrated analog input plus a digital press | A supplied trace and physical positions map to neutral directional intent with dead zone |

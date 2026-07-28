@@ -133,6 +133,10 @@ Physical RTC and removable-media adapters remain deferred.
 
 ## Lessons 037--039: vibration and sound laboratory
 
+The complete interface, fixture, experiment, resource, specimen, publication,
+and acceptance contract is in the
+[percussion laboratory plan](../design/LESSONS_037_039_PERCUSSION_PLAN.md).
+
 ### 037 — Contact dynamics
 
 Give tilt, vibration switch, knock, tap, and shock modules one common
@@ -147,9 +151,10 @@ amplitude experiment, not speech recognition or sound-level metrology.
 
 ### 039 — Project: percussion sequencer
 
-Four physical surfaces trigger a deterministic step sequencer. Contact sensors
-provide attack timing, the microphone supplies relative intensity, a
-potentiometer sets tempo, and passive buzzer plus LEDs replay the recorded
+Four injected logical surface lanes drive a deterministic step sequencer.
+Each eventual physical contact specimen remains separately gated. Qualified
+contacts provide attack timing, the microphone supplies relative envelope,
+a potentiometer sets tempo, and passive buzzer plus LEDs replay the recorded
 pattern.
 
 ```text
@@ -162,8 +167,8 @@ Deterministic evidence:
 
 - recorded single tap, double tap, vibration, shock, and ambient-noise traces;
 - exact refractory, quantization, simultaneous-hit, and buffer-full boundaries;
-- microphone rail, unplugged, and threshold-disagreement faults;
-- stable playback under uneven update intervals; and
+- injected source-unavailable, rail/stuck, and threshold-disagreement faults;
+- deterministic skip-to-current playback under uneven update intervals; and
 - a seed-free replay whose output frames match byte for byte.
 
 Circuit-native observation:
@@ -174,9 +179,10 @@ Circuit-native observation:
 - the microphone analog output is a named oscilloscope point; and
 - silence is the safe buzzer state.
 
-Planned specimen coverage: knock, vibration, shock, tap, sound/microphone,
-tilt, active buzzer, passive buzzer, potentiometer, LEDs, and one-digit
-display.
+Planned family coverage: separately qualified knock/vibration/shock/tap/tilt
+contacts, sound/microphone envelope, passive buzzer, potentiometer, LEDs, and
+one-digit display. Active buzzer is excluded because it cannot provide the
+project's pitched replay.
 
 ## Lessons 040--042: optical course marshal
 

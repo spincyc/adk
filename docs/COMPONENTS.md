@@ -126,17 +126,17 @@ architectural layers.
 
 | Kit part | Adapter composition | Placement |
 |---|---|---:|
-| Active buzzer | `DigitalOutput` + `ActiveBuzzer` | 005 |
+| Active buzzer | Future exact-specimen `DigitalOutput` semantic adapter | Deferred; not Lesson 005 support |
 | Passive buzzer | Timer and pin claims + `PiezoSounder` | 005 |
 | 74HC595 | `ShiftRegister` | 010 |
 | 4-digit seven-segment | `ShiftRegister`/multiplex outputs + display model | 010 |
-| 8x8 LED matrix | Shift-register or SPI transport + matrix model | 010--012 |
+| 8x8 LED matrix | Exact MAX7219/SPI transport + matrix model | 071--072 queued |
 | HD44780 / I2C LCD | Parallel endpoints or `I2cDevice` + display model | 014 |
 | DHT11/DHT22 | Timed digital endpoint + validated sample | 013 |
 | TMP36 / LM35 | `AnalogInput` + linear calibration | 008 |
 | LDR module | `AnalogInput`, optional threshold `DigitalInput` | 008 |
 | Soil moisture / water level | `AnalogInput` + corrosion-aware sampling policy | 008/024 |
-| Sound sensor | Analog envelope and optional threshold input | 008 |
+| Sound sensor | Relative ADC envelope and optional qualified threshold input | 038 queued; exact AO/DO open |
 | HC-SR04 | `UltrasonicRanger` | 019 |
 | PIR module | `PirSensor` | 019 |
 | MPU6050 | `I2cDevice` + inertial sample model | 022 extension |
