@@ -3,6 +3,8 @@
 Status meanings:
 
 - **Host verified** — strict deterministic tests pass.
+- **Host verified; bench open** — deterministic tests and the canonical Mega
+  adapter pass their non-hardware gates; physical acceptance remains open.
 - **Hardware experimental** — Mega build passes; bench card remains open.
 - **Queued** — contract or curriculum placement only.
 
@@ -61,7 +63,10 @@ Status meanings:
 | Magnetic observation | `LinearHall`, `MagneticContact` | Host verified; exact specimen and bench open | Lesson 034 |
 | Passage policy | `PassageQualifier` | Host verified; exact specimen and bench open | Lesson 035 |
 | Durable passage project | `TwoSlotPassageLedger`, `MagneticPassageLogger` | Host verified; exact specimen and bench open | Lesson 036 |
-| Queued layers | Lesson 037 and later curriculum components | Queued | See catalog and work queue |
+| Contact policy | `ContactDynamics` | Host verified; incoming conformance and bench open | [Lesson 037](lessons/037.md) |
+| Acoustic policy | `AcousticEnvelope` | Host verified; incoming conformance and bench open | [Lesson 038](lessons/038.md) |
+| Percussion project | `PercussionSequencer` | Host verified; incoming conformance and bench open | [Lesson 039](lessons/039.md) |
+| Queued layers | Lesson 040 and later curriculum components | Queued | See catalog and work queue |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.
 Behavior engines expose output intent rather than hiding hardware callbacks.
@@ -101,6 +106,15 @@ console, inert-channel assessment, and deterministic cue scheduling with a
 bounded replayable audit. Lesson 030 composes the assessor and scheduler with
 an explicit plan-position-to-channel map; incomplete evidence cannot authorize
 a transition, and contradictory evidence faults the composition.
+
+Lessons 037--039 keep sensing and sequencing policy separate from their
+adapters. `ContactDynamics` qualifies timestamped contact samples without
+owning an input pin. `AcousticEnvelope` qualifies timestamped envelope and
+optional threshold observations without owning the microphone board.
+`PercussionSequencer` consumes complete contact and acoustic observations and
+returns deterministic pattern and cue intent; it owns no pins or sounder.
+Their documented external reference fixtures make the Mega circuits
+reproducible, but incoming conformance and every E1 bench record remain open.
 
 - [Exact API](api-supported.md)
 - [Full component catalog](docs/COMPONENTS.md)

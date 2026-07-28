@@ -17,17 +17,17 @@ recorded in
 Its findings must be reconciled through bounded tasks; the audit itself does
 not promote work or replace this ledger.
 
-- Lessons 001--036 are promoted and host verified; physical cards remain open.
+- Lessons 001--039 are promoted and host verified; physical cards remain open.
 - Lesson 030 has an independently reviewed composition core, canonical Mega
   example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
-- Lessons 034--036 are complete through their non-hardware gates. Lessons
-  037--039 have complete E0 cores, tests, and hardware-independent drafts.
+- Lessons 034--039 are complete through their non-hardware gates. Lessons
+  037--039 use documented external reference fixtures.
   Their [sensor evidence report](research/LESSONS_037_039_SENSOR_EVIDENCE_REPORT.md)
-  selects documented external reference fixtures and preserves all six
-  exact-specimen requirements for optional Elegoo-kit substitutions.
-  Their reference Mega example, authoritative schematic, and promotion are
-  now active; incoming conformance and all E1 bench gates remain open.
+  preserves all six Elegoo exact-specimen requirements as historical optional
+  substitution-conformance work. Those requirements were superseded as
+  blockers for canonical reference publication, not answered. Incoming
+  conformance and all E1 bench gates remain open.
 - The USB research track has a deterministic product-native `Cau`/`Pau`
   `ColdMove` model. It performs no USB action and makes no transparency claim.
 - The exact kit inventory template and honest planned-versus-supported coverage
@@ -70,7 +70,8 @@ physical-acceptance paperwork outside the lesson flow.
 | Boundary | State | Required next result |
 |---|---|---|
 | [001--036](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Active integration | E0 cores/tests/drafts and exact external reference design complete; reference Mega example/schematic and promotion active; E1 open |
+| [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Host verified; bench/incoming conformance open | Preserve the canonical reference publication; complete incoming conformance and each E1 acceptance record |
+| [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Queued | Resolve its arming and exact-specimen gates, then implement the provisional brief |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -107,8 +108,8 @@ work; retail kit names are not electrical identities.
 |---:|---|---|
 | [031--033](design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md) | Host verified; bench open | Analog joystick, quadrature encoder, calibration console |
 | [034--036](design/LESSONS_034_036_MAGNETIC_PASSAGE_PLAN.md) | Host verified; bench open | Magnetic observations, passage qualification, magnetic passage logger |
-| [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Active integration | E0 cores/tests/drafts complete; linked exact-specimen Mega example/schematic, promotion, and E1 open |
-| [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Queued | Provisional implementation-depth optical observations, presence, and tabletop course marshal; reconcile after 037--039 |
+| [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Host verified; bench/incoming conformance open | Contact dynamics, acoustic envelopes, and percussion sequencer published against documented external references; E1 and incoming conformance open |
+| [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Queued; next | Provisional implementation-depth optical observations, presence, and tabletop course marshal; arming decision and exact-specimen gates open |
 | [043--045](projects/component_project_cadence.md) | Queued | Resistive probes, thermal/radiant observation, museum-case monitor |
 | [046--048](projects/component_project_cadence.md) | Queued | Touch/proximity, bounded stepper motion, kinetic sculpture |
 | [049--051](projects/component_project_cadence.md) | Queued | Local identity records, homing, inert parts carousel |
@@ -131,14 +132,14 @@ collision. The [kit coverage audit](design/ELEGOO_MEGA_KIT_COVERAGE_2026-07-27.m
 inputs. Coverage is not complete until every claimed module has an exact
 inventory record and the relevant block passes its gates.
 
-Lessons 031--036 have complete implementation-ready design briefs and are host
-verified. Lessons 037--039 have complete E0 cores, tests, and
-hardware-independent drafts. Their canonical Mega example,
-authoritative schematic, and promotion now proceed against exact external
-reference fixtures; incoming conformance and E1 physical acceptance remain
-open. Lessons 040--042 have a provisional
-implementation-depth brief but remain queued behind final 037--039
-reconciliation, the Lesson 042 arming decision, and exact-specimen gates.
+Lessons 031--039 have complete implementation-ready design briefs and are host
+verified. Lessons 037--039 are published against exact external reference
+fixtures; incoming conformance and E1 physical acceptance remain open. The six
+earlier Elegoo exact-specimen requirements are preserved as historical
+optional substitution-conformance work and were superseded as canonical
+publication blockers rather than answered. Lessons 040--042 are the next
+queued block. Their provisional implementation-depth brief remains gated by
+the Lesson 042 arming decision and exact-specimen requirements.
 Lessons 043--081 are canonical subjects and retained work, but their cadence
 entries are not implementation-ready lesson plans. Before code begins for each three-lesson
 arc, expand it to the same depth as 031--033: public values and interfaces,
@@ -202,7 +203,7 @@ out of scope. Controller high availability remains explicitly deferred.
 The landing page now uses one canonical source, a compact top navigation,
 linked published arcs, and linkless planned rows through Lesson 081 plus the
 retained research tracks. Preserve that scan-first hierarchy as work advances.
-The post-deploy verifier follows Lesson 036 and has a regression check that
+The post-deploy verifier follows Lesson 039 and has a regression check that
 must advance with the newest published lesson.
 
 At the next clean hierarchy boundary:

@@ -122,6 +122,19 @@ doc/lessons/036.pdf: docs/lessons/036/main.tex \
 		docs/lessons/assets/036-commit-journey-pencil.png \
 		docs/lessons/assets/036-ledger-recovery-pencil.svg \
 		docs/lessons/assets/036-ledger-recovery-pencil.png
+doc/lessons/037.pdf: docs/lessons/037/main.tex \
+		docs/lessons/assets/037-contact-stages-pencil.svg \
+		docs/lessons/assets/037-contact-stages-pencil.png \
+		docs/lessons/assets/037-trace-lab-pencil.svg \
+		docs/lessons/assets/037-trace-lab-pencil.png
+doc/lessons/038.pdf: docs/lessons/038/main.tex \
+		docs/lessons/assets/038-confidence-pencil.svg \
+		docs/lessons/assets/038-confidence-pencil.png \
+		docs/lessons/assets/038-envelope-trace-pencil.svg \
+		docs/lessons/assets/038-envelope-trace-pencil.png
+doc/lessons/039.pdf: docs/lessons/039/main.tex \
+		docs/lessons/assets/039-pattern-pencil.svg \
+		docs/lessons/assets/039-pattern-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons

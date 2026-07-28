@@ -536,6 +536,34 @@ is relevant, audit count, status, and deterministic `traceDigest`. Replaying
 the same valid timestamped frames from the same initial state produces the
 same digest and audit records.
 
+## Contact, acoustic, and percussion policy
+
+`ContactDynamics` is a hardware-neutral policy for timestamped dry-contact
+samples. It qualifies stable transitions, refractory timing, release, stuck
+state, and timing faults without owning a `DigitalInput`. The Lesson 037 Mega
+adapter supplies active-low observations from an external 10 kΩ pull-up and a
+documented C&K/Littelfuse reference contact.
+
+`AcousticEnvelope` accepts one complete timestamped analog-envelope
+observation with an optional digital-threshold level. It performs startup
+calibration, baseline tracking, event qualification, clipping detection, and
+fault reporting without owning an `AnalogInput` or acoustic module. The
+Lesson 038 adapter uses the documented SparkFun Sound Detector reference,
+leaves `AUDIO` disconnected, and treats its `ENVELOPE` and active-high `GATE`
+outputs as separate observations.
+
+`PercussionSequencer` composes four contact observations, one acoustic
+observation, tempo intent, and supplied time. Its fixed-capacity pattern,
+record/play state, fault policy, and snapshots are deterministic; the engine
+owns no pins, clock, LED, or sounder. The Lesson 039 adapter maps returned
+intent onto resistor-limited visible evidence and a passive sounder.
+
+[Lessons 037](lessons/037.md), [038](lessons/038.md), and
+[039](lessons/039.md) provide the exact lifecycle, reference circuits, and
+open acceptance procedures. Their non-hardware gates are host verified. That
+host and Mega evidence does not constitute incoming-fixture conformance,
+physical bench acceptance, or qualification of an optional kit substitution.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.

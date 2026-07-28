@@ -35,3 +35,6 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	1	Lesson034MagneticObservation	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	4932	16384	218	512
 1	1	Lesson035PassageQualifier	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6566	16384	481	768
 1	2	Lesson036MagneticPassageLogger	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	13342	24576	918	1536
+1	1	Lesson037ContactDynamics	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	4864	16384	194	512
+1	1	Lesson038AcousticEnvelope	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5840	16384	282	512
+1	1	Lesson039PercussionSequencer	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	12202	24576	1253	1536

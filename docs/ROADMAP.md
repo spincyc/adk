@@ -71,11 +71,13 @@ is experimental rather than hardware supported.
 
 ## Next slice
 
-Lessons 034--036 are host verified and published with their bench and exact
-specimen gates open. Lessons 037--039 are active against documented external
-reference fixtures; their incoming conformance and bench gates remain open.
-Development follows the canonical lessons 037--081 kit expansion, one
-implementation-depth three-lesson brief at a time.
+Lessons 034--039 are host verified and published with their bench gates open.
+Lessons 037--039 use documented external reference fixtures and retain open
+incoming-conformance gates. Earlier Elegoo exact-specimen questions are
+superseded as canonical-publication blockers, not answered; they remain
+historical optional substitution-conformance work. Lessons 040--042 are the
+next queued block. Development then follows the canonical lessons 040--081 kit
+expansion, one implementation-depth three-lesson brief at a time.
 
 Every component requires lifecycle tests, deterministic fakes, a canonical Mega
 example, size evidence, terse HTML, a rich complementary PDF, and recorded

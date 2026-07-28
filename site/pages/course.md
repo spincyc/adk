@@ -32,8 +32,11 @@ lesson number divisible by three is project-bearing.
 | 034 | Magnetic observations | Qualified analog/contact evidence | Host verified; exact specimen and E1 bench open |
 | 035 | Passage qualification | Bounded direction and passage evidence | Host verified; exact specimen and E1 bench open |
 | 036 | Durable passage records | Magnetic passage logger | Host verified; exact specimen and E1 bench open |
+| 037 | Contact dynamics | Qualified attack and release evidence | Host verified; incoming conformance and E1 bench open |
+| 038 | Acoustic envelope | Relative intensity and threshold evidence | Host verified; incoming conformance and E1 bench open |
+| 039 | Contact and acoustic composition | Percussion sequencer | Host verified; incoming conformance and E1 bench open |
 
-Lessons 037–081 are retained canonical work;
+Lessons 040–081 are retained canonical work;
 each later three-lesson arc requires an implementation-depth brief before code
 begins.
 
