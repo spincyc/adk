@@ -46,7 +46,7 @@ Lesson 038 remains unsupported until the canonical promotion gates are met.}
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
 Lesson & 038 --- component & Time & 120--180 minutes\\
 Prerequisites & Lessons 007, 012, and 037 & Board & host-independent trace fixture\\
-Evidence & ADC trace, optional threshold trace & Status & E0 core planned\\
+Evidence & focused host traces & Status & E0 core implemented; publication unsupported\\
 Energy class & E0 copied observations; physical module remains gated\\
 \end{tabularx}
 
@@ -66,7 +66,9 @@ The evidence chain is:
 \texttt{AcousticEnvelope} is a pure behavior. It owns no endpoint, pin,
 interrupt, sampling timer, ADC reference, heap, callback, or hidden clock.
 The caller copies one ADC sample and, when configured, one threshold sample
-into each timestamped frame.
+into each timestamped frame. That core and its focused host tests are
+implemented. The endpoint-owning Mega adapter, exact specimen, electrical
+schematic, board example, and physical evidence remain future gated work.
 
 \section{Read the supplied trace}
 \begin{center}
@@ -173,22 +175,32 @@ Refractory & ValidQuiet & Ok & completion snapshot cleared; no new attack\\
 Fault & ClippedLow/High & InvalidArgument & event and intensity fields cleared\\
 Fault & ThresholdDisagreement & HardwareFailure & event and intensity fields cleared\\
 Fault & SourceFault & exact source status & event and intensity fields cleared\\
+Fault & SourceFault & HardwareFailure & configured threshold presence mismatch; event/intensity cleared\\
+Fault & SourceFault & InvalidArgument & malformed runtime threshold enum; event/intensity cleared\\
 Fault & TimingFault & InvalidArgument & last completed evidence retained\\
-Fault & Unqualified & InvalidArgument & invalid headroom; event/intensity cleared\\
+Fault & Unqualified & InvalidArgument & raw above 1023 or invalid headroom; event/intensity cleared\\
 \bottomrule
 \end{tabularx}
 
 No other phase, quality, and status tuple is legal. ``Exact source status''
 means the non-Ok analog status, or the configured threshold status after a
-healthy analog sample. Invalid runtime headroom is specifically
+healthy analog sample. A malformed runtime threshold \texttt{Level} is instead
+\texttt{Fault/SourceFault/InvalidArgument}. A supplied raw value above 1023
+and invalid runtime headroom are both specifically
 \texttt{Fault/Unqualified/InvalidArgument}; unlike a timing fault, it clears
 event and intensity fields and requires reset and recalibration.
 
+Invalid construction policy is different from a runtime fault:
+\texttt{initialize()} returns \texttt{InvalidArgument}, leaves the behavior
+uninitialized, and does not mutate the snapshot into \texttt{Fault}.
+
 \section{Transition order and canonical evidence}
-Each update applies this precedence: lifecycle/configuration; timestamp
-validity; analog source; configured threshold source; clipping; calibration;
-sustained disagreement; event close; event open; baseline update. A winning
-fault prevents lower transitions.
+After the initialized-state check, each update applies this validation
+precedence: timestamp validity; malformed configured runtime threshold enum;
+analog status; configured-threshold presence agreement; configured threshold
+status; raw range \(0..1023\). Only then does interpretation apply clipping,
+calibration, sustained disagreement, event close, event open, and baseline
+update. A winning fault prevents every lower transition.
 
 Before completion, relative intensity, event start, and event duration use
 canonical zeros. Clipping, source failure, and disagreement also publish zero
@@ -200,6 +212,7 @@ An identical same-time frame is idempotent. Changed same-time evidence, an
 apparent backward timestamp, or a jump at least the unsigned half-range faults
 without partial mutation. Natural 32-bit rollover remains valid.
 
+\clearpage
 \section{Narrative trace fixture}
 \begin{lstlisting}[style=adkcpp]
 void loop ()
@@ -277,11 +290,14 @@ similar tap yields different intensity & baseline, headroom, gain, distance, roo
  \item State exactly what cannot be inferred from a 0--1000 value.
 \end{enumerate}
 
-Host evidence covers every configuration boundary; calibration and timing
+Implemented focused host evidence covers every configuration boundary;
+calibration and timing
 edges; baseline arithmetic; positive/negative peaks; intensity endpoints;
 quiet and maximum-window close; refractory; rails; source faults; optional
 threshold agreement; same-time and rollover cases; lifecycle; deterministic
-replay; and adapter acquisition/rollback when that adapter is introduced.
+replay. Adapter acquisition, transactional rollback, endpoint sample order,
+Mega size, and physical evidence remain future work because the adapter has
+not been introduced.
 Compilation, this PDF, and host traces are not microphone, ADC bandwidth,
 privacy, acoustic, SPL, or physical acceptance evidence.
 

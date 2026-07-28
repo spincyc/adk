@@ -23,6 +23,11 @@ microphone module remains outside scope until its exact revision, AO/DO roles,
 rails, bias/amplifier, output topology, and authoritative schematic are
 qualified.
 
+The pure core and focused host tests are implemented. The endpoint-owning Mega
+adapter, exact specimen, electrical schematic, board example, size evidence,
+and physical evidence remain future gated work. This design draft does not
+promote the implemented core into a published lesson.
+
 ## Baseline and amplitude
 
 The first healthy, non-clipped sample establishes the baseline and begins
@@ -101,29 +106,40 @@ behavior never silently recalibrates.
 | `Fault` | `ClippedLow` or `ClippedHigh` | `InvalidArgument` | event and intensity fields cleared |
 | `Fault` | `ThresholdDisagreement` | `HardwareFailure` | event and intensity fields cleared |
 | `Fault` | `SourceFault` | exact non-Ok endpoint status | event and intensity fields cleared |
+| `Fault` | `SourceFault` | `HardwareFailure` | configured threshold presence mismatch; event and intensity fields cleared |
+| `Fault` | `SourceFault` | `InvalidArgument` | malformed runtime threshold enum; event and intensity fields cleared |
 | `Fault` | `TimingFault` | `InvalidArgument` | last completed evidence retained |
-| `Fault` | `Unqualified` | `InvalidArgument` | invalid runtime headroom; event and intensity fields cleared |
+| `Fault` | `Unqualified` | `InvalidArgument` | raw above 1023 or invalid runtime headroom; event and intensity fields cleared |
 
 No other tuple is legal. Exact source status means the non-Ok analog status,
-or the configured threshold status after a healthy analog sample. Invalid
-runtime headroom is specifically
+or the configured threshold status after a healthy analog sample. A malformed
+runtime threshold `Level` is instead
+`Fault/SourceFault/InvalidArgument`. A supplied raw value above 1023 and
+invalid runtime headroom are both specifically
 `Fault/Unqualified/InvalidArgument`; unlike a timing fault, it clears event
 and intensity fields and requires reset and recalibration.
 
+Invalid construction policy is not a runtime tuple: `initialize()` returns
+`InvalidArgument`, leaves the behavior uninitialized, and does not mutate the
+snapshot into `Fault`.
+
 ## Transition order
 
-Each update applies this precedence:
+After the initialized-state check, each update applies this validation
+precedence:
 
-1. lifecycle and configuration;
-2. timestamp validity;
-3. analog source failure;
-4. configured threshold failure;
-5. clipping;
-6. calibration;
-7. sustained threshold disagreement;
-8. event close;
-9. event open; and
-10. baseline update.
+1. timestamp validity;
+2. malformed configured runtime threshold enum;
+3. analog status;
+4. configured-threshold presence agreement;
+5. configured threshold status;
+6. raw range `0..1023`;
+7. clipping;
+8. calibration;
+9. sustained threshold disagreement;
+10. event close;
+11. event open; and
+12. baseline update.
 
 Identical same-time frames are idempotent. Changed same-time evidence,
 backward apparent time, and jumps at least the unsigned half-range fault
@@ -162,16 +178,19 @@ qualified. Never ask for a loud or startling stimulus. Stop for an unidentified
 part, out-of-rail output, unexpected reset, unstable rail, heat, odor,
 excessive current, or specimen/schematic disagreement.
 
-## Proposed software evidence and design sources
+## Implemented core evidence and design sources
 
-Future host fixtures must cover calibration, integer baseline steps, attack and release
-edges, positive/negative peaks, intensity endpoints, quiet and maximum-window
-close, refractory, clipping, source faults, threshold agreement, time edges,
-lifecycle, and byte-identical replay. These are not microphone, ADC bandwidth,
-privacy, acoustic, SPL, or physical acceptance evidence.
+Focused host fixtures cover calibration, integer baseline steps, attack and
+release edges, positive/negative peaks, intensity endpoints, quiet and
+maximum-window close, refractory, clipping, source faults, malformed runtime
+threshold evidence, raw range, threshold agreement, time edges, lifecycle, and
+byte-identical replay. These are not endpoint-adapter, Mega, microphone, ADC
+bandwidth, privacy, acoustic, SPL, or physical acceptance evidence.
 
-- Proposed public contract: `src/acoustic_envelope.h` after implementation and
-  promotion review
+- Implemented pure-core contract: `src/acoustic_envelope.h`; it is not a
+  published lesson or physical support claim
+- Future gated work: endpoint-owning adapter, transactional acquisition,
+  exact-specimen Mega example and schematic, size evidence, and bench record
 - Governing design record:
   `docs/design/LESSONS_037_039_PERCUSSION_PLAN.md`
 - Governing policies: `docs/PDF_POLICY.md`, `docs/TESTING.md`, and
