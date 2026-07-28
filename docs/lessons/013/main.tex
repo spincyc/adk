@@ -1,50 +1,42 @@
 \documentclass[11pt]{article}
 
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage[margin=0.68in]{geometry}
+\usepackage[margin=0.72in]{geometry}
 \usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{fancyhdr}
+\usepackage{float}
 \usepackage{graphicx}
 \usepackage[hidelinks]{hyperref}
 \usepackage{listings}
 \usepackage{microtype}
 \usepackage{tabularx}
 \usepackage{tikz}
-\usepackage{titlesec}
 \usepackage[table]{xcolor}
-\usetikzlibrary{arrows.meta,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
-\definecolor{AdkBlack}{gray}{0}
-\definecolor{AdkDark}{gray}{0.20}
 \definecolor{CodeGray}{gray}{0.96}
 \hypersetup
 {
-    pdftitle={ADK Lesson 013: DHT11 Climate Sensor},
+    pdftitle={ADK Lesson 013: Make a Climate Light},
     pdfauthor={Kevin Shanahan},
-    pdfsubject={Validated climate samples, scheduled DHT11 acquisition, and circuit-native evidence},
+    pdfsubject={Build a DHT11 climate light on an Arduino Mega 2560},
     pdflang={en-US}
 }
 \pagestyle{fancy}
 \fancyhf{}
 \lhead{\textsc{ADK Lesson 013}}
-\rhead{DHT11 Climate Sensor}
+\rhead{Make a Climate Light}
 \cfoot{\thepage}
 \setlength{\headheight}{14pt}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt}
 \setlist{nosep,leftmargin=1.45em}
-\titleformat{\section}{\Large\bfseries\color{AdkBlack}}{\thesection}{0.5em}{}
-\titleformat{\subsection}{\large\bfseries\color{AdkBlack}}{\thesubsection}{0.5em}{}
 \lstdefinestyle{adkcpp}
 {
     language=C++,
     backgroundcolor=\color{CodeGray},
     basicstyle=\ttfamily\footnotesize,
-    keywordstyle=\color{AdkBlack}\bfseries,
-    commentstyle=\color{AdkDark},
+    keywordstyle=\bfseries,
     columns=fullflexible,
     keepspaces=true,
     showstringspaces=false,
@@ -53,338 +45,258 @@
     breaklines=true,
     tabsize=4
 }
-\newcommand{\checkbox}{\(\square\)}
-\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
-\newcommand{\warningbox}[1]{%
+\newcommand{\safetybox}[1]{%
   \begin{center}
-  \fcolorbox{black}{white}{\parbox{0.91\linewidth}{\textbf{Safety checkpoint.} #1}}
+  \fcolorbox{black}{white}{\parbox{0.92\linewidth}{\textbf{Before power:} #1}}
   \end{center}}
-\newcommand{\evidencebox}[1]{%
+\newcommand{\winbox}[1]{%
   \begin{center}
-  \fcolorbox{black}{white}{\parbox{0.91\linewidth}{#1}}
+  \fcolorbox{black}{white}{\parbox{0.92\linewidth}{\textbf{You win when:} #1}}
   \end{center}}
 
 \begin{document}
 
 \begin{center}
-  {\Huge\bfseries DHT11 Climate Sensor}\\[4pt]
-  {\Large Separate transport, validity, freshness, and physical accuracy}\\[8pt]
-  \textit{The RGB cadence reports software state; TP13 reveals the wire.}
+  {\Huge\bfseries Make a Climate Light}\\[4pt]
+  {\Large A tiny sensor turns raw timing into an unmistakable green success}\\[7pt]
+  \textit{Build one working layer at a time. Each new light unlocks the next.}
 \end{center}
 
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
-Lesson & 013 --- component & Time & 120--180 minutes\\
-Prerequisites & Lessons 001--012 & Board & Arduino Mega 2560\\
-Evidence & D5--D7 status indicator and TP13 & Status &
-host verified; physical acceptance open\\
-Safety & E1; USB-powered low-current circuit only\\
+Lesson & 013 --- component & Time & about 45 minutes\\
+You need & Lessons 001--012 & Board & Arduino Mega 2560\\
+Main signal & D22 & Visible result & RGB LED on D5--D7\\
+Power & USB only & Stop & unplug USB\\
 \end{tabularx}
 
-\warningbox{Disconnect USB before wiring. Identify the exact bare sensor or
-module before adding a DATA pull-up: many modules already contain one. Never
-connect the DHT11 NC pin. Stop for heat, odor, resets, unstable power, a DATA
-voltage outside the supply rails, or disagreement between the table and the
-identified part. Remove USB power to stop the experiment.}
+\section*{The one specimen decision}
 
-\section{Mission}
+The normal kit path is an \textbf{identified, labeled DHT11 module}. The Elegoo
+listing authorizes that family; it does not identify the board revision,
+pin order, supply limit, current, or pull-up. Before power, read the markings
+on the module in your hand and its matching documentation. Continue only when
+they establish 5 V operation, \(+\), DATA (often S), \(-\), peak current, and
+whether a DATA pull-up is already fitted. The drawing uses those \emph{names},
+not an asserted left-to-right module order.
 
-Build a scheduled climate observation path:
+\safetybox{With USB unplugged, map the module's printed \(+\), S/DATA, and
+\(-\) labels to breadboard columns 8, 9, and 10; rearrange the three module
+leads if its physical order differs. Use one 330\,\(\Omega\) resistor for each
+LED die. If identity, supply rating, current, LED common cathode, or pull-up is
+uncertain, set that part aside. Stop for heat, odor, resets, or a warm jumper.}
 
-\[
-\text{DHT11 at D22}\rightarrow\texttt{Dht11Sensor}\rightarrow
-\texttt{ClimateSample}\rightarrow\text{D5--D7 status evidence}.
-\]
+If the identified module has pull-up \(R_P\), its worst DATA-low current is
+\(5/R_P\); if it has none, fit the documented value from DATA to 5 V. The
+330\,\(\Omega\) LED resistors keep ordinary documented indicator dies below
+10 mA each when their minimum forward voltage is at least 1.8 V. Confirm the
+module's peak current and keep module plus three LED channels below 35 mA.
 
-The lesson deliberately does not add a display. Numeric presentation belongs
-to lesson 014. Here the learner asks four narrower questions:
+\section{Plate 1 --- Find the real pins}
 
-\begin{enumerate}
-  \item Did the software acquire its pin resource?
-  \item Did a bounded wire transaction complete?
-  \item Did checksum and range validation accept the decoded sample?
-  \item Is the last accepted sample still fresh under the lesson policy?
-\end{enumerate}
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[x=0.78cm,y=0.72cm,line width=0.55pt]
+    \draw[rounded corners] (0,0) rectangle (13,4);
+    \node[font=\large] at (6.5,2.2) {Arduino Mega 2560};
+    \draw (1,3.15) rectangle (8.2,3.75);
+    \node[above,font=\scriptsize] at (5,3.75)
+      {two top DIGITAL headers};
+    \foreach \x/\lab in {4.5/7,4.9/6,5.3/5,5.7/4,6.1/3,6.5/2}
+      {\draw (\x,3.35) circle (0.09); \node[below,font=\tiny] at (\x,3.25) {\lab};}
+    \draw (11.35,0.5) rectangle (12.35,3.5);
+    \foreach \y/\a/\b in {3.2/22/23,2.75/24/25,2.3/26/27,1.85/28/29,1.4/30/31,0.95/32/33}
+      {\draw (11.6,\y) circle (0.09); \draw (12.1,\y) circle (0.09);
+       \node[left,font=\tiny] at (11.45,\y) {\a};
+       \node[right,font=\tiny] at (12.25,\y) {\b};}
+    \draw[->] (14.8,3.2) -- (12.05,3.2);
+    \node[align=left,font=\small] at (16.5,3.2)
+      {D22 is the first socket\\of the vertical 22--52 header};
+    \draw (3.3,0.35) rectangle (8.6,0.75);
+    \foreach \x/\lab in {5.2/3.3V,5.8/5V,6.4/GND,7.0/GND,7.6/VIN}
+      {\draw (\x,0.55) circle (0.10); \node[below,font=\tiny] at (\x,0.35) {\lab};}
+    \draw[->] (14.8,0.65) -- (7.0,0.58);
+    \node[align=left,font=\small] at (16.5,0.65)
+      {Use labeled 5V and\\either adjacent GND};
+  \end{tikzpicture}
+  \caption{Top-view locator plate. The Mega's D22 is the first socket of the
+  paired 22--53 digital header, not socket 2 on the top header. The power
+  sockets are the labeled 5V and GND positions.}
+\end{figure}
 
-Those claims are independent. A pulse train at TP13 does not establish climate
-accuracy. A green indicator means the decoded sample is fresh and valid, not
-that the sensor has been calibrated against a reference instrument.
+Put the Mega beside the unpowered breadboard exactly as drawn. Find D22, D5,
+D6, D7, 5V, and GND with a fingertip before placing any wire.
 
-\section{Composition and lifecycle}
+\winbox{you can point to all six Mega sockets without following a jumper.}
 
-\begin{center}
-\begin{tikzpicture}[
-    node distance=8mm and 11mm,
-    box/.style={draw,rounded corners,minimum height=9mm,align=center},
-    >=Latex]
-  \node[box] (wire) {D22 / TP13\\bounded transaction};
-  \node[box,right=of wire] (sensor) {\texttt{Dht11Sensor}\\owns D22};
-  \node[box,right=of sensor] (sample) {\texttt{ClimateSample}\\state + timestamp};
-  \node[box,below=of sample] (led) {\texttt{RgbLed}\\D5--D7 cadence};
-  \draw[->] (wire) -- node[above]{observe} (sensor);
-  \draw[->] (sensor) -- node[above]{decide} (sample);
-  \draw[->] (sample) -- node[right]{actuate} (led);
-\end{tikzpicture}
-\end{center}
+\section{Plate 2 --- Build the whole climate light}
 
-Construction is inert. \texttt{initialize()} validates and claims D22, leaves
-the pulled-up DATA wire released as an input, and sets the sample to
-\texttt{Unavailable}. Repeated initialization is harmless. A failed RGB
-acquisition shuts the sensor down before setup returns.
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[x=0.59cm,y=0.55cm,line width=0.5pt]
+    \draw[rounded corners] (0,0) rectangle (25,11);
+    \draw (0.8,10.3) -- (24.2,10.3);
+    \draw (0.8,9.7) -- (24.2,9.7);
+    \node[left,font=\scriptsize] at (0.8,10.3) {\(+\)};
+    \node[left,font=\scriptsize] at (0.8,9.7) {\(-\)};
+    \node[anchor=east,font=\scriptsize] at (24.2,10.55) {jumper to Mega 5V};
+    \node[anchor=east,font=\scriptsize] at (24.2,9.45) {jumper to Mega GND};
+    \foreach \x/\n in {4/5,7/8,8/9,9/10,17/18,18/19,19/20,20/21,23/24}
+      {\node[font=\tiny] at (\x,9.15) {\n};}
+    \foreach \y/\l in {8.5/A,7.9/B,7.3/C,6.7/D,6.1/E,4.9/F,4.3/G,3.7/H,3.1/I,2.5/J}
+      {\node[left,font=\tiny] at (0.8,\y) {\l};
+       \foreach \x in {1,...,24} {\draw (\x,\y) circle (0.055);}}
+    \draw[double distance=5pt] (0.8,5.5) -- (24.2,5.5);
+    \node[right,font=\scriptsize] at (24.2,5.5) {center gap};
+    % Module named leads at E8/E9/E10.
+    \draw[rounded corners] (6.4,6.4) rectangle (10.6,8.9);
+    \node[font=\scriptsize] at (8.5,8.65) {identified DHT11 module};
+    \foreach \x/\lab in {7/+,8/S,9/-}
+      {\draw (\x,6.4) -- (\x,6.1); \node[below,font=\tiny] at (\x,6.05) {\lab};}
+    \draw (7,6.1) -- (7,10.3);
+    \draw (9,6.1) -- (9,9.7);
+    \draw (8,6.1) -- (8,5.75) -- (3.2,5.75)
+      node[left,font=\scriptsize]{TP13 to Mega D22};
+    % RGB legs E18-E21; common cathode at E19.
+    \draw[rounded corners] (16.5,6.4) arc[start angle=180,end angle=0,
+      x radius=2.1,y radius=1.8] -- (20.7,6.4);
+    \foreach \x/\lab in {17/R,18/C,19/G,20/B}
+      {\draw (\x,6.4) -- (\x,6.1); \node[below,font=\tiny] at (\x,6.05) {\lab};}
+    \draw (18,6.1) -- (18,9.7);
+    % Resistors across the E/F center gap.
+    \foreach \x in {17,19,20}
+      {\draw (\x,6.1) -- (\x,5.85) -- (\x-.18,5.65) -- (\x+.18,5.35)
+        -- (\x-.18,5.05) -- (\x,4.85) -- (\x,2.5);
+       \node[rotate=90,font=\tiny] at (\x+.32,5.5) {330 \(\Omega\)};}
+    \draw (17,2.5) -- (15.5,2.0) node[left,font=\scriptsize]{to Mega D5};
+    \draw (19,2.5) -- (19,1.5) node[below,font=\scriptsize]{to Mega D6};
+    \draw (20,2.5) -- (22,2.0) node[right,font=\scriptsize]{to Mega D7};
+    \node[font=\scriptsize] at (19,8.65) {identified common-cathode RGB LED};
+  \end{tikzpicture}
+  \caption{Literal breadboard plate. Numbered columns run left to right; A--E
+  and F--J are separate five-hole groups divided by the center gap. Module
+  names land at E8--E10. The RGB legs land at E18--E21; each anode crosses the
+  gap through its own resistor, while common cathode E19 reaches the minus
+  rail. Jumper endpoints are named on the plate.}
+\end{figure}
 
-\texttt{update(now)} schedules the next eligible transaction from caller
-supplied time. It never uses an unbounded wait. An early call is a successful
-no-op. \texttt{sample(now, freshFor)} reads state without touching hardware.
-\texttt{shutdown()} releases DATA to high impedance, clears the snapshot,
-releases the claim, and is idempotent. The destructor repeats that cleanup
-safely.
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+From & To & What this means\\
+\midrule
+Mega 5V & breadboard \(+\) rail & one 5 V supply rail\\
+Mega GND & breadboard \(-\) rail & one common return rail\\
+module \(+\) at E8 & \(+\) rail & VCC; only if documented for 5 V\\
+module S/DATA at E9 & Mega D22 & DATA; this same group is TP13\\
+module \(-\) at E10 & \(-\) rail & GND\\
+LED red E18 & resistor E18--F18, then J18 to D5 & red channel\\
+LED common cathode E19 & \(-\) rail & shared return\\
+LED green E20 & resistor E20--F20, then J20 to D6 & green channel\\
+LED blue E21 & resistor E21--F21, then J21 to D7 & blue channel\\
+\bottomrule
+\end{tabularx}
+
+The pictured module body is deliberately generic. Rotate or jumper the
+identified module so its \emph{named} leads reach E8 \(+\), E9 DATA, and E10
+\(-\); do not copy an unverified physical order. Likewise, preserve the
+identified LED's electrical lead names if its leg order is not R--C--G--B.
+
+Inspect every endpoint, plug in USB, and upload. The complete first powered
+stage already has its payoff: blue pulses during the short start, then a steady
+valid color appears. There is no Serial ritual or worksheet.
+
+\section{Plate 3 --- Watch the unlocks}
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[x=0.8cm,y=0.75cm,line width=0.55pt]
+    \foreach \x/\title/\text in
+      {2/{START}/{blue pulses},
+       8/{VALID}/{steady humidity color},
+       14/{DATA LIFTED}/{two red pulses}}
+    {
+      \draw[rounded corners] (\x-2,0) rectangle (\x+2,3.8);
+      \draw[rounded corners] (\x-0.8,1.0) arc[start angle=180,end angle=0,
+        x radius=0.8,y radius=1.1] -- (\x+0.8,1.0);
+      \node[font=\bfseries] at (\x,3.25) {\title};
+      \node[font=\scriptsize] at (\x,0.45) {\text};
+    }
+    \draw[->,thick] (4.3,1.9) -- (5.7,1.9)
+      node[midway,above,font=\scriptsize]{valid frame};
+    \draw[->,thick] (10.3,1.9) -- (11.7,1.9)
+      node[midway,above,font=\scriptsize]{unplug, lift DATA, power};
+  \end{tikzpicture}
+  \caption{Visible progression. A valid frame automatically advances from the
+  start pulse to a steady humidity color. The reversible missing-DATA surprise
+  cannot reach a valid color; restoring the jumper restarts the progression.}
+\end{figure}
+
+\winbox{blue pulses while the sensor starts, then the lamp settles on a steady
+green, cyan, or amber.
+That transition can happen only after a complete 40-bit frame passes timing,
+checksum, range, and freshness rules.}
+
+\section{Play with the air}
+
+Cup your hands loosely around the sensor without touching it, then breathe
+gently across the vents from several inches away. The steady valid color moves
+from green (below 55\% RH), through cyan (55--69.9\% RH), to amber
+(\(\geq70\%\) RH). Move it back into room air and watch it return. Lesson 014
+will reveal the numbers.
+
+Now unplug USB, lift only the D22-to-DATA jumper, and restore USB. The sketch
+cannot fake success: two red pulses repeat because no bounded sensor reply
+arrives. Unplug USB, restore that one jumper, and power again. Blue then green
+is the recovery animation.
+
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+What the lamp does & What to fix next\\
+\midrule
+No light & unplug USB; check LED type, common cathode, D5--D7, and all three
+resistors\\
+Blue forever & unplug USB; recheck D22, module labels, 5V, GND, and the
+documented pull-up decision\\
+Two red pulses & the sensor transaction timed out; check the DATA path\\
+Three red pulses & a frame arrived but failed checksum or range validation;
+shorten jumpers and inspect supply and specimen identity\\
+Amber & the last good observation became old; reset and watch for a new frame\\
+Steady green/cyan/amber & a current frame passed every software rule; color
+shows its humidity band, not calibrated accuracy\\
+\bottomrule
+\end{tabularx}
+
+\section{What the code is doing}
+
+The sketch reads in the same order as the build:
 
 \begin{lstlisting}[style=adkcpp]
-void loop ()
-{
-    const adk::TimePoint     now         (millis ());
-    const adk::Status        status      = observeClimate     (now);
-    const adk::ClimateSample observation = decideClimateState (now);
+const adk::Status        status      = observeClimate     (now);
+const adk::ClimateSample observation = decideClimateState (now);
 
-    showClimateState (observation, now);
+if ((!status.ok () &&
+     observation.state == adk::ClimateSampleState::Unavailable) ||
+    !showClimateState (observation, now))
+{
+    haltClimateCircuit ();
 }
 \end{lstlisting}
 
-The canonical sketch additionally checks each status and halts with outputs
-off if the evidence circuit itself fails.
+\texttt{Dht11Sensor} owns D22. It drives DATA low only for the request and then
+releases it to input; every edge wait has a deadline. It accepts a frame only
+after all five bytes arrive, their checksum matches, and the decoded values are
+in range. \texttt{sample(now, freshFor)} can later mark an old good frame stale
+without touching the wire. Shutdown releases D22 and turns the RGB LED off.
 
-\section{Parts and orientation}
+The repository quietly replays good frames, timeouts, malformed pulses,
+checksum faults, timing rollover, initialization failures, restart, and
+shutdown. Those automated checks protect the lesson; they are not chores for
+the learner.
 
-\begin{tabularx}{\linewidth}{@{}l l X@{}}
-\toprule
-Quantity & Part & Requirement\\
-\midrule
-1 & Mega 2560 & USB powered\\
-1 & DHT11 & exact bare part or documented module identified\\
-1 & DATA pull-up & value from the identified part; omit if module supplies it\\
-1 & common-cathode RGB LED & each die identified before wiring\\
-3 & 330\,\(\Omega\) resistors & one for each RGB channel\\
-1 & 0.1\,\(\mu\)F capacitor & across sensor VDD/GND when part guidance calls for it\\
-1 & logic analyzer or oscilloscope & optional TP13 timing evidence\\
-1 & multimeter & continuity, rail, and released-level checks\\
-\bottomrule
-\end{tabularx}
+\section{Next unlock}
 
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=0.96\linewidth]{013-dht11-climate-pencil.png}
-  \caption{Pencil orientation of the Mega, DHT11, DATA pull-up, RGB evidence,
-  and TP13. This is not an authoritative schematic. Pin placement and
-  breadboard connectivity are simplified; use the literal table and the exact
-  part documentation. Alternative text: Mega D22 reaches DHT11 DATA and TP13;
-  D5, D6, and D7 reach three resistor-limited RGB channels; all parts share
-  5\,V and GND while NC remains unconnected.}
-\end{figure}
-
-\section{Literal wiring}
-
-\begin{tabularx}{\linewidth}{@{}l l X@{}}
-\toprule
-Function & Mega connection & Literal path\\
-\midrule
-DHT11 supply & 5\,V and GND & VDD to 5\,V; GND to GND; never use Vin\\
-DATA & D22 & D22 to identified DATA pin; label the sensor-side node TP13\\
-NC & none & leave electrically unconnected\\
-pull-up & DATA to 5\,V & fit only the value required by the identified part/module\\
-red evidence & D5 & D5 through 330\,\(\Omega\) to red anode\\
-green evidence & D6 & D6 through 330\,\(\Omega\) to green anode\\
-blue evidence & D7 & D7 through 330\,\(\Omega\) to blue anode\\
-RGB return & GND & common cathode to GND\\
-\bottomrule
-\end{tabularx}
-
-Check resistance and continuity with USB removed. Verify that the pull-up does
-not become an unintended parallel resistor on a module. Place the meter or
-analyzer clip at TP13 while unpowered; inspect the clip spacing before applying
-USB power.
-
-\section{Wire transaction}
-
-The adapter drives DATA low only for the request, then releases it:
-
-\[
-\text{output low}\rightarrow\text{input/high impedance}\rightarrow
-\text{sensor response}\rightarrow 40\text{ data bits}.
-\]
-
-\begin{center}
-\begin{tikzpicture}[x=0.82cm,y=0.72cm,>=Latex]
-  \draw[->] (0,0) -- (13,0) node[right]{time};
-  \draw (0,2) -- (1,2) -- (1,0.6) -- (3.2,0.6) -- (3.2,2);
-  \node[align=center] at (2.1,0.15) {request low\\source minimum};
-  \draw (3.2,2) -- (3.7,0.6) -- (4.2,2) -- (4.7,0.6) -- (5.2,2);
-  \node[align=center] at (4.2,2.45) {sensor\\acknowledgement};
-  \draw (5.2,2) -- (5.8,0.6) -- (6.4,2) -- (7.0,0.6) -- (8.2,2);
-  \node at (6.1,2.45) {0};
-  \node at (7.6,2.45) {1};
-  \draw[dashed] (8.5,0.2) -- (8.5,2.5);
-  \node[align=left] at (10.6,1.4) {40 high pulses\\5 decoded bytes};
-\end{tikzpicture}
-\end{center}
-
-The drawing shows shape, not measured scale. Record the selected manual's
-request, acknowledgement, zero, and one windows before comparing a capture.
-Every edge wait has a finite deadline. The five bytes carry humidity,
-temperature, and a checksum under the exact selected DHT11 revision. Do not
-infer DHT22 compatibility.
-
-\section{Visible state vocabulary}
-
-Color is supporting evidence; pulse count and cadence carry the distinction in
-black-and-white observations.
-
-\begin{tabularx}{\linewidth}{@{}l l X@{}}
-\toprule
-Sample state & D5--D7 indication & Interpretation\\
-\midrule
-\texttt{Unavailable} & one slow blue pulse & resource owned; first frame pending\\
-\texttt{Valid} & steady green & checksum, range, and freshness accepted\\
-\texttt{TransportTimeout} & two red pulses & bounded transaction did not complete\\
-\texttt{ChecksumFailure} & three red pulses & 40 bits arrived but integrity failed\\
-range failure & three red pulses, then amber & decoded value outside limits\\
-\texttt{Stale} & steady amber & earlier valid sample exceeded freshness policy\\
-setup/evidence failure & indicator off & circuit halted; inspect acquisition separately\\
-\bottomrule
-\end{tabularx}
-
-TP13 is the primary transport evidence. Predict that released DATA rests high,
-observe the request and response, then interpret only whether transport
-occurred. A meter can verify the resting level, but a logic analyzer or
-oscilloscope is required to inspect pulse timing.
-
-\section{CLI workflow}
-
-\begin{lstlisting}[style=adkcpp]
-make host-test-climate-sensor
-make host-test-dht11-sensor
-make sanitize
-make arduino-Lesson013Dht11Climate
-make size-check
-make lesson-013
-make lessons-check
-
-make upload-Lesson013Dht11Climate PORT=/dev/ttyACM0
-\end{lstlisting}
-
-Use the repository's actual focused target names if integration reports a
-different spelling. Serial is neither required nor used by the canonical
-example. Upload and evidence collection remain CLI-driven.
-
-\section{Predict, observe, interpret}
-
-\subsection{Acquisition and first frame}
-
-\textbf{Predict.} Immediately after successful acquisition, one slow pulse
-repeats while the adapter honors power-up and acquisition intervals.
-
-\textbf{Observe.} Status cadence: \blank{1.1in}. TP13 resting voltage:
-\blank{0.7in}\,V relative to GND. Time to first green: \blank{0.8in}\,s.
-
-\textbf{Interpret.} A waiting pulse proves the software objects initialized.
-A high TP13 resting voltage is separate electrical evidence that DATA is
-released. Steady green means one sample passed protocol, checksum, range, and
-freshness checks.
-
-\subsection{Reversible transport fault}
-
-Remove USB power, disconnect only DATA, inspect the circuit, then restore USB.
-Do not short DATA to either rail.
-
-\textbf{Predict.} The bounded transaction times out and two red pulses repeat.
-
-\textbf{Observe.} Pulse count: \blank{0.5in}. Time from request to fault:
-\blank{0.8in}. TP13 waveform present? \checkbox\ yes \quad \checkbox\ no.
-
-\textbf{Interpret.} A timeout distinguishes missing wire response from checksum
-failure. It does not locate the cause; wiring, part orientation, pull-up, or
-sensor health may be responsible.
-
-\subsection{Recovery and freshness}
-
-Remove USB, restore DATA, inspect, then apply USB. A later valid frame should
-replace the transport fault normally. To study staleness deterministically,
-use the host recorded-sensor test; do not invent an electrical fault that
-pretends time advanced.
-
-\textbf{Observe.} Recovery cadence: \blank{1.2in}. Host stale boundary:
-\blank{0.8in}\,ms. State at the exact boundary: \blank{1.0in}.
-
-\section{Diagnosis}
-
-\begin{tabularx}{\linewidth}{@{}l X X@{}}
-\toprule
-Evidence & Likely boundary & Next safe check\\
-\midrule
-indicator always off & resource or RGB acquisition & remove USB; inspect pins,
-resistors, and resource conflicts\\
-waiting never ends & power-up interval or no eligible response & inspect TP13
-with a bounded capture and confirm the selected part\\
-two red pulses & transport timeout & remove USB; inspect DATA continuity,
-orientation, supply, and pull-up decision\\
-three red pulses & checksum failure & shorten wiring, inspect supply integrity,
-and compare measured timing to the selected manual\\
-three red then amber & decoded range failure & verify part revision and byte
-interpretation; do not present numeric fields as valid\\
-steady amber & freshness policy & inspect scheduling and last valid timestamp\\
-green but implausible climate & physical accuracy, not transport & compare
-against a suitable reference; record uncertainty\\
-\bottomrule
-\end{tabularx}
-
-\section{Exercises}
-
-\begin{enumerate}
-  \item Explain why \texttt{sample(now, freshFor)} must not trigger hardware.
-  \item A frame has valid timing but the checksum differs. Which state and
-        cadence should appear?
-
-        \blank{2.1in}
-  \item A valid sample becomes old. Why must it become \texttt{Stale} rather
-        than \texttt{TransportTimeout}?
-
-        \blank{2.5in}
-  \item Describe why driving a pulled-up open-style DATA line high is less safe
-        than releasing it to input.
-
-        \blank{2.3in}
-  \item Choose a freshness interval for a room display and justify it without
-        claiming a faster DHT11 acquisition rate.
-
-        \blank{2.0in}
-\end{enumerate}
-
-\section{Bench acceptance record}
-
-\textbf{Status before this card is signed: host verified; hardware acceptance
-open.} Compilation, tests, and this document do not supply physical evidence.
-
-\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X@{}}
-Date / reviewer & \blank{2.7in}\\
-Board / USB supply & \blank{2.7in}\\
-Sensor or module identity & \blank{2.7in}\\
-Primary manual and revision & \blank{2.7in}\\
-Pull-up fitted/on module & \blank{2.7in}\\
-Measured 5\,V rail & \blank{1.0in}\,V\\
-RGB resistor values & red \blank{0.5in}\(\Omega\), green
-\blank{0.5in}\(\Omega\), blue \blank{0.5in}\(\Omega\)\\
-TP13 released level & \blank{1.0in}\,V relative to GND\\
-Request low width & minimum \blank{0.7in}, maximum \blank{0.7in}\\
-Acknowledgement widths & low \blank{0.7in}, high \blank{0.7in}\\
-Observed zero/one highs & zero \blank{0.7in}, one \blank{0.7in}\\
-Reset / shutdown observation & \blank{2.7in}\\
-Disconnected-DATA result & \blank{2.7in}\\
-Recovery result & \blank{2.7in}\\
-Power-removed continuity & \blank{2.7in}\\
-Deviations / stop events & \blank{2.7in}\\
-\end{tabularx}
-
-\vfill
-\evidencebox{\textbf{Acceptance claim.} Resource evidence, released-wire
-evidence, successful transport, decoded validity, freshness, and physical
-accuracy are separate observations. Sign only the claims actually measured.}
+You now have a circuit that distinguishes ``a sensor said something'' from
+``a complete, current frame passed every rule.'' Keep this exact build intact.
+Lesson 014 gives the observations a character display, and lesson 015 turns
+both components into a small environmental station.
 
 \end{document}

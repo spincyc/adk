@@ -1,14 +1,16 @@
 #include <Adk.h>
 
-// Mega 2560, USB 5 V: a 16x2 HD44780 LCD uses D22-D27 in 4-bit mode.
-// D13 is the separate resource-acquisition indicator. LCD VO uses a 10 kOhm
-// contrast potentiometer; the backlight follows the identified module rating.
+// Mega 2560, USB 5 V: an independently identified parallel LCD1602 uses
+// D22-D27 in 4-bit mode.
+// D13 gives one short acquisition blink. LCD VO uses a 10 kOhm contrast
+// potentiometer. Leave the backlight disconnected until its rating is known.
 
 namespace {
 
     const adk::Hd44780Pins displayPins = {22, 23, 24, 25, 26, 27};
-    const adk::Duration    samplePeriod (2000);
-    const adk::TimePoint   traceStart   (0);
+    const adk::Duration    samplePeriod     (2000);
+    const adk::Duration    acquisitionPulse (250);
+    const adk::TimePoint   traceStart       (0);
 
     const adk::ClimateSample samples[] = {
         {2150, 456, traceStart, adk::ClimateSampleState::Valid},
@@ -26,9 +28,11 @@ namespace {
     adk::Hd44780Display display         (runtime.resources (), displayPins);
 
     adk::TimePoint lastSampleAt (0);
+    adk::TimePoint acquiredAt   (0);
     uint8_t        sampleIndex = 0;
     uint32_t       sequence    = 0;
-    bool           started     = false;
+    bool           welcomeShown = false;
+    bool           acquisitionLit = false;
     bool           halted      = false;
 
     bool               acquireDisplayCircuit  ();
@@ -61,6 +65,32 @@ void loop ()
         return;
     }
 
+    if (acquisitionLit &&
+        now.elapsedSince (acquiredAt).milliseconds () >=
+            acquisitionPulse.milliseconds ())
+    {
+        if (!acquisitionLed.off ().ok ())
+        {
+            haltDisplayCircuit ();
+            return;
+        }
+        acquisitionLit = false;
+    }
+
+    if (display.ready () && !welcomeShown)
+    {
+        if (!display.show (0, "LCD READY       ").ok () ||
+            !display.show (1, "watch the story ").ok ())
+        {
+            haltDisplayCircuit ();
+            return;
+        }
+
+        welcomeShown = true;
+        lastSampleAt = now;
+        return;
+    }
+
     if (!display.ready () || !observeSampleCadence (now))
     {
         return;
@@ -89,18 +119,20 @@ namespace {
             return false;
         }
 
-        return acquisitionLed.on ().ok ();
+        if (!acquisitionLed.on ().ok ())
+        {
+            display.shutdown        ();
+            acquisitionLed.shutdown ();
+            return false;
+        }
+
+        acquiredAt      = adk::TimePoint (millis ());
+        acquisitionLit  = true;
+        return true;
     }
 
     bool observeSampleCadence (adk::TimePoint now)
     {
-        if (!started)
-        {
-            lastSampleAt = now;
-            started      = true;
-            return true;
-        }
-
         if (now.elapsedSince (lastSampleAt).milliseconds () <
             samplePeriod.milliseconds ())
         {

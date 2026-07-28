@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-28T00:48:26Z"
-updated_at: "2026-07-28T02:15:09Z"
+updated_at: "2026-07-28T02:37:50Z"
 ---
 
 # Goal
@@ -79,3 +79,9 @@ coordinates, staged visible payoffs, corrected parts/resistor counts, size
 baselines, and publication artifacts agree. Learner-facing acceptance cards
 are absent; automated gates remain behind the scenes. The next repair unit is
 Lessons 013--014.
+
+Lessons 013--014 are software-prepared and independently reviewed. Their
+learner flow gives immediate visible payoff, reversible visible faults, and
+automatic recovery. Conditional specimen wording, actual Mega and breadboard
+geometry, LCD no-connects, staged drawings, size baselines, and publication
+artifacts agree. The next repair unit is Lessons 015--016.
