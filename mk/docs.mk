@@ -35,8 +35,7 @@ doc/lessons/014.pdf: docs/lessons/014/main.tex \
 		docs/lessons/assets/014-mega-lcd-pin-map.png \
 		docs/lessons/assets/014-lcd-breadboard.png \
 		docs/lessons/assets/014-lcd-visible-states.png
-doc/lessons/015.pdf: docs/lessons/015/main.tex \
-		docs/lessons/assets/015-environmental-station-pencil.png
+doc/lessons/015.pdf: docs/lessons/015/main.tex
 doc/lessons/016.pdf: docs/lessons/016/main.tex \
 		docs/lessons/assets/016-matrix-keypad-pencil.png
 doc/lessons/017.pdf: docs/lessons/017/main.tex \

@@ -1,8 +1,9 @@
 #include <Adk.h>
 
-// Mega 2560, USB 5 V: a passive 4x3 matrix keypad uses D22-D25 for
-// rows and D26-D28 for columns. D13 presents accepted input and faults.
-// TP-R0 is D22, observed relative to Mega GND.
+// Mega 2560, USB 5 V: use the 1-2-3 through *-0-# section of the authorized
+// passive 4x4 keypad. Its four rows use D22-D25 and its first three columns
+// use D26-D28. Identify all eight tail conductors first; insulate the unused
+// A-B-C-D column conductor separately. D13 celebrates accepted input.
 
 namespace {
 
@@ -56,7 +57,7 @@ namespace {
                                                    const OperatorDecision& decision);
     bool                  advanceEvidence         (adk::TimePoint now);
     OperatorDecision      acceptedKeyPattern      (adk::KeypadKey key);
-    void                  startPattern            (adk::TimePoint now,
+    bool                  startPattern            (adk::TimePoint now,
                                                    const OperatorDecision& decision);
     void                  stopSafely              ();
 } // namespace
@@ -98,9 +99,8 @@ namespace {
             return false;
         }
 
-        startPattern (adk::TimePoint (millis ()),
-                      {EvidenceKind::AcceptedKey, 1, 100, 100, false});
-        return evidence.on ().ok ();
+        return startPattern (adk::TimePoint (millis ()),
+                             {EvidenceKind::AcceptedKey, 1, 100, 100, false});
     }
 
     adk::KeypadSnapshot observeKeypad (adk::TimePoint now)
@@ -152,12 +152,18 @@ namespace {
                 pattern.pulseCount != decision.pulseCount ||
                 !pattern.repeating)
             {
-                startPattern (now, decision);
+                if (!startPattern (now, decision))
+                {
+                    return false;
+                }
             }
         }
         else if (decision.kind == EvidenceKind::AcceptedKey && !pattern.active)
         {
-            startPattern (now, decision);
+            if (!startPattern (now, decision))
+            {
+                return false;
+            }
         }
 
         return advanceEvidence (now);
@@ -232,18 +238,23 @@ namespace {
         return {EvidenceKind::ScanFault, 3, 100, 100, true};
     }
 
-    void startPattern (adk::TimePoint now, const OperatorDecision& decision)
+    bool startPattern (adk::TimePoint now, const OperatorDecision& decision)
     {
-        evidence.off ();
+        if (!evidence.off ().ok ())
+        {
+            return false;
+        }
 
-        pattern.deadlineMs      = now.milliseconds ();
+        pattern.deadlineMs      = now.milliseconds () + decision.onTimeMs;
         pattern.pulseCount      = decision.pulseCount;
         pattern.completedPulses = 0;
         pattern.onTimeMs        = decision.onTimeMs;
         pattern.offTimeMs       = decision.offTimeMs;
         pattern.active          = decision.pulseCount != 0;
-        pattern.lit             = false;
+        pattern.lit             = decision.pulseCount != 0;
         pattern.repeating       = decision.repeating;
+
+        return !pattern.lit || evidence.on ().ok ();
     }
 
     void stopSafely ()
