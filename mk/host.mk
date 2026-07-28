@@ -68,6 +68,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_magnetic_passage_logger \
 	$(BUILD_DIR)/host/test_passage_qualifier \
 	$(BUILD_DIR)/host/test_percussion_sequencer \
+	$(BUILD_DIR)/host/test_presence_model \
 	$(BUILD_DIR)/host/test_reaction_timer \
 	$(BUILD_DIR)/host/test_record_sink \
 	$(BUILD_DIR)/host/test_pwm_output \
@@ -216,6 +217,15 @@ $(BUILD_DIR)/host/test_optical_observation: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/optical_observation.cpp \
 		tests/test_optical_observation.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_presence_model: $(HOST_CORE_SOURCES) \
+		src/optical_observation.cpp src/presence_model.cpp src/pulse_input.cpp \
+		tests/test_presence_model.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/optical_observation.cpp \
+		src/presence_model.cpp src/pulse_input.cpp \
+		tests/test_presence_model.cpp \
+		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_analog_input: $(HOST_CORE_SOURCES) \
 		src/analog_input.cpp src/board.cpp src/digital_output.cpp \
