@@ -10,12 +10,12 @@ the Arduino Mega 2560.
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–035 are published, host verified, and
+> **Current boundary:** Lessons 001–036 are published, host verified, and
 > compiled for the Mega 2560. All lessons remain experimental, physical
 > acceptance remains open, and the exact electrical revisions used by Lessons
-> 031–035 are not yet qualified. Lesson 036 is the active planned project
+> 031–036 are not yet qualified. Lesson 037 is the next planned component
 > boundary; planned rows below are commitments, not support claims.
-> [Lesson 035](lessons/035.md) is the newest published component.
+> [Lesson 036](lessons/036.md) is the current published project.
 
 ## What ADK provides
 
@@ -46,52 +46,10 @@ a printable PDF companion. Each row links to the first lesson in its arc.
 | 025–027 · [start at 025](https://spincyc.github.io/adk/lessons/025/) | Receive-only evidence and telemetry console | Bounded captures, exact packets, freshness, and acknowledgement |
 | 028–030 · [start at 028](https://spincyc.github.io/adk/lessons/028/) | Fault evidence and inert cue simulation | Injectable channel states, confirmation, stop dominance, and audit replay |
 | 031–033 · [start at 031](https://spincyc.github.io/adk/lessons/031/) | Joystick, encoder, and calibration console | Calibrated input, Gray-code transitions, and explicit commit or cancel |
-| 034–035 · [start at 034](https://spincyc.github.io/adk/lessons/034/) · [continue at 035](lessons/035.md) | Magnetic observations and passage qualification | Qualified magnetic evidence, bounded direction, timeout, and suppression |
+| 034–036 · [start at 034](https://spincyc.github.io/adk/lessons/034/) | Magnetic observations and passage qualification | Durable magnetic passage logger with explicit recovery and presentation evidence |
 
 [View the complete lesson index](https://spincyc.github.io/adk/lessons/) or the
 [supported API](https://spincyc.github.io/adk/api-supported/).
-
-## Planned course
-
-These entries are deliberately linkless. A planned subject becomes a link only
-after its implementation, deterministic tests, Mega example, size evidence,
-HTML reference, and PDF lesson exist.
-
-| Lessons | Planned subjects | Planned project |
-|---:|---|---|
-| 036 | Active planned composition | Magnetic passage logger |
-| 037–039 | Contact dynamics; acoustic envelopes | Percussion sequencer |
-| 040–042 | Reflective/interrupted light; presence and passage | Tabletop course marshal |
-| 043–045 | Resistive environmental probes; thermal/radiant observations | Museum-case monitor |
-| 046–048 | Touch/proximity demonstrations; bounded stepper motion | Kinetic light sculpture |
-| 049–051 | Local identity records; positioning and homing | Tabletop parts carousel |
-| 052–054 | Known IR captures; bounded known-code transmission | IR command translator |
-| 055–057 | Threshold-module descriptors; characterization runs | Module characterization bench |
-| 058–060 | Constraint/clue model; fault-aware operator panel | Inert escape-room console |
-| 061–063 | Revision-neutral inertial samples; orientation presentation | Balance-table instrument |
-| 064–066 | Inertial record normalization; source qualification | Interchangeable motion recorder |
-| 067–069 | Single-wire transactions; qualified thermal probes | Thermal gradient mapper |
-| 070–072 | Multiplexed digits; MAX7219 presentation | Dual-display timing desk |
-| 073–075 | Authorized-family replacements for excluded DS1302, BMP180, and PCF8591 subjects | Replacement project after re-scope |
-| 076–078 | Authorized-family replacement for the excluded color-sensor subject; follow-on component | Replacement project after re-scope |
-| 079–081 | Bounded low-side driver; indicator-module semantics | Component qualification bench |
-
-Exact specimen identity, ratings, primary sources, and bench evidence remain
-gates. Planned coverage does not mean an unidentified kit module is supported.
-
-## Network research
-
-The network tracks are Linux/FPGA/SoC research, not Mega payload paths or
-working endpoint products.
-
-| Track | Evidence available now | Next unverified milestone |
-|---|---|---|
-| [Transparent USB](https://spincyc.github.io/adk/projects/mesh-roadmap/) | Deterministic routing, fencing, profiles, controller models, and hardware studies | Independent computer/peripheral attachment hardware and native enumeration |
-| [HDMI mesh](https://spincyc.github.io/adk/projects/mesh-roadmap/) | Endpoint, route, profile, and reconstruction architecture with host models | Licensed receiver/transmitter endpoints and measured local-loop video |
-| [Shared fabric](https://spincyc.github.io/adk/docs/research/SHARED_USB_HDMI_FABRIC/) | Admission, headroom, failure, and observability policy | Managed-switch capacity, QoS, PoE, congestion, and simultaneous-load measurements |
-
-No endpoint hardware has been qualified. USB/IP is a learning prototype, and
-nominal USB, HDMI, or Ethernet rates are not performance evidence.
 
 ## Build and verify
 
@@ -115,6 +73,43 @@ ADK is a low-voltage educational library, not a safety controller. It does not
 control igniters or launchers, replay unknown protocols, or connect learner
 circuits to mains, vehicles, buildings, medical systems, or public
 infrastructure. The show-cue work is physically inert.
+
+## Planned course
+
+These entries are deliberately linkless. A planned subject becomes a link only
+after its implementation, deterministic tests, Mega example, size evidence,
+HTML reference, and PDF lesson exist.
+
+- **037–045:** contact and acoustic evidence for a percussion sequencer;
+  optical presence and passage for a tabletop course marshal; environmental
+  and thermal observations for a museum-case monitor.
+- **046–054:** touch and bounded stepper motion for a kinetic light sculpture;
+  local identity and homing for a tabletop parts carousel; known IR captures
+  and bounded known-code transmission for an IR command translator.
+- **055–063:** threshold characterization for a module bench; constraints and
+  a fault-aware panel for an inert escape-room console; revision-neutral
+  inertial samples and orientation for a balance-table instrument.
+- **064–072:** inertial normalization and source qualification for an
+  interchangeable motion recorder; qualified single-wire thermal probes for a
+  gradient mapper; multiplexed digits and MAX7219 presentation for a
+  dual-display timing desk.
+- **073–081:** authorized-family replacements for the excluded DS1302, BMP180,
+  PCF8591, and color-sensor subjects, followed by a bounded low-side driver,
+  indicator semantics, and an inert component-qualification bench.
+
+Exact specimen identity, ratings, primary sources, and bench evidence remain
+gates. Planned coverage does not mean an unidentified kit module is supported.
+
+## Network research
+
+The [transparent USB and HDMI mesh roadmap](https://spincyc.github.io/adk/projects/mesh-roadmap/)
+and [shared-fabric research](https://spincyc.github.io/adk/docs/research/SHARED_USB_HDMI_FABRIC/)
+contain deterministic host models and explicit admission, failure, and
+observability policies. They are Linux/FPGA/SoC research, not Mega payload
+paths or working endpoint products. No endpoint hardware, native enumeration,
+local-loop video, shared-LAN capacity, QoS, PoE, congestion behavior, or
+simultaneous load has been qualified. USB/IP remains a learning prototype;
+nominal USB, HDMI, and Ethernet rates are not performance evidence.
 
 [Source](https://github.com/spincyc/adk) ·
 [Roadmap](docs/ROADMAP.md) ·

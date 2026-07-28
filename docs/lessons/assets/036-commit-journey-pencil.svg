@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900"
+ viewBox="0 0 1600 900" role="img" aria-labelledby="title description">
+ <title id="title">Magnetic passage logger commit journey</title>
+ <desc id="description">A six-stage pencil flow freezes an accepted passage
+ and label, reads the abstract clock, writes and synchronizes an inactive
+ ledger slot, commits by writing the valid marker last, then presents the
+ durable count. Side paths retain RTC retry and bounded overrun evidence.</desc>
+ <defs>
+  <filter id="pencil" x="-4%" y="-6%" width="108%" height="112%">
+   <feTurbulence type="fractalNoise" baseFrequency="0.013 0.08"
+    numOctaves="2" seed="36" result="grain"/>
+   <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.3"/>
+  </filter>
+  <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4"
+   orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#303030"/></marker>
+  <style>
+   .ink{fill:none;stroke:#303030;stroke-width:4;stroke-linecap:round;
+    stroke-linejoin:round;filter:url(#pencil)}
+   .dash{fill:none;stroke:#555;stroke-width:3;stroke-dasharray:11 9;
+    filter:url(#pencil)}
+   .label{fill:#202020;font-family:"Open Sans";font-size:25px;font-weight:700}
+   .text{fill:#202020;font-family:"Open Sans";font-size:20px}
+   .small{fill:#202020;font-family:"Open Sans";font-size:17px}
+  </style>
+ </defs>
+ <rect width="1600" height="900" fill="#fff"/>
+ <text x="45" y="45" class="label">ONE ACCEPTED RECORD BECOMES ONE DURABLE COMMIT</text>
+ <g>
+  <rect x="40" y="90" width="225" height="300" rx="20" class="ink"/>
+  <text x="60" y="130" class="label">1  ACCEPT</text>
+  <text x="60" y="185" class="text">Lesson 035 record</text>
+  <text x="60" y="225" class="small">Accepted only</text>
+  <text x="60" y="255" class="small">sequence + direction</text>
+  <text x="60" y="285" class="small">acceptance time</text>
+  <text x="60" y="315" class="small">position evidence</text>
+
+  <path d="M270 240h45" class="ink" marker-end="url(#arrow)"/>
+  <rect x="320" y="90" width="225" height="300" rx="20" class="ink"/>
+  <text x="340" y="130" class="label">2  FREEZE</text>
+  <text x="340" y="185" class="text">record + label</text>
+  <text x="340" y="225" class="small">None / A / B / C</text>
+  <text x="340" y="265" class="small">label is metadata</text>
+  <text x="340" y="295" class="small">not identity</text>
+  <text x="340" y="335" class="small">accepted pulse</text>
+
+  <path d="M550 240h45" class="ink" marker-end="url(#arrow)"/>
+  <rect x="600" y="90" width="225" height="300" rx="20" class="ink"/>
+  <text x="620" y="130" class="label">3  CLOCK</text>
+  <circle cx="710" cy="225" r="58" class="ink"/>
+  <path d="M710 225v-38M710 225l35 20" class="ink"/>
+  <text x="620" y="315" class="small">read abstract RTC once</text>
+  <text x="620" y="345" class="small">retain degraded state</text>
+
+  <path d="M830 240h45" class="ink" marker-end="url(#arrow)"/>
+  <rect x="880" y="90" width="225" height="300" rx="20" class="ink"/>
+  <text x="900" y="130" class="label">4  PREPARE</text>
+  <rect x="925" y="180" width="135" height="120" class="dash"/>
+  <text x="945" y="220" class="small">inactive slot</text>
+  <text x="945" y="250" class="small">body + CRC</text>
+  <text x="945" y="280" class="small">marker erased</text>
+  <text x="900" y="345" class="small">synchronize body</text>
+
+  <path d="M1110 240h45" class="ink" marker-end="url(#arrow)"/>
+  <rect x="1160" y="90" width="225" height="300" rx="20" class="ink"/>
+  <text x="1180" y="130" class="label">5  COMMIT</text>
+  <rect x="1205" y="180" width="135" height="120" class="ink"/>
+  <text x="1220" y="220" class="small">valid marker</text>
+  <text x="1245" y="250" class="label">A5</text>
+  <text x="1180" y="345" class="small">write last, sync again</text>
+
+  <path d="M1390 240h20" class="ink" marker-end="url(#arrow)"/>
+  <rect x="1415" y="90" width="150" height="300" rx="20" class="ink"/>
+  <text x="1430" y="130" class="text">6  SHOW</text>
+  <text x="1470" y="225" class="label">7.</text>
+  <text x="1430" y="280" class="small">count mod 10</text>
+  <text x="1430" y="310" class="small">dot: total 10+</text>
+  <text x="1430" y="350" class="small">commit pulse</text>
+ </g>
+
+ <rect x="40" y="455" width="1525" height="390" rx="22" class="ink"/>
+ <text x="70" y="500" class="label">VISIBLE PROGRESS AND FAILURE BOUNDARIES</text>
+ <path d="M95 585h45l14-15 22 30 22-30 22 30 22-15h40" class="ink"/>
+ <circle cx="320" cy="585" r="30" class="ink"/>
+ <text x="370" y="592" class="text">D30 ACCEPTED — input frozen for processing</text>
+ <path d="M95 660h45l14-15 22 30 22-30 22 30 22-15h40" class="ink"/>
+ <circle cx="320" cy="660" r="30" class="ink"/>
+ <text x="370" y="667" class="text">D31 COMMITTED — durable checkpoint advanced</text>
+ <path d="M95 735h45l14-15 22 30 22-30 22 30 22-15h40" class="ink"/>
+ <circle cx="320" cy="735" r="30" class="ink"/>
+ <text x="370" y="742" class="text">D32 PERSISTENT FAULT — remains until reinitialize</text>
+ <text x="920" y="580" class="label">RTC read fails</text>
+ <text x="920" y="615" class="small">pending record and label remain frozen;</text>
+ <text x="920" y="645" class="small">retry same sequence and read clock again.</text>
+ <text x="920" y="705" class="label">newer record while pending</text>
+ <text x="920" y="740" class="small">retain one bounded overrunInput;</text>
+ <text x="920" y="770" class="small">do not queue or silently commit it.</text>
+ <text x="920" y="815" class="small">Display failure never rewrites durable state.</text>
+ <text x="70" y="810" class="small">Healthy update: D30 + D31 together. Inject fixture failure to separate stages.</text>
+</svg>

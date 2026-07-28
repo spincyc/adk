@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="760"
+ viewBox="0 0 1600 760" role="img" aria-labelledby="title description">
+ <title id="title">Two-slot passage ledger recovery</title>
+ <desc id="description">Pencil drawings compare two alternating fixed-size
+ slots. A valid newest slot wins over erased, torn, corrupt, or unsupported
+ peers; two invalid slots, unequal duplicate generations, and exact
+ half-range generations stop recovery.</desc>
+ <defs>
+  <filter id="pencil" x="-4%" y="-7%" width="108%" height="114%">
+   <feTurbulence type="fractalNoise" baseFrequency="0.013 0.08"
+    numOctaves="2" seed="37" result="grain"/>
+   <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.2"/>
+  </filter>
+  <style>
+   .ink{fill:none;stroke:#303030;stroke-width:4;stroke-linecap:round;
+    stroke-linejoin:round;filter:url(#pencil)}
+   .dash{fill:none;stroke:#555;stroke-width:3;stroke-dasharray:11 9;
+    filter:url(#pencil)}
+   .label{fill:#202020;font-family:"Open Sans";font-size:25px;font-weight:700}
+   .text{fill:#202020;font-family:"Open Sans";font-size:20px}
+   .small{fill:#202020;font-family:"Open Sans";font-size:17px}
+  </style>
+ </defs>
+ <rect width="1600" height="760" fill="#fff"/>
+ <text x="45" y="45" class="label">RECOVER DURABLE EVIDENCE — NEVER GUESS BETWEEN AMBIGUOUS SLOTS</text>
+ <rect x="45" y="85" width="720" height="310" rx="22" class="ink"/>
+ <text x="75" y="130" class="label">SLOT 0 — older valid checkpoint</text>
+ <rect x="85" y="165" width="640" height="95" class="ink"/>
+ <path d="M170 165v95M250 165v95M360 165v95M510 165v95M650 165v95" class="ink"/>
+ <text x="100" y="215" class="small">magic</text><text x="185" y="215" class="small">ver</text>
+ <text x="270" y="215" class="small">generation</text><text x="385" y="215" class="small">entry</text>
+ <text x="535" y="215" class="small">CRC</text><text x="670" y="215" class="small">A5</text>
+ <text x="75" y="315" class="text">valid marker + checksum + supported version</text>
+ <text x="75" y="350" class="small">recoverable, but generation comparison selects newest</text>
+
+ <rect x="835" y="85" width="720" height="310" rx="22" class="ink"/>
+ <text x="865" y="130" class="label">SLOT 1 — newer valid checkpoint</text>
+ <rect x="875" y="165" width="640" height="95" class="ink"/>
+ <path d="M960 165v95M1040 165v95M1150 165v95M1300 165v95M1440 165v95" class="ink"/>
+ <text x="890" y="215" class="small">magic</text><text x="975" y="215" class="small">ver</text>
+ <text x="1060" y="215" class="small">generation</text><text x="1175" y="215" class="small">entry</text>
+ <text x="1325" y="215" class="small">CRC</text><text x="1460" y="215" class="small">A5</text>
+ <text x="865" y="315" class="text">newest valid slot becomes checkpoint authority</text>
+ <text x="865" y="350" class="small">entry, count, sequence, label, clock and gap survive restart</text>
+
+ <rect x="45" y="445" width="1510" height="260" rx="22" class="ink"/>
+ <text x="75" y="490" class="label">RECOVERY DISPOSITIONS ARE EVIDENCE</text>
+ <text x="75" y="545" class="text">Empty + Empty</text>
+ <text x="280" y="545" class="small">Empty / Ok; synthetic checkpoint 0,0,0</text>
+ <text x="75" y="590" class="text">Valid + bad peer</text>
+ <text x="280" y="590" class="small">RecoveredWithErased / Torn / Corrupt / UnsupportedPeer</text>
+ <text x="75" y="635" class="text">two invalid</text>
+ <text x="280" y="635" class="small">BothInvalid / HardwareFailure — stop</text>
+ <text x="850" y="545" class="text">equal generation</text>
+ <text x="1060" y="545" class="small">identical bytes recover; unequal bytes stop</text>
+ <text x="850" y="590" class="text">half-range apart</text>
+ <text x="1060" y="590" class="small">AmbiguousGeneration — stop</text>
+ <text x="850" y="635" class="text">sync uncertainty</text>
+ <text x="1060" y="635" class="small">reread both slots and reconcile before claiming commit</text>
+ <text x="75" y="680" class="small">The host byte-storage fixture proves the protocol; it is not a physical RTC, SD card, or EEPROM acceptance result.</text>
+</svg>

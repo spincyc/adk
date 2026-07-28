@@ -117,6 +117,11 @@ doc/lessons/035.pdf: docs/lessons/035/main.tex \
 		docs/lessons/assets/035-passage-stages-pencil.png \
 		docs/lessons/assets/035-passage-timing-pencil.svg \
 		docs/lessons/assets/035-passage-timing-pencil.png
+doc/lessons/036.pdf: docs/lessons/036/main.tex \
+		docs/lessons/assets/036-commit-journey-pencil.svg \
+		docs/lessons/assets/036-commit-journey-pencil.png \
+		docs/lessons/assets/036-ledger-recovery-pencil.svg \
+		docs/lessons/assets/036-ledger-recovery-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons
