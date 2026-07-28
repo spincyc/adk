@@ -133,6 +133,9 @@ Every lesson's PDF contains its open bench record; use the
 [testing contract](TESTING.md#hardware-acceptance). Work through 001 upward on
 an Arduino Mega 2560 and record board revision, exact specimen, supply,
 instrument, tool version, prediction, observation, interpretation, and commit.
+The software-preparation audit and lesson-by-lesson child-creation gates are
+recorded in the
+[physical acceptance campaign plan](audits/PHYSICAL_ACCEPTANCE_CAMPAIGN_PLAN.md).
 
 The campaign must separately prove:
 
