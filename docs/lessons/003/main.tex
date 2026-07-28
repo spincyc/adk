@@ -27,7 +27,8 @@
 {
     pdftitle={ADK Lesson 003: Deterministic Reaction Timer},
     pdfauthor={Kevin Shanahan},
-    pdfsubject={Button, DigitalOutput, deterministic debounce, replay, and Mega 2560 acceptance}
+    pdfsubject={Button, DigitalOutput, deterministic debounce, replay, and Mega 2560 acceptance},
+    pdflang={en-US}
 }
 \pagestyle{fancy}
 \fancyhf{}
@@ -78,7 +79,7 @@
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
 Lesson & 003 --- integration project & Time & 100--140 minutes\\
 Inputs & pushbutton on D22 & Output & LED on D8\\
-Status & host verified; hardware experimental & Board & Arduino Mega 2560\\
+Status & host verified; physical acceptance pending & Energy & E1, USB-powered Mega 2560\\
 \end{tabularx}
 
 \begin{figure}[h]
@@ -113,7 +114,9 @@ By the end, you can:
 Use a 330\(\Omega\) series resistor with the external LED. Do not connect an
 output directly to ground or 5\,V. The button circuit below uses the Mega's
 internal pull-up: do not add an external 5\,V jumper. Stop immediately for heat,
-odor, unexpected brightness, or repeated resets.}
+odor, unexpected brightness, repeated resets, a rail outside the board-specific
+accepted range, or current above the precomputed limit. Software shutdown is
+not an emergency stop: remove USB power if any stop condition occurs.}
 
 \section{Why this is lesson 003}
 
@@ -217,6 +220,10 @@ the contacts that change from open to closed when pressed.
 the common PWM cluster and serial pins. The project needs no interrupt. Polling
 at supplied timestamps makes behavior testable and sufficient for human input.
 
+Name the accessible conductors before power: TP-CUE is D8 measured to Mega GND,
+TP-BUTTON is D22 measured to Mega GND, and TP-ACQ is D13 measured to Mega GND.
+Do not move a probe or jumper while powered.
+
 \section{Ownership and lifetime}
 
 Construction records configuration but does not touch hardware. Initialization
@@ -261,15 +268,15 @@ if (!(cueReady && buttonReady && timerReady))
 }
 \end{lstlisting}
 
-The compile-authoritative full sketch is
-This endpoint-focused listing uses the exact supported API. The canonical
-\texttt{examples/Lesson003ReactionTimer} composes the same output through
-\texttt{MonoLed} and obtains the registry from \texttt{Runtime}. Its
-\texttt{LED\_BUILTIN} pin is D13; for the exact external D8 circuit in this
-lesson, make a local example copy and change only that constructor argument to
-8. Notice the aligned calls and explicit \texttt{ok()} checks.
+This endpoint-focused listing uses the exact supported API. The
+compile-authoritative example directory
+\texttt{examples/}\allowbreak\texttt{Lesson003ReactionTimer} uses D8 for the
+external cue and D13 for an independent acquisition pulse, matching this
+lesson. Notice the aligned calls and explicit \texttt{ok()} checks.
 \texttt{ReactionTimer} is a pure state owner; the GPIO owners perform hardware
-cleanup. No callback runs during cleanup.
+cleanup. Holding the D22 button for three seconds reaches the controlled
+shutdown fixture: D8 and D13 are first commanded LOW for 250\,ms, then D8,
+D13, and D22 become high impedance. No callback runs during cleanup.
 
 \section{Raw, stable, and event are different facts}
 
@@ -388,7 +395,9 @@ void loop ()
 All observers see one coherent update. Input sampling precedes behavior; behavior
 precedes output. Reporting comes last in the canonical example. Reordering those
 phases can introduce a one-update disagreement between the LED and recorded
-start time.
+start time. The full canonical sketch additionally checks the three-second D22
+hold after sampling and before advancing the timer. That fixture is intentionally
+reachable from every running state and is not evidence of an emergency stop.
 
 \section{Replay before hardware}
 
@@ -474,39 +483,98 @@ button snapshot rather than read D22 itself:\\[3pt]
 
 \section{Mega 2560 procedure}
 
+This is an E1 experiment. Before creating a physical run record, an operator
+and an independent reviewer must accept the exact identity card, schematic,
+current calculation, meter method, and stop limits below. Host replay and
+compilation remain valid while physical acceptance remains pending.
+
 \begin{enumerate}
-  \item Record repository commit, Arduino CLI version, AVR core version, and
-        fully qualified board name \texttt{arduino:avr:mega}.
+  \item Record the complete identity card: repository commit, sketch hash,
+        Arduino CLI and AVR core versions, FQBN, exact Mega board specimen,
+        USB source/current limit, switch specimen, LED part/color/polarity and
+        rating source, measured resistor value, jumper set, meter and probe,
+        operator, reviewer, date, and bench-run ID.
   \item Disconnect power. Build the exact schematic and check every row in the
-        connection table. Confirm the external LED resistor with a meter or bands.
+        connection table. Confirm the external LED resistor with a meter and
+        record the accepted resistance range. Calculate the expected LED current
+        from the accepted rail and LED forward-voltage bounds; accept it against
+        the LED, per-pin, port, board, and USB-source limits before power.
   \item Compile the unmodified \texttt{examples/Lesson003ReactionTimer}. Record
         flash and static RAM. Compilation proves only that the program fits and
         type-checks.
-  \item Copy the example to a temporary sketch and replace
-        \texttt{LED\_BUILTIN} with 8 so it matches this lesson's exact external
-        schematic. Compile, upload, and keep the button released through reset.
-        Verify the LED pulses during Ready, remains off during Wait, and then
-        turns on for Cue.
+  \item With probes fixed at the named test points, compile and upload the
+        unmodified canonical sketch. Keep the button released through reset.
+        Verify that TP-ACQ/D13 gives one 250\,ms acquisition pulse independent
+        of the D8 timer indication. Verify TP-CUE/D8 pulses during Ready, remains
+        LOW during Wait, and becomes HIGH for Cue.
   \item Press once after the cue. Verify exactly one result is reported and the
         cue changes according to the documented terminal state.
   \item Run three trials. Then deliberately press early; verify false-start
         indication and release gating.
   \item Hold the button through reset. Verify no immediate valid reaction.
-  \item Invoke or reach the example's shutdown path. Measure D8: confirm it is
-        input/high impedance rather than merely observing a dark LED.
-  \item Disconnect USB before any change. Inspect the board and components for
-        abnormal temperature or damage.
+  \item Run one trial without pressing after the cue. Record the visible
+        timeout terminal state and its elapsed bound.
+  \item Before the shutdown run, remove USB and install one fixture at a time.
+        For D8, disconnect the LED branch and connect measured 10\,k\(\Omega\)
+        resistors as 5\,V--10\,k\(\Omega\)--TP-CUE--10\,k\(\Omega\)--GND.
+        Measure TP-CUE to GND and calculate driven-LOW, driven-HIGH, and
+        released midpoint ranges using resistor tolerance, measured rail, and
+        DMM input resistance. Repeat for D13 only after recording the exact
+        board LED circuit and including its loading in the calculation. For
+        D22, leave the switch released and connect the named DMM
+        TP-BUTTON-to-GND; calculate the pull-up-active and post-shutdown ranges.
+        Never install, move, or remove a fixture while powered.
+  \item Hold D22 continuously for at least three seconds. Observe D8 and D13 LOW
+        for the controlled 250\,ms interval. Without moving the fixed probes,
+        use the accepted high-impedance test fixture to distinguish high
+        impedance from a driven LOW at TP-CUE and TP-ACQ; record both results.
+        At TP-BUTTON, release the switch after shutdown and use the same accepted
+        weak-bias method to prove that D22 is high impedance with its internal
+        pull-up disabled. Never use a low-resistance forced-voltage test.
+  \item Press reset and repeat the acquisition and nominal-cue observations.
+        Reach controlled shutdown again and repeat all three safe-state
+        measurements; reset is a new run, not proof that the prior shutdown
+        persisted.
+  \item Remove USB power without moving wiring. Record 0\,V at TP-CUE,
+        TP-ACQ, TP-BUTTON, and the 5\,V rail relative to GND. Only then inspect
+        or reconfigure the circuit and record the final component disposition.
 \end{enumerate}
 
 \begin{center}
-\begin{tabularx}{\linewidth}{@{}l X l X@{}}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.20\linewidth}X p{0.20\linewidth}X@{}}
 \toprule
 Field & Record & Field & Record\\
 \midrule
-Commit & & Mega board ID &\\[7pt]
-CLI / AVR core & & Supply / USB source &\\[7pt]
-Flash bytes & & Static RAM bytes &\\[7pt]
-Meter / analyzer & & D8 shutdown reading &\\[7pt]
+Bench-run ID / date & & Commit / sketch hash &\\[7pt]
+Operator & & Independent reviewer &\\[7pt]
+Mega specimen / revision & & FQBN &\\[7pt]
+Port / upload command & & Reviewer sign-off / date &\\[7pt]
+CLI / AVR core & & Flash / static RAM bytes &\\[7pt]
+USB source / current limit & & Meter / probe IDs &\\[7pt]
+Switch specimen & & LED part / color / polarity &\\[7pt]
+LED rating source / limits & & Resistor ID / measured value &\\[7pt]
+Expected current range & & Measured rail / total current &\\[7pt]
+Jumper set / fixture & & Final disposition &\\[7pt]
+Deviations & & Remaining uncertainty &\\[7pt]
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}p{0.16\linewidth}p{0.25\linewidth}p{0.25\linewidth}X@{}}
+\toprule
+Stage & Prediction & Observation & Interpretation / action\\
+\midrule
+Acquisition & TP-ACQ HIGH for 250\,ms, then LOW; TP-CUE is independent & &\\[9pt]
+Ready / Wait / Cue & TP-CUE pulse, LOW, then HIGH in that order & &\\[9pt]
+Nominal press & one debounced result; no duplicate transition & &\\[9pt]
+False start & early press produces failure and requires release & &\\[9pt]
+Timeout & no post-cue press produces the bounded timeout state & &\\[9pt]
+Reset & one new TP-ACQ pulse; held D22 cannot produce a valid reaction & &\\[9pt]
+Controlled shutdown & D8/D13 LOW for 250\,ms, then TP-CUE, TP-ACQ, and released TP-BUTTON test high impedance & &\\[11pt]
+Power removed & all named points and 5\,V rail measure 0\,V & &\\[9pt]
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -526,6 +594,9 @@ Trial & configured wait (ms) & cue time & press time & reaction (ms)\\
 \textbf{Status language.} If only the host tests and Mega compile pass, write
 ``host verified; Mega compiled.'' Write ``hardware verified'' only after the
 physical checklist and measurements are complete.
+
+\textbf{Reviewed result:} \checkbox\ draft \quad \checkbox\ rejected \quad
+\checkbox\ hardware verified \quad Reviewer/date: \blank{1.5in}
 
 \section{Diagnose from evidence}
 
@@ -600,6 +671,8 @@ Wiring checked unpowered: \checkbox{}\quad
 Replay passed twice: \checkbox{}\quad
 False start tested: \checkbox{}\quad
 D8 shutdown measured: \checkbox{}\quad
+TP-ACQ independent: \checkbox{}\quad
+D22 shutdown measured: \checkbox{}\quad
 Power removed before teardown: \checkbox{}
 
 \vfill

@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-28T00:48:26Z"
-updated_at: "2026-07-28T01:03:11Z"
+updated_at: "2026-07-28T01:15:12Z"
 ---
 
 # Goal
@@ -43,3 +43,9 @@ canonical examples now expose separate acquisition, behavior, controlled
 shutdown, reset, and physical weak-bias evidence procedures. All host, style,
 header, Mega/size, PDF, monochrome, and site gates pass. Physical acceptance
 remains open. The next repair unit is Lessons 003--004.
+
+Lessons 003--004 are also software-prepared and independently reviewed.
+Canonical pins, acquisition-only D13 evidence, finite shutdown, current and
+physical weak-bias measurements, full cards, project documentation, size
+baselines, and publication artifacts agree. Physical acceptance remains open.
+The next repair unit is Lessons 005--006.
