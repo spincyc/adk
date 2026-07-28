@@ -118,7 +118,7 @@ work; retail kit names are not electrical identities.
 | [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Host verified; bench/incoming conformance open | Contact dynamics, acoustic envelopes, and percussion sequencer published against documented external references; E1 and incoming conformance open |
 | [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Host verified; powered adapter/bench open | Optical observations, presence, and tabletop course marshal are published as pure policy; explicit button authorization is fixed, while powered exact-specimen and bench gates remain open |
 | [043--045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Host verified; powered adapter/bench open | Copied inertial samples, pure orientation/presentation intent, and stationary hand-operated tabletop balance instrument are published as E0 replay; no powered adapter, I2C, wiring, schematic, or E1 claim |
-| [046--048](projects/component_project_cadence.md) | Queued; authorized specimens only | Authorized tactile/directional inputs, bounded stepper motion, kinetic sculpture; excluded or unidentified pulse/gesture modules are not claimed |
+| [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Active integration; E0 policy only | Copied tactile/directional evidence, bounded logical stepper intent, and transactional kinetic-sculpture composition; powered inputs remain E1-gated and energized stepper motion remains E2-gated |
 | [049--051](projects/component_project_cadence.md) | Queued | Local identity records, homing, inert parts carousel |
 | [052--054](projects/component_project_cadence.md) | Queued; exact emitter gated | Known-kit IR capture, bounded listed IR-emission family, command translator |
 | [055--057](projects/component_project_cadence.md) | Queued | Constraint model, fault-aware panel, inert escape-room console |
@@ -160,10 +160,13 @@ published boundary preserves exact MPU6050 and QMI8658 variants as independent
 future adapter gates; exact-specimen qualification, powered adapters,
 authoritative schematics, and E1 bench acceptance remain open. The later
 067--069 normalization, qualification, comparison, and recorder scope remains
-intact. Lessons 046--081 remain canonical subjects and retained work in the
-engagement order above, but their cadence entries are not
-implementation-ready lesson plans. Before code begins for each later
-three-lesson
+intact. Lessons 046--048 now have an independently reviewed implementation-
+depth E0 plan and pre-implementation stress passes. The boundary owns no
+powered endpoint: exact tactile/directional adapters remain E1-gated, while
+the exact 28BYJ-48/ULN2003 system and kinetic sculpture remain E2-gated.
+Lessons 049--081 remain canonical subjects and retained work in the engagement
+order above, but their cadence entries are not implementation-ready lesson
+plans. Before code begins for each later three-lesson
 arc, expand it to the same depth as 031--033: public values and interfaces,
 resource and pin budgets, deterministic fixture and failure matrices,
 narrative example flow, staged circuit-native experiments, HTML/PDF division,
