@@ -2,7 +2,7 @@
 
 This is the planning map for first-class ADK interfaces. It complements
 `CURRICULUM.md`: that file defines teaching order; this file defines ownership,
-composition, resources, and test seams. The lesson 030 slice is implemented,
+composition, resources, and test seams. The lesson 033 slice is implemented,
 host verified, and experimental. A catalog name is still a target unless a
 matching public header has landed; in particular, lesson 009 models its
 photoresistor through `AnalogInput` and does not yet publish a
@@ -103,8 +103,8 @@ that configuration into domain meaning.
 | `FixedStorage` | `FixedStorageMedium`, `Storage` | Staged and durable prefixes make append/sync/restart explicit | 024 |
 | `Keypad` | Row outputs, column inputs | Debounced key/chord snapshots | 018 |
 | `MatrixKeypad` | Four row outputs and three column inputs | One complete release-gated key observation per scan | 018 |
-| `Joystick` | Two `AnalogInput`, optional `Button` | Calibrated axes and dead zone | 018 |
-| `RotaryEncoder` | Two inputs, optional interrupt claims | Direction/steps from supplied edge timestamps | 021 |
+| `AnalogJoystick` | Two `AnalogInput` objects and `Button` | Calibrated axes, dead zone, and distinct selection events | 033 |
+| `QuadratureEncoder` | Two `DigitalInput` objects | Observed Gray-code edges, invalid-transition evidence, and saturating position | 033 |
 | `Servo` | `ServoOutput` | Calibrated bounded position, never implied load safety | 018 |
 | `UltrasonicRanger` | Trigger output, `PulseInput` | Distance, timeout, and out-of-range are distinct | 021 |
 | `PirSensor` | `DigitalInput` | Warm-up and motion state are explicit | 021 |
@@ -143,7 +143,7 @@ architectural layers.
 | DS1307/DS3231 | `Rtc` | 022--024 |
 | MicroSD module | `SpiDevice` + `SdCard` | 022--024 |
 | Membrane keypad | `Keypad` | 016 |
-| Analog joystick | `Joystick` | 016 extension |
+| Analog joystick | `AnalogJoystick` | 031 |
 | Rotary encoder | `QuadratureEncoder` | 032 |
 | SG90 servo | `ServoOutput` + `Servo` + external supply boundary | 017--018 |
 | 28BYJ-48 + ULN2003 | Four outputs + bounded stepper sequencer | 020--021 extension |
@@ -175,6 +175,7 @@ pins behind a component's back.
 | Rover controller | Range/motion samples, operator mode | Bounded drive intent | World trace and emergency-stop injection | 024 |
 | Telemetry console | Configured packet observations | Health/signal/log intents | Recorded packet and fault trace | 027 |
 | Cue simulator | Confirmations, continuity simulation, clock | Inert cue/audit intent | Full replay, fault matrix, redundant-state model | 030 |
+| `CalibrationConsole` | Joystick/encoder/button snapshots and time | Preview, committed values, acknowledgement, and fault state | Supplied input/time replay | 033 |
 
 ## Mega 2560 profile
 

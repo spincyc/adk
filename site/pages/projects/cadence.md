@@ -16,6 +16,7 @@ PDF.
 | 024 | Greenhouse controller | Host verified; bench open | Schedules, faults, simulated loads |
 | 027 | Telemetry console | Host verified; bench open | Receive-only observations and logging |
 | 030 | Inert show-cue simulator | Host verified; bench open | Dry run, abort, faults, audit trail |
+| 033 | Calibration console | Host verified; bench open | Preview, trim, atomic commit/cancel, replay |
 
 The final project never controls an igniter, launcher, or cloned transmitter.
 See the [safety policy](../safety.md), [curriculum](../docs/CURRICULUM.md), and

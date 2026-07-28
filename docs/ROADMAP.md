@@ -51,7 +51,13 @@ publication ledger.
     bounded audit replay in lesson 029; and
 29. physically inert show-cue composition with complete channel observations,
     continuity gating, cancellation dominance, and replayable audit evidence
-    in lesson 030.
+    in lesson 030;
+30. calibrated two-axis joystick observations and explicit selection events in
+    lesson 031;
+31. deterministic quadrature decoding with invalid-transition evidence in
+    lesson 032; and
+32. atomic calibration preview, trim, commit, and cancel composition in lesson
+    033.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
@@ -59,9 +65,9 @@ is experimental rather than hardware supported.
 
 ## Next slice
 
-Lesson 030 is host verified and published with its E1 bench card open. Lesson
-031's calibrated analog joystick is the next queued implementation boundary.
-Development follows the canonical lessons 031--081 kit expansion, one
+Lesson 033 is host verified and published with its E1 bench card open. Lesson
+034 is the next queued implementation boundary and first requires its
+implementation-depth brief. Development follows the canonical lessons 034--081 kit expansion, one
 implementation-depth three-lesson brief at a time.
 
 Every component requires lifecycle tests, deterministic fakes, a canonical Mega

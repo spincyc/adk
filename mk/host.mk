@@ -29,6 +29,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_analog_input \
 	$(BUILD_DIR)/host/test_analog_joystick \
 	$(BUILD_DIR)/host/test_bus \
+	$(BUILD_DIR)/host/test_calibration_console \
 	$(BUILD_DIR)/host/test_io \
 	$(BUILD_DIR)/host/test_cue_audit \
 	$(BUILD_DIR)/host/test_inert_load_interlock \
@@ -170,6 +171,13 @@ $(BUILD_DIR)/host/test_bus: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/i2c_bus.cpp src/spi_bus.cpp \
 		tests/test_bus.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_calibration_console: $(HOST_CORE_SOURCES) \
+		src/calibration_console.cpp tests/test_calibration_console.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/calibration_console.cpp \
+		tests/test_calibration_console.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_access_trainer: $(HOST_CORE_SOURCES) \
 		src/access_trainer.cpp src/keypad.cpp tests/test_access_trainer.cpp \

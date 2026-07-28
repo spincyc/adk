@@ -37,6 +37,7 @@ third lesson for a deterministic integration project.
 | [Lesson 030 — Inert show-cue simulator](030.md) | Inert show-cue simulator | Continuity-gated cues, stop dominance, and deterministic audit replay |
 | [Lesson 031 — Analog joystick](031.md) | Two-axis joystick | Calibrated axes, dead zone, and separate select events |
 | [Lesson 032 — Quadrature encoder](032.md) | Rotary encoder | Gray-code edges, invalid transitions, and saturating position |
+| [Lesson 033 — Calibration console](033.md) | Calibration console | Joystick selection, encoder trim, and explicit commit or cancel |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance

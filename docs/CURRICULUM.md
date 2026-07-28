@@ -8,10 +8,10 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--030 have first-class implementation work, deterministic host
+Lessons 001--033 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
-bench cards remain open. Lesson 031 is the next queued implementation
-boundary. Its joystick and encoder families are in the
+bench cards remain open. Lesson 034 is the next queued implementation
+boundary. The joystick and encoder families used in 031--033 are in the
 [authorized Elegoo set](inventory/AUTHORIZED_ELEGOO_SET.md); exact electrical
 revision and bench evidence remain open. The
 [work queue](WORK_QUEUE.md) records later
@@ -72,6 +72,9 @@ For every lesson, the queued implementation order is:
 | 028 | Host verified; bench open | Inert channel assessment | Open, short, stale, and contradictory fixture evidence |
 | 029 | Host verified; bench open | Deterministic inert cue scheduling and bounded audit evidence | Confirmation window, hold/cancel dominance, and replayable records |
 | 030 | Host verified; bench open | Physically inert show-cue simulator | Redundant state indicators, inert channel lamps, stop dominance, and a complete audit log |
+| 031 | Host verified; bench open | Calibrated analog joystick | TP-X/TP-Y raw evidence, bounded RGB preview, and separate selection events |
+| 032 | Host verified; bench open | Quadrature rotary encoder | TP-A/TP-B phase evidence, edge count, and visible invalid transitions |
+| 033 | Host verified; bench open | Calibration console composition | Preview, commit/cancel state, fault indication, and deterministic replay |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation
