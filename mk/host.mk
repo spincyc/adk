@@ -41,6 +41,10 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_infrared_decoder \
 	$(BUILD_DIR)/host/test_infrared_record \
 	$(BUILD_DIR)/host/test_keypad \
+	$(BUILD_DIR)/host/test_lesson039_adapter_policy \
+	$(BUILD_DIR)/host/test_lesson039_frame_cue_gate \
+	$(BUILD_DIR)/host/test_lesson039_hardware_acquisition_failure \
+	$(BUILD_DIR)/host/test_lesson039_replay_adapter \
 	$(BUILD_DIR)/host/test_matrix_keypad \
 	$(BUILD_DIR)/host/test_magnetic_observation \
 	$(BUILD_DIR)/host/test_mega_avr_bus_io \
@@ -255,6 +259,58 @@ $(BUILD_DIR)/host/test_percussion_sequencer: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/percussion_sequencer.cpp \
 		tests/test_percussion_sequencer.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_lesson039_adapter_policy: \
+		examples/Lesson039PercussionSequencer/Lesson039AdapterPolicy.h \
+		examples/Lesson039PercussionSequencer/tests/test_adapter_policy.cpp \
+		| $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		examples/Lesson039PercussionSequencer/tests/test_adapter_policy.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_lesson039_frame_cue_gate: \
+		examples/Lesson039PercussionSequencer/FrameCueGate.h \
+		examples/Lesson039PercussionSequencer/tests/test_frame_cue_gate.cpp \
+		| $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		examples/Lesson039PercussionSequencer/tests/test_frame_cue_gate.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_lesson039_hardware_acquisition_failure: $(HOST_IO_SOURCES) \
+		src/acoustic_envelope.cpp src/analog_input.cpp src/board.cpp src/button.cpp \
+		src/contact_dynamics.cpp src/mono_led.cpp src/percussion_sequencer.cpp \
+		src/piezo_sounder.cpp src/seven_segment_display.cpp \
+		src/shift_register.cpp \
+		examples/Lesson039PercussionSequencer/FrameCueGate.h \
+		examples/Lesson039PercussionSequencer/Lesson039AdapterPolicy.h \
+		examples/Lesson039PercussionSequencer/Lesson039PercussionSequencer.ino \
+		examples/Lesson039PercussionSequencer/tests/test_hardware_acquisition_failure.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_IO_SOURCES) src/acoustic_envelope.cpp src/analog_input.cpp \
+		src/board.cpp src/button.cpp src/contact_dynamics.cpp \
+		src/mono_led.cpp src/percussion_sequencer.cpp src/piezo_sounder.cpp \
+		src/seven_segment_display.cpp src/shift_register.cpp \
+		examples/Lesson039PercussionSequencer/tests/test_hardware_acquisition_failure.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_lesson039_replay_adapter: $(HOST_IO_SOURCES) \
+		src/acoustic_envelope.cpp src/analog_input.cpp src/board.cpp src/button.cpp \
+		src/contact_dynamics.cpp src/mono_led.cpp src/percussion_sequencer.cpp \
+		src/piezo_sounder.cpp src/seven_segment_display.cpp \
+		src/shift_register.cpp \
+		examples/Lesson039PercussionSequencer/FrameCueGate.h \
+		examples/Lesson039PercussionSequencer/Lesson039AdapterPolicy.h \
+		examples/Lesson039PercussionSequencer/Lesson039PercussionSequencer.ino \
+		examples/Lesson039PercussionSequencer/tests/test_replay_adapter.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_IO_SOURCES) src/acoustic_envelope.cpp src/analog_input.cpp \
+		src/board.cpp src/button.cpp src/contact_dynamics.cpp \
+		src/mono_led.cpp src/percussion_sequencer.cpp src/piezo_sounder.cpp \
+		src/seven_segment_display.cpp src/shift_register.cpp \
+		examples/Lesson039PercussionSequencer/tests/test_replay_adapter.cpp \
+		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_magnetic_passage_logger: $(HOST_IO_SOURCES) \
 		src/board.cpp src/magnetic_passage_logger.cpp src/passage_ledger.cpp \

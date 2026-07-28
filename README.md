@@ -10,12 +10,14 @@ the Arduino Mega 2560.
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–036 are published, host verified, and
+> **Current boundary:** Lessons 001–039 are published, host verified, and
 > compiled for the Mega 2560. All lessons remain experimental, physical
 > acceptance remains open, and the exact electrical revisions used by Lessons
-> 031–036 are not yet qualified. Lesson 037 is the next planned component
-> boundary; planned rows below are commitments, not support claims.
-> [Lesson 036](lessons/036.md) is the current published project.
+> 031–036 are not yet qualified. Lessons 037–039 use documented external
+> reference fixtures; incoming conformance and bench acceptance remain open.
+> Lesson 040 is the next planned component boundary; planned rows below are
+> commitments, not support claims. [Lesson 039](lessons/039.md) is the current
+> published project.
 
 ## What ADK provides
 
@@ -47,6 +49,7 @@ a printable PDF companion. Each row links to the first lesson in its arc.
 | 028–030 · [start at 028](https://spincyc.github.io/adk/lessons/028/) | Fault evidence and inert cue simulation | Injectable channel states, confirmation, stop dominance, and audit replay |
 | 031–033 · [start at 031](https://spincyc.github.io/adk/lessons/031/) | Joystick, encoder, and calibration console | Calibrated input, Gray-code transitions, and explicit commit or cancel |
 | 034–036 · [start at 034](https://spincyc.github.io/adk/lessons/034/) | Magnetic observations and passage qualification | Durable magnetic passage logger with explicit recovery and presentation evidence |
+| 037–039 · [start at 037](https://spincyc.github.io/adk/lessons/037/) | Contact and acoustic evidence | Deterministic percussion sequencing with qualified contact and envelope records |
 
 [View the complete lesson index](https://spincyc.github.io/adk/lessons/) or the
 [supported API](https://spincyc.github.io/adk/api-supported/).
@@ -80,9 +83,8 @@ These entries are deliberately linkless. A planned subject becomes a link only
 after its implementation, deterministic tests, Mega example, size evidence,
 HTML reference, and PDF lesson exist.
 
-- **037–045:** contact and acoustic evidence for a percussion sequencer;
-  optical presence and passage for a tabletop course marshal; environmental
-  and thermal observations for a museum-case monitor.
+- **040–045:** optical presence and passage for a tabletop course marshal;
+  environmental and thermal observations for a museum-case monitor.
 - **046–054:** touch and bounded stepper motion for a kinetic light sculpture;
   local identity and homing for a tabletop parts carousel; known IR captures
   and bounded known-code transmission for an IR command translator.

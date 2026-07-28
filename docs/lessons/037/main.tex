@@ -1,0 +1,246 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\usepackage[margin=0.68in]{geometry}
+\usepackage{booktabs}
+\usepackage[american]{circuitikz}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage{tabularx}
+\usepackage{titlesec}
+\graphicspath{{docs/lessons/assets/}{../assets/}}
+\definecolor{Ink}{gray}{0}
+\definecolor{CodeGray}{gray}{0.96}
+\hypersetup{hidelinks,pdftitle={ADK Lesson 037: Contact Dynamics},
+ pdfauthor={Kevin Shanahan},
+ pdfsubject={Active-low contact qualification with a documented passive reference fixture},
+ pdflang={en-US}}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\textsc{ADK Lesson 037}}\rhead{Contact Dynamics}
+\cfoot{\thepage}\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries\color{Ink}}{\thesection}{0.5em}{}
+\lstdefinestyle{adkcpp}{language=C++,backgroundcolor=\color{CodeGray},
+ basicstyle=\ttfamily\small,keywordstyle=\color{Ink}\bfseries,
+ commentstyle=\color{Ink},columns=fullflexible,keepspaces=true,
+ showstringspaces=false,frame=single,rulecolor=\color{Ink},
+ breaklines=true,tabsize=4}
+\newcommand{\lessonbox}[1]{%
+ \begin{center}\fcolorbox{Ink}{white}{\parbox{0.92\linewidth}{#1}}\end{center}}
+
+\begin{document}
+\begin{center}
+ {\Huge\bfseries Contact Dynamics}\\[4pt]
+ {\Large Qualify one passive contact without hiding its raw evidence}\\[8pt]
+ \textit{Observe, qualify, suppress repeats, release}
+\end{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 037 --- component & Time & 120--180 minutes\\
+Prerequisites & Lessons 002, 006, and 007 & Board & Arduino Mega 2560\\
+Evidence & TP-C and three LED witnesses & Status & host verified; bench open\\
+Energy class & E1 passive contact fixture; E0 host trace separate\\
+\end{tabularx}
+
+\lessonbox{\textbf{Reference gate.} Use only a visibly identified
+C\&K/Littelfuse \texttt{RB-220-07A R}, or a separately qualified
+substitution. Confirm the delivered part, terminal continuity, installed
+closure orientation, 10 k\(\Omega\) resistor, and literal wiring before
+power. Remove USB power before wiring, moving the contact, or placing a probe.
+Stop on uncertain identity, damage, unexpected continuity, the wrong
+resistor, unresolved ground, or an out-of-bound prediction. The circuit and
+lesson are not physical acceptance.}
+
+\section{Mission}
+\[
+\text{raw level}\rightarrow\text{qualified contact}
+\rightarrow\text{attack event}\rightarrow\text{release event}.
+\]
+\texttt{ContactDynamics} consumes copied samples. It does not measure force,
+acceleration, impact energy, orientation, damage, or safety. The canonical
+sketch keeps raw evidence visible while time policy rejects chatter and
+suppresses repeated attacks.
+
+\section{Inspect and orient}
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.88\linewidth]{037-contact-stages-pencil.png}
+
+\small\textit{Alternative text: pencil timeline carries an active-low raw
+contact through continuous qualification, one accepted attack, refractory
+suppression, a qualified release, and a held-active warning.}
+\end{center}
+The drawing is an orientation aid, not an electrical schematic. Match the
+exact part-number marking and reject damage, uncertain identity, mercury,
+unknown capsules, and bare piezo elements. The two switch terminals are
+electrically nonpolar, but installed orientation determines when the rolling
+ball closes them and must be recorded.
+
+\section{Electrically authoritative reference circuit}
+\begin{center}
+% ADK visual: schematic
+\begin{circuitikz}
+\draw (0,3) node[left]{Mega 5 V}
+  to[R,l=10 k$\Omega$] (2.5,3)
+  -- (3.4,3) node[circ,label=above:{TP-C / D22}] (tpc) {}
+  to[nos,l_={RB-220-07A R}] (6.4,3)
+  -- (6.4,1.8) node[ground]{};
+\draw (0,1.2) node[left]{D30}
+  to[R,l=1 k$\Omega$] (2,1.2)
+  to[leD,l=raw witness] (4,1.2)
+  -- (4,0.5) node[ground]{};
+\draw (5,1.2) node[left]{D31}
+  to[R,l=1 k$\Omega$] (7,1.2)
+  to[leD,l=qualified witness] (9,1.2)
+  -- (9,0.5) node[ground]{};
+\draw (10,1.2) node[left]{D32}
+  to[R,l=1 k$\Omega$] (12,1.2)
+  to[leD,l=attack witness] (14,1.2)
+  -- (14,0.5) node[ground]{};
+\end{circuitikz}
+
+\small\textit{Formal schematic: the named manufacturer contact closes TP-C
+to ground; the external pull-up, not an internal pull, establishes High when
+open. Each evidence LED has its own current-limiting resistor.}
+\end{center}
+At nominal 5 V, closure current is \(5\text{ V}/10\text{ k}\Omega=0.5\)
+mA. This lies between the datasheet's 10 \(\mu\)A minimum rated-load point
+and 1 mA maximum resistive load. E1 must measure the actual rail and resistor
+tolerance and prove worst-case current no greater than 1 mA.
+
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+Evidence & Mega pin & Meaning\\
+\midrule
+TP-C & D22 & High when open; Low when the reference contact closes\\
+raw LED & D30 through 1 k\(\Omega\) & sampled contact is closed\\
+accepted LED & D31 through 1 k\(\Omega\) & 150 ms witness for an accepted attack\\
+ready/fault LED & D32 through 1 k\(\Omega\) & acquired and healthy; dark on stuck/fault\\
+\bottomrule
+\end{tabularx}
+Configure \texttt{DigitalInput} with \texttt{Pull::None}; configure
+\texttt{ContactDynamics} active-low.
+
+\section{Policy contract}
+Construction is inert. \texttt{initialize()} validates nonzero,
+half-range-safe durations. \texttt{update(sample)} processes one copied
+level, timestamp, and source status. \texttt{snapshot()} is stable and
+non-consuming; \texttt{reset()} clears history and counters.
+
+An attack requires continuous activity through \texttt{qualify}; release
+requires continuous inactivity through \texttt{release}. Refractory begins at
+an accepted attack. Completion before its exact boundary is suppressed, while
+completion at the boundary is accepted. A held contact creates no repeated
+attacks and reaches \texttt{StuckActive} at its configured boundary.
+
+Source and timing faults create no event and require reset. Natural 32-bit
+rollover is valid. A half-range or larger apparent jump is invalid. An
+identical same-time sample is idempotent; changed same-time evidence faults.
+
+\section{Narrative Mega example}
+\begin{lstlisting}[style=adkcpp]
+void loop ()
+{
+    const adk::TimePoint now (millis ());
+
+    if (now.elapsedSince (startedAt).milliseconds () >=
+            observationDurationMs
+        || !observeContact (now) || !qualifyDynamics ()
+        || !presentContactEvidence (now) || !actuateEvidence ())
+    {
+        stopSafely ();
+    }
+}
+\end{lstlisting}
+The sketch acquires D22 and all three LEDs, configures a bounded run, shows
+ready, then preserves observe--qualify--present--actuate order. Any failure and the
+120-second boundary call \texttt{stopSafely()}. Serial is unnecessary.
+
+\section{Absent-hardware trace laboratory}
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.82\linewidth]{037-trace-lab-pencil.png}
+
+\small\textit{Alternative text: four pencil laboratory cards show a short
+pulse rejected before qualification, chatter settling into one attack, a
+second attack suppressed during refractory, and a held contact warning.}
+\end{center}
+No physical contact is needed. Use active-low policy with 30 ms qualification,
+20 ms release, 80 ms refractory, and 120 ms stuck-active time.
+
+\begin{tabularx}{\linewidth}{@{}r l X@{}}
+\toprule Time (ms) & Level & Prediction\\
+\midrule
+0 & High & idle; counts 0/0\\
+10 & Low & active candidate starts\\
+20 & High & chatter cancels candidate\\
+30 & Low & candidate restarts\\
+60 & Low & accepted attack; counts 1/0\\
+70 & High & release candidate\\
+90 & High & release; pulse width 30 ms\\
+100 & Low & candidate during refractory\\
+130 & Low & suppressed attack; counts 1/1\\
+\bottomrule
+\end{tabularx}
+Save complete status and snapshot fields after every row. Reset, replay, and
+compare fields rather than C++ object bytes. This establishes deterministic
+policy only; sampling cannot reveal a pulse entirely between polls.
+
+Run a separate shortened E0 held-contact trace with
+\texttt{stuckActive=120 ms}: \texttt{(0,High)}, \texttt{(10,Low)},
+\texttt{(40,Low)}, \texttt{(160,Low)}, \texttt{(170,High)}, and
+\texttt{(190,High)}. Predict acceptance at 40 ms, \texttt{StuckActive}
+exactly at 160 ms, and release with 150 ms pulse width at 190 ms. The physical
+sketch deliberately uses a longer 2 s boundary.
+
+\section{Predict, observe, interpret}
+\begin{enumerate}
+\item Before power, predict open and closed TP-C levels, all three LEDs, and
+closed current. Inspect the part and resistor; unresolved identity stops.
+\item Observe TP-C relative to Mega ground, then raw, accepted, and ready/fault
+LEDs. Record time and do not revise the prediction.
+\item Interpret a discrepancy by separating circuit level, sampling, and
+policy. Do not infer physical intensity from an accepted attack.
+\end{enumerate}
+Acquisition and safe state are separate evidence. Successful start proves that
+D22 and the three output claims were acquired. Bench work must independently
+measure that shutdown releases every pin to high impedance.
+
+\section{Diagnosis}
+\begin{tabularx}{\linewidth}{@{}X X@{}}
+\toprule Observation & Inspect next\\
+\midrule
+TP-C never changes & part identity, continuity, orientation, ground path\\
+raw LED disagrees with TP-C & D22 mapping, active level, sample timing\\
+accepted LED never lights & continuous duration and chatter\\
+several accepted pulses from one hold & refractory and held-contact policy\\
+all witnesses go dark & acquisition, source status, bounded stop\\
+\bottomrule
+\end{tabularx}
+
+\section{Open bench acceptance}
+Record the exact delivered part, board revision, supply and instrument,
+contact-resistor measurement, each LED resistor and current bound, predicted
+levels/current, observed TP-C and LED states, worst-case closed current, and
+shutdown high impedance. Leave every row blank
+until a human performs it. Compilation, trace replay, and this PDF are not
+physical verification.
+
+\section{References}
+\begin{itemize}
+\item C\&K/Littelfuse, \href{https://www.ckswitches.com/media/1317/rb.pdf}
+{RB series manufacturer datasheet}.
+\item \texttt{src/contact\_dynamics.h} and
+\texttt{tests/test\_contact\_dynamics.cpp}.
+\item \texttt{examples/Lesson037ContactDynamics/}.
+\end{itemize}
+
+\lessonbox{\textbf{Result.} Host replay and Mega compilation establish the
+software path for the documented reference design. Incoming conformance,
+powered characterization, current measurement, safe-state measurement, and
+bench acceptance remain open.}
+\end{document}

@@ -1,0 +1,194 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.68in]{geometry}
+\usepackage{booktabs,enumitem,fancyhdr,graphicx,overpic,tabularx,titlesec}
+\usepackage[table]{xcolor}
+\usepackage[hidelinks]{hyperref}
+\usepackage{circuitikz}
+\graphicspath{{docs/lessons/assets/}{../assets/}}
+\hypersetup{pdftitle={ADK Lesson 039: Percussion Sequencer},
+ pdfauthor={Kevin Shanahan},
+ pdfsubject={Contact grouping, acoustic association, quantization, and playback intents},
+ pdflang={en-US}}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\textsc{ADK Lesson 039}}\rhead{Percussion Sequencer}
+\cfoot{\thepage}\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.5em}{}
+\newcommand{\lessonbox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{#1}}\end{center}}
+
+\begin{document}
+\begin{center}
+ {\Huge\bfseries Percussion Sequencer}\\[4pt]
+ {\Large Group attacks, associate one envelope, replay bounded cues}\\[8pt]
+ \textit{Exact reference design; incoming conformance and E1 acceptance open}
+\end{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 039 --- project & Time & 180--240 minutes\\
+Prerequisites & Lessons 037--038 & Board & Mega 2560 reference fixture\\
+Evidence & six LEDs, passive piezo, named test points &
+Status & integration verification active; bench open\\
+\end{tabularx}
+
+\lessonbox{\textbf{Scope gate.} Four C\&K/Littelfuse
+\texttt{RB-220-07A R} contacts and one SparkFun \texttt{SEN-12642 V10}
+define the reference circuit. A look-alike kit part is not interchangeable.
+Intensity is relative ADC evidence, not sound pressure, loudness, force,
+damage, speech, or a safety measurement.}
+
+\section{From four lanes to one pattern}
+\begin{center}
+% ADK visual: pencil
+\begin{overpic}[width=0.96\linewidth]{039-pattern-pencil.png}
+ \put(4,5){\small four qualified lanes}
+ \put(49,5){\small quantized grid}
+ \put(84,5){\small current frame}
+ \put(52,36){\small supplied-time cursor}
+\end{overpic}
+
+\small\textit{Alternative text: four hand-drawn lanes feed a bounded
+sixteenth-note grid. A supplied-time cursor selects only the current frame.}
+\end{center}
+
+The first qualified attack freezes recording tempo and epoch. Up to one attack
+per lane enters an inclusive simultaneous window. One eligible completed
+acoustic interval supplies relative intensity to every group member; timeout
+supplies zero with explicit \texttt{AssociationTimeout} provenance. Only one
+closed group waits, so later attacks are visibly suppressed rather than
+secretly queued.
+
+The pattern contains 4--16 sixteenth-note steps at 30--240 BPM:
+\[
+ \mathrm{stepPeriodMs}=\left\lfloor\frac{60000}{4\,\mathrm{tempoBpm}}\right\rfloor .
+\]
+Nearest-step quantization rounds an exact half-step forward. Fixed storage
+holds 32 hits. A group that cannot fit is rejected atomically.
+\texttt{hit(index)} returns a copied hit with its association provenance.
+
+\section{Electrically authoritative input schematic}
+The input schematic below is authoritative for this named reference fixture only.
+Each contact has its own 10 k\(\Omega\) external pull-up. The adapter therefore
+uses \texttt{Pull::None} and interprets closure as active low.
+
+\begin{center}
+% ADK visual: schematic
+\begin{circuitikz}[american]
+ \draw (0,4) node[vcc]{5 V} to[R,l=10 k$\Omega$] (0,2.8)
+       node[circ]{} to[push button] (0,1.4) node[ground]{};
+ \node[below left] at (0,2.8){TP-C0};
+ \draw (2,4) node[vcc]{5 V} to[R,l=10 k$\Omega$] (2,2.8)
+       node[circ]{} to[push button] (2,1.4) node[ground]{};
+ \node[below left] at (2,2.8){TP-C1};
+ \draw (4,4) node[vcc]{5 V} to[R,l=10 k$\Omega$] (4,2.8)
+       node[circ]{} to[push button] (4,1.4) node[ground]{};
+ \node[below left] at (4,2.8){TP-C2};
+ \draw (6,4) node[vcc]{5 V} to[R,l=10 k$\Omega$] (6,2.8)
+       node[circ]{} to[push button] (6,1.4) node[ground]{};
+ \node[below left] at (6,2.8){TP-C3};
+ \draw (9,4) rectangle (12,1.3);
+ \node at (10.5,3.5){SEN-12642 V10};
+ \draw (9,2.8) -- (8.1,2.8) node[left]{A8};
+ \node[right] at (9,2.8){ENVELOPE};
+ \draw (9,2.2) -- (8.1,2.2) node[left]{D44};
+ \node[right] at (9,2.2){GATE};
+ \node[right] at (9,1.65){AUDIO NC};
+ \draw (11.3,4) -- (11.3,4.5) node[vcc]{5 V};
+ \draw (11.3,1.3) -- (11.3,.8) node[ground]{};
+\end{circuitikz}
+
+\small Four nonpolar rolling-ball contacts close TP-C0--TP-C3 to ground.
+The module and Mega share 5 V and ground; AUDIO is disconnected.
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+Path & Mega pin & Observation\\
+\midrule
+TP-C0--TP-C3 & D40--D43 & high open; low when its reference contact closes\\
+TP-E / TP-T & A8 / D44 & envelope ADC and active-high gate\\
+TP-BPM & A9 & 10 k\(\Omega\) potentiometer wiper\\
+surface evidence & D45--D48 & accepted/current surface, each through 1 k\(\Omega\)\\
+step display & D49--D51 & 74HC595 data, clock, and latch\\
+state/capture & D52/D53 & ready/heartbeat and hardware-sample interval\\
+cue & D6 / timer 2 & identified passive piezo, bounded tone only\\
+play/clear & D38/D39 & buttons to ground using internal pull-ups\\
+\bottomrule
+\end{tabularx}
+
+\section{Observe, decide, actuate}
+The Mega adapter first updates four inputs and \texttt{ContactDynamics}
+policies, then the envelope and gate inputs and \texttt{AcousticEnvelope}.
+It copies only qualified attack bits, source statuses, and a completed
+acoustic record into \texttt{PercussionSequencerInput}. The engine owns no
+pin, timer, clock, endpoint, or dynamic storage.
+
+Playback position derives from elapsed supplied time. Sparse calls skip to the
+frame current now and never replay crossed cues late. A one-digit display
+shows the active step. Accepted-hit LEDs latch for 180 ms and show current
+surfaces during playback. In reference-hardware mode only, D53 toggles on each
+coalesced 20 ms hardware sample; replay leaves it inactive.
+The strongest current hit selects 262, 330, 392, or 523 Hz; equal intensity
+selects the lowest lane. A frame without a hit has zero tone intent. That does
+not prove physical silence.
+
+\section{Predict, observe, interpret}
+\begin{enumerate}
+ \item Keep \texttt{ADK\_LESSON039\_USE\_REFERENCE\_HARDWARE=0}.
+       Predict three replay hits followed by playback from step zero.
+ \item Observe D45--D48 for accepted/current surfaces. Jumping time must not
+       produce a burst of missed LED or tone cues.
+ \item Observe D52 steady as ready outside playback and changing once per beat
+       during playback, including empty pattern regions. D53 stays inactive
+       in replay; on a qualified reference build it toggles on each coalesced
+       20 ms hardware sample.
+ \item Inject one failing source status in host replay. Predict retained host
+       fault attribution while D52, D53, the display, surface LEDs, and piezo
+       all become inactive.
+ \item At the simultaneous boundary predict inclusion; one tick later predict
+       suppression while association waits.
+ \item Omit completion. Predict zero intensity with timeout provenance, not a
+       claim that the room was quiet.
+\end{enumerate}
+
+\section{Qualified-build and shutdown checklist}
+Before selecting hardware mode, match all five incoming specimens to the
+named references, inspect unpowered wiring, and approve a bounded powered
+plan. Measure the actual 5 V rail and every pull-up; prove each worst-case
+closed current is no greater than the RB reference's 1 mA maximum. Measure
+ENVELOPE and GATE ranges against Mega limits. Complete per-pin, per-port,
+74HC595-package, 5 V rail, and total-current arithmetic; the known direct LED
+and display bound is 70 mA, excluding module, pulls, passive piezo, and Mega
+baseline. Power the module and Mega together; never drive a module output into
+an unpowered Mega.
+
+Resource acquisition and electrical safe state are separate evidence.
+Initialization status establishes claims. After shutdown, verify LEDs and
+piezo inactive and separately inspect TP-C0--TP-C3, TP-E, and TP-T. Remove USB
+for heat, odor, reset, unstable rail, or unexpected output. Rewire only while
+unpowered.
+
+\lessonbox{\textbf{Physical acceptance remains open.} Compilation, host
+replay, documentation, and an authoritative reference schematic do not prove
+the delivered specimens, currents, output ranges, closure orientation,
+sounder behavior, or safe shutdown on a bench. Record those observations only
+after the qualified fixture is measured.}
+
+\section{Software evidence and sources}
+The project-engine tests exercise grouping and association boundaries,
+quantization, capacity, playback, source attribution, lifecycle, and the
+versioned fieldwise trace. Focused example tests exist for replay scheduling,
+frame-cue gating, and the hardware-free adapter path; their shared promotion
+gate remains integration work.
+
+\begin{itemize}
+ \item C\&K/Littelfuse RB-series formal datasheet, exact
+       \texttt{RB-220-07A R} drawing and ratings.
+ \item SparkFun SEN-12642 hardware V1.0 source at repository commit
+       \texttt{a456d9e}, product page, and hookup guide.
+ \item Texas Instruments LMV324 primary datasheet.
+ \item ADK sensor evidence report, testing contract, and safety model.
+\end{itemize}
+
+This untagged print edition has a searchable HTML alternative.
+It makes no PDF/UA or physical accessibility claim.
+\end{document}

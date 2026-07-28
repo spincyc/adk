@@ -41,6 +41,9 @@ third lesson for a deterministic integration project.
 | [Lesson 034 — Magnetic observations](034.md) | Qualified magnetic evidence | Raw analog/contact observations, hysteresis, dwell, and specimen gates |
 | [Lesson 035 — Passage qualification](035.md) | Qualified passage evidence | Direction, timeout, suppression, and optional position corroboration |
 | [Lesson 036 — Magnetic passage logger](036.md) | Durable passage project | Frozen evidence, two-slot recovery, retry, and post-commit presentation |
+| [Lesson 037 — Contact dynamics](037.md) | Rolling-ball contact | Qualified attack and release evidence with explicit timing |
+| [Lesson 038 — Acoustic envelope](038.md) | Sound Detector envelope and gate | Relative intensity, clipping, and threshold agreement |
+| [Lesson 039 — Percussion sequencer](039.md) | Four contact lanes and acoustic overlap | Deterministic capture, grouping, quantization, and replay |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance

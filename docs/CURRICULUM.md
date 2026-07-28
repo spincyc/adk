@@ -8,14 +8,15 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--036 have first-class implementation work, deterministic host
+Lessons 001--039 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
-bench cards remain open. Lessons 037--039 are the active integration boundary.
-Their documented C&K and SparkFun reference fixtures unblock canonical
-non-hardware integration while physical conformance remains open.
-Lessons 040--042 have a provisional implementation-depth brief and remain
-queued behind completion and final reconciliation of 037--039, the Lesson 042
-arming decision, and exact-specimen gates.
+bench cards remain open. Lessons 037--039 use documented C&K and SparkFun
+reference fixtures; incoming conformance and physical acceptance remain open.
+The six earlier Elegoo exact-specimen questions were superseded as blockers
+for this canonical publication, not answered, and remain historical optional
+substitution-conformance requirements. Lessons 040--042 are the next queued
+block. Their provisional implementation-depth brief still requires the Lesson
+042 arming decision and its own exact-specimen gates before activation.
 The input families used in 031--036 are in the
 [authorized Elegoo set](inventory/AUTHORIZED_ELEGOO_SET.md); exact electrical
 revision and bench evidence remain open. The
@@ -80,6 +81,12 @@ For every lesson, the queued implementation order is:
 | 031 | Host verified; bench open | Calibrated analog joystick | TP-X/TP-Y raw evidence, bounded RGB preview, and separate selection events |
 | 032 | Host verified; bench open | Quadrature rotary encoder | TP-A/TP-B phase evidence, edge count, and visible invalid transitions |
 | 033 | Host verified; bench open | Calibration console composition | Preview, commit/cancel state, fault indication, and deterministic replay |
+| 034 | Host verified; bench open | Magnetic and contact observations | Raw field/contact evidence, qualification state, and visible ambiguity |
+| 035 | Host verified; bench open | Qualified passage events | Raw contacts, accepted direction, duplicate suppression, and timeout |
+| 036 | Host verified; bench open | Magnetic passage logger composition | Passage acceptance, visible count, and deterministic records |
+| 037 | Host verified; bench/incoming conformance open | Contact dynamics with the documented C&K reference fixture | Raw contact, accepted strike, and refractory evidence |
+| 038 | Host verified; bench/incoming conformance open | Acoustic envelopes with the documented SparkFun reference fixture | Envelope test point, gate state, clipping, and confidence evidence |
+| 039 | Host verified; bench/incoming conformance open | Percussion sequencer composition | Indexed strikes, visible pattern progress, sound, and deterministic replay |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation
