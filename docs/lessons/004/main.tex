@@ -4,6 +4,7 @@
 \usepackage{amssymb}
 \usepackage{array}
 \usepackage{booktabs}
+\usepackage[american]{circuitikz}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
 \usepackage{listings}
@@ -21,7 +22,7 @@
     pdflang={en-US}
 }
 
-\usetikzlibrary{arrows.meta,positioning}
+\usetikzlibrary{arrows.meta,decorations.pathmorphing,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{ink}{gray}{0}
@@ -32,6 +33,20 @@
 \definecolor{wireR}{gray}{0}
 \definecolor{wireG}{gray}{0}
 \definecolor{wireB}{gray}{0}
+
+\tikzset
+{
+    pencil stroke/.style={
+        draw=black!72,
+        decorate,
+        decoration={random steps,segment length=3pt,amplitude=0.55pt},
+        line cap=round,
+        line join=round
+    },
+    pencil diagram/.style={
+        every node/.style={text=black!82}
+    }
+}
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -74,6 +89,7 @@
 \end{center}
 
 \begin{center}
+% ADK visual: pencil
 \includegraphics[width=\linewidth,height=0.30\textheight,keepaspectratio]
     {004-pwm-rgb-pencil.png}
 \end{center}
@@ -125,35 +141,42 @@ measured to Mega GND. They are on the pin side of the channel resistor.
 only to the factory acquisition LED and never carries RGB behavior.
 
 \begin{center}
-\begin{tikzpicture}[x=1cm,y=1cm,>=Latex,
-    terminal/.style={draw,rounded corners,fill=soft,minimum width=17mm,
-                     minimum height=7mm},
-    resistor/.style={draw,minimum width=18mm,minimum height=6mm,fill=white}]
-    \node[terminal] (p6) at (0,2.4) {D6 PWM};
-    \node[terminal] (p5) at (0,1.2) {D5 PWM};
-    \node[terminal] (p3) at (0,0.0) {D3 PWM};
-    \node[resistor] (rr) at (3.0,2.4) {220 \(\Omega\)};
-    \node[resistor] (rg) at (3.0,1.2) {220 \(\Omega\)};
-    \node[resistor] (rb) at (3.0,0.0) {220 \(\Omega\)};
-    \node[draw,circle,minimum size=8mm] (red) at (6.0,2.4) {R};
-    \node[draw,circle,minimum size=8mm] (green) at (6.0,1.2) {G};
-    \node[draw,circle,minimum size=8mm] (blue) at (6.0,0.0) {B};
-    \coordinate (common) at (7.4,1.2);
-    \node[terminal] (gnd) at (10.0,1.2) {Mega GND};
-    \draw[very thick,wireR,solid,->] (p6)--(rr)--(red);
-    \draw[very thick,wireG,dashed,->] (p5)--(rg)--(green);
-    \draw[very thick,wireB,densely dotted,->] (p3)--(rb)--(blue);
-    \draw[thick] (red)--(7.0,2.4)--(common);
-    \draw[thick] (green)--(common);
-    \draw[thick] (blue)--(7.0,0.0)--(common);
-    \fill (common) circle (2pt);
-    \draw[very thick,->] (common)--(gnd);
-    \node[above=2mm of common] {common cathode};
-    \node[below=8mm of rg,text width=7.8cm,align=center] {
-        Exact net rule: pin \(\rightarrow\) resistor \(\rightarrow\)
-        channel anode; the one common cathode \(\rightarrow\) GND.};
-\end{tikzpicture}
+% ADK visual: schematic
+\begin{circuitikz}[american voltages]
+    \draw
+        (0,4.0) node[left]{Mega D6 / TP-R}
+        to[short,o-] (1.0,4.0)
+        to[R,l={220\,\(\Omega\)}] (3.5,4.0)
+        to[leD,l={red die}] (6.0,4.0)
+        -- (7.0,4.0) -- (7.0,2.0);
+    \draw
+        (0,2.0) node[left]{Mega D5 / TP-G}
+        to[short,o-] (1.0,2.0)
+        to[R,l={220\,\(\Omega\)}] (3.5,2.0)
+        to[leD,l={green die}] (6.0,2.0)
+        -- (7.0,2.0)
+        node[circ] (common) {};
+    \draw
+        (0,0) node[left]{Mega D3 / TP-B}
+        to[short,o-] (1.0,0)
+        to[R,l={220\,\(\Omega\)}] (3.5,0)
+        to[leD,l={blue die}] (6.0,0)
+        -- (7.0,0);
+    \draw
+        (common) -- (8.6,2.0)
+        node[right]{common cathode};
+    \draw
+        (common) -- (7.0,0) -- (7.0,-0.7)
+        node[ground,label=right:{Mega GND}] {};
+\end{circuitikz}
 \end{center}
+
+\textbf{Formal electrical schematic.}
+The three LED symbols are the dies inside one common-cathode package. Confirm
+the physical leg order from that exact LED's datasheet; lens shape and lead
+length are not sufficient identification. TP-R, TP-G, and TP-B are measured
+on the Mega-pin side of their resistors. TP-ACQ remains the separate factory
+D13 indicator described above and is not part of this RGB network.
 
 \begin{checkpoint}{continuity check while unpowered}
 \checkbox\ no pin-to-pin short \quad \checkbox\ each channel has one resistor
@@ -204,14 +227,15 @@ limits. If any estimate lacks margin, increase resistance or stop.
 LED, zero is inactive. Other circuits may assign different semantics.
 
 \begin{center}
-\begin{tikzpicture}[x=0.95cm,y=0.65cm]
-    \draw[->] (0,0)--(11.5,0) node[right]{time};
+% ADK visual: pencil
+\begin{tikzpicture}[pencil diagram,x=0.95cm,y=0.65cm]
+    \draw[pencil stroke,->] (0,0)--(11.5,0) node[right]{time};
     \node[left] at (0,1.5) {128};
     \foreach \x in {0,2,4,6,8}
     {
-        \draw[thick] (\x,0.7)--(\x,1.7)--(\x+1,1.7)--(\x+1,0.7)--(\x+2,0.7);
+        \draw[pencil stroke,thick] (\x,0.7)--(\x,1.7)--(\x+1,1.7)--(\x+1,0.7)--(\x+2,0.7);
     }
-    \draw[<->,accent] (0,2.05)--node[above]{one period}(2,2.05);
+    \draw[pencil stroke,<->,accent] (0,2.05)--node[above]{one period}(2,2.05);
     \node[below] at (5,0.45) {approximately equal on and off time};
 \end{tikzpicture}
 \end{center}
@@ -269,16 +293,17 @@ channels; \texttt{off()} sets \texttt{Rgb(0,0,0)}. Shutdown proceeds through
 the owned endpoints, leaving every channel at zero and high impedance.
 
 \begin{center}
-\begin{tikzpicture}[>=Latex,node distance=10mm,
-    box/.style={draw,rounded corners,fill=soft,minimum width=30mm,
+% ADK visual: pencil
+\begin{tikzpicture}[pencil diagram,>=Latex,node distance=10mm,
+    box/.style={draw=black!72,rounded corners,fill=soft,minimum width=30mm,
                 minimum height=10mm,align=center}]
     \node[box] (rgb) {\texttt{RgbLed}\\color meaning};
     \node[box,right=of rgb,yshift=12mm] (r) {\texttt{PwmOutput}\\D6};
     \node[box,right=of rgb] (g) {\texttt{PwmOutput}\\D5};
     \node[box,right=of rgb,yshift=-12mm] (b) {\texttt{PwmOutput}\\D3};
-    \draw[->,wireR,thick,solid] (rgb)--(r);
-    \draw[->,wireG,thick,dashed] (rgb)--(g);
-    \draw[->,wireB,thick,densely dotted] (rgb)--(b);
+    \draw[pencil stroke,->,wireR,thick,solid] (rgb)--(r);
+    \draw[pencil stroke,->,wireG,thick,dashed] (rgb)--(g);
+    \draw[pencil stroke,->,wireB,thick,densely dotted] (rgb)--(b);
 \end{tikzpicture}
 \end{center}
 

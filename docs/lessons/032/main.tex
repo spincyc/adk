@@ -6,13 +6,14 @@
 \usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{fancyhdr}
+\usepackage{graphicx}
 \usepackage[hidelinks]{hyperref}
 \usepackage{listings}
 \usepackage{microtype}
 \usepackage{tabularx}
-\usepackage{tikz}
 \usepackage{titlesec}
-\usetikzlibrary{arrows.meta,positioning}
+\usepackage{xcolor}
+\graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{Ink}{gray}{0}
 \definecolor{CodeGray}{gray}{0.96}
@@ -121,18 +122,12 @@ channel.
 \section{Gray-code timing drawing}
 
 \begin{center}
-\begin{tikzpicture}[x=1.34cm,y=0.72cm,>=Latex]
-  \draw[->] (-0.2,0) -- (5.25,0) node[right]{sample};
-  \foreach \x/\label in {0/00,1/01,2/11,3/10,4/00}
-    \draw (\x,0.08) -- (\x,-0.08) node[below=3pt]{\label};
-  \draw[thick] (0,1.2)--(1,1.2)--(1,2)--(3,2)--(3,1.2)--(4,1.2);
-  \draw[thick] (0,0.3)--(2,0.3)--(2,0.9)--(4,0.9);
-  \node[left] at (0,1.6) {A};
-  \node[left] at (0,0.6) {B};
-  \foreach \x in {0.5,1.5,2.5,3.5}
-    \draw[->] (\x,2.25) -- (\x,2.65);
-  \node at (2,2.9) {four valid clockwise edges};
-\end{tikzpicture}
+% ADK visual: pencil
+\includegraphics[width=0.92\linewidth]{032-gray-code-pencil.png}
+
+\small Upper trace: \textbf{A}.\quad Lower trace: \textbf{B}.\quad
+Samples: \textbf{00 \(\rightarrow\) 01 \(\rightarrow\) 11
+\(\rightarrow\) 10 \(\rightarrow\) 00}.\quad Four valid clockwise edges.
 \end{center}
 
 \textit{Alternative text: phase B rises, phase A rises, phase B falls, then

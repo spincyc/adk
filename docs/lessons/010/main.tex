@@ -14,7 +14,7 @@
 \usepackage{tabularx}
 \usepackage{tikz}
 \usepackage{titlesec}
-\usetikzlibrary{arrows.meta,positioning}
+\usetikzlibrary{arrows.meta,decorations.pathmorphing,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{AdkBlue}{gray}{0}
@@ -57,6 +57,9 @@
 }
 \newcommand{\checkbox}{\(\square\)}
 \newcommand{\blank}[1]{\rule{#1}{0.4pt}}
+\tikzset{pencil picture/.style={
+  every path/.append style={line cap=round,line join=round,
+    dash pattern=on 1.15pt off .08pt,opacity=.88}}}
 \newcommand{\warningbox}[1]{%
   \begin{center}
   \fcolorbox{AdkRed}{AdkRed!6}{\parbox{0.91\linewidth}{\textbf{\color{AdkRed}Safety checkpoint.} #1}}
@@ -152,7 +155,8 @@ Stop if the rail leaves 4.75--5.25\,V or total USB current exceeds 100\,mA.
 \section{Authoritative wiring}
 
 \begin{center}
-\begin{tikzpicture}[>=Latex,
+% ADK visual: pencil
+\begin{tikzpicture}[pencil picture,>=Latex,
     pin/.style={draw,rounded corners,fill=Soft,minimum width=20mm,minimum height=7mm},
     chip/.style={draw,fill=white,minimum width=27mm,minimum height=24mm},
     display/.style={draw,fill=white,minimum width=24mm,minimum height=30mm}]
@@ -209,7 +213,8 @@ control signal is required when blank output during power-up is part of the
 circuit contract.
 
 \begin{center}
-\begin{tikzpicture}[x=0.75cm,y=0.52cm,
+% ADK visual: pencil
+\begin{tikzpicture}[pencil picture,x=0.75cm,y=0.52cm,
     wire/.style={draw,very thick},
     part/.style={draw,rounded corners,fill=white}]
   \node[part,minimum width=3.2cm,minimum height=8.2cm] (mega) at (0,0) {};

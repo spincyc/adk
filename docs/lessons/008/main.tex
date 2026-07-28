@@ -5,6 +5,7 @@
 \usepackage[letterpaper,margin=0.72in,headheight=15pt]{geometry}
 \usepackage{array}
 \usepackage{booktabs}
+\usepackage[american]{circuitikz}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
 \usepackage{listings}
@@ -73,6 +74,7 @@
 \end{center}
 
 \begin{center}
+% ADK visual: pencil
 \includegraphics[width=\linewidth,height=0.28\textheight,keepaspectratio]
     {008-sampled-signal-pencil.png}
 \end{center}
@@ -135,28 +137,17 @@ you hold, step, and repeat the input before Lesson 009 adds a photoresistor's
 environmental variability.
 
 \begin{center}
-\begin{tikzpicture}[>=Latex,node distance=10mm,
-    terminal/.style={draw,rounded corners,fill=soft,minimum width=18mm,
-                     minimum height=8mm,align=center},
-    part/.style={draw,minimum width=24mm,minimum height=9mm,align=center}]
-    \node[terminal] (vcc) {Mega 5 V};
-    \node[part,right=of vcc] (high) {pot outer\\high};
-    \node[part,right=of high] (wiper) {pot center\\wiper};
-    \node[part,right=of wiper] (low) {pot outer\\low};
-    \node[terminal,right=of low] (gnd) {Mega GND};
-    \node[terminal,below=of wiper] (a0) {A0 / pin 54\\TP-A0};
-    \draw[very thick,->] (vcc)--(high);
-    \draw[very thick] (high)--(wiper)--(low);
-    \draw[very thick,->] (low)--(gnd);
-    \draw[very thick,->] (wiper)--(a0);
-
-    \node[terminal,below=24mm of vcc] (d6) {D6 PWM\\TP-D6};
-    \node[part,right=of d6] (res) {\(\geq220\,\Omega\)};
-    \node[part,right=of res] (anode) {LED anode};
-    \node[part,right=of anode] (cathode) {LED cathode};
-    \draw[very thick,->] (d6)--(res)--(anode)--(cathode);
-    \draw[very thick,->] (cathode.east)--++(8mm,0)|-(gnd.south);
-\end{tikzpicture}
+% ADK visual: schematic
+\begin{circuitikz}[american voltages]
+  \draw (0,4) node[left]{Mega 5 V} to[short,o-] (1,4)
+    to[potentiometer,l={10 k\(\Omega\) linear},name=P] (1,1)
+    -- (1,0.5) node[ground]{};
+  \draw (P.wiper) -- (4.5,2.5) node[above]{TP-A0}
+    -- (6,2.5) node[right]{Mega A0 / pin 54};
+  \draw (0,0) node[left]{Mega D6 PWM} to[short,o-,l^={TP-D6}] (1.2,0)
+    to[R,l={\(\geq220\,\Omega\)}] (3.7,0)
+    to[leD,l={external LED}] (6,0) -- (6,-0.5) node[ground]{};
+\end{circuitikz}
 \end{center}
 
 \begin{center}
@@ -180,19 +171,9 @@ The circuit and program make five different claims. Do not collapse them into
 ``the LED works.''
 
 \begin{center}
-\begin{tikzpicture}[>=Latex,node distance=6mm,
-    box/.style={draw,rounded corners,fill=soft,minimum height=10mm,
-                text width=27mm,align=center}]
-    \node[box] (voltage) {TP-A0\\measured voltage};
-    \node[box,right=of voltage] (raw) {raw\\0--1023};
-    \node[box,right=of raw] (map) {calibrated\\0--255};
-    \node[box,right=of map] (mean) {average\\8 samples};
-    \node[box,right=of mean] (hold) {deadband\\4 counts};
-    \draw[->,thick] (voltage)--(raw);
-    \draw[->,thick] (raw)--(map);
-    \draw[->,thick] (map)--(mean);
-    \draw[->,thick] (mean)--(hold);
-\end{tikzpicture}
+% ADK visual: pencil
+\includegraphics[width=\linewidth,height=0.22\textheight,keepaspectratio]
+  {008-evidence-chain-pencil.png}
 \end{center}
 
 D13's 250\,ms pulse supports the separate claim that all three hardware owners

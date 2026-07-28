@@ -6,9 +6,18 @@
   to Mega A0, Y signal to A1, active-low select switch to D22, and its verified
   supply and ground terminals to 5 V and ground. TP-X and TP-Y mark the analog
   signals. A common-cathode RGB LED connects through three separate one
-  kiloohm resistors to D5, D6, and D7.</desc>
+  330 ohm resistors to D5, D6, and D7.</desc>
+  <defs>
+    <filter id="pencil" x="-3%" y="-3%" width="106%" height="106%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.08"
+                    numOctaves="2" seed="31" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.2"
+                         xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
   <rect width="1400" height="820" fill="#fff"/>
-  <g fill="none" stroke="#222" stroke-width="4" stroke-linecap="round"
+  <g fill="none" stroke="#333" stroke-width="3.4" stroke-linecap="round"
+     opacity="0.9" filter="url(#pencil)"
      stroke-linejoin="round">
     <rect x="60" y="120" width="390" height="560" rx="20"/>
     <path d="M60 190H18M18 190V245"/>

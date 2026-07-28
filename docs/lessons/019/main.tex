@@ -129,6 +129,7 @@ Supply & 5 V, GND & module VCC and GND; probe ground to Mega GND\\
 \end{tabularx}
 
 \begin{center}
+% ADK visual: pencil
 \includegraphics[width=\linewidth]{019-ultrasonic-range-pencil.png}
 
 \small\textit{Alternative text: four-stage pencil plate. Stage 1 locates the
@@ -166,20 +167,13 @@ bounds and a model assumption. They do not certify accuracy, prove a specimen
 identity, or restate the manufacturer's full operating envelope.
 
 \begin{center}
-\begin{tikzpicture}[>=Latex,
-  state/.style={draw,minimum width=27mm,minimum height=9mm}]
-  \node[state] (idle) {Idle};
-  \node[state,right=8mm of idle] (rise) {Awaiting Echo};
-  \node[state,right=8mm of rise] (high) {Measuring};
-  \node[state,below=12mm of high] (valid) {Valid};
-  \node[state,left=8mm of valid] (outside) {Out of range};
-  \node[state,left=8mm of outside] (timeout) {Timeout};
-  \draw[->] (idle)--node[above]{start}(rise);
-  \draw[->] (rise)--node[above]{rise}(high);
-  \draw[->] (high)--node[right]{fall}(valid);
-  \draw[->] (high)--(outside);
-  \draw[->] (rise)--(timeout);
-\end{tikzpicture}
+% ADK visual: pencil
+\includegraphics[width=\linewidth,height=0.31\textheight,keepaspectratio]
+{019-range-state-pencil.png}
+
+\small\textit{Pencil state map: Idle starts Awaiting Echo. An Echo rise starts
+Measuring; its fall produces Valid. Awaiting Echo can instead produce Timeout,
+and Measuring can instead produce Out of range.}
 \end{center}
 
 \section{Narrative run loop}

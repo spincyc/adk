@@ -11,7 +11,7 @@
 \usepackage{tikz}
 \usepackage{titlesec}
 \usepackage[table]{xcolor}
-\usetikzlibrary{arrows.meta,positioning}
+\usetikzlibrary{arrows.meta,decorations.pathmorphing,positioning}
 
 \definecolor{CodeGray}{gray}{0.96}
 \hypersetup{
@@ -94,7 +94,10 @@ or terminal ritual between those wins.
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[x=0.76cm,y=0.70cm,line width=0.55pt]
+% ADK visual: pencil
+\begin{tikzpicture}[
+    x=0.76cm,y=0.70cm,line width=0.55pt,
+    decorate,decoration={random steps,segment length=3pt,amplitude=0.18pt}]
   \draw[rounded corners] (0,0) rectangle (14,6);
   \node[font=\large] at (6.8,3.0) {Arduino Mega 2560 --- top view};
   \draw (1.2,5.15) rectangle (8.9,5.75);
@@ -135,7 +138,10 @@ mistake D22 for the top-header socket marked 2.
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[x=0.57cm,y=0.52cm,line width=0.5pt]
+% ADK visual: pencil
+\begin{tikzpicture}[
+    x=0.57cm,y=0.52cm,line width=0.5pt,
+    decorate,decoration={random steps,segment length=3pt,amplitude=0.18pt}]
   \draw[rounded corners] (0,0) rectangle (25,11);
   \draw (0.8,10.3) -- (24.2,10.3);
   \draw (0.8,9.7) -- (24.2,9.7);
@@ -197,7 +203,10 @@ you add the LCD; upload the lesson 015 project only after Plate 3 is complete.
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[x=0.55cm,y=0.55cm,line width=0.5pt]
+% ADK visual: pencil
+\begin{tikzpicture}[
+    x=0.55cm,y=0.55cm,line width=0.5pt,
+    decorate,decoration={random steps,segment length=3pt,amplitude=0.18pt}]
   \draw[rounded corners] (0,0) rectangle (28,11);
   \foreach \y/\l in {8.4/A,7.8/B,7.2/C,6.6/D,6.0/E,4.8/F,4.2/G,3.6/H,3.0/I,2.4/J}
     {\node[left,font=\tiny] at (0.7,\y) {\l};
@@ -274,7 +283,10 @@ resources to have been acquired.}
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[x=0.72cm,y=0.72cm,line width=0.55pt,>=Latex]
+% ADK visual: pencil
+\begin{tikzpicture}[
+    x=0.72cm,y=0.72cm,line width=0.55pt,>=Latex,
+    decorate,decoration={random steps,segment length=3pt,amplitude=0.18pt}]
   \foreach \x/\top/\bottom in
     {2/{STATION STARTING}/{WAIT FOR RECORD},
      8/{HEALTHY \#000001}/{T+21.50 H0480},

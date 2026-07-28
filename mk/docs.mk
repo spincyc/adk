@@ -14,23 +14,31 @@ doc/lessons/004.pdf: docs/lessons/004/main.tex \
 doc/lessons/005.pdf: docs/lessons/005/main.tex \
 		docs/lessons/assets/005-piezo-pencil.png
 doc/lessons/006.pdf: docs/lessons/006/main.tex \
-		docs/lessons/assets/006-simon-pencil.png
+		docs/lessons/assets/006-simon-pencil.png \
+		docs/lessons/assets/006-simon-composition-pencil.png \
+		docs/lessons/assets/006-simon-state-pencil.png
 doc/lessons/007.pdf: docs/lessons/007/main.tex \
 		docs/lessons/assets/007-analog-input-pencil.png
 doc/lessons/008.pdf: docs/lessons/008/main.tex \
-		docs/lessons/assets/008-sampled-signal-pencil.png
+		docs/lessons/assets/008-sampled-signal-pencil.png \
+		docs/lessons/assets/008-evidence-chain-pencil.png
 doc/lessons/009.pdf: docs/lessons/009/main.tex \
 		docs/lessons/assets/009-mega-header-locator.png \
+		docs/lessons/assets/009-mega-header-locator.svg \
 		docs/lessons/assets/009-night-light-overview.png \
-		docs/lessons/assets/009-night-light-breadboard.png
+		docs/lessons/assets/009-night-light-overview.svg \
+		docs/lessons/assets/009-night-light-breadboard.png \
+		docs/lessons/assets/009-night-light-breadboard.svg
 doc/lessons/010.pdf: docs/lessons/010/main.tex \
 		docs/lessons/assets/010-shift-register-pencil.png
 doc/lessons/011.pdf: docs/lessons/011/main.tex \
-		docs/lessons/assets/011-timed-traffic-pencil.png
+		docs/lessons/assets/011-mega-header-locator.tex \
+		docs/lessons/assets/011-timed-traffic-layout.tex \
+		docs/lessons/assets/011-build-stages.tex
 doc/lessons/012.pdf: docs/lessons/012/main.tex \
-		docs/lessons/assets/012-traffic-junction-pencil.png
-doc/lessons/013.pdf: docs/lessons/013/main.tex \
-		docs/lessons/assets/013-dht11-climate-pencil.png
+		docs/lessons/assets/012-traffic-junction-pencil.png \
+		docs/lessons/assets/012-traffic-junction-pencil.svg
+doc/lessons/013.pdf: docs/lessons/013/main.tex
 doc/lessons/014.pdf: docs/lessons/014/main.tex \
 		docs/lessons/assets/014-mega-lcd-pin-map.png \
 		docs/lessons/assets/014-lcd-breadboard.png \
@@ -41,42 +49,64 @@ doc/lessons/016.pdf: docs/lessons/016/main.tex \
 doc/lessons/017.pdf: docs/lessons/017/main.tex \
 		docs/lessons/assets/017-bounded-servo-pencil.png
 doc/lessons/018.pdf: docs/lessons/018/main.tex \
-		docs/lessons/assets/018-access-trainer-pencil.png
+		docs/lessons/assets/016-matrix-keypad-pencil.png \
+		docs/lessons/assets/018-indicator-breadboard.png \
+		docs/lessons/assets/018-lcd-wiring.png \
+		docs/lessons/assets/018-visible-states.png
 doc/lessons/019.pdf: docs/lessons/019/main.tex \
 		docs/lessons/assets/019-ultrasonic-range-pencil.png \
-		docs/lessons/assets/019-ultrasonic-range-pencil.tex
+		docs/lessons/assets/019-range-state-pencil.png
 doc/lessons/020.pdf: docs/lessons/020/main.tex \
-		docs/lessons/assets/020-motor-intent-layout.tex \
-		docs/lessons/assets/020-motor-intent-layout.png
+		docs/lessons/assets/020-motor-intent-pencil.png
 doc/lessons/021.pdf: docs/lessons/021/main.tex \
-		docs/lessons/assets/021-rover-layout.png \
+		docs/lessons/assets/021-rover-layout-pencil.png \
 		docs/lessons/assets/021-rover-layout.tex
 doc/lessons/022.pdf: docs/lessons/022/main.tex \
 		docs/lessons/assets/022-owned-buses-pencil.png \
-		docs/lessons/assets/022-record-journey-pencil.png
+		docs/lessons/assets/022-owned-buses-pencil.tex \
+		docs/lessons/assets/022-record-journey-pencil.png \
+		docs/lessons/assets/022-record-journey-pencil.tex
 doc/lessons/023.pdf: docs/lessons/023/main.tex \
 		docs/lessons/assets/023-inert-load-pencil.png \
-		docs/lessons/assets/023-progress-pencil.png
+		docs/lessons/assets/023-inert-load-pencil.svg \
+		docs/lessons/assets/023-progress-pencil.png \
+		docs/lessons/assets/023-progress-pencil.svg
 doc/lessons/024.pdf: docs/lessons/024/main.tex \
 		docs/lessons/assets/024-greenhouse-pencil.png \
+		docs/lessons/assets/024-greenhouse-pencil.tex \
 		docs/lessons/assets/024-lcd-closeup.png \
-		docs/lessons/assets/024-greenhouse-progress.png
+		docs/lessons/assets/024-lcd-closeup.tex \
+		docs/lessons/assets/024-greenhouse-progress.png \
+		docs/lessons/assets/024-greenhouse-progress.tex
 doc/lessons/025.pdf: docs/lessons/025/main.tex \
-		docs/lessons/assets/025-infrared-evidence-pencil.png
+		docs/lessons/assets/025-infrared-literal-pencil.tex \
+		docs/lessons/assets/025-infrared-literal-pencil.png \
+		docs/lessons/assets/025-infrared-progress-pencil.tex \
+		docs/lessons/assets/025-infrared-progress-pencil.png
 doc/lessons/026.pdf: docs/lessons/026/main.tex \
-		docs/lessons/assets/026-telemetry-packet-pencil.png
+		docs/lessons/assets/026-telemetry-packet-pencil.png \
+		docs/lessons/assets/026-telemetry-packet-pencil.tex
 doc/lessons/027.pdf: docs/lessons/027/main.tex \
-		docs/lessons/assets/027-telemetry-console-pencil.png
+		docs/lessons/assets/027-telemetry-console-pencil.png \
+		docs/lessons/assets/027-evidence-chain-pencil.png
 doc/lessons/028.pdf: docs/lessons/028/main.tex \
-		docs/lessons/assets/028-inert-channel-pencil.png
+		docs/lessons/assets/028-inert-channel-pencil.png \
+		docs/lessons/assets/028-inert-channel-pencil.tex
 doc/lessons/029.pdf: docs/lessons/029/main.tex \
-		docs/lessons/assets/029-inert-cue-pencil.png
+		docs/lessons/assets/029-inert-cue-pencil.png \
+		docs/lessons/assets/029-inert-cue-pencil.tex
 doc/lessons/030.pdf: docs/lessons/030/main.tex \
-		docs/lessons/assets/030-inert-show-pencil.png
+		docs/lessons/assets/030-inert-show-pencil.png \
+		docs/lessons/assets/030-inert-show-pencil.tex \
+		docs/lessons/assets/030-process-pencil.png \
+		docs/lessons/assets/030-process-pencil.tex
 doc/lessons/031.pdf: docs/lessons/031/main.tex \
 		docs/lessons/assets/031-analog-joystick-pencil.png
-doc/lessons/032.pdf: docs/lessons/032/main.tex
-doc/lessons/033.pdf: docs/lessons/033/main.tex
+doc/lessons/032.pdf: docs/lessons/032/main.tex \
+		docs/lessons/assets/032-gray-code-pencil.png
+doc/lessons/033.pdf: docs/lessons/033/main.tex \
+		docs/lessons/assets/033-console-orientation-pencil.png \
+		docs/lessons/assets/033-evidence-chain-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons

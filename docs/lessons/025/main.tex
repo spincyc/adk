@@ -1,7 +1,5 @@
 \documentclass[11pt]{article}
-
 \usepackage{amsmath}
-\usepackage{amssymb}
 \usepackage[margin=0.68in]{geometry}
 \usepackage{booktabs}
 \usepackage{enumitem}
@@ -12,404 +10,260 @@
 \usepackage{listings}
 \usepackage{microtype}
 \usepackage{tabularx}
-\usepackage{tikz}
 \usepackage{titlesec}
-\usetikzlibrary{arrows.meta,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
-
 \definecolor{Ink}{gray}{0}
 \definecolor{CodeGray}{gray}{0.96}
 \hypersetup
 {
-    pdftitle={ADK Lesson 025: Infrared Frame Evidence},
-    pdfauthor={Kevin Shanahan},
-    pdfsubject={Receive-only NEC fixture decoding, bounded records, and visible evidence},
-    pdflang={en-US}
+  pdftitle={ADK Lesson 025: Infrared Frame Adventure},
+  pdfauthor={Kevin Shanahan},
+  pdfsubject={Receive-only known NEC evidence with a visible three-frame progression},
+  pdflang={en-US}
 }
 \pagestyle{fancy}
 \fancyhf{}
 \lhead{\textsc{ADK Lesson 025}}
-\rhead{Infrared Frame Evidence}
+\rhead{Infrared Frame Adventure}
 \cfoot{\thepage}
 \setlength{\headheight}{14pt}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt}
 \setlist{nosep,leftmargin=1.45em}
-\titleformat{\section}{\Large\bfseries\color{Ink}}{\thesection}{0.5em}{}
-\titleformat{\subsection}{\large\bfseries\color{Ink}}{\thesubsection}{0.5em}{}
+\titleformat{\section}{\Large\bfseries\color{Ink}}{}{0pt}{}
+\titleformat{\subsection}{\large\bfseries\color{Ink}}{}{0pt}{}
 \lstdefinestyle{adkcpp}
 {
-    language=C++,
-    backgroundcolor=\color{CodeGray},
-    basicstyle=\ttfamily\small,
-    keywordstyle=\color{Ink}\bfseries,
-    commentstyle=\color{Ink},
-    columns=fullflexible,
-    keepspaces=true,
-    showstringspaces=false,
-    frame=single,
-    rulecolor=\color{Ink},
-    breaklines=true,
-    tabsize=4
+  language=C++,
+  backgroundcolor=\color{CodeGray},
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{Ink}\bfseries,
+  commentstyle=\color{Ink},
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  frame=single,
+  rulecolor=\color{Ink},
+  breaklines=true,
+  tabsize=4
 }
-\newcommand{\checkbox}{\(\square\)}
-\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
 \newcommand{\lessonbox}[1]{%
-  \begin{center}
-  \fcolorbox{Ink}{white}{\parbox{0.92\linewidth}{#1}}
-  \end{center}}
+  \begin{center}\fcolorbox{Ink}{white}{\parbox{0.92\linewidth}{#1}}\end{center}}
 
 \begin{document}
-
 \begin{center}
-  {\Huge\bfseries Infrared Frame Evidence}\\[4pt]
-  {\Large Decode known pulse evidence without transmitting}\\[8pt]
-  \textit{An owned receiver and visible cadence preserve the evidence path.}
+  {\Huge\bfseries Infrared Frame Adventure}\\[4pt]
+  {\Large Make three known button presses light a tiny victory}\\[7pt]
+  \textit{Receive only. Unknown evidence never becomes a command.}
 \end{center}
 
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
-Lesson & 025 --- component & Time & 150--210 minutes\\
-Prerequisites & Lessons 001--024 & Board & Arduino Mega 2560\\
-Primary evidence & D45 / TP-LED & Status & host verified; bench open\\
-Safety boundary & E1, identified receiver and owned NEC remote; receive only\\
+Lesson & 025 --- component & Board & Arduino Mega 2560\\
+Primary evidence & D45 lamp & Automatic ending & 120 seconds\\
+Conditional specimen & identified receiver plus owned, harmless NEC remote\\
+Status & host verified; physical observation remains open\\
 \end{tabularx}
 
-\section{Mission}
+\section{The adventure}
 
-Preserve the evidence chain:
+Build one receiver and one lamp. D13 announces that every pin was acquired.
+Then point an owned kit remote at the receiver. The first valid frame earns one
+long glow, the second earns two flashes, and the third unlocks three quick
+flashes. Unknown or damaged evidence makes a different pattern and cannot
+advance the count. At two minutes the sketch turns both lamps off, releases
+the pins, and waits for Reset.
+
 \[
-\text{capture}\rightarrow\text{frame}\rightarrow\text{validity}
-\rightarrow\text{canonical record}\rightarrow\text{visible cadence}.
+\text{light}\rightarrow\text{pulses}\rightarrow\text{frame}
+\rightarrow\text{validity}\rightarrow\text{visible reward}
 \]
-The Mega exercise captures an identified active-low receiver while an owned
-ordinary kit remote supplies known harmless NEC buttons. Deterministic host
-tests supply valid, unknown, timing, integrity, repeat, overflow, and record
-fixtures. Nothing emits infrared, exports raw pulses, maps a command to an
-action, or replays captured evidence.
 
-\lessonbox{\textbf{Evidence before meaning.} A numeric address or command is a
-decoded field, not an instruction such as ``unlock'', ``open'', or ``launch''.
-Unknown or invalid evidence remains unknown or invalid.}
+\lessonbox{\textbf{Numbers are evidence, not instructions.} An address or
+command field never means ``unlock'', ``open'', or ``launch''. This lesson
+does not transmit, export raw captures, replay an unknown protocol, or actuate
+anything beyond a resistor-limited lamp.}
 
-\subsection{Learning outcomes}
+\section{Specimen gate}
 
-\begin{itemize}
-  \item distinguish capture, frame, validity, and record;
-  \item explain why invalid evidence is not an exceptional API failure;
-  \item validate leader timing, bit timing, and inverse fields independently;
-  \item encode a stable record into caller-owned bounded storage;
-  \item observe decode classes without relying on Serial;
-  \item explain pin, interrupt, snapshot, and acknowledgement ownership.
-\end{itemize}
-
-\section{Parts, current, and wiring}
+Use the receiver only when its own marking and a primary datasheet establish
+its supply range, physical pin order, idle polarity, carrier band, and output
+level. Use only an ordinary remote you own whose harmless NEC buttons are known
+in advance. A similar-looking three-pin module is not an electrical identity.
+If either specimen is uncertain, leave the receiver unpowered and enjoy the
+deterministic software fixtures instead.
 
 \begin{tabularx}{\linewidth}{@{}l X@{}}
 \toprule
-Part & Requirement\\
-\midrule
-Arduino Mega 2560 & USB-powered board\\
-Evidence LED & One ordinary LED and one 1 k\(\Omega\) resistor\\
-Instrument & High-impedance logic probe or oscilloscope; meter for static state\\
-Receiver & Exact active-low specimen with reviewed primary datasheet\\
-Remote & Owned ordinary kit remote with known harmless NEC buttons\\
+Part & Required identity\\\midrule
+Mega 2560 & USB-powered board\\
+Receiver & exact active-low demodulating specimen, primary datasheet reviewed\\
+Remote & owned ordinary remote, known harmless NEC buttons only\\
+Visible path & ordinary LED and 1 k\(\Omega\) series resistor\\
 \bottomrule
 \end{tabularx}
 
-At an illustrative measured 5 V rail and 2 V LED drop,
-\[
-I=\frac{5\text{ V}-2\text{ V}}{1000\ \Omega}=3\text{ mA}.
-\]
-Measure the actual rail, resistor, and LED drop before recording current.
-Remove USB power before wiring or attaching probe clips. Stop for unexpected
-heating, unstable power, a resistor mismatch, or voltage outside the rails.
+\section{Wire the literal layout}
+
+Unplug USB before placing or moving anything. Match the Mega orientation,
+header labels, breadboard letters, and numbered rows in Plate 1.
 
 \begin{tabularx}{\linewidth}{@{}l l X@{}}
 \toprule
-Signal & Mega pin & Connection\\
-\midrule
-Acquisition evidence & D13 & built-in LED\\
-Frame evidence / TP-LED & D45 & D45 \(\rightarrow\) 1 k\(\Omega\)
-  \(\rightarrow\) LED anode; cathode \(\rightarrow\) GND\\
-Receiver evidence / TP-IR & D2 & identified active-low receiver OUT\\
-Receiver supply & 5 V, GND & only if the exact primary datasheet permits it\\
-Probe reference & GND & common reference for TP-LED and TP-IR\\
+Signal & Mega & Exact connection\\\midrule
+TP-IR & D2 & identified receiver's marked OUT function\\
+Receiver power & 5 V, GND & only when the exact datasheet permits 5 V\\
+TP-LED & D45 & row 13a; 1 k\(\Omega\) from 13c to 13f; LED anode
+  at 13h and cathode at 15h; 15j to ground rail\\
+Ground rail & GND & rail to one Mega GND pin\\
 \bottomrule
 \end{tabularx}
 
 \begin{center}
-\includegraphics[width=0.96\linewidth]{025-infrared-evidence-pencil.png}
+% ADK visual: pencil
+\includegraphics[width=\linewidth]{025-infrared-literal-pencil.png}
 
-\small\textit{Alternative text: graphite orientation plate showing a Mega,
-one resistor-limited D45 evidence LED, an active-low receiver connected to
-D2/TP-IR, and an owned known NEC remote pointed toward it. The table and exact
-receiver datasheet are electrically authoritative.}
+\small\textit{Plate 1 alternative text: literal Mega and breadboard plate.
+D2 connects to the identified receiver OUT function. D45 reaches breadboard
+row 13 through a 1 kOhm resistor and an LED spanning rows 13 and 15; the LED
+cathode returns through the ground rail. Receiver VCC and GND are connected
+only after its exact pin order is identified.}
 \end{center}
 
-\section{Bounded evidence model}
+The receiver block in Plate 1 names \emph{functions}; it deliberately does not
+claim that every specimen has the drawn OUT--VCC--GND physical order. Follow
+the exact specimen's marking and datasheet when mapping those three jumpers.
+The breadboard LED placement, Mega headers, and occupied holes are literal.
 
-\texttt{PulseCapture} owns D2 and its external-interrupt resource through
-\texttt{MegaPulseCaptureIo}. Receiver \texttt{LOW} maps to \texttt{Mark};
-\texttt{HIGH} maps to \texttt{Space}. The ISR stores bounded edge timestamps
-only. A published \texttt{PulseFrame} borrows immutable storage and carries its
-count, sequence, and capture state.
+At an illustrative 5 V rail and 2 V LED drop, the 1 k\(\Omega\) resistor limits
+current to about 3 mA. Unexpected heat, unstable power, a wrong resistor, or a
+voltage outside the rails means unplug immediately.
+
+\section{Watch the story unfold}
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=\linewidth]{025-infrared-progress-pencil.png}
+
+\small\textit{Plate 2 alternative text: four panels show D13 ready, one D45
+glow after the first valid frame, two flashes after the second, and three
+quick flashes after the third. Unknown evidence cannot advance the story.}
+\end{center}
+
+\subsection{Stage 1: ready}
+
+After Reset, D13 stays on only if capture owns D2 and its interrupt and both
+lamp endpoints initialized. D45 stays dark. That visible ready state depends
+on successful resource acquisition; it does not claim receiver compatibility.
+
+\subsection{Stage 2: find the first frame}
+
+Press one known harmless NEC button. A valid frame makes D45 glow for 650 ms.
+No Serial window is needed. If D13 is on but D45 stays dark, unplug and compare
+D2, the receiver's exact pin order, LED polarity, resistor holes, and ground
+return with Plate 1.
+
+\subsection{Stage 3: unlock the progression}
+
+Press known buttons twice more, allowing each flash story to finish. The second
+valid frame produces two 250 ms flashes. The third and later valid frames
+produce three 150 ms flashes. Each later reward depends on the receiver,
+capture, decoder, validity decision, and earlier count all working together.
+
+An unknown leader gives two short flashes but does not increase the valid
+count. A normal NEC repeat gives one short acknowledgement and also leaves the
+count unchanged. Timing, inverse-byte, overflow, or record trouble gives four
+very quick flashes. Do not seek unknown transmitters to make those patterns;
+automated fixtures exercise them behind the scenes.
+
+\subsection{Stage 4: discover the fixed ending}
+
+At 120 seconds, regardless of button activity, the sketch turns D45 and D13
+off, shuts down both endpoints and capture, and waits. Reset starts a fresh
+adventure. Darkness is the circuit-native ending; it is not a claim of
+separately measured high impedance.
+
+\section{How the evidence stays honest}
+
+\texttt{PulseCapture} owns D2 and its interrupt. Its interrupt path stores only
+bounded edge timestamps. A completed \texttt{PulseFrame} remains immutable
+until matching acknowledgement. \texttt{InfraredDecoder} recognizes the
+classic 8-bit-address NEC form, validates its leader, 32 bits, final mark, and
+inverse bytes, and reports uncertainty without guessing.
 
 \begin{tabularx}{\linewidth}{@{}l X@{}}
 \toprule
-Type or operation & Contract\\
-\midrule
-\texttt{Pulse} & one \texttt{Mark} or \texttt{Space} and bounded duration\\
-\texttt{PulseCapture} & own pin/interrupt and publish stable bounded evidence\\
-\texttt{PulseFrame} & immutable pulse span, sequence, and capture state\\
-\texttt{InfraredDecoder::decode()} & validate evidence into an \texttt{InfraredFrame}\\
-\texttt{InfraredFrame} & protocol, validity, numeric fields, and sequence\\
-\texttt{InfraredRecordEncoder::encode()} & write one exact record into caller storage\\
+Result & D45 story\\\midrule
+first valid frame & one 650 ms glow\\
+second valid frame & two 250 ms flashes\\
+third or later valid frame & three 150 ms flashes\\
+NEC repeat & one 150 ms acknowledgement; count unchanged\\
+unknown protocol & two 150 ms flashes; count unchanged\\
+timing, integrity, overflow, or record fault & four 100 ms flashes\\
 \bottomrule
 \end{tabularx}
 
-The decoder recognizes the ordinary 8-bit-address NEC form used by the known
-fixture. It checks a leader, exactly 32 bits, a final mark, and both inverse
-bytes. Timing windows are inclusive. Noise before or after an otherwise valid
-sequence cannot be accepted as an embedded frame.
-
-The first capture configuration accepts 100--10,000 \(\mu\)s pulse durations
-and requires a 12,000 \(\mu\)s frame gap. These are software gates, not optical
-range or receiver-performance claims. A frame stays stable until
-\texttt{acknowledge(sequence)} succeeds. An overrun cannot mutate it.
-
-\subsection{Status is not validity}
-
-An invalid pointer is an API error: \texttt{decode()} returns a non-OK
-\texttt{Status} and leaves the destination unchanged. A well-formed
-\texttt{PulseFrame} containing unknown, truncated, overflowed, or
-integrity-invalid evidence is different: decoding succeeds and the
-\texttt{validity} field carries that observation.
-
-Invalid evidence keeps address and command zero. Code must branch on
-\texttt{validity} before using either numeric field.
-
-\subsection{Canonical record}
-
+\texttt{InfraredRecordEncoder} can also write one bounded canonical line:
 \begin{verbatim}
 IR1,<sequence>,<protocol>,<validity>,<address-hex>,<command-hex>\n
 \end{verbatim}
-
-Decimal sequence spelling, uppercase names, eight uppercase hexadecimal
-digits, commas, and final newline are fixed. The encoder returns
-\texttt{Result<uint16\_t>}; check \texttt{ok()} before reading
-\texttt{value()}. A short destination receives no partial record.
-
-\section{Narrative example}
+Serial carries that optional record, never the primary result and never raw
+replay material.
 
 \begin{lstlisting}[style=adkcpp]
-if (!observeInfrared (adk::MicrosecondTimePoint (micros ())))
+if (now.elapsedSince (adventureStarted).milliseconds () >= 120000)
 {
     stopSafely ();
     return;
 }
 
-if (!showFrameEvidence (adk::TimePoint (millis ())))
-{
-    stopSafely ();
-}
+observeInfrared (adk::MicrosecondTimePoint (micros ()));
+showFrameEvidence (now);
 \end{lstlisting}
 
-Objects appear in dependency order: runtime, capture adapter, owned capture,
-owned LEDs, pure decoder, then pure encoder. Setup acquires D2, its interrupt,
-and both evidence outputs before illuminating D13. The loop updates capture,
-decodes a stable frame, records it, acknowledges its sequence, and shows D45.
-
-Host tests replay these deterministic fixture classes:
-
-\begin{tabularx}{\linewidth}{@{}l X l@{}}
-\toprule
-Fixture & Deliberate evidence & D45 result\\
-\midrule
-Known NEC & valid leader, 32 bits, inverse fields, final mark & one 1 s pulse\\
-Unknown & leader outside the accepted interval & two 150 ms pulses\\
-Fault & timing, integrity, overflow, or record failure & four 100 ms pulses\\
-\bottomrule
-\end{tabularx}
-
-Record output is optional supporting evidence. The LED cadence and TP-LED
-waveform are the primary observation path.
+The automated repository suite stays behind the scenes. It covers acquisition
+rollback, exact timing boundaries, repeat frames, corrupt inverse bytes,
+overflow, stale acknowledgement, record capacity, timestamp wrap, shutdown,
+claim reuse, and byte-identical replay. Those checks protect the adventure
+without turning it into learner paperwork.
 
 \section{Predict, observe, interpret}
 
-\subsection{Experiment A: acquisition}
+Before Reset, predict that successful acquisition lights D13 while D45 remains
+dark. Observe D13 after setup and interpret it only as resource-acquisition
+evidence. Before each known press, predict the next D45 reward; observe at
+TP-IR and D45, then interpret agreement as evidence that the receive and decode
+path reached the lamp, not as general receiver compatibility. Before the
+two-minute deadline, predict both lamps will go dark; observe the fixed ending
+and interpret darkness only as the visible software ending. Pin release and
+high impedance remain separate, unperformed physical measurements.
 
-\textbf{Predict.} D13 illuminates only after D2, its interrupt, and both LED
-endpoints initialize.
-
-\textbf{Observe:} \blank{55mm}.
-
-\textbf{Interpret.} This supports acquisition. It does not establish capture
-timing, D45 cadence, or safe shutdown.
-
-\subsection{Experiment B: class cadence}
-
-Before uploading, identify the receiver from its marking and primary
-datasheet. Predict TP-IR idle high and an active-low frame from one known
-button. Attach both probe channels while unpowered.
-
-\begin{tabularx}{\linewidth}{@{}l l l l@{}}
-\toprule
-Button/result & TP-IR frame & D45 count & D45 widths\\
-\midrule
-Known NEC & \blank{22mm} & \blank{16mm} & \blank{30mm}\\
-Known repeat & \blank{22mm} & \blank{16mm} & \blank{30mm}\\
-Deliberate fault & \blank{22mm} & \blank{16mm} & \blank{30mm}\\
-\bottomrule
-\end{tabularx}
-
-Agreement supports the path from light through capture and decode to visible
-output. It does not establish optical range or general compatibility.
-
-\subsection{Experiment C: stable record}
-
-Optionally run the CLI serial logger. Predict a record only after the owned
-remote's harmless numeric fixture fields have been reviewed. Observed bytes:
-\blank{95mm}. Compare exact case, field order, widths, and newline. A log never
-substitutes for TP-IR and TP-LED.
-
-\subsection{Experiment D: safe state}
-
-Invoke the stop path. Predict both LEDs inactive and D45 released. Observe the
-LED, then measure the pin separately with the appropriate high-impedance
-instrument. A dark LED alone does not prove high impedance or claim release.
-
-Recorded safe-state evidence: \blank{80mm}.
-
-\section{Diagnosis}
+\section{If the visible story breaks}
 
 \begin{tabularx}{\linewidth}{@{}l X@{}}
 \toprule
-Observation & Check next\\
-\midrule
-D13 dark & D2 interrupt or LED claim conflict, initialization status, board power\\
-D13 on; D45 dark & TP-IR activity, D45 polarity, resistor, LED orientation\\
-No complete frame & receiver identity, idle gap, pulse limits, interrupt ownership\\
-Valid becomes unknown & leader levels, durations, exact pulse count\\
-Valid becomes fault & mark/space timing and inverse bytes\\
-Serial record absent & encoder result and caller buffer; use D45 as primary evidence\\
-D45 remains driven after stop & safe-state failure; remove USB and record deviation\\
+What you see & Inspect while unpowered\\\midrule
+D13 never lights & board power, resource conflict, then initialization path\\
+D13 on; D45 always dark & receiver identity and D2, LED orientation, rows 13/15,
+  resistor, ground rail\\
+every press looks unknown & exact remote protocol, receiver idle polarity,
+  pulse timing\\
+one short flash while holding a button & normal NEC repeat; count unchanged\\
+four quick flashes & timing/integrity evidence or bounded-record failure\\
+progress never reaches three & use only the known buttons; allow each frame
+  and visible pattern to finish\\
+lamps remain on after two minutes & unplug; fixed shutdown did not complete\\
 \bottomrule
 \end{tabularx}
 
-\section{Owned receive-only boundary}
+\section{Make it yours}
 
-\texttt{PulseCapture} and \texttt{MegaPulseCaptureIo} own the D2 pin and
-interrupt. For the identified active-low demodulating receiver, \texttt{LOW}
-maps to \texttt{Mark} and \texttt{HIGH} maps to \texttt{Space}. The ISR records
-bounded timestamps only; decoding, records, and policy remain outside the ISR.
+Put paper stars numbered 1, 2, and 3 beside D45. Change only harmless
+presentation timing, or choose three named buttons on the owned remote and
+write their names on the stars. Keep all numeric fields as evidence, keep
+unknown evidence unable to advance, and keep the fixed two-minute ending.
 
-Before powering a module, record its exact marking and primary datasheet.
-Verify supply range, pinout, idle polarity, carrier band, output levels, and
-Mega compatibility. A three-pin module that resembles another receiver does
-not inherit its ratings.
-
-Capture acceptance remains incomplete until host tests prove:
-
-\begin{itemize}
-  \item pin and interrupt ownership with reverse-order rollback;
-  \item frame-gap, minimum-pulse, and maximum-pulse validation;
-  \item stable completed snapshots until matching acknowledgement;
-  \item explicit overflow, timing-fault, overrun, and stale-acknowledgement results;
-  \item shutdown during capture, interrupt disable, and resource reuse;
-  \item timestamp-wrap behavior and deterministic replay.
-\end{itemize}
-
-Use only an owned ordinary kit remote and named harmless buttons. Do not export
-or replay unknown captures. No transmitter, jammer, brute-force mapping,
-credential action, or safety-critical command belongs in this lesson.
-
-\section{CLI and open bench record}
-
-\begin{verbatim}
-make host-test
-make arduino-Lesson025InfraredEvidence
-make firmware-size EXAMPLE=Lesson025InfraredEvidence
-make upload EXAMPLE=Lesson025InfraredEvidence PORT=/dev/ttyACM0
-make serial-log PORT=/dev/ttyACM0
-make lessons
-make lessons-check
-make site-check
-\end{verbatim}
-
-\textbf{Software:} commit \blank{34mm}; Arduino CLI \blank{26mm};
-AVR core \blank{26mm}; flash \blank{20mm}; RAM \blank{20mm}.
-
-\textbf{Bench acceptance---open until measured}
-
-\begin{itemize}
-  \item \checkbox\ Exact Mega, receiver, remote, LED, and resistor recorded.
-  \item \checkbox\ Receiver datasheet, pinout, supply, and idle polarity recorded.
-  \item \checkbox\ Unpowered D2/D45 wiring and polarity checked.
-  \item \checkbox\ D13 acquisition evidence observed.
-  \item \checkbox\ TP-IR active-low pulse train measured for known buttons.
-  \item \checkbox\ One-, two-, and four-pulse D45 patterns measured.
-  \item \checkbox\ TP-LED pulse widths recorded with instrument and reference.
-  \item \checkbox\ Canonical records compared byte for byte, if Serial used.
-  \item \checkbox\ Reset, shutdown, USB removal, and claim reuse observed.
-  \item \checkbox\ D45 safe state checked separately from LED appearance.
-\end{itemize}
-
-Supply \blank{20mm}; instrument \blank{34mm}; date \blank{22mm};
-reviewer \blank{30mm}. Deviations: \blank{70mm}.
-
-\lessonbox{\textbf{Current result: host verified; hardware
-acceptance open.} Deterministic fixtures, compilation, a PDF, and blank
-worksheets are not physical verification.}
-
-\section{Exercises and primary reading}
-
-\begin{enumerate}
-  \item Change one inverse byte while preserving valid timings. Predict the
-        validity and cadence before running a host test.
-  \item Prove that a one-byte-short record buffer remains unchanged.
-  \item Explain why \texttt{UnknownProtocol} belongs in frame validity while a
-        null pulse pointer belongs in \texttt{Status}.
-  \item Design a receiver overrun experiment that never transmits or exports
-        the captured waveform.
-  \item Sketch how a matching sequence acknowledgement prevents a stale caller
-        from clearing newer evidence.
-\end{enumerate}
-
-\begin{itemize}
-  \item
-    \href{https://spincyc.github.io/adk/lessons/025.html}
-         {HTML reference and corrections}
-  \item
-    \href{https://github.com/spincyc/adk/blob/main/src/pulse_capture.h}
-         {PulseCapture public header} and
-    \href{https://github.com/spincyc/adk/blob/main/src/pulse_capture.cpp}
-         {implementation}
-  \item
-    \href{https://github.com/spincyc/adk/blob/main/src/mega_pulse_capture_io.h}
-         {Mega capture adapter} and
-    \href{https://github.com/spincyc/adk/blob/main/tests/test_pulse_capture.cpp}
-         {capture lifecycle tests}
-  \item
-    \href{https://github.com/spincyc/adk/blob/main/src/infrared_decoder.h}
-         {InfraredDecoder public header} and
-    \href{https://github.com/spincyc/adk/blob/main/src/infrared_decoder.cpp}
-         {implementation}
-  \item
-    \href{https://github.com/spincyc/adk/blob/main/src/infrared_record.h}
-         {InfraredRecordEncoder public header} and
-    \href{https://github.com/spincyc/adk/blob/main/tests/test_infrared_record.cpp}
-         {golden-vector tests}
-  \item
-    \href{https://docs.arduino.cc/resources/datasheets/A000067-datasheet.pdf}
-         {Arduino Mega 2560 Rev3 datasheet}
-  \item
-    \href{https://www.vishay.com/docs/82491/tsop382.pdf}
-         {Vishay TSOP382 receiver-family datasheet}: example identification
-         evidence, not a claim about an unmarked kit module
-  \item
-    \href{https://www.sbprojects.net/knowledge/ir/nec.php}
-         {NEC protocol description}: secondary timing reference for owned
-         fixtures
-\end{itemize}
-
+\vfill\small
+\textbf{Companion material.} The HTML page carries searchable pin and state
+tables plus source links. This printable lesson carries the literal wiring
+plate, staged visible progression, and receive-only specimen boundary.
 \end{document}

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="650"
+     viewBox="0 0 1500 650" role="img" aria-labelledby="title description">
+  <title id="title">Pencil orientation drawing for the calibration console</title>
+  <desc id="description">The joystick provides field selection at TP-X and
+  coarse preview at TP-Y. The encoder provides trim phases at TP-A and TP-B
+  plus a cancel button. A supplied-time console presents field and values on
+  an LCD, state on an RGB LED, and the selected preview high nibble on four
+  separate LEDs.</desc>
+  <rect width="1500" height="650" fill="white"/>
+  <defs>
+    <filter id="pencil" x="-4%" y="-5%" width="108%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.07"
+                    numOctaves="2" seed="33" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="3"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5"
+            markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 5 L0 10" fill="none" stroke="#333" stroke-width="1.5"/>
+    </marker>
+  </defs>
+  <g filter="url(#pencil)" fill="none" stroke="#333" stroke-width="4"
+     stroke-linecap="round" stroke-linejoin="round" opacity="0.9">
+    <path d="M35 40 Q265 29 490 42 L484 610 Q260 620 39 605 Z"/>
+    <path d="M552 40 Q750 30 946 44 L940 608 Q752 618 554 606 Z"/>
+    <path d="M1008 40 Q1242 29 1468 42 L1462 610 Q1240 620 1010 605 Z"/>
+    <path d="M488 325 C510 316 530 330 550 322" marker-end="url(#arrow)"/>
+    <path d="M943 324 C968 316 985 330 1007 322" marker-end="url(#arrow)"/>
+    <circle cx="265" cy="150" r="60"/><circle cx="265" cy="150" r="16"/>
+    <path d="M265 90 L265 210 M205 150 L325 150"/>
+    <circle cx="265" cy="390" r="58"/><circle cx="265" cy="390" r="22"/>
+    <rect x="1120" y="120" width="250" height="105" rx="8"/>
+    <circle cx="1125" cy="340" r="38"/>
+    <circle cx="1250" cy="430" r="18"/><circle cx="1300" cy="430" r="18"/>
+    <circle cx="1350" cy="430" r="18"/><circle cx="1400" cy="430" r="18"/>
+  </g>
+</svg>

@@ -13,7 +13,7 @@
 \usepackage{tikz}
 \usepackage{titlesec}
 \usepackage[table]{xcolor}
-\usetikzlibrary{arrows.meta,positioning}
+\usetikzlibrary{arrows.meta,decorations.pathmorphing,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{AdkBlack}{gray}{0}
@@ -118,9 +118,11 @@ scheduled sensor from lesson 013.
 \section{The four boundaries}
 
 \begin{center}
+% ADK visual: pencil
 \begin{tikzpicture}[
     node distance=8mm and 10mm,
     box/.style={draw,rounded corners,minimum height=9mm,align=center},
+    decorate,decoration={random steps,segment length=3pt,amplitude=0.18pt},
     >=Latex]
   \node[box] (state) {\texttt{ClimateSample}\\values + state + time};
   \node[box,right=of state] (present) {presentation choice\\two padded lines};
@@ -167,6 +169,7 @@ Quantity & Part & Requirement\\
 
 \begin{figure}[ht]
   \centering
+  % ADK visual: pencil
   \includegraphics[width=0.98\linewidth]{014-mega-lcd-pin-map.png}
   \caption{Pencil pin map. Follow the printed Mega socket numbers and the
   LCD1602 pin numbers. Alternative text: D22 through D27 map respectively to
@@ -175,6 +178,7 @@ Quantity & Part & Requirement\\
 
 \begin{figure}[ht]
   \centering
+  % ADK visual: pencil
   \includegraphics[width=0.98\linewidth]{014-lcd-breadboard.png}
   \caption{Breadboard close-up with the LCD facing you and pin 1 at the left.
   Alternative text: LCD supply and RW reach the rails, VO reaches the
@@ -254,6 +258,7 @@ then unplug again.
 
 \begin{figure}[ht]
   \centering
+  % ADK visual: pencil
   \includegraphics[width=0.98\linewidth]{014-lcd-visible-states.png}
   \caption{The visible reward sequence. Alternative text: LCD READY leads to
   changing climate values, then SENSOR TIMEOUT, followed by automatic

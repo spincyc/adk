@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="300"
+     viewBox="0 0 1400 300" role="img"
+     aria-labelledby="title description">
+  <title id="title">Lesson 030 reviewed cue process</title>
+  <desc id="description">A pencil process line moves from Review through
+  Waiting, Confirmation, Active, and back to Waiting at the destination
+  evidence gate.</desc>
+  <defs>
+    <filter id="graphite" x="-3%" y="-8%" width="106%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015 0.045"
+                    numOctaves="2" seed="330" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.3"
+                         xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="paper">
+      <feTurbulence type="fractalNoise" baseFrequency="0.48"
+                    numOctaves="3" seed="430"/>
+      <feColorMatrix values="0 0 0 0 0.3  0 0 0 0 0.3
+                             0 0 0 0 0.3  0 0 0 .10 0"/>
+    </filter>
+  </defs>
+  <rect width="1400" height="300" fill="#fff"/>
+  <rect width="1400" height="300" filter="url(#paper)" opacity=".22"/>
+  <g fill="none" stroke="#333" stroke-width="7" opacity=".16"
+     stroke-linecap="round" filter="url(#graphite)">
+    <path d="M145 142 C330 132 470 148 650 140 S980 148 1255 138"/>
+  </g>
+  <g fill="none" stroke="#222" stroke-width="4" stroke-linecap="round"
+     stroke-linejoin="round" filter="url(#graphite)">
+    <path d="M145 142 C330 132 470 148 650 140 S980 148 1255 138"/>
+    <path d="M340 124l28 16-27 18M595 123l28 16-27 18
+             M850 122l28 16-27 18M1100 121l28 16-27 18"/>
+    <circle cx="145" cy="142" r="12"/><circle cx="400" cy="142" r="12"/>
+    <circle cx="655" cy="140" r="12"/><circle cx="910" cy="140" r="12"/>
+    <circle cx="1255" cy="138" r="12"/>
+  </g>
+  <g display="none" fill="#202020" font-family="DejaVu Sans, sans-serif" text-anchor="middle">
+    <text x="145" y="72" font-size="30" font-weight="700">REVIEW</text>
+    <text x="400" y="72" font-size="30" font-weight="700">WAITING</text>
+    <text x="655" y="72" font-size="30" font-weight="700">CONFIRMATION</text>
+    <text x="910" y="72" font-size="30" font-weight="700">ACTIVE</text>
+    <text x="1255" y="72" font-size="30" font-weight="700">WAITING</text>
+    <text x="145" y="218" font-size="23">Run</text>
+    <text x="400" y="218" font-size="23">cue becomes due</text>
+    <text x="655" y="218" font-size="23">Confirm + Closed</text>
+    <text x="910" y="218" font-size="23">visible duration ends</text>
+    <text x="1255" y="218" font-size="23">fresh frame gates destination</text>
+  </g>
+</svg>

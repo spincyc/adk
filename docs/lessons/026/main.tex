@@ -50,8 +50,6 @@
     breaklines=true,
     tabsize=4
 }
-\newcommand{\checkbox}{\(\square\)}
-\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
 \newcommand{\lessonbox}[1]{%
   \begin{center}
   \fcolorbox{Ink}{white}{\parbox{0.92\linewidth}{#1}}
@@ -66,9 +64,9 @@
 \end{center}
 
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
-Lesson & 026 --- component & Time & 150--210 minutes\\
+Lesson & 026 --- component & Time & 35--50 minutes\\
 Prerequisites & Lessons 001--025 & Board & Arduino Mega 2560\\
-Primary evidence & D45 / TP-LED & Status & host verified; bench open\\
+Primary evidence & D45 / TP-LED & Status & host verified; physical build unmeasured\\
 Safety boundary & E1, compiled-in fixtures, no radio receiver or transmitter\\
 \end{tabularx}
 
@@ -132,13 +130,35 @@ Probe reference & GND & common reference for TP-LED\\
 \end{tabularx}
 
 \begin{center}
+% ADK visual: pencil
 \includegraphics[width=0.96\linewidth]{026-telemetry-packet-pencil.png}
 
-\small\textit{Alternative text: graphite orientation plate showing local
-valid, gap, corrupt, and silent fixture packets entering a Mega; the Mega
-checks integrity, sequence, and age, then drives one resistor-limited D45
-evidence LED. No receiver, antenna, or transmitter is present.}
+\small\textit{Alternative text: three-panel graphite wiring plate identifying
+the Mega's D45 and GND header holes, breadboard columns and rows, a one-kilohm
+series resistor, and LED anode and cathode. Later panels show the one-, two-,
+four-, and three-blink packet story. No radio part is present.}
 \end{center}
+
+\subsection{Build, upload, watch}
+
+With USB unplugged, connect D45 to one end of the 1 k\(\Omega\) resistor.
+Use a10 for the D45 jumper, place the resistor from e10 to f10 across the center
+trench, put the LED anode (long leg) at h10 and cathode (short leg, flat rim) at
+h14, then join h14 directly to Mega GND. Do not put both resistor leads or both
+LED legs in one connected five-hole strip.
+
+Upload once and watch the complete 12-second packet story:
+\begin{enumerate}
+  \item D13 lights when the software and both output pins are acquired.
+  \item One long D45 blink announces fresh, in-order evidence.
+  \item Two short blinks expose the deliberately skipped sequence.
+  \item Four quick blinks catch a deliberately corrupted packet.
+  \item Three quick blinks show the last accepted packet becoming stale.
+  \item One long blink returns with the recovered fresh packet.
+\end{enumerate}
+The story repeats until the fixed two-minute deadline, when the sketch switches
+both outputs off and releases their pins. Every later scene depends on the same
+correct wiring and preceding packet path; there is no separate learner test.
 
 \section{Exact bounded packet}
 
@@ -172,21 +192,6 @@ a security primitive.
 partial packet. \texttt{decode()} requires exactly 19 bytes and distinguishes
 bad version, length, type, quality, integrity, and trailing data. Failure
 leaves the destination unchanged.
-
-\subsection{Packet worksheet}
-
-\begin{tabularx}{\linewidth}{@{}l l X@{}}
-\toprule
-Check & Prediction & Observation\\
-\midrule
-Golden valid packet & accepted & \blank{48mm}\\
-One changed value bit & bad integrity & \blank{48mm}\\
-One byte removed & bad length & \blank{48mm}\\
-One byte appended & trailing data & \blank{48mm}\\
-Unknown kind & bad type & \blank{48mm}\\
-Unknown quality & bad quality & \blank{48mm}\\
-\bottomrule
-\end{tabularx}
 
 A changed value or timestamp bit with the old CRC reaches
 \texttt{BadIntegrity}. A changed magic, version, kind, or quality may reach its
@@ -224,9 +229,6 @@ Accepted & Incoming & State & Does value change?\\
 \bottomrule
 \end{tabularx}
 
-Half-range prediction: accepted \blank{18mm}; incoming \blank{18mm};
-expected classification \blank{34mm}; reason \blank{55mm}.
-
 \section{Freshness belongs to the receiver}
 
 Age is \texttt{now - receivedAt}, not \texttt{now -
@@ -240,23 +242,19 @@ The example uses:
 \text{Stale}\geq5000\text{ ms}.
 \]
 
-\begin{tabularx}{\linewidth}{@{}r l l@{}}
+\begin{tabularx}{\linewidth}{@{}r l X@{}}
 \toprule
-Local age & Prediction & Observation\\
+Local age & State & Visible consequence\\
 \midrule
-1999 ms & Fresh & \blank{45mm}\\
-2000 ms & Aging & \blank{45mm}\\
-4999 ms & Aging & \blank{45mm}\\
-5000 ms & Stale & \blank{45mm}\\
+1999 ms & Fresh & one long pulse\\
+2000 ms & Aging & two short pulses\\
+4999 ms & Aging & two short pulses\\
+5000 ms & Stale & three quick pulses\\
 \bottomrule
 \end{tabularx}
 
-Now reverse the packet's remote timestamp while keeping the same local receipt
-time.
-
-Prediction: \blank{90mm}.
-
-Interpretation: \blank{95mm}.
+Reversing the packet's remote timestamp does not alter these results because
+freshness follows local receipt time.
 
 \section{Narrative run loop and visible state}
 
@@ -274,8 +272,8 @@ and actuates D45.
 
 The 12-second schedule accepts sequence 1, skips 2 and accepts 3, corrupts the
 next packet, waits until sequence 3 becomes stale, then accepts sequence 4
-after wrap. Every advertised evidence state is reachable, and recovery is an
-accepted in-order observation rather than a display reset.
+when the schedule restarts. Every advertised evidence state is reachable, and
+recovery is an accepted in-order observation rather than a display reset.
 
 \texttt{TelemetryFixtureSchedule} owns this tested one-shot decision trace; the
 sketch does not duplicate its timing policy. \texttt{TelemetryEvidenceModel}
@@ -300,42 +298,19 @@ D13 proves acquisition only. D45 reports current evidence only. Serial may
 print supporting records, but it does not control tuning, capture, or replay
 and is never the sole observation.
 
-\section{Predict, observe, interpret}
+\section{Read the adventure}
 
-\subsection{Experiment A: acquisition}
+D13 first tells you acquisition succeeded. D45 then tells the packet story.
+If D13 lights but D45 stays dark, check the D45 header hole, resistor row, LED
+polarity, and GND lead. If D45 blinks but never changes cadence, the physical
+path is probably intact and the fixture/state path needs review. A complete
+one--two--four--three--one sequence demonstrates the local software chain; it
+proves no radio, network, remote sensor, or security property.
 
-\textbf{Predict.} D13 illuminates only after the tracker and both output
-endpoints initialize.
-
-\textbf{Observe:} \blank{90mm}.
-\textbf{Interpret.} This supports acquisition, not packet correctness or safe
-shutdown.
-
-\subsection{Experiment B: deterministic fixture cycle}
-
-Before upload, predict each D45 cadence. Probe TP-LED against GND and record:
-
-\begin{tabularx}{\linewidth}{@{}l l l l@{}}
-\toprule
-Fixture & Predicted count & Observed count & Pulse widths\\
-\midrule
-valid & \blank{18mm} & \blank{18mm} & \blank{30mm}\\
-forward gap & \blank{18mm} & \blank{18mm} & \blank{30mm}\\
-corrupt & \blank{18mm} & \blank{18mm} & \blank{30mm}\\
-silence to stale & \blank{18mm} & \blank{18mm} & \blank{30mm}\\
-\bottomrule
-\end{tabularx}
-
-Agreement supports the path from fixture bytes through integrity, tracker, and
-visible actuation. It proves no RF, network, remote sensor, or security claim.
-
-\subsection{Experiment C: safe state}
-
-Invoke shutdown. Predict D13 and D45 inactive and both pins released. Observe
-the LEDs, then measure TP-LED separately. A dark LED does not prove high
-impedance or claim release.
-
-Measured safe-state evidence: \blank{80mm}.
+After two minutes both LEDs go dark by design. A dark LED is useful visible
+progress, but only a separately measured TP-LED voltage and pin state could
+establish physical safe-state evidence. This lesson makes no such unrecorded
+claim.
 
 \section{Diagnosis and privacy review}
 
@@ -353,85 +328,21 @@ D45 driven after stop & safe-state failure; remove USB and record deviation\\
 \bottomrule
 \end{tabularx}
 
-\subsection{Minimum-data worksheet}
-
-For every proposed field ask: Does the experiment require it? Could it identify
-a person, place, account, or device? Can an opaque lab identifier replace it?
-How long must it be retained?
-
-\begin{tabularx}{\linewidth}{@{}l l l X@{}}
-\toprule
-Proposed field & Required? & Opaque substitute? & Retention reason\\
-\midrule
-\blank{28mm} & \blank{16mm} & \blank{25mm} & \blank{38mm}\\
-\blank{28mm} & \blank{16mm} & \blank{25mm} & \blank{38mm}\\
-\blank{28mm} & \blank{16mm} & \blank{25mm} & \blank{38mm}\\
-\bottomrule
-\end{tabularx}
-
 Use only owned lab fixtures. Do not collect device serial numbers, addresses,
 locations, credentials, or unnecessary payloads. This lesson contains no
 receiver, transmitter, raw capture export, rolling-code analysis, key
 recovery, replay, or command mapping.
 
-\section{CLI and open acceptance records}
+\section{What is verified behind the scenes}
 
-\begin{verbatim}
-make host-test
-make arduino-Lesson026TelemetryPacket
-make size-Lesson026TelemetryPacket
-make upload-Lesson026TelemetryPacket PORT=/dev/ttyACM0
-make serial-log PORT=/dev/ttyACM0
-make lessons
-make lessons-check
-make site-check
-\end{verbatim}
+Automated tests retain golden packet bytes, every one-bit corruption,
+truncation, extension, short output, all sequence classes, wraparound,
+freshness boundaries, remote-clock independence, lifecycle, and deterministic
+replay. The Mega build and size measurement are automated too. Those results
+verify software behavior, not this particular board, LED, resistor, wiring, or
+probe measurement.
 
-\textbf{Software fixture acceptance}
-
-\begin{itemize}
-  \item \checkbox\ Golden valid packet and exact encoded bytes compared.
-  \item \checkbox\ All one-bit corruption positions rejected by host tests.
-  \item \checkbox\ Truncation, extension, unaligned input, and short output tested.
-  \item \checkbox\ Sequence first/in-order/duplicate/gap/reorder/wrap tested.
-  \item \checkbox\ Freshness edges and remote-clock independence tested.
-  \item \checkbox\ Identical fixtures and receipt times replay byte identically.
-\end{itemize}
-
-Commit \blank{34mm}; compiler \blank{30mm}; result \blank{40mm}.
-
-\textbf{Mega bench acceptance---open until measured}
-
-\begin{itemize}
-  \item \checkbox\ Exact Mega, LED, resistor, supply, and instrument recorded.
-  \item \checkbox\ Unpowered D45 wiring and polarity checked.
-  \item \checkbox\ D13 acquisition evidence observed separately.
-  \item \checkbox\ One-, two-, three-, and four-pulse patterns measured.
-  \item \checkbox\ TP-LED widths and periods recorded against GND.
-  \item \checkbox\ Reset, shutdown, USB removal, and claim reuse observed.
-  \item \checkbox\ D45 safe state checked separately from LED appearance.
-\end{itemize}
-
-Supply \blank{20mm}; instrument \blank{34mm}; date \blank{22mm};
-reviewer \blank{30mm}. Deviations: \blank{70mm}.
-
-\lessonbox{\textbf{Current result: host verified; hardware acceptance open.}
-Fixtures, compilation, and blank worksheets are not physical verification.}
-
-\section{Exercises and further reading}
-
-\begin{enumerate}
-  \item Change each bit of one golden packet in turn. Explain why rejection
-        establishes error detection but not sender identity.
-  \item Prove that a one-byte-short encoder destination remains unchanged.
-  \item Draw the five sequence classes around 16-bit wrap and half range.
-  \item Make the remote timestamp move backward while local time advances.
-        Predict freshness before running the test.
-  \item Propose a minimal humidity sample record. Remove every field that the
-        experiment does not need.
-  \item Explain why sample quality \texttt{SensorFault}, transport corruption,
-        and local staleness must remain three different observations.
-\end{enumerate}
+\section{Further reading}
 
 \begin{itemize}
   \item

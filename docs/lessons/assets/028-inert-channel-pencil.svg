@@ -1,6 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820">
+  <defs>
+    <filter id="graphite" x="-3%" y="-3%" width="106%" height="106%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.035"
+                    numOctaves="2" seed="28" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.2"
+                         xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="paper">
+      <feTurbulence type="fractalNoise" baseFrequency="0.45"
+                    numOctaves="3" seed="128"/>
+      <feColorMatrix values="0 0 0 0 0.28  0 0 0 0 0.28
+                             0 0 0 0 0.28  0 0 0 .10 0"/>
+    </filter>
+  </defs>
   <rect width="1400" height="820" fill="#fff"/>
-  <g fill="none" stroke="#111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+  <rect width="1400" height="820" filter="url(#paper)" opacity=".24"/>
+  <g fill="none" stroke="#333" stroke-width="7" opacity=".16"
+     stroke-linecap="round" stroke-linejoin="round" filter="url(#graphite)">
+    <path d="M45 65 Q315 45 590 70 L582 750 Q310 770 52 742 Z"/>
+    <path d="M82 112 H550 M84 682 H548"/>
+    <path d="M660 82 Q1000 62 1330 88 L1320 290 Q990 310 665 286 Z"/>
+    <path d="M660 390 Q1000 370 1330 396 L1322 672 Q990 692 666 668 Z"/>
+  </g>
+  <g fill="none" stroke="#222" stroke-width="4.2" stroke-linecap="round"
+     stroke-linejoin="round" filter="url(#graphite)">
     <path d="M45 65 Q315 45 590 70 L582 750 Q310 770 52 742 Z"/>
     <path d="M82 112 H550 M84 682 H548"/>
     <circle cx="126" cy="168" r="18"/><circle cx="512" cy="168" r="18"/>
@@ -17,7 +40,7 @@
     <path d="M590 490 C625 490 625 482 697 482"/>
     <path d="M580 560 C625 560 625 600 670 600"/>
   </g>
-  <g fill="#111" font-family="DejaVu Sans, sans-serif">
+  <g display="none" fill="#111" font-family="DejaVu Sans, sans-serif">
     <text x="210" y="105" font-size="34" font-weight="700">MEGA 2560</text>
     <text x="96" y="226" font-size="25">USB POWER ONLY</text>
     <text x="96" y="286" font-size="25">D30–D33 pull-up buttons</text>

@@ -7,9 +7,32 @@
   resistor-limited cue LEDs, and one resistor-limited RGB state LED. TP28 marks
   the synthetic evidence input and TP29 marks the selected cue output. No
   external load is present.</desc>
+  <defs>
+    <filter id="graphite" x="-3%" y="-3%" width="106%" height="106%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.037"
+                    numOctaves="2" seed="30" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.2"
+                         xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="paper">
+      <feTurbulence type="fractalNoise" baseFrequency="0.47"
+                    numOctaves="3" seed="130"/>
+      <feColorMatrix values="0 0 0 0 0.3  0 0 0 0 0.3
+                             0 0 0 0 0.3  0 0 0 .10 0"/>
+    </filter>
+  </defs>
   <rect width="1400" height="820" fill="#fff"/>
-  <g fill="none" stroke="#222" stroke-width="4" stroke-linecap="round"
-     stroke-linejoin="round">
+  <rect width="1400" height="820" filter="url(#paper)" opacity=".22"/>
+  <g fill="none" stroke="#333" stroke-width="6.5" opacity=".15"
+     stroke-linecap="round" stroke-linejoin="round" filter="url(#graphite)">
+    <rect x="55" y="105" width="405" height="550" rx="20"/>
+    <rect x="560" y="55" width="770" height="180" rx="18"/>
+    <rect x="560" y="270" width="770" height="155" rx="18"/>
+    <rect x="560" y="460" width="770" height="240" rx="18"/>
+    <path d="M180 735H1195"/>
+  </g>
+  <g fill="none" stroke="#292929" stroke-width="3.6" stroke-linecap="round"
+     stroke-linejoin="round" filter="url(#graphite)">
     <!-- Mega and USB power -->
     <rect x="55" y="105" width="405" height="550" rx="20"/>
     <path d="M55 180H12M12 180V238"/>
@@ -49,5 +72,44 @@
     <!-- Simulator flow -->
     <path d="M180 735H1195"/>
     <path d="M380 720l24 15-24 15M635 720l24 15-24 15M890 720l24 15-24 15"/>
+  </g>
+  <g display="none" fill="#202020" font-family="DejaVu Sans, sans-serif">
+    <text x="258" y="160" font-size="34" font-weight="700"
+          text-anchor="middle">MEGA 2560</text>
+    <text x="258" y="205" font-size="23" text-anchor="middle">USB 5 V only</text>
+    <text x="258" y="315" font-size="23" text-anchor="middle">D35–D38 synthetic editor</text>
+    <text x="258" y="360" font-size="23" text-anchor="middle">D30–D34 operator buttons</text>
+    <text x="258" y="405" font-size="23" text-anchor="middle">D22–D29 cue LEDs</text>
+    <text x="258" y="450" font-size="23" text-anchor="middle">D5–D7 RGB state</text>
+    <text x="945" y="95" font-size="27" font-weight="700"
+          text-anchor="middle">SYNTHETIC OBSERVATION EDITOR</text>
+    <text x="655" y="210" font-size="18" text-anchor="middle">CHANNEL</text>
+    <text x="805" y="210" font-size="18" text-anchor="middle">PRIMARY</text>
+    <text x="955" y="210" font-size="18" text-anchor="middle">REDUNDANT</text>
+    <text x="1105" y="210" font-size="18" text-anchor="middle">APPLY</text>
+    <text x="535" y="248" font-size="18" text-anchor="end">TP28</text>
+    <text x="945" y="305" font-size="27" font-weight="700"
+          text-anchor="middle">OPERATOR BUTTONS TO GND</text>
+    <text x="650" y="392" font-size="17" text-anchor="middle">REVIEW</text>
+    <text x="830" y="392" font-size="17" text-anchor="middle">RUN</text>
+    <text x="1010" y="392" font-size="17" text-anchor="middle">CONFIRM</text>
+    <text x="1190" y="392" font-size="17" text-anchor="middle">SKIP</text>
+    <text x="1305" y="392" font-size="17" text-anchor="middle">CANCEL</text>
+    <text x="945" y="500" font-size="27" font-weight="700"
+          text-anchor="middle">EIGHT CUE LEDs — 1 kΩ EACH</text>
+    <text x="630" y="642" font-size="17" text-anchor="middle">0</text>
+    <text x="710" y="642" font-size="17" text-anchor="middle">1</text>
+    <text x="790" y="642" font-size="17" text-anchor="middle">2</text>
+    <text x="870" y="642" font-size="17" text-anchor="middle">3</text>
+    <text x="950" y="642" font-size="17" text-anchor="middle">4</text>
+    <text x="1030" y="642" font-size="17" text-anchor="middle">5</text>
+    <text x="1110" y="642" font-size="17" text-anchor="middle">6</text>
+    <text x="1190" y="642" font-size="17" text-anchor="middle">7</text>
+    <text x="1240" y="680" font-size="17" text-anchor="middle">RGB STATE</text>
+    <text x="535" y="585" font-size="18" text-anchor="end">TP29</text>
+    <text x="280" y="785" font-size="22" text-anchor="middle">observe</text>
+    <text x="530" y="785" font-size="22" text-anchor="middle">assess</text>
+    <text x="785" y="785" font-size="22" text-anchor="middle">review + confirm</text>
+    <text x="1050" y="785" font-size="22" text-anchor="middle">inert cue + audit</text>
   </g>
 </svg>

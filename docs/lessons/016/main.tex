@@ -14,7 +14,7 @@
 \usepackage{tabularx}
 \usepackage{tikz}
 \usepackage{titlesec}
-\usetikzlibrary{arrows.meta,positioning}
+\usetikzlibrary{arrows.meta,decorations.pathmorphing,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{Ink}{gray}{0}
@@ -149,6 +149,7 @@ inputs with internal pull-ups. A closed key pulls its column low. The selected
 row immediately returns to input before the next row is selected.
 
 \begin{center}
+% ADK visual: pencil
 \includegraphics[width=0.96\linewidth]{016-matrix-keypad-pencil.png}
 
 \small\textit{Alternative text: pencil orientation plate with a Mega on the
@@ -161,7 +162,9 @@ There is no breadboard because every connection is direct.}
 \section{Scan and interpretation}
 
 \begin{center}
+% ADK visual: pencil
 \begin{tikzpicture}[>=Latex,
+    decorate,decoration={random steps,segment length=3pt,amplitude=0.18pt},
     state/.style={draw,minimum width=28mm,minimum height=9mm,fill=white}]
   \node[state] (released) {Released};
   \node[state,right=18mm of released] (candidate) {Candidate};

@@ -15,6 +15,7 @@
 \usepackage{tabularx}
 \usepackage{tikz}
 \usepackage{titlesec}
+\usetikzlibrary{decorations.pathmorphing}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{AdkBlue}{gray}{0}
@@ -22,6 +23,20 @@
 \definecolor{AdkGreen}{gray}{0.30}
 \definecolor{AdkGray}{gray}{0.94}
 \definecolor{CodeGray}{gray}{0.97}
+
+\tikzset
+{
+    pencil stroke/.style={
+        draw=black!72,
+        decorate,
+        decoration={random steps,segment length=3pt,amplitude=0.55pt},
+        line cap=round,
+        line join=round
+    },
+    pencil diagram/.style={
+        every node/.style={text=black!82}
+    }
+}
 
 \hypersetup
 {
@@ -89,6 +104,7 @@ Outcome & Read and diagnose one grounded switch & Evidence & Truth table, LED/te
 
 \begin{figure}[h]
     \centering
+    % ADK visual: pencil
     \includegraphics[width=\linewidth,height=0.29\textheight,keepaspectratio]
         {002-digital-input-pencil.png}
     \caption*{\textbf{Orientation only.} The exact schematic and connection
@@ -181,6 +197,7 @@ human meaning to it.}
 \section{Build from the exact schematic}
 
 \begin{center}
+% ADK visual: schematic
 \begin{circuitikz}[american voltages]
     \draw
         (0,3.2) node[left]{Mega 5\,V}
@@ -339,11 +356,12 @@ may see it. DigitalInput must preserve raw evidence. It must not silently delay,
 filter, or synthesize events.
 
 \begin{center}
-\begin{tikzpicture}[x=0.78cm,y=0.7cm]
-    \draw[->] (0,0) -- (13,0) node[right]{time};
-    \draw (0,0.5) node[left]{LOW} -- (13,0.5);
-    \draw (0,2.0) node[left]{HIGH} -- (13,2.0);
-    \draw[very thick,black]
+% ADK visual: pencil
+\begin{tikzpicture}[pencil diagram,x=0.78cm,y=0.7cm]
+    \draw[pencil stroke,->] (0,0) -- (13,0) node[right]{time};
+    \draw[pencil stroke] (0,0.5) node[left]{LOW} -- (13,0.5);
+    \draw[pencil stroke] (0,2.0) node[left]{HIGH} -- (13,2.0);
+    \draw[pencil stroke,very thick,black]
         (0,2.0) -- (3.0,2.0) -- (3.0,0.5) -- (3.35,0.5)
         -- (3.35,2.0) -- (3.7,2.0) -- (3.7,0.5)
         -- (4.0,0.5) -- (4.0,2.0) -- (4.25,2.0)

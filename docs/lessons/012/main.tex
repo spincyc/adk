@@ -14,7 +14,7 @@
 \usepackage{tabularx}
 \usepackage{tikz}
 \usepackage{titlesec}
-\usetikzlibrary{arrows.meta,positioning}
+\usetikzlibrary{arrows.meta,decorations.pathmorphing,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{AdkBlue}{gray}{0}
@@ -56,6 +56,9 @@
 }
 \newcommand{\checkbox}{\(\square\)}
 \newcommand{\blank}[1]{\rule{#1}{0.4pt}}
+\tikzset{pencil picture/.style={
+  every path/.append style={line cap=round,line join=round,
+    dash pattern=on 1.15pt off .08pt,opacity=.88}}}
 \newcommand{\warningbox}[1]{%
   \begin{center}
   \fcolorbox{AdkRed}{AdkRed!6}{\parbox{0.91\linewidth}{\textbf{\color{AdkRed}Safety checkpoint.} #1}}
@@ -126,7 +129,8 @@ By the end, you can:
 \section{System composition}
 
 \begin{center}
-\begin{tikzpicture}[
+% ADK visual: pencil
+\begin{tikzpicture}[pencil picture,
     node distance=8mm and 10mm,
     box/.style={draw,rounded corners,minimum height=9mm,align=center},
     >=Latex]
@@ -178,6 +182,7 @@ blocks while a traffic phase elapses.
 
 \begin{figure}[ht]
   \centering
+  % ADK visual: pencil
   \includegraphics[width=0.94\linewidth]{012-traffic-junction-pencil.png}
   \caption{Four complementary pencil plates: physical Mega header locator,
   74HC595 placement worksheet, physical signal breadboard coordinates, and

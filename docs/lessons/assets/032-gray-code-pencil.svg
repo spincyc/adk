@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520"
+     viewBox="0 0 1200 520" role="img" aria-labelledby="title description">
+  <title id="title">Pencil drawing of Gray-code timing</title>
+  <desc id="description">Phase B rises, phase A rises, phase B falls, then
+  phase A falls, producing sampled masks 00, 01, 11, 10, 00 and four
+  clockwise edge decisions.</desc>
+  <rect width="1200" height="520" fill="white"/>
+  <defs>
+    <filter id="pencil" x="-4%" y="-5%" width="108%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018 0.09"
+                    numOctaves="2" seed="32" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.8"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5"
+            markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10" fill="none" stroke="#333"
+            stroke-width="1.5"/>
+    </marker>
+  </defs>
+  <g filter="url(#pencil)" fill="none" stroke="#333" stroke-width="4"
+     stroke-linecap="round" stroke-linejoin="round" opacity="0.9">
+    <path d="M110 405 C330 401 770 408 1080 403" marker-end="url(#arrow)"/>
+    <path d="M145 245 L345 244 L347 130 L747 132 L749 246 L947 245"/>
+    <path d="M145 340 L545 339 L547 225 L947 227"/>
+    <path d="M245 104 L246 57 M445 104 L446 57 M645 104 L646 57 M845 104 L846 57"
+          marker-end="url(#arrow)"/>
+    <path d="M145 393 L145 418 M345 393 L345 418 M545 393 L545 418
+             M745 393 L745 418 M945 393 L945 418"/>
+  </g>
+</svg>

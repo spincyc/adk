@@ -5,6 +5,7 @@
 \usepackage[letterpaper,margin=0.72in,headheight=15pt]{geometry}
 \usepackage{array}
 \usepackage{booktabs}
+\usepackage[american]{circuitikz}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
 \usepackage{listings}
@@ -73,6 +74,7 @@
 \end{center}
 
 \begin{center}
+% ADK visual: pencil
 \includegraphics[width=\linewidth,height=0.30\textheight,keepaspectratio]
     {007-analog-input-pencil.png}
 \end{center}
@@ -130,29 +132,17 @@ separate LED through its own 220\,\(\Omega\) resistor. D13 is the board's
 built-in diagnostic LED and consumes one claimed pin.
 
 \begin{center}
-\begin{tikzpicture}[x=1cm,y=1cm,>=Latex,
-    terminal/.style={draw,rounded corners,fill=soft,minimum width=17mm,
-                     minimum height=7mm},
-    part/.style={draw,fill=white,minimum width=18mm,minimum height=7mm}]
-    \node[terminal] (vcc) at (0,3.0) {Mega 5 V};
-    \node[terminal] (gnd) at (0,0.0) {Mega GND};
-    \node[part] (pot) at (4.0,1.5) {10 k\(\Omega\) linear};
-    \node[terminal] (a0) at (8.4,1.5) {A0 / pin 54};
-    \draw[very thick,->] (vcc)--(2.0,3.0)--(2.0,2.0)--(pot.north west);
-    \draw[very thick,->] (pot.south west)--(2.0,1.0)--(2.0,0.0)--(gnd);
-    \draw[very thick,->] (pot.east)--node[above]{wiper; TP-A0}(a0);
-
-    \node[terminal] (d6) at (0,-1.5) {D6 PWM};
-    \node[part] (r) at (3.0,-1.5) {220 \(\Omega\)};
-    \node[draw,circle,minimum size=8mm] (led) at (5.4,-1.5) {LED};
-    \node[terminal] (gnd2) at (8.4,-1.5) {Mega GND};
-    \draw[very thick,->] (d6)--node[above]{TP-D6}(r)--(led)--(gnd2);
-
-    \node[terminal] (d13) at (0,-2.8) {D13 built-in LED};
-    \node[right=5mm of d13,text width=7.0cm] {
-        250 ms pulse = all three objects acquired; then 750 ms dark separator;
-        off afterward = normal run or stopped circuit};
-\end{tikzpicture}
+% ADK visual: schematic
+\begin{circuitikz}[american voltages]
+  \draw (0,4) node[left]{Mega 5 V} to[short,o-] (1,4)
+    to[potentiometer,l={10 k\(\Omega\) linear},name=P] (1,1)
+    -- (1,0.5) node[ground]{};
+  \draw (P.wiper) -- (4.5,2.5) node[above]{TP-A0}
+    -- (6,2.5) node[right]{Mega A0 / pin 54};
+  \draw (0,0) node[left]{Mega D6 PWM} to[short,o-,l^={TP-D6}] (1.2,0)
+    to[R,l={220 \(\Omega\)}] (3.7,0)
+    to[leD,l={external LED}] (6,0) -- (6,-0.5) node[ground]{};
+\end{circuitikz}
 \end{center}
 
 \begin{center}
