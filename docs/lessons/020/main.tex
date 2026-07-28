@@ -1,6 +1,4 @@
 \documentclass[11pt]{article}
-
-\usepackage{amsmath}
 \usepackage[margin=0.68in]{geometry}
 \usepackage{booktabs}
 \usepackage{enumitem}
@@ -11,192 +9,145 @@
 \usepackage{listings}
 \usepackage{microtype}
 \usepackage{tabularx}
-\usepackage{tikz}
 \usepackage{titlesec}
-\usetikzlibrary{arrows.meta,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
-
 \definecolor{Ink}{gray}{0}
 \definecolor{CodeGray}{gray}{0.96}
-\definecolor{Soft}{gray}{0.90}
-\hypersetup
-{
-    pdftitle={ADK Lesson 020: Bounded Motor Intent},
-    pdfauthor={Kevin Shanahan},
-    pdfsubject={Deterministic motor intent, reversal dead time, and safe LED evidence},
-    pdflang={en-US}
+\hypersetup{
+  pdftitle={ADK Lesson 020: The Direction Chase},
+  pdfauthor={Kevin Shanahan},
+  pdfsubject={A fast, inert demonstration of bounded motor intent and reversal dead time},
+  pdflang={en-US}
 }
 \pagestyle{fancy}
 \fancyhf{}
 \lhead{\textsc{ADK Lesson 020}}
-\rhead{Bounded Motor Intent}
+\rhead{The Direction Chase}
 \cfoot{\thepage}
 \setlength{\headheight}{14pt}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{5pt}
 \setlist{nosep,leftmargin=1.45em}
 \titleformat{\section}{\Large\bfseries\color{Ink}}{\thesection}{0.5em}{}
-\titleformat{\subsection}{\large\bfseries\color{Ink}}{\thesubsection}{0.5em}{}
-\lstdefinestyle{adkcpp}
-{
-    language=C++,
-    backgroundcolor=\color{CodeGray},
-    basicstyle=\ttfamily\small,
-    keywordstyle=\color{Ink}\bfseries,
-    commentstyle=\color{Ink},
-    columns=fullflexible,
-    keepspaces=true,
-    showstringspaces=false,
-    frame=single,
-    rulecolor=\color{Ink},
-    breaklines=true,
-    tabsize=4
+\lstdefinestyle{adkcpp}{
+  language=C++,backgroundcolor=\color{CodeGray},basicstyle=\ttfamily\small,
+  keywordstyle=\color{Ink}\bfseries,columns=fullflexible,keepspaces=true,
+  showstringspaces=false,frame=single,rulecolor=\color{Ink},breaklines=true
 }
-\newcommand{\checkbox}{\(\square\)}
-\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
-\newcommand{\lessonbox}[1]{%
-  \begin{center}
-  \fcolorbox{Ink}{white}{\parbox{0.92\linewidth}{#1}}
-  \end{center}}
+\newcommand{\lessonbox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{#1}}\end{center}}
 
 \begin{document}
-
 \begin{center}
-  {\Huge\bfseries Bounded Motor Intent}\\[4pt]
-  {\Large Request motion; observe what may actually be applied}\\[8pt]
-  \textit{Three LEDs make direction, enable, and reversal dead time visible.}
+  {\Huge\bfseries The Direction Chase}\\[4pt]
+  {\Large Three lamps race, reverse, and shut themselves down}\\[7pt]
+  \textit{Motor logic you can see, with no motor or driver connected.}
 \end{center}
 
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
-Lesson & 020 --- component & Time & 150--210 minutes\\
-Prerequisites & Lessons 001--019 & Board & Arduino Mega 2560\\
-Primary evidence & TP-F, TP-R, TP-E & Status & host verified; bench open\\
-Primary safety & E1: USB-powered LED simulation; no motor power\\
+Lesson & 020 --- component & Build time & about 20 minutes\\
+Board & Arduino Mega 2560 & Power & USB only\\
+Visible result & two direction rounds & Finish & automatic at 10 seconds\\
 \end{tabularx}
 
-\section{Mission}
+\section{What you are making}
 
-Build a deterministic boundary between a motion request and applied driver
-intent:
-\[
-\text{operator request}\rightarrow\texttt{MotorIntent}\rightarrow
-\texttt{MotorIntentSnapshot}\rightarrow\text{three evidence LEDs}.
-\]
-A request for the opposite direction never flips the direction signals while
-enable is active. The controller first applies stop, waits through an explicit
-dead-time deadline, then applies the opposite command. Stop dominates every
-phase. Moving intent also requires an explicit admitted \texttt{PowerDomain};
-the sketch admits it only after every evidence endpoint initializes.
+Three LEDs stand in for the inputs of a future motor driver. Forward and
+reverse are direction lamps. Enable is the ``go'' lamp: its brightness changes
+with PWM duty. On every reversal all three go dark for 250 ms before the other
+direction may light.
 
-\lessonbox{\textbf{Primary experiment.} The LEDs simulate H-bridge logic
-inputs. No motor, motor supply, relay, or driver power stage is connected.
-The exercise proves command timing; it does not prove torque, current,
-rotation, or motor polarity.}
+\lessonbox{\textbf{The whole lesson is inert.} Use only the three LEDs and
+resistors shown here. Do not connect an H-bridge, motor, motor supply, relay, or
+wheel. The Elegoo family listing does not establish an exact driver or motor
+electrical identity, so powered motion is outside this lesson.}
 
-\subsection{Learning outcomes}
-
-\begin{itemize}
-  \item distinguish requested motion from applied electrical intent;
-  \item explain why reversal has an all-inactive interval;
-  \item replay transitions using caller-supplied time;
-  \item observe direction, PWM enable, acquisition, and safe state separately;
-  \item identify what must be measured before an E2 motor continuation.
-\end{itemize}
-
-\section{Parts and current}
+\section{Parts}
 
 \begin{tabularx}{\linewidth}{@{}l X@{}}
 \toprule
-Part & Requirement\\
+Part & Use\\
 \midrule
-Arduino Mega 2560 & USB-powered board\\
-Three LEDs & forward, reverse, and PWM-enable evidence\\
-Three resistors & 1 k\(\Omega\), one in series with each LED\\
-Logic analyzer & preferred for TP-F, TP-R, and TP-E timing\\
-Multimeter & safe-state level and resistor checks; not PWM timing\\
+Arduino Mega 2560 & runs the fixed ten-second show\\
+Three ordinary LEDs & forward, reverse, and enable lamps\\
+Three 1 k\(\Omega\) resistors & one series resistor for each LED\\
+Breadboard and jumpers & the three independent signal paths\\
 \bottomrule
 \end{tabularx}
 
-At a conservative 2 V LED drop from a measured 5 V rail,
-\[
-I=\frac{5\text{ V}-2\text{ V}}{1000\ \Omega}=3\text{ mA}
-\]
-per continuously active LED. Record the actual rail, resistor, and LED drop.
-Remove USB power before wiring or moving probe clips. Stop on a hot part,
-unstable USB connection, unexpected illumination, or a mismatch with the
-wiring table.
+At a conservative 5 V rail and 2 V LED drop, each continuously lit path is
+about \((5-2)/1000=3\) mA. Unplug USB before changing a wire. If an LED is hot,
+the USB connection is unstable, or the picture and your board disagree,
+unplug and inspect the circuit.
 
 \newpage
-\section{Authoritative wiring}
+\section{Find the exact pins}
+
+On the Mega's long paired digital header, find D22 and D23 next to each other.
+D6 is on the PWM-numbered digital header near the board end. Use any labeled
+GND pin. The drawing separates these locations so the labels remain readable.
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{020-motor-intent-layout.png}
+
+\small\textit{A pencil-style layout of the Mega paired header and breadboard.
+D22, D23, and D6 each run through their own 1 k\(\Omega\) resistor to an LED
+long leg. All three short legs return through the breadboard negative rail to
+Mega GND. No motor or driver appears in the circuit.}
+\end{center}
 
 \begin{tabularx}{\linewidth}{@{}l l X@{}}
 \toprule
-Signal & Mega pin & Connection\\
+Lamp & Mega pin & Complete electrical path\\
 \midrule
 Forward / TP-F & D22 & D22 \(\rightarrow\) 1 k\(\Omega\)
-  \(\rightarrow\) LED anode; cathode \(\rightarrow\) GND\\
+  \(\rightarrow\) LED long leg; short leg \(\rightarrow\) negative rail\\
 Reverse / TP-R & D23 & D23 \(\rightarrow\) 1 k\(\Omega\)
-  \(\rightarrow\) LED anode; cathode \(\rightarrow\) GND\\
+  \(\rightarrow\) LED long leg; short leg \(\rightarrow\) negative rail\\
 Enable / TP-E & D6 & D6 \(\rightarrow\) 1 k\(\Omega\)
-  \(\rightarrow\) LED anode; cathode \(\rightarrow\) GND\\
-Acquisition evidence & D13 & built-in LED; no external wire\\
-Probe reference & GND & common reference for TP-F, TP-R, and TP-E\\
+  \(\rightarrow\) LED long leg; short leg \(\rightarrow\) negative rail\\
+Return & GND & Mega GND \(\rightarrow\) negative rail\\
 \bottomrule
 \end{tabularx}
 
-\begin{center}
-\includegraphics[width=0.96\linewidth]{020-motor-intent-pencil.png}
+\section{Build in three payoffs}
 
-\small\textit{Alternative text: graphite orientation plate showing a Mega and
-breadboard with three resistor-limited LEDs for forward, reverse, and PWM
-enable. A logic probe touches the enable test point. A disconnected H-bridge
-and motor sit inside a future supervised continuation area with an open
-physical motor-power switch. The table above is electrically authoritative.}
-\end{center}
+\textbf{First payoff --- direction.} Build only D22 and its LED path, then add
+D23 and its path. The two LEDs must have separate resistors. A shared resistor
+would couple the signals and spoil the chase.
 
-The illustration is an orientation aid, not a wiring schematic. In particular,
-the motor and power stage remain disconnected during the supported experiment.
+\textbf{Second payoff --- speed.} Add D6 and the enable LED. This lamp starts
+dim, becomes bright, and later runs bright in both directions. That visible
+change comes from two same-direction duty commands, not from a delay.
 
-\section{Intent and phase}
-
-\begin{center}
-\begin{tikzpicture}[>=Latex,
-    state/.style={draw,minimum width=30mm,minimum height=9mm,fill=white}]
-  \node[state] (stopped) {Stopped};
-  \node[state,right=16mm of stopped] (running) {Running};
-  \node[state,below=15mm of running] (dead) {Waiting for dead time};
-  \node[state,left=16mm of dead] (fault) {Fault};
-  \draw[->] (stopped)--node[above]{valid motion}(running);
-  \draw[->] (running)--node[right]{opposite request}(dead);
-  \draw[->] (dead)--node[right]{deadline}(running);
-  \draw[->] (running) to[bend left=24] node[above]{stop}(stopped);
-  \draw[->] (dead)--node[below]{stop}(stopped);
-  \draw[->] (running)--node[above,sloped]{failure}(fault);
-  \draw[->] (dead)--node[below]{failure}(fault);
-\end{tikzpicture}
-\end{center}
-
-\begin{tabularx}{\linewidth}{@{}l l l l X@{}}
-\toprule
-Phase & TP-F & TP-R & TP-E & Meaning\\
-\midrule
-Stopped & low & low & zero duty & no applied motion intent\\
-Forward & high & low & bounded PWM & forward intent applied\\
-Reverse & low & high & bounded PWM & reverse intent applied\\
-Dead time & low & low & zero duty & reversal request pending\\
-Fault & low & low & zero duty & intent cannot be trusted\\
-\bottomrule
-\end{tabularx}
-
-No state permits both direction signals high. The first interface deliberately
-does not expose braking because H-bridge brake truth tables vary by device.
+\textbf{Third payoff --- reversal.} Upload the canonical sketch. Watch closely
+when forward hands the chase to reverse: every lamp goes dark before reverse
+and enable return. The reverse round cannot appear correctly unless both
+direction paths and enable are independent.
 
 \newpage
-\section{Deterministic controller}
+\section{Read the ten-second show}
 
-\texttt{MotorCommand} contains a direction and duty. Stopped requires duty
-zero; forward or reverse requires a nonzero duty no greater than the configured
-maximum. The snapshot preserves both requested and applied commands.
+\begin{tabularx}{\linewidth}{@{}r l l X@{}}
+\toprule
+Time & Direction lamps & Enable lamp & What the controller is doing\\
+\midrule
+0.00--0.75 s & both dark & dark & stopped and ready\\
+0.75--1.75 s & forward & dim & forward at duty 72\\
+1.75--2.75 s & forward & bright & same direction, duty 180\\
+2.75 s & both dark & dark & 250 ms reversal dead time\\
+about 3.00--4.50 s & reverse & bright & reverse at duty 160\\
+4.50--5.50 s & both dark & dark & stopped between rounds\\
+5.50--6.50 s & forward & bright & second round\\
+6.50 s & both dark & dark & another 250 ms dead time\\
+about 6.75--8.00 s & reverse & bright & second reversal completed\\
+8.00--10.00 s & both dark & dark & stopped\\
+10.00 s onward & all dark & dark & automatic safe shutdown\\
+\bottomrule
+\end{tabularx}
+
+The blackout is the important trick. The requested direction may already be
+reverse while the \emph{applied} command remains stopped. The opposite output
+is allowed only after the explicit deadline.
 
 \begin{lstlisting}[style=adkcpp]
 void loop ()
@@ -209,213 +160,58 @@ void loop ()
 }
 \end{lstlisting}
 
-The canonical example introduces the runtime, evidence endpoints, power gate,
-then motor intent. Setup acquires, configures, and starts. The loop observes
-one scheduled request, advances the explicit-time decision, then writes only
-the \emph{applied} snapshot.
+The loop always observes, decides, then actuates the applied snapshot. There is
+no blocking delay. Stop cancels pending motion, no state permits both direction
+signals high, and shutdown first requests stopped intent before releasing the
+pins.
 
-\subsection{Command rules}
-
-\begin{enumerate}
-  \item A valid stopped request applies immediately.
-  \item A first moving request applies its direction and bounded duty.
-  \item A same-direction duty change applies without dead time.
-  \item An opposite request applies stop immediately and records a deadline.
-  \item At the deadline, the pending opposite command becomes applied.
-  \item Stop during dead time cancels the pending motion.
-  \item Invalid input changes neither requested nor applied command.
-\end{enumerate}
-
-Hidden calls to \texttt{millis()}, blocking \texttt{delay()}, callbacks, and
-heap-owned commands would make replay harder and do not belong in the
-controller.
-
-\section{Experiment A: acquire separately}
-
-\textbf{Predict.} D13 illuminates only after the controller and all three
-evidence outputs initialize. TP-F, TP-R, and TP-E remain inactive.
-
-\textbf{Observe.} Reset the Mega. Record the D13 sequence and then measure the
-three test points relative to the named GND reference.
-
-\textbf{Interpret.} The D13 light supports successful acquisition. Low evidence
-signals support the stopped electrical state. Neither observation substitutes
-for the other.
-
-\begin{tabularx}{\linewidth}{@{}l l l l@{}}
-\toprule
-Signal & Prediction & Observation & Interpretation\\
-\midrule
-D13 & \blank{24mm} & \blank{24mm} & \blank{32mm}\\
-TP-F & \blank{24mm} & \blank{24mm} & \blank{32mm}\\
-TP-R & \blank{24mm} & \blank{24mm} & \blank{32mm}\\
-TP-E & \blank{24mm} & \blank{24mm} & \blank{32mm}\\
-\bottomrule
-\end{tabularx}
-
-\newpage
-\section{Experiment B: direction truth table}
-
-Run the scripted stopped, forward, stopped, and reverse sequence. Predict the
-three signals before observing them.
-
-\begin{tabularx}{\linewidth}{@{}l l l l l@{}}
-\toprule
-Step & TP-F predicted & TP-R predicted & TP-E predicted & Observed\\
-\midrule
-Stopped & low & low & zero duty & \blank{30mm}\\
-Forward & high & low & PWM & \blank{30mm}\\
-Stopped & low & low & zero duty & \blank{30mm}\\
-Reverse & low & high & PWM & \blank{30mm}\\
-\bottomrule
-\end{tabularx}
-
-An illuminated enable LED shows switching energy averaged by the eye. Use the
-logic analyzer at TP-E to establish duty and waveform. A direction LED proves
-only its logic-level evidence path.
-
-\section{Experiment C: reversal dead time}
-
-\textbf{Predict.} When reverse is requested during forward motion, enable
-becomes zero and both direction LEDs go dark immediately. Reverse becomes
-active only at the snapshot deadline.
-
-\textbf{Observe.} Capture TP-F, TP-R, and TP-E on the same time base. Measure
-from the falling enable edge to the first reverse/enabling edge.
-
-\[
-t_{\mathrm{dark}}=\blank{28mm}\qquad
-t_{\mathrm{configured}}=\blank{28mm}\qquad
-\mathrm{difference}=\blank{28mm}
-\]
-
-\textbf{Interpret.} A dark interval at least as long as the configured dead
-time supports the reversal contract. It does not measure H-bridge switching
-delay because no power driver is present.
-
-\section{Experiment D: stop dominance}
-
-Request stop once while running and once during dead time. In both cases,
-predict immediate stopped intent and no later spontaneous restart.
-
-\begin{tabularx}{\linewidth}{@{}l l l l@{}}
-\toprule
-Starting phase & Immediate evidence & After old deadline & Pass?\\
-\midrule
-Running & \blank{36mm} & \blank{36mm} & \blank{12mm}\\
-Dead time & \blank{36mm} & \blank{36mm} & \blank{12mm}\\
-\bottomrule
-\end{tabularx}
-
-\newpage
-\section{Diagnosis}
-
-\begin{tabularx}{\linewidth}{@{}l X X@{}}
-\toprule
-Observation & Likely boundary & Next unpowered check\\
-\midrule
-No D13 acquisition light & claim/configuration failure & pin assignments and
-  prior owners\\
-Both direction LEDs active & adapter defect or wiring short & D22/D23 paths;
-  do not connect a driver\\
-No dark reversal interval & controller/adapter timing defect & reproduce the
-  host trace and inspect all three channels\\
-Direction changes but enable stays dark & duty zero, PWM claim, or D6 path &
-  resistor, LED polarity, and D6 continuity\\
-LED pattern correct, motor later fails & outside the LED evidence boundary &
-  motor supply, driver rating, wiring, load, and measured current\\
-LED dark after shutdown & safe level not high impedance & measure pin mode
-  with the documented acceptance method\\
-\bottomrule
-\end{tabularx}
-
-\section{Deterministic test ledger}
-
-\begin{itemize}
-  \item invalid direction/duty/configuration before state change;
-  \item stopped, first motion, same-direction duty change, and duty bounds;
-  \item forward-to-reverse and reverse-to-forward dead time;
-  \item just before, exactly at, and just after the deadline;
-  \item stop and replacement requests during dead time;
-  \item timestamp wraparound and long time jumps;
-  \item stable snapshots and byte-identical replay;
-  \item adapter acquisition rollback and resource reuse;
-  \item inactive outputs during reset, fault, shutdown, and destruction.
-\end{itemize}
-
-\section{CLI workflow}
-
-\begin{lstlisting}[style=adkcpp]
-make host-test
-make arduino-Lesson020MotorIntent
-make upload-Lesson020MotorIntent PORT=/dev/ttyACM0
-make hardware-card LESSON=020 BOARD=mega2560
-make evidence LESSON=020 SIGNAL=TP-E
-make lessons
-make lessons-check
-make site-check
-\end{lstlisting}
-
-Serial logging may record requested/applied snapshots, but it cannot replace
-TP-F, TP-R, TP-E, and safe-state measurements.
-
-\newpage
-\section{E2 continuation gate}
-
-Do not connect motor power merely because the LED experiment passes. A future
-supported continuation must select one H-bridge module and cite its primary
-datasheet. Record:
-
-\begin{itemize}
-  \item motor stall current at the chosen current-limited supply;
-  \item continuous and peak driver ratings, logic thresholds, flyback
-    strategy, and thermal behavior;
-  \item separate logic and motor-power paths plus grounding or isolation;
-  \item a physical switch that removes motor power;
-  \item a restrained motor or raised wheel with no pinch or entanglement path;
-  \item measured inactive, forward, reverse, dead-time, reset, and fault states.
-\end{itemize}
-
-\lessonbox{\textbf{Stop rule.} Software shutdown is not an emergency stop.
-Remove motor-supply power with the physical switch. USB may remain connected
-only if the selected module cannot back-power the Mega. Uncertainty stops the
-E2 continuation; it does not block the LED simulation.}
-
-\section{Exercises}
+\section{Make the idea your own}
 
 \begin{enumerate}
-  \item Draw the three evidence signals for a forward-to-reverse request.
-  \item Explain why the snapshot needs both requested and applied commands.
-  \item Add a same-direction duty change to the deterministic host trace.
-  \item Inject stop one tick before the reversal deadline and predict every
-    later snapshot.
-  \item Design a separate wheel-encoder observation interface. State why
-    commanded direction is not observed direction.
+  \item Swap the physical forward and reverse LEDs. Predict how the show will
+    look while the code's meaning stays unchanged.
+  \item Change the first duty from 72 to 36. The enable lamp should begin even
+    dimmer, while direction remains forward.
+  \item Change the dead time from 250 ms to 500 ms. The deliberate blackout
+    becomes much easier to count.
+  \item Add a third round that requests stop during the blackout. A correct
+    controller stays dark instead of restarting at the old deadline.
 \end{enumerate}
 
-\section{Bench acceptance record}
+\section{If the chase looks wrong}
 
 \begin{tabularx}{\linewidth}{@{}l X@{}}
-Date / operator & \blank{90mm}\\
-Board / revision & \blank{90mm}\\
-Arduino CLI / AVR core & \blank{90mm}\\
-Measured 5 V rail & \blank{35mm} V\\
-LED resistors & TP-F \blank{18mm}\(\Omega\);
-  TP-R \blank{18mm}\(\Omega\); TP-E \blank{18mm}\(\Omega\)\\
-Acquisition sequence & \blank{90mm}\\
-Stopped measurements & \blank{90mm}\\
-Forward measurements & \blank{90mm}\\
-Reverse measurements & \blank{90mm}\\
-Configured / measured dead time & \blank{35mm} / \blank{35mm}\\
-Stop during dead time & \blank{90mm}\\
-Shutdown / reset evidence & \blank{90mm}\\
-Deviations / stop conditions & \blank{90mm}\\
+\toprule
+What you see & Inspect while USB is unplugged\\
+\midrule
+One direction never lights & its LED polarity and its pin--resistor--LED path\\
+Both directions light together & accidental shared rows or a D22/D23 short\\
+Direction works but enable is dark & D6 path, LED polarity, and resistor row\\
+No brightness change & confirm the enable jumper really starts at PWM pin D6\\
+No dark reversal gap & confirm you uploaded the Lesson 020 sketch\\
+Lights remain after 10 seconds & reset once; if repeated, disconnect USB\\
+\bottomrule
 \end{tabularx}
+
+\section{What the repository checks behind the scenes}
+
+Automated tests replay stopped, same-direction speed changes, both reversals,
+stop during dead time, exact deadline edges, time wraparound, invalid commands,
+rollback, repeated shutdown, and resource reuse. The Mega build also checks
+the sketch's flash and RAM budget. Those checks protect the lesson; they are
+not extra chores for the learner.
+
+\section{Where this leads}
+
+A real motor needs an exactly identified motor, driver, primary datasheets,
+measured stall current, separate current-limited load supply, complete flyback
+path, physical power disconnect, and guarded unloaded fixture. None of those
+facts follows from a retail kit-family name. Until that separate E2 work is
+qualified, these three lamps are the complete supported circuit.
 
 \vfill
 \small
-Status remains \textbf{hardware acceptance open} until this record is completed
-on a Mega 2560. The HTML reference carries current API links and corrections;
-this PDF carries the printable experiment and evidence ledger.
-
+Status: host verified; physical observation remains unclaimed. Current
+reference material and the canonical sketch are published with the HTML
+lesson.
 \end{document}
