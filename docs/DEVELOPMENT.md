@@ -185,6 +185,14 @@ deterministic proof, packaging, examples and documentation, and downstream
 consumers. Re-read relevant prior decisions rather than treating a passing
 local test suite as architectural evidence.
 
+At both passes, exercise the most demanding currently authorized composition,
+not only an isolated happy path. Applicability-gated checks cover aggregate
+scheduler/time and memory/resource load, shared buses, persistence, motion or
+stored energy, observation identity/provenance, diagnostic interference, and
+colliding failures. A non-applicable result names the excluding contract fact;
+an applicable but unproven pressure remains a promotion blocker. Do not
+prescribe a shared API before a second concrete consumer establishes it.
+
 A natural extension uses existing contracts without special cases, duplicated
 policy, hidden ownership, or an abstraction outside its stated purpose. Local
 strain may be repaired inside the unpromoted boundary only when it preserves
