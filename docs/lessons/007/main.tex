@@ -88,13 +88,14 @@ mapping drives PWM brightness?\\
 Time & 70--95 minutes\\
 Prerequisites & Lessons 001, 004, and the resource-safe lifecycle\\
 You need & Mega 2560, USB cable, breadboard, 10\,k\(\Omega\) linear
-potentiometer, ordinary LED, measured 220\,\(\Omega\) resistor, jumpers, and
-multimeter; logic analyzer or oscilloscope optional\\
+potentiometer with recorded markings and terminal order, identified LED,
+measured 220\,\(\Omega\) resistor, jumpers, multimeter, and logic analyzer or
+oscilloscope\\
 Evidence & A0 wiper voltage, raw reading, D6 duty waveform, LED brightness,
 D13 acquisition indicator, and high-impedance shutdown\\
 Safety class & E1: USB-powered Mega, passive potentiometer, and
 current-limited LEDs only\\
-Status & Host-verified and experimental; physical Mega acceptance remains open\\
+Status & Host verified; physical acceptance pending\\
 \end{tabularx}
 
 \section*{Safety and measurement boundary}
@@ -104,10 +105,16 @@ same measured supply, which is also the default ADC reference through AVCC; do
 not attach an external signal source or drive AREF. Remove USB before changing
 any wire. Put meter leads in the correct voltage sockets and clip the black
 lead to Mega GND while power is off. Use DC-voltage mode, never current mode.
+Before power is applied, record the exact USB source make/model or computer
+port, its stated current capability or configured current limit, and the USB
+cable identity. Use no unrecorded hub or alternate supply.
 
 \textbf{Stop} for heat, odor, smoke, USB disconnects, an unknown potentiometer
 terminal, voltage outside 0--5\,V, or a meter lead in a current jack.
 Disconnect USB upstream and inspect the unpowered circuit.
+Record the actual LED forward voltage and measured series resistance. At full
+duty calculate \(I=(V_{\rm rail}-V_{\rm F})/R\); do not proceed unless the
+result is at most 15 mA.
 
 \begin{checkpoint}{before wiring}
 \checkbox\ USB removed \quad \checkbox\ resistor measured \quad
@@ -143,8 +150,8 @@ built-in diagnostic LED and consumes one claimed pin.
 
     \node[terminal] (d13) at (0,-2.8) {D13 built-in LED};
     \node[right=5mm of d13,text width=7.0cm] {
-        on = all three first-class objects acquired; off = startup fault or
-        stopped circuit};
+        250 ms pulse = all three objects acquired; then 750 ms dark separator;
+        off afterward = normal run or stopped circuit};
 \end{tikzpicture}
 \end{center}
 
@@ -245,9 +252,10 @@ before release.
 \section*{4. Let the example tell the run-loop story}
 
 The canonical sketch declares the objects in dependency order. Its
-\texttt{setup()} acquires the diagnostic LED, input, and output. D13 turns on
-only after all three initialize. Its \texttt{loop()} then reads as the circuit
-does:
+\texttt{setup()} acquires the diagnostic LED, input, and output. D13 pulses
+for 250 ms only after all three initialize, then remains dark for a 750 ms
+separator. Its \texttt{loop()} then reads as the circuit does and reaches
+\texttt{stopSafely()} after a fixed 120-second run:
 
 \begin{lstlisting}[style=adkcpp]
 potentiometer.update ();
@@ -261,7 +269,8 @@ if (!brightnessLed.write (brightness).ok ())
 }
 \end{lstlisting}
 
-\textbf{Observe}: take exactly one explicit raw sample.
+\textbf{Observe}: take exactly one explicit raw sample and publish
+\texttt{raw=<count>,duty=<value>} at 115200 baud whenever it changes.
 \textbf{Decide}: map position into the output domain.
 \textbf{Actuate}: command one PWM duty. Any command failure tears the whole
 circuit down; D13 turns off and both signal pins become high impedance.
@@ -280,9 +289,9 @@ make arduino-Lesson007AnalogInput
 make upload EXAMPLE=Lesson007AnalogInput PORT=/dev/ttyACM0
 \end{lstlisting}
 
-Use \texttt{make boards} to discover the port. This example intentionally emits
-no Serial records; its first evidence is the circuit. Repository targets still
-support later optional logs:
+Use \texttt{make boards} to discover the port. The LED and named test points
+remain the primary evidence. Optional records expose the exact raw-to-duty
+transformation:
 
 \begin{lstlisting}[style=adkcpp,language=bash]
 make monitor-describe PORT=/dev/ttyACM0
@@ -291,17 +300,20 @@ make serial-log PORT=/dev/ttyACM0 BAUD=115200 \
     SERIAL_LOG=build/serial/lesson007.log
 \end{lstlisting}
 
-An empty Serial stream is expected here and is not a failure. Disconnect any
-monitor before uploading if the operating system cannot share the port.
+Disconnect any monitor before uploading if the operating system cannot share
+the port. Serial is supporting evidence and cannot replace circuit
+observations.
 
 \section*{6. Predict, observe, interpret}
 
 \subsection*{Resource-acquisition evidence}
 
 \textbf{Predict}: after reset, D13 remains off until every owner initializes,
-then stays on. \textbf{Observe}: watch D13 without touching the potentiometer.
-\textbf{Interpret}: on supports the claim that the program acquired A0, D6,
-and D13. It does not prove correct breadboard wiring or ADC accuracy.
+pulses for 250 ms, then stays off after a 750 ms dark separator.
+\textbf{Observe}: capture D13 timing with the logic analyzer or oscilloscope.
+\textbf{Interpret}: the pulse supports the claim that the program acquired
+A0, D6, and D13. No pulse supports startup failure; it does not identify the
+failed owner or prove correct breadboard wiring.
 
 \subsection*{Input evidence at TP-A0}
 
@@ -313,7 +325,8 @@ does not by itself prove which raw integer software cached.
 
 \subsection*{Output evidence at TP-D6}
 
-\textbf{Predict}: the LED is off near raw 0 and grows brighter toward raw 1023.
+\textbf{Predict}: the LED is off near raw 0 and grows brighter toward raw 1023;
+the optional record contains the corresponding exact raw count and duty.
 At middle position, a logic analyzer or oscilloscope shows D6 switching with
 about 50\% high time. \textbf{Observe}: compare the LED and TP-D6.
 \textbf{Interpret}: the waveform supports correct scaling and PWM command.
@@ -322,13 +335,19 @@ of a steady analog voltage.
 
 \subsection*{Safe-state evidence}
 
-After recording normal behavior, disconnect USB. Before rewiring, run a
-purpose-built shutdown acceptance sketch or host test that calls
-\texttt{shutdown()}; never short a live output to test it. Confirm D13 and the
-external LED turn off. With a suitable high-impedance instrument and the
-published acceptance procedure, verify A0 and D6 are no longer actively driven.
-This electrical observation is separate from the earlier D13 acquisition
-signal.
+The canonical sketch calls \texttt{stopSafely()} 120 seconds after the
+acquisition sequence. Predict the deadline, capture D6 becoming inactive, and
+confirm both LEDs remain off. Then remove USB before moving any lead.
+
+Test A0 and D6 one at a time. With USB removed, disconnect the potentiometer
+wiper from A0 for the A0 test, then connect the selected pin to the midpoint
+of two 10\,k\(\Omega\) resistors placed in series from 5 V to GND. Inspect the
+fixture, restore USB, and measure the midpoint relative to the named Mega GND.
+A reading near one-half the measured rail supports high impedance; a value
+near a rail contradicts it. Remove USB before moving the fixture from A0 to
+D6 or restoring the normal circuit. Never open the ground connection or move
+a bare probe while powered. The midpoint test, not LED darkness, is the
+safe-state evidence.
 
 \section*{7. Diagnose by following the evidence}
 
@@ -337,7 +356,7 @@ signal.
 \toprule
 Observation & Most useful next check & What it separates\\
 \midrule
-D13 stays off & remove power; inspect pin choices and unpowered continuity &
+D13 never pulses & remove power; inspect pin choices and unpowered continuity &
 initialization/resource failure from the run loop\\
 D13 on, TP-A0 fixed & probe wiper, then both outer terminals relative to GND &
 divider wiring from software mapping\\
@@ -375,9 +394,17 @@ Mega circuit.
 
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}lX@{}}
 Board / revision & \\
-Supply / measured 5 V & \\
+USB source / port / stated current capability or limit & \\
+USB cable identity & \\
+Measured Mega 5 V rail & \\
 Arduino CLI / AVR core & \\
-Meter / probe & \\
+Potentiometer markings / terminal order & \\
+LED package / color / polarity & \\
+Resistor marked / measured value & \\
+LED forward voltage / calculated active current & \\
+Meter make / model / mode & \\
+Analyzer or oscilloscope / probe & \\
+10 k\(\Omega\) fixture resistors, measured & \\
 Sketch revision & \\
 Reviewer / date & \\
 \end{tabularx}
@@ -387,13 +414,18 @@ Reviewer / date & \\
 \toprule
 Claim & Prediction & Observation & Interpretation\\
 \midrule
-Resources acquired & D13 turns on after reset & & \\
-Low input & TP-A0 near 0 V; raw near 0; LED off & & \\
-Middle input & TP-A0 near half supply; duty near 128 & & \\
-High input & TP-A0 near supply; duty 255 & & \\
-PWM is switched & TP-D6 toggles at a middle setting & & \\
-Shutdown is safe & LEDs off; A0 and D6 high impedance & & \\
-Reset recovers & startup sequence repeats predictably & & \\
+Resources acquired & D13 pulses 250 ms, then 750 ms dark & & \\
+Low input & TP-A0 near 0 V; record raw near 0; LED off & & \\
+Middle input & TP-A0 near half rail; record duty near 128 & & \\
+High input & TP-A0 near rail; record duty 255 & & \\
+PWM is switched & TP-D6 toggles at recorded middle duty & & \\
+LED current bounded & At duty 255, calculated current is at most 15 mA & & \\
+Timed shutdown & At 120 s, TP-D6 stops toggling; LEDs stay off & & \\
+A0 released & Separate midpoint fixture reads near half rail & & \\
+D6 released & Separate midpoint fixture reads near half rail & & \\
+Reset recovers & Reset restarts pulse, separator, and deadline & & \\
+Power removed & USB removal makes rail and test points 0 V & & \\
+Rollback proof & Host-injected D6 acquisition failure releases A0/D13 & & \\
 \bottomrule
 \end{tabularx}
 \end{center}
@@ -410,9 +442,9 @@ Reset recovers & startup sequence repeats predictably & & \\
     Predict the entire evidence table before reconnecting USB.
     \item Change the mapping so the minimum visible duty is 16 while raw zero
     still means off. State the new integer formula and boundary cases.
-    \item Add optional Serial records without changing the circuit-native
-    acceptance criteria. Log raw and duty only when either changes by a useful
-    threshold.
+    \item Change the optional record policy to emit only when raw changes by a
+    useful threshold. Explain why this cannot change the circuit-native
+    acceptance criteria.
     \item Sketch a calibration object for Lesson 008. Keep sampling,
     calibration, filtering, and PWM ownership as separate responsibilities.
 \end{enumerate}

@@ -6,19 +6,26 @@ namespace {
     constexpr adk::PinId potentiometerPin = 54; // Mega A0
     constexpr adk::PinId brightnessPin    = 6;
     constexpr adk::PinId diagnosticPin    = 13;
+    constexpr uint32_t   acquisitionOnMs  = 250;
+    constexpr uint32_t   acquisitionGapMs = 750;
+    constexpr uint32_t   runDurationMs    = 120000;
 
     adk::Runtime     runtime;
     adk::AnalogInput potentiometer (runtime.resources (), potentiometerPin);
     adk::PwmOutput   brightnessLed (runtime.resources (), brightnessPin);
     adk::MonoLed     diagnosticLed (runtime.resources (), diagnosticPin);
 
-    bool ready = false;
+    bool     ready       = false;
+    uint32_t startedAtMs = 0;
 
     bool acquireCircuit ();
 
-    bool showReady ();
+    bool showAcquisition ();
 
     adk::PwmOutput::Duty chooseBrightness (adk::AnalogInput::Reading position);
+
+    void recordTransformation (adk::AnalogInput::Reading position,
+                               adk::PwmOutput::Duty      brightness);
 
     void stopSafely ();
 
@@ -26,18 +33,30 @@ namespace {
 
 void setup ()
 {
-    ready = acquireCircuit () && showReady ();
+    Serial.begin (115200);
+
+    ready = acquireCircuit () && showAcquisition ();
 
     if (!ready)
     {
         stopSafely ();
+        return;
     }
+
+    startedAtMs = millis ();
 }
 
 void loop ()
 {
     if (!ready)
     {
+        return;
+    }
+
+    const uint32_t now = millis ();
+    if (static_cast<uint32_t> (now - startedAtMs) >= runDurationMs)
+    {
+        stopSafely ();
         return;
     }
 
@@ -48,7 +67,10 @@ void loop ()
     if (!brightnessLed.write (brightness).ok ())
     {
         stopSafely ();
+        return;
     }
+
+    recordTransformation (position, brightness);
 }
 
 namespace {
@@ -76,9 +98,21 @@ namespace {
         return true;
     }
 
-    bool showReady ()
+    bool showAcquisition ()
     {
-        return diagnosticLed.on ().ok ();
+        if (!diagnosticLed.on ().ok ())
+        {
+            return false;
+        }
+
+        delay                       (acquisitionOnMs);
+        if (!diagnosticLed.off      ().ok ())
+        {
+            return false;
+        }
+
+        delay (acquisitionGapMs);
+        return true;
     }
 
     adk::PwmOutput::Duty chooseBrightness (adk::AnalogInput::Reading position)
@@ -86,6 +120,26 @@ namespace {
         const uint32_t scaled = static_cast<uint32_t> (position) * 255u + 511u;
         return static_cast<adk::PwmOutput::Duty> (scaled /
                                                   adk::AnalogInput::maximumReading);
+    }
+
+    void recordTransformation (adk::AnalogInput::Reading position,
+                               adk::PwmOutput::Duty      brightness)
+    {
+        static adk::AnalogInput::Reading previousPosition = 0;
+        static bool                      firstRecord       = true;
+
+        if (!firstRecord && position == previousPosition)
+        {
+            return;
+        }
+
+        Serial.print   ("raw=");
+        Serial.print   (position);
+        Serial.print   (",duty=");
+        Serial.println (brightness);
+
+        previousPosition = position;
+        firstRecord       = false;
     }
 
     void stopSafely ()
