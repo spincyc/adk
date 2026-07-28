@@ -562,27 +562,52 @@ Provisional reference resources:
 |---|---|
 | A0/D54 `TP-E` | qualified analog envelope output |
 | D22 `TP-T` | optional qualified comparator output |
-| D30 | quiet/ready LED through 1 kΩ |
-| D31 | event-window LED through 1 kΩ |
-| D32 | clipping/disagreement fault LED through 1 kΩ |
+| D30 | one-update `eventCompleted` LED through 1 kΩ |
+| D31 | copied active-high `GATE` LED through 1 kΩ |
+| D32 | initialized-and-healthy LED through 1 kΩ |
 
 `examples/Lesson038AcousticEnvelope/Lesson038AcousticEnvelope.ino` reads:
 
 ```text
-setup: acquire envelope -> acquire indicators -> calibrate quiet
-loop:  observe envelope -> classify window -> present confidence
+setup: acquire evidence panel -> configure envelope -> start lesson
+loop:  observe acoustic evidence -> decide envelope -> actuate evidence
 ```
 
-Helpers are `observeEnvelope()`, `classifyAcousticWindow()`, and
-`presentAcousticEvidence()`. Staged experiments are:
+Helpers are `acquireEvidencePanel()`, `configureEnvelope()`,
+`startLesson()`, `observeAcousticEvidence()`, `decideEnvelope()`,
+`actuateEvidence()`, and `stopSafely()`. `AcousticEnvelope` owns copied policy
+state only. The sketch owns the three `MonoLed` endpoints; the optional
+reference-fixture path performs the explicit A0 and D22 board reads and
+submits their copied values and statuses to the policy. It does not imply that
+the pure behavior owns those pins or can diagnose a failed board read.
+
+D30 is true only for the update that completes a bounded event. D31 mirrors
+the copied raw `GATE` level and can therefore precede, outlast, or disagree
+with the qualified analog event. D32 is lit after the evidence panel and
+policy initialize and remains lit only while the policy is not in `Fault`;
+it is ready/healthy evidence, not a code for the specific fault source.
+Initialization acquires D30, D31, then D32 and configures the pure policy.
+Any failed acquisition rolls back already acquired LEDs. `stopSafely()` turns
+the lesson inert in reverse presentation order by shutting down D32, D31, and
+D30, then resetting the pure policy. The resulting high-impedance LED pins
+are the shutdown evidence; policy reset is not electrical cleanup.
+
+The checked-in replay advances its copied evidence timestamps by 20 ms even
+though presentation is intentionally paced at 250 ms of wall time. This makes
+the lesson deterministic and visible but does not model real-time capture,
+bandwidth, or every transient between polls. In reference-fixture mode the
+timestamp and sampling cadence come from the running sketch, so a pulse
+between samples can still be missed.
+
+Staged experiments are:
 
 1. inventory both PCB faces, pin labels, supply, output topology, microphone
    bias/amplifier, comparator rail, and potentiometer direction before power;
 2. place probes with USB removed, then predict and observe quiet `TP-E` and
    `TP-T` values without touching the powered breadboard;
 3. observe baseline settling with no deliberate sound;
-4. make one gentle nearby hand tap and compare raw envelope, event LED, and
-   completed relative intensity;
+4. make one gentle nearby hand tap and compare the raw `GATE` LED, the
+   one-update completed-event LED, and completed relative intensity;
 5. adjust only an identified comparator control with USB removed between
    trials, then compare threshold agreement; and
 6. prove clipping/fault presentation with host fixtures, not a live short,
@@ -942,7 +967,7 @@ Provisional Mega budget:
 | A9/D63 `TP-BPM` | 10 kΩ tempo potentiometer wiper |
 | D45–D48 | accepted-surface LEDs, 1 kΩ each |
 | D49/D50/D51 | 74HC595 data/clock/latch for one-digit step display |
-| D52 | heartbeat/ready/fault LED, 1 kΩ |
+| D52 | healthy ready/heartbeat LED, 1 kΩ |
 | D53 | envelope-observation/capture LED, 1 kΩ |
 | D6 and timer 2 | existing `PiezoSounder`, silent when inactive |
 | D38/D39 | play and clear buttons |
@@ -976,6 +1001,16 @@ order and rolls back in strict reverse order. Shutdown stops/releases sounder,
 display and LEDs, buttons, tempo, threshold/envelope, then contacts in
 descending lane order. Behavior objects reset only after endpoint outputs are
 inactive.
+
+D52 is only ready/heartbeat evidence during healthy execution: ready before
+playback and the bounded `frame.heartbeat` cadence while a frame is valid. It
+must not be described as a generic runtime-fault indicator unless a separate,
+bounded, documented diagnostic state machine assigns an unambiguous fault
+pattern. Runtime source, timing, and input faults are instead proven by
+deterministic host traces that retain `faultSource` provenance and show cue
+intent clearing. Safe shutdown, including a fault-triggered stop, leaves D52,
+the capture and surface LEDs, display, and piezo inactive; keeping D52 driven
+after teardown would conflate resource survival with safe-state evidence.
 
 Staged project experiments are:
 

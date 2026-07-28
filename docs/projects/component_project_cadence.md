@@ -177,10 +177,22 @@ Deterministic evidence:
 Circuit-native observation:
 
 - one LED per surface reports accepted rather than merely raw hits;
-- four discrete LEDs or the existing one-digit display show the active step;
-- a heartbeat LED separates a quiet system from a stalled scheduler;
-- the microphone analog output is a named oscilloscope point; and
-- silence is the safe buzzer state.
+- the existing one-digit display shows the active hexadecimal step;
+- a dedicated capture LED shows enabled envelope sampling;
+- D52 reports ready/healthy execution and the bounded heartbeat cadence, not
+  an unqualified runtime-fault code;
+- named contact, envelope, and threshold test points preserve raw electrical
+  evidence;
+- host traces prove runtime fault attribution and cleared cue intent; and
+- shutdown leaves the LEDs and display dark and the buzzer silent.
+
+The canonical adapter owns four contact inputs, envelope and threshold inputs,
+tempo input, play/clear buttons, four surface LEDs, D52 status, D53 capture,
+the 74HC595-backed one-digit display, and the passive sounder. It acquires
+owners in documented dependency order and releases them in reverse. A runtime
+fault is not encoded on D52 unless a future bounded diagnostic state is
+specified and tested; the current acceptance path uses retained host
+provenance plus separately observed all-dark/silent shutdown.
 
 Planned family coverage: separately qualified knock/vibration/shock/tap/tilt
 contacts, sound/microphone envelope, passive buzzer, potentiometer, LEDs, and
