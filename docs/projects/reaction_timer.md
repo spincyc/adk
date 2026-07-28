@@ -44,24 +44,26 @@ legacy LED API is not a project dependency.
 
 ## Circuit
 
-Reference wiring uses the Mega 2560 built-in LED for the reaction cue and one
-normally open pushbutton:
+Reference wiring uses an external resistor-limited LED on D8 for the reaction
+cue, the Mega 2560 built-in D13 LED for acquisition evidence only, and one
+normally open pushbutton on D22:
 
 | Role | Mega resource | Connection | Inactive state |
 |---|---|---|---|
-| Cue LED | `LED_BUILTIN` | board LED through board resistor | off |
-| Reaction button | digital pin 2 | pin to button, button to ground | internal pull-up, released |
+| Cue LED | D8 | pin through measured 330 Ω resistor and LED to ground | off |
+| Acquisition LED | `LED_BUILTIN` / D13 | board LED through board resistor | off |
+| Reaction button | D22 | pin to button, button to ground | internal pull-up, released |
 
-An external LED may replace the board LED. Connect the output through a
-220--330 ohm resistor to the LED anode and connect the cathode to ground.
-Record the changed pin in the hardware mapping; game policy remains unchanged.
+The D13 pulse reports only successful acquisition. It does not report timer
+state or prove shutdown.
 
 ```text
              Mega 2560
 
-      LED_BUILTIN o----[board resistor]---->|----GND
+               D8 o----[330 ohm]---->|----GND
+              D13 o----[board resistor]---->|----GND
 
-          pin 2  o----------+----- internal pull-up
+              D22 o----------+----- internal pull-up
                             |
                          [ button ]
                             |

@@ -101,7 +101,9 @@ Status & Host-verified and experimental; not yet hardware-accepted or stable\\
 Use only USB power and the low-energy circuit shown here. Remove every power
 source before changing a wire. Never omit or share the three current-limiting
 resistors. Confirm the LED is \emph{common cathode}; a common-anode part needs
-different semantics and is outside this lesson.
+different semantics and is outside this lesson. The Mega's factory D13 LED is
+the independent acquisition indicator; identify its exact board path before
+using D13 for physical weak-bias evidence.
 
 \textbf{Stop} for heat, odor, smoke, unexpected USB disconnects, an unknown
 resistor value, or an unidentified LED common lead. Disconnect USB upstream.
@@ -116,7 +118,11 @@ Do not troubleshoot a powered breadboard by moving jumpers.
 
 The cathodes of the three LED dies meet at one common lead connected to Mega
 \texttt{GND}. Each anode has its \emph{own} series resistor. Pins 6, 5, and 3
-are PWM-capable on the Mega 2560.
+are PWM-capable on the Mega 2560. The named measurement points are
+\textbf{TP-R} at D6, \textbf{TP-G} at D5, and \textbf{TP-B} at D3, each
+measured to Mega GND. They are on the pin side of the channel resistor.
+\textbf{TP-ACQ} is D13, measured to Mega GND at the board header; it belongs
+only to the factory acquisition LED and never carries RGB behavior.
 
 \begin{center}
 \begin{tikzpicture}[x=1cm,y=1cm,>=Latex,
@@ -310,13 +316,54 @@ make arduino
 arduino-cli board list
 \end{lstlisting}
 
+The canonical sketch is finite. It claims the RGB component first and then the
+independent \texttt{MonoLed} on D13 transactionally: if D13 acquisition fails,
+all RGB claims are released. Successful acquisition produces a 250\,ms
+TP-ACQ/D13 factory-LED pulse, then 750\,ms with D13 dark. The RGB LED remains
+off throughout both intervals. Only then does the RGB behavior sequence show
+red, green, blue, white, off, and orange for 1000\,ms each. It calls
+\texttt{shutdown()} on D13 and all RGB endpoints after the final interval and
+makes no further hardware calls. Acquisition, RGB behavior, and safe-state
+evidence are therefore distinct observations.
+
 \begin{enumerate}
-    \item Remove USB. Build and continuity-check the exact circuit.
-    \item Connect USB only. Upload to the port you explicitly identified.
-    \item Command red, green, blue, white, off, and one mixed color.
-    \item Record observed color and whether any channel appears swapped.
-    \item Run the shutdown phase. Confirm all channels are inactive.
-    \item Remove USB before correcting any channel identity.
+    \item Remove USB. Build and continuity-check the exact circuit. Label the
+          pin-side resistor nodes TP-R/D6, TP-G/D5, and TP-B/D3.
+    \item Connect USB only. Identify the port and upload to that exact Mega.
+    \item Observe TP-ACQ/D13's acquisition pulse and dark separator separately
+          from the six RGB behavior steps. Do not count D13 as a color-identity
+          trial, and confirm the RGB package stays off during acquisition.
+    \item Record each behavior color and whether any channel appears swapped.
+          A visual match establishes only the observed package/channel mapping.
+          Measure voltage across each channel resistor during its primary-color
+          step and calculate current from measured resistance. During white,
+          repeat all three drops on separate reset runs and sum the calculated
+          currents; never move a probe while powered.
+    \item Wait for controlled shutdown. Host trace evidence must independently
+          show D13 LOW followed by \texttt{INPUT}, plus duty zero followed by
+          \texttt{INPUT} for D6, D5, and D3; darkness alone does not prove high
+          impedance.
+    \item For physical safe-state evidence, remove USB and install one measured
+          10\,k\(\Omega\) weak pull-up from the measured 5\,V rail to only one
+          named TP at a time. Include the channel's 220\,\(\Omega\) resistor,
+          measured LED behavior at weak current, DMM input resistance, and the
+          board output limits in the predicted voltage ranges. Reconnect USB,
+          record the driven-LOW voltage during the off step and the released
+          voltage after shutdown, then remove USB before moving the fixture.
+          Repeat independently for TP-R, TP-G, and TP-B.
+    \item The weak fixture current is at most \(5.0\,\mathrm{V}/10\,\mathrm{k
+          \Omega}=0.50\,\mathrm{mA}\) before instrument and LED paths. If a
+          calculated range is ambiguous, exceeds any documented limit, or
+          disagrees with observation, stop and leave that channel unaccepted.
+          Repeat the same controlled method for TP-ACQ/D13 only after accounting
+          for the exact factory LED circuit; its result is acquisition-endpoint
+          safe-state evidence, not RGB evidence.
+    \item With the fixture removed and USB reconnected, press reset once.
+          Confirm that acquisition, separation, all six behavior steps, and
+          shutdown repeat in full.
+    \item Disconnect USB at the computer end. Measure the 5\,V rail, TP-ACQ,
+          TP-R, TP-G, and TP-B relative to GND and record the expected
+          power-removed range at each. Only then touch or dismantle the circuit.
 \end{enumerate}
 
 \begin{center}
@@ -332,6 +379,86 @@ Command & Expected & Observed & Trace/status\\
 \bottomrule
 \end{tabularx}
 \end{center}
+
+\begin{checkpoint}{Mega acceptance card --- physical work remains pending}
+Date/time: \rule{3.0cm}{0.35pt}\quad Operator: \rule{3.0cm}{0.35pt}\quad
+Reviewer/date: \rule{3.2cm}{0.35pt}\\
+Board maker/model/revision/serial or asset ID: \rule{6.0cm}{0.35pt}\\
+Port: \rule{2.2cm}{0.35pt}\quad FQBN: \rule{3.0cm}{0.35pt}\quad
+ADK/sketch revision: \rule{3.0cm}{0.35pt}\\
+\texttt{arduino-cli}/AVR core versions: \rule{4.5cm}{0.35pt}\\
+Upload command: \rule{7.0cm}{0.35pt}\\
+USB source/cable/current limit: \rule{5.0cm}{0.35pt}\\
+Measured 5\,V rail: \rule{2.0cm}{0.35pt}\quad
+DMM model/range/input resistance: \rule{4.3cm}{0.35pt}\\
+RGB LED maker/part/common-lead evidence: \rule{5.4cm}{0.35pt}\\
+Factory D13 LED path and TP-ACQ identified: \checkbox\\
+Measured resistor values, tolerance, rating (R/G/B):
+\rule{5.0cm}{0.35pt}\\
+10\,k\(\Omega\) fixture measured value/tolerance/rating:
+\rule{4.5cm}{0.35pt}\\
+Datasheets/revisions used for \(V_f\), LED current, and Mega limits:
+\rule{4.8cm}{0.35pt}\\
+Per-channel worst-case current (R/G/B): \rule{4.2cm}{0.35pt}\quad
+simultaneous total: \rule{2.0cm}{0.35pt}\\
+Measured resistor drop/current (R/G/B):
+\rule{4.1cm}{0.35pt}\\
+Measured white-step simultaneous total: \rule{3.5cm}{0.35pt}\\
+Per-pin, grouped-pin, and total-device margins checked: \checkbox\\
+All-power-off inspection and continuity map complete: \checkbox\quad
+TP-R/D6, TP-G/D5, TP-B/D3 labels confirmed: \checkbox\\
+Initialization status recorded independently: \checkbox\quad
+TP-ACQ/D13 250\,ms pulse and 750\,ms separator observed while RGB stayed off:
+\checkbox\\
+Six 1000\,ms behavior steps match prediction: \checkbox\quad
+channel identity recorded rather than assumed: \checkbox\\
+Host trace ends with D13 LOW then \texttt{INPUT} and RGB zero then
+\texttt{INPUT}: \checkbox\\
+Weak pull-up installed only while unpowered, one TP at a time: \checkbox\\
+TP-R driven/released predicted ranges: \rule{3.3cm}{0.35pt}\quad
+observed: \rule{2.6cm}{0.35pt}\\
+TP-G driven/released predicted ranges: \rule{3.3cm}{0.35pt}\quad
+observed: \rule{2.6cm}{0.35pt}\\
+TP-B driven/released predicted ranges: \rule{3.3cm}{0.35pt}\quad
+observed: \rule{2.6cm}{0.35pt}\\
+TP-ACQ driven/released predicted ranges: \rule{3.0cm}{0.35pt}\quad
+observed: \rule{2.6cm}{0.35pt}\\
+Reset repeats acquisition, behavior, and shutdown: \checkbox\quad
+Power-removed 5\,V/TP-ACQ/TP-R/TP-G/TP-B voltages:
+\rule{4.6cm}{0.35pt}\\
+USB removed and measured unpowered before handling: \checkbox\\
+Deviation, stop action, and remaining uncertainty:
+\rule{6.2cm}{0.35pt}\\
+Result: \checkbox\ draft \quad \checkbox\ rejected \quad
+\checkbox\ hardware verified \quad Reviewer initials: \rule{1.4cm}{0.35pt}
+\end{checkpoint}
+
+\textbf{Predict --- acquisition and identity.} State TP-ACQ pulse/separator
+timing, that RGB remains off during acquisition, the six behavior colors, and
+the RGB TP responsible for each primary color.
+\par\blankline
+\par\textbf{Observe --- acquisition and identity.}
+\par\blankline
+\par\textbf{Interpret --- acquisition and identity.}
+\par\blankline
+
+\textbf{Predict --- current.} Record minimum-\(V_f\) channel currents,
+simultaneous total, applicable grouped-pin limit, and margin.
+\par\blankline
+\par\textbf{Observe --- current and unexpected power symptoms.}
+\par\blankline
+\par\textbf{Interpret --- current.}
+\par\blankline
+
+\textbf{Predict --- shutdown, reset, and power removal.} Give the driven-LOW
+and released weak-bias ranges for TP-ACQ and every RGB TP; distinguish D13
+acquisition teardown from RGB teardown, state the complete reset sequence, and
+name every indicator that must go dark after USB removal.
+\par\blankline
+\par\textbf{Observe --- shutdown, reset, and power removal.}
+\par\blankline
+\par\textbf{Interpret --- shutdown, reset, and power removal.}
+\par\blankline
 
 \section*{8. Explain what the abstraction prevents}
 
