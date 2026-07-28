@@ -107,6 +107,11 @@ doc/lessons/032.pdf: docs/lessons/032/main.tex \
 doc/lessons/033.pdf: docs/lessons/033/main.tex \
 		docs/lessons/assets/033-console-orientation-pencil.png \
 		docs/lessons/assets/033-evidence-chain-pencil.png
+doc/lessons/034.pdf: docs/lessons/034/main.tex \
+		docs/lessons/assets/034-magnetic-observation-pencil.svg \
+		docs/lessons/assets/034-magnetic-observation-pencil.png \
+		docs/lessons/assets/034-magnetic-transition-pencil.svg \
+		docs/lessons/assets/034-magnetic-transition-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons
