@@ -1,8 +1,8 @@
 schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_bytes	static_ram_bytes	static_ram_budget_bytes
 1	1	Lesson001DigitalOutput	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	2378	8192	56	384
 1	2	Lesson002DigitalInput	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	2794	8192	66	384
-1	1	Lesson003ReactionTimer	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	4342	12288	170	512
-1	2	Lesson004PwmRgb	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	3942	12288	156	512
+1	1	Lesson003ReactionTimer	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	4470	12288	155	512
+1	2	Lesson004PwmRgb	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	4200	12288	138	512
 1	1	Lesson005PiezoSounder	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	3528	12288	100	512
 1	1	Lesson006Simon	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	10126	20480	487	1024
 1	1	Lesson007AnalogInput	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	3806	12288	107	512
