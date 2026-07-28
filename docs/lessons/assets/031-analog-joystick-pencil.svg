@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820"
+     viewBox="0 0 1400 820" role="img"
+     aria-labelledby="title description">
+  <title id="title">Lesson 031 analog joystick orientation</title>
+  <desc id="description">An inspected joystick module connects its X signal
+  to Mega A0, Y signal to A1, active-low select switch to D22, and its verified
+  supply and ground terminals to 5 V and ground. TP-X and TP-Y mark the analog
+  signals. A common-cathode RGB LED connects through three separate one
+  kiloohm resistors to D5, D6, and D7.</desc>
+  <rect width="1400" height="820" fill="#fff"/>
+  <g fill="none" stroke="#222" stroke-width="4" stroke-linecap="round"
+     stroke-linejoin="round">
+    <rect x="60" y="120" width="390" height="560" rx="20"/>
+    <path d="M60 190H18M18 190V245"/>
+    <rect x="18" y="245" width="42" height="28" rx="5"/>
+
+    <rect x="560" y="65" width="700" height="330" rx="22"/>
+    <circle cx="910" cy="205" r="92"/>
+    <circle cx="910" cy="205" r="28"/>
+    <path d="M910 177V105M882 205H790M938 205H1030M910 233V305"/>
+    <path d="M560 130H500V220H450M560 180H520V285H450"/>
+    <path d="M560 230H540V350H450M560 280H525V415H450"/>
+    <path d="M560 330H510V480H450"/>
+    <circle cx="500" cy="220" r="10"/>
+    <circle cx="520" cy="285" r="10"/>
+
+    <rect x="560" y="470" width="700" height="220" rx="22"/>
+    <circle cx="900" cy="570" r="62"/>
+    <circle cx="900" cy="570" r="40"/>
+    <circle cx="900" cy="570" r="16"/>
+    <path d="M560 510H500V545H450M560 565H505V590H450"/>
+    <path d="M560 620H520V635H450"/>
+    <path d="M760 510h100M760 565h100M760 620h100"/>
+    <path d="M810 490v40M810 545v40M810 600v40"/>
+
+    <path d="M170 740H1200"/>
+    <path d="M420 725l24 15-24 15M710 725l24 15-24 15M1000 725l24 15-24 15"/>
+  </g>
+</svg>
