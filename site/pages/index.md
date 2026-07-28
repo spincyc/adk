@@ -14,7 +14,10 @@ a resource-owning library and an evidence-centered course for the Arduino Mega
 > their canonical examples compile for the Mega 2560. Physical acceptance
 > remains open until each lesson has a recorded bench result.
 > [Lesson 030](lessons/030.md) is the current published capstone. Lesson 031 is
-> the next queued component; lessons 031–081 remain the retained kit expansion.
+> the next queued component. Its joystick and encoder families are in the
+> [authorized Elegoo set](docs/inventory/AUTHORIZED_ELEGOO_SET.md), while
+> exact-revision and bench evidence remain open. Lessons 031–081 remain the
+> retained kit expansion.
 
 ## One method, three ways in
 

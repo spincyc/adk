@@ -11,7 +11,9 @@ use the first-class RAII interfaces.
 Lessons 001--030 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
 bench cards remain open. Lesson 031 is the next queued implementation
-boundary. The
+boundary. Its joystick and encoder families are in the
+[authorized Elegoo set](inventory/AUTHORIZED_ELEGOO_SET.md); exact electrical
+revision and bench evidence remain open. The
 [work queue](WORK_QUEUE.md) records later
 expansion, research, physical, and publication work.
 
@@ -138,7 +140,7 @@ supplies the shortest planned path through the library.
 | 051 | Project-bearing | Tabletop parts carousel | Identity, confirmation, homing, and inert gate intent compose safely |
 | 052 | Component | Captured IR pulse trains | Known, repeated, unknown, and malformed receive evidence remain distinct |
 | 053 | Component | Known-code IR transmission | Only documented learner-created codes use a bounded, cancellable emitter |
-| 054 | Project-bearing | IR command translator | Adjacent owned transmitter and receiver fixtures replay known commands |
+| 054 | Project-bearing | IR command translator | Adjacent, exactly qualified transmitter and receiver fixtures replay known harmless commands |
 | 055 | Component | Threshold-module descriptors | Identified low-voltage comparator modules share one explicit electrical descriptor |
 | 056 | Component | Characterization runs | Supplied sweeps expose threshold, hysteresis, chatter, and disagreement |
 | 057 | Project-bearing | Module characterization bench | One identified analog/comparator specimen produces a stable acceptance record |
@@ -151,18 +153,18 @@ supplies the shortest planned path through the library.
 | 064 | Component | Inertial record normalization | Device identity, range, calibration version, data-ready, and faults survive normalization |
 | 065 | Component | Inertial source qualification | Explicit configuration qualifies one source without hidden voting or failover |
 | 066 | Project-bearing | Interchangeable motion recorder | Revision-specific traces normalize and present through earlier endpoints |
-| 067 | Component | Owned single-wire transactions | Reset, presence, slots, pull-up policy, timeout, rollback, and DS18B20 identity are explicit |
+| 067 | Component | Single-wire transactions | Reset, presence, slots, pull-up policy, timeout, rollback, and DS18B20 identity are explicit |
 | 068 | Component | Qualified thermal probe sets | Fixed-capacity identities retain conversion, CRC, stale, and disappearance state |
 | 069 | Project-bearing | Thermal gradient mapper | Safe tabletop probe observations produce stable displays and records |
 | 070 | Component | Nonblocking multiplexed digits | Supplied-time digit frames expose polarity, blanking, overflow, and refresh loss |
 | 071 | Component | MAX7219 matrix presentation | Owned SPI configuration and frames fail blank without hiding transport faults |
 | 072 | Project-bearing | Dual-display timing desk | Multiplexed digits and matrix progress present one stopwatch snapshot |
-| 073 | Component | Owned three-wire clock observations | DS1302 transactions retain direction, protection, oscillator, and calendar validity |
-| 074 | Component | Pressure and external analog conversion | Identified BMP180 and PCF8591 observations retain raw and compensated evidence |
-| 075 | Project-bearing | Pressure and analog station | Clocked pressure and controlled analog records reproduce trend decisions |
-| 076 | Component | Identified color observations | One inventoried pulse or register mechanism produces explicit raw channels |
-| 077 | Component | Calibrated color classification | Fixed dark/white calibration produces bounded labels and confidence |
-| 078 | Project-bearing | Color sorting trainer | Paper swatches produce confirmed, replayable pointer intent and confusion records |
+| 073 | Component | Authorized-family replacement pending | Retain this number; DS1302 is not in the cited Elegoo union and must be replaced before activation |
+| 074 | Component | Authorized-family replacement pending | Retain this number; BMP180 and PCF8591 are not in the cited Elegoo union and must be replaced before activation |
+| 075 | Project-bearing | Authorized-family project pending | Compose the replacements selected for 073–074 without adding an unlisted specimen |
+| 076 | Component | Authorized-family replacement pending | Retain this number; a color sensor is not in the cited Elegoo union and must be replaced before activation |
+| 077 | Component | Authorized-family replacement pending | Build on the authorized replacement selected for 076 |
+| 078 | Project-bearing | Authorized-family project pending | Compose the replacements selected for 076–077 without adding an unlisted specimen |
 | 079 | Component | Bounded low-side load driver | Identified transistor intent, current limits, flyback, and all-off rollback are explicit |
 | 080 | Component | Small indicator-module semantics | Identified low-energy indicators retain polarity, autonomy, and safe state |
 | 081 | Project-bearing | Component qualification bench | One identified inert specimen passes review, bounded stimulus, and stable recording |
@@ -226,13 +228,13 @@ the external-power boundary introduced in `017`.
 | Fault injection and cue scheduling | 028--029 | 030 | Capstone evidence |
 | Joystick and encoder input | 031--032 | 033 | 048, 060, 063 |
 | Contact, acoustic, optical, and environmental observations | 034--044 | 036--045 | 057, 060 |
-| Stepper, identity, homing, and owned IR output | 047--053 | 048--054 | 060 |
+| Stepper, identity, homing, and exactly qualified IR output | 047--053 | 048--054 | 060 |
 | Descriptor, rule, and operator-panel models | 055--059 | 057--060 | 081 |
 | Revision-neutral inertial observations | 061--065 | 063--066 | Recorded comparison |
 | Single-wire thermal observations | 067--068 | 069 | Recorded mapping |
 | Multiplexed and MAX7219 displays | 070--071 | 072 | Timing presentation |
-| Three-wire clock, pressure, and external conversion | 073--074 | 075 | Acquisition records |
-| Color observation and classification | 076--077 | 078 | Inert sorting intent |
+| Authorized-family replacements | 073--074 | 075 | Pending re-scope |
+| Authorized-family replacements | 076--077 | 078 | Pending re-scope |
 | Low-side driver and indicator descriptors | 079--080 | 081 | Inert qualification |
 
 ## Circuit-native debugging thread

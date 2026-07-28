@@ -21,7 +21,9 @@ not promote work or replace this ledger.
 - Lesson 030 has an independently reviewed composition core, canonical Mega
   example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
-- Lesson 031 is the next queued implementation boundary; it is not active.
+- Lesson 031 is the next queued implementation boundary. Its component
+  families are in the [authorized Elegoo set](inventory/AUTHORIZED_ELEGOO_SET.md);
+  exact-revision electrical qualification and bench acceptance remain open.
 - The USB research track has a deterministic product-native `Cau`/`Pau`
   `ColdMove` model. It performs no USB action and makes no transparency claim.
 - The exact kit inventory template and honest planned-versus-supported coverage
@@ -52,7 +54,7 @@ qualification are not yet supported.
 | Boundary | State | Required next result |
 |---|---|---|
 | [001--030](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [031](design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md) | Queued | Calibrated analog joystick |
+| [031](design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md) | Queued; family authorized, bench open | Calibrated joystick contract with an exact-revision gate for physical wiring |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -68,9 +70,12 @@ generation-wrap, and deterministic replay coverage.
 
 ## Kit expansion
 
-Lessons 031--081 are the canonical append-only kit expansion. Exact specimens,
-module markings, voltage limits, and primary sources remain prerequisites to
-physical work; retail kit names are not electrical identities.
+Lessons 031--081 are the canonical append-only kit expansion. Their
+[listing-authorized family scope](inventory/AUTHORIZED_ELEGOO_SET.md) is the
+deduplicated union of the cited official Elegoo Mega Most Complete and
+Upgraded 37-in-1 manifests. Exact revisions, module markings, voltage limits,
+and primary sources remain prerequisites to electrical claims and powered
+work; retail kit names are not electrical identities.
 
 | Lessons | State | Block |
 |---:|---|---|
@@ -81,15 +86,15 @@ physical work; retail kit names are not electrical identities.
 | [043--045](projects/component_project_cadence.md) | Queued | Resistive probes, thermal/radiant observation, museum-case monitor |
 | [046--048](projects/component_project_cadence.md) | Queued | Touch/proximity, bounded stepper motion, kinetic sculpture |
 | [049--051](projects/component_project_cadence.md) | Queued | Local identity records, homing, inert parts carousel |
-| [052--054](projects/component_project_cadence.md) | Queued | Owned IR capture, known-code transmission, command translator |
+| [052--054](projects/component_project_cadence.md) | Queued; exact emitter gated | Known-kit IR capture, bounded listed IR-emission family, command translator |
 | [055--057](projects/component_project_cadence.md) | Queued | Threshold descriptors, characterization, module test bench |
 | [058--060](projects/component_project_cadence.md) | Queued | Constraint model, fault-aware panel, inert escape-room console |
 | [061--063](projects/component_project_cadence.md) | Queued | Revision-neutral MPU6050/QMI8658 samples, orientation presentation, balance-table instrument |
 | [064--066](projects/component_project_cadence.md) | Queued | Normalized inertial records, source qualification, motion recorder |
-| [067--069](projects/component_project_cadence.md) | Queued | Owned single-wire transport, DS18B20 probe set, thermal mapper |
+| [067--069](projects/component_project_cadence.md) | Queued | Single-wire transport, listed 18B20 temperature family, thermal mapper |
 | [070--072](projects/component_project_cadence.md) | Queued | Multiplexed digits, MAX7219 display transport, timing desk |
-| [073--075](projects/component_project_cadence.md) | Queued | DS1302 three-wire clock, BMP180/PCF8591 acquisition, pressure and analog station |
-| [076--078](projects/component_project_cadence.md) | Queued | Identified color adapter, fixed calibration, sorting trainer |
+| [073--075](projects/component_project_cadence.md) | Re-scope required | DS1302, BMP180, and PCF8591 are not in the authorized Elegoo union; retain numbers but replace subjects before activation |
+| [076--078](projects/component_project_cadence.md) | Re-scope required | Color sensor is not in the authorized Elegoo union; retain numbers but replace subjects before activation |
 | [079--081](projects/component_project_cadence.md) | Queued | Bounded low-side driver, indicator semantics, inert qualification bench |
 
 The input-first 031--033 decision supersedes older use of 032--033 for the
@@ -100,9 +105,11 @@ collision. The [kit coverage audit](design/ELEGOO_MEGA_KIT_COVERAGE_2026-07-27.m
 inputs. Coverage is not complete until every claimed module has an exact
 inventory record and the relevant block passes its gates.
 
-Lessons 031--033 have an implementation-ready design brief. Lessons 034--081
-are canonical subjects and retained work, but their cadence entries are not
-implementation-ready lesson plans. Before code begins for each three-lesson
+Lessons 031--033 have an implementation-ready design brief and authorized
+product families. Exact-revision electrical qualification and bench
+acceptance remain open. Lessons
+034--081 are canonical subjects and retained work, but their cadence entries
+are not implementation-ready lesson plans. Before code begins for each three-lesson
 arc, expand it to the same depth as 031--033: public values and interfaces,
 resource and pin budgets, deterministic fixture and failure matrices,
 narrative example flow, staged circuit-native experiments, HTML/PDF division,
@@ -114,6 +121,11 @@ physiological claims, and prototype/power construction variants still require
 separately scoped, inventory-gated planning. Lesson 057 covers only identified
 low-voltage analog/comparator characterization; it is not a catch-all claim
 for every product sold as a 37-sensor kit.
+
+The source audit found that the retained DS1302, BMP180, PCF8591, and color
+sensor subjects came from other vendor taxonomies. They are not authorized
+specimens and must not be implemented under the Elegoo-set task. Re-scoping
+keeps lesson numbers 073--078 stable.
 
 ## Physical acceptance campaign
 

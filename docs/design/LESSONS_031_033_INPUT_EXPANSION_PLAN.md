@@ -1,7 +1,11 @@
 # Lessons 031–033 input expansion plan
 
-Status: proposed delivery boundary, 2026-07-27. This plan extends the completed
-001–030 spine. It does not renumber or replace any existing lesson.
+Status: implementation planning ready, 2026-07-27. The joystick and encoder
+families are in the
+[authorized Elegoo set](../inventory/AUTHORIZED_ELEGOO_SET.md); exact-revision
+electrical qualification and bench acceptance remain open. This plan extends
+the completed 001–030 spine and does not renumber or replace an existing
+lesson.
 
 ## Decision
 
