@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="920"
+     viewBox="0 0 1600 920" role="img"
+     aria-labelledby="title description">
+  <title id="title">Lesson 034 specimen-gated observation stages</title>
+  <desc id="description">Three labeled pencil panels show an unpowered
+  specimen inspection, provisional Mega signal roles available only after
+  qualification, and three resistor-limited LED witnesses. Unknown specimens
+  never connect to the Mega.</desc>
+  <defs>
+    <filter id="pencil" x="-3%" y="-3%" width="106%" height="106%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.08"
+                    numOctaves="2" seed="34" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.4"
+                         xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4"
+            orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#303030"/>
+    </marker>
+    <style>
+      .ink { fill: none; stroke: #303030; stroke-width: 4;
+             stroke-linecap: round; stroke-linejoin: round;
+             filter: url(#pencil); }
+      .fine { fill: none; stroke: #303030; stroke-width: 3;
+              stroke-linecap: round; filter: url(#pencil); }
+      .label { fill: #202020; font-family: "Open Sans"; font-size: 27px;
+               font-weight: 700; }
+      .text { fill: #202020; font-family: "Open Sans"; font-size: 23px; }
+      .small { fill: #202020; font-family: "Open Sans"; font-size: 20px; }
+      .note { fill: #202020; font-family: "Open Sans"; font-size: 21px;
+              font-style: italic; }
+    </style>
+  </defs>
+  <rect width="1600" height="920" fill="#fff"/>
+
+  <text x="45" y="48" class="label">STAGE 1 — INSPECT, USB REMOVED</text>
+  <rect x="35" y="70" width="465" height="790" rx="24" class="ink"/>
+  <text x="65" y="120" class="text">Linear Hall family specimen</text>
+  <rect x="80" y="150" width="360" height="145" rx="18" class="ink"/>
+  <circle cx="125" cy="220" r="19" class="fine"/>
+  <path d="M175 190h205M175 220h165M175 250h185" class="fine"/>
+  <path d="M70 140l380 170M450 140L70 310" class="ink"/>
+  <text x="65" y="350" class="text">Magnetic Spring family specimen</text>
+  <rect x="80" y="380" width="360" height="145" rx="18" class="ink"/>
+  <path d="M125 420h260M125 455h210M125 490h240" class="fine"/>
+  <path d="M70 370l380 170M450 370L70 540" class="ink"/>
+  <text x="65" y="590" class="label">QUARANTINE</text>
+  <text x="65" y="630" class="small">Record exact markings and both PCB faces.</text>
+  <text x="65" y="665" class="small">Resolve pin order, supply and output type.</text>
+  <text x="65" y="700" class="small">Identify pull rail and module LED path.</text>
+  <text x="65" y="735" class="small">Retain and restrain an authorized stimulus.</text>
+  <text x="65" y="790" class="note">Unknown means unpowered and disconnected.</text>
+
+  <path d="M515 455h75" class="ink" marker-end="url(#arrow)"/>
+  <text x="520" y="420" class="small">only after</text>
+  <text x="520" y="445" class="small">qualification</text>
+
+  <text x="605" y="48" class="label">STAGE 2 — PROVISIONAL SIGNAL ROLES</text>
+  <rect x="595" y="70" width="465" height="790" rx="24" class="ink"/>
+  <text x="625" y="120" class="label">MEGA 2560</text>
+  <rect x="630" y="145" width="395" height="570" rx="22" class="ink"/>
+  <text x="665" y="200" class="text">A0 / D54</text>
+  <circle cx="965" cy="192" r="15" class="fine"/>
+  <path d="M760 192h188" class="fine"/>
+  <text x="665" y="235" class="small">TP-H — qualified analog raw output</text>
+  <text x="665" y="315" class="text">D22</text>
+  <circle cx="965" cy="307" r="15" class="fine"/>
+  <path d="M725 307h223" class="fine"/>
+  <text x="665" y="350" class="small">TP-R — qualified contact raw level</text>
+  <path d="M665 405h320M665 435h280" class="fine"/>
+  <text x="665" y="485" class="text">D30 — qualified-range witness</text>
+  <text x="665" y="530" class="text">D31 — contact-state witness</text>
+  <text x="665" y="575" class="text">D32 — ready/fault witness</text>
+  <text x="665" y="640" class="note">Test points retain raw evidence.</text>
+  <text x="625" y="765" class="label">NOT A SCHEMATIC</text>
+  <text x="625" y="805" class="small">Use only the later exact-revision schematic.</text>
+
+  <path d="M1075 455h75" class="ink" marker-end="url(#arrow)"/>
+  <text x="1080" y="420" class="small">interpret</text>
+  <text x="1080" y="445" class="small">separately</text>
+
+  <text x="1160" y="48" class="label">STAGE 3 — VISIBLE EVIDENCE</text>
+  <rect x="1150" y="70" width="415" height="790" rx="24" class="ink"/>
+  <text x="1180" y="125" class="small">Each path uses its own 1 kΩ resistor.</text>
+  <path d="M1200 210h55l15-18 25 36 25-36 25 36 25-18h45"
+        class="ink"/>
+  <circle cx="1450" cy="210" r="35" class="ink"/>
+  <path d="M1430 190l40 40M1470 190l-40 40" class="fine"/>
+  <text x="1190" y="275" class="text">D30  RANGE</text>
+  <path d="M1200 380h55l15-18 25 36 25-36 25 36 25-18h45"
+        class="ink"/>
+  <circle cx="1450" cy="380" r="35" class="ink"/>
+  <path d="M1430 360l40 40M1470 360l-40 40" class="fine"/>
+  <text x="1190" y="445" class="text">D31  CONTACT</text>
+  <path d="M1200 550h55l15-18 25 36 25-36 25 36 25-18h45"
+        class="ink"/>
+  <circle cx="1450" cy="550" r="35" class="ink"/>
+  <path d="M1430 530l40 40M1470 530l-40 40" class="fine"/>
+  <text x="1190" y="615" class="text">D32  READY / FAULT</text>
+  <text x="1180" y="690" class="small">LEDs show interpreted state.</text>
+  <text x="1180" y="730" class="small">They do not replace TP-H or TP-R.</text>
+  <text x="1180" y="790" class="note">Dark does not prove pin release.</text>
+</svg>

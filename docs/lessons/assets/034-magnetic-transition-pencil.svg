@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="700"
+     viewBox="0 0 1600 700" role="img"
+     aria-labelledby="title description">
+  <title id="title">Lesson 034 dwell and polarity transition sequence</title>
+  <desc id="description">A labeled pencil timing plate shows raw samples
+  entering a candidate band, continuous dwell producing a stable Negative
+  observation, a required Neutral dwell and deactivation, then a separate
+  Positive dwell and activation.</desc>
+  <defs>
+    <filter id="pencil" x="-3%" y="-5%" width="106%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.014 0.08"
+                    numOctaves="2" seed="35" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.2"
+                         xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4"
+            orient="auto"><path d="M0,0 L10,4 L0,8 Z" fill="#303030"/></marker>
+    <style>
+      .ink { fill: none; stroke: #303030; stroke-width: 4;
+             stroke-linecap: round; stroke-linejoin: round;
+             filter: url(#pencil); }
+      .dash { fill: none; stroke: #555; stroke-width: 3;
+              stroke-dasharray: 12 10; filter: url(#pencil); }
+      .label { fill: #202020; font-family: "Open Sans"; font-size: 27px;
+               font-weight: 700; }
+      .text { fill: #202020; font-family: "Open Sans"; font-size: 22px; }
+      .small { fill: #202020; font-family: "Open Sans"; font-size: 19px; }
+    </style>
+  </defs>
+  <rect width="1600" height="700" fill="#fff"/>
+  <text x="55" y="48" class="label">ONE SAMPLE PER UPDATE — CONTINUOUS DWELL BEFORE EACH CHANGE</text>
+
+  <path d="M135 610H1530" class="ink" marker-end="url(#arrow)"/>
+  <text x="1480" y="655" class="text">time</text>
+  <path d="M135 100V610" class="ink"/>
+  <text x="35" y="125" class="text">raw</text>
+
+  <path d="M135 185H1530M135 285H1530M135 425H1530M135 525H1530"
+        class="dash"/>
+  <text x="20" y="192" class="small">+ activate</text>
+  <text x="20" y="292" class="small">+ release</text>
+  <text x="20" y="432" class="small">− release</text>
+  <text x="20" y="532" class="small">− activate</text>
+
+  <path d="M150 360L250 520L350 540L450 555L550 500L650 390
+           L750 350L850 315L950 270L1050 210L1150 170L1280 145L1450 135"
+        class="ink"/>
+  <circle cx="250" cy="520" r="10" class="ink"/>
+  <circle cx="450" cy="555" r="10" class="ink"/>
+  <circle cx="750" cy="350" r="10" class="ink"/>
+  <circle cx="950" cy="270" r="10" class="ink"/>
+  <circle cx="1150" cy="170" r="10" class="ink"/>
+
+  <path d="M250 575v-45M450 575v-20M750 575V350M950 575V270M1150 575V170"
+        class="dash"/>
+  <path d="M250 575H450M750 575H950M950 575H1150" class="ink"/>
+  <text x="275" y="600" class="small">Negative dwell</text>
+  <text x="770" y="600" class="small">Neutral dwell</text>
+  <text x="975" y="600" class="small">Positive dwell</text>
+
+  <rect x="250" y="75" width="200" height="65" rx="15" class="ink"/>
+  <text x="260" y="115" class="small">candidate Negative</text>
+  <rect x="450" y="75" width="230" height="65" rx="15" class="ink"/>
+  <text x="472" y="115" class="text">stable Negative</text>
+  <rect x="750" y="75" width="200" height="65" rx="15" class="ink"/>
+  <text x="785" y="115" class="text">Neutral</text>
+  <rect x="950" y="75" width="200" height="65" rx="15" class="ink"/>
+  <text x="960" y="115" class="small">candidate Positive</text>
+  <rect x="1150" y="75" width="260" height="65" rx="15" class="ink"/>
+  <text x="1175" y="115" class="text">stable Positive</text>
+
+  <text x="470" y="165" class="small">activation event</text>
+  <path d="M455 145l35 25" class="ink"/>
+  <text x="765" y="245" class="small">deactivation event</text>
+  <path d="M755 255l35-110" class="ink"/>
+  <text x="1170" y="245" class="small">new activation event</text>
+  <path d="M1160 255l35-110" class="ink"/>
+
+  <text x="555" y="665" class="text">A direct Negative-to-Positive trip still requires two distinct dwells.</text>
+</svg>
