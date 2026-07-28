@@ -7,9 +7,9 @@ publication inventories have been reconciled against this record. Their
 interfaces remain unchanged and are not dependencies of the new optical
 types. The Lesson 040 E0 copied-value policies, deterministic fixtures, and
 stress passes described here are authorized for implementation. Measured AVR
-stress results block Lesson 041 and 042 API fixation until their owned state is
-redesigned and every resulting type and object measures no more than 128
-bytes.
+stress results required Lesson 041 and 042 redesign. The compact Lesson 042 E0
+API has now passed its per-object size and review gate; aggregate linked
+example, stack, powered-composition, and publication gates remain open.
 Powered adapters, wiring tables, formal schematics, E1 examples, and electrical
 support claims remain gated on exact-specimen qualification and measured
 composition evidence.
@@ -674,11 +674,13 @@ qualified low-voltage sensors/modules whose PX-to-P1/P2 electrical gates have
 closed, resistor-limited indicators, an existing qualified display, and a
 hand-moved card or unpowered model. There is no motion or gate actuator.
 
-Architecture status: **API fixation blocked by measured SRAM buckling.** The
-provisional AVR measurements are 653 bytes for `CourseMarshal` and 432 bytes
-for `CourseMarshalPresenter`, each far above the 128-byte largest-object
-ceiling. The declarations below are semantic design material, not a final
-storage layout or public API.
+Architecture status: **bounded E0 API size and review gate passed after
+remediation.** The rejected monolithic AVR layout measured 653 bytes for
+`CourseMarshal` and 432 bytes for `CourseMarshalPresenter`. The final compact
+API below splits evidence into six caller-owned storage objects; every public
+type and policy object now measures no more than the 128-byte ceiling.
+Aggregate linked-example SRAM, stack, powered composition, and publication
+evidence remain open. This result is not a promotion claim.
 
 Provisional files:
 
@@ -721,6 +723,7 @@ struct CourseMarshalConfig
 {
     CheckpointBinding orderedCheckpoints[4];
     uint8_t           checkpointCount;
+    uint8_t           buttonSourceId;
     Duration     checkpointEventMaximumAge;
     Duration     checkpointSimultaneityWindow;
     Duration     finishAgreementWindow;
@@ -796,9 +799,11 @@ struct CourseStartPolicy
 
 struct RecordedCheckpoint
 {
+    TimePoint         observedAt;
+    uint16_t          calibrationRevision;
     CheckpointId      checkpointId;
     OpticalSourceKind sourceKind;
-    OpticalProvenance provenance;
+    uint8_t           sourceId;
     OpticalQuality    quality;
     Status            status;
 };
@@ -814,27 +819,14 @@ enum struct RunTriggerKind : uint8_t
     PresenceFault
 };
 
-struct RunTriggerEvidence
+struct CourseTriggerRecord
 {
-    RunTriggerKind        kind;
-    TimePoint             observedAt;
-    uint8_t               checkpointCount;
-    RecordedCheckpoint    checkpoints[4];
-    OpticalPresenceState  finishGuard;
-    RangePresenceState    range;
-    CourseStartEvent      start;
-    PresenceSnapshot      presence;
-    PresenceQuality       presenceQuality;
-    Status                status;
-};
-
-struct CourseMarshalInput
-{
-    TimePoint             observedAt;
-    CourseStartEvent start;
-    PresenceSnapshot      presence;
-    uint8_t               eventCount;
-    CheckpointEvent       events[4];
+    RunTriggerKind     kind;
+    TimePoint          observedAt;
+    uint8_t            checkpointCount;
+    RecordedCheckpoint checkpoints[4];
+    CourseStartEvent   start;
+    Status             status;
 };
 
 struct CourseRunRecord
@@ -845,13 +837,52 @@ struct CourseRunRecord
     Duration       elapsed;
     uint8_t            acceptedCheckpointCount;
     RecordedCheckpoint acceptedCheckpoints[4];
-    RunTriggerEvidence trigger;
-    CourseStartEvent      start;
-    OpticalPresenceState finishGuard;
-    RangePresenceState   finishRange;
+    CourseStartEvent   start;
     RunDisposition       disposition;
     bool                 sequenceExhausted;
     Status               status;
+};
+
+struct CourseRunStorage
+{
+    CourseRunRecord record;
+};
+
+struct CourseTriggerStorage
+{
+    CourseTriggerRecord trigger;
+};
+
+struct CourseTriggerPresenceStorage
+{
+    PresenceSnapshot presence;
+};
+
+struct CourseReplayFrameStorage
+{
+    TimePoint        observedAt;
+    CourseStartEvent start;
+    uint8_t          eventCount;
+    bool             present;
+};
+
+struct CourseReplayPresenceStorage
+{
+    PresenceSnapshot presence;
+};
+
+struct CourseReplayEventStorage
+{
+    CheckpointEvent events[4];
+};
+
+struct CourseMarshalInputView
+{
+    TimePoint               observedAt;
+    CourseStartEvent        start;
+    const PresenceSnapshot* presence;
+    const CheckpointEvent*  events;
+    uint8_t                 eventCount;
 };
 
 enum struct CoursePresentationPhase : uint8_t
@@ -882,26 +913,37 @@ struct CoursePresentationIntent
 
 struct CourseMarshalSnapshot
 {
-    MarshalPhase    phase;
-    uint8_t         expectedSlot;
-    CheckpointId    expectedCheckpointId;
-    uint8_t         acceptedCheckpointCount;
-    Duration        elapsed;
-    bool            hasRecord;
-    CourseRunRecord record;
-    Status          status;
+    MarshalPhase   phase;
+    uint8_t        checkpointCount;
+    uint8_t        expectedSlot;
+    CheckpointId   expectedCheckpointId;
+    uint8_t        acceptedCheckpointCount;
+    Duration       elapsed;
+    bool           hasRecord;
+    uint32_t       recordSequence;
+    RunDisposition disposition;
+    Status         status;
 };
 
 struct CourseMarshal
 {
-    explicit CourseMarshal (const CourseMarshalConfig& config) noexcept;
+    CourseMarshal (const CourseMarshalConfig& config,
+                   CourseRunStorage& runStorage,
+                   CourseTriggerStorage& triggerStorage,
+                   CourseTriggerPresenceStorage& triggerPresenceStorage,
+                   CourseReplayFrameStorage& replayFrameStorage,
+                   CourseReplayPresenceStorage& replayPresenceStorage,
+                   CourseReplayEventStorage& replayEventStorage) noexcept;
 
-    Status                initialize () noexcept;
-    void                  reset      () noexcept;
-    void                  acknowledgeRecord() noexcept;
-    Status                update     (const CourseMarshalInput& input) noexcept;
-    CourseMarshalSnapshot snapshot   () const noexcept;
-    bool                  initialized() const noexcept;
+    Status                   initialize          () noexcept;
+    void                     reset               () noexcept;
+    void                     acknowledgeRecord   () noexcept;
+    Status                   update              (const CourseMarshalInputView& input) noexcept;
+    CourseMarshalSnapshot    snapshot            () const noexcept;
+    const CourseRunRecord&   record              () const noexcept;
+    const CourseTriggerRecord& trigger           () const noexcept;
+    const PresenceSnapshot&  triggerPresence     () const noexcept;
+    bool                     initialized         () const noexcept;
 };
 
 struct CourseMarshalPresenter
@@ -919,19 +961,50 @@ struct CourseMarshalPresenter
 ```
 
 The bounded Lesson 042 remediation replaces the monolithic value graph with
-small, read-only input views and explicit caller-owned fixed storage for
-accepted evidence and replay records. Every view and storage handle needs a
-documented lifetime; no engine may retain a view to a temporary or conceal
-allocation. The trigger becomes a compact tagged payload that stores only the
-selected cause, while inactive evidence is absent rather than duplicated
-inside the engine. `CourseMarshalSnapshot` becomes a small operational summary,
-and the presenter consumes that summary to produce a small presentation frame
-instead of retaining complete run evidence. The caller-owned evidence and
-replay buffers remain bounded, separately measured, and included in aggregate
-SRAM accounting. Exact names, field partitions, capacities, and ownership
-signatures remain open until AVR measurement proves that every public type and
-object, including each view, engine, storage object, summary, and presenter
-frame, is at or below 128 bytes.
+the six exact caller-owned objects `CourseRunStorage`,
+`CourseTriggerStorage`, `CourseTriggerPresenceStorage`,
+`CourseReplayFrameStorage`, `CourseReplayPresenceStorage`, and
+`CourseReplayEventStorage`. A marshal retains references to all six for its
+complete lifetime; none may be moved or destroyed first. By contrast,
+`CourseMarshalInputView` pointers need remain valid only for `update()`, and
+the marshal never retains them.
+
+Each update validates the complete input view before mutation, then atomically
+freezes the terminal record, compact tagged trigger projection, and selected
+presence projection into their separate storages. `CourseTriggerRecord`
+retains only checkpoint/start/timeout projection fields. Finish-guard, range,
+and complete presence-fault projections live in
+`CourseTriggerPresenceStorage`; fields not selected by the trigger kind remain
+canonical zero. Replay storage preserves a lossless fieldwise identity of the
+frame, complete presence snapshot, and all supplied checkpoint events.
+Equality compares every public field and never padding bytes. Thus same-time
+idempotence and changed-frame faults do not depend on input pointer identity or
+lossy hashing.
+
+`CourseMarshalSnapshot` is a small operational summary and includes
+`checkpointCount`, so presenter mask/slot validation does not need a retained
+configuration or terminal record. The presenter consumes that summary and
+produces a small presentation frame rather than retaining complete run
+evidence. Caller storage is fixed and allocation-free but is still real SRAM:
+its subtotal and the full policy subtotal remain part of aggregate linked
+example accounting.
+
+| Final type/object | AVR bytes |
+|---|---:|
+| `CourseMarshalConfig` | 38 |
+| `CourseStartInput` / `CourseStartEvent` / `CourseStartPolicy` | 27 / 29 / 59 |
+| `CheckpointEvent` / `RecordedCheckpoint` | 11 / 11 |
+| `CourseTriggerRecord` / `CourseRunRecord` | 80 / 93 |
+| `CourseRunStorage` / `CourseTriggerStorage` / `CourseTriggerPresenceStorage` | 93 / 80 / 102 |
+| `CourseReplayFrameStorage` / `CourseReplayPresenceStorage` / `CourseReplayEventStorage` | 35 / 102 / 44 |
+| `CourseMarshalInputView` / `CourseMarshalSnapshot` / `CourseMarshal` | 38 / 16 / 69 |
+| `CoursePresentationIntent` / `CourseMarshalPresenter` | 21 / 55 |
+
+The six caller-owned storages total 456 bytes. Adding the 69-byte marshal gives
+525 bytes; adding the 59-byte start policy and 55-byte presenter gives the
+639-byte E0 course-policy subtotal. These subtotals exclude the linked example,
+stack, source policies, endpoints, diagnostics, and display, which remain
+mandatory open aggregate gates.
 
 `CourseStartPolicy` is the sole start-authority seam. Its composition owner
 updates the existing debounced `Button`, constructs one `CourseStartInput` in
@@ -948,7 +1021,7 @@ canonical-zero remaining fields with Ok status. A present event always has
 `ExplicitButtonWithPirEligibility`, the configured button source ID, the
 policy frame timestamp, and the complete copied PIR state. It lasts for one
 snapshot and clears on the next later update. The marshal accepts it only in a
-`CourseMarshalInput` with the same `observedAt`; it is never queued or accepted
+`CourseMarshalInputView` with the same `observedAt`; it is never queued or accepted
 as an aged authorization. It is deduplicated by source, timestamp, copied PIR
 evidence, and status. Identical same-time inputs are idempotent; changed same-time,
 backward, or half-range-invalid inputs publish a timing fault without partial
@@ -1033,7 +1106,8 @@ subtraction; both ages must be below half-range. Their ordinary absolute
 difference is the source separation. Separation less than or equal to
 `finishAgreementWindow` agrees, and one tick beyond does not. The record
 freezes the ordered accepted checkpoint tuples, start tuple, complete
-finish-guard and range states, and one discriminated `RunTriggerEvidence`.
+finish-guard and range states, and one discriminated `CourseTriggerRecord`
+plus its selected `CourseTriggerPresenceStorage` projection.
 Its active members are fixed:
 
 | Disposition/cause | `kind` | Required active evidence |
@@ -1052,7 +1126,7 @@ Its active members are fixed:
 For colliding `EvidenceFault` causes, trigger selection follows whole-frame
 validation precedence: checkpoint structure/time/source, start
 structure/time/source, then presence sources in PIR, beam, finish-guard, range
-order. `RunTriggerEvidence` is a discriminated record, not a C++ union:
+order. `CourseTriggerRecord` is a discriminated record, not a C++ union:
 exactly the selected row is semantically active, and every other payload field
 is canonical zero. Unused accepted slots and every inactive trigger payload
 use canonical zeros. Rejected
@@ -1170,7 +1244,7 @@ existing button input as the sole start-event producer.
 | Time | Source acquisition must finish into an immutable frame before policy; bound HC-SR04 echo polling/latency, optical dwell, PIR cadence, start-event qualification, ADC settling, and one-cell display work so no source is starved |
 | Timers/interrupts | None are assumed; a specimen or display requiring one reopens the budget and stress pass |
 | Current | Direct LEDs planned below 5 mA each; module, emitter, display, per-pin, port, and aggregate USB current remain blank until exact qualification |
-| SRAM/flash/stack | The provisional `PresenceModel`/marshal/presenter layouts measured 233/653/432 bytes and failed the 128-byte largest-object ceiling. Redesign around one exact 041 evidence cache, small 042 input views and summaries, compact tagged trigger evidence, and explicit caller-owned fixed replay/evidence storage. Measure every type/object at no more than 128 bytes plus total caller storage, aggregate SRAM, stack peak, example size, and below/at/above capacity |
+| SRAM/flash/stack | The provisional `PresenceModel`/marshal/presenter layouts measured 233/653/432 bytes and failed the 128-byte largest-object ceiling. The final Lesson 042 objects now each measure at or below 128 bytes; its six caller storages total 456 bytes, storage plus marshal totals 525 bytes, and storage plus marshal/start/presenter totals 639 bytes. Aggregate linked-example SRAM, stack peak, source policies, endpoints, display, and below/at/above-capacity evidence remain open |
 | Diagnostics | Local LEDs, all-red, heartbeat, display, and optional Serial are included in pin/current/time/size budgets; fill/failure/disable cannot change primary policy |
 | Persistence | Not applicable: run state and records are intentionally volatile and no storage/RTC owner exists |
 | Motion/energy | Not applicable: no actuation path, motor, gate, load supply, or stored-energy command exists |
@@ -1186,19 +1260,20 @@ deterministic.
 
 ## Architecture stress disposition
 
-Reconciled disposition: **Lesson 040 E0 implementation authorized; Lessons
-041--042 require bounded SRAM remediation before API fixation; powered
-promotion remains gated**.
+Reconciled disposition: **Lesson 040 E0 implementation authorized; Lesson 042
+compact E0 API size/review gate passed; aggregate and powered promotion gates
+remain open**.
 
 The seven pure copied-evidence and presentation policies
 (`ReflectiveObservationPolicy`, `BeamObservationPolicy`,
 `PirObservationPolicy`, `PresenceModel`, `CourseStartPolicy`,
 `CourseMarshal`, and `CourseMarshalPresenter`) fit the intended downward
 dependency, explicit-time, fixed-storage, `Status`, and
-presentation-separation contracts semantically. Their provisional storage
-design does not fit: AVR measured `PresenceModel` at 233 bytes,
+presentation-separation contracts semantically. Their original provisional
+storage design did not fit: AVR measured `PresenceModel` at 233 bytes,
 `CourseMarshal` at 653 bytes, and `CourseMarshalPresenter` at 432 bytes,
-violating the 128-byte largest-object ceiling.
+violating the 128-byte largest-object ceiling. The compact Lesson 042 layout
+closes its per-object failure without claiming aggregate promotion.
 The local `TimedRangeEvidence` bridge addresses missing range provenance
 without changing prior consumers. Separate analog and beam policies avoid a
 false universal sensor abstraction.
@@ -1220,11 +1295,10 @@ Open E0 implementation gates:
 2. Lesson 041 must eliminate duplicate stored input/snapshot evidence and
    measure its one-cache design at no more than 128 bytes, or move evidence to
    explicit caller-owned fixed storage before its API freezes.
-3. Lesson 042 must replace full copied graphs with small input views, explicit
-   caller-owned evidence/replay storage, a compact tagged trigger, and small
-   summary/presenter values. Every type and object must measure no more than
-   128 bytes, and the caller storage plus aggregate composition SRAM and stack
-   must be recorded before its API freezes.
+3. Lesson 042 has replaced full copied graphs with the six caller-owned
+   storages, compact tagged trigger projection, input view, and small
+   summary/presenter values. Its E0 API size and review gate is passed.
+   Aggregate linked-example SRAM and stack remain open.
 4. After each redesign, prove deterministic lifecycle, status precedence,
    modular timing, replay, capacity, collision behavior, and lifetime safety.
 
@@ -1249,12 +1323,10 @@ before implementation.
 ## Reconciliation and promotion boundary
 
 The 037--039 dependency and the deliberate-start decision are complete. Lesson
-040 implementation proceeds. Lesson 041 and 042 remain at redesign and
-measurement depth: neither provisional declaration block may be treated as a
-fixed API until its bounded remediation satisfies the 128-byte ceiling and
-aggregate SRAM/lifetime gates. After Lesson 041 clears those gates, presence
-and start composition may freeze; only then may the remediated marshal and
-presenter contract freeze.
+040 implementation proceeds. Lesson 042's compact E0 API is fixed after its
+per-object size and ownership review. That does not close aggregate linked
+example SRAM, stack, source-policy, endpoint, powered-composition, or
+publication evidence.
 
 This authorization does not turn provisional pins, current estimates, retail
 family names, or synthetic traces into electrical evidence. No powered

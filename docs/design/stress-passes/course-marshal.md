@@ -2,16 +2,16 @@
 
 This record applies the
 [component design stress pass](../../templates/component-design-stress-pass.md)
-to the hardware-independent Lesson 042 `CourseMarshal` and
-`CourseMarshalPresenter` before implementation. It evaluates the maximum
-authorized tabletop composition. It does not qualify an optical module,
-button, PIR, ultrasonic ranger, display, or physical course.
+to the hardware-independent Lesson 042 `CourseStartPolicy`, `CourseMarshal`,
+and `CourseMarshalPresenter`. This checkpoint reviews the compact implemented
+E0 core and its maximum authorized tabletop composition. It does not qualify
+an optical module, button, PIR, ultrasonic ranger, display, or physical course.
 
 ## Boundary
 
 - Name and lesson/project: `CourseMarshal` and `CourseMarshalPresenter`,
   Lesson 042
-- Reviewer and date: preimplementation architecture stress review, 2026-07-28
+- Reviewer and date: compact-code architecture review, 2026-07-28
 - Public types and operations: the fixed-capacity checkpoint bindings, copied
   checkpoint and start evidence, run dispositions and immutable terminal
   record, `CourseMarshal::{initialize,reset,acknowledgeRecord,update,snapshot,
@@ -30,15 +30,15 @@ button, PIR, ultrasonic ranger, display, or physical course.
 
 | Pressure | Evidence and disposition |
 |---|---|
-| API and layering | **Natural after bounded local remediation.** The marshal consumes already-qualified semantic checkpoint events and one copied presence snapshot; it owns course order, terminal disposition, and a fixed volatile record. It does not own pins, endpoints, sampling, optical/PIR/range qualification, display transport, or rendering. The presenter consumes only one immutable marshal snapshot and emits intent. The planning draft still exposes a `ProvisionalStartSource` alternative under which PIR could start a run. Decision `3251b219-1a4a-41b7-8497-d8c6b5a72a98` closes that alternative: implementation must use an explicit qualified button request as the sole start authority, with PIR only as eligibility evidence. The provisional enum and names must be narrowed before the public header is fixed. |
-| Ownership and lifecycle | **Natural.** Both policies are inert copied-state owners, non-copyable and non-movable, with no endpoint, callback, timer, bus, heap, or external storage. Initialization validates complete configuration before mutation. Reset clears active run/presentation state but does not silently reuse a sequence identity; record acknowledgment is explicit. Sensor, button, indicator, and display adapters retain acquisition, rollback, shutdown, and electrical safe-state responsibility. The presenter cannot acknowledge, reset, start, or otherwise mutate the marshal. |
+| API and layering | **Natural after completed bounded remediation.** The marshal consumes already-qualified semantic checkpoint events and one borrowed presence snapshot; it owns course order, terminal disposition, and bounded volatile evidence. It does not own pins, endpoints, sampling, optical/PIR/range qualification, display transport, or rendering. The presenter consumes only a compact immutable marshal projection and emits intent. The implemented `CourseStartPolicy` has only `None` and `ExplicitButtonWithPirEligibility`; the rejected provisional PIR-start authority is absent. Decision `3251b219-1a4a-41b7-8497-d8c6b5a72a98` is therefore enforced by the type surface rather than left as runtime configuration. |
+| Ownership and lifecycle | **Natural and explicit.** All three policies are inert, non-copyable, and non-movable, with no endpoint, callback, timer, bus, heap, or external storage transport. The marshal retains references to six caller-owned fixed storage objects for its complete lifetime; those objects must neither move nor be destroyed first. In contrast, `CourseMarshalInputView` presence and event pointers are borrowed only for `update()` and are never retained. Initialization validates before use, reset preserves sequence identity, and record acknowledgment is explicit. Sensor, button, indicator, and display adapters retain acquisition, rollback, shutdown, and electrical safe-state responsibility. |
 | Time and ordering | **Natural if the planned rules are implemented exactly.** Every input supplies time. Whole-frame validation precedes mutation; same-time identical frames are idempotent and changed frames fault. Event age, simultaneity, finish agreement, run timeout, presenter cell cadence, heartbeat cadence, natural rollover, and the half-range exclusion are explicit. Equal-time checkpoint events sort by configured semantic slot, never array or pin order. The start request retains its own observation epoch, while PIR eligibility retains its distinct epoch and age; neither may be restamped to imply simultaneity. |
-| Errors and status | **Natural.** Existing `Status` carries malformed configuration, copied source failure, and timing failure. `RunDisposition` carries bounded domain outcomes without converting skip, reverse, duplicate, simultaneous, early finish, or timeout into transport errors. Trigger evidence identifies the winning cause under documented precedence. Presenter faults cannot reclassify course evidence or feed back into course state. Canonical absent and unused values are required so replay identity does not depend on uninitialized bytes. |
-| Resource budget | **Open promotion blocker, bounded by design.** Core storage is four checkpoint bindings, four input events, four accepted records, one copied presence snapshot, one immutable terminal record, and one presenter intent; there is no allocation or unbounded work. The authorized maximum physical composition is four intermediate optical boundaries, one reflective finish guard, PIR, HC-SR04 trigger/echo, one existing debounced button, four checkpoint LEDs, all-red/ready/heartbeat presentation, and one existing display. The final Mega map, roughly 18--20 claims, ADC channel/settling schedule, display transport, claim-registry occupancy, rollback order, flash, SRAM, stack, per-pin/port/aggregate current, and exact specimen currents must be measured before promotion. |
-| Deterministic proof | **Specified but not yet executed.** Host fixtures must cover zero, one, and four checkpoint configurations; input capacity below, at, and above four; every ordering rejection; simultaneity and finish-agreement edges; explicit request with PIR ineligible, eligible, stale, stuck, and faulted; bounce and repeated request identity; timeout and rollover; source-fault collisions; immutable record acknowledgment; sequence exhaustion; presenter phase/digit/heartbeat boundaries; reset/restart; and fieldwise golden replay. The maximum-collision fixture below is mandatory. Hardware evidence remains separate. |
-| Packaging and public surface | **Natural in the planned repository shape.** Standalone headers and out-of-line implementations can use the ordinary host, native package, Arduino archive, umbrella-header, example, and size inventories without a special source path. The public contract must remove the unresolved/PIR-authority alternative before registration. Exact adapters and renderer remain example-local compositions until separately qualified; they do not enter the pure engine API. |
+| Errors and status | **Natural.** Existing `Status` carries malformed configuration, copied source failure, and timing failure. `RunDisposition` carries bounded domain outcomes without converting skip, reverse, duplicate, simultaneous, early finish, or timeout into transport errors. Compact `CourseTriggerRecord` preserves the selected cause and checkpoint/start projection; a separate `CourseTriggerPresenceStorage` losslessly retains the complete presence projection only for finish, range, or presence causes. Presenter faults cannot reclassify course evidence or feed back into course state. Canonical absent and unused values keep fieldwise replay deterministic. |
+| Resource budget | **E0 core measured and bounded; aggregate promotion evidence remains open.** Exact AVR sizes are: `CourseStartPolicy` 59 bytes; caller storages `CourseRunStorage` 93, `CourseTriggerStorage` 80, `CourseTriggerPresenceStorage` 102, `CourseReplayFrameStorage` 35, `CourseReplayPresenceStorage` 102, and `CourseReplayEventStorage` 44 bytes, 456 bytes total; `CourseMarshalInputView` 38; `CourseMarshalSnapshot` 16; `CourseMarshal` 69; `CoursePresentationIntent` 21; and `CourseMarshalPresenter` 55. Marshal plus retained storage is 525 bytes, and start plus marshal/storage plus presenter is 639 bytes before `PresenceModel`, endpoints, renderer state, and stack. There is no allocation or unbounded work. The final Mega map, ADC schedule, display transport, flash, full SRAM/stack, claims, and electrical current remain aggregate-example gates. |
+| Deterministic proof | **Core PASS.** Strict, custom-style, sanitizer, and focused fixtures cover configurations and capacity, all order rejections, simultaneity and agreement edges, explicit-button authority with PIR eligibility/faults, same-time identity, timeout and rollover, source-fault trigger projection, acknowledgment, sequence behavior, presenter mapping/cadence/fault isolation, and lossless fieldwise replay across the split caller-owned storages. Failed preflight leaves replay storage unchanged, proving frame acceptance is atomic. The powered maximum-collision and aggregate example remain separate promotion gates. |
+| Packaging and public surface | **Natural for the E0 code checkpoint.** The standalone header and out-of-line implementation use the ordinary source shape without a special abstraction. Compact snapshots and caller-owned storage keep large evidence out of return-by-value and stack paths while preserving bounded typed access. Exact adapters, renderer, umbrella/archive registration, canonical example, and aggregate size evidence remain integration work. |
 | Example and documentation fit | **Natural.** The canonical sketch can retain acquire sensors and explicit button, configure policies, start endpoints, then observe all sources, freeze one evidence frame, decide course state, and render one bounded intent. Local checkpoint LEDs, all-red, heartbeat, and the display provide non-Serial evidence. The course layout, identity map, timing, state graph, and staged build are pencil drawings; only exact qualified conventional electrical circuits may be marked as formal schematics. The same terms must appear in code, HTML, PDF, tests, and acceptance records. |
-| Downstream effects | **Contained before promotion.** The bounded start-authority repair affects the provisional Lesson 042 plan, new header, tests, example, replay fixture, HTML/PDF, and stress re-review. It does not change `Button`, PIR qualification, `PresenceModel`, optical policies, `UltrasonicRanger`, existing displays, or Lessons 001--039. Future consumers may copy a terminal record but cannot infer occupancy, security, navigation, or persistent history from it. |
+| Downstream effects | **Contained.** The completed start-authority and compact-storage remediation affects only the unpromoted Lesson 042 header, implementation, tests, future example, replay fixture, HTML/PDF, and promotion re-review. It does not change `Button`, PIR qualification, `PresenceModel`, optical policies, `UltrasonicRanger`, existing displays, or Lessons 001--039. Future consumers receive compact snapshots or explicit record/trigger access and cannot infer occupancy, security, navigation, or persistent history. |
 
 ## Composition pressure scenario
 
@@ -61,25 +61,26 @@ restart while faults remain.
 | Composition pressure | Applicability and required evidence |
 |---|---|
 | Scheduler and time load | **Applicable.** Measure the worst source-acquisition and render iteration, including ADC channel settling, HC-SR04 polling/latency, button qualification, five optical updates, PIR, one marshal update, one presenter update, and one display cell. Replay simultaneous timestamps, one-tick edges, rollover, missed updates, and faults. No source may be starved, and presentation failure or a large elapsed jump may not cause catch-up loops. |
-| Total memory and hardware resources | **Applicable.** Enumerate all live endpoints, policies, copied frames, records, presenter state, display state, stack peak, flash, SRAM, claim entries, GPIO/analog pins, ADC reference/mode, display transport, LEDs, test points, and current. Test one and four configured checkpoints plus an attempted fifth event; measure the aggregate Mega example rather than summing isolated guesses. |
+| Total memory and hardware resources | **Applicable; E0 subtotal measured.** The exact AVR compact-core subtotal is 639 bytes: 59-byte start policy, 69-byte marshal, 456 bytes across six retained storages, and 55-byte presenter. The 38-byte borrowed input view, 16-byte snapshot, and 21-byte intent are transfer values rather than additional retained core storage, though caller stack residency must still be measured. Enumerate `PresenceModel`, all endpoints, renderer/display state, stack peak, flash, claims, GPIO/analog pins, ADC reference/mode, LEDs, test points, and current in the aggregate Mega example. |
 | Shared bus or transport | **Conditionally applicable.** The pure policies own no bus. If the selected existing display uses a bus, the example composition must name its endpoint owner, borrowing and address rules, bounded one-cell transaction, acquisition rollback, failure isolation, and restart behavior. A direct display instead requires an explicit pin and cadence budget. |
 | Persistence and recovery | **Not applicable.** Course state, sequence epoch, and terminal records are intentionally volatile; no RTC, EEPROM, removable storage, schema, commit, wear, or power-loss recovery owner exists. Shutdown/reinitialize behavior is in-object inspection, not persistence. |
 | Motion, external power, or stored energy | **Not applicable.** The project has no actuator, motor, gate drive, switched external load, launcher, or stored-energy command path. The button authorizes only starting the inert timing policy. Adapters must still de-energize indicators and release claims on partial acquisition, reset, shutdown, and destruction. |
-| Observation identity and provenance | **Applicable.** Every checkpoint retains checkpoint ID, optical kind, source ID, calibration revision, source epoch, quality, and status. Start evidence retains the explicit button event identity and the separately aged copied PIR eligibility state. Finish evidence retains reflective provenance and timed range evidence. Same-time replay compares canonical public fields; delayed evidence cannot be combined as if simultaneous. |
+| Observation identity and provenance | **Applicable; core PASS.** Every checkpoint retains checkpoint ID, optical kind, source ID, calibration revision, source epoch, quality, and status. Start evidence retains explicit-button identity and separately aged PIR eligibility. The trigger record stores the selected compact cause projection while its dedicated caller-owned presence storage preserves the complete selected presence value. Run, trigger, frame, presence, and event storages together retain a lossless fieldwise replay identity without retaining either input pointer. Delayed evidence cannot be combined as if simultaneous. |
 | Diagnostic interference | **Applicable.** Four checkpoint LEDs, ready, all-red, heartbeat, display, optional Serial, and test points belong in the same pin/current/time/memory budget. A disabled, busy, failed, or stalled renderer cannot alter checkpoint acceptance, start authority, elapsed time, terminal record, or safe endpoint shutdown. Heartbeat must expose a stalled presentation loop without becoming an input to course correctness. |
 | Failure collision and recovery | **Applicable.** Whole-frame malformed/time/source precedence selects one recorded trigger without partially accepting a checkpoint. The collision fixture combines resource rollback, PIR ineligibility, no echo, simultaneous optical events, a faulty explicit start request, and display failure. It must prove deterministic attribution, canonical inactive evidence, retained accepted prefix, renderer isolation, reset/restart with faults present, and claim reuse. |
 
-The bounded proof must exercise capacity immediately below, at, and above the
-four-event input limit, worst-case simultaneous work, failure at every
-acquisition step, shutdown and restart with the same faults, sequence
-exhaustion, and byte-stable fieldwise replay. Passing host replay cannot close
-the exact-specimen or E1 bench gates.
+The E0 core proof exercises capacity immediately below, at, and above the
+four-event input limit, simultaneous work, malformed-frame atomicity, restart,
+sequence behavior, and lossless fieldwise replay. The aggregate composition
+must still add failure at every endpoint-acquisition step, measured scheduler
+and stack pressure, renderer/display failure, and shutdown/restart with powered
+faults. Passing host replay cannot close the exact-specimen or E1 bench gates.
 
 ## Prior-decision impact
 
 - Decision `3251b219-1a4a-41b7-8497-d8c6b5a72a98`, explicit button start with
-  PIR eligibility only: **preserved**, after removing the provisional
-  PIR-start alternative before API registration.
+  PIR eligibility only: **preserved** by `CourseStartPolicy`; the provisional
+  PIR-start alternative is absent.
 - Qualified semantic evidence rather than pin or array identity:
   **preserved**.
 - Source kind, source ID, calibration revision, epoch, quality, and status
@@ -92,7 +93,14 @@ the exact-specimen or E1 bench gates.
 - Pure copied-state policy below endpoint ownership and presentation adapters:
   **preserved**.
 - Fixed memory, bounded work, no heap, no exceptions, and no hidden clocks:
-  **preserved**, with aggregate measurement still required.
+  **preserved**. The exact compact E0 retained subtotal is 639 AVR bytes;
+  aggregate example and stack measurement remain required.
+- Caller-owned bounded storage with explicit retained lifetimes, update-only
+  borrowed input pointers, and atomic replay publication: **extended** for the
+  large fixed evidence record without introducing allocation.
+- Complete provenance with compact trigger projections: **preserved**. Split
+  storage reduces individual AVR object sizes without dropping the selected
+  presence evidence or fieldwise replay identity.
 - Presentation intent cannot change primary policy or evidence:
   **preserved**.
 - Volatile records rather than RTC or storage reuse: **preserved**.
@@ -102,45 +110,55 @@ the exact-specimen or E1 bench gates.
   qualification before a formal schematic: **preserved**.
 
 No existing published interface is challenged. The provisional Lesson 042
-start types are challenged only inside this unpromoted boundary and have a
-recorded resolution.
+start and oversized-object concerns were confined to this unpromoted boundary
+and are resolved in the reviewed E0 code.
 
 ## Stress disposition
 
-**Bounded local remediation required.** The architecture fits naturally once
-the planning-only start seam is narrowed to the durable decision: a qualified
-explicit button event is the sole authority to start, and copied PIR evidence
-can only make that request eligible. Keeping `PirEligibilityStartsRun` or an
-`Unresolved` runtime value would preserve an invalid authority path and is not
-permitted.
+**Natural fit after completed bounded local remediation.** The implemented
+start seam makes a qualified explicit button event the sole authority and
+uses copied PIR evidence only for eligibility. The compact marshal retains six
+explicit caller-owned bounded storages, borrows input pointers for one update,
+publishes compact snapshots, and exposes selected trigger projections without
+losing replay evidence. Preflight validation is atomic with respect to all
+retained replay state.
 
-The remediation is confined to the unpromoted Lesson 042 API, implementation,
-tests, fixture, example, and documentation. It does not require a shared start
-abstraction or changes to earlier button, PIR, presence, optical, range, or
-display contracts. Promotion also remains blocked on aggregate resource
-measurements, deterministic maximum-composition replay, exact specimen
+The custom-style, strict, sanitizer, focused deterministic, exact-layout, and
+diff checks pass for this E0 code checkpoint. No shared start abstraction or
+change to earlier button, PIR, presence, optical, range, or display contracts
+is required. Canonical promotion remains blocked on the aggregate Mega example,
+endpoint/resource measurements, documentation/publication, powered specimen
 qualification, and the repeated pre-promotion stress pass.
 
 ## Gate result
 
-- Disposition: bounded local remediation required before implementation shape
-  is registered
+- Disposition: natural fit after completed bounded local remediation; E0 core
+  architecture gate passed
 - Open risks: unresolved exact optical/PIR/range/button/display specimens;
-  unmeasured aggregate cadence, ADC settling, pin/claim/current, flash, SRAM,
-  and stack budgets; unexecuted collision and replay fixtures; open E1 bench
+  unmeasured aggregate cadence, ADC settling, pin/claim/current, flash, full
+  SRAM, and stack budgets; aggregate renderer/endpoint collision fixture;
+  canonical example, documentation, packaging, publication, and open E1 bench
   acceptance
 - Required discussion or decision IDs:
   `3251b219-1a4a-41b7-8497-d8c6b5a72a98` resolves start authority; no further
   user decision is required for this stress finding
-- Remediation owner and next action: Lessons 040--042 integration owner narrows
-  the start evidence to explicit-button authority with PIR eligibility, then
-  implements focused host fixtures and measures the maximum Mega composition
+- Remediation owner and next action: local core remediation is complete; the
+  Lessons 040--042 integration owner builds and measures the maximum Mega
+  composition, completes public registration and lessons, and repeats this
+  pass before promotion
 - Verification commands and results:
-  - document review against the live Lesson 042 plan, stress template, active
-    task, and start-authority decision: passed
-  - implementation, host replay, AVR size, archive, lesson, and hardware
-    checks: not yet run because this is a preimplementation record
+  - focused strict host build and deterministic test: passed
+  - custom-style check for the component header, implementation, and test:
+    passed
+  - focused sanitizer build and deterministic test: passed
+  - exact AVR layout probe: passed with start policy 59 bytes; retained
+    storages 93/80/102/35/102/44 bytes (456 total); input view 38; snapshot 16;
+    marshal 69; intent 21; presenter 55; marshal plus storage 525; start,
+    marshal/storage, and presenter subtotal 639
+  - lossless fieldwise replay, trigger projection, borrowed-pointer
+    non-retention, and malformed-preflight atomicity review: passed
   - `git diff --check -- docs/design/stress-passes/course-marshal.md`: passed
-- Maximum-composition scenario and proof: specified above; deterministic
-  replay and measured aggregate resource evidence remain open promotion gates
+- Maximum-composition scenario and proof: compact E0 policy/storage replay
+  passed; aggregate endpoint/example timing, stack, resource, electrical, and
+  collision evidence remains open
 - Promotion permitted: no

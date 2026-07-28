@@ -56,6 +56,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_character_display \
 	$(BUILD_DIR)/host/test_climate_sensor \
 	$(BUILD_DIR)/host/test_contact_dynamics \
+	$(BUILD_DIR)/host/test_course_marshal \
 	$(BUILD_DIR)/host/test_dht11_sensor \
 	$(BUILD_DIR)/host/test_environmental_station \
 	$(BUILD_DIR)/host/test_greenhouse_controller \
@@ -196,6 +197,16 @@ $(BUILD_DIR)/host/test_calibration_console: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/calibration_console.cpp \
 		tests/test_calibration_console.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_course_marshal: $(HOST_CORE_SOURCES) \
+		src/course_marshal.cpp src/optical_observation.cpp \
+		src/presence_model.cpp src/pulse_input.cpp \
+		tests/test_course_marshal.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/course_marshal.cpp \
+		src/optical_observation.cpp src/presence_model.cpp \
+		src/pulse_input.cpp tests/test_course_marshal.cpp \
+		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_access_trainer: $(HOST_CORE_SOURCES) \
 		src/access_trainer.cpp src/keypad.cpp tests/test_access_trainer.cpp \

@@ -11,6 +11,7 @@
 #include "character_display.h"
 #include "climate_sensor.h"
 #include "contact_dynamics.h"
+#include "course_marshal.h"
 #include "cue_audit.h"
 #include "digital.h"
 #include "digital_input.h"
