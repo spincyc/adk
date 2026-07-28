@@ -84,23 +84,28 @@ after its implementation, deterministic tests, Mega example, size evidence,
 HTML reference, and PDF lesson exist.
 
 - **040–045:** optical presence and passage for a tabletop course marshal;
-  environmental and thermal observations for a museum-case monitor.
-- **046–054:** touch and bounded stepper motion for a kinetic light sculpture;
+  revision-neutral motion and orientation for a balance-table instrument.
+- **046–054:** authorized tactile/directional inputs and bounded stepper motion for
+  a kinetic light sculpture;
   local identity and homing for a tabletop parts carousel; known IR captures
   and bounded known-code transmission for an IR command translator.
-- **055–063:** threshold characterization for a module bench; constraints and
-  a fault-aware panel for an inert escape-room console; revision-neutral
-  inertial samples and orientation for a balance-table instrument.
-- **064–072:** inertial normalization and source qualification for an
-  interchangeable motion recorder; qualified single-wire thermal probes for a
-  gradient mapper; multiplexed digits and MAX7219 presentation for a
-  dual-display timing desk.
+- **055–063:** constraints and a fault-aware panel for an inert escape-room
+  console; multiplexed digits and MAX7219 presentation for a dual-display
+  timing desk; corrected authorized environmental sensing for a museum-case
+  monitor.
+- **064–072:** qualified single-wire 18B20 thermal probes for a gradient
+  mapper; inertial normalization and source qualification for an
+  interchangeable motion recorder; threshold characterization for a module
+  bench.
 - **073–081:** authorized-family replacements for the excluded DS1302, BMP180,
   PCF8591, and color-sensor subjects, followed by a bounded low-side driver,
   indicator semantics, and an inert component-qualification bench.
 
 Exact specimen identity, ratings, primary sources, and bench evidence remain
 gates. Planned coverage does not mean an unidentified kit module is supported.
+The [sensor engagement-order audit](docs/audits/SENSOR_ENGAGEMENT_REORDER_AUDIT.md)
+explains why interactive, immediately visible projects move earlier while
+completeness and qualification work remain later.
 
 ## Network research
 

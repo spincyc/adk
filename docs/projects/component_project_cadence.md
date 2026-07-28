@@ -259,61 +259,53 @@ Photo-Interrupter, Photo-Resistor, HC-SR501, HC-SR04, and existing displays.
 The light-cup alias is not in the authorized Elegoo union and is excluded
 unless a later source decision admits it.
 
-## Lessons 043--045: leak and thermal alarm trainer
+## Lessons 043--045: balance-table instrument
 
-### 043 — Resistive environmental probes
+This engagement-first block brings visible, responsive motion sensing forward
+without changing its specimen gate or revision-neutral design.
 
-Add water-level, rain, and soil-moisture adapters over switched-power
-`AnalogInput`. Teach corrosion-aware duty cycles, dry/wet calibration,
-contamination, disconnected probes, and the limits of absolute readings.
+### 043 — Revision-neutral inertial samples
 
-### 044 — Thermal and radiant observations
+Add separately identified MPU6050 and QMI8658 I2C adapters behind one
+revision-neutral accelerometer/gyroscope sample value. Validated units, device
+identity, range, transport failure, stale data, and physical saturation remain
+distinct. Only the adapter matching the inventoried specimen is built.
 
-Compare thermistor, analog temperature, digital temperature, and flame/radiant
-IR modules. Preserve units, uncertainty, threshold state, validity, and age.
-Use a TV remote or controlled low-energy IR source for the radiant experiment;
-an open flame is unnecessary.
+### 044 — Orientation presentation
 
-### 045 — Project: museum-case monitor
+Map supplied inertial samples into bounded pitch/roll intent and an RGB/LED
+direction presentation. Board orientation is explicit configuration.
+Presentation and tone intent depend only on samples, calibration, and supplied
+time.
 
-A model display case watches for liquid, excessive temperature, abrupt radiant
-IR, and unauthorized opening. It presents health locally, logs timestamped
-events, and drives only an inert relay indicator.
+### 045 — Project: balance-table instrument
+
+A handheld instrument maps tilt to an RGB/LED direction display, uses the
+joystick to adjust sensitivity, and freezes one measurement for comparison.
 
 ```text
-wetness probes ---+
-temperature ------+--> validated hazard model --> LCD/status/alarm intent
-radiant IR -------+             |                --> inert relay lamp
-reed contact -----+             +---------------> RTC/SD audit record
+joystick events ----+
+                    +--> calibration --> orientation --> LED frame
+inertial samples ---+                         |       --> tone intent
+explicit time --------------------------------+
 ```
 
-Deterministic evidence:
+Evidence includes stationary, tilt, rotation, saturation, dropout, I2C NACK,
+stale-sample, axis-permutation, timestamp-wrap, and byte-identical replay
+fixtures. LED self-test, RGB health, SDA/SCL test points, and joystick-axis
+test points provide the non-Serial path.
 
-- dry-to-wet ramps, probe open/short, contamination drift, and stale samples;
-- temperature boundary, disagreement, and sensor transport failures;
-- radiant pulse traces and ambient saturation;
-- alarm latch, acknowledgement, cooldown, restart, and log-write interruption;
-- invariant: invalid sensing can never request the “healthy” indication.
-
-Circuit-native observation:
-
-- RGB state is healthy/warning/alarm/fault with a grayscale-safe blink code;
-- LCD always includes sample age or fault;
-- probe supply has a measurable duty-cycle test point;
-- the inert relay drives a current-limited lamp only; and
-- the alarm output is inactive after shutdown.
-
-Planned specimen coverage: water sensor, rain sensor, soil probe, thermistor, analog
-temperature, digital temperature, flame/radiant sensor, reed, relay, LCD, RTC,
-SD, RGB LED.
+Planned specimen coverage: revision-dependent MPU6050 or QMI8658, joystick,
+RGB LED, passive buzzer, button, potentiometer, I2C bus, and shift-register
+LEDs.
 
 ## Lessons 046--048: tactile kinetic sculpture
 
-### 046 — Touch, proximity, and human gestures
+### 046 — Touch and gesture-like switches
 
-Add capacitive touch, metal-touch, finger-heartbeat, and gesture-like switch
-modules. Heartbeat modules are treated as noisy pulse demonstrations, never
-medical devices.
+Add only listing-authorized metal-touch and gesture-like switch observations.
+Preserve polarity, chatter, hold duration, and source validity without
+generalizing them into an unsupported proximity or physiological interface.
 
 ### 047 — Bounded stepper motion
 
@@ -323,20 +315,20 @@ de-energized shutdown are explicit.
 
 ### 048 — Project: kinetic light sculpture
 
-Touch selects a pattern, a noisy pulse sensor modulates it, the joystick or
-tilt sensor changes direction, and a stepper rotates a lightweight paper
-element while RGB and shift-register LEDs mirror the commanded phase.
+Touch selects a pattern, the joystick or tilt sensor changes direction, and a
+stepper rotates a lightweight paper element while RGB and shift-register LEDs
+mirror the commanded phase.
 
 ```text
-touch/pulse/tilt --> gesture model --> bounded motion intent --> stepper
-explicit time ---------------------^          |             --> RGB/LEDs
-stop button ----------------------------------+
+touch/tilt -----> gesture model --> bounded motion intent --> stepper
+joystick -------^                     |                    --> RGB/LEDs
+explicit time ------------------------^
+stop button --------------------------+
 ```
 
 Deterministic evidence:
 
-- touch chatter, long hold, pulse dropout, impossible pulse rate, and tilt
-  transitions;
+- touch chatter, long hold, invalid source, and tilt transitions;
 - exact coil vectors, direction reversal, cancellation, and wrap boundaries;
 - stop dominance at every state and no queued motion after shutdown;
 - external-power loss and driver-fault injection; and
@@ -350,9 +342,10 @@ Circuit-native observation:
 - external motor power is physically separable from logic power; and
 - the motor is de-energized on shutdown.
 
-Planned specimen coverage: capacitive touch, metal touch, pulse/heartbeat,
-tilt/ball switch, joystick, stepper, ULN2003, RGB LED, shift-register LEDs,
-and stop button.
+Planned specimen coverage: the listed Metal Touch family, contact or
+tilt/ball switches, joystick, stepper, ULN2003, RGB LED,
+shift-register LEDs, and stop button. Capacitive-touch and heartbeat modules
+are not claimed because they are outside the authorized specimen union.
 
 ## Lessons 049--051: identity-controlled parts carousel
 
@@ -433,61 +426,20 @@ Circuit-native observation:
 Planned specimen coverage: IR receiver, IR emitter, remote, keypad, LCD, timers,
 buttons, LEDs.
 
-## Lessons 055--057: modular sensor test bench
+## Lessons 055--057: cooperative escape-room console
 
-### 055 — Descriptor-driven threshold modules
-
-Add a compact descriptor for the many modules that expose analog and
-comparator outputs. It records polarity, range, pull requirement, warm-up,
-settling, and threshold-pot direction without inventing a new class per PCB.
-
-### 056 — Characterization runs
-
-Add a deterministic sweep recorder and classifier comparison. A learner
-supplies controlled samples; the behavior reports threshold crossing,
-hysteresis, chatter, stuck output, and analog/digital disagreement.
-
-### 057 — Project: module characterization bench
-
-The bench accepts one low-voltage sensor module at a time, guides a safe test,
-shows raw and threshold state, and emits a stable characterization record.
-This is where identified low-voltage analog/comparator variants are handled
-honestly rather than forced into unrelated applications. Register devices,
-emitters, gas exposure, and physiological claims require their own boundaries.
-
-Deterministic evidence:
-
-- ascending and descending ramps for active-high and active-low descriptors;
-- chatter, rail, open, short, stale, and comparator disagreement;
-- descriptor validation and unknown-module rejection;
-- stable record serialization and interrupted storage; and
-- replay from recorded raw samples without the physical module.
-
-Circuit-native observation:
-
-- seven-segment or LCD raw reading beside comparator LED;
-- RGB validity state;
-- named analog, digital, power, and ground test points;
-- switched sensor power with an inactive default; and
-- no module is connected before its voltage and pinout are identified.
-
-Planned specimen coverage: identified low-voltage analog/digital light, sound,
-Hall, temperature, flame/radiant, touch, vibration, and obstacle variants.
-
-## Lessons 058--060: cooperative escape-room console
-
-### 058 — Constraint and clue model
+### 055 — Constraint and clue model
 
 Add a fixed-capacity rule graph whose predicates consume existing semantic
 observations. Rules are data, cycles are rejected, and hidden time is
 forbidden.
 
-### 059 — Fault-tolerant operator panel
+### 056 — Fault-tolerant operator panel
 
 Compose keypad, RFID, joystick, encoder, buttons, display, storage, and
 redundant stop/acknowledgement behavior into one deterministic panel model.
 
-### 060 — Project: tabletop escape-room console
+### 057 — Project: tabletop escape-room console
 
 Players solve optical, magnetic, motion, sound, identity, and ordering clues.
 Success moves only a lightweight servo latch and lights an inert relay lamp.
@@ -514,133 +466,23 @@ Circuit-native observation:
 Planned composition coverage: deliberate reuse of all earlier endpoint families and a
 meaningful integration test for the common kit.
 
-## Lessons 061--063: balance-table instrument
+## Lessons 058--060: display transport laboratory
 
-This block begins the expansion beyond lesson 060. Its numbers are reserved so
-motion-device work cannot collide with the input-first block.
-
-### 061 — Revision-neutral inertial samples
-
-Add separately identified MPU6050 and QMI8658 I2C adapters behind one
-revision-neutral accelerometer/gyroscope sample value. Validated units, device
-identity, range, transport failure, stale data, and physical saturation remain
-distinct. Only the adapter matching the inventoried specimen is built.
-
-### 062 — Orientation presentation
-
-Map supplied inertial samples into bounded pitch/roll intent and an RGB/LED
-direction presentation. Board orientation is explicit configuration.
-Presentation and tone intent depend only on samples, calibration, and supplied
-time.
-
-### 063 — Project: balance-table instrument
-
-A handheld instrument maps tilt to an RGB/LED direction display, uses the
-joystick to adjust sensitivity, and freezes one measurement for comparison.
-
-```text
-joystick events ----+
-                    +--> calibration --> orientation --> LED frame
-inertial samples ---+                         |       --> tone intent
-explicit time --------------------------------+
-```
-
-Evidence includes stationary, tilt, rotation, saturation, dropout, I2C NACK,
-stale-sample, axis-permutation, timestamp-wrap, and byte-identical replay
-fixtures. LED self-test, RGB health, SDA/SCL test points, and joystick-axis
-test points provide the non-Serial path.
-
-Planned specimen coverage: revision-dependent MPU6050 or QMI8658, joystick,
-RGB LED, passive buzzer, button, potentiometer, I2C bus, and shift-register
-LEDs.
-
-## Lessons 064--066: interchangeable motion recorder
-
-### 064 — Inertial record normalization
-
-Normalize recorded output from the lesson 061 adapters while retaining device
-identity, configured range, data-ready state, saturation, calibration version,
-and transport status. No runtime probe writes configuration to an unidentified
-address.
-
-### 065 — Inertial source qualification
-
-Qualify one explicitly configured source using stationary bias, axis mapping,
-sample age, and range checks. Source selection is configuration, not voting or
-automatic failover. Recorded samples can drive the qualifier without either
-device driver.
-
-### 066 — Project: interchangeable motion recorder
-
-The learner records the same hand-motion script with the kit's identified
-motion module, compares normalized traces on the host, and presents live
-orientation and health on LEDs and the character display.
-
-Deterministic evidence includes golden traces for each adapter, register
-identity mismatch, NACK, stale/data-ready disagreement, range saturation,
-axis permutations, and byte-identical normalized records. SDA, SCL, interrupt,
-and sensor-rail test points expose acquisition; a display self-test is
-separate from changing orientation; RGB fault dominates valid orientation.
-
-Before power is applied, the inventory must name MPU6050 or QMI8658, PCB
-markings, address strap, regulator and level-shifter population, logic voltage,
-and primary register-map revision. An unidentified revision remains unpowered.
-
-Planned specimen coverage: revision-dependent MPU6050 or QMI8658, I2C,
-character display, RGB LED, button, RTC, and SD.
-
-## Lessons 067--069: multi-probe thermal mapper
-
-### 067 — Owned single-wire transactions
-
-Add an owned, bounded single-wire transaction endpoint with explicit reset,
-presence, bit-slot, strong-pull-up policy, timeout, and rollback. Add DS18B20
-identity, scratchpad, CRC, resolution, and conversion-state handling above it;
-do not hide timing or parasite-power requirements in the sensor class.
-
-### 068 — Qualified thermal probe sets
-
-Compose fixed-capacity probe identities and readings into a thermal snapshot.
-Duplicate identities, disappearance, conversion-in-progress, CRC failure,
-stale values, implausible steps, and mixed resolutions remain visible.
-
-### 069 — Project: thermal gradient mapper
-
-Two or more identified probes measure a safe tabletop gradient produced by
-room-temperature and hand-warmed objects. The LCD pages through probe identity,
-temperature, age, and validity while LEDs show which probe is being presented.
-RTC/SD records use the stable sensor identity rather than discovery order.
-
-Deterministic evidence includes reset/presence slots, ROM search fixtures,
-CRC vectors, resolution-dependent deadlines, duplicate and disappearing
-probes, timestamp wrap, and interrupted records. The data line, switched probe
-rail, and conversion-activity LED provide non-Serial evidence; a fault pattern
-cannot be mistaken for a cold reading.
-
-The specimen gate records the exact DS18B20 marking, package, pull-up,
-waterproof-probe construction if present, supply mode, and datasheet. No
-immersion, hot surface, parasite-power, or unknown three-pin module is used
-until its electrical and material construction is established.
-
-Planned specimen coverage: DS18B20 variants, LCD, RTC, SD, buttons, and LEDs.
-
-## Lessons 070--072: display transport laboratory
-
-### 070 — Nonblocking multiplexed digits
+### 058 — Nonblocking multiplexed digits
 
 Add a four-digit display owner whose supplied-time refresh emits bounded digit
 and segment frames. Common-anode/cathode polarity, blanking, leading zeros,
 decimal points, overflow, refresh loss, and shutdown blanking are explicit.
 The endpoint owns every digit-select and segment resource it drives.
 
-### 071 — Register-driven display presentation
+### 059 — Register-driven display presentation
 
 Add a MAX7219 adapter over the existing owned SPI transaction boundary.
 Configuration, intensity, scan limit, decode mode, row writes, chip-select,
 transport faults, and blank-on-shutdown policy remain explicit. Frame
 generation stays independent of this adapter.
 
-### 072 — Project: dual-display timing desk
+### 060 — Project: dual-display timing desk
 
 One deterministic stopwatch model drives a multiplexed four-digit display and
 a MAX7219 matrix progress dial. Buttons control start, lap, and reset; the
@@ -661,6 +503,167 @@ unpowered.
 Planned specimen coverage: four-digit seven-segment display, MAX7219 matrix,
 buttons, SPI, and status LEDs. PCF8574 LCD backpacks remain inventory-gated
 planning work and are not claimed by this arc.
+
+## Lessons 061--063: leak and thermal alarm trainer
+
+### 061 — Water-level observations
+
+Add the authorized Water Level adapter over switched-power `AnalogInput`.
+Teach corrosion-aware duty cycles, dry/wet calibration, contamination,
+disconnected probes, and the limits of absolute readings.
+
+### 062 — Thermal and radiant observations
+
+Compare the thermistor, the distinct authorized Digital Temperature module,
+and flame/radiant IR module. Preserve units, uncertainty, threshold state,
+validity, age, and sensor identity. Use a TV remote or controlled low-energy
+IR source for the radiant experiment; an open flame is unnecessary.
+
+### 063 — Project: museum-case monitor
+
+A model display case watches for liquid, excessive temperature, abrupt radiant
+IR, and unauthorized opening. It presents health locally, logs timestamped
+events, and drives only an inert relay indicator.
+
+```text
+water level ------+
+temperature ------+--> validated hazard model --> LCD/status/alarm intent
+radiant IR -------+             |                --> inert relay lamp
+reed contact -----+             +---------------> RTC/SD audit record
+```
+
+Deterministic evidence:
+
+- dry-to-wet ramps, sensor open/short, contamination drift, and stale samples;
+- temperature boundary, disagreement, and sensor transport failures;
+- radiant pulse traces and ambient saturation;
+- alarm latch, acknowledgement, cooldown, restart, and log-write interruption;
+- invariant: invalid sensing can never request the “healthy” indication.
+
+Circuit-native observation:
+
+- RGB state is healthy/warning/alarm/fault with a grayscale-safe blink code;
+- LCD always includes sample age or fault;
+- water-sensor supply has a measurable duty-cycle test point;
+- the inert relay drives a current-limited lamp only; and
+- the alarm output is inactive after shutdown.
+
+Planned specimen coverage: authorized Water Level sensor, thermistor, distinct
+Digital Temperature module, flame/radiant sensor, reed, relay, LCD, RTC, SD,
+and RGB LED. Rain and soil-moisture probes are not claimed.
+
+## Lessons 064--066: multi-probe thermal mapper
+
+### 064 — Owned single-wire transactions
+
+Add an owned, bounded single-wire transaction endpoint with explicit reset,
+presence, bit-slot, strong-pull-up policy, timeout, and rollback. Add DS18B20
+identity, scratchpad, CRC, resolution, and conversion-state handling above it;
+do not hide timing or parasite-power requirements in the sensor class.
+
+### 065 — Qualified thermal probe sets
+
+Compose fixed-capacity probe identities and readings into a thermal snapshot.
+Duplicate identities, disappearance, conversion-in-progress, CRC failure,
+stale values, implausible steps, and mixed resolutions remain visible.
+
+### 066 — Project: thermal gradient mapper
+
+Two or more identified probes measure a safe tabletop gradient produced by
+room-temperature and hand-warmed objects. The LCD pages through probe identity,
+temperature, age, and validity while LEDs show which probe is being presented.
+RTC/SD records use the stable sensor identity rather than discovery order.
+
+Deterministic evidence includes reset/presence slots, ROM search fixtures,
+CRC vectors, resolution-dependent deadlines, duplicate and disappearing
+probes, timestamp wrap, and interrupted records. The data line, switched probe
+rail, and conversion-activity LED provide non-Serial evidence; a fault pattern
+cannot be mistaken for a cold reading.
+
+The specimen gate records the exact DS18B20 marking, package, pull-up,
+waterproof-probe construction if present, supply mode, and datasheet. No
+immersion, hot surface, parasite-power, or unknown three-pin module is used
+until its electrical and material construction is established.
+
+Planned specimen coverage: DS18B20 variants, LCD, RTC, SD, buttons, and LEDs.
+
+## Lessons 067--069: interchangeable motion recorder
+
+### 067 — Inertial record normalization
+
+Normalize recorded output from the lesson 043 adapters while retaining device
+identity, configured range, data-ready state, saturation, calibration version,
+and transport status. No runtime probe writes configuration to an unidentified
+address.
+
+### 068 — Inertial source qualification
+
+Qualify one explicitly configured source using stationary bias, axis mapping,
+sample age, and range checks. Source selection is configuration, not voting or
+automatic failover. Recorded samples can drive the qualifier without either
+device driver.
+
+### 069 — Project: interchangeable motion recorder
+
+The learner records the same hand-motion script with the kit's identified
+motion module, compares normalized traces on the host, and presents live
+orientation and health on LEDs and the character display.
+
+Deterministic evidence includes golden traces for each adapter, register
+identity mismatch, NACK, stale/data-ready disagreement, range saturation,
+axis permutations, and byte-identical normalized records. SDA, SCL, interrupt,
+and sensor-rail test points expose acquisition; a display self-test is
+separate from changing orientation; RGB fault dominates valid orientation.
+
+Before power is applied, the inventory must name MPU6050 or QMI8658, PCB
+markings, address strap, regulator and level-shifter population, logic voltage,
+and primary register-map revision. An unidentified revision remains unpowered.
+
+Planned specimen coverage: revision-dependent MPU6050 or QMI8658, I2C,
+character display, RGB LED, button, RTC, and SD.
+
+## Lessons 070--072: modular sensor test bench
+
+### 070 — Descriptor-driven threshold modules
+
+Add a compact descriptor for the many modules that expose analog and
+comparator outputs. It records polarity, range, pull requirement, warm-up,
+settling, and threshold-pot direction without inventing a new class per PCB.
+
+### 071 — Characterization runs
+
+Add a deterministic sweep recorder and classifier comparison. A learner
+supplies controlled samples; the behavior reports threshold crossing,
+hysteresis, chatter, stuck output, and analog/digital disagreement.
+
+### 072 — Project: module characterization bench
+
+The bench accepts one low-voltage sensor module at a time, guides a safe test,
+shows raw and threshold state, and emits a stable characterization record.
+This is where identified low-voltage analog/comparator variants are handled
+honestly rather than forced into unrelated applications. Register devices,
+emitters, gas exposure, and physiological claims require their own boundaries.
+
+Deterministic evidence:
+
+- ascending and descending ramps for active-high and active-low descriptors;
+- chatter, rail, open, short, stale, and comparator disagreement;
+- descriptor validation and unknown-module rejection;
+- stable record serialization and interrupted storage; and
+- replay from recorded raw samples without the physical module.
+
+Circuit-native observation:
+
+- seven-segment or LCD raw reading beside comparator LED;
+- RGB validity state;
+- named analog, digital, power, and ground test points;
+- switched sensor power with an inactive default; and
+- no module is connected before its voltage and pinout are identified.
+
+Planned specimen coverage is limited to previously authorized or separately
+qualified low-voltage light, sound, Hall, thermal, flame/radiant, Metal Touch,
+vibration, and obstacle families. Generic analog-temperature and capacitive-
+touch boards are not admitted by this characterization boundary.
 
 ## Lessons 073--078: authorized-family replacements pending
 
@@ -729,30 +732,31 @@ individually identified retail boards.
 | Module family | Primary project | Later reuse |
 |---|---:|---:|
 | LEDs, RGB, buttons, buzzers | 003/006 | all diagnostic paths |
-| Potentiometer, photoresistor | 009 | 039, 042, 063 |
-| Shift register and one-digit 7-segment | 012 | 036, 039, 048, 063 |
-| DHT, LCD | 015 | 045 |
-| Keypad, servo | 018 | 051, 054, 060 |
+| Potentiometer, photoresistor | 009 | 039, 042, 045 |
+| Shift register and one-digit 7-segment | 012 | 036, 039, 045, 048 |
+| DHT | 015 | no required reuse |
+| LCD | 015 | 045, 051, 054, 057, 063, 066, 069, 072 |
+| Keypad, servo | 018 | 051, 054, 057 |
 | Ultrasonic, PIR, DC motor/driver | 021 | 042 |
-| RTC and deterministic durable records; physical RTC/media deferred | 024 | 036, 045, 060 |
+| RTC and deterministic durable records; physical RTC/media deferred | 024 | 036, 057, 063 |
 | IR receiver and remote | 027 | 054 |
 | Receive-capable RF | 027 passive only | no transmit project |
-| Continuity and cue panel | 030 inert only | 060 fault model |
-| Joystick, rotary encoder | 033 | 036, 048, 060, 063 |
-| MPU6050 or QMI8658 revision | 063 | 066 normalized records |
-| Hall variants, reed | 036 | 051, 060 |
-| Tilt, knock, vibration, shock, sound | 039 | 048, 060 |
-| Tracking, Avoidance, Photo-Interrupter | 042 | 057, 060 |
-| Water, rain, soil | 045 | 057 |
-| Thermistor, analog/digital temperature | 045 | 057 |
-| Flame/radiant detector | 045, controlled IR only | 057 |
-| Touch, metal touch, pulse demonstration | 048 | 060 |
-| Stepper and ULN2003 | 048 | 051 |
-| RFID | 051 | 060 |
+| Continuity and cue panel | 030 inert only | 057 fault model |
+| Joystick, rotary encoder | 033 | 036, 045, 048, 057 |
+| MPU6050 or QMI8658 revision | 045 | 069 normalized records |
+| Hall variants, reed | 036 | 051, 057, 063 |
+| Tilt, knock, vibration, shock, sound | 039 | 048, 057 |
+| Tracking, Avoidance, Photo-Interrupter | 042 | 057, 072 |
+| Authorized Water Level sensor | 063 | 072 |
+| Thermistor and distinct Digital Temperature module | 063 | 072 |
+| Flame/radiant detector | 063, controlled IR only | 072 |
+| Listed Metal Touch, contact/tilt switches, and joystick | 048 | 057, 072 |
+| Stepper and ULN2003 | 048 | 051, 057 |
+| RFID | 051 | 057 |
 | IR emitter | 054, known local codes only | none required |
-| Analog/comparator module variants | 057 | inventory acceptance |
-| DS18B20 and single-wire variants | 069 | thermal records |
-| Four-digit display, MAX7219 matrix | 072 | timing presentation |
+| Analog/comparator module variants | 072 | inventory acceptance |
+| DS18B20 and single-wire variants | 066 | thermal records |
+| Four-digit display, MAX7219 matrix | 060 | timing presentation |
 | Authorized replacements for former 073--075 subjects | pending re-scope | no unlisted specimen |
 | Authorized replacements for former 076--078 subjects | pending re-scope | no unlisted specimen |
 | PN2222/S8050, diode, indicator variants | 081 inert loads only | inventory acceptance |

@@ -124,7 +124,11 @@ full integration gates, and publication remain coordinator responsibilities.
 
 Lessons 001--039 are host verified with their physical and incoming-conformance
 cards open where applicable. Lessons 040--042 are the next queued block;
-Lessons 043--081 remain the later three-lesson expansion.
+Lessons 043--081 remain the later three-lesson expansion in the
+engagement-first order recorded by the
+[sensor engagement-order audit](audits/SENSOR_ENGAGEMENT_REORDER_AUDIT.md).
+That reordering preserves specimen, safety, dependency, host-verification, and
+open bench-evidence gates; it does not promote the queued arcs.
 
 Transparent USB, HDMI mesh, and shared-fabric material remains research and
 host-model evidence only. Bounded next USB and HDMI/shared-fabric research

@@ -66,7 +66,19 @@ Status meanings:
 | Contact policy | `ContactDynamics` | Host verified; incoming conformance and bench open | [Lesson 037](lessons/037.md) |
 | Acoustic policy | `AcousticEnvelope` | Host verified; incoming conformance and bench open | [Lesson 038](lessons/038.md) |
 | Percussion project | `PercussionSequencer` | Host verified; incoming conformance and bench open | [Lesson 039](lessons/039.md) |
-| Queued layers | Lesson 040 and later curriculum components | Queued | See catalog and work queue |
+| Planned optical arc | Optical observation and presence policy | Queued | Lessons 040–042 |
+| Planned balance arc | Inertial samples and orientation presentation | Queued | Lessons 043–045 |
+| Planned kinetic arc | Authorized tactile/directional inputs and bounded stepper motion | Queued | Lessons 046–048 |
+| Planned carousel arc | Identity records and homing | Queued | Lessons 049–051 |
+| Planned IR arc | Known-family capture and bounded emission | Queued; exact emitter gated | Lessons 052–054 |
+| Planned escape-console arc | Constraint and fault-aware operator models | Queued | Lessons 055–057 |
+| Planned display arc | Multiplexed digits and matrix presentation | Queued | Lessons 058–060 |
+| Planned museum arc | Resistive and thermal/radiant observations | Queued | Lessons 061–063 |
+| Planned thermal arc | Single-wire probes and thermal mapping | Queued | Lessons 064–066 |
+| Planned motion arc | Normalized inertial records and source qualification | Queued | Lessons 067–069 |
+| Planned characterization arc | Threshold descriptors and supplied sweeps | Queued | Lessons 070–072 |
+| Reserved arcs | Authorized-family replacements pending | Re-scope required | Lessons 073–078 |
+| Planned qualification arc | Bounded load driver and indicator semantics | Queued | Lessons 079–081 |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.
 Behavior engines expose output intent rather than hiding hardware callbacks.

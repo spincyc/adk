@@ -144,19 +144,50 @@ The union directly authorizes the joystick and rotary-encoder families for
 lessons 031–033, so host-contract and family-level planning may proceed.
 Revision-specific wiring and physical acceptance remain open.
 
-The prior long-range plan contained several candidates imported from other
-37-sensor taxonomies. They are not authorized by this source union:
+The engagement-first curriculum assigns the authorized sensor families as
+follows:
+
+- lessons 040–042: optical sensing;
+- lessons 043–045: one identified GY-521/MPU-6050 or QMI-8658 inertial
+  revision, orientation, and the balance-table instrument;
+- lessons 046–048: the listed Metal Touch family, a contact or existing
+  joystick fallback, bounded stepper motion, and the kinetic sculpture;
+- lessons 049–051: RC522 identity observations and the parts carousel;
+- lessons 052–054: identified IR receive and listed IR-emission families,
+  restricted to known local codes;
+- lessons 055–057: the cooperative escape-room console;
+- lessons 058–060: four-digit and MAX7219 display work;
+- lessons 061–063: a museum monitor using the listed Water Level, thermistor,
+  Digital Temperature, Flame, and Magnetic Spring families;
+- lessons 064–066: single-wire transport and the listed 18B20 Temp family;
+- lessons 067–069: normalized records from the identified inertial revision;
+- lessons 070–072: characterization of identified low-voltage
+  analog/comparator families; and
+- lessons 079–081: inert low-energy component qualification.
+
+Metal Touch is listing-authorized, but its exact topology, pinout, thresholds,
+and safe stimulus remain gated by specimen evidence. `Digital Temperature` is
+a distinct label from `18B20 Temp`; it remains electrically unidentified and
+must not be treated as an 18B20 or assigned a powered adapter until specimen
+evidence proves its identity.
+
+The prior long-range plan also contained several candidates imported from
+other 37-sensor taxonomies. They are not authorized by this source union:
 
 - DS1302 in lesson 073; the cited Elegoo baseline supplies DS1307, with a
   documented DS3231 shipping alternative;
 - BMP180 and PCF8591 in lesson 074;
 - the color-sensor arc in lessons 076–078; and
+- rain, soil-moisture, generic capacitive-touch, and heartbeat/pulse modules;
+  these appeared in historical planning prose but not in either cited
+  manifest; and
 - any programmable IR transmitter beyond the listed IR-emission family until
   its exact revision and safe use are established.
 
-Those entries must be re-scoped to authorized families or explicitly extended
-by a later user-authorized source. They are not evidence that such specimens
-exist.
+Lessons 073–078 remain reserved for authorized-family re-scoping; no
+replacement subjects have been selected. Historical references to the
+unauthorized candidates document earlier planning only. They are not evidence
+that such specimens exist and confer no curriculum or electrical scope.
 
 [mega-product]: https://www.elegoo.com/en-gb/collections/arduino-kits/products/elegoo-mega-2560-the-most-complete-starter-kit
 [mega-tutorial]: https://www.elegoo.com/en-gb/blogs/arduino-projects/elegoo-mega-2560-the-most-complete-starter-kit-tutorial

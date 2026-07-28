@@ -77,7 +77,12 @@ incoming-conformance gates. Earlier Elegoo exact-specimen questions are
 superseded as canonical-publication blockers, not answered; they remain
 historical optional substitution-conformance work. Lessons 040--042 are the
 next queued block. Development then follows the canonical lessons 040--081 kit
-expansion, one implementation-depth three-lesson brief at a time.
+expansion, one implementation-depth three-lesson brief at a time. That future
+arc is engagement-first: optical play leads into balance, kinetic motion,
+carousel, IR, escape-console, and display projects before the more methodical
+environmental, 18B20, motion-recording, and characterization blocks.
+Authorization, prerequisite, exact-specimen, safety, and evidence gates still
+control activation; the ordering is not a support claim.
 
 Every component requires lifecycle tests, deterministic fakes, a canonical Mega
 example, size evidence, terse HTML, a rich complementary PDF, and recorded
