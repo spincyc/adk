@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""Check the small set of public artifacts required for Lesson 030."""
+"""Check the public artifacts required for the newest published lesson."""
 
 from __future__ import annotations
 
@@ -33,28 +33,28 @@ CHECKS = (
     Check(
         "",
         "landing page",
-        markers=(b"lessons 001\xe2\x80\x93030", b"physically inert show-cue"),
+        markers=(b"Lessons 001\xe2\x80\x93033", b"Planned course"),
     ),
     Check(
-        "lessons/030/",
-        "Lesson 030 page",
+        "lessons/033/",
+        "Lesson 033 page",
         markers=(
-            b"Reviewed inert show-cue simulator",
-            b"synthetic observations and inert visual cues only",
+            b"Lesson 033",
+            b"calibration console",
         ),
     ),
-    Check("downloads/lessons/030.pdf", "Lesson 030 PDF", b"%PDF-"),
+    Check("downloads/lessons/033.pdf", "Lesson 033 PDF", b"%PDF-"),
     Check(
-        "downloads/sketches/Lesson030InertShowSimulator.ino",
-        "Lesson 030 Arduino example",
-        markers=(b"#include <Adk.h>", b"InertShowSimulator simulator"),
+        "downloads/sketches/Lesson033CalibrationConsole.ino",
+        "Lesson 033 Arduino example",
+        markers=(b"#include <Adk.h>", b"CalibrationConsole console"),
     ),
 )
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 CANONICAL_EXAMPLE = (
     REPOSITORY_ROOT
-    / "examples/Lesson030InertShowSimulator/Lesson030InertShowSimulator.ino"
+    / "examples/Lesson033CalibrationConsole/Lesson033CalibrationConsole.ino"
 )
 
 

@@ -16,121 +16,41 @@ theme:
 nav:
   - Home: index.md
   - Start here: start.md
-  - Command-line workflow: docs/CLI.md
-  - Course map: course.md
-  - Lessons:
+  - Course:
+      - Course map: course.md
       - Lesson index: lessons/index.md
-      - "001 — Digital output": lessons/001.md
-      - "002 — Digital input": lessons/002.md
-      - "003 — Reaction timer": lessons/003.md
-      - "004 — PWM and RGB": lessons/004.md
-      - "005 — Piezo sounder": lessons/005.md
-      - "006 — Simon": lessons/006.md
-      - "007 — Analog input": lessons/007.md
-      - "008 — Sampled signal": lessons/008.md
-      - "009 — Adaptive night light": lessons/009.md
-      - "010 — Shift register display": lessons/010.md
-      - "011 — Timed traffic states": lessons/011.md
-      - "012 — Traffic junction": lessons/012.md
-      - "013 — DHT11 climate sensor": lessons/013.md
-      - "014 — Character display": lessons/014.md
-      - "015 — Environmental station": lessons/015.md
-      - "016 — Matrix keypad": lessons/016.md
-      - "017 — Bounded servo intent": lessons/017.md
-      - "018 — Inert access trainer": lessons/018.md
-      - "019 — Ultrasonic range": lessons/019.md
-      - "020 — Motor intent": lessons/020.md
-      - "021 — Bench rover": lessons/021.md
-      - "022 — Owned buses and durable records": lessons/022.md
-      - "023 — Inert load interlock": lessons/023.md
-      - "024 — Greenhouse trainer": lessons/024.md
-      - "025 — Infrared evidence": lessons/025.md
-      - "026 — Receive-only telemetry": lessons/026.md
-      - "027 — Telemetry console": lessons/027.md
-      - "028 — Inert channel assessment": lessons/028.md
-      - "029 — Inert cue scheduling and audit": lessons/029.md
-      - "030 — Inert show-cue simulator": lessons/030.md
-      - "031 — Analog joystick": lessons/031.md
-      - "032 — Quadrature encoder": lessons/032.md
-      - "033 — Calibration console": lessons/033.md
-  - Components: components.md
-  - Supported API: api-supported.md
-  - Design:
+      - Command-line workflow: docs/CLI.md
+  - Library:
+      - Components: components.md
+      - Supported API: api-supported.md
       - Determinism: determinism.md
       - Architecture: docs/ARCHITECTURE.md
       - Component catalog: docs/COMPONENTS.md
+  - Plan:
       - Curriculum: docs/CURRICULUM.md
       - Projects: docs/PROJECTS.md
       - Roadmap: docs/ROADMAP.md
       - Durable work queue: docs/WORK_QUEUE.md
-      - Physical acceptance campaign: docs/audits/PHYSICAL_ACCEPTANCE_CAMPAIGN_PLAN.md
-      - Input expansion 031–033: docs/design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md
-      - Magnetic passage 034–036: docs/design/LESSONS_034_036_MAGNETIC_PASSAGE_PLAN.md
-      - Style: docs/STYLE.md
-      - Mega ADC notes: docs/MEGA_ADC_NOTES.md
-      - Comparable projects: docs/COMPARABLE_PROJECTS.md
-  - Network research:
-      - Shared constraints: docs/NETWORK_MATRIX_CONSTRAINTS.md
+      - Complete-kit cadence: docs/projects/component_project_cadence.md
+  - Research:
+      - USB and HDMI roadmap: projects/mesh-roadmap.md
       - Shared USB and HDMI fabric: docs/research/SHARED_USB_HDMI_FABRIC.md
-      - HDMI 8K architecture: docs/research/HDMI_8K_NETWORK.md
-      - HDMI 8K quantitative study: docs/research/hdmi_8k_switched_network.md
-      - HDMI mesh:
-          - Architecture: docs/research/HDMI_MESH_ARCHITECTURE.md
-          - Identity and inventory: docs/research/HDMI_MESH_IDENTITY.md
-          - Control protocol: docs/research/HDMI_MESH_PROTOCOL.md
-          - Reconciler: docs/research/HDMI_MESH_RECONCILER.md
-          - Operator CLI: docs/research/HDMI_MESH_CLI.md
-          - Data plane: docs/research/HDMI_MESH_DATA_PLANE.md
-          - Endpoint hardware: docs/research/HDMI_MESH_ENDPOINT_HARDWARE.md
-          - Security: docs/research/HDMI_MESH_SECURITY.md
-          - Observability: docs/research/HDMI_MESH_OBSERVABILITY.md
-          - Test plan: docs/research/HDMI_MESH_TEST_PLAN.md
-      - USB 3 matrix: docs/research/USB3_NETWORK_MATRIX.md
-      - USB 3 operator CLI: docs/research/USB3_MATRIX_CLI.md
-      - Transparent USB product:
-          - Product contract: docs/research/USB_TRANSPARENT_PRODUCT.md
-          - Cross-platform support: docs/research/USB_MESH_CROSS_PLATFORM.md
-          - Windows host support: docs/research/USB_MESH_WINDOWS_HOST.md
-          - Endpoint hardware: docs/research/USB_MESH_ENDPOINT_HARDWARE.md
-          - PoE power: docs/research/USB_MESH_POE_POWER.md
-      - USB 3 mesh:
-          - Architecture: docs/research/USB3_MESH_ARCHITECTURE.md
-          - Identity and inventory: docs/research/USB3_MESH_IDENTITY.md
-          - Control protocol: docs/research/USB3_MESH_PROTOCOL.md
-          - Reconciler: docs/research/USB3_MESH_RECONCILER.md
-          - Operator CLI: docs/research/USB3_MESH_CLI.md
-          - Data plane: docs/research/USB3_MESH_DATA_PLANE.md
-          - Security: docs/research/USB3_MESH_SECURITY.md
-          - Scaling: docs/research/USB3_MESH_SCALING.md
-          - Observability: docs/research/USB3_MESH_OBSERVABILITY.md
-          - Test plan: docs/research/USB3_MESH_TEST_PLAN.md
-      - USB 3 phase 1: projects/usb3-matrix.md
+      - HDMI mesh architecture: docs/research/HDMI_MESH_ARCHITECTURE.md
+      - Transparent USB product: docs/research/USB_TRANSPARENT_PRODUCT.md
       - Sensor-kit taxonomy: docs/research/SENSOR_KIT_TAXONOMY.md
-  - Projects:
-      - Cadence: projects/cadence.md
-      - USB and HDMI mesh roadmap: projects/mesh-roadmap.md
-      - Reaction timer: docs/projects/reaction_timer.md
-      - Deterministic Simon: docs/projects/simon.md
-      - Complete-kit project cadence: docs/projects/component_project_cadence.md
-  - Agent and release contracts:
+  - Build and safety:
+      - Safety: safety.md
+      - Build locally: build.md
       - Development: docs/DEVELOPMENT.md
       - Testing: docs/TESTING.md
-      - Safety model: docs/SAFETY_MODEL.md
       - Packaging: docs/PACKAGING.md
       - PDF policy: docs/PDF_POLICY.md
-      - Size budgets: docs/SIZE_BUDGETS.md
-  - Legacy:
-      - Overview: legacy/index.md
-      - Preview API: legacy/api.md
-      - Lesson 001: legacy/lessons/001.md
-      - Lesson 002: legacy/lessons/002.md
-      - Lesson 003: legacy/lessons/003.md
-  - Safety: safety.md
-  - Build locally: build.md
-  - Contributing: contributing.md
-  - Accessibility: accessibility.md
-  - About: about.md
-  - License: license.md
+  - About:
+      - About ADK: about.md
+      - Accessibility: accessibility.md
+      - Contributing: contributing.md
+      - Legacy preview: legacy/index.md
+      - License: license.md
 
 markdown_extensions:
   - attr_list

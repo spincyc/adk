@@ -3,6 +3,7 @@ import unittest
 from pathlib import Path
 
 from scripts.check_deployed_site import CHECKS
+from scripts.check_deployed_site import CANONICAL_EXAMPLE
 from scripts.check_deployed_site import check_deployment
 from scripts.check_deployed_site import normalize_base_url
 
@@ -11,23 +12,18 @@ class DeployedSiteTest(unittest.TestCase):
     def test_file_url_fixture_passes(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            canonical_example = (
-                Path(__file__).resolve().parents[1]
-                / "examples/Lesson030InertShowSimulator/"
-                "Lesson030InertShowSimulator.ino"
-            ).read_bytes()
+            canonical_example = CANONICAL_EXAMPLE.read_bytes()
             contents = {
                 "index.html": (
                     b"<!doctype html><title>ADK</title>"
-                    b"lessons 001\xe2\x80\x93030 physically inert show-cue"
+                    b"Lessons 001\xe2\x80\x93033 Planned course"
                 ),
-                "lessons/030/index.html": (
-                    b"<!doctype html><title>030</title>"
-                    b"Reviewed inert show-cue simulator "
-                    b"synthetic observations and inert visual cues only"
+                "lessons/033/index.html": (
+                    b"<!doctype html><title>033</title>"
+                    b"Lesson 033 calibration console"
                 ),
-                "downloads/lessons/030.pdf": b"%PDF-1.7\nfixture",
-                "downloads/sketches/Lesson030InertShowSimulator.ino": (
+                "downloads/lessons/033.pdf": b"%PDF-1.7\nfixture",
+                "downloads/sketches/Lesson033CalibrationConsole.ino": (
                     canonical_example
                 ),
             }
@@ -74,17 +70,10 @@ class DeployedSiteTest(unittest.TestCase):
             if url.endswith(".pdf"):
                 return b"%PDF-1.7\n"
             if url.endswith(".ino"):
-                return (
-                    Path(__file__).resolve().parents[1]
-                    / "examples/Lesson030InertShowSimulator/"
-                    "Lesson030InertShowSimulator.ino"
-                ).read_bytes()
-            if url.endswith("lessons/030/"):
-                return (
-                    b"Reviewed inert show-cue simulator "
-                    b"synthetic observations and inert visual cues only"
-                )
-            return b"lessons 001\xe2\x80\x93030 physically inert show-cue"
+                return CANONICAL_EXAMPLE.read_bytes()
+            if url.endswith("lessons/033/"):
+                return b"Lesson 033 calibration console"
+            return b"Lessons 001\xe2\x80\x93033 Planned course"
 
         self.assertEqual(
             check_deployment(
@@ -97,6 +86,17 @@ class DeployedSiteTest(unittest.TestCase):
             [],
         )
         self.assertEqual(set(attempts.values()), {2})
+
+    def test_checks_follow_newest_published_lesson(self):
+        repository = Path(__file__).resolve().parents[1]
+        latest = max(
+            path.stem
+            for path in (repository / "site/pages/lessons").glob("[0-9][0-9][0-9].md")
+        )
+
+        self.assertEqual(CHECKS[1].path, f"lessons/{latest}/")
+        self.assertEqual(CHECKS[2].path, f"downloads/lessons/{latest}.pdf")
+        self.assertTrue(CANONICAL_EXAMPLE.parent.name.startswith(f"Lesson{latest}"))
 
     def test_base_url_validation(self):
         self.assertEqual(
