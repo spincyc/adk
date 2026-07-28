@@ -57,6 +57,8 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_night_light \
 	$(BUILD_DIR)/host/test_observation_tracker \
 	$(BUILD_DIR)/host/test_packet_receiver \
+	$(BUILD_DIR)/host/test_passage_ledger \
+	$(BUILD_DIR)/host/test_magnetic_passage_logger \
 	$(BUILD_DIR)/host/test_passage_qualifier \
 	$(BUILD_DIR)/host/test_reaction_timer \
 	$(BUILD_DIR)/host/test_record_sink \
@@ -224,6 +226,23 @@ $(BUILD_DIR)/host/test_passage_qualifier: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/passage_qualifier.cpp \
 		tests/test_passage_qualifier.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_passage_ledger: $(HOST_CORE_SOURCES) \
+		src/passage_ledger.cpp tests/test_passage_ledger.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/passage_ledger.cpp \
+		tests/test_passage_ledger.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_magnetic_passage_logger: $(HOST_IO_SOURCES) \
+		src/board.cpp src/magnetic_passage_logger.cpp src/passage_ledger.cpp \
+		src/rtc.cpp src/seven_segment_display.cpp src/shift_register.cpp \
+		tests/test_magnetic_passage_logger.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_IO_SOURCES) src/board.cpp src/magnetic_passage_logger.cpp \
+		src/passage_ledger.cpp src/rtc.cpp src/seven_segment_display.cpp \
+		src/shift_register.cpp tests/test_magnetic_passage_logger.cpp \
+		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_magnetic_observation: $(HOST_IO_SOURCES) \
 		src/analog_input.cpp src/board.cpp src/magnetic_observation.cpp \

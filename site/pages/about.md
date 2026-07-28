@@ -16,10 +16,10 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--035 use the first-class per-object
+ADK is early-stage software. Lessons 001--036 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
-Lesson 036 is the active planned project boundary.
+Lesson 037 is the next planned component boundary.
 
 The hierarchy is developed in dependency order:
 
@@ -31,9 +31,9 @@ The per-object lifecycle uses transactional `initialize()`, idempotent
 `shutdown() noexcept`, and destructor-driven cleanup. The original
 global-registration preview is frozen under [Legacy](legacy/index.md).
 
-The latest promoted slices are lesson 034's qualified magnetic observations
-and lesson 035's bounded passage qualification. Lesson 036 is active and
-planned next. See
+The latest promoted arc is Lessons 034--036: qualified magnetic observations,
+bounded passage qualification, and durable passage logging with explicit
+recovery evidence. Lesson 037 is planned next. See
 the [roadmap](docs/ROADMAP.md) for the full sequence.
 
 ## Principles

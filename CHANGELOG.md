@@ -55,8 +55,10 @@
   specimen gates, hysteresis, dwell, and deterministic evidence.
 - Added deterministic passage qualification with direction, timeout,
   duplicate suppression, position corroboration, and fault recovery.
+- Added the deterministic magnetic passage logger with two-slot recovery,
+  byte-identical retries, and presentation that follows durable commit.
 
-Interfaces through lesson 035 are host verified and experimental. Physical
+Interfaces through lesson 036 are host verified and experimental. Physical
 Mega 2560 acceptance, USB/HDMI endpoint hardware, interoperability, and
 performance evidence remain open and are not implied by this version.
 

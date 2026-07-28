@@ -40,6 +40,7 @@ third lesson for a deterministic integration project.
 | [Lesson 033 — Calibration console](033.md) | Calibration console | Joystick selection, encoder trim, and explicit commit or cancel |
 | [Lesson 034 — Magnetic observations](034.md) | Qualified magnetic evidence | Raw analog/contact observations, hysteresis, dwell, and specimen gates |
 | [Lesson 035 — Passage qualification](035.md) | Qualified passage evidence | Direction, timeout, suppression, and optional position corroboration |
+| [Lesson 036 — Magnetic passage logger](036.md) | Durable passage project | Frozen evidence, two-slot recovery, retry, and post-commit presentation |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance

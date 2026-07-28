@@ -334,7 +334,9 @@ struct LoggerSnapshot
 `PassageLedgerRecovery` distinguishes valid empty storage from failure.
 
 `MagneticPassageLogger(LoggerConfig, Rtc&, PassageLedger&,
-SevenSegmentDisplay&)` is destructible and noncopyable/nonmovable. It provides
+PassageCountDisplay&)` is destructible and noncopyable/nonmovable. The
+`SevenSegmentPassageCountDisplay` adapter binds that narrow presentation
+boundary to `SevenSegmentDisplay`. The logger provides
 `Status initialize()`, `Status update(const PassageRecord&)`,
 `Status cycleLabel()`, `LoggerSnapshot snapshot() const`, `bool initialized()
 const`, and `void shutdown()`. Initialization validates configuration,

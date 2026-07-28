@@ -60,7 +60,8 @@ Status meanings:
 | Input expansion | `AnalogJoystick`, `QuadratureEncoder`, `CalibrationConsole` | Host verified; bench open | Lessons 031–033 |
 | Magnetic observation | `LinearHall`, `MagneticContact` | Host verified; exact specimen and bench open | Lesson 034 |
 | Passage policy | `PassageQualifier` | Host verified; exact specimen and bench open | Lesson 035 |
-| Queued layers | Lesson 036 and later curriculum components | Queued | See catalog and work queue |
+| Durable passage project | `TwoSlotPassageLedger`, `MagneticPassageLogger` | Host verified; exact specimen and bench open | Lesson 036 |
+| Queued layers | Lesson 037 and later curriculum components | Queued | See catalog and work queue |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.
 Behavior engines expose output intent rather than hiding hardware callbacks.

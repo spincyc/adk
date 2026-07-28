@@ -17,12 +17,12 @@ recorded in
 Its findings must be reconciled through bounded tasks; the audit itself does
 not promote work or replace this ledger.
 
-- Lessons 001--035 are promoted and host verified; physical cards remain open.
+- Lessons 001--036 are promoted and host verified; physical cards remain open.
 - Lesson 030 has an independently reviewed composition core, canonical Mega
   example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
-- Lessons 034 and 035 are complete through their non-hardware gates. Lesson
-  036 is the active planned composition boundary; its bench gates remain open.
+- Lessons 034--036 are complete through their non-hardware gates. Lesson 037
+  is the next planned component boundary; all bench gates remain open.
 - The USB research track has a deterministic product-native `Cau`/`Pau`
   `ColdMove` model. It performs no USB action and makes no transparency claim.
 - The exact kit inventory template and honest planned-versus-supported coverage
@@ -64,8 +64,8 @@ physical-acceptance paperwork outside the lesson flow.
 
 | Boundary | State | Required next result |
 |---|---|---|
-| [001--035](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [036](projects/component_project_cadence.md) | Active planned integration | Complete the magnetic passage logger without closing physical gates |
+| [001--036](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
+| [037--039](projects/component_project_cadence.md) | Queued; detailed brief required | Expand the percussion-sequencer arc before code |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -91,7 +91,7 @@ work; retail kit names are not electrical identities.
 | Lessons | State | Block |
 |---:|---|---|
 | [031--033](design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md) | Host verified; bench open | Analog joystick, quadrature encoder, calibration console |
-| [034--036](design/LESSONS_034_036_MAGNETIC_PASSAGE_PLAN.md) | Active integration; 034--035 host verified | Magnetic passage logger remains |
+| [034--036](design/LESSONS_034_036_MAGNETIC_PASSAGE_PLAN.md) | Host verified; bench open | Magnetic observations, passage qualification, magnetic passage logger |
 | [037--039](projects/component_project_cadence.md) | Queued | Contact dynamics, acoustic envelope, percussion sequencer |
 | [040--042](projects/component_project_cadence.md) | Queued | Optical observations, presence, tabletop course marshal |
 | [043--045](projects/component_project_cadence.md) | Queued | Resistive probes, thermal/radiant observation, museum-case monitor |
@@ -116,10 +116,10 @@ collision. The [kit coverage audit](design/ELEGOO_MEGA_KIT_COVERAGE_2026-07-27.m
 inputs. Coverage is not complete until every claimed module has an exact
 inventory record and the relevant block passes its gates.
 
-Lessons 031--035 have implementation-ready design briefs and authorized
+Lessons 031--036 have implementation-ready design briefs and authorized
 product families. Exact-revision electrical qualification and bench
-acceptance remain open. Lesson 036 is active planned integration. Lessons
-037--081 are canonical subjects and retained work, but their cadence entries
+acceptance remain open. Lessons 037--081 are canonical subjects and retained
+work, but their cadence entries
 are not implementation-ready lesson plans. Before code begins for each three-lesson
 arc, expand it to the same depth as 031--033: public values and interfaces,
 resource and pin budgets, deterministic fixture and failure matrices,
@@ -182,7 +182,7 @@ out of scope. Controller high availability remains explicitly deferred.
 The landing page now uses one canonical source, a compact top navigation,
 linked published arcs, and linkless planned rows through Lesson 081 plus the
 retained research tracks. Preserve that scan-first hierarchy as work advances.
-The post-deploy verifier follows Lesson 035 and has a regression check that
+The post-deploy verifier follows Lesson 036 and has a regression check that
 must advance with the newest published lesson.
 
 At the next clean hierarchy boundary:
