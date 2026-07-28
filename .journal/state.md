@@ -3,10 +3,10 @@ schema_version: 1
 repository_uuid: "51e8871e-d671-4f8b-9e07-505dbc2090e8"
 primary_remote: "https://github.com/spincyc/adk.git"
 branch: "main"
-head_observed: "b15bd814531fe7b73c4a8464756ba27840cf5314"
-working_tree_state: "lesson-032-verified-lesson-033-integration-pending"
-active_tasks: ["d6769eef-c69b-457c-bdf1-5aa7498ae5ab"]
-updated_at: "2026-07-28T00:14:08Z"
+head_observed: "0915ee2"
+working_tree_state: "lessons-031-033-verified"
+active_tasks: []
+updated_at: "2026-07-28T00:17:36Z"
 ---
 
 # Repository recovery state
@@ -23,4 +23,5 @@ authorized inventory-family scope. Their revisioned manifests, deduplicated
 union rules, electrical-evidence boundary, and curriculum reconciliation are
 complete. Revision-specific electrical claims still require markings or
 primary-source evidence where the listing is insufficient.
-Lessons 031--033 are the active dependency boundary.
+Lessons 031--033 are host verified and published with physical acceptance
+open. The post-033 implementation-depth brief is the next runnable boundary.

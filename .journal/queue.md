@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-07-28T00:01:17Z"
+generated_at: "2026-07-28T00:18:25Z"
 task_count: 18
 ---
 
@@ -10,7 +10,7 @@ This file is a rebuildable view. Task `state.md` files are authoritative.
 
 ## Active
 
-- `d6769eef-c69b-457c-bdf1-5aa7498ae5ab` — implement lessons 031--033 [active, normal] (depends on efdb8701-d7fe-490e-9a85-d0116f37e4fc, fb9510ee-13cf-4bb7-a7ad-7b6f7bfce3df)
+None.
 
 ## Queued
 
@@ -37,4 +37,5 @@ None.
 - `73b4e704-b483-424e-ab0c-6ffcac540ef3` — reconcile release and lint policy [done, normal] (depends on efdb8701-d7fe-490e-9a85-d0116f37e4fc, 3cbaec90-9c9d-421e-b129-34bbdb477340, cb197bb3-b7e1-4054-8bfe-92f7f27963f2, 957366fa-d370-4060-89a3-40ec5c4a1722)
 - `957366fa-d370-4060-89a3-40ec5c4a1722` — finish site navigation and deployment verification [done, normal] (depends on d6a8e538-7ae1-4522-9b37-ffa79055b36b)
 - `cb197bb3-b7e1-4054-8bfe-92f7f27963f2` — add native C++ consumer packaging [done, normal]
+- `d6769eef-c69b-457c-bdf1-5aa7498ae5ab` — implement lessons 031--033 [done, normal] (depends on efdb8701-d7fe-490e-9a85-d0116f37e4fc, fb9510ee-13cf-4bb7-a7ad-7b6f7bfce3df)
 - `fb9510ee-13cf-4bb7-a7ad-7b6f7bfce3df` — complete exact kit inventory [done, normal]
