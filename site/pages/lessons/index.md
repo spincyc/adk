@@ -38,6 +38,8 @@ third lesson for a deterministic integration project.
 | [Lesson 031 — Analog joystick](031.md) | Two-axis joystick | Calibrated axes, dead zone, and separate select events |
 | [Lesson 032 — Quadrature encoder](032.md) | Rotary encoder | Gray-code edges, invalid transitions, and saturating position |
 | [Lesson 033 — Calibration console](033.md) | Calibration console | Joystick selection, encoder trim, and explicit commit or cancel |
+| [Lesson 034 — Magnetic observations](034.md) | Qualified magnetic evidence | Raw analog/contact observations, hysteresis, dwell, and specimen gates |
+| [Lesson 035 — Passage qualification](035.md) | Qualified passage evidence | Direction, timeout, suppression, and optional position corroboration |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="760"
+     viewBox="0 0 1600 760" role="img" aria-labelledby="title description">
+  <title id="title">Passage dwell timeout and suppression timing</title>
+  <desc id="description">Pencil timing tracks show boundary A qualifying
+  first, boundary B qualifying before the inclusive timeout edge, one accepted
+  record, and rearm only after both boundaries are inactive and the duplicate
+  window expires. Side cases show timeout, ambiguity, retreat, and fault.</desc>
+  <defs>
+    <filter id="pencil" x="-4%" y="-7%" width="108%" height="114%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.013 0.08"
+       numOctaves="2" seed="36" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="2.2"/>
+    </filter>
+    <style>
+      .ink{fill:none;stroke:#303030;stroke-width:4;stroke-linecap:round;
+       stroke-linejoin:round;filter:url(#pencil)}
+      .dash{fill:none;stroke:#555;stroke-width:3;stroke-dasharray:11 9;
+       filter:url(#pencil)}
+      .label{fill:#202020;font-family:"Open Sans";font-size:25px;font-weight:700}
+      .text{fill:#202020;font-family:"Open Sans";font-size:21px}
+      .small{fill:#202020;font-family:"Open Sans";font-size:18px}
+    </style>
+  </defs>
+  <rect width="1600" height="760" fill="#fff"/>
+  <text x="45" y="45" class="label">ACCEPTED A-TO-B TRACE — EXACT EDGES ARE PART OF THE CONTRACT</text>
+  <text x="55" y="125" class="label">A active</text>
+  <text x="55" y="225" class="label">B active</text>
+  <text x="55" y="325" class="label">record</text>
+  <text x="55" y="425" class="label">phase</text>
+  <path d="M210 150H1510M210 250H1510M210 350H1510M210 450H1510" class="dash"/>
+  <path d="M240 150H390V90H800V150H1450" class="ink"/>
+  <path d="M240 250H650V190H950V250H1450" class="ink"/>
+  <path d="M240 350H800l25-45 25 90 25-90 25 45h550" class="ink"/>
+  <text x="805" y="290" class="small">one Accepted record</text>
+  <path d="M390 70V500M650 170V500M800 70V500M950 170V500M1120 70V500"
+    class="dash"/>
+  <text x="330" y="535" class="small">A starts</text>
+  <text x="350" y="560" class="small">dwell</text>
+  <text x="610" y="535" class="small">B starts</text>
+  <text x="625" y="560" class="small">dwell</text>
+  <text x="760" y="535" class="small">B qualifies</text>
+  <text x="760" y="560" class="small">before timeout</text>
+  <text x="910" y="535" class="small">both inactive</text>
+  <text x="1070" y="535" class="small">duplicate window</text>
+  <text x="1090" y="560" class="small">expires: rearm</text>
+  <text x="260" y="440" class="text">Idle</text>
+  <text x="415" y="440" class="text">FirstBoundary</text>
+  <text x="660" y="440" class="text">AwaitingSecond</text>
+  <text x="840" y="440" class="text">Suppressing</text>
+  <text x="1140" y="440" class="text">Idle</text>
+
+  <rect x="45" y="610" width="1510" height="105" rx="20" class="ink"/>
+  <text x="70" y="650" class="label">OTHER TERMINAL PATHS</text>
+  <text x="70" y="690" class="small">late second dwell = TimedOut</text>
+  <text x="420" y="690" class="small">both qualify together = Ambiguous</text>
+  <text x="820" y="690" class="small">first retreats = wait for both inactive</text>
+  <text x="1210" y="690" class="small">bad evidence/time = Fault</text>
+</svg>

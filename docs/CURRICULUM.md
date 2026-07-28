@@ -8,10 +8,10 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--033 have first-class implementation work, deterministic host
+Lessons 001--035 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
-bench cards remain open. Lesson 034 is the next queued implementation
-boundary. The joystick and encoder families used in 031--033 are in the
+bench cards remain open. Lesson 036 is the active planned project boundary.
+The input families used in 031--035 are in the
 [authorized Elegoo set](inventory/AUTHORIZED_ELEGOO_SET.md); exact electrical
 revision and bench evidence remain open. The
 [work queue](WORK_QUEUE.md) records later

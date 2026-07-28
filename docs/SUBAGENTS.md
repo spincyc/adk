@@ -122,9 +122,9 @@ full integration gates, and publication remain coordinator responsibilities.
 
 ## Current checkpoint
 
-Lessons 001--033 are host verified with their physical cards open. Lesson 034
-is the next queued lesson implementation boundary. Lessons 034--081 remain
-the queued three-lesson expansion.
+Lessons 001--035 are host verified with their physical cards open. Lesson 036
+is the active planned project boundary. Lessons 037--081 remain the queued
+three-lesson expansion.
 
 Transparent USB, HDMI mesh, and shared-fabric material remains research and
 host-model evidence only. Bounded next USB and HDMI/shared-fabric research
