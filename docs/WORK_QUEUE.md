@@ -79,7 +79,7 @@ work; retail kit names are not electrical identities.
 | Lessons | State | Block |
 |---:|---|---|
 | [031--033](design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md) | Host verified; bench open | Analog joystick, quadrature encoder, calibration console |
-| [034--036](projects/component_project_cadence.md) | Queued | Magnetic/contact observation, passage policy, passage logger |
+| [034--036](design/LESSONS_034_036_MAGNETIC_PASSAGE_PLAN.md) | Queued; implementation-depth brief complete | Magnetic observations, passage qualification, passage logger |
 | [037--039](projects/component_project_cadence.md) | Queued | Contact dynamics, acoustic envelope, percussion sequencer |
 | [040--042](projects/component_project_cadence.md) | Queued | Optical observations, presence, tabletop course marshal |
 | [043--045](projects/component_project_cadence.md) | Queued | Resistive probes, thermal/radiant observation, museum-case monitor |

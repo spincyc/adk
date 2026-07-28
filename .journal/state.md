@@ -4,9 +4,9 @@ repository_uuid: "51e8871e-d671-4f8b-9e07-505dbc2090e8"
 primary_remote: "https://github.com/spincyc/adk.git"
 branch: "main"
 head_observed: "6f41792"
-working_tree_state: "lessons-034-036-plan-active"
-active_tasks: ["9de22f03-58c6-4bcc-a991-fd934ea45f80"]
-updated_at: "2026-07-28T00:18:44Z"
+working_tree_state: "lessons-034-036-plan-complete"
+active_tasks: []
+updated_at: "2026-07-28T00:42:59Z"
 ---
 
 # Repository recovery state
@@ -24,4 +24,5 @@ union rules, electrical-evidence boundary, and curriculum reconciliation are
 complete. Revision-specific electrical claims still require markings or
 primary-source evidence where the listing is insufficient.
 Lessons 031--033 are host verified and published with physical acceptance
-open. The lessons 034--036 implementation-depth brief is active.
+open. The independently reviewed Lessons 034--036 implementation-depth brief
+is complete; implementation remains queued.

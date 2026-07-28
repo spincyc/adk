@@ -2,7 +2,7 @@
 schema_version: 1
 task_uuid: "9de22f03-58c6-4bcc-a991-fd934ea45f80"
 title: "deepen the next post-033 block"
-status: "active"
+status: "done"
 priority: "normal"
 priority_reason: "Recovered audit prompt 14; ordered by the repository recovery audit."
 parent: null
@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-28T00:18:44Z"
+updated_at: "2026-07-28T00:42:59Z"
 ---
 
 # Goal
@@ -46,3 +46,9 @@ details. Do not write first-class code in this task.
 Both hard dependencies are complete. Planning uses only families in the
 authorized Elegoo union and must leave exact revision-specific electrical
 facts as explicit specimen gates.
+
+## Completion
+
+The implementation-depth Lessons 034--036 plan is complete. Independent
+implementation/API and inventory/safety reviews both passed. No first-class
+lesson code or physical acceptance is claimed.
