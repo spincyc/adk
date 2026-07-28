@@ -9,7 +9,7 @@ briefs come from [the project catalog](PROJECTS.md) and the
 
 ## Restart checkpoint
 
-Last reconciled: 2026-07-27 on `main`.
+Last reconciled: 2026-07-28 on `main`.
 
 The repository-wide recovery audit and ordered journal-ingestion prompts are
 recorded in
@@ -105,7 +105,7 @@ work; retail kit names are not electrical identities.
 | [031--033](design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md) | Host verified; bench open | Analog joystick, quadrature encoder, calibration console |
 | [034--036](design/LESSONS_034_036_MAGNETIC_PASSAGE_PLAN.md) | Host verified; bench open | Magnetic observations, passage qualification, magnetic passage logger |
 | [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Active integration | E0 cores/tests/drafts complete; linked exact-specimen Mega example/schematic, promotion, and E1 open |
-| [040--042](projects/component_project_cadence.md) | Queued | Optical observations, presence, tabletop course marshal |
+| [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Queued | Provisional implementation-depth optical observations, presence, and tabletop course marshal; reconcile after 037--039 |
 | [043--045](projects/component_project_cadence.md) | Queued | Resistive probes, thermal/radiant observation, museum-case monitor |
 | [046--048](projects/component_project_cadence.md) | Queued | Touch/proximity, bounded stepper motion, kinetic sculpture |
 | [049--051](projects/component_project_cadence.md) | Queued | Local identity records, homing, inert parts carousel |
@@ -132,10 +132,11 @@ Lessons 031--036 have complete implementation-ready design briefs and are host
 verified. Lessons 037--039 have complete E0 cores, tests, and
 hardware-independent drafts. Their linked exact-specimen Mega example,
 authoritative schematic, promotion, and E1 physical acceptance remain open
-behind specimen qualification. Lessons 040--081 are
-canonical subjects and retained
-work, but their cadence entries
-are not implementation-ready lesson plans. Before code begins for each three-lesson
+behind specimen qualification. Lessons 040--042 have a provisional
+implementation-depth brief but remain queued behind final 037--039
+reconciliation, the Lesson 042 arming decision, and exact-specimen gates.
+Lessons 043--081 are canonical subjects and retained work, but their cadence
+entries are not implementation-ready lesson plans. Before code begins for each three-lesson
 arc, expand it to the same depth as 031--033: public values and interfaces,
 resource and pin budgets, deterministic fixture and failure matrices,
 narrative example flow, staged circuit-native experiments, HTML/PDF division,
