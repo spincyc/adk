@@ -1,16 +1,18 @@
 # Presence model design stress pass
 
-This pre-implementation record applies the
+This record applies the
 [component design stress pass](../../templates/component-design-stress-pass.md)
-to the proposed Lesson 041 PIR qualification and copied-evidence presence
-model. It evaluates the planned public boundary; implementation, measured
-composition, exact-fixture, publication, and physical gates remain open.
+to the bounded Lesson 041 PIR qualification and copied-evidence presence
+model. The E0 core, deterministic tests, independent review, and exact AVR
+layout measurement are complete; the linked example, powered composition,
+publication, and physical gates remain open.
 
 ## Boundary
 
 - Name and lesson/project: `PirObservationPolicy` and `PresenceModel`,
   Lesson 041
-- Reviewer and date: pre-implementation architecture review, 2026-07-28
+- Reviewer and date: implementation checkpoint and independent review,
+  2026-07-28
 - Public types and operations: `PirPhase`, `PresenceQuality`, `PirSample`,
   `PirObservation`, `PirObservationConfig`,
   `PirObservationPolicy::{initialize,reset,update,snapshot,initialized}`,
@@ -32,14 +34,14 @@ composition, exact-fixture, publication, and physical gates remain open.
 | Pressure | Evidence and disposition |
 |---|---|
 | API and layering | **Natural in the planned boundary.** `PirObservationPolicy` alone qualifies PIR warm-up, polarity, motion/clear dwell, retrigger, stuck motion, and recovery. `PresenceModel` consumes qualified copied PIR and optical evidence plus copied terminal range evidence; it neither owns endpoints nor requalifies those sources. A passage event remains a beam restoration semantic event with retained context, not a generic vote or reuse of magnetic passage policy. |
-| Ownership and lifecycle | **Natural, subject to implementation proof.** Both values are planned as inert, fixed-storage pure policies with explicit initialization and reset and no pin, endpoint, callback, bus, timer, heap, or borrowed lifetime. Reset returns PIR warm-up and aggregate passage/disagreement candidates to an unqualified state without synthesizing events. Tests must prove failed initialization and malformed updates leave no partial mutation. |
-| Time and ordering | **Natural but proof remains open.** All course time and microsecond acquisition timing enter in copied values. Source epochs may precede the frame and retain measured age; future, half-range, and apparent backward epochs fault before mutation. `TimedRangeEvidence` preserves course-clock start/completion and the distinct microsecond measurement interval rather than pretending delayed range and current optical/PIR samples were simultaneous. Same-time identity, rollover, dwell, freshness, agreement, and passage-window boundaries are specified for deterministic implementation. |
+| Ownership and lifecycle | **Natural and verified at E0.** Both implementations are inert, fixed-storage pure policies with explicit initialization and reset and no pin, endpoint, callback, bus, timer, heap, or borrowed lifetime. Reset returns PIR warm-up and aggregate passage/disagreement candidates to an unqualified state without synthesizing events. Malformed updates publish a canonical fault without partially replacing retained stable evidence. |
+| Time and ordering | **Natural and verified at E0.** All course time and microsecond acquisition timing enter in copied values. Source epochs may precede the frame and retain measured age; future, half-range, and apparent backward epochs fault before mutation. `TimedRangeEvidence` preserves course-clock start/completion and the distinct microsecond measurement interval rather than pretending delayed range and current optical/PIR samples were simultaneous. Tests cover same-time identity, rollover, dwell, freshness, agreement, and passage-window boundaries. |
 | Errors and status | **Natural.** Existing `Status` represents malformed evidence and source/timing failure. `PirPhase`, `OpticalQuality`, range states, and `PresenceQuality` retain semantic state such as warm-up, stale, disagreement, timeout, and out-of-range. The planned precedence is malformed timing/tuple, source fault, stale, disagreement, then ordinary transition; absence of a required source is `Unqualified` with Ok status rather than an invented failure. |
-| Resource budget | **Architecturally bounded; measured gate open.** Both policies use fixed copied records and bounded constant-time source evaluation. The provisional composition reserves PIR D23, beam D22, optional finish guard A0, HC-SR04 D24/D25, and evidence LEDs D30--D32, with no bus, timer, interrupt, storage, actuator, or external-power owner. Final object/stack/flash/SRAM measurements, claim occupancy, exact pins, current, and coexistence margin on Mega 2560 remain required before promotion. |
-| Deterministic proof | **Specified but not yet executed.** The matrix covers PIR warm-up/retrigger/stuck/recovery, optical passage, every legal and crossed-invalid range tuple, per-source freshness, simultaneous changes, disagreement, same-time identity, rollover, half-range, collision precedence, reset/restart, and byte-stable replay. Host fixtures must demonstrate no partial mutation and capacity boundaries before this row can close. |
-| Packaging and public surface | **Natural if implemented conventionally.** The plan names one standalone declarative header, one out-of-line source, focused host tests, ordinary umbrella exposure, Arduino source discovery, and no special native source path. Archive inventory, exception/sanitizer coverage, and measured size baselines remain open implementation gates. |
+| Resource budget | **E0 object gate passed; aggregate gate open.** AVR 7.3.0 measures `PresenceModel` 128 bytes, `PirObservationPolicy` 52 bytes, `PresenceInput` 89 bytes, and `PresenceSnapshot` 102 bytes, so the largest owned object is exactly at the supported ceiling. A direct `-Os` AVR compile of `presence_model.cpp` measures 7,632 bytes of section text. The powered composition still requires aggregate stack/flash/SRAM, claim, pin, current, cadence, and coexistence evidence. |
+| Deterministic proof | **Passed for the bounded E0 core.** Focused and sanitizer fixtures cover PIR warm-up/retrigger/stuck/recovery, optical passage, legal and malformed range tuples, freshness, simultaneous changes, disagreement, same-time identity, rollover, half-range, collision precedence, reset/restart, canonical absence, deduplication across absence, and no partial mutation. |
+| Packaging and public surface | **Natural at the source boundary.** The implementation has one standalone declarative header, one out-of-line source, focused host inventory, and ordinary umbrella exposure. The Arduino archive, linked example, aggregate firmware size, package, and publication gates remain open. |
 | Example and documentation fit | **Natural at the copied-policy layer.** The Lesson 041 narrative can observe each source alone, copy an immutable multi-source frame, decide presence/passage quality, and actuate D30--D32 evidence LEDs. The Mega sketch, HTML, and PDF must use identical warm-up, freshness, disagreement, passage, and provenance vocabulary. All non-schematic visuals must use the required pencil presentation; an authoritative schematic requires an exact qualified circuit. |
-| Downstream effects | **Contained if the narrow contract is preserved.** Lesson 042 may consume the stable semantic passage event and copied context. Lesson 040 policies, `UltrasonicRanger`, `RangeReading`, magnetic passage components, telemetry observation tracking, storage, and RTC contracts remain unchanged. A generic timestamped-observation framework, changed upstream observation type, implicit source substitution, or persistence would challenge this result and require architectural remediation. |
+| Downstream effects | **Contained.** Lesson 042 may consume the stable semantic passage event and copied context. Lesson 040 policies, `UltrasonicRanger`, `RangeReading`, magnetic passage components, telemetry observation tracking, storage, and RTC contracts remain unchanged. The bounded implementation introduces no generic timestamped-observation framework, source substitution, persistence, or start authority. |
 
 ## Composition pressure scenario
 
@@ -61,9 +63,9 @@ passage event.
 | Shared bus or transport | **Not applicable to the planned component.** The pure policies and provisional PIR, beam, reflective, HC-SR04, and LED fixture own no shared bus or transport. Adding a display or bus-backed diagnostic reopens scheduling, ownership, rollback, and resource analysis. |
 | Persistence and recovery | **Not applicable.** PIR, disagreement, passage-candidate, and copied observation state are intentionally volatile; no EEPROM, RTC, removable storage, schema, wear, or reset-recovery promise is introduced. Reset explicitly returns to unqualified/warm-up state. |
 | Motion, external power, or stored energy | **Not applicable.** The project observes a hand-moved card or unpowered model and produces indicator evidence only. It owns no motor, launcher, relay, external supply switch, or stored-energy actuation path. |
-| Observation identity and provenance | **Applicable; implementation proof open.** Preserve source ID, source epoch, status, PIR phase, optical provenance and calibration revision, complete range state, course-clock start/completion, and microsecond measurement epoch/latency. Same-time comparison must cover every public input field; repeated identical events are idempotent while changed evidence with the same identity faults. |
+| Observation identity and provenance | **Applicable; E0 proof passed.** Source ID, epoch, status, PIR phase, optical provenance and calibration revision, complete range state, course-clock start/completion, and microsecond measurement epoch/latency remain copied. To fit the AVR ceiling, an absent wrapper changes only its presence bit internally: its prior payload remains hidden for monotonic-source and event-identity checks. Public snapshots still expose the canonical absent value, and replaying an event after an absence remains deduplicated. Same-time canonical absence is idempotent. |
 | Diagnostic interference | **Applicable; open composition gate.** D30--D32 evidence LEDs and named HC-SR04 trigger/echo test points share the final pin/current/time budget. Serial remains optional. Prove LED or diagnostic failure cannot alter source qualification, aggregate precedence, event identity, or reset behavior, and that non-Serial evidence remains available. |
-| Failure collision and recovery | **Applicable; implementation proof open.** Inject a malformed range tuple and timing fault while PIR changes and the beam restores, plus stale/disagreeing required evidence and reset. Structural/timing failure must suppress the event without partially mutating stable state; source attribution and copied evidence must remain inspectable, and recovery must require new valid evidence rather than replaying the rejected transition. |
+| Failure collision and recovery | **Applicable; E0 proof passed.** Tests inject malformed range/timing evidence, source faults, stale values, disagreement, optical events, absence, reset, and recovery. Any active disagreement, including its pre-threshold observable interval, clears the beam passage candidate; a later matching restoration cannot close that suppressed candidate. Structural/timing failure suppresses events without partial mutation. Powered-fixture collisions remain open. |
 
 The required deterministic maximum-composition fixture must cover optional
 sources absent and present, required masks and agreement masks below/at/above
@@ -98,8 +100,8 @@ the exact-specimen electrical record or bench acceptance.
 
 ## Stress disposition
 
-**Natural fit at the planned architecture boundary, with implementation and
-composition evidence open.** The separation between PIR qualification,
+**Natural fit verified for the bounded E0 core, with powered composition
+evidence open.** The separation between PIR qualification,
 source-owned optical/range semantics, and aggregate copied-evidence policy
 fits existing layering without changing a supported public contract.
 
@@ -111,27 +113,33 @@ are architectural changes rather than local implementation details.
 
 ## Gate result
 
-- Disposition: natural fit in pre-implementation review
-- Open risks: public-header implementation drift; deterministic transition and
-  collision coverage; measured host/AVR object, stack, flash, and SRAM costs;
-  final pin/claim/current/timing coexistence; exact PIR, beam, reflective, and
+- Disposition: natural fit; bounded E0 implementation gate passed
+- Open risks: aggregate stack, flash, and SRAM costs; final
+  pin/claim/current/timing coexistence; exact PIR, beam, reflective, and
   HC-SR04 specimen qualification; authoritative circuit; pencil-visual audit;
-  and physical acceptance
+  linked example, HTML/PDF publication, and physical acceptance
 - Required discussion or decision IDs: the recorded Lesson 042 explicit-button
   authorization decision is preserved and does not alter this component;
   no additional discussion is required unless a listed architectural boundary
   is challenged
-- Remediation owner and next action: Lesson 041 implementation owner must keep
-  the proposed separation, build the deterministic source and maximum-
-  composition fixtures, measure aggregate resources, and reopen this record
-  if implementation pressure changes any public or upstream contract
+- Remediation owner and next action: Lesson 041 integration owner must build
+  the linked Mega example and powered maximum-composition fixture, measure
+  aggregate resources, and reopen this record if fixture pressure changes any
+  public or upstream contract
 - Verification commands and results:
-  - template-section coverage and plan-contract review: passed
-  - implementation, focused host tests, exception/sanitizer tests, trace
-    replay, Mega compile/size, package, and publication checks: not yet run
+  - focused host and sanitizer tests: passed
+  - independent implementation review and follow-up absence/disagreement/
+    passage regression tests: passed
+  - AVR 7.3.0 layout probe: `PresenceModel` 128,
+    `PirObservationPolicy` 52, `PresenceInput` 89, and
+    `PresenceSnapshot` 102 bytes
+  - AVR `-Os` implementation object: 7,632 bytes section text
+  - `git diff --check`: passed
+  - Mega example/aggregate size, package, lesson, site, and publication checks:
+    not yet run
 - Maximum-composition scenario and proof: scenario specified above; bounded
   deterministic replay, aggregate size/resource evidence, exact-specimen
   electrical evidence, and bench acceptance remain open
-- Promotion permitted: no; architecture fit is provisionally accepted, but
-  implementation, measured composition, exact-fixture, publication, and
+- Promotion permitted: no; the bounded E0 core gate has passed, but the linked
+  example/documentation, powered aggregate, exact-fixture, publication, and
   physical gates remain independently controlling
