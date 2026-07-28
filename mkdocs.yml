@@ -51,6 +51,7 @@ nav:
       - "029 — Inert cue scheduling and audit": lessons/029.md
       - "030 — Inert show-cue simulator": lessons/030.md
       - "031 — Analog joystick": lessons/031.md
+      - "032 — Quadrature encoder": lessons/032.md
   - Components: components.md
   - Supported API: api-supported.md
   - Design:
