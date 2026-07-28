@@ -214,8 +214,12 @@ wraparound tests when timed, example, hardware checklist, HTML reference, and
 lesson PDF are present. Its
 [component design stress pass](templates/component-design-stress-pass.md)
 must also show how composition pressure, finite resources, prior decisions,
-and downstream consumers were assessed. Projects add composition traces and
-deterministic replay fixtures.
+and downstream consumers were assessed. Applicable maximum-composition tests
+exercise aggregate scheduler and resource load, simultaneous capacity
+boundaries, diagnostic interference, and colliding failure/recovery paths;
+conditional bus, persistence, provenance, and actuation checks remain explicit
+rather than silently omitted. Projects add composition traces and deterministic
+replay fixtures.
 
 These are component-boundary gates. The complete non-publishing release gate
 is `make release-check`; it additionally checks committed metadata, both clean
