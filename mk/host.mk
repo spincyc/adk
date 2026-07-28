@@ -29,6 +29,9 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_acoustic_envelope \
 	$(BUILD_DIR)/host/test_analog_input \
 	$(BUILD_DIR)/host/test_analog_joystick \
+	$(BUILD_DIR)/host/test_balance_table_instrument_lifecycle \
+	$(BUILD_DIR)/host/test_balance_table_instrument_evidence \
+	$(BUILD_DIR)/host/test_balance_table_instrument_boundaries \
 	$(BUILD_DIR)/host/test_bus \
 	$(BUILD_DIR)/host/test_calibration_console \
 	$(BUILD_DIR)/host/test_io \
@@ -39,6 +42,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_inert_cue_scheduler \
 	$(BUILD_DIR)/host/test_inert_show_simulator \
 	$(BUILD_DIR)/host/test_inertial_observation \
+	$(BUILD_DIR)/host/test_orientation_presentation \
 	$(BUILD_DIR)/host/test_infrared_decoder \
 	$(BUILD_DIR)/host/test_infrared_record \
 	$(BUILD_DIR)/host/test_keypad \
@@ -181,6 +185,43 @@ $(BUILD_DIR)/host/test_inertial_observation: $(HOST_CORE_SOURCES) \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
 		src/inertial_observation.cpp tests/test_inertial_observation.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_orientation_presentation: $(HOST_CORE_SOURCES) \
+		src/inertial_observation.cpp src/orientation_presentation.cpp \
+		tests/test_orientation_presentation.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/inertial_observation.cpp src/orientation_presentation.cpp \
+		tests/test_orientation_presentation.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_balance_table_instrument_lifecycle: $(HOST_CORE_SOURCES) \
+		src/inertial_observation.cpp src/orientation_presentation.cpp \
+		src/balance_table_instrument.cpp tests/test_balance_table_instrument.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		-DADK_BALANCE_TABLE_TEST_PART=1 $(HOST_CORE_SOURCES) \
+		src/inertial_observation.cpp src/orientation_presentation.cpp \
+		src/balance_table_instrument.cpp tests/test_balance_table_instrument.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_balance_table_instrument_evidence: $(HOST_CORE_SOURCES) \
+		src/inertial_observation.cpp src/orientation_presentation.cpp \
+		src/balance_table_instrument.cpp tests/test_balance_table_instrument.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		-DADK_BALANCE_TABLE_TEST_PART=2 $(HOST_CORE_SOURCES) \
+		src/inertial_observation.cpp src/orientation_presentation.cpp \
+		src/balance_table_instrument.cpp tests/test_balance_table_instrument.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_balance_table_instrument_boundaries: $(HOST_CORE_SOURCES) \
+		src/inertial_observation.cpp src/orientation_presentation.cpp \
+		src/balance_table_instrument.cpp tests/test_balance_table_instrument.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		-DADK_BALANCE_TABLE_TEST_PART=3 $(HOST_CORE_SOURCES) \
+		src/inertial_observation.cpp src/orientation_presentation.cpp \
+		src/balance_table_instrument.cpp tests/test_balance_table_instrument.cpp \
 		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/inert_show_trace_runner: $(HOST_CORE_SOURCES) \

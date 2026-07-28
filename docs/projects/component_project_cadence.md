@@ -261,14 +261,23 @@ unless a later source decision admits it.
 
 ## Lessons 043--045: balance-table instrument
 
-This engagement-first block brings visible, responsive motion sensing forward
-without changing its specimen gate or revision-neutral design. Its
+This host-verified engagement-first block brings visible, responsive motion
+sensing forward without changing its specimen gate or revision-neutral
+design. Its
 [implementation-depth plan](../design/LESSONS_043_045_BALANCE_TABLE_PLAN.md)
 authorizes E0 replay only: copied synthetic inertial values, pure policies,
 deterministic composition, and presentation intent. It does not authorize a
 powered adapter, I2C transaction, wiring table, formal schematic, or E1
 acceptance claim. Exact MPU6050 and QMI8658 variants remain independently
 gated.
+
+The published API is `InertialObservationPolicy` followed by
+`OrientationPolicy` and `BalancePresentationPolicy`, then
+`BalanceInstrument`. The canonical Mega 2560 compile-only replays measure
+6,682/949, 13,740/748, and 26,398/1,898 bytes of flash/static SRAM for Lessons
+043, 044, and 045 respectively. The first two stay below 16,384 bytes of flash
+and 1,024 bytes of SRAM; the project stays below 28,672 bytes of flash and
+2,048 bytes of SRAM.
 
 ### 043 — Revision-neutral inertial samples
 
@@ -306,8 +315,15 @@ E0 evidence includes level, tilt, unsteady, saturation, stale, producer-fault,
 axis-permutation, sensitivity, freeze, timestamp-wrap, simultaneous-event, and
 byte-identical replay fixtures. The host harness records distinct
 acquisition/health, orientation, freeze, light-intent, and tone-intent result
-cells as the non-Serial-independent evidence surface. Compile-only Mega
+cells as the Serial-independent evidence surface. Compile-only Mega
 examples add no physical observation claim.
+
+AVR GCC 7.3 measures `InertialObservationPolicy` at 80 bytes,
+`OrientationPolicy` at 38 bytes, `BalancePresentationPolicy` at 95 bytes,
+`BalanceInstrument` at 339 bytes, caller-owned `BalanceFrameStorage` at 102
+bytes, and the worst live composition at 741 bytes. The compiler-derived
+`BalanceInstrument::update()` frame is 399 bytes; these static/compiler
+figures are capacity evidence, not a runtime stack measurement.
 
 Future E1 specimen coverage may include one exactly qualified MPU6050 or
 QMI8658 variant plus the joystick, RGB LED, passive buzzer, button, and

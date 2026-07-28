@@ -19,14 +19,15 @@ hardware-neutral optical, presence, and course-marshal policy. A debounced
 button is the sole start authorization; PIR may establish eligibility but
 cannot start a run. Powered adapters, exact specimens, and physical acceptance
 remain open.
-Lessons 043--045 are active under an
+Lessons 043--045 are host verified under an
 [implementation-depth E0 replay-first plan](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md).
-They authorize copied synthetic inertial values, pure orientation and
-presentation policies, and a stationary hand-operated tabletop composition,
-not a powered adapter, I2C transaction, wiring table, schematic, or physical
-claim. Exact MPU6050 and QMI8658 variants remain independently gated, and
-Lessons 067--069 retain normalization, qualification, comparison, and recorder
-scope.
+They publish `InertialObservationPolicy`, `OrientationPolicy`,
+`BalancePresentationPolicy`, and `BalanceInstrument` over copied synthetic
+values and inputs. Their canonical Mega sketches compile within the recorded
+flash/SRAM ceilings, but remain E0 replays: no powered adapter, I2C
+transaction, wiring table, schematic, or physical claim is authorized. Exact
+MPU6050 and QMI8658 variants remain independently gated, and Lessons 067--069
+retain normalization, qualification, comparison, and recorder scope.
 The later blocks are ordered for early learner engagement while retaining
 prerequisite, authorization, safety, and evidence gates: interactive motion
 and display projects precede the more methodical environmental and
@@ -104,9 +105,9 @@ For every lesson, the queued implementation order is:
 | 040 | Host verified; powered adapter and bench open | Qualified optical observations | Raw values, source identity, calibration revision, timing, transitions, and faults |
 | 041 | Host verified; powered adapter and bench open | Presence and passage composition | PIR eligibility, beam and range validity, age, and disagreement |
 | 042 | Host verified; powered adapter and bench open | Tabletop course marshal | Explicit button authorization, ordered checkpoints, invalid-run state, and replayable timing |
-| 043 | Active integration; E0 replay-first | Copied inertial observation validation | Source/configuration identity, producer status, sequence, age, saturation, and synthetic-fixture provenance |
-| 044 | Active integration; E0 replay-first | Pure board-frame orientation and presentation intent | Stationarity, bounded pitch/roll, health, light intent, and tone intent from copied samples |
-| 045 | Active integration; E0 replay-first | Stationary hand-operated tabletop balance instrument | Sensitivity, freeze, health, and presentation replay without powered endpoints |
+| 043 | Host verified; powered adapter and bench open | `InertialObservationPolicy` copied-sample validation | Source/configuration identity, producer status, sequence, age, saturation, and synthetic-fixture provenance |
+| 044 | Host verified; powered endpoints and bench open | `OrientationPolicy` and `BalancePresentationPolicy` | Stationarity, bounded pitch/roll, health, light intent, and tone intent from copied samples |
+| 045 | Host verified; powered composition and bench open | `BalanceInstrument` stationary tabletop composition | Sensitivity, freeze, health, and presentation replay without powered endpoints |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation

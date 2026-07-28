@@ -16,13 +16,15 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--042 use the first-class per-object
+ADK is early-stage software. Lessons 001--045 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
 conformance and bench acceptance remain open. Lessons 040--042 publish
 hardware-neutral optical, presence, and course-marshal policy; powered
-adapters and exact specimens remain gated.
+adapters and exact specimens remain gated. Lessons 043--045 publish E0
+copied-value inertial, orientation, and stationary balance-table policy; no
+powered sensor adapter, wiring, or physical measurement is claimed.
 
 The hierarchy is developed in dependency order:
 
@@ -34,9 +36,9 @@ The per-object lifecycle uses transactional `initialize()`, idempotent
 `shutdown() noexcept`, and destructor-driven cleanup. The original
 global-registration preview is frozen under [Legacy](legacy/index.md).
 
-The latest promoted arc is Lessons 040--042: source-specific optical evidence,
-bounded presence composition, and explicitly authorized course timing. The
-planned sequence from Lesson 043 is engagement-first: balance, kinetic motion,
+The latest promoted arc is Lessons 043--045: copied inertial evidence,
+board-frame orientation, and a stationary hand-operated balance instrument.
+The planned sequence from Lesson 046 remains engagement-first: kinetic motion
 and a parts carousel lead the remaining sensor and display arcs. See the
 [course map](course.md) for that order and the
 [roadmap](docs/ROADMAP.md) for the full sequence.

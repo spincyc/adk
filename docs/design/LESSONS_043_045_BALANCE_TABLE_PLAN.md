@@ -186,6 +186,7 @@ struct InertialObservationConfig
 struct InertialObservation
 {
     InertialSample       sample;
+    bool                 latestDataReady;
     InertialSampleQuality quality;
     Duration             age;
     Duration             maximumAge;
@@ -240,11 +241,15 @@ templates or runtime polymorphism merely for dimensional typing.
    member starts a new domain;
 7. before rejecting a zero sequence delta, compare the full sample
    semantically (every named field, with no padding-byte or `memcmp`
-   dependency); an exact repeated sample is idempotent sample evidence, while
-   any changed field at delta zero is invalid;
-8. for an exact repeated sample, recompute `age` and quality from the new
-   policy time `now` without emitting a new sample event or sequence gap; this
-   is how a previously `Current` sample becomes `Stale`;
+   dependency); an exact repeated sample is idempotent sample evidence. A
+   same-domain, same-sequence record whose only change is
+   `dataReady: true -> false` is a readiness poll, not a replacement payload:
+   retain the last accepted sample byte-for-byte and publish
+   `latestDataReady == false`. Any other changed field at delta zero is
+   invalid;
+8. for an exact repeated sample or a readiness poll, recompute `age` and
+   quality from the new policy time `now` without emitting a new sample event
+   or sequence gap; this is how a previously `Current` sample becomes `Stale`;
 9. otherwise evaluate sequence deltas modularly: `1..INT32_MAX` is forward,
    `0x80000000` is ambiguous and invalid, and larger deltas are regression;
    record `delta - 1` as the explicit sequence gap;
@@ -252,8 +257,9 @@ templates or runtime polymorphism merely for dimensional typing.
    `InvalidArgument`;
 11. require the producer's explicit saturation field to agree with the axes at
     their declared bounds; disagreement is invalid;
-12. `dataReady == false` cannot produce a new sequence and is stale evidence,
-    not a fabricated current sample;
+12. `dataReady == false` cannot produce a new sequence or replace the accepted
+    payload; it updates only `latestDataReady` and is stale evidence, not a
+    fabricated current sample;
 13. classify an axis exactly at either declared range as `Saturated`;
 14. otherwise classify age greater than `maximumAge` as `Stale`; age equal to
     `maximumAge` remains current;
@@ -280,6 +286,13 @@ through its own reviewed boundary, not by relaxing E0 validation.
 Every snapshot copies `maximumAge` and `freshnessContractRevision` from the
 initialized policy config. These fields are evidence about how freshness was
 derived, not a second source-controlled timestamp.
+
+`sample.dataReady` belongs to the retained accepted payload.
+`latestDataReady` reports the newest valid readiness poll for that same source
+domain and sequence. Keeping both is intentional: a not-ready poll must remain
+observable without rewriting the sample that produced the axes, provenance,
+timestamp, or sequence. A newly accepted ready sample sets
+`latestDataReady == true`; reset clears it to false.
 
 The snapshot is stable until the next `update()` or `reset()`. Observation
 does not consume an event. `reset()` clears sequence history and returns the
@@ -336,7 +349,7 @@ Before either seam is implemented, its inventory record must identify:
 | Source identity | synthetic accepted; MPU/QMI structural negative cases return `Unsupported`; zero/duplicate source IDs where composed; zero revisions; each kind/model/source/range/config/calibration change starts a new sequence domain |
 | Values | zero, +1/-1, each exact range, one beyond each positive/negative range, `INT32_MIN` absolute-value safety |
 | Status | every `StatusCode` producer value, non-OK dominance, no numeric classification from invalid payload |
-| Quality | current, exact age boundary, one tick stale, exact-axis saturation, saturation plus stale |
+| Quality | current, exact age boundary, one tick stale, exact-axis saturation, saturation plus stale, latest not-ready poll retains accepted payload and publishes stale readiness |
 | Sequence | first, semantic delta-zero replay before modular rejection, changed delta-zero sample rejection, forward delta 1, explicit gap, `INT32_MAX`, ambiguous `0x80000000`, regression, wrap, and new source/config/calibration domains |
 | Time | zero, exact sample replay at later policy time transitions Current to Stale without a new event, conflicting same-identity sample, future sample time, maximum age inclusive, one over, `TimePoint` wrap, illegal regression |
 | Snapshot | byte-stable copied output, non-consuming repeated reads, reset canonicalization |
@@ -449,12 +462,36 @@ struct OrientationEstimate
     Status             status;
 };
 
+Status validateOrientationConfig (const OrientationConfig& config) noexcept;
+
+struct OrientationPolicy;
+
+struct PreparedOrientationEstimate
+{
+    PreparedOrientationEstimate () noexcept;
+
+    const OrientationEstimate& result () const noexcept;
+
+  private:
+    friend struct OrientationPolicy;
+    OrientationEstimate       result_;
+    const OrientationPolicy*  owner_;
+    uint32_t                  generation_;
+};
+
 struct OrientationPolicy
 {
     explicit OrientationPolicy (const OrientationConfig& config) noexcept;
 
     Status              initialize () noexcept;
     void                reset      () noexcept;
+    Status              preview    (const InertialObservation& input,
+                                    PreparedOrientationEstimate& prepared) const
+        noexcept;
+    bool                canCommit  (
+                      const PreparedOrientationEstimate& prepared) const noexcept;
+    Status              commit     (
+                            const PreparedOrientationEstimate& prepared) noexcept;
     Status              update     (const InertialObservation& input) noexcept;
     OrientationEstimate snapshot   () const noexcept;
     bool                initialized() const noexcept;
@@ -486,6 +523,7 @@ struct BalancePresentationConfig
     BalanceLightIntent unsteadyPhaseB;
     BalanceLightIntent beyondRange;
     BalanceLightIntent invalid;
+    int32_t fullScaleAngleMilliDegrees;
     uint16_t minimumTiltIntensityPermille;
     uint16_t maximumTiltIntensityPermille;
     uint16_t directionChangeFrequencyHertz;
@@ -500,6 +538,24 @@ struct BalancePresentation
     Status            status;
 };
 
+Status validateBalancePresentationConfig (
+    const BalancePresentationConfig& config) noexcept;
+
+struct BalancePresentationPolicy;
+
+struct PreparedBalancePresentation
+{
+    PreparedBalancePresentation () noexcept;
+
+    const BalancePresentation& result () const noexcept;
+
+  private:
+    friend struct BalancePresentationPolicy;
+    BalancePresentation              result_;
+    const BalancePresentationPolicy* owner_;
+    uint32_t                         generation_;
+};
+
 struct BalancePresentationPolicy
 {
     explicit BalancePresentationPolicy (
@@ -507,6 +563,15 @@ struct BalancePresentationPolicy
 
     Status              initialize () noexcept;
     void                reset      () noexcept;
+    Status              preview    (const OrientationEstimate& estimate,
+                                    uint16_t sensitivityPermille,
+                                    bool diagnosticPhase,
+                                    PreparedBalancePresentation& prepared) const
+        noexcept;
+    bool                canCommit  (
+                     const PreparedBalancePresentation& prepared) const noexcept;
+    Status              commit     (
+                           const PreparedBalancePresentation& prepared) noexcept;
     Status              update     (const OrientationEstimate& estimate,
                                     uint16_t sensitivityPermille,
                                     bool diagnosticPhase) noexcept;
@@ -518,6 +583,40 @@ struct BalancePresentationPolicy
 The intent values describe bounded desired presentation. They are not hardware
 commands. Existing RGB/mono LED and sounder components remain the only owners
 of pins and timers.
+
+Both Lesson 044 policies expose nonmutating `preview()`, `canCommit()`, and
+transactional `commit()` seams. A prepared candidate is opaque except for its
+const-reference `result()` accessor. It binds the candidate to the producing
+policy instance and that policy's committed generation.
+`preview()` validates and derives the complete candidate from the policy's
+current committed snapshot but changes no state. `canCommit()` returns true
+only for a valid candidate produced by that same policy at its still-current
+generation. Calling `commit()` without first obtaining true from `canCommit()`
+is a caller-contract violation and returns `InvalidArgument`; with that
+precondition, commit copies the candidate snapshot, advances the generation,
+and returns `Ok` without a remaining failure path. Any
+initialize, reset, update, or commit invalidates every older candidate.
+
+Candidate binding is independent of the returned classification status.
+Structurally valid, initialized input always remains bound and committable even
+when its safe classification returns non-OK: this includes stale or saturated
+inertial evidence, an originating producer fault, invalid presentation derived
+from that fault, `Unsteady`, and `BeyondPresentationRange`. A malformed value
+or a call before policy initialization returns the diagnostic result but
+clears the owner binding, so `canCommit()` is false. This distinction lets a
+caller commit safe-state history deliberately without treating a producer
+fault as a transaction failure.
+
+The existing `update()` remains the convenient standalone operation. It runs
+`preview()` and publishes that result internally: a committable result follows
+the same checked commit path, while malformed input publishes the canonical
+diagnostic snapshot and advances the generation without making the malformed
+candidate externally committable. The free functions
+`validateOrientationConfig()` and `validateBalancePresentationConfig()`
+perform the complete configuration checks without constructing, initializing,
+or mutating a policy. These seams let Lesson 045 derive every dependent value
+before one atomic project commit without copying a noncopyable policy or
+attempting rollback.
 
 ### Orientation rules
 
@@ -637,10 +736,14 @@ fixed-point rounding and are table-tested at `threshold-E-1` through
 ### Presentation rules
 
 - `Level`: green intensity at configured minimum or greater, no tone.
-- `Tilted`: scale the dominant absolute angle by the sensitivity supplied to
-  that `update()`, clamp rather
-  than wrap, map forward/backward/left/right to documented color patterns, and
-  emit a bounded short tone intent only on a direction change.
+- `Tilted`: scale the dominant absolute angle against the configured
+  `fullScaleAngleMilliDegrees` and the sensitivity supplied to that `update()`.
+  The unbounded intensity in permille is
+  `abs(dominantAngle) * sensitivityPermille / fullScaleAngleMilliDegrees`,
+  using a 64-bit numerator and integer division toward zero. Clamp that result
+  to the configured minimum and maximum intensity rather than wrapping it,
+  map forward/backward/left/right to documented color patterns, and emit a
+  bounded short tone intent only on a direction change.
 - `BeyondPresentationRange`: amber/fault-safe light intent, no tone.
 - `Unsteady`: blue alternating intent expressed as a frame value, no tone.
 - `Invalid` or non-OK: red fault intent, no tone.
@@ -658,6 +761,8 @@ Initialization rejects:
 - presentation angle not greater than the level threshold;
 - presentation range above the approximation's proven domain;
 - any RGB intensity above 1000 permille;
+- a nonpositive full-scale presentation angle or one above 180,000
+  millidegrees;
 - inverted or zero tilt-intensity range;
 - zero tone frequency with nonzero duration, or the reverse; or
 - a duration or frequency outside the existing sounder contract.
@@ -665,7 +770,9 @@ Initialization rejects:
 Each update rejects sensitivity outside 1--1000 permille. Sensitivity is not
 constructor state, so Lesson 045 can render a frozen measurement at a newly
 selected sensitivity without mutating or reconstructing the presentation
-policy.
+policy. A `Tilted` estimate whose dominant absolute angle exceeds 180,000
+millidegrees is malformed and is rejected before scaling; the widened
+numerator therefore cannot overflow.
 
 ### Lesson 044 deterministic test matrix
 
@@ -678,9 +785,10 @@ policy.
 | Rate guard | exact threshold and one over on every positive/negative axis |
 | Input quality | current, stale, saturated, invalid, producer failure; invalid values never leak angles |
 | Thresholds | exact level threshold, one beyond, exact max presentation angle, one beyond |
-| Intent | all directions, clamp at 1000, minimum intensity, direction-change tone, repeated-direction silence |
+| Intent | all directions; full-scale angle at 1 and 180,000 millidegrees; one below/at/above the configured full scale; 1 and 1000 sensitivity; 64-bit product boundary; minimum/maximum intensity clamps; malformed angle rejection; direction-change tone; repeated-direction silence |
 | Permutations | sensor-axis mapping changes geometry only as configured; presentation is independent of pins and source kind |
 | Replay | byte-identical estimates and intents for byte-identical copied input |
+| Transaction seam | every valid and malformed orientation/presentation candidate through `preview()`; snapshot unchanged before commit; malformed and preinitialize previews are unbound; classified stale, saturated, unsteady, beyond-range, and producer-fault safe states remain bound even when preview returns non-OK; wrong-owner and stale-generation candidates fail `canCommit()`; both candidates pass `canCommit()` before either commit; successful commit exactly matches `result()`; standalone `update()` publishes the preview result and advances generation for both valid and malformed diagnostics |
 | Lifecycle/size | invalid config, repeated initialize/reset, canonical safe snapshot, AVR object and stack measurements |
 
 The fixed-point angle sweep compares the integer implementation with an
@@ -771,6 +879,10 @@ struct BalanceInstrumentConfig
     uint16_t inertialFreshnessContractRevision;
     Duration maximumInputSkew;
     Duration diagnosticPhase;
+    BalancePresentation awaitingFramePresentation;
+    BalancePresentation recoveringPresentation;
+    BalancePresentation faultPresentation;
+    BalancePresentation shutdownPresentation;
 };
 
 struct BalanceInstrumentInput
@@ -791,7 +903,8 @@ struct CompactInertialEvidence
     Duration              maximumAge;
     uint16_t              freshnessContractRevision;
     InertialSaturation    saturation;
-    bool                  dataReady;
+    bool                  acceptedDataReady;
+    bool                  latestDataReady;
     Status                status;
 };
 
@@ -826,8 +939,8 @@ struct BalanceInstrumentOutput
 struct BalanceInstrument
 {
     BalanceInstrument (const BalanceInstrumentConfig& config,
-                       OrientationPolicy& orientation,
-                       BalancePresentationPolicy& presentation,
+                       const OrientationConfig& orientationConfig,
+                       const BalancePresentationConfig& presentationConfig,
                        BalanceFrameStorage& replayStorage) noexcept;
 
     Status                   initialize () noexcept;
@@ -843,7 +956,8 @@ The output deliberately does not duplicate either six-axis payload.
 `CompactInertialEvidence` retains every fact needed to identify and interpret
 the live or frozen derived measurement: kind, model, source ID, both ranges,
 configuration and calibration revisions, timestamp, sequence, quality,
-saturation, data-ready state, freshness maximum/revision, and status. The full axes exist only in the
+saturation, accepted-payload readiness, latest readiness, freshness
+maximum/revision, and status. The full axes exist only in the
 current input and one caller-owned `BalanceFrameStorage` used to prove exact
 idempotent replay.
 
@@ -855,12 +969,32 @@ that storage. Failed frames never mutate it. `shutdown()` marks it unavailable.
 The project object stores only a non-owning pointer; it never aliases the
 caller's transient candidate input as retained state.
 
-The project borrows pure policies whose lifetimes exceed its own. It owns no
-endpoint and performs no callback. If implementation review finds borrowed
-mutable policies create aliasing or partial-update strain, the bounded remedy
-is to own those small policy objects by value or accept their configs and
-construct them internally. It is not acceptable to add heap allocation,
-runtime polymorphism, or a repository-wide service locator.
+The project owns its two pure Lesson 044 policies by value. The constructor
+accepts their immutable configs and constructs the policies internally; it
+does not borrow mutable policy state that another caller could change between
+project preview and commit. It still owns no endpoint and performs no callback.
+There is no heap allocation, runtime polymorphism, repository-wide service
+locator, copied rollback object, or externally shared mutable policy.
+
+`initialize()` first calls all three complete configuration validators:
+the project validator, `validateOrientationConfig()`, and
+`validateBalancePresentationConfig()`. Only after every preflight
+succeeds does it initialize the owned policies and publish the canonical
+`AwaitingFrame` snapshot. Thus a configuration failure cannot leave one owned
+policy initialized and the other uninitialized. `shutdown()` resets both owned
+policies after publishing the configured shutdown presentation.
+
+The four project presentations are complete canonical intent records rather
+than values synthesized from inaccessible Lesson 044 configuration. Project
+config validation requires recognized enum/status values, every light channel
+within 0--1000 permille, and tone disabled with zero frequency and duration.
+The awaiting, recovery, and shutdown records use `BalanceDirection::None`,
+carry their documented noncurrent status, and have no fault light bit except
+where explicitly documented; the fault record uses `BalanceDirection::None`,
+sets the fault light bit, carries the selected fault status at publication
+time, and is always tone-off. The project copies the configured light and
+direction values, then sets the status required by the transition; it never
+reaches into a presentation policy to recover an `invalid` light frame.
 
 ### Input identity and admission
 
@@ -869,6 +1003,27 @@ pretend that repository-wide `JoystickObservation` or `ButtonObservation`
 types exist. A caller may translate an existing `AnalogJoystickSnapshot` and
 `Button` accessors into them, but that adapter is outside the pure project
 policy. Each copied value carries its own time, sequence, and status.
+
+The copied controls are self-consistent records, not unverified event labels.
+Both producer sequences are nonzero and every enum and `Status` value is
+recognized. Joystick axes are each in `[-1000, 1000]`. `+X` is right, `-X` is
+left, `+Y` is up, and `-Y` is down. The axes corroborate the already-qualified
+event; they do not define another dead zone:
+
+```text
+positive       = xPermille > 0 || yPermille > 0
+negative       = xPermille < 0 || yPermille < 0
+canonicalEvent = None          when !positive && !negative
+                 Increase      when  positive && !negative
+                 Decrease      when !positive &&  negative
+                 Contradictory when  positive &&  negative
+```
+
+The supplied event must equal that canonical event. `Contradictory` is an
+admitted no-op, but the complete frame is not fully healthy. For the button,
+`pressEvent` requires `pressed && !releaseEvent`, `releaseEvent` requires
+`!pressed && !pressEvent`, and when neither event is set, `pressed` may
+represent either held state. The other four Boolean tuples are malformed.
 
 One `BalanceInstrumentInput` is an atomic application frame. `frameAt` is the
 coordinator's frame time; it is distinct from each producer's `observedAt`.
@@ -888,29 +1043,50 @@ Admission order:
    `frameAt`;
 5. require inertial, joystick, and button ages to be within
    `maximumInputSkew`;
-6. validate each producer sequence by the same replay-first modular rule; for
+6. validate the copied-control ranges, enums, statuses, and event/axis or
+   event/level consistency described above;
+7. validate each producer sequence by the same replay-first modular rule; the
+   first joystick and button sequences may be any nonzero value, and their
+   accepted baselines remain independent. A change to any member of the
+   complete inertial source domain starts a fresh inertial sequence baseline:
+   the first nonzero sequence in the new domain is accepted without computing
+   a cross-domain gap or regression. Subsequent samples compare only with that
+   domain's accepted baseline. A delta-zero control record must be
+   semantically identical and is replay evidence that never reapplies its
+   event, even inside a later forward complete frame. A changed field at delta
+   zero is malformed. A forward producer sequence with an otherwise identical
+   payload is new producer identity and its event applies. For
    inertial delta zero, equality covers only every immutable named field of
    the underlying `InertialSample` (complete source domain, both vectors,
-   sample timestamp, sequence, data-ready, saturation, and producer status),
+   sample timestamp, sequence, accepted-payload data-ready, saturation, and
+   producer status), not the observation's explicit latest readiness,
    not the observation's derived age, quality, gap, or status;
-7. independently recompute canonical inertial `age`, `quality`,
+8. independently recompute canonical inertial `age`, `quality`,
    `sequenceGap`, and observation status from the immutable sample,
-   `frameAt`, prior accepted sequence, and configured `inertialMaximumAge`;
+   explicit `latestDataReady`, `frameAt`, prior accepted sequence, and
+   configured `inertialMaximumAge`;
    require the supplied derived fields to equal those canonical values, so a
    repeated sample may correctly age from Current to Stale while arbitrary
    derived-field mutation is rejected;
-8. require the observation's `maximumAge` and
+9. require the observation's `maximumAge` and
    `freshnessContractRevision` to equal `inertialMaximumAge` and
    `inertialFreshnessContractRevision`; mismatch is
    `InvalidConfiguration`;
-9. preserve compact input evidence in the output even when presentation faults;
-10. apply fault precedence;
-11. apply explicit freeze/unfreeze event;
-12. apply sensitivity events;
-13. derive the live orientation;
-14. select live or frozen estimate;
-15. derive one complete presentation intent atomically;
-16. commit the accepted full frame to caller-owned replay storage last.
+10. preserve compact input evidence in the output even when presentation
+    faults;
+11. apply fault precedence;
+12. derive the current live orientation into a nonmutating prepared candidate;
+13. evaluate explicit freeze/unfreeze against that current candidate and select
+    live or frozen evidence;
+14. apply sensitivity events to a candidate sensitivity;
+15. select the estimate rendered by the candidate mode;
+16. derive one complete presentation intent into a nonmutating prepared
+    candidate;
+17. require both policies' `canCommit()` checks to pass, then infallibly commit
+    both owned policy candidates, output, evidence, control state,
+    diagnostic epoch,
+    and frame/producer baselines together, then copy the accepted full frame
+    to caller-owned replay storage and set its `available` flag last.
 
 An exactly repeated complete frame is idempotent only when `frameAt`, frame
 sequence, and every named field of all copied observations are semantically
@@ -928,7 +1104,7 @@ age          = frameAt.elapsedSince(sample.observedAt)
 sequenceGap  = 0 for unchanged sample identity, otherwise forwardDelta - 1
 quality      = Invalid when sample/status structure is invalid
                Saturated when canonical saturation applies
-               Stale when !dataReady or age > inertialMaximumAge
+               Stale when !latestDataReady or age > inertialMaximumAge
                Current otherwise
 status       = preserved non-OK producer/validation status, otherwise Ok
 ```
@@ -947,6 +1123,38 @@ as though they were simultaneous. A skew fault produces no tone and the
 canonical red fault intent. Duplicate button snapshots do not retrigger
 freeze because the project tracks button event identity according to the
 project-local button sequence.
+
+Admission and derivation are transactional. Before mutating any project,
+owned policy, baseline, epoch, or replay state, `update()` performs the full
+replay-first check; validates all values, times, skew, freshness metadata, and
+sequence deltas; canonicalizes the inertial evidence; and computes fault
+precedence, health, controls, diagnostic phase, evidence, estimate,
+sensitivity, and mode into temporaries. It calls the owned Lesson 044 policies'
+const `preview()` methods only after input prevalidation. A non-OK preview
+status is not itself rejection when it is the classified safe-state result of
+an admitted stale, saturated, unsteady, beyond-range, or producer-fault frame.
+The project calls `canCommit()` on both opaque, generation-bound candidates
+before committing either. Only after both checks pass does it call both
+`commit()` methods; under those checked preconditions each returns `Ok`
+without a remaining failure path. No project-level failure-injection hook is
+added for `canCommit()`: Lesson 044 exhaustively tests malformed, wrong-owner,
+and stale-generation candidates through the opaque seam, while Lesson 045
+owns both policies and performs no callback or other state-changing operation
+between its two preflight checks and the commits. Project tests instead prove
+that both preflights precede either commit and that every admitted frame
+reaches the infallible checked commit path. There is no ad-hoc rollback. A
+malformed or rejected frame
+leaves the output, owned-policy snapshots, baselines, epoch, and replay storage
+byte-identical. A structurally valid producer-fault frame is instead admitted
+and atomically commits the corresponding configured `Fault` presentation.
+
+Every admitted frame commits both candidates, including fault and ineligible
+safe-state frames. This resets presentation direction history consistently, so
+the first later eligible direction cannot emit a tone by comparing against a
+direction hidden before the interruption. The project may override the
+candidate's public output presentation with its configured fault, recovery, or
+other canonical project intent, but it still commits the prepared Lesson 044
+candidate that records the admitted frame's safe-state history.
 
 ### Freeze semantics
 
@@ -967,11 +1175,27 @@ project-local button sequence.
   last frozen value for diagnosis. Healthy later frames update retained
   evidence but do not auto-clear the latch or apply controls.
 - `acknowledgeFault()` succeeds only while the latest complete frame is fully
-  healthy. It is an out-of-band operation, never a bit in an input frame.
-  It changes `Fault` to `Recovering`, clears pending control events, and waits
-  for a later fully healthy frame. That frame re-primes sequence/event
-  baselines, enters `Live`, and does not apply its control events. Before the
-  first complete frame after initialization, mode is `AwaitingFrame`.
+  healthy. “Fully healthy” means a newly accepted complete frame passed every
+  structural, time, sequence, freshness, and skew check; every producer status
+  is `Ok`; canonical inertial quality is `Current`, latest readiness is true,
+  and saturation is `None`; orientation is `Ok` and `Level` or `Tilted`; the
+  joystick event is not `Contradictory`; the button tuple is consistent; and
+  initialized presentation derivation succeeded. Stale, saturated, unsteady,
+  beyond-range, invalid, not-ready, contradictory, or failed evidence is not
+  fully healthy. The method returns `NotInitialized` before initialization and
+  `InvalidArgument` unless mode is `Fault` and that predicate is true.
+  It is an out-of-band operation, never a bit in an input frame. Success
+  changes `Fault` to `Recovering`, preserves live/frozen evidence, frozen
+  measurement, sensitivity, and diagnostic epoch, emits the canonical no-tone
+  recovery intent, and does not change accepted-frame identity or replay
+  storage. It waits for a later forward, fully healthy complete frame; an exact
+  replay of the pre-ack frame cannot complete recovery. A producer/skew fault
+  while recovering relatches `Fault`; a nonfault ineligible frame remains
+  `Recovering`, updates evidence, and applies no controls or tone. The first
+  forward fully healthy frame re-primes every frame, producer, and event
+  baseline, enters `Live`, and suppresses both freeze and sensitivity events
+  carried by that frame. Before the first complete frame after initialization,
+  mode is `AwaitingFrame`.
   Shutdown/reinitialize returns to `AwaitingFrame`. None of these transitions
   manufactures a freeze or sensitivity event.
 - `shutdown()` clears frozen state and returns a canonical no-tone/invalid
@@ -980,11 +1204,12 @@ project-local button sequence.
 ### Sensitivity semantics
 
 The joystick's already-qualified directional event changes sensitivity by one
-configured step. Up/right increases and down/left decreases; simultaneous
-opposites or invalid joystick evidence does not change it. Clamp at configured
-minimum and maximum. Sensitivity is volatile and resets to the midpoint
-rounded toward the minimum. Persistence belongs to an explicitly planned
-later configuration boundary, not this project.
+configured step. `Increase` and `Decrease` follow the canonical axis/event
+contract above; `Contradictory` is an admitted no-op and invalid joystick
+evidence is rejected or faulted according to the precedence rules. Clamp at
+configured minimum and maximum. Sensitivity is volatile and resets to the
+midpoint rounded toward the minimum. Persistence belongs to an explicitly
+planned later configuration boundary, not this project.
 
 The potentiometer listed in the cadence is not required by the canonical E0
 project because the joystick already supplies bounded adjustment. It may not
@@ -1018,10 +1243,12 @@ The output retains independent status/quality fields so a joystick fault does
 not relabel a valid inertial sample and an inertial fault does not disappear
 because the fault LED also failed.
 
-When freeze and sensitivity events share one admitted frame, freeze selection
-uses the current estimate and sensitivity then changes the rendering of the
-selected estimate. The deterministic order is tested. Reordering input
-members, source IDs, or physical pins cannot change it.
+When freeze and sensitivity events share one admitted frame, the policy first
+derives the current frame's prepared orientation, then freeze selection uses
+that current estimate rather than the prior committed snapshot, and sensitivity
+changes the rendering of the selected estimate. The deterministic order is
+tested. Reordering input members, source IDs, or physical pins cannot change
+it.
 
 ### Timing
 
@@ -1031,6 +1258,13 @@ members, source IDs, or physical pins cannot change it.
 - Diagnostic alternation uses
   `(frameAt.elapsedSince(epoch) / diagnosticPhase) & 1` with a recorded
   epoch and wrap-safe arithmetic.
+- `diagnosticPhase` is nonzero and no greater than `INT32_MAX`.
+  `AwaitingFrame` has no epoch and uses canonical phase A/false. The first
+  newly accepted complete frame establishes `epoch = frameAt`, so it renders
+  phase A; the exact one-phase boundary renders B and the two-phase boundary
+  renders A. The epoch persists through Live, Frozen, Fault,
+  `acknowledgeFault()`, Recovering, and exact replay. Shutdown clears it and
+  reinitialization again has no epoch; acknowledgement never re-phases.
 - Equal `frameAt` values are legal only for a semantically identical complete,
   idempotent frame. A changed frame requires a forward frame time and frame
   sequence. Producer `observedAt` values retain their independent freshness
@@ -1044,15 +1278,18 @@ members, source IDs, or physical pins cannot change it.
 
 | Group | Required fixtures and assertions |
 |---|---|
-| Lifecycle | invalid configs, repeated initialize, `AwaitingFrame`, partial policy-init failure rollback, shutdown from Live/Frozen/Recovering/Fault, restart |
+| Lifecycle | every invalid project/orientation/presentation config fails preflight before either owned policy mutates; repeated initialize; `AwaitingFrame`; shutdown from Live/Frozen/Recovering/Fault; restart |
+| Canonical project intents | awaiting, recovery, fault, and shutdown records are independently configured and validated; each is tone-off with canonical direction/light/status; no transition depends on private presentation-policy config |
 | Happy path | level, each direction, diagonal, sensitivity up/down, freeze, changed live tilt, frozen comparison, unfreeze |
-| Freeze authority | tilt alone cannot freeze; joystick cannot freeze; press event can; held/replayed event cannot; invalid estimate cannot become frozen |
-| Sensitivity | each direction mapping, simultaneous opposites, exact min/max, one step into each clamp, frozen rerender |
-| Atomicity | each field future dated, exact skew, one tick over, freshness maximum/revision match and each mismatch, full-frame semantic replay before delta-zero rejection, changed delta-zero frame, immutable sample reused in a later frame with Current→Stale recomputation, arbitrary derived age/quality/gap/status mutation, regressed sequences, repeated snapshots, replay-storage commit last |
-| 043→045 integration | feed one Lesson 043 Current observation into L045, advance policy/frame time without a new sample sequence, require Lesson 043 and L045 to derive the same Stale transition with zero sequence gap, visible ineligible intent, no tone, and no fabricated producer/control event |
+| Freeze authority | tilt alone cannot freeze; joystick cannot freeze; press event uses the current frame's prepared orientation rather than the prior snapshot; held/replayed event cannot; invalid current estimate cannot become frozen |
+| Control consistency | joystick zero, every sign quadrant and corner, exact +/-1000, invalid +/-1001, and every supplied/canonical event mismatch; all eight button Boolean tuples; recognized enums/statuses; zero sequence |
+| Sensitivity | each direction mapping, simultaneous opposites as admitted contradictory no-op, exact min/max, one step into each clamp, frozen rerender |
+| Producer replay | zero/forward/half-range/regressed frame, inertial, joystick, and button sequences; every inertial source-domain member changed independently starts a fresh nonzero baseline with no cross-domain gap or regression; identical producer record in a later frame never retriggers; changed delta-zero rejected; forward identical-payload event applies |
+| Atomicity | each field future dated, exact skew, one tick over, freshness maximum/revision match and each mismatch, full-frame semantic replay before delta-zero rejection, changed delta-zero frame, immutable sample reused in a later frame with Current→Stale recomputation, latest not-ready evidence recomputed without replacing the accepted payload, arbitrary latest-readiness/derived age/quality/gap/status mutation, repeated snapshots, and each ordinary prevalidation rejection leave project/replay/owned-policy snapshots unchanged; Lesson 044 separately exhausts malformed/unbound preview, wrong-owner candidate, stale generation, and `canCommit()` rejection; classified non-OK safe states remain bound; both project preflights are observed true and precede either commit; every admitted frame commits both histories before project intent override and sets replay availability last; no artificial production failure hook is required |
+| 043→045 integration | feed one Lesson 043 Current observation into L045; advance policy/frame time without a new sample sequence and require matching age-based Stale derivation; separately publish a latest not-ready poll and require matching readiness-based Stale derivation while both layers retain the same accepted payload, report zero sequence gap, emit visible ineligible/no-tone intent, and fabricate no producer or control event |
 | Failure precedence | all pairwise and credible triple collisions across inertial/button/joystick status, stale, saturation, unsteady, skew, freeze, sensitivity |
-| Recovery | healthy frame does not auto-clear latch; acknowledgement rejected while unhealthy; valid acknowledgement re-primes without replaying controls; frozen evidence retained during fault; shutdown clears retention |
-| Time | zero, semantically identical equal-time replay, changed equal-time frame rejection, rollover, diagnostic phase edges, illegal regression |
+| Recovery | healthy frame does not auto-clear latch; exclude each health factor independently; valid acknowledgement preserves evidence/sensitivity/epoch and does not mutate replay identity; exact pre-ack replay cannot recover; producer fault relatches while ineligible evidence remains Recovering; forward healthy recovery suppresses simultaneous freeze and sensitivity; frozen evidence retained during fault; shutdown clears retention |
+| Time | zero, semantically identical equal-time replay, changed equal-time frame rejection, rollover, diagnostic epoch establishment, exact phase and two-phase edges, exact replay, acknowledgement without re-phase, illegal regression |
 | Permutations | source ID, axis mapping, input member construction order, and copied presentation-channel order do not alter semantic order |
 | Replay | complete golden trace byte-identical on repeated run; malformed traces fail at the same record |
 | Capacity | below/at/above fixture capacity where a replay runner is used; every AVR `sizeof`; compact live/frozen evidence; replay-storage lifetime; candidate + resident composition + returned-snapshot stack peak; flash and update-work bounds |
@@ -1120,12 +1357,12 @@ capacity. Measured values replace estimates before promotion.
 | `InertialObservationPolicy` including snapshot/history | <= 96 B | 128 B |
 | `OrientationPolicy` including config/snapshot | <= 80 B | 112 B |
 | `BalancePresentationPolicy` | <= 64 B | 96 B |
-| `BalanceInstrument` including compact output, excluding caller replay storage | <= 192 B | 208 B |
+| `BalanceInstrument` including owned Lesson 044 policies and compact output, excluding caller replay storage | <= 352 B | 384 B |
 | `BalanceInstrumentInput` | <= 112 B | 128 B |
 | `BalanceInstrumentOutput` with two compact evidence records | <= 144 B | 160 B |
 | Caller-owned `BalanceFrameStorage` | <= 128 B | 144 B |
 | Peak input + output + replay-storage representation | <= 388 B | 436 B |
-| Resident four-policy composition plus replay storage | <= 560 B | 688 B |
+| Resident owned-policy composition plus replay storage | <= 560 B | 688 B |
 | Worst live composition + candidate input + returned snapshot copy | <= 816 B | 976 B |
 
 Crossing a target requires explanation and a bounded reduction attempt.
@@ -1133,30 +1370,89 @@ Crossing a hard threshold blocks promotion pending a design stress decision.
 Do not remove identity, status, range, timestamp, or calibration evidence
 merely to meet a number.
 
-The preliminary AVR field sum after adding freshness maximum/revision evidence
-is approximately 112 B input, 136 B output, and 116 B replay storage, or 364 B
-before measured padding. The representation target leaves 24 B for padding;
-its hard threshold leaves 72 B. The larger
-composition rows explicitly add the observation, orientation, presentation,
-and instrument objects and pessimistically add a returned snapshot copy rather
-than assuming copy elision.
-Implementation must publish each `sizeof`, not only the total. The caller-owned
-storage is live for the complete initialized instrument lifetime; the
-candidate input is transient for one `update`; and the compact output is owned
-by the instrument and stable until the next accepted update, acknowledgement,
-or shutdown. Stack measurement must include the update call while all three
-representations coexist.
+The Lesson 044 AVR probe measures `BalancePresentationConfig` at 75 B and
+`BalancePresentationPolicy` at 91 B after making the full-scale angle
+explicit. The policy therefore exceeds its 64 B target but remains below the
+96 B hard threshold. Nine complete, independently configurable light intents
+account for 63 B of the configuration; retaining those semantic frames and the
+4 B angle is preferred to a lossy encoding. The Lesson 045 aggregate and stack
+gates remain controlling.
+
+The final AVR GCC 7.3 measurement uses `-mmcu=atmega2560 -Os
+-fno-exceptions -fno-rtti`. It measures 14 B copied joystick input, 12 B copied
+button input, 76 B instrument config, 101 B project input, 34 B compact inertial
+evidence, 45 B measurement evidence, 102 B replay storage, 119 B output, 23 B
+orientation config, 16 B prepared orientation, 38 B orientation policy, 7 B
+light intent, 5 B tone intent, 75 B presentation config, 14 B presentation
+value, 20 B prepared presentation, 95 B presentation policy, 80 B inertial
+observation policy, and 339 B instrument.
+
+The instrument's revised 352 B target and 384 B hard threshold are an
+owned-policy accounting decision, not permission to grow aggregate memory.
+The measured 339 B includes both Lesson 044 policies and four complete 14 B
+canonical project presentations. The earlier 192/208 B limits assumed a much
+smaller config and did not account for that owned state. Borrowing the policies
+would only move their memory outside the instrument while adding lifetime,
+aliasing, and mutation coupling, so that alternative is rejected.
+
+The measured representation total is 322 B for input, output, and replay
+storage. The actual resident composition is 521 B:
+`InertialObservationPolicy` 80 B + `BalanceInstrument` 339 B +
+`BalanceFrameStorage` 102 B. Do not add the orientation and presentation
+policies again because the instrument owns them. The worst live composition is
+741 B after pessimistically adding the 101 B candidate input and 119 B returned
+snapshot copy. These results pass the unchanged 560/688 B resident and
+816/976 B worst-live target/hard gates.
+
+AVR compiler stack reports for the isolated core are 399 B for `update`, 146 B
+for `shutdown`, 33 B for `initialize`, 19 B for `acknowledgeFault`, 11 B for
+construction, at most 7 B for helpers, and 3 B for `snapshot`. A minimal linked
+core harness measures 17,156 B text, 64 B initialized data, and 1 B BSS:
+17,220 B of flash including initialized data and 65 B static SRAM. It contains
+no heap, RTTI, exceptions, vtable, Wire/TWI, or application timer symbols; the
+ordinary AVR runtime vectors remain. These isolated-core results establish
+feasibility but do not close the canonical-sketch gate.
+
+The final canonical sketch was rebuilt with Arduino AVR core 1.8.8 and AVR
+GCC 7.3.0, without link-time optimization. Compilation used `-Os`,
+`-fno-exceptions`, `-fno-rtti`, `-fno-threadsafe-statics`,
+`-ffunction-sections`, `-fdata-sections`, `-fstack-usage`, and
+`-mmcu=atmega2560`; linking used `-Os`, `--gc-sections`, a cross-reference map,
+and the same MCU. Its ELF measures 21,538 B `.text`, 238 B `.data`, and
+1,660 B `.bss`: 21,776 B flash including initialized data and 1,898 B static
+SRAM. Linker garbage collection was accounted for: unlinked archive stack
+records were excluded from the reachable graph. The deepest direct reachable
+foreground chain is `main` (3 B) to `setup` (261 B, dynamic but bounded), to
+`replayFrame` (4 B), to `BalanceInstrument::update` (399 B), to
+`OrientationPolicy::preview` (85 B), to `atan2MilliDegrees` (65 B), and then
+the resolved libgcc 64-bit division helpers. Including three-byte Mega return
+addresses, the 12-register `__divdi3` save, and the `__udivmod64` return and
+one-byte save gives a conservative 851 B foreground bound. A timer-zero
+overflow may preempt that path even though the application owns no timer or
+interrupt; reserving its 12 B compiler frame plus the three-byte hardware
+return address raises the bound to 866 B. No recursion or application indirect
+call is present. The conservative remaining SRAM is therefore
+`8192 - 1898 - 866 = 5428 B`, exceeding the 1,024 B gate by 4,404 B.
+Startup's `init` path and global constructor are shorter and do not coexist
+with the deepest foreground frames; startup enables the timer-zero interrupt,
+whose possible preemption is included above.
+
+This is a reviewed static call-chain bound for the exact final no-LTO ELF, not
+a runtime canary, measured high-water mark, or physical observation. E0
+prohibits the powered Mega execution required for a stack sentinel. Runtime
+stack-high-water instrumentation is therefore an explicit E1 acceptance item,
+not an E0 promotion gate.
 
 ### Mega aggregate budgets
 
 | Resource | E0 budget |
 |---|---|
 | Static SRAM, complete Lesson 045 example | <= 2,048 B, leaving at least 6,000 B nominal headroom |
-| Measured stack margin | >= 1,024 B under the worst replay/update path |
+| Conservative static stack reserve | >= 1,024 B after complete-sketch static SRAM, deepest bounded no-LTO call chain, Mega return addresses, and startup/ISR preemption reserve |
 | Flash | <= 28 KiB for the canonical project sketch |
 | Heap | 0 B and no allocator calls |
-| Timers | zero in canonical E0 |
-| Interrupts | zero in canonical E0 |
+| Application timers | zero in canonical E0; Arduino startup still links timer zero |
+| Application interrupts | zero in canonical E0; the static proof reserves timer-zero ISR preemption |
 | I2C claims | zero in E0 |
 | ADC inputs | zero in canonical E0 |
 | Digital pins | zero in canonical E0 |

@@ -83,14 +83,17 @@ historical optional substitution-conformance work. Lessons 040--042 publish
 pure policy and replay evidence; powered optical/PIR adapters, exact specimens,
 and E1 acceptance remain open.
 
-Lessons 043--045 are the active
+Lessons 043--045 are the host-verified
 [implementation-depth E0 replay-first slice](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md):
-copied synthetic inertial samples, pure orientation and presentation policies,
-and a stationary hand-operated tabletop balance instrument. This status is not
-host verification. No powered adapter, I2C transaction, wiring table, formal
-schematic, or physical claim is authorized. Exact MPU6050 and QMI8658 variants
-remain independently gated. Lessons 067--069 retain inertial normalization,
-source qualification, cross-device comparison, and motion-recorder scope.
+`InertialObservationPolicy`, `OrientationPolicy`,
+`BalancePresentationPolicy`, and `BalanceInstrument` process copied synthetic
+inertial samples and inputs for a stationary hand-operated tabletop
+instrument. Deterministic host tests, compile-only Mega replays, size gates,
+and lesson publication pass. No powered adapter, I2C transaction, wiring
+table, formal schematic, or physical claim is authorized. Exact MPU6050 and
+QMI8658 variants remain independently gated. Lessons 067--069 retain inertial
+normalization, source qualification, cross-device comparison, and
+motion-recorder scope.
 
 Development then follows lessons 046--081, one implementation-depth
 three-lesson brief at a time. That future arc remains engagement-first: kinetic motion,

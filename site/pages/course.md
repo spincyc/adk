@@ -38,13 +38,15 @@ lesson number divisible by three is project-bearing.
 | 040 | Reflective and interrupted light | Qualified optical observations | Host verified; powered adapter and E1 bench open |
 | 041 | PIR, beam, and range composition | Presence and passage | Host verified; powered adapter and E1 bench open |
 | 042 | Ordered checkpoints and explicit authorization | Tabletop course marshal | Host verified; powered adapter and E1 bench open |
+| 043 | Copied six-axis values and provenance | Inertial observation policy | Host verified; E0 replay only |
+| 044 | Board-frame gravity orientation and presentation | Orientation policy | Host verified; E0 replay only |
+| 045 | Inertial and copied-control composition | Stationary balance-table instrument | Host verified; E0 replay only |
 
-The retained Lessons 043–081 sequence is front-loaded for learner engagement.
+The retained Lessons 046–081 sequence is front-loaded for learner engagement.
 This is planned work, not a support or bench-verification claim:
 
 | Lessons | Planned focus | Project |
 |---:|---|---|
-| 043–045 | Inertial samples and orientation | Balance-table instrument |
 | 046–048 | Authorized tactile/directional inputs and bounded stepper motion | Kinetic sculpture |
 | 049–051 | Local identity records and homing | Inert parts carousel |
 | 052–054 | Known-family IR capture and bounded emission | IR command translator |

@@ -77,6 +77,7 @@ namespace adk {
     {
         InertialSample        sample;
         InertialSampleQuality quality;
+        bool                  latestDataReady;
         Duration              age;
         Duration              maximumAge;
         uint16_t              freshnessContractRevision;

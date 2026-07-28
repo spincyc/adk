@@ -31,10 +31,10 @@ indicator, sounder, wiring table, schematic, powered board, or E1 result.
 | Pressure | Evidence and disposition |
 |---|---|
 | API and layering | **Natural in the plan.** The project consumes already-copied inertial, joystick, and button observations; applies project admission, freeze, sensitivity, recovery, and precedence; and emits presentation intent. It does not own sampling, conversion, pins, endpoints, buses, sensor registers, or physical rendering. The project-local control observations avoid inventing repository-wide joystick or button snapshot contracts. A caller may translate existing accessors, but that adapter remains outside the pure policy. |
-| Ownership and lifecycle | **Natural with one local design check open.** The planned instrument owns no endpoint or heap object. It borrows the orientation and presentation policies for its initialized lifetime and borrows a caller-owned `BalanceFrameStorage` that must remain alive and unmodified. Candidate inputs are update-only values and are never retained by address. Initialization validates before mutation; failed frames do not alter replay storage; shutdown clears replay availability, frozen evidence, and current intent. Implementation must prove partial policy initialization rollback and alias safety. If borrowed mutable policies cause partial-update or lifetime strain, the bounded remedy is to own the small policies by value or construct them from copied configuration, not add allocation, runtime polymorphism, or a service locator. |
+| Ownership and lifecycle | **Natural after bounded local remediation.** The instrument owns the orientation and presentation policies by value, accepts copied configs, and owns no endpoint or heap object. It borrows only a caller-owned `BalanceFrameStorage` that must remain alive and unmodified. Candidate inputs are update-only values and are never retained by address. Complete config preflight precedes policy initialization; transactional preview/commit prevents partial policy mutation; failed frames do not alter replay storage; shutdown clears replay availability, frozen evidence, and current intent. Borrowed mutable policies were rejected because they merely relocate memory while adding lifetime, aliasing, and mutation coupling. |
 | Time and ordering | **Natural if implemented exactly.** Every observation and complete frame carries explicit time and sequence identity. Replay-first fieldwise comparison, modular forward deltas, the half-range exclusion, future-time rejection, freshness, input skew, diagnostic phase, and same-time identity are specified without a clock, delay, or retry loop. One atomic frame is admitted before freeze, sensitivity, orientation, and presentation mutations. An unchanged inertial sample may age in a later frame only through canonical recomputation of its derived fields. |
 | Errors and status | **Natural.** Existing `Status` describes configuration, producer, and malformed-frame failures; mode and inertial quality describe project-domain state. Fixed producer precedence is inertial, freeze button, then joystick. Ineligible stale, saturated, unsteady, or beyond-range evidence disables tone without being mislabeled as a producer failure. Fault is latched; recovery requires a fully healthy latest frame, explicit out-of-band acknowledgement, and one later healthy re-priming frame that cannot replay controls. Independent status fields preserve attribution even if presentation also fails. |
-| Resource budget | **Bounded estimates; measurement is a promotion blocker.** The plan sets AVR hard thresholds of 192 bytes for the instrument, 128 for input, 144 for output, 132 for caller replay storage, 660 for the resident four-policy composition plus replay storage, and 932 for the worst live composition with candidate input and returned snapshot. The complete E0 Mega sketch is limited to 2,048 bytes static SRAM, at least 1,024 bytes measured stack margin, and 28 KiB flash, with no heap, pins, timers, interrupts, ADC, or I2C claims. Implementation must publish every object size, coexistence total, stack peak, update-work bound, and sketch measurement. Provenance may not be removed to meet a target. |
+| Resource budget | **Passes the owned-policy, aggregate, and final-sketch static gates.** Exact AVR GCC 7.3 measurement gives a 339 B instrument against revised 352/384 B target/hard limits, 101 B input, 119 B output, and 102 B caller replay storage. The actual resident composition is 521 B and worst live composition is 741 B, passing the unchanged 560/688 B and 816/976 B target/hard gates. The instrument already contains its 38 B orientation and 95 B presentation policies, so counting them again would be false. The final no-LTO canonical ELF uses 21,776 B flash including initialized data and 1,898 B static SRAM. Its reviewed 866 B conservative stack bound includes the deepest reachable chain, Mega return addresses, libgcc division saves, and timer-zero ISR preemption, leaving 5,428 B static reserve against the 1,024 B gate. This is static compiler/link evidence, not runtime high-water evidence. |
 | Deterministic proof | **Planned and sufficient in scope; not yet executed.** The matrix covers lifecycle, all directions, freeze authority, sensitivity clamps, atomic admission, exact replay, reused-sample aging, every sequence/time boundary, pairwise and credible triple fault collisions, recovery, permutations, capacity, shutdown, and tone-off safety. A versioned golden trace must reproduce startup, live and frozen states, changed live evidence, faults, acknowledgement, rollover, and shutdown. Host replay cannot close a hardware gate. |
 | Packaging and public surface | **Natural if the compact surface survives implementation.** The planned standalone header and out-of-line implementation fit the ordinary archive and host inventories. Caller-owned replay storage keeps the full atomic frame out of the instrument and public output while compact evidence retains interpretation identity. Umbrella registration, build inventories, exact AVR layout, size baseline, example, HTML, PDF, indexes, and newest-lesson checks remain open integration work. |
 | Example and documentation fit | **Natural at E0.** The canonical compile-only Mega sketch can initialize pure policies, configure the board frame and project, replay one atomic frame, decide validation/orientation/freeze/sensitivity, and copy complete RGB, diagnostic, and tone intents into named host result cells. It must never read a live control or actuate an endpoint under E0. Code, tests, HTML, and PDF use the same live, frozen, recovering, provenance, sensitivity, and fault vocabulary. Every E0 PDF visual is a classified pencil drawing; no electrically authoritative formal schematic is available. |
@@ -42,11 +42,12 @@ indicator, sounder, wiring table, schematic, powered board, or E1 result.
 
 ## Composition pressure scenario
 
-The maximum authorized E0 composition is one synthetic inertial producer,
-one copied `InertialObservationPolicy`, one `OrientationPolicy`, one
-`BalancePresentationPolicy`, and one `BalanceInstrument`, plus project-local
-copied joystick and button observations and copied RGB, diagnostic, and tone
-intent cells. It runs at the fastest documented finite fixture cadence.
+The maximum authorized E0 composition is one synthetic inertial producer, one
+copied `InertialObservationPolicy`, and one `BalanceInstrument` that owns its
+`OrientationPolicy` and `BalancePresentationPolicy`, plus caller replay
+storage, project-local copied joystick and button observations, and copied RGB,
+diagnostic, and tone intent cells. It runs at the fastest documented finite
+fixture cadence.
 
 The collision frame combines stale inertial evidence, a producer fault, a
 qualified freeze-button event, a sensitivity event, and a diagnostic-output
@@ -58,7 +59,7 @@ with the fault still present in the source trace.
 | Composition pressure | Applicability and required evidence |
 |---|---|
 | Scheduler and time load | **Applicable; open.** Each update is fixed O(1) work with no hidden sampling, retry, catch-up, or input-sized loop. Measure the fastest documented replay cadence, worst collision-frame path, diagnostic phase edge, same-time replay, rollover, and a large elapsed jump. Prove validation and presentation cannot starve another component and that diagnostics do not create scheduler authority. |
-| Total memory and hardware resources | **Applicable; open.** Measure all four policy objects, caller replay storage, candidate frame, returned snapshot, copied result cells, fixture cursor, globals, stack peak, and flash together. Exercise below, at, and above any replay-fixture capacity. E0 must retain zero pin, timer, interrupt, ADC, I2C, and heap use. Crossing a target requires a bounded reduction attempt; crossing a hard threshold blocks promotion and triggers a stress decision. |
+| Total memory and hardware resources | **Applicable; complete at E0.** Exact AVR sizes are 80 B inertial policy, 339 B instrument including both owned Lesson 044 policies, 102 B replay storage, 101 B candidate input, and 119 B returned output. Resident is 521 B and worst live is 741 B. The final Arduino AVR core 1.8.8, AVR GCC 7.3.0 no-LTO canonical ELF measures 21,538 B `.text`, 238 B `.data`, and 1,660 B `.bss`, for 21,776 B flash including initialized data and 1,898 B static SRAM. The deepest linker-reachable foreground chain, including Mega return addresses and libgcc division saves, is conservatively bounded at 851 B; reserving timer-zero ISR preemption raises the bound to 866 B. Startup and global-constructor paths are shorter and do not coexist with that chain. The resulting 5,428 B reserve exceeds the 1,024 B gate by 4,404 B. No recursion or application indirect call is present. Linked Arduino startup owns timer zero; the application owns no pin, timer, interrupt, ADC, I2C, or heap resource. This is exact-ELF static evidence, not a runtime canary, high-water mark, or physical observation. Runtime sentinel evidence remains E1 work. |
 | Shared bus or transport | **Not applicable to E0.** No E0 type owns or borrows a bus or transport, and the canonical path consumes already-copied synthetic values. A future exact inertial adapter is a separately qualified E1 boundary with one bus owner, explicit borrower lifetime, address and pull-up evidence, bounded transactions, rollback, NACK/stuck-bus recovery, test points, and aggregate measurement. It cannot be hidden inside this project. |
 | Persistence and recovery | **Not applicable.** Freeze, sensitivity, sequence baselines, and fault/recovery mode are intentionally volatile. There is no EEPROM, RTC, removable storage, schema, commit, wear, or power-loss retry. Shutdown clears frozen and replay state, and reinitialize begins `AwaitingFrame`; this lifecycle behavior is not persistence. |
 | Motion, external power, or stored energy | **Not applicable.** The E0 project emits copied intent only and has no actuator, motor, external-load switch, launcher, balancing mechanism, or stored-energy path. Its authorized subject is a stationary, lightweight, hand-tilted inert platform, not a vehicle, wearable, load balancer, or safety instrument. E0 contains no powered endpoint at all. A future E1 renderer must still prove de-energized startup, fault, shutdown, reset, and power-removal states. |
@@ -67,10 +68,15 @@ with the fault still present in the source trace.
 | Failure collision and recovery | **Applicable; open.** Malformed/future input precedes producer status; producer faults follow fixed field order; skew follows producer faults; an existing latch suppresses controls; ineligible orientation forces tone off; freeze precedes sensitivity; ordinary presentation is last. The maximum-collision fixture must show atomic rejection, unchanged replay storage on failure, retained frozen evidence, independent producer and diagnostic attribution, no automatic clear, acknowledgement only after a healthy latest frame, control-free re-priming, canonical shutdown, and restart with faults still present. |
 
 The composition proof must include exact semantic replay, changed equal-time
-rejection, reused inertial identity aging from current to stale, partial
+rejection, every inertial source-domain member starting a fresh sequence
+baseline, reused inertial identity aging from current to stale, partial
 initialization rollback, failure before replay-storage commit, and candidate
-plus resident plus returned-snapshot stack pressure. No result may be described
-as physical observation.
+plus resident plus returned-snapshot stack pressure. Lesson 044 exhaustively
+tests `canCommit()` rejection through its opaque candidate seam. Lesson 045
+owns both policies and has no callback or state change between its two
+preflights and the commits, so project verification proves both checks are
+true and precede either commit; it must not add an artificial production
+failure hook. No result may be described as physical observation.
 
 ## Prior-decision impact
 
@@ -100,13 +106,18 @@ as physical observation.
 - Pencil presentation for every non-schematic PDF visual and exact electrical
   qualification before a formal schematic: **preserved**.
 
-No published interface is challenged by the planned project. The two known
-strain points are local and unpromoted: mutable borrowed policies may complicate
-atomic rollback, and the complete copied frame may buckle AVR SRAM or stack
-budgets. Their bounded remedies are, respectively, value-owned small policies
-or internally constructed policy state, and compact caller-owned replay plus
-measured field-level representation reduction. Neither remedy may discard
-provenance, weaken replay identity, or alter shared contracts.
+No published interface is challenged by the project. The mutable-borrowing
+strain was resolved by owning the policies by value and using transactional
+preview/commit. Borrowing was rejected because it saves no aggregate SRAM and
+adds lifecycle and mutation coupling. Exact AVR measurement also resolves the
+object-budget accounting defect: the 339 B instrument owns 133 B of Lesson 044
+policy state and four complete canonical safe presentations, so the former
+208 B hard limit was not compatible with the selected ownership. The revised
+352/384 B individual target/hard limits retain 13/45 B margin while the
+unchanged aggregate gates prevent that accounting correction from hiding
+system growth. Compact caller-owned replay preserves provenance and replay
+identity. The complete-sketch static proof now passes without weakening the E0
+no-powered-execution boundary.
 
 If those remedies cannot meet the hard limits, or implementation requires a
 change to `Status`, `TimePoint`, `I2cBus`, published joystick/button behavior,
@@ -118,36 +129,37 @@ decision must precede any shared-contract change.
 
 ## Stress disposition
 
-**Bounded local remediation pending measurement.** The planned responsibility,
-layering, explicit control authority, volatile recovery, provenance, and
-stationary no-actuator safety boundary fit the existing architecture. The
-caller-owned replay seam and compact output are the correct local direction,
-but implementation must prove atomicity and the hard AVR object, aggregate,
-and stack thresholds before this can become a natural fit.
+**Natural after bounded owned-policy remediation; E0 resource gates pass.**
+The responsibility, layering, explicit control authority, volatile
+recovery, provenance, and stationary no-actuator safety boundary fit the
+existing architecture. Transactional owned policies, caller-owned replay, and
+compact output pass the exact AVR object, aggregate, flash, static-SRAM, and
+reviewed static-stack thresholds. Runtime sentinel/high-water evidence requires
+powered execution and remains an explicit E1 acceptance item.
 
 ## Gate result
 
-- Disposition: bounded local remediation pending implementation and
-  measurement
-- Open risks: borrowed-policy rollback/alias behavior; exact object padding;
-  candidate/resident/snapshot stack coexistence; worst-path update work;
-  diagnostic-failure isolation; replay-storage commit atomicity; complete
-  failure-collision and recovery replay; packaging and publication integration;
-  all exact-specimen, powered-adapter, schematic, and E1 gates
+- Disposition: natural fit after bounded owned-policy resource decision; E0
+  implementation and static resource proof pass
+- Open risks: runtime stack high-water at E1; packaging and publication
+  integration; all exact-specimen, powered-adapter, schematic, and E1 gates
 - Required discussion or decision IDs: none for the planned local experiment;
   a consequential decision is required before any shared-contract or
   curriculum-scope change
-- Remediation owner and next action: Lesson 045 implementation owner builds
-  the compact caller-storage version first, measures every AVR object and the
-  aggregate stack/flash/SRAM composition, exercises collision and recovery
-  fixtures, and repeats this pass before promotion
+- Remediation owner and next action: E1 acceptance owner instruments runtime
+  stack high-water on the exact qualified powered build without relabeling
+  that future result as E0 evidence
 - Verification commands and results:
   - plan and canonical-contract review: completed
-  - implementation, focused strict tests, sanitizer replay, style,
-    standalone-header, Mega compile, exact AVR layout, stack, size, packaging,
-    PDF, site, and independent reviews: not yet run
+  - exact AVR layout, compiler stack, minimal linked-core size, and owned-policy
+    aggregate decision: passed
+  - canonical Mega sketch flash/static SRAM and reviewed no-LTO static stack
+    bound: passed
+  - runtime stack high-water: deferred to E1 because it requires powered
+    execution
+  - packaging, PDF, site, and final independent reviews: not yet complete
   - `git diff --check -- docs/design/stress-passes/balance-table-instrument.md`:
     passed
-- Maximum-composition scenario and proof: scenario specified above; no
-  implementation or measured proof yet
-- Promotion permitted: no
+- Maximum-composition scenario and proof: object and aggregate measurement
+  passed; canonical-sketch static resource proof passed
+- Promotion permitted: yes after remaining non-resource E0 gates pass
