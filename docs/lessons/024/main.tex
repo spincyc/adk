@@ -53,8 +53,6 @@
     breaklines=true,
     tabsize=4
 }
-\newcommand{\checkbox}{\(\square\)}
-\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
 \newcommand{\lessonbox}[1]{%
   \begin{center}
   \fcolorbox{Ink}{white}{\parbox{0.92\linewidth}{#1}}
@@ -69,9 +67,9 @@
 \end{center}
 
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
-Lesson & 024 --- project & Time & 240--330 minutes\\
+Lesson & 024 --- project & Time & 45--75 minutes\\
 Prerequisites & Lessons 001--023 & Board & Arduino Mega 2560\\
-Evidence & TP-M, D38, D13, RGB, LCD & Status & physical acceptance open\\
+Evidence & TP-M, D38, D13, RGB, LCD & Status & host verified\\
 Energy class & E1: USB, passive input, LCD, and resistor-limited LEDs only\\
 \end{tabularx}
 
@@ -124,11 +122,19 @@ objects outlive it.
 \begin{center}
 \includegraphics[width=0.94\linewidth]{024-greenhouse-pencil.png}
 \end{center}
-\textit{Alternative text: pencil orientation drawing with a Mega 2560, 10
-kiloohm potentiometer on A0, 16 by 2 LCD, D40 fan, D38 pump, and D41 heater
-indicator LEDs, D13 record LED, and D5--D7 RGB status LED. Every external LED
-channel has a resistor and all paths return to common ground. The drawing
-contains no relay or load.}
+\textit{Alternative text: literal Mega and numbered-breadboard plate. It shows
+the paired D30--D41 header, top-header D5--D7, A0, 5 V, and GND; exact
+potentiometer rows; three separate resistor--LED--ground paths; three RGB
+series paths; and the parallel LCD connector. D13 is explicitly the built-in
+LED. The plate contains no relay or external load.}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{024-lcd-closeup.png}
+\end{center}
+\textit{Alternative text: close-up of all sixteen LCD header positions,
+numbered 1 through 16 in breadboard holes F5 through F20. Every used supply,
+contrast, control, four-bit data, and backlight connection is labeled; D0
+through D3 remain empty.}
 
 The drawing helps locate parts; this table is authoritative.
 
@@ -148,20 +154,35 @@ LCD supply & 5 V, GND & exact module rating and contrast network\\
 \bottomrule
 \end{tabularx}
 
-\textbf{Unpowered inspection.} Remove USB. Confirm the potentiometer endpoints,
-one resistor per LED channel, common ground, LCD pin order, and complete absence
-of a relay or external supply. Record measured resistances:
+\textbf{Before USB:} trace each signal from its labeled Mega pin, through one
+series resistor and LED, to GND. Check the LCD's printed pin order against the
+table. If the module differs, stop at the three-LED build and leave the LCD
+unplugged. There is no relay or external supply in this lesson.
+
+\section{Four quick wins}
 
 \begin{center}
-\begin{tabular}{@{}llll@{}}
-Potentiometer & \blank{.6in} &
-D40/D38/D41 & \blank{.8in}\\
-Red resistor & \blank{.6in} &
-Green resistor & \blank{.6in}\\
-Blue resistor & \blank{.6in} &
-Board revision & \blank{1.1in}\\
-\end{tabular}
+\includegraphics[width=0.98\linewidth]{024-greenhouse-progress.png}
 \end{center}
+\textit{Alternative text: four panels show the dependent progression:
+potentiometer-controlled moisture number, dry-triggered D38 watering LED,
+LCD-and-RGB status dashboard, and D13 acknowledgement after an in-memory
+record append and sync.}
+
+\begin{enumerate}
+  \item Wire the potentiometer and LCD. Turning the dial must move the moisture
+        value; if it does not, later stages cannot make a valid decision.
+  \item Add D38 and its resistor. Hold the dial in the dry region: after the
+        minimum-off interval D38 lights. Turn wet and it goes dark.
+  \item Add the RGB channels. Their pattern and the LCD words must explain the
+        same D38 decision. Every eight seconds inhibition creates an amber,
+        D38-dark intermission without another input part.
+  \item Watch built-in D13. It changes only after a complete record is appended
+        and synchronized in the fixed RAM model.
+\end{enumerate}
+
+At 120 seconds the sketch shuts down the controller and every owned evidence
+output. Press Reset for another run.
 
 \section{The narrative loop}
 
@@ -181,20 +202,6 @@ policy and intent but no output. \texttt{actuate()} is the only stage allowed
 to change D38. \texttt{present()} writes an already-decided LCD view.
 \texttt{record()} publishes the same decision. Missed periods coalesce; they do
 not create a burst.
-
-\subsection{Object reading exercise}
-
-In the canonical sketch, underline each owner once and draw an arrow to every
-borrower. Then answer:
-
-\begin{enumerate}
-  \item Which object claims A0? \blank{2.2in}
-  \item Which object may command D38? \blank{2.2in}
-  \item Which object owns the LCD pins? \blank{2.2in}
-  \item Why must the record sink outlive the controller? \blank{2.8in}
-  \item What runs during exception-driven unwinding in a caller?
-        \blank{2.3in}
-\end{enumerate}
 
 \section{Watering policy and state graph}
 
@@ -261,54 +268,39 @@ Output failure dominates and latches until successful reinitialization. Sensor
 failure and inhibition always suppress watering. A display or record failure
 cannot enable D38.
 
-\subsection{Predict, observe, interpret}
+\subsection{Read the visible story}
 
 \begin{enumerate}
-  \item \textbf{Acquisition.} Predict the starting RGB pattern. Observe the
-        LCD startup and RGB transition. Interpret only resource and lifecycle
-        progress; do not infer D38 safe state.
-  \item \textbf{Safe state.} Predict D38 dark at startup, inhibition, invalid
-        sensing, and shutdown. Observe the LED, then measure TP38 relative to
-        GND. Interpret commanded level separately from resource acquisition.
-  \item \textbf{Record boundary.} Predict D13 changes only after append and
-        sync succeed. Observe it at a one-second cadence. Interpret it as
-        simulated storage acknowledgement, never SD durability.
+  \item \textbf{Acquisition.} LCD startup and the first RGB transition show
+        that the visible system acquired its resources.
+  \item \textbf{Safe state.} D38 stays dark at startup, inhibition, invalid
+        sensing, and shutdown.
+  \item \textbf{Record boundary.} D13 changes only after append and sync
+        succeed. It means the RAM model accepted a record, never SD durability.
 \end{enumerate}
 
-\section{Schedule and replay worksheet}
+If a later reward appears without the earlier one, remove USB and retrace that
+stage's numbered rows. Serial is not needed to enjoy or diagnose the build.
 
-Fill the prediction columns before running:
+\section{What the visible sequence means}
 
 \begin{tabularx}{\linewidth}{@{}r r c X X X@{}}
 \toprule
-ms & raw & allowed & mode & D38 & record sequence\\
+ms & raw & allowed & visible result & D38 & record\\
 \midrule
-0 & 500 & yes & \blank{.65in} & \blank{.35in} & \blank{.45in}\\
-1999 & 700 & yes & \blank{.65in} & \blank{.35in} & \blank{.45in}\\
-2000 & 700 & yes & \blank{.65in} & \blank{.35in} & \blank{.45in}\\
-4500 & 440 & yes & \blank{.65in} & \blank{.35in} & \blank{.45in}\\
-6500 & 700 & yes & \blank{.65in} & \blank{.35in} & \blank{.45in}\\
-8000 & 700 & no & \blank{.65in} & \blank{.35in} & \blank{.45in}\\
-16000 & 700 & yes & \blank{.65in} & \blank{.35in} & \blank{.45in}\\
+0 & 500 & yes & monitoring & off & first accepted\\
+1999 & 700 & yes & dry; waiting & off & cadence continues\\
+2000 & 700 & yes & watering & on & decision captured\\
+4500 & 440 & yes & wet threshold & off & stop captured\\
+6500 & 700 & yes & watering may restart & on & decision captured\\
+8000 & 700 & no & amber inhibited & off & inhibition captured\\
+16000 & 700 & yes & policy resumes & timing decides & cadence continues\\
 \bottomrule
 \end{tabularx}
 
-Replay the exact timestamps, raw values, and inhibition values twice.
-
-\begin{tabularx}{\linewidth}{@{}l X X@{}}
-\toprule
-Evidence & Run A digest/notes & Run B digest/notes\\
-\midrule
-Snapshots & \rule{2.1in}{.4pt} & \rule{2.1in}{.4pt}\\
-Pump commands & \rule{2.1in}{.4pt} & \rule{2.1in}{.4pt}\\
-LCD lines & \rule{2.1in}{.4pt} & \rule{2.1in}{.4pt}\\
-Record bytes & \rule{2.1in}{.4pt} & \rule{2.1in}{.4pt}\\
-\bottomrule
-\end{tabularx}
-
-Conclusion: \checkbox{} equivalent \quad \checkbox{} different.
-
-If different, first divergence: \blank{3.2in}.
+The repository's automated tests replay exact timestamp and fault traces
+behind the scenes while the learner experience stays with the visible
+dependent sequence.
 
 \section{Stable records, storage, and time}
 
@@ -334,22 +326,6 @@ oscillator-stopped, and transport-fault readings. The deterministic
 requires a valid reading before append and sync. No physical RTC adapter is
 selected, so the record schema still uses explicit \texttt{TimePoint}
 milliseconds.
-
-\subsection{Record decoding}
-
-Decode one observed record:
-
-\begin{tabularx}{\linewidth}{@{}l X l X@{}}
-Sequence & \blank{1.0in} & Decision ms & \blank{1.0in}\\
-Sample state & \blank{1.0in} & Raw & \blank{1.0in}\\
-Moisture & \blank{1.0in} & Pump & \blank{1.0in}\\
-Reason & \blank{1.0in} & Mode & \blank{1.0in}\\
-\end{tabularx}
-
-Does the record prove physical media durability?
-\checkbox{} yes \quad \checkbox{} no.
-
-Explain: \blank{3.2in}.
 
 \section{Fault matrix and diagnosis}
 
@@ -378,9 +354,9 @@ Shutdown in any mode & dependencies close in reverse & TP38 safe state\\
   \node[q] (rgb) {RGB fault?};
   \node[a,below left=of rgb] (safe) {Remove USB if wiring, heat,\\or behavior is uncertain};
   \node[q,below right=of rgb] (pump) {D38 on?};
-  \node[a,below left=of pump] (sensor) {Compare TP-M raw,\\freshness, and mode};
+  \node[a,below left=of pump] (sensor) {Turn the dial; compare\\LCD, D38, and RGB};
   \node[q,below right=of pump] (record) {D13 changes?};
-  \node[a,below=of record] (host) {Replay host trace; inspect\\append versus sync status};
+  \node[a,below=of record] (host) {Press Reset; watch two record beats.\\If absent, remove USB and check earlier wiring.};
   \draw (rgb) -- node[above,sloped]{yes} (safe);
   \draw (rgb) -- node[above,sloped]{no} (pump);
   \draw (pump) -- node[above,sloped]{unexpected} (sensor);
@@ -391,81 +367,16 @@ Shutdown in any mode & dependencies close in reverse & TP38 safe state\\
 
 Never diagnose by shorting, hot-plugging bare wires, or attaching a real load.
 
-\section{CLI experiment}
+\section{Safe finish and honest claims}
 
-\begin{lstlisting}[style=adkcpp]
-make host-test
-make host-test-sanitize
-make arduino-Lesson024GreenhouseTrainer
-make size-Lesson024GreenhouseTrainer
-make lessons
-make lessons-check
-make site-check
-make upload-Lesson024GreenhouseTrainer PORT=/dev/ttyACM0
-make hardware-card LESSON=024 BOARD=mega2560
-\end{lstlisting}
+The last reward is the shutdown: at 120 seconds D38, the other inert-load LEDs,
+the RGB indicator, display, record sink, moisture input, and their resource
+claims all close in dependency-safe order. Remove USB before changing wires.
 
-Record tool versions: Arduino CLI \blank{1.0in}; AVR core \blank{1.0in};
-compiler \blank{1.4in}. Firmware flash \blank{.8in} bytes; static RAM
-\blank{.8in} bytes. A compile is not a physical observation.
-
-\section{Exercises}
-
-\begin{enumerate}
-  \item Draw the exact precedence path when a record failure and stale sample
-        coexist. Which mode appears, and why?
-  \item Change only the injected timestamps to cross unsigned rollover.
-        Predict each schedule decision before replay.
-  \item Inject append failure, make two newer decisions, then retry. Prove the
-        accepted bytes describe the original pending decision.
-  \item Design a \emph{host-only} RTC fake trace containing Valid, NotSet,
-        OscillatorStopped, and TransportFault. Do not invent a hardware adapter.
-  \item Explain why an RGB ``watering'' pattern plus D38 high still does not
-        prove that a physical pump received energy.
-\end{enumerate}
-
-\section{Claim--evidence--reasoning}
-
-\begin{tabularx}{\linewidth}{@{}l X X@{}}
-\toprule
-Claim & Evidence & Reasoning / limitation\\
-\midrule
-Decisions replay & \rule{1.45in}{.4pt} & \rule{1.45in}{.4pt}\\[8pt]
-Invalid sample suppresses D38 & \rule{1.45in}{.4pt} & \rule{1.45in}{.4pt}\\[8pt]
-Record retry is identical & \rule{1.45in}{.4pt} & \rule{1.45in}{.4pt}\\[8pt]
-Shutdown is safe & \rule{1.45in}{.4pt} & \rule{1.45in}{.4pt}\\[8pt]
-\bottomrule
-\end{tabularx}
-
-Keep claims narrow: an LED and fixed storage model cannot establish pump
-electrical behavior, SD durability, RTC accuracy, water delivery, plant health,
-or unattended safety.
-
-\section{Open Mega 2560 acceptance record}
-
-\textbf{Do not complete from memory or compilation output.}
-
-\begin{tabularx}{\linewidth}{@{}l X@{}}
-Date, person, commit & \blank{4.1in}\\
-Board revision / USB supply & \blank{4.1in}\\
-Potentiometer and LCD markings & \blank{4.1in}\\
-Meter / logic instrument & \blank{4.1in}\\
-Measured 5 V rail & \blank{1.0in} V\\
-TP-M at both stops & dry \blank{.8in} V;\quad wet \blank{.8in} V\\
-Measured LED resistors & D40/D38/D41 \blank{1.1in}; RGB \blank{1.2in}\\
-Acquisition prediction / observation & \blank{4.1in}\\
-D38 safe-state prediction / observation & \blank{4.1in}\\
-Record acknowledgement observation & \blank{4.1in}\\
-Fan/pump/heater mutual exclusion & \blank{4.1in}\\
-Inhibition and stale-sample observation & \blank{4.1in}\\
-Reset and shutdown TP38 observation & \blank{4.1in}\\
-Deviation and interpretation & \blank{4.1in}\\
-\end{tabularx}
-
-\textbf{Stop conditions.} Remove USB on a hot part, unstable connection,
-voltage outside the rails, unexpected D38 state, LCD pin ambiguity, or any
-disagreement between table and breadboard. Software shutdown is not the
-power-removal method.
+An LED and fixed-storage model cannot establish pump electrical behavior, SD
+durability, RTC accuracy, water delivery, plant health, or unattended safety.
+No physical RTC, media adapter, pump, relay, heater, or water path is part of
+this build, and no bench verification is claimed by this document.
 
 \section{References and next step}
 
@@ -486,8 +397,8 @@ power-removal method.
   {Arduino data-logging guide}
 \end{itemize}
 
-The HTML reference carries searchable API links and commands. This PDF is the
-printable experiment and evidence record. Next, Lesson 025 separates captured
-infrared timing evidence from decoded command policy.
+The HTML reference carries searchable API links. This PDF is the printable
+build adventure. Next, Lesson 025 separates captured infrared timing evidence
+from decoded command policy.
 
 \end{document}

@@ -26,6 +26,7 @@ namespace {
     const adk::GreenhouseConfig    greenhouseConfig = {
         adk::Duration (250), adk::Duration (500), adk::Duration (1000),
         adk::Duration (750)};
+    const adk::Duration            adventureDuration (120000);
 
     struct SimulatedRtc final : adk::Rtc
     {
@@ -212,7 +213,8 @@ namespace {
     adk::GreenhouseController greenhouse (greenhouseConfig, moisture, watering, display,
                                           records);
 
-    bool running = false;
+    bool           running = false;
+    adk::TimePoint startedAt;
 
     bool acquireGreenhouse    ();
     bool observeGreenhouse    (adk::TimePoint now);
@@ -230,6 +232,11 @@ namespace {
 void setup ()
 {
     running = acquireGreenhouse ();
+
+    if (running)
+    {
+        startedAt = adk::TimePoint (millis ());
+    }
 }
 
 void loop ()
@@ -240,6 +247,13 @@ void loop ()
     }
 
     const adk::TimePoint now (millis ());
+
+    if (now.elapsedSince (startedAt).milliseconds () >=
+        adventureDuration.milliseconds ())
+    {
+        stopSafely ();
+        return;
+    }
 
     if (!observeGreenhouse   (now) || !decideGreenhouse    (now) ||
         !actuateGreenhouse   (now) || !presentGreenhouse   (now) ||

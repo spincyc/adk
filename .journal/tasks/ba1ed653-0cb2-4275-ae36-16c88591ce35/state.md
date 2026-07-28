@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-28T00:48:26Z"
-updated_at: "2026-07-28T10:43:32Z"
+updated_at: "2026-07-28T10:56:43Z"
 ---
 
 # Goal
@@ -123,3 +123,14 @@ makes no RTC, removable-storage, soil, or physical-bus claim. Learner-facing
 cards, instructor/signoff fields, CLI work, and manual test chores are absent
 while automated repository verification remains intact. No physical
 observation is claimed. The next repair unit is Lessons 023--024.
+
+Lessons 023--024 are software-prepared and independently reviewed. Lesson 023
+uses two dependent light chases around an exact fail-closed hardware-failure
+scene, lifecycle recovery, literal wiring, and a fixed 15-second shutdown with
+a 250-millisecond inactive hold. Lesson 024 provides a coherent four-stage
+LCD, dial, indicator, RGB, and inhibit story with literal wiring and a fixed
+120-second shutdown; stale-record behavior remains model evidence only and the
+parallel LCD remains exact-specimen conditional. Learner cards, instructor
+language, CLI work, and manual test chores are absent while automated tests
+remain behind the scenes. No physical observation is claimed. The next repair
+unit is Lessons 025--026.
