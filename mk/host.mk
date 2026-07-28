@@ -44,6 +44,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_inert_show_simulator \
 	$(BUILD_DIR)/host/test_inertial_observation \
 	$(BUILD_DIR)/host/test_interaction_intent_policy \
+	$(BUILD_DIR)/host/test_kinetic_sculpture \
 	$(BUILD_DIR)/host/test_orientation_presentation \
 	$(BUILD_DIR)/host/test_infrared_decoder \
 	$(BUILD_DIR)/host/test_infrared_record \
@@ -239,6 +240,15 @@ $(BUILD_DIR)/host/test_interaction_intent_policy: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
 		src/contact_dynamics.cpp src/interaction_intent_policy.cpp \
 		tests/test_interaction_intent_policy.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_kinetic_sculpture: $(HOST_CORE_SOURCES) \
+		src/contact_dynamics.cpp src/interaction_intent_policy.cpp \
+		src/bounded_stepper_sequence.cpp src/kinetic_sculpture.cpp \
+		tests/test_kinetic_sculpture.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/contact_dynamics.cpp src/interaction_intent_policy.cpp \
+		src/bounded_stepper_sequence.cpp src/kinetic_sculpture.cpp \
+		tests/test_kinetic_sculpture.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/inert_show_trace_runner: $(HOST_CORE_SOURCES) \
 		src/inert_channel_assessor.cpp src/cue_audit.cpp \
