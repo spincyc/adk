@@ -65,7 +65,7 @@ physical-acceptance paperwork outside the lesson flow.
 | Boundary | State | Required next result |
 |---|---|---|
 | [001--036](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [037--039](projects/component_project_cadence.md) | Queued; detailed brief required | Expand the percussion-sequencer arc before code |
+| [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Queued | Implement E0 core/docs; exact-specimen Mega example/schematic gated; E1 acceptance open |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -92,7 +92,7 @@ work; retail kit names are not electrical identities.
 |---:|---|---|
 | [031--033](design/LESSONS_031_033_INPUT_EXPANSION_PLAN.md) | Host verified; bench open | Analog joystick, quadrature encoder, calibration console |
 | [034--036](design/LESSONS_034_036_MAGNETIC_PASSAGE_PLAN.md) | Host verified; bench open | Magnetic observations, passage qualification, magnetic passage logger |
-| [037--039](projects/component_project_cadence.md) | Queued | Contact dynamics, acoustic envelope, percussion sequencer |
+| [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Queued | E0 contact/envelope/sequencer core ready; exact-specimen Mega materials gated; E1 acceptance open |
 | [040--042](projects/component_project_cadence.md) | Queued | Optical observations, presence, tabletop course marshal |
 | [043--045](projects/component_project_cadence.md) | Queued | Resistive probes, thermal/radiant observation, museum-case monitor |
 | [046--048](projects/component_project_cadence.md) | Queued | Touch/proximity, bounded stepper motion, kinetic sculpture |
@@ -116,9 +116,12 @@ collision. The [kit coverage audit](design/ELEGOO_MEGA_KIT_COVERAGE_2026-07-27.m
 inputs. Coverage is not complete until every claimed module has an exact
 inventory record and the relevant block passes its gates.
 
-Lessons 031--036 have implementation-ready design briefs and authorized
-product families. Exact-revision electrical qualification and bench
-acceptance remain open. Lessons 037--081 are canonical subjects and retained
+Lessons 031--036 have complete implementation-ready design briefs and are host
+verified. Lessons 037--039 have an implementation-ready E0 core and
+hardware-independent documentation brief. Their electrically specific Mega
+examples and authoritative schematics wait for exact specimen qualification;
+E1 physical acceptance remains a distinct later gate. Lessons 040--081 are
+canonical subjects and retained
 work, but their cadence entries
 are not implementation-ready lesson plans. Before code begins for each three-lesson
 arc, expand it to the same depth as 031--033: public values and interfaces,

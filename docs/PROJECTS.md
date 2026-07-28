@@ -12,7 +12,10 @@ are complete.
 ## Current status
 
 Lessons 001--036 are host verified with their bench cards open. Lesson 037
-is the next planned component boundary. See the [authoritative work
+is the next planned component boundary. Its 037--039 E0 core and
+hardware-independent documentation brief is ready; electrically specific Mega
+examples/schematics await exact specimens, and E1 acceptance remains separate.
+See the [authoritative work
 queue](WORK_QUEUE.md) for the complete ledger.
 
 Every API and lesson remains experimental. Mega 2560 bench acceptance is open
@@ -93,7 +96,7 @@ explicit open item.
 | 030 | Host verified; bench open | Immutable cue schedule, arming order, simulated continuity, simultaneous-event policy, stop dominance, restart lockout, and audit replay | Inert channel lamps, redundant armed/fault/stop states, and no energizing output path |
 | 033 | Host verified; bench open | Input and commit/cancel traces | Preview, committed, and fault indications |
 | 036 | Host verified; bench open | Passage, bounce, direction, recovery, and record traces | Raw contacts, accepted passage, and count |
-| 039 | Queued; detailed plan required | Contact, envelope, quantization, and playback traces | Accepted-hit LEDs, step display, and silent shutdown |
+| 039 | Queued; E0 core brief complete | Contact, envelope, quantization, pending association, and skip-to-current playback traces | Hardware-independent publication ready; exact-specimen Mega schematic/example gated; E1 acceptance open |
 | 042 | Queued; detailed plan required | Calibration, checkpoint-order, range, and timeout traces | Local checkpoints and invalid-run state |
 | 045 | Queued; detailed plan required | Probe, thermal, radiant, latch, and record traces | Health/fault display and inert alarm lamp |
 | 048 | Queued; detailed plan required | Gesture, coil-frame, stop, and power-loss traces | Shift-register intent mirror and independent stop |
