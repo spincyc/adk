@@ -15,8 +15,8 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	1	Lesson014CharacterDisplay	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	7892	24576	839	1536
 1	1	Lesson015EnvironmentalStation	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	14746	32768	946	1536
 1	1	Lesson016MatrixKeypad	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5844	24576	284	1024
-1	1	Lesson017BoundedServo	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6656	24576	323	1024
-1	1	Lesson018AccessTrainer	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	11832	32768	763	1536
+1	1	Lesson017BoundedServo	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6480	24576	295	1024
+1	1	Lesson018AccessTrainer	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	11278	32768	508	1536
 1	1	Lesson019UltrasonicRange	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5024	24576	197	1024
 1	1	Lesson020MotorIntent	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6018	24576	186	1024
 1	1	Lesson021BenchRover	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	12436	32768	665	1536
