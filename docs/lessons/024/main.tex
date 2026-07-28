@@ -14,7 +14,7 @@
 \usepackage{tabularx}
 \usepackage{tikz}
 \usepackage{titlesec}
-\usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+\usetikzlibrary{arrows.meta,decorations.pathmorphing,positioning,shapes.geometric}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{Ink}{gray}{0}
@@ -80,22 +80,18 @@ card. ADK is not an unattended irrigation or safety controller.}
 
 \section{Mission and dependency map}
 
-Build one replayable chain:
-\[
-\text{TP-M}\rightarrow\texttt{MoistureSensor}\rightarrow
-\texttt{WateringController}\rightarrow\texttt{PanelPumpOutput}
-\rightarrow\texttt{InertLoadPanel}
-\]
-\[
-\hspace{1.5in}\searrow\quad\text{LCD view}\quad+\quad
-\text{stable record}\quad+\quad\text{RGB mode evidence}.
-\]
+Build one replayable chain. TP-M feeds \texttt{MoistureSensor}; its sample
+reaches \texttt{WateringController}, then \texttt{PanelPumpOutput}, then
+\texttt{InertLoadPanel}. The same decided state also feeds the LCD view, stable
+record, and RGB mode evidence.
 
 \begin{center}
+% ADK visual: pencil
 \begin{tikzpicture}[scale=0.91,transform shape,
   node distance=5mm and 7mm,
   box/.style={draw,rounded corners,align=center,minimum height=8mm},
-  every path/.style={-{Latex[length=2mm]}}
+  pencil/.style={-{Latex[length=2mm]},decorate,
+    decoration={random steps,segment length=2.2mm,amplitude=.12mm}}
 ]
   \node[box] (input) {A0\\\texttt{AnalogInput}};
   \node[box,right=of input] (moisture) {\texttt{MoistureSensor}\\sample};
@@ -104,12 +100,12 @@ Build one replayable chain:
   \node[box,right=of watering] (pump) {\texttt{PanelPumpOutput}\\pump only};
   \node[box,below right=of greenhouse] (view) {LCD + RGB\\presentation};
   \node[box,below=of greenhouse] (record) {\texttt{RecordSink}\\fixed storage};
-  \draw (input) -- (moisture);
-  \draw (moisture) -- (greenhouse);
-  \draw (greenhouse) -- (watering);
-  \draw (watering) -- (pump);
-  \draw (greenhouse) -- (view);
-  \draw (greenhouse) -- (record);
+  \draw[pencil] (input) -- (moisture);
+  \draw[pencil] (moisture) -- (greenhouse);
+  \draw[pencil] (greenhouse) -- (watering);
+  \draw[pencil] (watering) -- (pump);
+  \draw[pencil] (greenhouse) -- (view);
+  \draw[pencil] (greenhouse) -- (record);
 \end{tikzpicture}
 \end{center}
 
@@ -120,6 +116,7 @@ objects outlive it.
 \section{Orientation and exact circuit}
 
 \begin{center}
+% ADK visual: pencil
 \includegraphics[width=0.94\linewidth]{024-greenhouse-pencil.png}
 \end{center}
 \textit{Alternative text: literal Mega and numbered-breadboard plate. It shows
@@ -129,6 +126,7 @@ series paths; and the parallel LCD connector. D13 is explicitly the built-in
 LED. The plate contains no relay or external load.}
 
 \begin{center}
+% ADK visual: pencil
 \includegraphics[width=0.98\linewidth]{024-lcd-closeup.png}
 \end{center}
 \textit{Alternative text: close-up of all sixteen LCD header positions,
@@ -162,6 +160,7 @@ unplugged. There is no relay or external supply in this lesson.
 \section{Four quick wins}
 
 \begin{center}
+% ADK visual: pencil
 \includegraphics[width=0.98\linewidth]{024-greenhouse-progress.png}
 \end{center}
 \textit{Alternative text: four panels show the dependent progression:
@@ -213,23 +212,25 @@ on. Maximum-on creates a lockout; another dry sample cannot clear it early.
 The fan and heater indicators remain off throughout this project.
 
 \begin{center}
+% ADK visual: pencil
 \begin{tikzpicture}[
   node distance=10mm and 14mm,
   state/.style={draw,ellipse,align=center,minimum width=23mm},
-  every path/.style={-{Latex[length=2mm]}}
+  pencil/.style={-{Latex[length=2mm]},decorate,
+    decoration={random steps,segment length=2.2mm,amplitude=.12mm}}
 ]
   \node[state] (start) {Starting};
   \node[state,right=of start] (idle) {Idle};
   \node[state,right=of idle] (water) {Watering};
   \node[state,below=of water] (lock) {Locked out};
   \node[state,below=of idle] (fault) {Sensor/output\\fault};
-  \draw (start) -- node[above]{first decision} (idle);
-  \draw[bend left=18] (idle) to node[above]{dry + off time} (water);
-  \draw[bend left=18] (water) to node[below]{wet or inhibit} (idle);
-  \draw (water) -- node[right]{maximum on} (lock);
-  \draw (lock) -- node[below]{minimum off} (idle);
-  \draw (idle) -- node[left]{invalid sample} (fault);
-  \draw (water) -- node[above,sloped]{invalid/output failure} (fault);
+  \draw[pencil] (start) -- node[above]{first decision} (idle);
+  \draw[pencil,bend left=18] (idle) to node[above]{dry + off time} (water);
+  \draw[pencil,bend left=18] (water) to node[below]{wet or inhibit} (idle);
+  \draw[pencil] (water) -- node[right]{maximum on} (lock);
+  \draw[pencil] (lock) -- node[below]{minimum off} (idle);
+  \draw[pencil] (idle) -- node[left]{invalid sample} (fault);
+  \draw[pencil] (water) -- node[above,sloped]{invalid/output failure} (fault);
 \end{tikzpicture}
 \end{center}
 
@@ -345,11 +346,13 @@ Shutdown in any mode & dependencies close in reverse & TP38 safe state\\
 \end{tabularx}
 
 \begin{center}
+% ADK visual: pencil
 \begin{tikzpicture}[
   node distance=6mm,
   q/.style={draw,diamond,aspect=2.4,align=center},
   a/.style={draw,rounded corners,align=center},
-  every path/.style={-{Latex[length=2mm]}}
+  pencil/.style={-{Latex[length=2mm]},decorate,
+    decoration={random steps,segment length=2.2mm,amplitude=.12mm}}
 ]
   \node[q] (rgb) {RGB fault?};
   \node[a,below left=of rgb] (safe) {Remove USB if wiring, heat,\\or behavior is uncertain};
@@ -357,11 +360,11 @@ Shutdown in any mode & dependencies close in reverse & TP38 safe state\\
   \node[a,below left=of pump] (sensor) {Turn the dial; compare\\LCD, D38, and RGB};
   \node[q,below right=of pump] (record) {D13 changes?};
   \node[a,below=of record] (host) {Press Reset; watch two record beats.\\If absent, remove USB and check earlier wiring.};
-  \draw (rgb) -- node[above,sloped]{yes} (safe);
-  \draw (rgb) -- node[above,sloped]{no} (pump);
-  \draw (pump) -- node[above,sloped]{unexpected} (sensor);
-  \draw (pump) -- node[above,sloped]{expected} (record);
-  \draw (record) -- node[right]{no} (host);
+  \draw[pencil] (rgb) -- node[above,sloped]{yes} (safe);
+  \draw[pencil] (rgb) -- node[above,sloped]{no} (pump);
+  \draw[pencil] (pump) -- node[above,sloped]{unexpected} (sensor);
+  \draw[pencil] (pump) -- node[above,sloped]{expected} (record);
+  \draw[pencil] (record) -- node[right]{no} (host);
 \end{tikzpicture}
 \end{center}
 

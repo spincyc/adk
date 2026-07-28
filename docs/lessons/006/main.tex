@@ -116,24 +116,9 @@ host/indicator simulation and provides no RF replay or launcher interface.}
 \section{Composition, not inheritance}
 
 \begin{center}
-\begin{tikzpicture}[
-    node distance=8mm and 12mm,
-    box/.style={draw,rounded corners,minimum height=8mm,align=center},
-    >=latex]
-  \node[box] (buttons) {4 \texttt{Button}s\\D22--D25};
-  \node[box,right=of buttons] (adapter) {input adapter\\three masks};
-  \node[box,right=of adapter] (simon) {\texttt{Simon}\\pure game state};
-  \node[box,below=of simon] (snapshot) {\texttt{SimonSnapshot}\\one coherent frame};
-  \node[box,left=of snapshot] (cueled) {4 \texttt{MonoLed}s\\D30--D33};
-  \node[box,left=of cueled] (feedback) {RGB D5--D7\\piezo D11};
-  \node[box,above=of simon] (source) {\texttt{CueSource}\\fixed or XorShift32V1};
-  \draw[->] (buttons) -- (adapter);
-  \draw[->] (adapter) -- (simon);
-  \draw[->] (source) -- (simon);
-  \draw[->] (simon) -- (snapshot);
-  \draw[->] (snapshot) -- (cueled);
-  \draw[->] (snapshot.south) |- (feedback.east);
-\end{tikzpicture}
+% ADK visual: pencil
+\includegraphics[width=\linewidth,height=0.28\textheight,keepaspectratio]
+  {006-simon-composition-pencil.png}
 \end{center}
 
 \texttt{Simon} owns no GPIO and reads no clock. The adapter samples all buttons,
@@ -150,6 +135,7 @@ sampling and game behavior begin only after that separator.
 
 \begin{figure}[ht]
   \centering
+  % ADK visual: pencil
   \includegraphics[width=\linewidth]{006-simon-pencil.png}
   \caption{Conceptual pencil orientation for the complete control panel. This
   drawing helps locate functional groups, but it is \textbf{not authoritative
@@ -179,6 +165,7 @@ passive piezo & D11 & pin \(\rightarrow100\,\Omega\rightarrow\) piezo \(+\); pie
 \end{center}
 
 \begin{center}
+% ADK visual: schematic
 \begin{circuitikz}[american voltages,scale=.82,transform shape]
   \foreach \y/\pin/\n in {6.0/22/1,4.8/23/2,3.6/24/3,2.4/25/4}
   {
@@ -199,6 +186,7 @@ passive piezo & D11 & pin \(\rightarrow100\,\Omega\rightarrow\) piezo \(+\); pie
 \end{center}
 
 \begin{center}
+% ADK visual: schematic
 \begin{circuitikz}[american voltages,scale=.82,transform shape]
   \foreach \y/\pin/\c in {4.0/5/R,2.8/6/G,1.6/7/B}
   {
@@ -343,31 +331,9 @@ independently of iteration order. Bits 4--7 are invalid in every phase.
 \section{State machine}
 
 \begin{center}
-\begin{tikzpicture}[
-    node distance=9mm and 12mm,
-    state/.style={draw,rounded corners,minimum width=25mm,minimum height=8mm,align=center},
-    >=latex]
-  \node[state] (idle) {Idle};
-  \node[state,right=of idle] (on) {PlaybackOn};
-  \node[state,right=of on] (gap) {PlaybackGap};
-  \node[state,below=of gap] (press) {AwaitPress};
-  \node[state,left=of press] (release) {AwaitRelease};
-  \node[state,left=of release] (round) {RoundSuccess};
-  \node[state,below=of release] (success) {GameSuccess};
-  \node[state,right=of success] (failure) {GameFailure};
-  \draw[->] (idle) -- node[above]{start event} (on);
-  \draw[->] (on) -- node[above]{cue duration} (gap);
-  \draw[->] (gap) to[bend left=25] node[above]{next cue} (on);
-  \draw[->] (gap) -- node[right]{playback done} (press);
-  \draw[->] (press) -- node[above]{correct single press} (release);
-  \draw[->] (release) -- node[above]{more input} (press);
-  \draw[->] (release) -- node[above]{round done} (round);
-  \draw[->] (round) to[bend right=20] node[above]{grow + replay} (on);
-  \draw[->] (release) -- node[left]{maximum reached} (success);
-  \draw[->] (press) -- node[right]{bad / timeout} (failure);
-  \draw[->] (success) to[bend right=24] node[below]{start resets} (on);
-  \draw[->] (failure) to[bend left=20] node[below]{start resets} (on);
-\end{tikzpicture}
+% ADK visual: pencil
+\includegraphics[width=\linewidth,height=0.34\textheight,keepaspectratio]
+  {006-simon-state-pencil.png}
 \end{center}
 
 \begin{tabularx}{\linewidth}{@{}l X X@{}}

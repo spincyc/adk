@@ -1,0 +1,18 @@
+\documentclass[tikz,border=0pt]{standalone}
+\usepackage{graphicx}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+  \node[anchor=south west,inner sep=0] at (0,0)
+    {\includegraphics[width=140mm,height=30mm]{030-process-pencil-base.png}};
+  \foreach \x/\t in {14.5/REVIEW,40/WAITING,65.5/CONFIRMATION,91/ACTIVE,125.5/WAITING}
+    \node[font=\bfseries\small] at (\x,23) {\t};
+  \node[font=\scriptsize] at (14.5,8) {Run};
+  \node[font=\scriptsize] at (40,8) {cue becomes due};
+  \node[font=\scriptsize] at (65.5,8) {Confirm + Closed};
+  \node[font=\scriptsize] at (91,8) {visible duration ends};
+  \node[font=\scriptsize,align=center] at (125.5,7)
+    {fresh frame gates\\destination};
+\end{tikzpicture}
+\end{document}

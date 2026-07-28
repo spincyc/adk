@@ -14,7 +14,7 @@
 \usepackage{tabularx}
 \usepackage{tikz}
 \usepackage{titlesec}
-\usetikzlibrary{arrows.meta,positioning}
+\usetikzlibrary{arrows.meta,decorations.pathmorphing,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{AdkBlue}{gray}{0}
@@ -56,6 +56,9 @@
 }
 \newcommand{\checkbox}{\(\square\)}
 \newcommand{\blank}[1]{\rule{#1}{0.4pt}}
+\tikzset{pencil picture/.style={
+  every path/.append style={line cap=round,line join=round,
+    dash pattern=on 1.15pt off .08pt,opacity=.88}}}
 \newcommand{\warningbox}[1]{%
   \begin{center}
   \fcolorbox{AdkRed}{AdkRed!6}{\parbox{0.91\linewidth}{\textbf{\color{AdkRed}Safety checkpoint.} #1}}
@@ -115,7 +118,8 @@ This is a low-voltage learning model, not a road-signal controller.}
 \section{The state machine is the design}
 
 \begin{center}
-\begin{tikzpicture}[
+% ADK visual: pencil
+\begin{tikzpicture}[pencil picture,
     node distance=8mm and 7mm,
     phase/.style={draw,rounded corners,minimum height=8mm,align=center},
     >=Latex]
@@ -167,6 +171,7 @@ Fault & both vehicle reds, pedestrian stop & latched until explicit reset\\
 
 \begin{figure}[ht]
   \centering
+  % ADK visual: pencil
   \resizebox{\linewidth}{!}{\input{docs/lessons/assets/011-mega-header-locator.tex}}
   \caption{Physical Mega header locator, top view with USB at left. Read the
   board's printed numbers before inserting each lead: D30--D37 alternate
@@ -176,6 +181,7 @@ Fault & both vehicle reds, pedestrian stop & latched until explicit reset\\
 
 \begin{figure}[ht]
   \centering
+  % ADK visual: pencil
   \resizebox{\linewidth}{!}{\input{docs/lessons/assets/011-timed-traffic-layout.tex}}
   \caption{Authoritative coordinate layout. Each LED consumes three different
   breadboard rows: Mega lead at A\(n\), resistor A\(n\)--A\(n+1\), LED
@@ -187,6 +193,7 @@ Fault & both vehicle reds, pedestrian stop & latched until explicit reset\\
 
 \begin{figure}[ht]
   \centering
+  % ADK visual: pencil
   \resizebox{\linewidth}{!}{\input{docs/lessons/assets/011-build-stages.tex}}
   \caption{Three visible wins. Each plate names only the new pins and the
   behavior that becomes possible after that stage is wired correctly.}

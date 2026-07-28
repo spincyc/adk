@@ -41,5 +41,10 @@ observe it, and how to interpret it. Resource-acquisition evidence and
 safe-state evidence are separate checks. Serial output is optional supporting
 evidence, never the only proof.
 
+Every lesson PDF visual uses pencil-drawing presentation unless it is an
+explicitly identified, electrically authoritative formal schematic. Apply the
+classification markers and gate in `docs/PDF_POLICY.md`; filenames and
+grayscale alone do not establish compliance.
+
 Never claim physical verification without a recorded bench acceptance result.
 Never add pyrotechnic ignition, launcher control, or unknown-protocol replay.

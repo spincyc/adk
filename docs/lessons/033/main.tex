@@ -6,12 +6,14 @@
 \usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage{fancyhdr}
+\usepackage{graphicx}
 \usepackage[table]{xcolor}
 \usepackage[hidelinks]{hyperref}
 \usepackage{listings}
 \usepackage{microtype}
 \usepackage{tabularx}
 \usepackage{titlesec}
+\graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{Ink}{gray}{0}
 \definecolor{CodeGray}{gray}{0.96}
@@ -97,17 +99,18 @@ After the lesson, you can:
 \section{Monochrome orientation drawing}
 
 \begin{center}
-\fbox{\begin{minipage}{0.93\linewidth}
-\centering
-\begin{tabular}{c@{\quad$\longrightarrow$\quad}c@{\quad$\longrightarrow$\quad}c}
-\textbf{Joystick} & \textbf{Mega 2560 + console} & \textbf{Presentation}\\
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth]{033-console-orientation-pencil.png}
+
+\begin{tabularx}{0.96\linewidth}{@{}>{\centering\arraybackslash}X
+  >{\centering\arraybackslash}X >{\centering\arraybackslash}X@{}}
+\textbf{Joystick + Encoder} & \textbf{Mega 2560 + console} &
+\textbf{Presentation}\\
 TP-X: field & supplied-time update & LCD: field/values\\
-TP-Y: coarse preview & commit/cancel policy & RGB: console state\\[4pt]
-\textbf{Encoder} & & four LEDs: preview nibble\\
-TP-A + TP-B: trim & & optional piezo: acknowledgement\\
-button: cancel & & \\
-\end{tabular}
-\end{minipage}}
+TP-Y: coarse preview & commit/cancel policy & RGB: console state\\
+TP-A + TP-B: trim & & four LEDs: preview nibble\\
+button: cancel & & optional piezo: acknowledgement
+\end{tabularx}
 
 \small\textit{Alternative text: a left-to-right orientation diagram. The
 joystick provides field selection at TP-X and coarse preview at TP-Y. The
@@ -258,12 +261,19 @@ simultaneous cancel/select & \blank{1.35in} & \blank{1.9in}\\
 
 \section{Evidence chain and diagnosis}
 
-\[
-\boxed{\text{TP-X/TP-Y/TP-A/TP-B}}\rightarrow
-\boxed{\text{component snapshots}}\rightarrow
-\boxed{\text{console snapshot}}\rightarrow
-\boxed{\text{LCD/RGB/LEDs}}.
-\]
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth]{033-evidence-chain-pencil.png}
+
+\small\textbf{TP-X / TP-Y / TP-A / TP-B}
+\(\rightarrow\) \textbf{component snapshots}
+\(\rightarrow\) \textbf{console snapshot}
+\(\rightarrow\) \textbf{LCD / RGB / four LEDs}
+
+\small\textit{Alternative text: pencil evidence chain from TP-X, TP-Y, TP-A,
+and TP-B through component snapshots and the console snapshot to the LCD,
+RGB LED, and four indicator LEDs.}
+\end{center}
 
 Agreement at one link does not prove the next. An LCD value does not prove the
 raw voltage; a valid phase sequence does not prove a commit; a dark LED does

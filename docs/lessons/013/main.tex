@@ -12,6 +12,7 @@
 \usepackage{tabularx}
 \usepackage{tikz}
 \usepackage[table]{xcolor}
+\usetikzlibrary{decorations.pathmorphing}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{CodeGray}{gray}{0.96}
@@ -95,7 +96,10 @@ module's peak current and keep module plus three LED channels below 35 mA.
 
 \begin{figure}[H]
   \centering
-  \begin{tikzpicture}[x=0.78cm,y=0.72cm,line width=0.55pt]
+  % ADK visual: pencil
+  \begin{tikzpicture}[
+      x=0.78cm,y=0.72cm,line width=0.55pt,
+      decorate,decoration={random steps,segment length=3pt,amplitude=0.18pt}]
     \draw[rounded corners] (0,0) rectangle (13,4);
     \node[font=\large] at (6.5,2.2) {Arduino Mega 2560};
     \draw (1,3.15) rectangle (8.2,3.75);
@@ -132,7 +136,10 @@ D6, D7, 5V, and GND with a fingertip before placing any wire.
 
 \begin{figure}[H]
   \centering
-  \begin{tikzpicture}[x=0.59cm,y=0.55cm,line width=0.5pt]
+  % ADK visual: pencil
+  \begin{tikzpicture}[
+      x=0.59cm,y=0.55cm,line width=0.5pt,
+      decorate,decoration={random steps,segment length=3pt,amplitude=0.18pt}]
     \draw[rounded corners] (0,0) rectangle (25,11);
     \draw (0.8,10.3) -- (24.2,10.3);
     \draw (0.8,9.7) -- (24.2,9.7);
@@ -208,7 +215,10 @@ valid color appears. There is no Serial ritual or worksheet.
 
 \begin{figure}[H]
   \centering
-  \begin{tikzpicture}[x=0.8cm,y=0.75cm,line width=0.55pt]
+  % ADK visual: pencil
+  \begin{tikzpicture}[
+      x=0.8cm,y=0.75cm,line width=0.55pt,
+      decorate,decoration={random steps,segment length=3pt,amplitude=0.18pt}]
     \foreach \x/\title/\text in
       {2/{START}/{blue pulses},
        8/{VALID}/{steady humidity color},

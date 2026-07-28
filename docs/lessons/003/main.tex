@@ -15,13 +15,27 @@
 \usepackage{tabularx}
 \usepackage{tikz}
 \usepackage{titlesec}
-\usetikzlibrary{positioning}
+\usetikzlibrary{decorations.pathmorphing,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{AdkBlue}{gray}{0}
 \definecolor{AdkRed}{gray}{0}
 \definecolor{AdkGreen}{gray}{0.30}
 \definecolor{CodeGray}{gray}{0.97}
+
+\tikzset
+{
+  pencil stroke/.style={
+    draw=black!72,
+    decorate,
+    decoration={random steps,segment length=3pt,amplitude=0.55pt},
+    line cap=round,
+    line join=round
+  },
+  pencil diagram/.style={
+    every node/.style={text=black!82}
+  }
+}
 
 \hypersetup
 {
@@ -84,6 +98,7 @@ Status & host verified; physical acceptance pending & Energy & E1, USB-powered M
 
 \begin{figure}[h]
   \centering
+  % ADK visual: pencil
   \includegraphics[width=\linewidth,height=0.28\textheight,keepaspectratio]
       {003-reaction-timer-pencil.png}
   \caption*{\textbf{Orientation only.} Use the exact schematic and connection
@@ -124,9 +139,10 @@ Lessons 001 and 002 introduced one hardware endpoint at a time. This third
 lesson composes them into a project:
 
 \begin{center}
-\begin{tikzpicture}[
+% ADK visual: pencil
+\begin{tikzpicture}[pencil diagram,
     node distance=8mm and 11mm,
-    box/.style={draw,rounded corners,minimum height=8mm,align=center},
+    box/.style={draw=black!72,rounded corners,minimum height=8mm,align=center},
     >=latex]
   \node[box] (sample) {Mega GPIO\\sample};
   \node[box,right=of sample] (input) {\texttt{DigitalInput}\\raw electrical state};
@@ -134,11 +150,11 @@ lesson composes them into a project:
   \node[box,below=of button] (timer) {ReactionTimer\\deterministic state};
   \node[box,left=of timer] (output) {\texttt{DigitalOutput}\\safe pin ownership};
   \node[box,left=of output] (led) {LED +\\330\(\Omega\)};
-  \draw[->] (sample) -- (input);
-  \draw[->] (input) -- (button);
-  \draw[->] (button) -- (timer);
-  \draw[->] (timer) -- (output);
-  \draw[->] (output) -- (led);
+  \draw[pencil stroke,->] (sample) -- (input);
+  \draw[pencil stroke,->] (input) -- (button);
+  \draw[pencil stroke,->] (button) -- (timer);
+  \draw[pencil stroke,->] (timer) -- (output);
+  \draw[pencil stroke,->] (output) -- (led);
 \end{tikzpicture}
 \end{center}
 
@@ -174,6 +190,7 @@ button has been released?\\[3pt]
 \section{Exact schematic --- build only from this page}
 
 \begin{center}
+% ADK visual: schematic
 \begin{circuitikz}[american voltages]
   \draw
     (0,4.2) node[left,align=right]{Mega D8\\digital output}
@@ -288,17 +305,18 @@ for the configured interval. \texttt{pressEvent()} and
 same answer until the next update.
 
 \begin{center}
-\begin{tikzpicture}[x=.012cm,y=.72cm,>=latex]
-  \draw[->] (0,0) -- (720,0) node[right]{time (ms)};
+% ADK visual: pencil
+\begin{tikzpicture}[pencil diagram,x=.012cm,y=.72cm,>=latex]
+  \draw[pencil stroke,->] (0,0) -- (720,0) node[right]{time (ms)};
   \foreach \x/\lab in {0/1000,160/1002,400/1005,560/1007,720/1009}
   {
-    \draw (\x,-.08) -- (\x,.08) node[below=5pt]{\lab};
+    \draw[pencil stroke] (\x,-.08) -- (\x,.08) node[below=5pt]{\lab};
   }
-  \draw[very thick,black,dashed]
+  \draw[pencil stroke,very thick,black,dashed]
     (0,2) -- (160,2) -- (160,1) -- (400,1) -- (400,2)
     -- (560,2) -- (560,1) -- (720,1);
   \node[left] at (0,1.5) {raw};
-  \draw[very thick,black] (0,3.3) -- (720,3.3);
+  \draw[pencil stroke,very thick,black] (0,3.3) -- (720,3.3);
   \node[left] at (0,3.3) {stable};
   \node[align=left,anchor=west] at (770,2.2)
     {No stable press yet:\\the final LOW has not\\lasted 20\,ms.};
@@ -329,9 +347,10 @@ Do not compare absolute deadlines with \texttt{now >= deadline}.
 \section{The reaction-timer state machine}
 
 \begin{center}
-\begin{tikzpicture}[
+% ADK visual: pencil
+\begin{tikzpicture}[pencil diagram,
     node distance=11mm and 14mm,
-    state/.style={draw,rounded corners,minimum width=28mm,minimum height=9mm,align=center},
+    state/.style={draw=black!72,rounded corners,minimum width=28mm,minimum height=9mm,align=center},
     >=latex]
   \node[state] (idle) {Idle\\LED off};
   \node[state,right=of idle] (release) {AwaitRelease\\LED off};
@@ -340,15 +359,15 @@ Do not compare absolute deadlines with \texttt{now >= deadline}.
   \node[state,left=of wait] (cue) {Cue\\LED on};
   \node[state,left=of cue] (success) {Success\\pulsing};
   \node[state,below=of wait] (failure) {Failure\\LED on};
-  \draw[->] (idle) -- node[above]{press event} (release);
-  \draw[->] (release) -- node[above]{release / not pressed} (ready);
-  \draw[->] (ready) -- node[right]{ready duration} (wait);
-  \draw[->] (wait) -- node[above]{wait duration} (cue);
-  \draw[->] (wait) -- node[right]{press event} (failure);
-  \draw[->] (cue) -- node[above]{press event} (success);
-  \draw[->] (cue) -- node[left]{timeout} (failure);
-  \draw[->] (success) to[bend right=28] node[above]{result duration} (idle);
-  \draw[->] (failure) to[bend left=18] node[right]{result duration} (idle);
+  \draw[pencil stroke,->] (idle) -- node[above]{press event} (release);
+  \draw[pencil stroke,->] (release) -- node[above]{release / not pressed} (ready);
+  \draw[pencil stroke,->] (ready) -- node[right]{ready duration} (wait);
+  \draw[pencil stroke,->] (wait) -- node[above]{wait duration} (cue);
+  \draw[pencil stroke,->] (wait) -- node[right]{press event} (failure);
+  \draw[pencil stroke,->] (cue) -- node[above]{press event} (success);
+  \draw[pencil stroke,->] (cue) -- node[left]{timeout} (failure);
+  \draw[pencil stroke,->] (success) to[bend right=28] node[above]{result duration} (idle);
+  \draw[pencil stroke,->] (failure) to[bend left=18] node[right]{result duration} (idle);
 \end{tikzpicture}
 \end{center}
 

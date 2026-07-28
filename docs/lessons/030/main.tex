@@ -105,6 +105,7 @@ their lifecycles and decisions without owning an endpoint or performing I/O.
 \section{Orientation and unpowered inspection}
 
 \begin{center}
+% ADK visual: pencil
 \includegraphics[width=0.96\linewidth]{030-inert-show-pencil.png}
 
 \small\textit{Alternative text: pencil orientation plate showing one
@@ -259,12 +260,13 @@ from one cue reaches a hidden waiting state first; a later fresh frame assesses
 the destination channel before requesting confirmation.
 
 \begin{center}
-\begin{tabular}{c@{\quad}c@{\quad}c@{\quad}c@{\quad}c}
-Review & Waiting & Confirmation & Active & Waiting\\
-\(\longrightarrow\) & \(\longrightarrow\) & \(\longrightarrow\) &
-\(\longrightarrow\) & destination gate\\
-Run & due & Confirm + Closed & duration ends & fresh frame
-\end{tabular}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth]{030-process-pencil.png}
+
+\small\textit{Alternative text: pencil process line from Review through
+Waiting, Confirmation, Active, and back to Waiting. Run starts the sequence;
+the cue becomes due; Confirm with a Closed assessment begins the visible
+interval; its end returns to a destination gate that requires a fresh frame.}
 \end{center}
 
 At TP29 predict inactivity before accepted confirmation, a bounded active

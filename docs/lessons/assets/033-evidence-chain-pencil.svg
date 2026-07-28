@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="300"
+     viewBox="0 0 1500 300" role="img" aria-labelledby="title description">
+  <title id="title">Pencil evidence-chain drawing</title>
+  <desc id="description">Test points TP-X, TP-Y, TP-A, and TP-B lead to
+  component snapshots, then to the console snapshot, and finally to the LCD,
+  RGB LED, and four indicator LEDs.</desc>
+  <rect width="1500" height="300" fill="white"/>
+  <defs>
+    <filter id="pencil" x="-4%" y="-10%" width="108%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.016 0.08"
+                    numOctaves="2" seed="34" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="3"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5"
+            markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 5 L0 10" fill="none" stroke="#333" stroke-width="1.5"/>
+    </marker>
+  </defs>
+  <g filter="url(#pencil)" fill="none" stroke="#333" stroke-width="4"
+     stroke-linecap="round" opacity="0.9">
+    <path d="M25 65 Q190 54 354 66 L350 235 Q188 245 30 233 Z"/>
+    <path d="M405 65 Q570 54 733 66 L730 235 Q568 245 410 233 Z"/>
+    <path d="M785 65 Q950 54 1114 66 L1110 235 Q948 245 790 233 Z"/>
+    <path d="M1165 65 Q1320 54 1474 66 L1470 235 Q1318 245 1170 233 Z"/>
+    <path d="M355 150 C372 142 388 156 404 148" marker-end="url(#arrow)"/>
+    <path d="M734 150 C752 142 768 156 784 148" marker-end="url(#arrow)"/>
+    <path d="M1115 150 C1132 142 1148 156 1164 148" marker-end="url(#arrow)"/>
+  </g>
+</svg>

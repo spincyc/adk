@@ -162,6 +162,8 @@ Every endpoint or component lands with:
 - terse HTML reference with links to source, example, tests, and related work;
 - a complementary PDF lesson with schematic, pencil orientation drawing,
   experiment, diagnosis, exercises, and acceptance record;
+- pencil-drawing presentation for every PDF visual except an explicitly
+  identified, electrically authoritative formal schematic;
 - a hardware checklist that distinguishes compilation from observation;
 - a non-Serial debug signal or named test point with prediction,
   interpretation, and separate resource/safe-state checks.

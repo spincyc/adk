@@ -15,7 +15,7 @@
 \usepackage{tabularx}
 \usepackage{tikz}
 \usepackage{titlesec}
-\usetikzlibrary{arrows.meta,positioning}
+\usetikzlibrary{arrows.meta,decorations.pathmorphing,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{AdkBlue}{gray}{0}
@@ -57,6 +57,9 @@
 }
 \newcommand{\checkbox}{\(\square\)}
 \newcommand{\blank}[1]{\rule{#1}{0.4pt}}
+\tikzset{pencil picture/.style={
+  every path/.append style={line cap=round,line join=round,
+    dash pattern=on 1.15pt off .08pt,opacity=.88}}}
 \newcommand{\warningbox}[1]{%
   \begin{center}
   \fcolorbox{AdkRed}{AdkRed!6}{\parbox{0.91\linewidth}{\textbf{\color{AdkRed}Safety checkpoint.} #1}}
@@ -119,7 +122,8 @@ lesson, or any measured voltage outside 0--5\,V.}
 \section{System composition}
 
 \begin{center}
-\begin{tikzpicture}[
+% ADK visual: pencil
+\begin{tikzpicture}[pencil picture,
     node distance=7mm and 9mm,
     box/.style={draw,rounded corners,minimum height=8mm,align=center},
     >=Latex]
@@ -159,6 +163,7 @@ Hysteresis & Has light crossed the appropriate boundary for the current mode? & 
 
 \begin{figure}[ht]
   \centering
+  % ADK visual: pencil
   \includegraphics[width=\linewidth]{009-mega-header-locator.png}
   \caption{Plate 0 locates the used sockets in their physical Mega 2560 header
   groups and order. Orient the board with USB at left and still confirm the
@@ -167,6 +172,7 @@ Hysteresis & Has light crossed the appropriate boundary for the current mode? & 
 
 \begin{figure}[ht]
   \centering
+  % ADK visual: pencil
   \includegraphics[width=\linewidth]{009-night-light-overview.png}
   \caption{Plate A separates every used physical Mega header from its named
   breadboard net. D13 is the built-in LED and has no external jumper.}
@@ -174,6 +180,7 @@ Hysteresis & Has light crossed the appropriate boundary for the current mode? & 
 
 \begin{figure}[ht]
   \centering
+  % ADK visual: pencil
   \includegraphics[width=\linewidth]{009-night-light-breadboard.png}
   \caption{Plate B enlarges breadboard topology, coordinates, polarity, and
   resistor placement. Cross-check both plates against the manifest below.}
@@ -242,6 +249,7 @@ never above 10\,k\(\Omega\), matching the conservative ADC source-impedance
 guidance used in this lesson.
 
 \begin{center}
+% ADK visual: schematic
 \begin{circuitikz}[american voltages,scale=.85,transform shape]
   \draw (0,5) node[vcc]{5 V}
         to[phR,l={LDR}] (0,3)
@@ -330,7 +338,8 @@ changes off only strictly above 450. Equality does not cross either boundary.
 This memory is hysteresis, not filtering.
 
 \begin{center}
-\begin{tikzpicture}[
+% ADK visual: pencil
+\begin{tikzpicture}[pencil picture,
     node distance=18mm,
     state/.style={draw,rounded corners,minimum width=24mm,minimum height=10mm},
     >=Latex]

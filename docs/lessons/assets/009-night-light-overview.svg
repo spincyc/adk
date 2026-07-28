@@ -1,5 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1500" height="650" viewBox="0 0 1500 650">
+  <defs>
+    <filter id="pencil" x="-2%" y="-2%" width="104%" height="104%">
+      <feTurbulence type="fractalNoise" baseFrequency=".018" numOctaves="2"
+        seed="10" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="1.35"/>
+    </filter>
+  </defs>
   <style>
+    path,rect,circle,line,polyline,polygon{filter:url(#pencil)}
     text{font-family:"DejaVu Sans";fill:#191919}
     .title{font-size:30px}.pin{font-size:25px}.net{font-size:23px}.note{font-size:20px}
     .box{fill:#faf9f4;stroke:#222;stroke-width:4}

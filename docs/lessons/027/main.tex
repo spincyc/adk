@@ -12,9 +12,7 @@
 \usepackage{listings}
 \usepackage{microtype}
 \usepackage{tabularx}
-\usepackage{tikz}
 \usepackage{titlesec}
-\usetikzlibrary{arrows.meta,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{Ink}{gray}{0}
@@ -95,23 +93,8 @@ Input order cannot change configured source order. Missing sources remain
 explicit. Presentation and record failures cannot rewrite health.
 
 \begin{center}
-\begin{tikzpicture}[
-  node distance=7mm and 9mm,
-  box/.style={draw,rounded corners,align=center,minimum height=9mm},
-  every path/.style={-{Latex[length=2mm]}}
-]
-  \node[box] (fixtures) {owned fixtures\\packets};
-  \node[box,right=of fixtures] (track) {sequence +\\freshness};
-  \node[box,right=of track] (console) {console\\decision};
-  \node[box,above right=of console] (display) {selected source\\presentation};
-  \node[box,right=of console] (health) {RGB health\\cadence};
-  \node[box,below right=of console] (record) {bounded record\\acceptance LED};
-  \draw (fixtures) -- (track);
-  \draw (track) -- (console);
-  \draw (console) -- (display);
-  \draw (console) -- (health);
-  \draw (console) -- (record);
-\end{tikzpicture}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth]{027-evidence-chain-pencil.png}
 \end{center}
 
 \subsection{Learning outcomes}
@@ -128,12 +111,14 @@ explicit. Presentation and record failures cannot rewrite health.
 \section{Orientation and circuit plan}
 
 \begin{center}
+% ADK visual: pencil
 \includegraphics[width=0.96\linewidth]{027-telemetry-console-pencil.png}
 
-\small\textit{Alternative text: graphite orientation plate showing a Mega,
-optional character display, next and acknowledge buttons, RGB source-health
-evidence, record LED, and separate paths from console decision to presentation
-and record acceptance. No radio or actuator is shown.}
+\small\textit{Alternative text: graphite orientation plate showing the
+USB-powered Mega, optional unassigned display, D30 next and D31 acknowledge
+buttons to ground, D5--D7 RGB channels with one 330-ohm resistor each, built-in
+D13 record evidence, and separate health and record paths. No live radio or
+actuator is shown.}
 \end{center}
 
 The plate shows the extension path as well as the starter circuit. The released

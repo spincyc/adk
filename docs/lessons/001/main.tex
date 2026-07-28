@@ -4,6 +4,7 @@
 \usepackage{amssymb}
 \usepackage{array}
 \usepackage{booktabs}
+\usepackage[american]{circuitikz}
 \usepackage{fancyhdr}
 \usepackage{graphicx}
 \usepackage{listings}
@@ -21,7 +22,7 @@
     pdflang={en-US}
 }
 
-\usetikzlibrary{arrows.meta,positioning}
+\usetikzlibrary{arrows.meta,decorations.pathmorphing,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
 
 \definecolor{ink}{gray}{0}
@@ -29,6 +30,20 @@
 \definecolor{mid}{gray}{0.42}
 \definecolor{accent}{gray}{0}
 \definecolor{codebg}{gray}{0.97}
+
+\tikzset
+{
+    pencil stroke/.style={
+        draw=black!72,
+        decorate,
+        decoration={random steps,segment length=3pt,amplitude=0.55pt},
+        line cap=round,
+        line join=round
+    },
+    pencil diagram/.style={
+        every node/.style={text=black!82}
+    }
+}
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -71,6 +86,7 @@
 \end{center}
 
 \begin{center}
+% ADK visual: pencil
 \includegraphics[width=\linewidth,height=0.31\textheight,keepaspectratio]
     {001-digital-output-pencil.png}
 \end{center}
@@ -120,6 +136,29 @@ Do not touch a hot board or retry a damaged one. Label it \textsc{do not use}.
 \checkbox\ sound cable \quad \checkbox\ no other power source
 \end{checkpoint}
 
+\begin{center}
+% ADK visual: schematic
+\begin{circuitikz}[american voltages]
+    \draw
+        (0,3.0) node[vcc]{measured 5\,V}
+        to[R,l={measured 10\,k\(\Omega\)}] (0,1.5)
+        -- (3.0,1.5) node[circ,label=above:{D13 / TP-LED}] (d13) {};
+    \draw
+        (d13) -- (5.0,1.5)
+        to[voltmeter] (5.0,0)
+        node[ground]{};
+    \node[align=left,anchor=west] at (5.7,1.5)
+        {DMM red: D13\\DMM black: GND};
+\end{circuitikz}
+\end{center}
+
+\textbf{Formal acceptance-fixture schematic.}
+With USB removed, connect the measured resistor from the measured board 5\,V
+rail to D13 and the DMM from D13 to board GND. The ground branch in the drawing
+is the meter reference, not a jumper that shorts D13 to ground. The factory LED
+path stays on the board; use the schematic for the exact Mega revision to
+identify it rather than reconstructing it on the breadboard.
+
 \section*{1. Separate a command from an electrical state}
 
 A digital output actively drives a pin near ground for \texttt{Low} or near
@@ -128,18 +167,19 @@ means the output driver is disconnected. It is not another voltage level.
 An unconnected high-impedance pin may float.
 
 \begin{center}
-\begin{tikzpicture}[>=Latex,node distance=9mm and 14mm,
-    box/.style={draw,rounded corners,fill=soft,minimum width=28mm,
+% ADK visual: pencil
+\begin{tikzpicture}[pencil diagram,>=Latex,node distance=9mm and 14mm,
+    box/.style={draw=black!72,rounded corners,fill=soft,minimum width=28mm,
                 minimum height=10mm,align=center}]
     \node[box] (object) {\texttt{DigitalOutput}\\owns pin claim};
     \node[box,right=of object] (driver) {Mega output\\driver};
     \node[box,right=of driver] (led) {board LED\\and resistor};
     \node[above=5mm of driver] (supply) {\(V_{\rm CC}\)};
     \node[below=5mm of driver] (ground) {GND};
-    \draw[->,thick] (object)--node[above]{\texttt{write()}}(driver);
-    \draw[->,thick] (driver)--node[above]{pin level}(led);
-    \draw[->] (supply)--(driver);
-    \draw[->] (ground)--(driver);
+    \draw[pencil stroke,->,thick] (object)--node[above]{\texttt{write()}}(driver);
+    \draw[pencil stroke,->,thick] (driver)--node[above]{pin level}(led);
+    \draw[pencil stroke,->] (supply)--(driver);
+    \draw[pencil stroke,->] (ground)--(driver);
     \node[below=12mm of object,text width=11.5cm,align=center] {
         Exact lesson path: software object \(\rightarrow\)
         \texttt{LED\_BUILTIN} output driver \(\rightarrow\)
@@ -162,17 +202,18 @@ Destruction calls shutdown, so stack unwinding in an exception-enabled host
 still cleans up even though ADK does not throw internally.
 
 \begin{center}
-\begin{tikzpicture}[>=Latex,node distance=11mm,
-    state/.style={draw,rounded corners,fill=soft,minimum width=37mm,
+% ADK visual: pencil
+\begin{tikzpicture}[pencil diagram,>=Latex,node distance=11mm,
+    state/.style={draw=black!72,rounded corners,fill=soft,minimum width=37mm,
                   minimum height=11mm,align=center}]
     \node[state] (inert) {inert\\unclaimed, \texttt{HiZ}};
     \node[state,right=of inert] (active) {active\\claimed, driving};
-    \draw[->,thick] (inert) to[bend left=16]
+    \draw[pencil stroke,->,thick] (inert) to[bend left=16]
         node[above]{successful \texttt{initialize()}} (active);
-    \draw[->,thick] (active) to[bend left=16]
+    \draw[pencil stroke,->,thick] (active) to[bend left=16]
         node[below]{\texttt{shutdown()} or destructor} (inert);
-    \draw[->] (inert) edge[loop left] node[left]{failed initialize} (inert);
-    \draw[->] (active) edge[loop right] node[right]{\texttt{write()}} (active);
+    \draw[draw=black!72,->] (inert) edge[loop left] node[left]{failed initialize} (inert);
+    \draw[draw=black!72,->] (active) edge[loop right] node[right]{\texttt{write()}} (active);
 \end{tikzpicture}
 \end{center}
 
@@ -422,14 +463,15 @@ became high impedance''?
 Do not teach a generic pin that \texttt{High} always means ``on.''
 
 \begin{center}
-\begin{tikzpicture}[>=Latex,node distance=13mm,
-    box/.style={draw,rounded corners,fill=soft,minimum width=34mm,
+% ADK visual: pencil
+\begin{tikzpicture}[pencil diagram,>=Latex,node distance=13mm,
+    box/.style={draw=black!72,rounded corners,fill=soft,minimum width=34mm,
                 minimum height=11mm,align=center}]
     \node[box] (app) {project\\semantic intent};
     \node[box,right=of app] (led) {\texttt{MonoLed}\\polarity};
     \node[box,right=of led] (out) {\texttt{DigitalOutput}\\electrical level};
-    \draw[->,thick] (app)--node[above]{on/off}(led);
-    \draw[->,thick] (led)--node[above]{High/Low}(out);
+    \draw[pencil stroke,->,thick] (app)--node[above]{on/off}(led);
+    \draw[pencil stroke,->,thick] (led)--node[above]{High/Low}(out);
 \end{tikzpicture}
 \end{center}
 

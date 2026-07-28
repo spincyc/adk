@@ -35,6 +35,38 @@ Every lesson source must:
 - keep code available as text, not only as an image;
 - include a hardware-independent HTML route to the same learning outcome.
 
+### Visual language
+
+Every lesson PDF visual that is not a formal electrical schematic uses a
+pencil-drawing presentation. This includes physical layouts, orientation
+plates, staged build progress, state and timing diagrams, conceptual flows,
+charts, troubleshooting illustrations, and other diagrammatic teaching art.
+Grayscale, a `pencil` filename, or a rasterized clean vector drawing does not
+by itself satisfy the rule; the rendered visual must visibly use the pencil
+language while keeping labels and connections legible.
+
+A formal electrical schematic is the only exception. It uses conventional
+component and net symbols, is explicitly identified as electrically
+authoritative, and may retain precise schematic drafting. A pictorial
+breadboard layout, block diagram, pin locator, waveform, or state machine is
+not a formal schematic.
+
+Immediately before every visual source construct, authors classify it with one
+of these comments:
+
+```tex
+% ADK visual: pencil
+\includegraphics{assets/example-pencil.png}
+
+% ADK visual: schematic
+\begin{circuitikz}
+```
+
+`make lessons-check` rejects missing classifications and rejects a plain
+`tikzpicture` claiming the schematic exception. Review still inspects the
+rendered PDF: the marker records intent and cannot prove that art looks like a
+pencil drawing or that a schematic is electrically correct.
+
 Alternative text describes what the learner needs from an image, not every
 stroke. A pencil wiring diagram also needs a nearby pin-by-pin connection list.
 
