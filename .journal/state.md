@@ -3,10 +3,10 @@ schema_version: 1
 repository_uuid: "51e8871e-d671-4f8b-9e07-505dbc2090e8"
 primary_remote: "https://github.com/spincyc/adk.git"
 branch: "main"
-head_observed: "ff41d955678c707f1abf3730888dd2ce0d20d7fd"
-working_tree_state: "authorized-elegoo-union-audit-complete"
-active_tasks: []
-updated_at: "2026-07-27T23:59:49Z"
+head_observed: "16c8318420729f9dc5862332c8d38af8db1476a6"
+working_tree_state: "lessons-031-033-active"
+active_tasks: ["d6769eef-c69b-457c-bdf1-5aa7498ae5ab"]
+updated_at: "2026-07-28T00:00:56Z"
 ---
 
 # Repository recovery state
@@ -23,3 +23,4 @@ authorized inventory-family scope. Their revisioned manifests, deduplicated
 union rules, electrical-evidence boundary, and curriculum reconciliation are
 complete. Revision-specific electrical claims still require markings or
 primary-source evidence where the listing is insufficient.
+Lessons 031--033 are the active dependency boundary.

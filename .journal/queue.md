@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-07-28T00:00:39Z"
+generated_at: "2026-07-28T00:01:17Z"
 task_count: 18
 ---
 
@@ -10,12 +10,11 @@ This file is a rebuildable view. Task `state.md` files are authoritative.
 
 ## Active
 
-None.
+- `d6769eef-c69b-457c-bdf1-5aa7498ae5ab` — implement lessons 031--033 [active, normal] (depends on efdb8701-d7fe-490e-9a85-d0116f37e4fc, fb9510ee-13cf-4bb7-a7ad-7b6f7bfce3df)
 
 ## Queued
 
 - `9de22f03-58c6-4bcc-a991-fd934ea45f80` — deepen the next post-033 block [queued, normal] (depends on d6769eef-c69b-457c-bdf1-5aa7498ae5ab, fb9510ee-13cf-4bb7-a7ad-7b6f7bfce3df)
-- `d6769eef-c69b-457c-bdf1-5aa7498ae5ab` — implement lessons 031--033 [queued, normal] (depends on efdb8701-d7fe-490e-9a85-d0116f37e4fc, fb9510ee-13cf-4bb7-a7ad-7b6f7bfce3df)
 - `f7517e0d-8ca0-4a85-88d5-e7657de132b3` — plan the physical acceptance campaign [queued, normal]
 - `35f3ab7c-b93b-4d75-99c1-dbaedbd36d7d` — bound the next USB research milestone [queued, low]
 - `8a7a5ee1-b646-4f0b-83b2-8380c7f259e6` — bound the next HDMI/shared-fabric milestone [queued, low]

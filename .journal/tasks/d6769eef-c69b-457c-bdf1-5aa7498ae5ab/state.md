@@ -2,7 +2,7 @@
 schema_version: 1
 task_uuid: "d6769eef-c69b-457c-bdf1-5aa7498ae5ab"
 title: "implement lessons 031--033"
-status: "queued"
+status: "active"
 priority: "normal"
 priority_reason: "Recovered audit prompt 13; ordered by the repository recovery audit."
 parent: null
@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-27T22:00:43Z"
-updated_at: "2026-07-27T22:00:43Z"
+updated_at: "2026-07-28T00:00:56Z"
 ---
 
 # Goal
@@ -40,3 +40,10 @@ encoder, then calibration console. Use
 Acceptance: each lesson receives its complete component/test/example/size/
 HTML/PDF/open-bench package; lesson 033 proves composition; all earlier gates
 remain green; status documents advance together.
+
+## Activation
+
+Both hard dependencies are complete. The authorized Elegoo union establishes
+the joystick and rotary-encoder product families; implementation may proceed
+with host contracts while exact-revision electrical claims and bench
+acceptance remain explicit open gates.
