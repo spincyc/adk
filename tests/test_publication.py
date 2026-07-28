@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 
 from scripts.publication import PublicationConfigError
 from scripts.publication import PublishedLesson
@@ -99,6 +100,59 @@ EXAMPLES := Lesson036Prior # Lesson037StillNotConfigured
             with self.subTest(source=source):
                 with self.assertRaises(PublicationConfigError):
                     resolve_latest_publication(source)
+
+    def test_rejects_make_control_directives(self):
+        inventory = (
+            "LESSONS := 001\n"
+            "EXAMPLES := Lesson001First\n"
+        )
+        fixtures = (
+            "include hostile.mk\n" + inventory,
+            "ifeq (1,0)\n" + inventory + "endif\n",
+            "define MUTATE\nLESSONS := 999\nendef\n" + inventory,
+            "MUTATE := $(eval LESSONS := 999)\n" + inventory,
+            "export LESSONS := 001\nEXAMPLES := Lesson001First\n",
+            "# comment hides next line \\\n" + inventory,
+            "SAFE := value # comment continues \\\n" + inventory,
+            "MAKEFLAGS := -e\n" + inventory,
+            "MAKEFLAGS += -e\n" + inventory,
+            "MAKEFLAGS := $(FLAGS)\n" + inventory,
+            "BUILD_MARKER := $(HOSTILE)\n" + inventory,
+        )
+        for source in fixtures:
+            with self.subTest(source=source):
+                with self.assertRaisesRegex(
+                    PublicationConfigError,
+                    "unsupported",
+                ):
+                    resolve_latest_publication(source)
+
+    def test_rejects_unapproved_rules_and_recipes(self):
+        inventory = (
+            "LESSONS := 001\n"
+            "EXAMPLES := Lesson001First\n"
+        )
+        fixtures = (
+            inventory + "publish:\n\ttrue\n",
+            inventory + '\tpython3 -c "mutate()"\n',
+            inventory + "target: LESSONS := 999\n",
+        )
+        for source in fixtures:
+            with self.subTest(source=source):
+                with self.assertRaisesRegex(
+                    PublicationConfigError,
+                    "unsupported",
+                ):
+                    resolve_latest_publication(source)
+
+    def test_repository_configuration_is_in_the_safe_subset(self):
+        repository = Path(__file__).resolve().parents[1]
+        source = (repository / "mk/config.mk").read_text(encoding="utf-8")
+
+        publication = resolve_latest_publication(source)
+
+        self.assertRegex(publication.number, r"^[0-9]{3}$")
+        self.assertTrue(publication.example.startswith(f"Lesson{publication.number}"))
 
     def test_promotion_changes_every_derived_artifact(self):
         before = resolve_latest_publication(

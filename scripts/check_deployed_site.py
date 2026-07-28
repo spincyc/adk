@@ -15,9 +15,11 @@ from urllib.parse import urljoin, urlsplit
 from urllib.request import Request, urlopen
 
 if __package__:
+    from scripts.publication import PublicationConfigError
     from scripts.publication import PublishedLesson
     from scripts.publication import resolve_latest_publication
 else:
+    from publication import PublicationConfigError
     from publication import PublishedLesson
     from publication import resolve_latest_publication
 
@@ -42,7 +44,12 @@ BUILD_CONFIG = REPOSITORY_ROOT / "mk/config.mk"
 
 def configured_publication() -> PublishedLesson:
     """Resolve the repository's current publication boundary."""
-    source = BUILD_CONFIG.read_text(encoding="utf-8")
+    try:
+        source = BUILD_CONFIG.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as exception:
+        raise PublicationConfigError(
+            f"cannot read lesson configuration: {exception}"
+        ) from None
     return resolve_latest_publication(source)
 
 
