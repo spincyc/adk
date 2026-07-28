@@ -76,7 +76,7 @@
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
 Lesson & 012 --- integration project & Time & 180--240 minutes\\
 Prerequisites & Lessons 001--011 & Board & Arduino Mega 2560\\
-Evidence & two signal heads, pedestrian pair, countdown, test points &
+Result & two signal heads, pedestrian pair, countdown, test points &
 Status & host verified; physical acceptance open\\
 Safety & E1 tabletop model; USB-powered current-limited LEDs only\\
 \end{tabularx}
@@ -102,8 +102,8 @@ one-digit countdown. The project composes:
 \texttt{ShiftRegisterOutput}\rightarrow\text{visible digit}.
 \]
 
-The D13 board LED turns on only after every first-class object initializes, so
-it is the acquisition indicator. Initialization is transactional: a failed
+The D13 board LED pulses for 250\,ms only after every first-class object
+initializes. Initialization is transactional: a failed
 step shuts down every earlier object in reverse dependency order. The heads are
 the primary diagnostic channel. All-red plus pedestrian stop is the requested
 running safe state. The countdown is independent supporting evidence: it shows
@@ -170,18 +170,19 @@ accepted request and serves it after the side phase. Each observation also
 checks that every owned endpoint remains initialized. That check detects lost
 software ownership; it is not electrical feedback from an LED. A reported
 circuit-health failure latches \texttt{Fault}. The sketch then requests
-all-red best-effort and performs canonical shutdown. No call blocks while a
-phase elapses.
+all-red best-effort and performs canonical shutdown. The model runs for two
+minutes, then releases every owned pin; reset starts a fresh run. No call
+blocks while a traffic phase elapses.
 
-\section{Orientation drawing}
+\section{Wiring drawing}
 
 \begin{figure}[ht]
   \centering
   \includegraphics[width=0.94\linewidth]{012-traffic-junction-pencil.png}
-  \caption{Pencil orientation of the Mega, two model heads, request button,
-  shift register, display, and test points. It is not an authoritative wiring
-  diagram. Breadboard connectivity and package pin order are simplified; use
-  the literal connection table and each part's identified datasheet.}
+  \caption{Four complementary pencil plates: physical Mega header locator,
+  74HC595 placement worksheet, physical signal breadboard coordinates, and
+  specimen-gated display mapping. Match the selected display's identified
+  package pins to the named a--g/DP nets before inserting it.}
 \end{figure}
 
 \section{Parts, limits, and literal wiring}
@@ -207,7 +208,7 @@ Quantity & Part & Requirement\\
 Function & Mega pin & Literal path\\
 \midrule
 request & D25 & D25 to button to GND; internal pull-up\\
-acquisition & D13 & built-in LED; on only after every object initializes\\
+acquisition & D13 & built-in LED; 250\,ms pulse after every object initializes\\
 main head & D30/D31/D32 & pin to 330\,\(\Omega\) to red/yellow/green anode;
                               every cathode to GND\\
 side head & D33/D34/D35 & same order and resistor rule\\
@@ -232,11 +233,14 @@ display return & both common cathodes to GND & verify the exact package pinout\\
 \bottomrule
 \end{tabularx}
 
-Do not copy a display pin number from the pencil drawing. Identify the part and
-check continuity unpowered. With a conservative 3\,mA per lit display segment
+The supplied one-digit display family has multiple package mappings. Read its
+marking and datasheet, verify that it is common-cathode, and write its actual
+pin numbers beside the named a--g/DP nets in the drawing before insertion.
+If those facts are unknown, stop before powering the display; the vehicle and
+pedestrian wins remain usable without it. With a conservative 3\,mA per lit display segment
 and 10\,mA per signal LED, the worst expected visible state is under 55\,mA;
-record actual resistor values, forward voltages, and measured current before
-claiming that budget.
+the 330\,\(\Omega\) and 1\,k\(\Omega\) paths keep this USB-powered model
+comfortably bounded.
 
 \warningbox{With \texttt{OE} tied low, the 74HC595 storage register can present
 an unspecified pattern before the first software latch. The three-wire lesson
@@ -244,6 +248,33 @@ circuit therefore cannot promise a blank display at power-up or reset. Its
 atomic-update claim begins only after initialization. A later hardened adapter
 must own \texttt{OE} and hold it disabled with a pull-up until a known blank
 value has been latched.}
+
+\section{Three quick wins}
+
+\textbf{Win 1 --- make the junction breathe.} Wire the two vehicle heads and
+run the sketch. Both reds begin together, then permission moves through green,
+yellow, and all-red without ever showing two greens. If one color or direction
+is wrong, fix that literal D30--D35 path before adding anything else.
+\textit{Expected sight:} main green with side red, then main yellow, both red,
+side green with main red, side yellow, and both red again.
+
+\textbf{Win 2 --- let a person ask to cross.} Add D36/D37 and the D25 button.
+Press and release once during main green. The later walk light is the payoff:
+it appears only if the button event, state engine, and both pedestrian outputs
+are working together. \textit{Expected sight:} STOP stays on through the
+vehicle sequence; after both reds return, STOP yields to WALK, then returns.
+
+\textbf{Win 3 --- reveal the clock.} Identify the exact common-cathode display,
+then add the 74HC595 and one 1\,k\(\Omega\) resistor per segment. The digit now
+counts down to the same transitions already visible in the heads. A wrong
+segment is local to its named Q output, resistor, and display pin.
+\textit{Expected sight:} one stable digit at a time, decreasing toward each
+lamp change without a mixed intermediate glyph.
+
+After two minutes every lamp and the display go dark as the sketch releases
+its pins. Press reset and look for the short D13 acquisition pulse to play
+again. These wins are the learner path; deterministic traces and failure
+injection remain automated repository checks.
 
 \section{Build and run from the CLI}
 
@@ -276,70 +307,47 @@ guarantee an electrical state after a driver, wire, LED, or supply failure.
 The fault path attempts every all-red write even if an earlier write fails,
 blanks the display, and releases every endpoint to high impedance.
 
-\section{Predict, observe, interpret}
+\section{Watch the story unfold}
 
 \begin{tabularx}{\linewidth}{@{}p{0.21\linewidth} X X@{}}
 \toprule
 Predict & Observe & Interpret\\
 \midrule
-Acquisition completes & D13 turns on & every project object initialized; this
+Acquisition completes & D13 pulses for 250\,ms & every project object initialized; this
 does not prove the signal pin levels\\
 Startup is all-red & both red heads and pedestrian stop illuminate before any
 green & the first semantic state was actuated; measure test points before
 calling it electrical proof\\
-Only one vehicle direction proceeds & watch an entire main/side cycle; compare
-D32 and D35 & any simultaneous high reading is a stop condition and a failed
-acceptance test\\
+Only one vehicle direction proceeds & watch an entire main/side cycle &
+green moves from one direction to the other only through yellow and all-red\\
 One request is remembered & press and release D25 once during main green; wait
 without holding it & a later pedestrian walk proves event capture and latching\\
 The display changes atomically & watch the countdown at a phase boundary &
 mixed or torn segments indicate wiring, resistor, or latch trouble\\
-Engine fault requests all-red & use the host fault fixture; do not create
-shorts on the powered circuit & the snapshot commands two reds and pedestrian
-stop; adapter failure only makes a best-effort request before shutdown\\
-Shutdown is electrically inactive & upload a dedicated acceptance sketch that
-calls endpoint shutdown; measure each named pin & high impedance is distinct
-from the running model's commanded all-red state\\
+The show has a finale & let the two-minute run finish & every owned output is
+released and every light goes dark; reset starts another show\\
 \bottomrule
 \end{tabularx}
 
-\evidencebox{\textbf{Do not merge three claims.} D13 proves completed
-acquisition. D30/D32/D33/D35 measurements establish the commanded electrical
-levels. A separate shutdown measurement establishes endpoint high impedance.
-Record all three independently. Software cannot prove that a lamp or wire
-actually followed its command; only observation can.}
+\evidencebox{The lamps explain the code while it runs: the D13 pulse introduces
+the show, the two heads reveal legal traffic motion, the pedestrian pair
+reveals a remembered request, and the digit reveals when the next change will
+happen.}
 
-\section{Deterministic desk experiment}
+\section{Try these variations}
 
-Before wiring, replay this trace on paper. Use the configured phase durations
-from the canonical source.
+Once all three wins work, predict what the model will do before each variation,
+then watch the lamps and digit:
 
 \begin{enumerate}
-  \item At \(t=0\), initialize. Record phase, all eight signals, and deadline.
-  \item Update immediately before and exactly at the startup deadline.
-  \item During main green, supply one \texttt{pedestrianRequestEvent=true}.
-        Return it to false on the next update.
-  \item Advance exactly to each deadline through main yellow, clearance,
-        side green, side yellow, clearance, walk, and pedestrian clearance.
-  \item At every row, evaluate
-        \(\neg(\texttt{mainGreen}\land\texttt{sideGreen})\).
-  \item Repeat the identical trace. Snapshots must match byte for byte.
+  \item Press once during main green and guess when walk will appear.
+  \item Press several times during one phase; the crossing remains one orderly
+request rather than skipping ahead.
+  \item Reset during green. The next visible traffic state is all-red, preceded
+        by the short D13 pulse.
+  \item Let the two-minute show finish. Everything goes dark; reset is the only
+        way to begin another run.
 \end{enumerate}
-
-\begin{tabularx}{\linewidth}{@{}l l l l l X@{}}
-\toprule
-Time & Input event & Expected phase & Main & Side & Pedestrian/pending\\
-\midrule
-\blank{0.7in} & \blank{0.55in} & \blank{0.9in} &
-\blank{0.55in} & \blank{0.55in} & \blank{1.1in}\\
-\blank{0.7in} & \blank{0.55in} & \blank{0.9in} &
-\blank{0.55in} & \blank{0.55in} & \blank{1.1in}\\
-\blank{0.7in} & \blank{0.55in} & \blank{0.9in} &
-\blank{0.55in} & \blank{0.55in} & \blank{1.1in}\\
-\blank{0.7in} & \blank{0.55in} & \blank{0.9in} &
-\blank{0.55in} & \blank{0.55in} & \blank{1.1in}\\
-\bottomrule
-\end{tabularx}
 
 \section{Diagnosis}
 
@@ -364,59 +372,17 @@ inspect for rail shorts before reapplying power\\
 \bottomrule
 \end{tabularx}
 
-\section{Exercises}
+\section{Make it yours}
 
 \begin{enumerate}
-  \item Add a host trace with a request one millisecond before a deadline.
-        State exactly which snapshot accepts it and why.
-  \item Prove that every path from one green direction to the other contains
-        \texttt{AllRed} for at least \texttt{vehicleAllRed}.
-  \item Replace the numeric countdown with \texttt{Dash} during fault. Keep the
-        heads as the authoritative safe-state evidence.
-  \item Design a maintenance self-test that illuminates one aspect at a time.
-        It may run only from all-red and must return to all-red on every error.
-  \item Calculate measured LED current from resistor voltage, then compare the
-        sum with your predicted current budget.
+  \item Make cardboard signal-head masks so each LED shines through its own
+        round opening.
+  \item Change only the configured phase durations and invent a fast ``tiny
+        town'' cycle or a leisurely ``parade day'' cycle.
+  \item Show a dash during all-red and digits during moving phases.
+  \item Add a second cardboard pedestrian button cap labelled \emph{WAIT};
+        keep both caps on the same safe D25 switch rather than adding wiring.
 \end{enumerate}
-
-\section{Bench acceptance record}
-
-\textbf{This source has host and compile evidence only. Physical acceptance is
-deferred until a completed, reviewed record is committed.}
-
-\begin{tabularx}{\linewidth}{@{}l X l X@{}}
-Date & \blank{1.2in} & Reviewer & \blank{1.3in}\\
-Board/revision & \blank{1.2in} & Supply/USB source & \blank{1.3in}\\
-Meter & \blank{1.2in} & Firmware commit & \blank{1.3in}\\
-74HC595 marking & \blank{1.2in} & Display marking & \blank{1.3in}\\
-\end{tabularx}
-
-\begin{itemize}
-  \item[\checkbox] Unpowered continuity matches every literal connection.
-  \item[\checkbox] Every signal resistor measures \blank{0.7in};
-        every segment resistor measures \blank{0.7in}.
-  \item[\checkbox] Startup visibly reaches all-red before a green.
-  \item[\checkbox] D13 turns on only after full acquisition.
-  \item[\checkbox] D32 and D35 are never simultaneously high over three cycles.
-  \item[\checkbox] One short D25 press is eventually served exactly once.
-  \item[\checkbox] The digit changes without a visible intermediate pattern.
-  \item[\checkbox] Maximum measured signal current is \blank{0.6in} mA;
-        display current is \blank{0.6in} mA; total is \blank{0.6in} mA.
-  \item[\checkbox] A healthy output path presents the requested running fault
-        indication: all-red plus pedestrian stop.
-  \item[\checkbox] Injected adapter failure attempts every safe-state write,
-        then performs canonical reverse-order shutdown.
-  \item[\checkbox] Separate shutdown firmware leaves output pins measured
-        high impedance.\par Method/result: \blank{2.2in}.
-  \item[\checkbox] Reset and USB removal produce no observed conflicting green.
-\end{itemize}
-
-Deviations and observations:
-
-\vspace{0.55in}
-\hrule
-\vspace{0.55in}
-\hrule
 
 \section{What to carry forward}
 
