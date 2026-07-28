@@ -2,6 +2,7 @@
 
 #include "access_trainer.h"
 #include "analog_input.h"
+#include "analog_joystick.h"
 #include "board.h"
 #include "bounded_span.h"
 #include "button.h"
