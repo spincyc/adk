@@ -32,7 +32,7 @@ worksheets are not bench evidence.
 
 | Lessons | Readiness | Required preparation before child creation |
 |---:|---|---|
-| 001--002 | Not executable | Declare energy class; add full identity and signed P/O/I card; provide independent acquisition and named high-impedance evidence; add a reachable shutdown fixture. Remove Lesson 002's nonexistent Serial-recording instruction or add a canonical diagnostic path. |
+| 001--002 | Software prepared; bench resources gated | E1 declarations, finite/reachable shutdown, complete P/O/I records, and physical weak-bias methods are published. Before child creation, identify the exact board/switch, supply, meter/fixture, operator, and reviewer; calculate the board-specific D13 and D22 voltage ranges. |
 | 003--004 | Not executable | Reconcile Lesson 003 D13 canonical sketch with the D8 bench circuit; add independent acquisition, exact specimen/current evidence, named test points, reset/power-removal rows, and reachable shutdown fixtures. |
 | 005--006 | Not executable | Instantiate canonical cards with independent acquisition and safe-state rows, reset and stop conditions, exact identities/current evidence, and a named D6 high-impedance method. Treat near-simultaneous button work as physical chord evidence only. |
 | 007--008 | Not executable | Identify specimens and supply; require timing/high-impedance instrumentation; define access to raw ADC/stage evidence; add rollback, reset, power-removal, and reachable shutdown procedures. Never open ground while powered. |
