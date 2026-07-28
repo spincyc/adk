@@ -24,10 +24,10 @@ not promote work or replace this ledger.
 - Lessons 034--036 are complete through their non-hardware gates. Lessons
   037--039 have complete E0 cores, tests, and hardware-independent drafts.
   Their [sensor evidence report](research/LESSONS_037_039_SENSOR_EVIDENCE_REPORT.md)
-  narrows the contact and acoustic candidates from official sources while
-  preserving all six exact-specimen requirements.
-  Their linked exact-specimen Mega example, authoritative schematic,
-  promotion, and all E1 bench gates remain open.
+  selects documented external reference fixtures and preserves all six
+  exact-specimen requirements for optional Elegoo-kit substitutions.
+  Their reference Mega example, authoritative schematic, and promotion are
+  now active; incoming conformance and all E1 bench gates remain open.
 - The USB research track has a deterministic product-native `Cau`/`Pau`
   `ColdMove` model. It performs no USB action and makes no transparency claim.
 - The exact kit inventory template and honest planned-versus-supported coverage
@@ -70,7 +70,7 @@ physical-acceptance paperwork outside the lesson flow.
 | Boundary | State | Required next result |
 |---|---|---|
 | [001--036](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
-| [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Active integration | E0 cores/tests/drafts complete; linked exact-specimen Mega example/schematic, promotion, and E1 open |
+| [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Active integration | E0 cores/tests/drafts and exact external reference design complete; reference Mega example/schematic and promotion active; E1 open |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -133,9 +133,10 @@ inventory record and the relevant block passes its gates.
 
 Lessons 031--036 have complete implementation-ready design briefs and are host
 verified. Lessons 037--039 have complete E0 cores, tests, and
-hardware-independent drafts. Their linked exact-specimen Mega example,
-authoritative schematic, promotion, and E1 physical acceptance remain open
-behind specimen qualification. Lessons 040--042 have a provisional
+hardware-independent drafts. Their canonical Mega example,
+authoritative schematic, and promotion now proceed against exact external
+reference fixtures; incoming conformance and E1 physical acceptance remain
+open. Lessons 040--042 have a provisional
 implementation-depth brief but remain queued behind final 037--039
 reconciliation, the Lesson 042 arming decision, and exact-specimen gates.
 Lessons 043--081 are canonical subjects and retained work, but their cadence
