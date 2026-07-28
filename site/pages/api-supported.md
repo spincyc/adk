@@ -564,6 +564,55 @@ open acceptance procedures. Their non-hardware gates are host verified. That
 host and Mega evidence does not constitute incoming-fixture conformance,
 physical bench acceptance, or qualification of an optional kit substitution.
 
+## Optical, presence, and course-marshal policy
+
+`ReflectiveObservationPolicy` and `BeamObservationPolicy` consume copied
+samples and own no endpoint or clock. Their snapshots retain source identity,
+calibration revision, raw evidence, qualified state, stable duration,
+transition events, quality, and status. Reflective policy makes range,
+calibration, polarity, activation, and release explicit; beam policy makes
+interruption polarity and dwell explicit.
+
+`PirObservationPolicy` preserves warm-up, motion and clear qualification,
+stuck-motion, source identity, timing, and fault state. `PresenceModel`
+combines copied PIR, beam, reflective finish-guard, and timed range evidence.
+It exposes per-source availability, age, validity, staleness, approach state,
+passage, and disagreement. It does not sample hardware, hide a clock, or treat
+PIR motion as authorization.
+
+`CourseStartPolicy` accepts only the configured debounced button source and
+requires valid PIR eligibility. `CourseMarshal` then consumes copied start,
+presence, checkpoint, and supplied-time values. It retains a fixed maximum of
+four ordered checkpoints in caller-owned storage, rejects skipped, reversed,
+duplicate, simultaneous, premature-finish, timed-out, and faulty runs, and
+preserves a replay identity for each accepted or rejected record.
+`CourseMarshalPresenter` maps snapshots to display and visible evidence intent
+without owning pins, LEDs, sounders, or displays.
+
+[Lessons 040](lessons/040.md), [041](lessons/041.md), and
+[042](lessons/042.md) provide the lifecycle, deterministic replay, and open
+acceptance procedures. Their non-hardware gates are host verified. Powered
+adapters, exact specimen qualification, wiring, electrical schematics, and E1
+bench acceptance remain open.
+
+- Optical policy: [source](https://github.com/spincyc/adk/blob/main/src/optical_observation.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_optical_observation.cpp),
+  [Mega replay](downloads/sketches/Lesson040OpticalObservation.ino), and
+  [Lesson 040](lessons/040.md)
+- Presence policy: [source](https://github.com/spincyc/adk/blob/main/src/presence_model.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_presence_model.cpp),
+  [Mega replay](downloads/sketches/Lesson041PresenceModel.ino), and
+  [Lesson 041](lessons/041.md)
+- Course policy: [source](https://github.com/spincyc/adk/blob/main/src/course_marshal.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_course_marshal.cpp),
+  [Mega replay](downloads/sketches/Lesson042CourseMarshal.ino), and
+  [Lesson 042](lessons/042.md)
+
+The canonical Mega 2560 builds measure 5,112 bytes flash / 300 bytes static
+RAM for Lesson 040, 8,818 / 226 for Lesson 041, and 15,596 / 901 for Lesson
+042. These compile measurements are software evidence, not powered or physical
+acceptance.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.

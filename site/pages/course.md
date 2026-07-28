@@ -35,13 +35,15 @@ lesson number divisible by three is project-bearing.
 | 037 | Contact dynamics | Qualified attack and release evidence | Host verified; incoming conformance and E1 bench open |
 | 038 | Acoustic envelope | Relative intensity and threshold evidence | Host verified; incoming conformance and E1 bench open |
 | 039 | Contact and acoustic composition | Percussion sequencer | Host verified; incoming conformance and E1 bench open |
+| 040 | Reflective and interrupted light | Qualified optical observations | Host verified; powered adapter and E1 bench open |
+| 041 | PIR, beam, and range composition | Presence and passage | Host verified; powered adapter and E1 bench open |
+| 042 | Ordered checkpoints and explicit authorization | Tabletop course marshal | Host verified; powered adapter and E1 bench open |
 
-The retained Lessons 040–081 sequence is front-loaded for learner engagement.
+The retained Lessons 043–081 sequence is front-loaded for learner engagement.
 This is planned work, not a support or bench-verification claim:
 
 | Lessons | Planned focus | Project |
 |---:|---|---|
-| 040–042 | Optical observations and presence | Tabletop course marshal |
 | 043–045 | Inertial samples and orientation | Balance-table instrument |
 | 046–048 | Authorized tactile/directional inputs and bounded stepper motion | Kinetic sculpture |
 | 049–051 | Local identity records and homing | Inert parts carousel |

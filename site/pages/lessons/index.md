@@ -44,6 +44,9 @@ third lesson for a deterministic integration project.
 | [Lesson 037 — Contact dynamics](037.md) | Rolling-ball contact | Qualified attack and release evidence with explicit timing |
 | [Lesson 038 — Acoustic envelope](038.md) | Sound Detector envelope and gate | Relative intensity, clipping, and threshold agreement |
 | [Lesson 039 — Percussion sequencer](039.md) | Four contact lanes and acoustic overlap | Deterministic capture, grouping, quantization, and replay |
+| [Lesson 040 — Reflective and interrupted light](040.md) | Source-specific optical evidence | Calibration, timing, transitions, and faults remain explicit |
+| [Lesson 041 — Presence and passage](041.md) | PIR, beam, and range evidence | Eligibility, validity, age, and disagreement compose without hidden resampling |
+| [Lesson 042 — Tabletop course marshal](042.md) | Ordered checkpoint evidence | Explicit button authorization produces replayable timed runs |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance
@@ -57,7 +60,6 @@ They remain planned—not published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 040–042 | Optical tabletop course marshal |
 | 043–045 | Balance-table instrument |
 | 046–048 | Kinetic sculpture |
 | 049–051 | Inert parts carousel |

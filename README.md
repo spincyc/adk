@@ -10,13 +10,14 @@ the Arduino Mega 2560.
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–039 are published, host verified, and
+> **Current boundary:** Lessons 001–042 are published, host verified, and
 > compiled for the Mega 2560. All lessons remain experimental, physical
 > acceptance remains open, and the exact electrical revisions used by Lessons
 > 031–036 are not yet qualified. Lessons 037–039 use documented external
 > reference fixtures; incoming conformance and bench acceptance remain open.
-> Lesson 040 is the next planned component boundary; planned rows below are
-> commitments, not support claims. [Lesson 039](lessons/039.md) is the current
+> Lessons 040–042 publish hardware-neutral optical, presence, and course policy;
+> powered adapters and exact specimens remain gated. Planned rows below are
+> commitments, not support claims. [Lesson 042](lessons/042.md) is the current
 > published project.
 
 ## What ADK provides
@@ -50,6 +51,7 @@ a printable PDF companion. Each row links to the first lesson in its arc.
 | 031–033 · [start at 031](https://spincyc.github.io/adk/lessons/031/) | Joystick, encoder, and calibration console | Calibrated input, Gray-code transitions, and explicit commit or cancel |
 | 034–036 · [start at 034](https://spincyc.github.io/adk/lessons/034/) | Magnetic observations and passage qualification | Durable magnetic passage logger with explicit recovery and presentation evidence |
 | 037–039 · [start at 037](https://spincyc.github.io/adk/lessons/037/) | Contact and acoustic evidence | Deterministic percussion sequencing with qualified contact and envelope records |
+| 040–042 · [start at 040](https://spincyc.github.io/adk/lessons/040/) | Optical and presence evidence | Explicitly authorized, replayable tabletop course runs |
 
 [View the complete lesson index](https://spincyc.github.io/adk/lessons/) or the
 [supported API](https://spincyc.github.io/adk/api-supported/).
@@ -83,8 +85,8 @@ These entries are deliberately linkless. A planned subject becomes a link only
 after its implementation, deterministic tests, Mega example, size evidence,
 HTML reference, and PDF lesson exist.
 
-- **040–045:** optical presence and passage for a tabletop course marshal;
-  revision-neutral motion and orientation for a balance-table instrument.
+- **043–045:** revision-neutral motion and orientation for a balance-table
+  instrument.
 - **046–054:** authorized tactile/directional inputs and bounded stepper motion for
   a kinetic light sculpture;
   local identity and homing for a tabletop parts carousel; known IR captures

@@ -135,6 +135,14 @@ doc/lessons/038.pdf: docs/lessons/038/main.tex \
 doc/lessons/039.pdf: docs/lessons/039/main.tex \
 		docs/lessons/assets/039-pattern-pencil.svg \
 		docs/lessons/assets/039-pattern-pencil.png
+doc/lessons/040.pdf: docs/lessons/040/main.tex \
+		docs/lessons/assets/040-optical-traces-pencil.png
+doc/lessons/041.pdf: docs/lessons/041/main.tex \
+		docs/lessons/assets/041-evidence-lanes-pencil.png \
+		docs/lessons/assets/041-passage-experiment-pencil.png
+doc/lessons/042.pdf: docs/lessons/042/main.tex \
+		docs/lessons/assets/042-course-layout-pencil.png \
+		docs/lessons/assets/042-run-timeline-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons

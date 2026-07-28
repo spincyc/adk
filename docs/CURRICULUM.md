@@ -8,15 +8,17 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--039 have first-class implementation work, deterministic host
+Lessons 001--042 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
 bench cards remain open. Lessons 037--039 use documented C&K and SparkFun
 reference fixtures; incoming conformance and physical acceptance remain open.
 The six earlier Elegoo exact-specimen questions were superseded as blockers
 for this canonical publication, not answered, and remain historical optional
-substitution-conformance requirements. Lessons 040--042 are the next queued
-block. Their provisional implementation-depth brief still requires the Lesson
-042 arming decision and its own exact-specimen gates before activation.
+substitution-conformance requirements. Lessons 040--042 publish
+hardware-neutral optical, presence, and course-marshal policy. A debounced
+button is the sole start authorization; PIR may establish eligibility but
+cannot start a run. Powered adapters, exact specimens, and physical acceptance
+remain open.
 The later blocks are ordered for early learner engagement while retaining
 prerequisite, authorization, safety, and evidence gates: interactive motion
 and display projects precede the more methodical environmental and
@@ -91,6 +93,9 @@ For every lesson, the queued implementation order is:
 | 037 | Host verified; bench/incoming conformance open | Contact dynamics with the documented C&K reference fixture | Raw contact, accepted strike, and refractory evidence |
 | 038 | Host verified; bench/incoming conformance open | Acoustic envelopes with the documented SparkFun reference fixture | Envelope test point, gate state, clipping, and confidence evidence |
 | 039 | Host verified; bench/incoming conformance open | Percussion sequencer composition | Indexed strikes, visible pattern progress, sound, and deterministic replay |
+| 040 | Host verified; powered adapter and bench open | Qualified optical observations | Raw values, source identity, calibration revision, timing, transitions, and faults |
+| 041 | Host verified; powered adapter and bench open | Presence and passage composition | PIR eligibility, beam and range validity, age, and disagreement |
+| 042 | Host verified; powered adapter and bench open | Tabletop course marshal | Explicit button authorization, ordered checkpoints, invalid-run state, and replayable timing |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation
