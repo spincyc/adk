@@ -702,6 +702,92 @@ namespace {
                      "identical trace produces byte-equivalent observation fields");
         }
     }
+
+    void testMalformedThresholdLevel ()
+    {
+        const adk::Level malformed = static_cast<adk::Level> (2);
+        adk::AcousticEnvelope precedence (config (true, adk::Level::High));
+
+        require (precedence.initialize ().ok (), "malformed precedence initialize");
+
+        precedence.update (sample (0, 500, true, adk::Level::Low));
+
+        precedence.update (sample (10, 500, true, adk::Level::High));
+
+        const auto before = precedence.snapshot ();
+
+        require (before.rawThresholdActive,
+                 "regression starts with active raw threshold evidence");
+
+        precedence.update (
+
+            sample (11, 700, true, malformed, adk::StatusCode::ResourceBusy,
+                    adk::StatusCode::Unsupported));
+
+        require (precedence.snapshot ().phase == adk::AcousticPhase::Fault &&
+                     precedence.snapshot ().quality ==
+                         adk::AcousticQuality::SourceFault &&
+                     precedence.snapshot ().status.error () ==
+                         adk::StatusCode::InvalidArgument,
+                 "malformed threshold level precedes endpoint statuses");
+
+        require (precedence.snapshot ().baseline == before.baseline &&
+                     precedence.snapshot ().raw == before.raw &&
+                     precedence.snapshot ().rawThresholdActive ==
+                         before.rawThresholdActive &&
+                     precedence.snapshot ().amplitude == 0 &&
+                     precedence.snapshot ().peakAmplitude == 0 &&
+                     precedence.snapshot ().relativeIntensity == 0,
+                 "malformed threshold level is not interpreted or partially applied");
+
+        precedence.update (
+            sample (12, 500, true, adk::Level::Low));
+
+        require (precedence.snapshot ().phase == adk::AcousticPhase::Fault &&
+                     precedence.snapshot ().status.error () ==
+                         adk::StatusCode::InvalidArgument,
+                 "malformed threshold fault remains latched until reset");
+
+        precedence.reset ();
+
+        precedence.update (sample (20, 500, true, adk::Level::Low));
+
+        precedence.update (sample (30, 500, true, adk::Level::Low));
+
+        require (precedence.snapshot ().phase == adk::AcousticPhase::Quiet &&
+                     precedence.snapshot ().quality ==
+                         adk::AcousticQuality::ValidQuiet &&
+                     precedence.snapshot ().status.ok (),
+                 "reset permits healthy threshold recalibration");
+
+        adk::AcousticEnvelope sameTime (config (true, adk::Level::High));
+
+        require (sameTime.initialize ().ok (), "same-time malformed initialize");
+
+        sameTime.update (sample (0, 500, true, adk::Level::Low));
+
+        sameTime.update (sample (0, 500, true, malformed));
+
+        require (sameTime.snapshot ().phase == adk::AcousticPhase::Fault &&
+                     sameTime.snapshot ().quality ==
+                         adk::AcousticQuality::TimingFault &&
+                     sameTime.snapshot ().status.error () ==
+                         adk::StatusCode::InvalidArgument,
+                 "changed same-time evidence precedes malformed level");
+
+        adk::AcousticEnvelope replay (config (true, adk::Level::High));
+
+        require (replay.initialize ().ok (), "same malformed replay initialize");
+
+        replay.update (sample (0, 500, true, malformed));
+
+        const auto malformedFault = replay.snapshot ();
+
+        require (replay.update (sample (0, 500, true, malformed)).error () ==
+                     adk::StatusCode::InvalidArgument &&
+                     sameObservation (replay.snapshot (), malformedFault),
+                 "identical same-time malformed sample is idempotent");
+    }
 } // namespace
 
 int main ()
@@ -721,5 +807,7 @@ int main ()
     testThresholdRecoveryPresenceAndFaultClearing ();
 
     testBackwardTimeAndDeterministicReplay ();
+
+    testMalformedThresholdLevel ();
 }
 // clang-format on

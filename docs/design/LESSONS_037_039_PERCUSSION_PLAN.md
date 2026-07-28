@@ -397,6 +397,16 @@ acquisition sample during their own `initialize()`; these samples are ignored
 and never submitted to `AcousticEnvelope`. Only the one copied sample from
 each loop update enters the pure behavior.
 
+When `sample.hasThreshold=true`, `thresholdLevel` must be exactly
+`Level::Low` or `Level::High`. Runtime validation order is time first, then
+threshold-level enum, then analog/threshold status, then raw-range and signal
+processing. An invalid threshold level therefore wins over simultaneous
+source-status or raw faults, latches `Fault + SourceFault +
+InvalidArgument`, preserves the previously published raw-threshold and
+baseline evidence, performs no calibration/event transition, clears
+event/intensity fields to canonical zero, and requires `reset()` before
+sampling resumes.
+
 The first healthy non-clipped sample sets `baseline=raw`, starts calibration,
 and has zero amplitude. A rail sample before that point reports clipping and
 does not start calibration. Any clipped sample during calibration enters
@@ -450,9 +460,10 @@ completed event, intensity, event start, and event duration use zero canonical
 values.
 
 Acoustic transition precedence is: uninitialized/invalid configuration;
-timestamp mismatch or invalid time; analog source failure; configured
-threshold source failure; clipping; calibration; sustained threshold
-disagreement; event close; event open; baseline update. A winning fault makes
+timestamp mismatch or invalid time; invalid runtime threshold-level enum;
+analog source failure; configured threshold source failure; raw-range error;
+clipping; calibration; sustained threshold disagreement; event close; event
+open; baseline update. A winning fault makes
 no lower transition. `TimingFault` preserves the last completed event evidence;
 clipping, source failure, threshold disagreement, and invalid runtime
 headroom clear event/intensity fields to their canonical zero values.
@@ -468,7 +479,7 @@ The only legal nested snapshot combinations are:
 | `Refractory` | `ValidQuiet` | Ok after the completion snapshot has cleared |
 | `Fault` | `ClippedLow` or `ClippedHigh` | `InvalidArgument`; event/intensity fields canonical zero |
 | `Fault` | `ThresholdDisagreement` | `HardwareFailure`; event/intensity fields canonical zero |
-| `Fault` | `SourceFault` | exact non-Ok endpoint status; event/intensity fields canonical zero |
+| `Fault` | `SourceFault` | propagated non-Ok endpoint status or `InvalidArgument` for an invalid runtime level; event/intensity fields canonical zero |
 | `Fault` | `TimingFault` | `InvalidArgument`; last completed evidence retained |
 | `Fault` | `Unqualified` | `InvalidArgument` for invalid runtime headroom/configuration |
 
@@ -490,6 +501,9 @@ Host fixtures cover:
 - rail margin ±1/exact, startup at each rail, injected source-unavailable,
   rail/stuck-style supplied traces without claiming electrical diagnosis, and
   explicit fault recovery;
+- invalid runtime threshold-level enum alone and colliding with invalid time,
+  source status, and out-of-range raw input, proving precedence, preserved
+  raw-threshold/baseline evidence, no partial transition, and reset recovery;
 - optional threshold absent, agreement, one-sample mismatch, sustained
   disagreement, reversed active level, and comparator chatter;
 - repeated timestamps, same-time mismatch, rollover, half-range, and backward

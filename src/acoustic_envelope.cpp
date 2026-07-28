@@ -204,6 +204,23 @@ namespace adk {
             return snapshot_.status;
         }
 
+        if (config_.hasThreshold && sample.hasThreshold &&
+            !validLevel (sample.thresholdLevel))
+        {
+            const uint16_t previousRaw = snapshot_.raw;
+            const bool previousRawThresholdActive =
+                snapshot_.rawThresholdActive;
+
+            const Status status =
+                enterFault (sample, AcousticQuality::SourceFault,
+                            StatusCode::InvalidArgument, false);
+
+            snapshot_.raw                = previousRaw;
+            snapshot_.rawThresholdActive = previousRawThresholdActive;
+
+            return status;
+        }
+
         if (!sample.analogStatus.ok ())
         {
             return enterFault (sample, AcousticQuality::SourceFault,
