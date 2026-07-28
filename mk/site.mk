@@ -8,6 +8,7 @@ site:
 	@$(SITE_TOOL) build
 
 site-check:
+	@python3 -m unittest tests/test_site_staging.py
 	@$(SITE_TOOL) check
 
 site-serve:
