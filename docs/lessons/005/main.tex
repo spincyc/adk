@@ -133,7 +133,9 @@ driver is outside this lesson. A transistor is not permission to guess a load's
 ratings.}
 
 \textbf{Required:} Mega 2560, USB data cable, breadboard, one passive piezo
-transducer, one 100\,$\Omega$ series resistor, and jumper wires. Use the
+transducer, one 100\,$\Omega$ series resistor, one measured
+10\,k\(\Omega\) weak-pull resistor, a high-impedance oscilloscope or logic
+analyzer, a DMM, and jumper wires. Use the
 transducer datasheet when its permitted voltage or wiring differs.
 Record the manufacturer's part number, rated voltage, and capacitance or drive
 limits before energizing it. If the kit part cannot be identified well enough
@@ -148,6 +150,7 @@ Action & Expected software state & Expected circuit state\\
 \midrule
 Construct only & not initialized, not sounding & D6 untouched\\
 Initialize & initialized, not sounding & D6 passive; Timer2 owned\\
+Acquisition evidence & both components owned & D13 on 250\,ms, then off 750\,ms\\
 Play 440\,Hz for 250\,ms & sounding at 440\,Hz & square wave drives piezo\\
 Update before deadline & still sounding & waveform continues\\
 Update at/after deadline & not sounding & tone stopped; D6 restored to input\\
@@ -339,25 +342,73 @@ The first update is one millisecond early; the second reaches the deadline.}
 
 \section{Hardware investigation}
 
-Start with 440\,Hz for 100\,ms. Keep the piezo away from your ear. Increase to
-250\,ms only after confirming comfortable output. Run three trials.
+The canonical sketch is finite and gives acquisition its own evidence. After
+both components initialize, TP-ACQ/D13 is lit for 250\,ms and dark for 750\,ms
+while the sounder remains silent. It then plays one 440\,Hz, 250\,ms cue and
+calls \texttt{shutdown()} on the D13 LED and sounder. It makes no further
+hardware calls. Pressing reset repeats the entire sequence. Thus the D13 pulse
+proves acquisition separately from the cue at TP-SND/D6 and from D6's released
+safe state.
 
-\begin{center}
-\begin{tabularx}{\linewidth}{@{}c c c c X@{}}
-\toprule
-Trial & Frequency & Requested duration & Observed result & Loop remained responsive?\\
-\midrule
-1 & 440\,Hz & 100\,ms & \blank{1.3in} & \blank{1.1in}\\[8pt]
-2 & 660\,Hz & 100\,ms & \blank{1.3in} & \blank{1.1in}\\[8pt]
-3 & 880\,Hz & 250\,ms & \blank{1.3in} & \blank{1.1in}\\
-\bottomrule
-\end{tabularx}
-\end{center}
+\begin{enumerate}
+    \item With USB removed, identify the exact board, passive piezo, resistor,
+          instruments, and probe input impedance. Label the D6 pin-side end of
+          the 100\,$\Omega$ resistor \textbf{TP-SND/D6}; label the factory LED
+          signal \textbf{TP-ACQ/D13}. Trace the circuit and verify no short
+          between 5\,V and GND.
+    \item From the exact retained board revision's schematic and board
+          inspection, draw the complete D13 factory-LED branch: PB7/D13,
+          resistor value, LED polarity and electrical limits, and any buffer
+          or other load between the MCU pin and indicator. Calculate its
+          worst-case ON current from the measured rail and documented component
+          limits. Include that branch in the per-pin, grouped-pin, and
+          whole-device budget; ``built in'' does not mean load-free.
+    \item Calculate the worst-case D6 edge current from the identified
+          transducer's capacitance/impedance, its primary source, the measured
+          resistor, and the Mega output limits. Record the method and margin;
+          the resistor alone is not an identity or current guarantee.
+    \item Attach the high-impedance waveform probe to TP-SND/D6 and its
+          reference to Mega GND while unpowered. Connect USB, upload, and
+          observe D13's 250\,ms pulse and 750\,ms dark separator before the cue.
+    \item At TP-SND/D6, record the cue's high/low levels, frequency, and finite
+          duration. Interpret the waveform and audible cue together; hearing a
+          sound alone does not establish frequency, duration, or pin state.
+    \item Wait for controlled shutdown. Host trace evidence must independently
+          end with tone stop, D6 \texttt{INPUT}, D13 LOW, and D13
+          \texttt{INPUT}. Darkness and silence do not prove high impedance.
+    \item To prove D6's physical safe state, remove USB and install the measured
+          10\,k\(\Omega\) weak pull-up from the measured 5\,V rail to
+          TP-SND/D6. Include probe/DMM input resistance, transducer leakage,
+          and Mega leakage in the predicted released-voltage range. Reconnect
+          USB, record TP-SND/D6 during the driven cue and after shutdown, then
+          remove USB before removing the fixture. A released voltage in the
+          calculated range is the physical high-impedance evidence.
+    \item Prove D13's physical post-shutdown state with a \emph{separate},
+          board-specific weak-bias calculation. Using the identified factory
+          branch, meter/probe impedance, MCU leakage limits, rail uncertainty,
+          and component tolerances, choose and measure a temporary resistor
+          from TP-ACQ/D13 to the rail that makes the predicted driven-LOW and
+          released-\texttt{INPUT} voltage ranges non-overlapping. The fixture
+          must remain within every D13 and factory-branch current limit even if
+          firmware drives the opposite level. Install it only while USB is
+          removed; reconnect USB, record D13 during the dark separator and
+          after controlled shutdown, then remove USB before removing the
+          fixture. If no safe resistor yields separable ranges for that board
+          branch, do not claim physical high impedance; use a separately
+          reviewed high-impedance current/impedance method instead.
+    \item With all fixtures removed, reconnect USB and press reset once. Confirm
+          the acquisition pulse, separator, cue, and shutdown all repeat.
+    \item Disconnect USB at the computer end. Measure the 5\,V rail,
+          TP-ACQ/D13, and TP-SND/D6 relative to GND. Record the power-removed
+          ranges before touching or dismantling the circuit.
+\end{enumerate}
 
-While a tone runs, update the Lesson 001 diagnostic LED at a visible cadence or
-scan the Lesson 002 input. Continued response is evidence that tone duration is
-nonblocking. It is not evidence that every possible frequency is equally loud or
-safe; piezo response varies strongly with resonance.
+Stop immediately and remove USB for an unidentified or warm part, unexpected
+continuous sound, a waveform outside the identified part or Mega limits,
+current above either calculated limit, overlapping weak-bias prediction ranges,
+a failed acquisition separator, or any failure to reach shutdown within
+2 seconds after reset. Do not move a probe or change a weak-bias fixture while
+powered.
 
 \subsection{Safe fault exercises}
 
@@ -378,27 +429,92 @@ the powered circuit with a meter in current mode.
 
 \section{Mega 2560 acceptance}
 
-Board: \blank{1.5in}\quad port: \blank{1.5in}\\
-Toolchain: \blank{1.7in}\quad date: \blank{1.2in}
+\textbf{Physical work remains pending.} Leave every field blank until the named
+observation is made on the retained bench assembly.
 
-Piezo manufacturer / part: \blank{2.2in}\quad
-rated voltage: \blank{1.0in}\quad capacitance: \blank{1.0in}
+Date/time: \blank{1.5in}\quad Operator: \blank{1.5in}\\
+Reviewer/date: \blank{1.8in}\\
+Board maker/model/revision/serial or asset ID: \blank{3.4in}\\
+Port/FQBN: \blank{2.3in}\quad ADK/sketch commit: \blank{2.3in}\\
+\texttt{arduino-cli}/AVR core versions: \blank{3.5in}\\
+Upload command: \blank{4.8in}\\
+USB source/cable/current limit and removal point: \blank{3.3in}\\
+DMM model/range/input resistance: \blank{2.9in}\\
+Scope/analyzer model, probe, attenuation, bandwidth, and reference:
+\blank{2.5in}\\
+Exact board schematic/revision and D13 branch topology:
+\blank{3.0in}\\
+D13 resistor/LED/buffer identities, values, tolerances, and sources:
+\blank{2.2in}\\
+Calculated D13 branch current/method/margin: \blank{3.0in}\\
+Piezo maker/part/markings/passive-identity evidence:
+\blank{3.2in}\\
+Piezo rated voltage and capacitance/impedance: \blank{2.4in}\\
+Primary source and revision: \blank{3.8in}\\
+100\,\(\Omega\) measured value/tolerance/rating: \blank{2.5in}\\
+10\,k\(\Omega\) fixture measured value/tolerance/rating:
+\blank{2.4in}\\
+Measured 5\,V rail: \blank{1.3in}\\
+Calculated worst-case D6 current/method/margin: \blank{3.1in}\\
+Mega per-pin, grouped-pin, and total-device limits checked: \checkbox\\
+Flash: \blank{0.8in} bytes\quad SRAM: \blank{0.8in} bytes
 
-\begin{itemize}
-    \item[\checkbox] Part is identified as a passive piezo with suitable rating.
-    \item[\checkbox] Exact D6--100\,$\Omega$--piezo--GND path is verified unpowered.
-    \item[\checkbox] Clean Mega build succeeds; flash and SRAM sizes are recorded.
-    \item[\checkbox] Initialization returns a status whose \texttt{ok()} is true.
-    \item[\checkbox] Three requested cues sound and end without \texttt{delay()}.
-    \item[\checkbox] A simultaneous LED or input task remains responsive.
-    \item[\checkbox] Invalid frequency returns \texttt{InvalidArgument} and remains silent.
-    \item[\checkbox] Explicit stop ends a tone immediately.
-    \item[\checkbox] Shutdown leaves D6 passive and releases both claims.
-    \item[\checkbox] USB is disconnected before dismantling the circuit.
-\end{itemize}
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}p{0.18\linewidth}XXX@{}}
+\toprule
+Evidence & Predict & Observe & Interpret\\
+\midrule
+Acquisition &
+D13 pulse/separator; sounder silent &
+\rule{0pt}{3.5ex} &
+\\[9ex]
+Primary cue at TP-SND/D6 &
+levels, 440\,Hz, 250\,ms &
+&
+\\[9ex]
+Current/limits &
+D6 edge and D13 branch margins &
+&
+\\[9ex]
+Controlled shutdown &
+tone stop; D6 and D13 released &
+&
+\\[9ex]
+Weak-pull D6 safe state &
+driven/released voltage ranges &
+&
+\\[9ex]
+D13 safe state &
+board-specific bias ranges &
+&
+\\[9ex]
+Reset &
+complete sequence repeats &
+&
+\\[9ex]
+Power removal &
+5\,V, D13, D6 unpowered ranges &
+&
+\\
+\bottomrule
+\end{tabularx}
+\end{center}
 
-Flash: \blank{1.0in} bytes\quad SRAM: \blank{1.0in} bytes\quad
-Longest observed cue: \blank{1.0in} ms
+Unpowered continuity map and TP labels confirmed: \checkbox\quad
+Initialization status recorded independently: \checkbox\\
+Host trace records tone stop/D6 input and D13 LOW/input: \checkbox\quad
+D6 weak pull installed and removed only while unpowered: \checkbox\\
+D13 fixture resistor/value/rail: \blank{2.5in}\quad
+opposite-drive worst-case current safe: \checkbox\\
+D13 driven-LOW/released predicted ranges: \blank{2.6in}\\
+D13 driven-LOW/released observed values: \blank{2.8in}\\
+D13 fixture installed and removed only while unpowered: \checkbox\\
+Reset completed: \checkbox\quad USB physically removed before handling:
+\checkbox\\
+Deviation and stop action: \blank{4.2in}\\
+Remaining uncertainty: \blank{4.5in}\\
+Result: \checkbox\ draft \quad \checkbox\ rejected \quad
+\checkbox\ hardware verified \quad Reviewer initials: \blank{1.0in}
 
 \section{Explain and extend}
 

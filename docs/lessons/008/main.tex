@@ -88,11 +88,13 @@ without hiding what the circuit measured?\\
 Time & 75--100 minutes\\
 Prerequisites & Lesson 007; integer ranges; explicit status handling\\
 You need & Mega 2560, USB cable, breadboard, 10\,k\(\Omega\) linear
-potentiometer, LED, resistor of at least 220\,\(\Omega\), jumpers, multimeter\\
+potentiometer, LED, resistor of at least 220\,\(\Omega\), jumpers, multimeter,
+and logic analyzer or oscilloscope with a 10\,k\(\Omega\)/10\,k\(\Omega\)
+midpoint fixture\\
 Evidence & TP-A0 voltage, raw and transformed worksheet, D6 duty/brightness,
 D13 acquisition witness, safe-state record\\
 Safety class & E1: USB-powered Mega and passive low-current parts only\\
-Status & Host-verified and experimental; physical acceptance remains open\\
+Status & Host verified; physical acceptance pending\\
 \end{tabularx}
 
 \section*{Safety boundary}
@@ -101,6 +103,16 @@ Remove USB before wiring or moving a probe connection. Use a 10\,k\(\Omega\)
 potentiometer between Mega 5\,V and GND; connect only its wiper to A0. Drive
 the external LED from D6 through its own resistor of at least
 220\,\(\Omega\). All grounds are common.
+
+Use a regulated 5\,V USB source rated for at least 500\,mA and record its
+label rating. Identify the LED color, package, polarity, and datasheet or
+measured forward voltage \(V_f\). Before power, calculate
+\[
+I_{\rm LED}=\frac{V_{\rm source}-V_f}{R}.
+\]
+Proceed only when the worst-case result is at most 15\,mA; otherwise increase
+the resistor. This limit is a lesson go/no-go rule, not a claim that the full
+source rating may flow through an I/O pin.
 
 Filtering is interpretation, not electrical protection. It cannot make an
 over-voltage safe, prove a wire is sound, or turn a floating input into valid
@@ -123,23 +135,27 @@ you hold, step, and repeat the input before Lesson 009 adds a photoresistor's
 environmental variability.
 
 \begin{center}
-\begin{tikzpicture}[>=Latex,node distance=12mm,
+\begin{tikzpicture}[>=Latex,node distance=10mm,
     terminal/.style={draw,rounded corners,fill=soft,minimum width=18mm,
                      minimum height=8mm,align=center},
-    part/.style={draw,minimum width=25mm,minimum height=10mm,align=center}]
+    part/.style={draw,minimum width=24mm,minimum height=9mm,align=center}]
     \node[terminal] (vcc) {Mega 5 V};
-    \node[part,right=of vcc] (pot) {10 k\(\Omega\)\\potentiometer};
-    \node[terminal,right=of pot] (a0) {A0 / pin 54\\TP-A0};
-    \node[terminal,below=13mm of pot] (gnd) {Mega GND};
-    \draw[very thick,->] (vcc)--(pot);
-    \draw[very thick,->] (pot)--node[above]{wiper}(a0);
-    \draw[very thick,->] (pot)--node[right]{low end}(gnd);
+    \node[part,right=of vcc] (high) {pot outer\\high};
+    \node[part,right=of high] (wiper) {pot center\\wiper};
+    \node[part,right=of wiper] (low) {pot outer\\low};
+    \node[terminal,right=of low] (gnd) {Mega GND};
+    \node[terminal,below=of wiper] (a0) {A0 / pin 54\\TP-A0};
+    \draw[very thick,->] (vcc)--(high);
+    \draw[very thick] (high)--(wiper)--(low);
+    \draw[very thick,->] (low)--(gnd);
+    \draw[very thick,->] (wiper)--(a0);
 
-    \node[terminal,below=25mm of vcc] (d6) {D6 PWM\\TP-D6};
+    \node[terminal,below=24mm of vcc] (d6) {D6 PWM\\TP-D6};
     \node[part,right=of d6] (res) {\(\geq220\,\Omega\)};
-    \node[part,right=of res] (led) {LED};
-    \draw[very thick,->] (d6)--(res)--(led);
-    \draw[very thick,->] (led.east)--++(10mm,0)|-(gnd.east);
+    \node[part,right=of res] (anode) {LED anode};
+    \node[part,right=of anode] (cathode) {LED cathode};
+    \draw[very thick,->] (d6)--(res)--(anode)--(cathode);
+    \draw[very thick,->] (cathode.east)--++(8mm,0)|-(gnd.south);
 \end{tikzpicture}
 \end{center}
 
@@ -148,10 +164,11 @@ environmental variability.
 \toprule
 From & Through & To & Purpose\\
 \midrule
-Mega 5 V & pot high terminal & --- & known source\\
-pot wiper & TP-A0 & Mega A0 & sampled position\\
-pot low terminal & --- & Mega GND & divider return\\
-Mega D6 & resistor, LED anode & LED cathode to GND & brightness witness\\
+Mega 5 V & pot outer high terminal & --- & known source\\
+pot center wiper & TP-A0 & Mega A0 / pin 54 & sampled position\\
+pot outer low terminal & --- & Mega GND & divider return\\
+Mega D6 & resistor & LED anode & current-limited drive\\
+LED cathode & jumper & Mega GND & brightness return\\
 Mega D13 & built-in LED & --- & acquisition witness\\
 \bottomrule
 \end{tabularx}
@@ -178,7 +195,8 @@ The circuit and program make five different claims. Do not collapse them into
 \end{tikzpicture}
 \end{center}
 
-D13 on supports the separate claim that all three hardware owners initialized.
+D13's 250\,ms pulse supports the separate claim that all three hardware owners
+initialized. A 750\,ms dark separator follows before sampling begins.
 D6 brightness and its PWM waveform expose the final held value. TP-A0 remains
 available to challenge every software interpretation.
 
@@ -291,8 +309,9 @@ sample history, not processor speed or wall-clock timing.
 \section*{6. Read the narrative run loop}
 
 The canonical sketch introduces owners before transformations. Setup validates
-the software configuration, acquires D13, A0, and D6, then lights D13. The loop
-reads as observe, decide, actuate:
+the software configuration, acquires D13, A0, and D6, then pulses D13 for
+250\,ms and leaves a 750\,ms dark separator. The loop reads as observe, decide,
+actuate:
 
 \begin{lstlisting}[style=adkcpp]
 potentiometer.update ();
@@ -312,8 +331,13 @@ if (!brightnessLed.write (brightness).ok ())
 
 The 20\,ms sampling schedule belongs to the application. Calibration,
 averaging, and deadband remain useful in host tests without Arduino time.
-Shutdown turns off D6, makes A0 and D6 high impedance, releases all claims, and
-turns off D13. Destruction repeats that cleanup safely.
+Each observation is also emitted as a four-column CSV row: raw, calibrated,
+average, then held. That optional textual trace makes every software stage
+recordable, while TP-A0 and D6 remain the required circuit evidence. After
+120 seconds the sketch shuts down without user input, leaves a 250\,ms
+measurement window, and halts. Shutdown turns off D6, makes A0 and D6 high
+impedance, releases all claims, and turns off D13. Destruction repeats that
+cleanup safely. Reset starts a new acquisition pulse and timed run.
 
 \section*{7. Prove the transforms on the host}
 
@@ -340,8 +364,13 @@ Compilation and simulation do not establish physical acceptance.
 
 \section*{8. Upload and observe without depending on Serial}
 
+Record the exact specimen before upload: Mega board marking, board serial or
+lab asset ID, USB supply identity, potentiometer marking and measured
+end-to-end resistance, LED color/package, measured series-resistor value, and
+jumper/breadboard identifier. Record the meter and analyzer manufacturer,
+model, asset or serial ID, probe or lead identity, and last-calibration date.
 Identify the board and port, compile the one canonical sketch, upload it, and
-optionally capture Serial only if a later experiment adds textual records:
+optionally capture the CSV transformation trace:
 
 \begin{lstlisting}[style=adkcpp]
 make boards
@@ -353,13 +382,15 @@ make monitor PORT=/dev/ttyACM0 BAUD=115200
 The required evidence is circuit-native:
 
 \begin{enumerate}
-    \item D13 off at reset, then steadily on: resource-acquisition witness.
+    \item D13 emits one 250\,ms pulse, then remains dark for the 750\,ms
+          separator: resource-acquisition witness. Measure its duration.
     \item TP-A0 voltage follows the knob: primary input evidence.
     \item D6 duty and LED brightness follow a sustained change: output evidence.
     \item Small TP-A0 movement may leave D6 unchanged: deadband evidence.
     \item A fast step reaches D6 gradually: moving-average evidence.
-    \item After the published shutdown procedure, D13 and the LED are off; a
-          meter or logic analyzer, not darkness alone, checks safe state.
+    \item At 120 seconds, D6 and D13 become inactive without a button or host
+          command. During the following 250\,ms window, the analyzer records
+          the transition and the midpoint fixture checks released pins.
 \end{enumerate}
 
 \begin{center}
@@ -371,10 +402,54 @@ hold at middle & TP-A0 and D6 settle & &\\
 small nudge & TP-A0 moves; D6 may hold & &\\
 large step & TP-A0 jumps; D6 ramps & &\\
 return step & same direction-independent rules & &\\
-shutdown & D13/LED off; pins released & &\\
+automatic shutdown & at 120 s, D13/D6 inactive; pins released & &\\
+power removal & after shutdown, 5 V and test points de-energize & &\\
 \bottomrule
 \end{tabularx}
 \end{center}
+
+\textbf{Released-pin fixture.} Remove USB, connect two measured
+10\,k\(\Omega\) resistors in series from 5\,V to GND, and connect their
+midpoint to only the pin under test. Reapply USB and run the experiment.
+During the 250\,ms shutdown window, measure approximately half the supply at
+D6; then repeat a separate run for A0. Never attach, remove, or move this
+fixture while powered, never test two pins at once, and never open the ground
+connection while powered. LED darkness alone is not high-impedance evidence.
+
+\textbf{Reset and acquisition rollback.} Press reset once after a completed
+run. Record a new 250\,ms acquisition pulse and confirm the CSV column order
+and response repeat from an identical knob position. Then compile a separate
+fault-injection artifact:
+\begin{lstlisting}[style=adkcpp]
+arduino-cli compile --fqbn arduino:avr:mega --library . \
+  --build-property \
+  compiler.cpp.extra_flags=-DADK_LESSON008_INJECT_D6_CONFLICT \
+  examples/Lesson008SampledSignal
+\end{lstlisting}
+Upload that artifact only for the rollback run. It deterministically claims D6
+before normal acquisition. The subsequent D6 acquisition must fail; the sketch
+must emit no acquisition pulse and must roll back the already acquired A0 and
+D13 owners before releasing the injected D6 claim. In separate powered runs,
+with the midpoint fixture installed while USB is absent, record released-state
+evidence for A0 and D13. Remove USB after each run. Recompile and upload the
+canonical artifact before continuing.
+
+\textbf{Configuration restoration.} To demonstrate return to the prerequisite
+configuration, remove USB, restore the unmodified Lesson 007
+potentiometer/LED wiring, inspect it against that lesson's net list, upload its
+canonical sketch, and record its acquisition and finite safe-state evidence.
+This is configuration restoration, not the acquisition-failure rollback test.
+If upload, identity, timing, or fixture checks disagree, remove USB and return
+to the last inspected unpowered wiring state; do not improvise around a powered
+fault.
+
+\textbf{Physical power removal.} After the canonical automatic-shutdown run,
+record the precondition: D13 and D6 inactive and the analyzer capture saved.
+Unplug USB at the upstream source without touching breadboard wiring. Record
+the observation: Mega power LED, D13, and external LED are dark and TP-A0,
+TP-D6, and 5\,V measure de-energized. Interpret darkness plus voltage
+measurements as removal of source power; do not interpret it as pin-release
+evidence, which belongs to the powered midpoint-fixture checks.
 
 \section*{9. Diagnose by stage}
 
@@ -417,14 +492,25 @@ input can float plausibly\\
 
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}lX@{}}
 Board and supply & \\
-Meter / analyzer & \\
+Board marking, serial / asset ID & \\
+USB supply and cable identity & \\
+Pot, LED, resistor, breadboard / jumpers & \\
+Meter make, model, ID, calibration date & \\
+Analyzer / scope, probe, ID, calibration date & \\
 Measured 5 V reference & \\
+Source rating; LED identity and \(V_f\) & \\
 Measured pot and LED resistor & \\
+Calculated worst-case LED current / \(\leq15\) mA go/no-go & \\
 Observed calibration bounds & \\
 D13 acquisition observation & \\
+CSV raw / calibrated / average / held file & \\
 TP-A0 observations & \\
 TP-D6 / brightness observations & \\
-Shutdown pin evidence & \\
+120 s deadline and 250 ms window & \\
+D6 and A0 midpoint-fixture evidence & \\
+Reset repeat and injected D6 rollback evidence & \\
+Lesson 007 configuration-restoration evidence & \\
+Power removal P / O / I & \\
 Deviations, reviewer, date & \\
 \end{tabularx}
 
