@@ -38,6 +38,7 @@
 #include "night_light.h"
 #include "observation_tracker.h"
 #include "packet_receiver.h"
+#include "passage_qualifier.h"
 #include "piezo_sounder.h"
 #include "power_domain.h"
 #include "pump_output.h"
