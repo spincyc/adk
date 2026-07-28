@@ -51,11 +51,11 @@ qualification are not yet supported.
 ## Lesson delivery
 
 The repository-wide
-[lesson PDF visual-style audit](audits/LESSON_PDF_VISUAL_STYLE_AUDIT.md) is the
-current highest-priority publication task. Audit Lessons 001--033 and convert
-every non-schematic visual to pencil-drawing presentation. Formal electrical
-schematics are the sole exception. The canonical PDF policy and automated
-classification gate apply the same rule to every future lesson.
+[lesson PDF visual-style audit](audits/LESSON_PDF_VISUAL_STYLE_AUDIT.md) is
+complete for Lessons 001--033. Every non-schematic visual uses pencil-drawing
+presentation; formal electrical schematics are the sole exception. The
+canonical PDF policy and automated classification gate apply the same rule to
+every future lesson.
 
 | Boundary | State | Required next result |
 |---|---|---|
