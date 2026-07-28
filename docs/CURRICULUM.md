@@ -17,6 +17,10 @@ for this canonical publication, not answered, and remain historical optional
 substitution-conformance requirements. Lessons 040--042 are the next queued
 block. Their provisional implementation-depth brief still requires the Lesson
 042 arming decision and its own exact-specimen gates before activation.
+The later blocks are ordered for early learner engagement while retaining
+prerequisite, authorization, safety, and evidence gates: interactive motion
+and display projects precede the more methodical environmental and
+characterization work.
 The input families used in 031--036 are in the
 [authorized Elegoo set](inventory/AUTHORIZED_ELEGOO_SET.md); exact electrical
 revision and bench evidence remain open. The
@@ -144,10 +148,10 @@ supplies the shortest planned path through the library.
 | 040 | Component | Reflective and interrupted light | Optical observations retain calibration, ambient effects, and crosstalk |
 | 041 | Component | Presence and passage | PIR, beam, and range observations retain validity, age, and disagreement |
 | 042 | Project-bearing | Tabletop course marshal | Ordered checkpoints and finish evidence produce a replayable timed run |
-| 043 | Component | Resistive environmental probes | Switched-power wetness observations expose calibration, corrosion, and faults |
-| 044 | Component | Thermal and radiant observations | Units, uncertainty, validity, age, and controlled low-energy IR remain explicit |
-| 045 | Project-bearing | Museum-case monitor | Sensor health, inert alarm intent, and records reproduce each decision |
-| 046 | Component | Touch, proximity, and pulse demonstrations | Human-input observations retain noise and make no medical claim |
+| 043 | Component | Revision-neutral inertial samples | Identified MPU6050 or QMI8658 adapters produce one validated sample value |
+| 044 | Component | Orientation presentation | Supplied samples produce bounded pitch/roll and existing LED/tone intent |
+| 045 | Project-bearing | Balance-table instrument | Tilt, sensitivity, freeze, health, and presentation replay without a later display driver |
+| 046 | Component | Authorized tactile and directional inputs | Listed Metal Touch, contact, and joystick observations retain noise and explicit validity without capacitive or heartbeat claims |
 | 047 | Component | Bounded stepper motion | Coil frames, rate, travel, cancellation, and de-energized shutdown are explicit |
 | 048 | Project-bearing | Kinetic light sculpture | Existing indicators mirror bounded motion intent before motor power is used |
 | 049 | Component | Identity records | RFID observations and keypad entries form bounded local identifiers, not authentication |
@@ -156,24 +160,24 @@ supplies the shortest planned path through the library.
 | 052 | Component | Captured IR pulse trains | Known, repeated, unknown, and malformed receive evidence remain distinct |
 | 053 | Component | Known-code IR transmission | Only documented learner-created codes use a bounded, cancellable emitter |
 | 054 | Project-bearing | IR command translator | Adjacent, exactly qualified transmitter and receiver fixtures replay known harmless commands |
-| 055 | Component | Threshold-module descriptors | Identified low-voltage comparator modules share one explicit electrical descriptor |
-| 056 | Component | Characterization runs | Supplied sweeps expose threshold, hysteresis, chatter, and disagreement |
-| 057 | Project-bearing | Module characterization bench | One identified analog/comparator specimen produces a stable acceptance record |
-| 058 | Component | Constraint and clue model | Fixed-capacity rules reject cycles and consume only explicit observations |
-| 059 | Component | Fault-aware operator panel | Inputs, presentation, acknowledgement, stop, and storage compose deterministically |
-| 060 | Project-bearing | Inert escape-room console | Replayable clues can request only lightweight, bounded actuator intent |
-| 061 | Component | Revision-neutral inertial samples | Identified MPU6050 or QMI8658 adapters produce one validated sample value |
-| 062 | Component | Orientation presentation | Supplied samples produce bounded pitch/roll and existing LED/tone intent |
-| 063 | Project-bearing | Balance-table instrument | Tilt, sensitivity, freeze, health, and presentation replay without a later display driver |
-| 064 | Component | Inertial record normalization | Device identity, range, calibration version, data-ready, and faults survive normalization |
-| 065 | Component | Inertial source qualification | Explicit configuration qualifies one source without hidden voting or failover |
-| 066 | Project-bearing | Interchangeable motion recorder | Revision-specific traces normalize and present through earlier endpoints |
-| 067 | Component | Single-wire transactions | Reset, presence, slots, pull-up policy, timeout, rollback, and DS18B20 identity are explicit |
-| 068 | Component | Qualified thermal probe sets | Fixed-capacity identities retain conversion, CRC, stale, and disappearance state |
-| 069 | Project-bearing | Thermal gradient mapper | Safe tabletop probe observations produce stable displays and records |
-| 070 | Component | Nonblocking multiplexed digits | Supplied-time digit frames expose polarity, blanking, overflow, and refresh loss |
-| 071 | Component | MAX7219 matrix presentation | Owned SPI configuration and frames fail blank without hiding transport faults |
-| 072 | Project-bearing | Dual-display timing desk | Multiplexed digits and matrix progress present one stopwatch snapshot |
+| 055 | Component | Constraint and clue model | Fixed-capacity rules reject cycles and consume only explicit observations |
+| 056 | Component | Fault-aware operator panel | Inputs, presentation, acknowledgement, stop, and storage compose deterministically |
+| 057 | Project-bearing | Inert escape-room console | Replayable clues can request only lightweight, bounded actuator intent |
+| 058 | Component | Nonblocking multiplexed digits | Supplied-time digit frames expose polarity, blanking, overflow, and refresh loss |
+| 059 | Component | MAX7219 matrix presentation | Owned SPI configuration and frames fail blank without hiding transport faults |
+| 060 | Project-bearing | Dual-display timing desk | Multiplexed digits and matrix progress present one stopwatch snapshot |
+| 061 | Component | Authorized environmental observations | Water Level, thermistor, distinct Digital Temperature, radiant, and reed observations retain specimen identity, validity, age, and disagreement |
+| 062 | Component | Environmental qualification and presentation | Switched-power, calibration, uncertainty, corrosion, and sensor-health evidence remain explicit for each distinct authorized family |
+| 063 | Project-bearing | Museum-case monitor | Qualified environmental and reed evidence, inert alarm intent, and records reproduce each decision |
+| 064 | Component | Single-wire transactions | Reset, presence, slots, pull-up policy, timeout, rollback, and DS18B20 identity are explicit |
+| 065 | Component | Qualified 18B20 thermal probe sets | Fixed-capacity identities retain conversion, CRC, stale, and disappearance state |
+| 066 | Project-bearing | Thermal gradient mapper | Safe tabletop 18B20 observations produce stable displays and records |
+| 067 | Component | Inertial record normalization | Device identity, range, calibration version, data-ready, and faults survive normalization |
+| 068 | Component | Inertial source qualification | Explicit configuration qualifies one source without hidden voting or failover |
+| 069 | Project-bearing | Interchangeable motion recorder | Revision-specific traces normalize and present through earlier endpoints |
+| 070 | Component | Threshold-module descriptors | Identified low-voltage comparator modules share one explicit electrical descriptor |
+| 071 | Component | Characterization runs | Supplied sweeps expose threshold, hysteresis, chatter, and disagreement |
+| 072 | Project-bearing | Module characterization bench | One identified analog/comparator specimen produces a stable acceptance record |
 | 073 | Component | Authorized-family replacement pending | Retain this number; DS1302 is not in the cited Elegoo union and must be replaced before activation |
 | 074 | Component | Authorized-family replacement pending | Retain this number; BMP180 and PCF8591 are not in the cited Elegoo union and must be replaced before activation |
 | 075 | Project-bearing | Authorized-family project pending | Compose the replacements selected for 073–074 without adding an unlisted specimen |
@@ -241,13 +245,15 @@ the external-power boundary introduced in `017`.
 | I2C, SPI, storage, RTC, and relay simulation | 022--023 | 024 | 027, 030 |
 | Infrared and packet observation | 025--026 | 027 | Receive-only fixture evidence |
 | Fault injection and cue scheduling | 028--029 | 030 | Capstone evidence |
-| Joystick and encoder input | 031--032 | 033 | 048, 060, 063 |
-| Contact, acoustic, optical, and environmental observations | 034--044 | 036--045 | 057, 060 |
-| Stepper, identity, homing, and exactly qualified IR output | 047--053 | 048--054 | 060 |
-| Descriptor, rule, and operator-panel models | 055--059 | 057--060 | 081 |
-| Revision-neutral inertial observations | 061--065 | 063--066 | Recorded comparison |
-| Single-wire thermal observations | 067--068 | 069 | Recorded mapping |
-| Multiplexed and MAX7219 displays | 070--071 | 072 | Timing presentation |
+| Joystick and encoder input | 031--032 | 033 | 046, 048, 055 |
+| Contact, acoustic, and optical observations | 034--042 | 036--042 | 046, 055, 070 |
+| Revision-neutral inertial observations | 043--044, 067--068 | 045, 069 | Recorded comparison |
+| Authorized tactile inputs, stepper, identity, homing, and exactly qualified IR output | 046--053 | 048--054 | 055 |
+| Rule and operator-panel models | 055--056 | 057 | 081 |
+| Multiplexed and MAX7219 displays | 058--059 | 060 | Timing presentation |
+| Authorized environmental observations | 061--062 | 063 | Recorded monitoring |
+| Single-wire 18B20 thermal observations | 064--065 | 066 | Recorded mapping |
+| Threshold descriptors and characterization | 070--071 | 072 | 081 |
 | Authorized-family replacements | 073--074 | 075 | Pending re-scope |
 | Authorized-family replacements | 076--077 | 078 | Pending re-scope |
 | Low-side driver and indicator descriptors | 079--080 | 081 | Inert qualification |

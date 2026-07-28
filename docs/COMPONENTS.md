@@ -130,16 +130,19 @@ architectural layers.
 | Passive buzzer | Timer and pin claims + `PiezoSounder` | 005 |
 | 74HC595 | `ShiftRegister` | 010 |
 | 4-digit seven-segment | `ShiftRegister`/multiplex outputs + display model | 010 |
-| 8x8 LED matrix | Exact MAX7219/SPI transport + matrix model | 071--072 queued |
+| 8x8 LED matrix | Exact MAX7219/SPI transport + matrix model | 058--060 queued |
 | HD44780 / I2C LCD | Parallel endpoints or `I2cDevice` + display model | 014 |
 | DHT11/DHT22 | Timed digital endpoint + validated sample | 013 |
-| TMP36 / LM35 | `AnalogInput` + linear calibration | 008 |
+| TMP36 / LM35 | `AnalogInput` + linear calibration | Non-kit extension only; not an authorized Elegoo family |
 | LDR module | `AnalogInput`, optional threshold `DigitalInput` | 008 |
-| Soil moisture / water level | `AnalogInput` + corrosion-aware sampling policy | 008/024 |
-| Sound sensor | Relative ADC envelope and optional qualified threshold input | 038 queued; exact AO/DO open |
+| Water Level | `AnalogInput` + corrosion-aware sampling policy | 061--063 queued; exact board open |
+| Digital Temperature | Adapter pending exact specimen identity; not assumed to be 18B20 | 061--063 queued; unidentified |
+| 18B20 Temp | Exact-specimen single-wire transport + qualified thermal value | 064--066 queued |
+| Metal Touch | Exact-specimen input semantics, with contact or joystick fallback | 046--048 queued; identity gated |
+| Sound sensor | Relative ADC envelope and optional qualified threshold input | 038 published against an external reference; Elegoo substitution open |
 | HC-SR04 | `UltrasonicRanger` | 019 |
 | PIR module | `PirSensor` | 019 |
-| MPU6050 | `I2cDevice` + inertial sample model | 022 extension |
+| MPU6050 / QMI8658 | One exact adapter behind a revision-neutral inertial sample | 043--045; normalized records 067--069 |
 | DS1307/DS3231 | `Rtc` | 022--024 |
 | MicroSD module | `SpiDevice` + `SdCard` | 022--024 |
 | Membrane keypad | `Keypad` | 016 |
@@ -151,7 +154,8 @@ architectural layers.
 | DC motor/fan | Load behind `MotorDriver`; never direct from a pin | 020--021 |
 | Relay module | `Relay` + inert test load and isolation review | 023--024 |
 | IR receiver/remote | `InfraredReceiver` + decoder | 025--027 |
-| RFID module | SPI/UART device + identity record | 025/027 extension |
+| RFID module | SPI device + identity record | 049--051 queued |
+| Listed IR-emission module | Exact-specimen output + known local-code encoder | 052--054 queued; identity gated |
 | Receive-capable RF module | Inventory-gated future adapter | Deferred |
 
 Adapters outside the canonical numbered curriculum are extension lessons. They

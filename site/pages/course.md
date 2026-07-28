@@ -36,9 +36,29 @@ lesson number divisible by three is project-bearing.
 | 038 | Acoustic envelope | Relative intensity and threshold evidence | Host verified; incoming conformance and E1 bench open |
 | 039 | Contact and acoustic composition | Percussion sequencer | Host verified; incoming conformance and E1 bench open |
 
-Lessons 040–081 are retained canonical work;
-each later three-lesson arc requires an implementation-depth brief before code
-begins.
+The retained Lessons 040–081 sequence is front-loaded for learner engagement.
+This is planned work, not a support or bench-verification claim:
+
+| Lessons | Planned focus | Project |
+|---:|---|---|
+| 040–042 | Optical observations and presence | Tabletop course marshal |
+| 043–045 | Inertial samples and orientation | Balance-table instrument |
+| 046–048 | Authorized tactile/directional inputs and bounded stepper motion | Kinetic sculpture |
+| 049–051 | Local identity records and homing | Inert parts carousel |
+| 052–054 | Known-family IR capture and bounded emission | IR command translator |
+| 055–057 | Constraint and fault-aware operator models | Inert escape-room console |
+| 058–060 | Multiplexed digits and matrix presentation | Dual-display timing desk |
+| 061–063 | Resistive and thermal/radiant observations | Museum-case monitor |
+| 064–066 | Single-wire probes and qualified thermal sets | Thermal gradient mapper |
+| 067–069 | Normalized inertial records and source qualification | Interchangeable motion recorder |
+| 070–072 | Threshold descriptors and characterization sweeps | Module characterization bench |
+| 073–075 | Authorized-family replacements pending | Project pending |
+| 076–078 | Authorized-family replacements pending | Project pending |
+| 079–081 | Bounded load driver and indicator semantics | Component qualification bench |
+
+Each later three-lesson arc requires an implementation-depth brief before code
+begins. Lessons 073–078 retain their numbers but require authorized-family
+subjects before activation.
 
 The [canonical curriculum](docs/CURRICULUM.md) owns lesson numbers,
 prerequisites, and acceptance gates. [Project briefs](docs/PROJECTS.md) explain

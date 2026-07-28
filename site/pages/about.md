@@ -20,8 +20,8 @@ ADK is early-stage software. Lessons 001--039 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
-conformance and bench acceptance remain open. Lesson 040 is the next planned
-component boundary.
+conformance and bench acceptance remain open. Lesson 040 begins the next
+planned arc.
 
 The hierarchy is developed in dependency order:
 
@@ -34,9 +34,11 @@ The per-object lifecycle uses transactional `initialize()`, idempotent
 global-registration preview is frozen under [Legacy](legacy/index.md).
 
 The latest promoted arc is Lessons 037--039: qualified contact dynamics,
-acoustic-envelope evidence, and deterministic percussion sequencing. Lesson
-040 is planned next. See
-the [roadmap](docs/ROADMAP.md) for the full sequence.
+acoustic-envelope evidence, and deterministic percussion sequencing. The
+planned sequence from Lesson 040 is engagement-first: optical interaction,
+balance, kinetic motion, and a parts carousel lead the remaining sensor and
+display arcs. See the [course map](course.md) for that order and the
+[roadmap](docs/ROADMAP.md) for the full sequence.
 
 ## Principles
 

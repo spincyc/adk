@@ -67,6 +67,12 @@ is complete for Lessons 001--033. Learner artifacts use dependent visible
 stages and keep repository administration, command-line maintenance, and
 physical-acceptance paperwork outside the lesson flow.
 
+The [sensor engagement-order audit](audits/SENSOR_ENGAGEMENT_REORDER_AUDIT.md)
+front-loads immediately legible, interactive outcomes while retaining
+dependency, specimen, safety, and verification gates. It is a curriculum
+ordering decision, not evidence that any queued sensor is electrically
+qualified.
+
 | Boundary | State | Required next result |
 |---|---|---|
 | [001--036](CURRICULUM.md#cadence) | Host verified; bench open | Preserve interfaces and complete each physical acceptance record |
@@ -110,23 +116,25 @@ work; retail kit names are not electrical identities.
 | [034--036](design/LESSONS_034_036_MAGNETIC_PASSAGE_PLAN.md) | Host verified; bench open | Magnetic observations, passage qualification, magnetic passage logger |
 | [037--039](design/LESSONS_037_039_PERCUSSION_PLAN.md) | Host verified; bench/incoming conformance open | Contact dynamics, acoustic envelopes, and percussion sequencer published against documented external references; E1 and incoming conformance open |
 | [040--042](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Queued; next | Provisional implementation-depth optical observations, presence, and tabletop course marshal; arming decision and exact-specimen gates open |
-| [043--045](projects/component_project_cadence.md) | Queued | Resistive probes, thermal/radiant observation, museum-case monitor |
-| [046--048](projects/component_project_cadence.md) | Queued | Touch/proximity, bounded stepper motion, kinetic sculpture |
+| [043--045](projects/component_project_cadence.md) | Queued | Revision-neutral inertial samples, orientation presentation, balance-table instrument |
+| [046--048](projects/component_project_cadence.md) | Queued; authorized specimens only | Authorized tactile/directional inputs, bounded stepper motion, kinetic sculpture; excluded or unidentified pulse/gesture modules are not claimed |
 | [049--051](projects/component_project_cadence.md) | Queued | Local identity records, homing, inert parts carousel |
 | [052--054](projects/component_project_cadence.md) | Queued; exact emitter gated | Known-kit IR capture, bounded listed IR-emission family, command translator |
-| [055--057](projects/component_project_cadence.md) | Queued | Threshold descriptors, characterization, module test bench |
-| [058--060](projects/component_project_cadence.md) | Queued | Constraint model, fault-aware panel, inert escape-room console |
-| [061--063](projects/component_project_cadence.md) | Queued | Revision-neutral MPU6050/QMI8658 samples, orientation presentation, balance-table instrument |
-| [064--066](projects/component_project_cadence.md) | Queued | Normalized inertial records, source qualification, motion recorder |
-| [067--069](projects/component_project_cadence.md) | Queued | Single-wire transport, listed 18B20 temperature family, thermal mapper |
-| [070--072](projects/component_project_cadence.md) | Queued | Multiplexed digits, MAX7219 display transport, timing desk |
+| [055--057](projects/component_project_cadence.md) | Queued | Constraint model, fault-aware panel, inert escape-room console |
+| [058--060](projects/component_project_cadence.md) | Queued | Multiplexed digits, MAX7219 display transport, timing desk |
+| [061--063](projects/component_project_cadence.md) | Queued; corrected authorized scope | Resistive probes and qualified thermal/radiant observations composed into a museum-case monitor |
+| [064--066](projects/component_project_cadence.md) | Queued | Single-wire transport, listed 18B20 temperature family, thermal mapper |
+| [067--069](projects/component_project_cadence.md) | Queued | Normalized inertial records, source qualification, motion recorder |
+| [070--072](projects/component_project_cadence.md) | Queued | Threshold descriptors, characterization, module test bench |
 | [073--075](projects/component_project_cadence.md) | Re-scope required | DS1302, BMP180, and PCF8591 are not in the authorized Elegoo union; retain numbers but replace subjects before activation |
 | [076--078](projects/component_project_cadence.md) | Re-scope required | Color sensor is not in the authorized Elegoo union; retain numbers but replace subjects before activation |
 | [079--081](projects/component_project_cadence.md) | Queued | Bounded low-side driver, indicator semantics, inert qualification bench |
 
 The input-first 031--033 decision supersedes older use of 032--033 for the
-MPU6050 and balance table. That work is retained at 061--063 without a number
-collision. The [kit coverage audit](design/ELEGOO_MEGA_KIT_COVERAGE_2026-07-27.md),
+MPU6050 and balance table. The engagement-order audit now retains that work at
+043--045 without a number collision and orders the later arcs by learner
+payoff rather than inventory taxonomy alone. The
+[kit coverage audit](design/ELEGOO_MEGA_KIT_COVERAGE_2026-07-27.md),
 [sensor taxonomy](research/SENSOR_KIT_TAXONOMY.md), and
 [safety taxonomy](design/KIT_MODULE_SAFETY_TAXONOMY.md) remain implementation
 inputs. Coverage is not complete until every claimed module has an exact
@@ -140,8 +148,9 @@ optional substitution-conformance work and were superseded as canonical
 publication blockers rather than answered. Lessons 040--042 are the next
 queued block. Their provisional implementation-depth brief remains gated by
 the Lesson 042 arming decision and exact-specimen requirements.
-Lessons 043--081 are canonical subjects and retained work, but their cadence
-entries are not implementation-ready lesson plans. Before code begins for each three-lesson
+Lessons 043--081 are canonical subjects and retained work in the engagement
+order above, but their cadence entries are not implementation-ready lesson
+plans. Before code begins for each three-lesson
 arc, expand it to the same depth as 031--033: public values and interfaces,
 resource and pin budgets, deterministic fixture and failure matrices,
 narrative example flow, staged circuit-native experiments, HTML/PDF division,
@@ -150,7 +159,7 @@ never means that an exact kit module is supported.
 
 The PCF8574 LCD backpack, gas-response experiments, unidentified emitters,
 physiological claims, and prototype/power construction variants still require
-separately scoped, inventory-gated planning. Lesson 057 covers only identified
+separately scoped, inventory-gated planning. Lesson 072 covers only identified
 low-voltage analog/comparator characterization; it is not a catch-all claim
 for every product sold as a 37-sensor kit.
 

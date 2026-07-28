@@ -132,23 +132,38 @@ failure states. None may be powered directly from a Mega I/O pin.
 The kit does not justify flattening ADK into one wrapper per retail part.
 Interfaces should follow shared electrical mechanisms:
 
-1. preserve the host-verified lessons through 026 while completing their exact
+1. preserve the host-verified lessons through 039 while completing their exact
    specimen bench cards;
-2. use the owned `I2cBus` and `SpiBus` foundations from lesson 022 for
-   separately identified device adapters;
-3. add an RTC adapter and one motion-device adapter only after inventory;
-4. add MAX7219 and RC522 device leases after exact electrical qualification;
-5. reuse pulse timing from lessons 019 and 025 for identified PIR and rotary
-   semantics;
-6. add rotary decoding and joystick composition;
-7. add externally powered servo and motor endpoints under the E2 gate;
-8. leave relay and stepper work until the driver, supply, and shutdown evidence
-   is reusable.
+2. front-load optical work in 040–042, then one identified inertial revision
+   and the balance-table instrument in 043–045;
+3. use the listing-authorized Metal Touch family only after exact identity,
+   with a contact or existing joystick fallback, alongside bounded stepper
+   motion in 046–048;
+4. add the RC522 identity carousel in 049–051 and identified, known-code IR
+   work in 052–054;
+5. compose the cooperative escape-room console in 055–057, then add the
+   four-digit and MAX7219 display laboratory in 058–060;
+6. place the lower-immediacy Water Level, thermistor, unidentified Digital
+   Temperature, passive radiant/flame, and reed work in 061–063;
+7. keep listed 18B20 single-wire work distinct in 064–066, then reuse the
+   identified inertial adapter for normalized records in 067–069;
+8. characterize remaining identified low-voltage analog/comparator variants
+   in 070–072 and retain 073–078 for later authorized-family re-scoping; and
+9. leave the low-energy qualification bench at 079–081.
 
 This order makes kit breadth an integration test of the hierarchy instead of
 creating unrelated component classes. Circuit-native verification should
 remain part-specific: visible display patterns, LED state, audible cue,
 electrical test points, or bounded inert motion. Serial remains supplemental.
+
+The 2026-07-27 audit historically discussed rain, soil-moisture, generic
+capacitive-touch, and heartbeat/pulse candidates while comparing broader
+seller taxonomies. The cited Elegoo manifests do not authorize those families,
+so the engagement-first curriculum removes them from planned coverage.
+`Digital Temperature` and `18B20 Temp` are separate first-party inventory
+labels: the former remains unidentified pending specimen proof, while the
+latter belongs to the single-wire thermal arc. Metal Touch is authorized only
+at listing level until exact topology and safe stimulus are established.
 
 ## Explicit non-coverage and aliases
 
@@ -159,10 +174,14 @@ electrical test points, or bounded inert motion. Serial remains supplemental.
   not interchangeable software components. Their regulator, jumper, polarity,
   backfeed, and thermal behavior must be inventoried per board revision.
 - Gas-board names such as `MQ-2`, “gas,” “smoke,” or “air quality” are aliases,
-  not supported measurements. Lesson 057 may characterize an identified
+  not supported measurements. Lessons 070–072 may characterize an identified
   low-voltage analog/comparator output with harmless supplied traces; it does
   not authorize gas exposure, heating a sensor, concentration units, alarms,
   or safety claims.
+- Rain, soil-moisture, generic capacitive-touch, and heartbeat/pulse boards
+  are absent from the cited manifests. Historical planning references do not
+  authorize them. Water Level, Metal Touch, and the two separately labelled
+  temperature families must not be broadened into those absent categories.
 - `KY-` identifiers, seller lesson numbers, PCB color, and bundle position are
   searchable aliases only. They never select a C++ type or waive exact
   electrical identity.

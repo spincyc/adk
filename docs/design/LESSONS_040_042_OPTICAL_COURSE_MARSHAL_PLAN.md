@@ -241,7 +241,7 @@ qualified emitter-on/off or paired-channel schedule. Until then, correlated
 changes are a worksheet observation, not a component diagnosis.
 
 Lesson 040 owns calibration-bound optical state and event semantics over a
-qualified copied source. Lessons 055--057 own specimen-neutral module
+qualified copied source. Lessons 070--072 own specimen-neutral module
 descriptors, electrical characterization sweeps, and characterization records.
 Neither boundary widens or silently absorbs the other; Lesson 040 does not own
 potentiometer, pull-up, comparator, or module-topology characterization.

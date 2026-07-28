@@ -50,5 +50,26 @@ Mega 2560. Every circuit remains experimental until its physical acceptance
 card is recorded. Historical preview lessons are preserved under
 [Legacy](../legacy/index.md).
 
+## Planned engagement-first sequence
+
+The next arcs deliberately lead with interactive sensing and visible motion.
+They remain planned—not published or bench-verified:
+
+| Lessons | Planned project |
+|---:|---|
+| 040–042 | Optical tabletop course marshal |
+| 043–045 | Balance-table instrument |
+| 046–048 | Kinetic sculpture |
+| 049–051 | Inert parts carousel |
+| 052–054 | IR command translator |
+| 055–057 | Inert escape-room console |
+| 058–060 | Dual-display timing desk |
+| 061–063 | Museum-case monitor |
+| 064–066 | Thermal gradient mapper |
+| 067–069 | Interchangeable motion recorder |
+| 070–072 | Module characterization bench |
+| 073–078 | Authorized-family subjects pending |
+| 079–081 | Component qualification bench |
+
 Pencil drawings provide orientation only. Build from each PDF’s exact schematic
 and connection table.

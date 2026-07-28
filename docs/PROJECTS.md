@@ -67,16 +67,16 @@ may claim hardware verification until its measured record is published.
 | 034--036 | Magnetic/contact sensing and passage policy | Magnetic passage logger |
 | 037--039 | Contact dynamics and acoustic envelopes | Percussion sequencer |
 | 040--042 | Optical observations and presence policy | Tabletop course marshal |
-| 043--045 | Resistive, thermal, and radiant observations | Museum-case monitor |
-| 046--048 | Touch/pulse observations and bounded stepper motion | Kinetic light sculpture |
+| 043--045 | Revision-neutral inertial samples and orientation | Balance-table instrument |
+| 046--048 | Authorized tactile/directional inputs and bounded stepper motion | Kinetic light sculpture |
 | 049--051 | Local identity records and bounded homing | Tabletop parts carousel |
 | 052--054 | Known-kit IR capture and exactly qualified transmission | IR command translator |
-| 055--057 | Identified threshold descriptors and sweeps | Module characterization bench |
-| 058--060 | Constraint model and fault-aware panel | Inert escape-room console |
-| 061--063 | Revision-neutral inertial samples and orientation | Balance-table instrument |
-| 064--066 | Inertial records and source qualification | Interchangeable motion recorder |
-| 067--069 | Single-wire transport and qualified probes | Thermal gradient mapper |
-| 070--072 | Multiplexed digits and MAX7219 presentation | Dual-display timing desk |
+| 055--057 | Constraint model and fault-aware panel | Inert escape-room console |
+| 058--060 | Multiplexed digits and MAX7219 presentation | Dual-display timing desk |
+| 061--063 | Authorized Water Level, thermistor, Digital Temperature, radiant, and reed observations | Museum-case monitor |
+| 064--066 | Single-wire transport and qualified 18B20 probes | Thermal gradient mapper |
+| 067--069 | Inertial records and source qualification | Interchangeable motion recorder |
+| 070--072 | Identified threshold descriptors and sweeps | Module characterization bench |
 | 073--075 | Authorized-family replacements pending | Project pending re-scope |
 | 076--078 | Authorized-family replacements pending | Project pending re-scope |
 | 079--081 | Low-side driver and indicator semantics | Component qualification bench |
@@ -103,18 +103,18 @@ explicit open item.
 | 036 | Host verified; bench open | Passage, bounce, direction, recovery, and record traces | Raw contacts, accepted passage, and count |
 | 039 | Host verified; bench/incoming conformance open | Sequencer core, attribution, atomic admission, replay, indexed-hit evidence, and exact external reference publication complete | Canonical Mega schematic/example, visible pattern evidence, and E1 acceptance card; incoming conformance remains open |
 | 042 | [Queued; provisional implementation-depth plan complete](design/LESSONS_040_042_OPTICAL_COURSE_MARSHAL_PLAN.md) | Calibration, checkpoint-order, range, and timeout traces; implementation remains gated | Local checkpoints and invalid-run state |
-| 045 | Queued; detailed plan required | Probe, thermal, radiant, latch, and record traces | Health/fault display and inert alarm lamp |
-| 048 | Queued; detailed plan required | Gesture, coil-frame, stop, and power-loss traces | Shift-register intent mirror and independent stop |
+| 045 | Queued; detailed plan required | Revision-specific inertial, orientation, and freeze traces | Existing LED/tone health and bus test points |
+| 048 | Queued; detailed plan required | Authorized tactile/directional input, coil-frame, stop, and power-loss traces | Shift-register intent mirror and independent stop |
 | 051 | Queued; detailed plan required | Identity, homing, confirmation, and interruption traces | Position, home, gate-intent, and stop evidence |
 | 054 | Queued; detailed plan required | Encode/decode, malformed-frame, policy, and cancellation traces | Separate transmit/receive/fault indications |
-| 057 | Queued; detailed plan required | Descriptor, sweep, disagreement, and record traces | Raw, comparator, validity, and switched-power evidence |
-| 060 | Queued; detailed plan required | Clue, permutation, fault, reset, and stop traces | Raw/accepted/fault clue states and inert intent |
-| 063 | Queued; detailed plan required | Revision-specific inertial, orientation, and freeze traces | Existing LED/tone health and bus test points |
-| 066 | Queued; detailed plan required | Normalization, provenance, qualification, and replay traces | Display self-test, orientation, and dominant fault |
-| 069 | Queued; detailed plan required | Single-wire, CRC, conversion, identity, and record traces | Data/rail/activity test points and explicit invalid state |
-| 072 | Queued; detailed plan required | Digit refresh, SPI failure, disagreement, and shutdown traces | Independent display self-tests and transport points |
-| 075 | Queued; detailed plan required | Clock, compensation, ADC/DAC, trend, and record traces | Three-wire/I2C/analog points and health LEDs |
-| 078 | Queued; detailed plan required | Calibration, boundary, confidence, confirmation, and replay traces | Raw/classified state and inert pointer intent |
+| 057 | Queued; detailed plan required | Clue, permutation, fault, reset, and stop traces | Raw/accepted/fault clue states and inert intent |
+| 060 | Queued; detailed plan required | Digit refresh, SPI failure, disagreement, and shutdown traces | Independent display self-tests and transport points |
+| 063 | Queued; detailed plan required | Water Level, thermistor, Digital Temperature, radiant, reed, latch, and record traces | Health/fault display and inert alarm lamp |
+| 066 | Queued; detailed plan required | Single-wire, CRC, conversion, identity, and record traces | Data/rail/activity test points and explicit invalid state |
+| 069 | Queued; detailed plan required | Normalization, provenance, qualification, and replay traces | Display self-test, orientation, and dominant fault |
+| 072 | Queued; detailed plan required | Descriptor, sweep, disagreement, and record traces | Raw, comparator, validity, and switched-power evidence |
+| 075 | Re-scope required | Deterministic artifacts depend on the authorized families selected for 073--074 | Observation paths depend on the authorized replacement specimens |
+| 078 | Re-scope required | Deterministic artifacts depend on the authorized families selected for 076--077 | Observation paths depend on the authorized replacement specimens |
 | 081 | Queued; detailed plan required | Descriptor, current budget, endpoint fault, and record traces | Separate power, raw, accepted, intent, and fault evidence |
 
 Each project package still includes the public component interfaces, host
