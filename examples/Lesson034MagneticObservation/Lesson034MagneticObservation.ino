@@ -1,8 +1,11 @@
 // Mega 2560, USB 5 V only after exact specimen qualification. Connect the
 // qualified Linear Hall output to A0/TP-H and the qualified contact output to
 // D22/TP-R. Connect D30, D31, and D32 to LEDs through separate 1 kOhm
-// resistors. The sketch makes no claim about an unidentified module pinout,
-// output topology, or magnetic stimulus. Bench acceptance remains open.
+// resistors. D30 means the Hall sample is in its qualified range, D31 means
+// the contact is qualified closed, and D32 means both observations are ready.
+// D32 stays dark before the first sample or after a fault. The sketch makes no
+// claim about an unidentified module pinout, output topology, or magnetic
+// stimulus. Bench acceptance remains open.
 #include <Adk.h>
 #include <magnetic_observation.h>
 
@@ -133,7 +136,7 @@ namespace {
     {
         return rangeEvidence.off   ().ok ()
             && contactEvidence.off ().ok ()
-            && readyFault.on       ().ok ();
+            && readyFault.off      ().ok ();
     }
 
     void observeMagneticInputs (adk::TimePoint now)
@@ -155,11 +158,14 @@ namespace {
 
         const bool rangeIsQualified =
             hallObservation.quality == adk::MagneticQuality::Valid;
+        const bool observationsAreReady =
+            rangeIsQualified && hallObservation.status.ok ()
+            && contactObservation.quality == adk::MagneticQuality::Valid
+            && contactObservation.status.ok ();
 
         return rangeEvidence.set   (rangeIsQualified).ok ()
             && contactEvidence.set (contactObservation.active).ok ()
-
-            && readyFault.set       (rangeIsQualified).ok ();
+            && readyFault.set      (observationsAreReady).ok ();
     }
 
     void stopSafely ()
