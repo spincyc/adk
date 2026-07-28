@@ -4,9 +4,9 @@ repository_uuid: "51e8871e-d671-4f8b-9e07-505dbc2090e8"
 primary_remote: "https://github.com/spincyc/adk.git"
 branch: "main"
 head_observed: "4a7106c"
-working_tree_state: "physical-acceptance-planning-active"
-active_tasks: ["f7517e0d-8ca0-4a85-88d5-e7657de132b3"]
-updated_at: "2026-07-28T00:43:36Z"
+working_tree_state: "physical-acceptance-audit-complete"
+active_tasks: []
+updated_at: "2026-07-28T00:48:37Z"
 ---
 
 # Repository recovery state
@@ -28,3 +28,6 @@ open. The independently reviewed Lessons 034--036 implementation-depth brief
 is complete; implementation remains queued.
 The software-preparation boundary for the physical acceptance campaign is
 active; no physical observation is claimed.
+The physical campaign preparation audit is complete. Child creation is blocked
+on named human and equipment prerequisites; its discovered software
+remediation remains runnable.
