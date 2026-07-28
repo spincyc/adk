@@ -48,8 +48,8 @@ namespace {
         adk::InteractionSourceKind::SyntheticFixture, 2, 1};
 
     const adk::InteractionIntentConfig interactionConfig = {
-        {adk::Level::High, adk::Duration (8), adk::Duration (8),
-         adk::Duration (80), adk::Duration (2000)},
+        {adk::Level::High, adk::Duration (8), adk::Duration (8), adk::Duration (80),
+         adk::Duration (2000)},
         adk::Duration (100),
         adk::Duration (100),
         300,
@@ -86,18 +86,22 @@ namespace {
     uint8_t replayIndex  = 0;
     bool    replayActive = false;
 
+    // clang-format off
     bool        configureReplay ();
     void        startReplay     (adk::Status acquired, bool fixturesValid);
     ReplayFrame observeEvidence ();
-    adk::Status decideIntent    (const ReplayFrame& frame);
-    void        actuateMirror   (uint8_t index, adk::Status updateStatus);
+    adk::Status decideIntent    (const ReplayFrame& frame, bool& committed);
+    void        actuateMirror   (uint8_t index, adk::Status updateStatus,
+                                 bool committed);
+    // clang-format on
 
 } // namespace
 
 void setup ()
 {
-    const adk::Status acquired      = interaction.initialize ();
-    const bool        fixturesValid = configureReplay ();
+    const adk::Status acquired = interaction.initialize ();
+
+    const bool fixturesValid = configureReplay ();
 
     startReplay (acquired, fixturesValid);
 }
@@ -109,10 +113,11 @@ void loop ()
         return;
     }
 
-    const ReplayFrame frame        = observeEvidence ();
-    const adk::Status updateStatus = decideIntent (frame);
+    const ReplayFrame frame = observeEvidence ();
+    bool              committed;
+    const adk::Status updateStatus = decideIntent (frame, committed);
 
-    actuateMirror (replayIndex, updateStatus);
+    actuateMirror (replayIndex, updateStatus, committed);
 
     ++replayIndex;
     replayActive = replayIndex < replayFrameCount;
@@ -134,10 +139,23 @@ namespace {
                     frame.xPermille >= -1000 && frame.xPermille <= 1000 &&
                     frame.yPermille >= -1000 && frame.yPermille <= 1000;
 
-            resultCells[index] = {0,    0,    0xff, 0xffff, 0xff, 0xff,
-                                  0xff, 0xff, 0xff, 0xffffffffUL,
-                                  0xffffffffUL, 0xff, 0xff, 0xff,
-                                  0xff, 0xff, 0};
+            resultCells[index]       = {0,
+                                        0,
+                                        0xff,
+                                        0xffff,
+                                        0xff,
+                                        0xff,
+                                        0xff,
+                                        0xff,
+                                        0xff,
+                                        0xffffffffUL,
+                                        0xffffffffUL,
+                                        0xff,
+                                        0xff,
+                                        0xff,
+                                        0xff,
+                                        0xff,
+                                        0};
             updateStatusCells[index] = 0xff;
         }
 
@@ -157,24 +175,21 @@ namespace {
         return replayFrames[replayIndex];
     }
 
-    adk::Status decideIntent (const ReplayFrame& frame)
+    adk::Status decideIntent (const ReplayFrame& frame, bool& committed)
     {
-        const adk::ContactSample contact = {
-            adk::TimePoint (frame.contactObservedAt), frame.contactLevel,
-            frame.contactStatus};
+        committed                        = false;
+        const adk::ContactSample contact = {adk::TimePoint (frame.contactObservedAt),
+                                            frame.contactLevel, frame.contactStatus};
         const adk::DirectionalEvidence directional = {
-            directionalSource,
-            adk::TimePoint (frame.directionalObservedAt),
-            frame.directionalSequence,
-            frame.xPermille,
-            frame.yPermille,
-            frame.directionalSaturated,
+            directionalSource,         adk::TimePoint (frame.directionalObservedAt),
+            frame.directionalSequence, frame.xPermille,
+            frame.yPermille,           frame.directionalSaturated,
             frame.directionalStatus};
 
         adk::InteractionIntentPreview candidate;
-        const adk::Status previewed =
-            interaction.preview (adk::TimePoint (frame.now), contactSource,
-                                 frame.contactSequence, contact, directional, candidate);
+        const adk::Status             previewed = interaction.preview (
+            adk::TimePoint (frame.now), contactSource, frame.contactSequence, contact,
+            directional, candidate);
         if (!previewed.ok ())
         {
             return previewed;
@@ -184,36 +199,39 @@ namespace {
             return adk::StatusCode::InvalidArgument;
         }
 
-        return interaction.commit (candidate);
+        const adk::Status commitStatus = interaction.commit (candidate);
+        committed                      = true;
+        return commitStatus;
     }
 
-    void actuateMirror (uint8_t index, adk::Status updateStatus)
+    void actuateMirror (uint8_t index, adk::Status updateStatus, bool committed)
     {
         updateStatusCells[index] = static_cast<uint8_t> (updateStatus.error ());
-        if (!updateStatus.ok ())
+        if (!committed)
         {
             return;
         }
 
         const adk::InteractionIntent intent = interaction.snapshot ();
-        resultCells[index] = {
-            intent.contactSequence,
-            intent.directionalSequence,
-            static_cast<uint8_t> (intent.direction),
-            intent.magnitudePermille,
-            intent.touchActive ? 1 : 0,
-            intent.touchEvent ? 1 : 0,
-            intent.touchReleaseEvent ? 1 : 0,
-            intent.directionEvent ? 1 : 0,
-            static_cast<uint8_t> (intent.quality),
-            intent.contactAge.milliseconds (),
-            intent.directionalAge.milliseconds (),
-            intent.directionalSaturated ? 1 : 0,
-            static_cast<uint8_t> (intent.contactQuality),
-            static_cast<uint8_t> (intent.contactStatus.error ()),
-            static_cast<uint8_t> (intent.directionalStatus.error ()),
-            static_cast<uint8_t> (intent.status.error ()),
-            1};
+        // clang-format off
+        resultCells[index] = {intent.contactSequence,
+                              intent.directionalSequence,
+                              static_cast<uint8_t> (intent.direction),
+                              intent.magnitudePermille,
+                              intent.touchActive ? 1 : 0,
+                              intent.touchEvent ? 1 : 0,
+                              intent.touchReleaseEvent ? 1 : 0,
+                              intent.directionEvent ? 1 : 0,
+                              static_cast<uint8_t> (intent.quality),
+                              intent.contactAge.milliseconds     (),
+                              intent.directionalAge.milliseconds (),
+                              intent.directionalSaturated ? 1 : 0,
+                              static_cast<uint8_t> (intent.contactQuality),
+                              static_cast<uint8_t> (intent.contactStatus.error     ()),
+                              static_cast<uint8_t> (intent.directionalStatus.error ()),
+                              static_cast<uint8_t> (intent.status.error            ()),
+                              1};
+        // clang-format on
     }
 
 } // namespace

@@ -754,9 +754,9 @@ and clears the pending flag; without a pending entry it preserves the previous
 terminal record. Project shutdown terminalizes pending in the same way before
 clearing live intent; the terminal record remains inspectable until the next
 initialization. Internal child reset cannot create or erase an authorization
-record. A terminal record remains for one subsequent strictly-forward
-published frame unless that frame supplies a newer terminal disposition; it
-then clears to the canonical `None` record.
+record. A terminal record is observable on the frame that resolves it. The
+next accepted strictly-forward frame clears it to the canonical `None` record
+unless that frame replaces it with a newer terminal outcome.
 
 The staged one-frame authorization makes the Lesson 046 preview genuinely
 opaque: Lesson 048 never needs a prepared-intent accessor and never predicts a
@@ -863,8 +863,10 @@ wraps, clamps a partially executed motif, or calls the bound a physical stop.
 - both authorization records' complete provenance/status for `None`,
   `Pending`, `Accepted`, `Inhibited`, and `BoundRejected`; proof that a
   resolving frame cannot enqueue; later release and requalification before a
-  new pending frame; terminal aging; canonical initialization/power-loss
-  clearing; stop/fault/shutdown terminalization; and no event loss or repeat;
+  new pending frame; terminal visibility on its resolving frame and clearing
+  on the next accepted forward frame unless replaced; canonical
+  initialization/power-loss clearing; stop/fault/shutdown terminalization; and
+  no event loss or repeat;
 - frame/source sequence exact repeat, gap, wrap, ambiguity, regression, domain
   change, future time, rollover, and stale evidence;
 - stop before start, during each logical frame, simultaneous with touch,
