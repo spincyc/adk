@@ -155,6 +155,10 @@ optional supplementary context and cannot be the sole verification path.
 
 Every endpoint or component lands with:
 
+- a completed
+  [component design stress pass](templates/component-design-stress-pass.md)
+  showing that it fits the architecture naturally or routing detected strain
+  through a bounded remediation decision;
 - a declarative public header and out-of-line implementation;
 - ownership, initialization, failure, shutdown, and timing contracts;
 - host fakes plus success, failure, lifetime, and boundary tests;
@@ -171,6 +175,24 @@ Every endpoint or component lands with:
 Every third lesson is an integrating project. Project tests include a replayable
 happy path, every state transition, timeout and rollover boundaries, invalid
 input, platform failure, restart, and shutdown from each active state.
+
+### Architecture stress gate
+
+Run the component design stress pass before implementation fixes the public
+shape and again before promotion. Review API layering, ownership and lifecycle,
+timing and ordering, error/status semantics, pins and finite resources,
+deterministic proof, packaging, examples and documentation, and downstream
+consumers. Re-read relevant prior decisions rather than treating a passing
+local test suite as architectural evidence.
+
+A natural extension uses existing contracts without special cases, duplicated
+policy, hidden ownership, or an abstraction outside its stated purpose. Local
+strain may be repaired inside the unpromoted boundary only when it preserves
+public behavior and prior decisions. If a component challenges a public
+contract, layer boundary, lifecycle, timing/status convention, resource
+policy, packaging promise, canonical-source relationship, or several existing
+consumers, stop promotion and discuss bounded alternatives with the user.
+Record the consequential decision and migration impact before remediation.
 
 ## Exact acceptance gates
 
@@ -272,9 +294,10 @@ hardware acceptance without physical evidence. If a prerequisite changes, the
 agent stops at a clean boundary and notifies the integrator.
 
 The integrator reviews dependency direction, public names, resource rollback,
-shutdown behavior, deterministic traces, documentation links, and generated
-artifacts before committing. Failed gates remain visible in the deferred-work
-ledger with an owner and next action.
+shutdown behavior, deterministic traces, documentation links, generated
+artifacts, and the completed architecture stress pass before committing.
+Failed gates remain visible in the deferred-work ledger with an owner and next
+action.
 
 ## Definition of supported
 
