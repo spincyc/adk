@@ -402,40 +402,82 @@ Capacitive-touch and heartbeat modules remain excluded.
 
 ### 049 — Identity records and bounded enrollment
 
-Turn RFID UID observations and keypad entries into fixed-size identity records.
-Enrollment, duplicate identity, unknown identity, lockout, and corrupt storage
-are explicit outcomes. A UID is an identifier, not proof of security.
+Turn copied synthetic identifier and key evidence into fixed-size local
+identity records. Enrollment, duplicate identity, unknown identity, lockout,
+and malformed supplied record images are explicit outcomes. An identifier is
+a local lesson token, not a credential, authentication result, or proof of a
+person. E0 records are caller-owned and volatile; an explicitly supplied
+two-slot fixed image models deterministic commit markers, generations,
+checksums, interrupted-write cuts, and reconstruction. This is simulated
+durability semantics, not an EEPROM/SD transaction or physical persistence
+claim.
 
 ### 050 — Positioning and homing
 
-Compose stepper position, Hall/reed home sensor, travel limits, and
-power-interruption recovery. Position is unknown until a bounded homing
-procedure succeeds.
+Compose copied synthetic home and stop evidence, logical travel limits, and
+exact step-intent vectors in a pure bounded homing policy. A successful E0
+fixture establishes logical zero only for that replay session; issued steps
+are intent, not evidence of physical movement or position. Physical position
+remains unknown until the exact E2 mechanism completes a recorded bounded
+homing acceptance.
 
 ### 051 — Project: tabletop parts carousel
 
-An RFID token requests one of several paper-part bins. The keypad confirms the
-selection, the carousel homes and moves, the servo opens a lightweight gate,
-and LCD/LEDs report each phase.
+Copied local-identifier evidence requests one of several named paper-bin
+records, copied key evidence confirms the selection, and the coordinator
+publishes bounded logical home, travel, gate, presentation, and audit intents.
+The E0 carousel is an inert deterministic fixture: it owns no endpoint, moves
+nothing, opens no gate, writes no persistent medium, and makes no powered
+display or sensor claim.
 
 Deterministic evidence:
 
 - known, unknown, duplicate, and rapidly repeated identities;
-- homing success, missing home, stuck home, interrupted movement, and restart;
+- synthetic logical-home success, missing/stuck home evidence, interrupted
+  logical travel, and restart with position unknown;
 - authorization expiry and keypad conflict boundaries;
-- exact step/servo command vectors with motor power absent; and
-- invariant: no gate-open intent before identity, confirmation, and position.
+- exact logical step and bounded gate-intent vectors with no powered endpoint;
+- deterministic two-slot reconstruction from supplied valid, torn, corrupt,
+  duplicate-generation, ambiguous, erased, and full fixed record images;
+- durable-model authorization-start admission before any logical motion is
+  eligible, followed by terminal reconciliation under the same operation
+  identity; and
+- invariant: no gate-open intent before identity, confirmation, and known
+  logical target position in the same valid operation epoch.
 
-Circuit-native observation:
+E0 retained evidence:
 
-- position LEDs and the home-sensor LED work before motors are powered;
-- LCD names requested and confirmed bins;
-- coil and servo intents are mirrored on LEDs in inert acceptance mode;
-- stop removes actuator intent independently of UI state; and
-- audit records survive a simulated interrupted write.
+- caller-owned result cells retain identity disposition, logical phase,
+  authorization epoch, home evidence, logical position, and fault attribution;
+- fixture-owned mirrors retain exact coil, bounded gate, presentation, stop,
+  and all-off intents;
+- fixed-capacity audit records and explicitly supplied two-slot restart images
+  make authorization-start admission, terminal reconciliation, every
+  interrupted-write cut, and replay byte-checkable;
+- an indeterminate simulated commit is reconstructed before retry so one
+  logical operation cannot be duplicated under a new identity; and
+- stop clears logical motion and gate intent independently of presentation or
+  audit diagnostics.
 
-Planned specimen coverage: RFID, keypad, stepper, Hall/reed, servo, LCD, EEPROM/SD,
-buttons, status LEDs.
+E0's durable image is a pure fixed-memory model. It establishes ordering and
+recovery semantics only: authorization-start must be resolved in that model
+before logical motion eligibility, and a terminal record with the same
+operation identity must remain attributable until resolved or reconstructed.
+It does not establish that bytes reached, survived on, or were recovered from
+any physical medium.
+
+Future E1 may separately qualify exact RFID/keypad/home inputs, an existing
+display and LEDs, and a named nonvolatile adapter while motor and servo power
+remain absent. Future E2 may separately qualify the exact stepper/driver and
+servo with switchable current-limited actuator power, a restrained lightweight
+mechanism, independent stop and power removal, and measured homing, travel,
+gate, fault, and shutdown acceptance. LEDs and an LCD may present intent after
+E1 qualification, but cannot prove physical home, movement, gate position, or
+de-energization.
+
+Planned specimen coverage after those independent gates: RFID, keypad,
+Hall/reed home input, display, LEDs, and nonvolatile medium at E1; exact
+stepper/driver, servo, and restrained paper-bin mechanism at E2.
 
 ## Lessons 052--054: infrared protocol workbench
 

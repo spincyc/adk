@@ -164,6 +164,42 @@ method.
 - ADK does not export a launcher driver, transmitter, waveform, pinout, adapter,
   or real-show operating procedure.
 
+### Lessons 049--051 identity and carousel boundaries
+
+Lessons 049--051 are E0 policy work until separately qualified hardware gates
+are recorded. Their copied UID-shaped values are local identifiers, not
+authentication, authorization, proof of identity, access control, or a
+security boundary. Enrollment, lookup, key confirmation, presentation, and
+audit results remain simulated decisions over caller-owned memory.
+
+- E0 owns no pins, buses, timers, interrupts, storage medium, display, reader,
+  sensor, motor, servo, or power path. Home and stop are copied evidence;
+  positions, step vectors, coil patterns, gate commands, display records, and
+  storage records are logical intents only. They do not prove physical
+  position, motion, actuation, display, or persistence.
+- A simulated durable-start admission may follow only the specified
+  preview/export/acknowledge sequence over deterministic caller-owned record
+  images. It demonstrates recovery policy, not a completed EEPROM, SD, flash,
+  or other physical-media write.
+- Startup and every restart begin closed and off, with physical position and
+  home unknown. Persisted identity or audit data cannot restore position
+  authority, energize motion, open the gate, or bypass a fresh qualified
+  homing sequence.
+- E1 requires separate qualification of the exact RFID reader and owned cards,
+  keypad matrix and polarity, home and stop inputs, display and its bus, and
+  storage device and medium. Record supply voltage, logic-level compatibility,
+  pin and bus ownership, pull policy, current, authoritative schematics,
+  unpowered wiring inspection, observation points, failure injection, and
+  restart/recovery behavior. E1 retains the stepper, servo, and their load
+  supplies physically absent.
+- E2 requires the exact stepper, rated driver, servo, restrained lightweight
+  carousel, guarded travel envelope, separate current-limited load supplies,
+  and an independent means to remove actuator power. Bench acceptance records
+  measured idle, moving, stall, and simultaneous-load current; driver and
+  supply temperature; home repeatability; travel bounds; stop, reset, sensor
+  loss, jam, and communication-loss behavior; and proof that removing load
+  power leaves the mechanism closed and inactive.
+
 ## Project hazard gates
 
 Every project first passes all component gates it composes. It then records the
@@ -183,6 +219,7 @@ following project-specific evidence.
 | 030 | Show-cue simulator | E0/E1 | Inert outputs only; no launcher/initiator connection; complete deterministic fault and audit trace |
 | 045 | Balance-table instrument | E0/E1 | Stationary hand-operated tabletop tilt/orientation demonstrator; E0 replay has no hardware side effect; stale, saturated, or unsteady evidence forces a distinct visible ineligible diagnostic and silent tone; qualify the exact E1 circuit before using indicators or controls; remove physical power to stop |
 | 048 | Kinetic sculpture | E0/E1/E2 | E0 uses memory-only intent and has no hardware side effect; E1 qualifies the exact inert inputs and indicators with the motor absent; E2 requires the exact restrained motor, ULN driver, separate current-limited load supply, and independent physical load-power removal before motion |
+| 051 | Tabletop parts carousel | E0/E1/E2 | E0 admits only copied identity, home, stop, key, record-image, and logical actuator intent; E1 separately qualifies the exact RFID, keypad, home/stop, display, and storage fixture with actuators absent; E2 requires restrained stepper/servo motion, independent actuator-power removal, and measured bench acceptance |
 
 Project 018 does not secure property. Project 021 carries no person, animal,
 hot item, sharp tool, or hazardous material. Project 027 does not monitor a
@@ -194,6 +231,12 @@ Project 048 makes no emergency-stop or position-feedback claim. Its software
 state, input controls, and indicators do not replace independent physical
 load-power removal, and commanded steps do not prove that the mechanism moved
 or reached a position.
+Project 051 does not secure property or authenticate a person. Its local
+identifier match and key confirmation are demonstration prerequisites only.
+Software stop state is not an emergency stop, logical position is not physical
+position, and a durable-start acknowledgment is not evidence of a physical
+write. Restart leaves the gate closed, actuator intent off, and position
+unknown until the applicable E1 and E2 gates are separately accepted.
 
 ## Lesson release record
 
