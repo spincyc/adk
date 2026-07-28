@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-28T00:48:26Z"
-updated_at: "2026-07-28T00:49:06Z"
+updated_at: "2026-07-28T01:03:11Z"
 ---
 
 # Goal
@@ -35,3 +35,11 @@ The parallel physical-readiness audit found software and documentation blockers 
 
 Begin with Lessons 001--002. Later lesson defects remain retained and must not
 leapfrog this numeric preparation order.
+
+## Progress
+
+Lessons 001--002 are software-prepared and independently reviewed. Their
+canonical examples now expose separate acquisition, behavior, controlled
+shutdown, reset, and physical weak-bias evidence procedures. All host, style,
+header, Mega/size, PDF, monochrome, and site gates pass. Physical acceptance
+remains open. The next repair unit is Lessons 003--004.

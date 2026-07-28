@@ -26,6 +26,8 @@
 \hypersetup
 {
     hidelinks,
+    pdfdisplaydoctitle=true,
+    pdflang={en-US},
     pdftitle={ADK Lesson 002: Digital Input},
     pdfauthor={Kevin Shanahan},
     pdfsubject={Safe pull-up inputs, raw diagnostics, and deterministic testing on Arduino Mega 2560}
@@ -82,7 +84,7 @@
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
 Lesson & 002 & Time & 70--95 minutes\\
 Requires & Lesson 001: Digital Output & Board & Arduino Mega 2560\\
-Outcome & Read and diagnose one grounded switch & Evidence & Truth table, serial trace, host test, three trials\\
+Outcome & Read and diagnose one grounded switch & Evidence & Truth table, LED/test points, host test, three trials\\
 \end{tabularx}
 
 \begin{figure}[h]
@@ -116,14 +118,27 @@ By the end, you can:
 
 \section{Safety and equipment}
 
+\textbf{Energy class E1:} one USB-powered Arduino Mega 2560, one dry-contact
+switch, the board's built-in LED, DMM, and an identified 10\,k\(\Omega\)
+D13 weak-bias resistor. No external supply or stored-energy load is admitted.
+
 \warningbox{Disconnect USB, barrel power, batteries, programmers, and powered
 modules before changing wiring. The switch must connect D22 to GND---never to an
 output. Do not connect 5\,V directly to GND. Use only a dry-contact switch in this
 lesson. Do not use mains-powered, automotive, pyrotechnic, or unknown equipment.}
 
-\textbf{Required:} Arduino Mega 2560, USB data cable, breadboard, normally-open
-momentary pushbutton, two jumper wires, and the Lesson 001 diagnostic LED.
-A multimeter is useful but optional.
+\textbf{Required:} Arduino Mega 2560 Rev3 or identified compatible board, USB
+data cable, breadboard, normally-open momentary pushbutton, jumper wires, one
+measured 10\,k\(\Omega\) resistor, the board's built-in LED, and a DMM with
+documented input resistance and range.
+
+\textbf{Identity record:} board maker/model/revision \blank{1.3in}, board
+marking \blank{1.0in}, switch part or kit label \blank{1.1in},
+continuity-confirmed contact pair \blank{0.8in}, USB source identity and
+5\,V rating \blank{1.2in}, and cable identity \blank{0.9in}. Confirm that
+\texttt{LED\_BUILTIN} names the on-board diagnostic LED for the selected Mega
+target. A visually similar four-leg switch is not identified until its open and
+closed contact pair has been measured with all power removed.
 
 \textbf{Before power:}
 \checkbox\ switch straddles the breadboard center gap;
@@ -252,15 +267,30 @@ hardware; successful \texttt{initialize()} claims and configures D22; repeated
 passive input state. Internal code reports failure with \texttt{Status}, not
 exceptions, while cleanup remains correct if surrounding application code throws.
 
-\section{Observe before interpreting}
+The downloadable canonical sketch begins with a 250\,ms acquisition pulse and
+750\,ms dark separator before input behavior begins. It adds one controlled
+acceptance action: hold
+the switch continuously for three seconds to call \texttt{shutdown()} on the
+LED and input. The sketch then remains passive until reset. This is a diagnostic
+path, not button debouncing and not emergency power removal.
 
-Upload with the switch released. Open the serial monitor at 115200 baud. Collect
-at least ten samples for each state rather than reporting one favorable line.
+\section{Predict, observe, interpret}
+
+The canonical sketch does not produce Serial output. Its primary evidence is
+the built-in LED, driven from the same cached sample used by the application.
+TP-IN is Mega D22 measured relative to GND; TP-LED is the built-in LED
+indication. Repeat three voltage/LED trials for each state; the DMM observes
+TP-IN voltage, while the LED exposes the cached firmware interpretation.
+
+\textbf{Predict --- acquisition:} one 250\,ms LED pulse, then 750\,ms dark,
+precedes switch behavior.\\
+\textbf{Observe --- acquisition timing:} \blank{3.0in}\\
+\textbf{Interpret --- acquisition:} \blank{3.3in}
 
 \begin{center}
 \begin{tabularx}{\linewidth}{@{}c c c c X@{}}
 \toprule
-Trial & Switch & Expected raw & Observed raw & Diagnostic LED / notes\\
+Trial & Switch & Expected level & TP-IN voltage & Diagnostic LED / notes\\
 \midrule
 1 & released & HIGH & \blank{0.7in} & \blank{2.2in}\\[8pt]
 1 & pressed  & LOW  & \blank{0.7in} & \blank{2.2in}\\[8pt]
@@ -274,8 +304,32 @@ Trial & Switch & Expected raw & Observed raw & Diagnostic LED / notes\\
 
 \textbf{Diagnostic mapping:} the canonical sketch turns the Lesson 001 LED on
 when \texttt{button.read () == adk::Level::Low}. The LED is a view of the stored
-sample, not a second input read. If a serial view says LOW and the LED is off,
-investigate the output path; if both are wrong, investigate input wiring.
+sample, not a second input read. If TP-IN has the predicted level but the LED is
+wrong, investigate the output path; if both are wrong, investigate input wiring.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}p{0.20\linewidth}p{0.25\linewidth}X@{}}
+\toprule
+Predict & Observe & Interpret\\
+\midrule
+Released: TP-IN HIGH; LED off
+& Record TP-IN voltage and LED in three trials
+& Agreement supports the open-contact and pull-up paths\\
+Pressed: TP-IN LOW; LED on
+& Record TP-IN voltage and LED in three trials
+& Agreement supports the closed contact-to-GND path\\
+Reset while held: LOW and LED on after startup
+& Hold, tap reset, then observe without rewiring
+& Initialization sampled the real startup level rather than assuming HIGH\\
+Three-second hold: LED extinguishes and sketch stays passive
+& Keep the switch held until shutdown, release it, and observe no LED response
+& The controlled path ran; physical pin-mode evidence is recorded separately\\
+USB removed: no powered indication
+& Disconnect USB and confirm the board is unpowered before touching wiring
+& Physical power removal, not software cleanup, makes rewiring permissible\\
+\bottomrule
+\end{tabularx}
+\end{center}
 
 \section{Contact bounce is evidence, not yet a bug}
 
@@ -395,21 +449,57 @@ configuration before continuing.}
 
 \section{Mega 2560 acceptance checklist}
 
-Board model: \blank{1.5in}\quad port: \blank{1.5in}\\
-Toolchain version: \blank{2.0in}
+Date/time: \blank{1.3in}\quad operator: \blank{1.3in}\quad
+reviewer/date: \blank{1.5in}\\
+Board maker/model/revision/ID: \blank{3.6in}\\
+Port: \blank{1.0in}\\
+ADK/sketch commit: \blank{1.4in}\quad upload command: \blank{2.7in}\\
+Arduino CLI: \blank{1.0in}\quad AVR core: \blank{1.0in}\quad
+FQBN: \blank{1.5in}\\
+USB source/cable/current limit: \blank{3.5in}\quad
+measured 5\,V rail: \blank{1.0in}\\
+Switch identity/contact map: \blank{3.0in}\quad
+10\,k\(\Omega\) measured value/rating: \blank{1.7in}\\
+DMM model/range/input resistance: \blank{3.6in}
 
 \begin{itemize}
     \item[\checkbox] Clean build succeeds with warnings treated according to project policy.
     \item[\checkbox] Sketch size is recorded: flash \blank{0.8in} bytes; SRAM \blank{0.8in} bytes.
-    \item[\checkbox] Initialization succeeds with only one owner of D22.
-    \item[\checkbox] Released reports \texttt{Level::High} for ten samples.
-    \item[\checkbox] Pressed reports \texttt{Level::Low} for ten samples.
+    \item[\checkbox] A distinct 250\,ms LED acquisition pulse and 750\,ms dark
+          separator occur before switch behavior.
+    \item[\checkbox] Released TP-IN voltage and LED-off agree in three trials.
+    \item[\checkbox] Pressed TP-IN voltage and LED-on agree in three trials.
     \item[\checkbox] Diagnostic LED agrees with the same stored sample.
     \item[\checkbox] Three press/release trials match the prediction table.
     \item[\checkbox] Ground-wire-open fault is detected from evidence and restored.
     \item[\checkbox] Reset while pressed reports the actual pressed state.
+    \item[\checkbox] A continuous three-second hold enters the passive state;
+          release produces no further LED response until reset.
+    \item[\checkbox] Host trace confirms controlled shutdown sets D22 and
+          \texttt{LED\_BUILTIN} to \texttt{INPUT} (high impedance).
+    \item[\checkbox] A named DMM is connected TP-IN-to-GND while unpowered;
+          its input resistance and the exact Mega pull-up limits are recorded.
+    \item[\checkbox] Released TP-IN voltage with the pull-up active and after
+          shutdown is recorded against calculated ranges, separately proving
+          the weak meter path controls the released pin after shutdown.
+    \item[\checkbox] The measured 10\,k\(\Omega\) weak pull-up is installed
+          D13-to-5\,V while unpowered. The exact board D13 path is included in
+          predicted driven-LOW and released-pin voltage ranges.
+    \item[\checkbox] The sketch holds D13 LOW for 250\,ms before shutdown;
+          its later weak-bias voltage separately supports D13 high impedance.
+    \item[\checkbox] Reset after shutdown reacquires both pins and restores the
+          released/pressed LED mapping.
     \item[\checkbox] USB is disconnected before the circuit is dismantled.
 \end{itemize}
+
+Deviations and remaining uncertainty: \blank{4.4in}\\[8pt]
+Result: \checkbox\ draft \quad \checkbox\ rejected \quad
+\checkbox\ hardware verified \quad Reviewer initials: \blank{1.0in}
+
+\warningbox{High impedance is a software pin condition, not power isolation.
+Do not rewire after shutdown while USB or any other source remains connected.
+Stop for heat, odor, resets, damaged insulation, an unidentified switch, or
+evidence that disagrees with the prediction. Remove USB before investigating.}
 
 \section{Explain the result}
 
@@ -417,8 +507,8 @@ Toolchain version: \blank{2.0in}
 two switch states.\\[8pt]
 \blank{6.8in}
 
-\textbf{Evidence:} Cite at least three observations, including raw level and the
-diagnostic output.\\[8pt]
+\textbf{Evidence:} Cite at least three observations, including measured TP-IN
+voltage, expected digital level, and the diagnostic output.\\[8pt]
 \blank{6.8in}
 
 \textbf{Reasoning:} Use the pull-up and ground paths to explain why LOW means
