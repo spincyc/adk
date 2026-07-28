@@ -33,6 +33,7 @@ namespace {
 
     uint8_t nextPosition = 0;
     bool    running      = false;
+    adk::TimePoint startedAt (0);
 
     bool validateConfigurationRecord ();
 
@@ -52,7 +53,8 @@ namespace {
 
 void setup ()
 {
-    running = initializeBench ();
+    running   = initializeBench ();
+    startedAt = adk::TimePoint  (millis ());
 }
 
 void loop ()
@@ -63,6 +65,12 @@ void loop ()
     }
 
     const adk::TimePoint now (millis ());
+
+    if (now.elapsedSince (startedAt).milliseconds () >= 120000U)
+    {
+        stopLogic ();
+        return;
+    }
 
     if (!commandRequested (now))
     {

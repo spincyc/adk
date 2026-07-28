@@ -1,15 +1,27 @@
 #include <Adk.h>
 #include <access_trainer.h>
 
-// Mega 2560, USB 5 V only: 4x3 keypad D22-D28, common-cathode RGB
-// on D5-D7, soft-latch intent LED on D30, LCD on D34-D39, ready on D13.
+// Mega 2560, USB 5 V only: the authorized 4x4 membrane keypad runs in
+// 12-key mode on D22-D28; identify and insulate its unused C3 conductor.
+// A common-cathode RGB uses D5-D7, the paper-latch LED uses D30, and D13
+// gives a short acquisition pulse. The exact parallel LCD1602 is optional.
+// The adventure ends after two minutes, holds outputs inactive for 250 ms,
+// then releases every resource in reverse acquisition order.
 // This inert trainer has no servo, motor, relay, lock, or external load supply.
+
+#ifndef ADK_LESSON018_USE_LCD
+#define ADK_LESSON018_USE_LCD 0
+#endif
 
 namespace {
 
     const adk::MatrixKeypadPins keypadPins = {22, 23, 24, 25, 26, 27, 28};
 
     const adk::Hd44780Pins displayPins = {34, 35, 36, 37, 38, 39};
+    const adk::Duration    acquisitionPulse  (250);
+    const adk::Duration    adventureDuration (120000);
+    const adk::Duration    inactiveInterval  (250);
+    const bool             useDisplay = ADK_LESSON018_USE_LCD != 0;
 
     adk::AccessTrainerConfig makeTrainerConfig ();
 
@@ -29,7 +41,11 @@ namespace {
     bool running           = false;
     bool presentationFault = false;
     bool auditVisible      = false;
+    bool acquisitionLit    = false;
+    bool stopping          = false;
 
+    adk::TimePoint       acquiredAt       (0);
+    adk::TimePoint       stoppingAt       (0);
     adk::TimePoint       auditShownAt     (0);
     adk::AccessAuditKind shownAuditKind     = adk::AccessAuditKind::Reset;
     uint16_t             shownAuditSequence = 0;
@@ -49,6 +65,7 @@ namespace {
     bool                showAuditRecord       ();
     const char*         auditPrompt           (adk::AccessAuditKind kind);
     const char*         statePrompt           (adk::AccessState state);
+    bool                beginNormalShutdown   (adk::TimePoint now);
     void                stopSafely            ();
 
 } // namespace
@@ -71,6 +88,32 @@ void loop ()
     }
 
     const adk::TimePoint now (static_cast<uint32_t> (millis ()));
+
+    if (stopping)
+    {
+        if (useDisplay && !display.update (now).ok ())
+        {
+            stopSafely ();
+            return;
+        }
+
+        if (now.elapsedSince (stoppingAt).milliseconds () >=
+            inactiveInterval.milliseconds ())
+        {
+            stopSafely ();
+        }
+        return;
+    }
+
+    if (now.elapsedSince (acquiredAt).milliseconds () >=
+        adventureDuration.milliseconds ())
+    {
+        if (!beginNormalShutdown (now))
+        {
+            stopSafely ();
+        }
+        return;
+    }
 
     const adk::AccessInput    input    = observeOperator                    (now);
     const adk::AccessSnapshot decision = decideAccess                       (now, input);
@@ -119,7 +162,7 @@ namespace {
             return false;
         }
 
-        if (!display.initialize ().ok ())
+        if (useDisplay && !display.initialize ().ok ())
         {
             softLatchIntent.shutdown                                        ();
             stateLed.shutdown                                               ();
@@ -146,13 +189,28 @@ namespace {
             return false;
         }
 
-        return acquisitionLed.on ().ok ();
+        acquiredAt = adk::TimePoint (static_cast<uint32_t> (millis ()));
+
+        acquisitionLit = acquisitionLed.on ().ok ();
+        return acquisitionLit;
     }
 
     adk::AccessInput observeOperator (adk::TimePoint now)
     {
-        const adk::Status keypadStatus  = keypad.update                      (now);
-        const adk::Status displayStatus = display.update                     (now);
+        if (acquisitionLit &&
+            now.elapsedSince (acquiredAt).milliseconds () >=
+                acquisitionPulse.milliseconds ())
+        {
+            acquisitionLit = false;
+            if (!acquisitionLed.off ().ok ())
+            {
+                presentationFault = true;
+            }
+        }
+
+        const adk::Status keypadStatus = keypad.update (now);
+        const adk::Status displayStatus =
+            useDisplay ? display.update (now) : adk::Status ();
         const bool        componentFault =
             presentationFault || !keypadStatus.ok () || !displayStatus.ok ();
 
@@ -217,6 +275,11 @@ namespace {
 
     bool showPrompt (adk::TimePoint now, const adk::AccessSnapshot& decision)
     {
+        if (!useDisplay)
+        {
+            return true;
+        }
+
         char countLine[] = "ENTRY COUNT: 0  ";
 
         countLine[13] = static_cast<char> ('0' + decision.enteredCount);
@@ -284,6 +347,30 @@ namespace {
         return "FAULT           ";
     }
 
+    bool beginNormalShutdown (adk::TimePoint now)
+    {
+        trainer.shutdown ();
+
+        const adk::Status latchStatus       = softLatchIntent.off ();
+
+        const adk::Status stateStatus       = stateLed.off ();
+
+        const adk::Status acquisitionStatus = acquisitionLed.off ();
+        const adk::Status displayRow0Status =
+            useDisplay ? display.show (0, "                ") : adk::Status ();
+        const adk::Status displayRow1Status =
+            useDisplay ? display.show (1, "                ") : adk::Status ();
+
+        const bool indicatorsInactive =
+            latchStatus.ok () && stateStatus.ok () && acquisitionStatus.ok ();
+        const bool displayInactive =
+            displayRow0Status.ok () && displayRow1Status.ok ();
+
+        stoppingAt = now;
+        stopping   = indicatorsInactive && displayInactive;
+        return stopping;
+    }
+
     void stopSafely ()
     {
         trainer.shutdown                                                     ();
@@ -291,7 +378,10 @@ namespace {
         stateLed.off                                                         ();
         acquisitionLed.off                                                   ();
         acquisitionLed.shutdown                                              ();
-        display.shutdown                                                     ();
+        if (useDisplay)
+        {
+            display.shutdown                                                 ();
+        }
         softLatchIntent.shutdown                                             ();
         stateLed.shutdown                                                    ();
         keypad.shutdown                                                      ();

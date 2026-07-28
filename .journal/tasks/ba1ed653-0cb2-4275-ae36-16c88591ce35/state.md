@@ -12,7 +12,7 @@ soft_dependencies: []
 related_to: []
 superseded_by: null
 created_at: "2026-07-28T00:48:26Z"
-updated_at: "2026-07-28T02:44:55Z"
+updated_at: "2026-07-28T02:57:24Z"
 ---
 
 # Goal
@@ -92,3 +92,13 @@ payoffs, fault recovery, and bounded shutdown. Lesson 016 uses the authorized
 4x4 keypad as a documented 12-key submatrix, parks the unused column, and
 produces exact key-count pulses. Drawings, size baselines, and publication
 artifacts agree. The next repair unit is Lessons 017--018.
+
+Lessons 017--018 are software-prepared and independently reviewed. Lesson 017
+uses a paper-marker signal path before conditional exact-servo motion, with a
+rated separate current-limited supply, common ground, physical load
+disconnect, and bounded shutdown. Lesson 018 uses the authorized 4x4 keypad in
+documented 12-key mode with its unused column insulated, defaults to an inert
+visible trainer, and keeps the exact parallel LCD optional. Accurate staged
+wiring drawings, size baselines, publication artifacts, and automated gates
+agree. No physical observation is claimed. The next repair unit is Lessons
+019--020.

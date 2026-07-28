@@ -1,302 +1,208 @@
 \documentclass[11pt]{article}
 \usepackage[letterpaper,margin=0.72in,headheight=15pt]{geometry}
-\usepackage{amssymb,array,booktabs,fancyhdr,graphicx,listings,microtype,tabularx,tikz,xcolor}
+\usepackage{amsmath,array,booktabs,enumitem,fancyhdr,graphicx,listings,microtype,tabularx,xcolor}
 \usepackage[hidelinks]{hyperref}
-\hypersetup{pdftitle={ADK Lesson 018: Inert access-control trainer},
-pdfauthor={Kevin Shanahan},pdfsubject={Deterministic keypad entry, lockout, fault handling, and inert output intent},pdflang={en-US}}
-\usetikzlibrary{arrows.meta,positioning}
 \graphicspath{{docs/lessons/assets/}{../assets/}}
-\definecolor{soft}{gray}{0.94}\definecolor{mid}{gray}{0.45}
 \definecolor{codebg}{gray}{0.97}
-\pagestyle{fancy}\fancyhf{}\lhead{\textsc{ADK field lesson 018}}
-\rhead{Inert access trainer}\cfoot{\thepage}
+\pagestyle{fancy}\fancyhf{}\lhead{\textsc{ADK lesson 018}}
+\rhead{The paper-latch challenge}\cfoot{\thepage}
 \setlength{\parindent}{0pt}\setlength{\parskip}{5pt}
-\renewcommand{\arraystretch}{1.18}
+\setlist{nosep,leftmargin=1.45em}
+\renewcommand{\arraystretch}{1.16}
 \lstdefinestyle{adkcpp}{language=C++,basicstyle=\ttfamily\small,
-backgroundcolor=\color{codebg},frame=single,rulecolor=\color{mid},
-columns=fullflexible,keepspaces=true,showstringspaces=false,breaklines=true}
-\newcommand{\checkbox}{\(\square\)}
-\newcommand{\blankline}{\rule{0.96\linewidth}{0.35pt}}
+backgroundcolor=\color{codebg},frame=single,columns=fullflexible,
+keepspaces=true,showstringspaces=false,breaklines=true}
+\hypersetup{
+pdftitle={ADK Lesson 018: The Paper-Latch Challenge},
+pdfauthor={Kevin Shanahan},
+pdfsubject={A fast, inert keypad project with RGB, LED, and optional LCD rewards},
+pdflang={en-US}}
 \begin{document}
 
 \begin{center}
-{\Huge\bfseries Separate intent from physical truth}\\[3pt]
-{\Large Lesson 018: inert access-control trainer}\\[6pt]
-\textit{Observe $\rightarrow$ decide $\rightarrow$ present $\rightarrow$ replay}
+{\Huge\bfseries The paper-latch challenge}\\[4pt]
+{\Large Lesson 018 --- keypad, color, light, and a tiny state machine}\\[6pt]
+\textit{Each new connection unlocks the next visible trick.}
 \end{center}
-\begin{center}
-\includegraphics[width=\linewidth,height=0.28\textheight,keepaspectratio]
-{018-access-trainer-pencil.png}
-\end{center}
-\textbf{Orientation plate.} The pencil drawing helps identify the Mega, keypad,
-three status channels, and optional sounder. It is not a wiring diagram. This
-first E1 build omits the sounder; the net table below is authoritative.
 
-\begin{tabularx}{\linewidth}{@{}>{\bfseries}lX@{}}
-Question & Can an input policy remain deterministic, observable, and inert
-through grants, denials, lockout, faults, reset, and shutdown?\\
-Time & 100--140 minutes\\
-Prerequisites & Lessons 010, 014, 016, and the host-only Lesson 017 model\\
-You need & Mega 2560, USB, 4×3 passive matrix keypad, common-cathode RGB LED,
-four resistors of at least 220\,\(\Omega\), 16×2 HD44780 module, breadboard,
-jumpers, multimeter or logic analyzer\\
-Evidence & TP-R0 scan, D13 acquisition, RGB state, display prompt/count,
-D30 soft-latch intent, shutdown pin state, deterministic audit trace\\
-Safety class & E1: logic and low-current indicators only; no motion or load
-supply\\
-Status & Host verified; physical acceptance open; not a security component\\
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}lX>{\bfseries}lX@{}}
+Time & about 60 minutes & Board & Arduino Mega 2560\\
+Payoffs & key light, color states, paper latch, optional words & Energy & E1, USB only\\
+Part & authorized 4x4 membrane keypad & Motion & none\\
 \end{tabularx}
 
-\section*{Safety and meaning boundary}
+This is a tabletop story machine, not a lock. A good four-key pattern makes a
+green light and turns on one LED behind a paper drawing of a latch. A wrong
+pattern makes amber. Three wrong patterns begin a short lockout. Nothing moves,
+protects property, checks a real identity, or controls a door.
 
-This is a tabletop state-machine trainer. It does not control a lock, door,
-cabinet, alarm, relay, solenoid, motor, servo, radio, valuable property, or
-real credential. ``Granted'' is a software state. D30 means only
-\textbf{open requested}; it never proves a physical thing is open.
+\textbf{Stop rule.} Unplug USB before moving wires. Give every LED channel its
+own resistor of at least 220\,\(\Omega\). Stop for heat, smell, smoke, repeated
+USB resets, or any part whose pinout does not match its own documentation.
 
-Remove USB before wiring. Identify the keypad pinout by its manufacturer data
-or unpowered continuity measurements. Give every LED its own resistor. Follow
-the identified LCD module's contrast and backlight ratings. Stop for heat,
-odor, smoke, USB resets, an unknown module, or a voltage outside 0--5\,V.
+\section*{Gather the parts}
 
-\section*{1. Build two independent evidence paths}
+Mega 2560, USB cable, authorized eight-tail 4x4 membrane keypad, breadboard,
+common-cathode RGB LED, ordinary LED, four 220\,\(\Omega\) or larger resistors,
+jumpers, tape, pencil, and a small paper latch drawing.
 
-\begin{center}
-\begin{tabularx}{0.96\linewidth}{@{}lllX@{}}
-\toprule
-Role & Mega pins & Observation & Meaning\\\midrule
-keypad rows & D22--D25 & TP-R0 at D22 & scan activity only\\
-keypad columns & D26--D28 & interpreted event & bounded operator input\\
-RGB channels & D5/D6/D7 & state color & redundant state presentation\\
-soft-latch LED & D30 & off/on & closed/open software intent only\\
-acquisition LED & D13 built-in & off/on & all owners acquired\\
-LCD & D34--D39 & prompt/count & state without credential digits\\
-\bottomrule
-\end{tabularx}
-\end{center}
+The LCD is a bonus stage. Use it only if it is a separately identified,
+bare parallel HD44780-compatible LCD1602 with the literal 16-pin order shown
+later. An I2C backpack, an unknown pin order, or an unknown backlight stays out
+of this build. The whole project remains fun and complete without the LCD.
 
-\begin{center}
-\begin{tikzpicture}[>=Latex,node distance=7mm,
-box/.style={draw,rounded corners,fill=soft,text width=27mm,
-minimum height=11mm,align=center}]
-\node[box] (keys) {4×3 keypad\\TP-R0};
-\node[box,right=of keys] (matrix) {\texttt{MatrixKeypad}\\debounced event};
-\node[box,right=of matrix] (engine) {\texttt{AccessTrainer}\\pure policy};
-\node[box,right=of engine,yshift=15mm] (rgb) {RGB + LCD\\state evidence};
-\node[box,right=of engine,yshift=-15mm] (intent) {D30 LED\\soft-latch intent};
-\draw[->,thick] (keys)--(matrix);\draw[->,thick] (matrix)--(engine);
-\draw[->,thick] (engine)--(rgb);\draw[->,thick] (engine)--(intent);
-\end{tikzpicture}
-\end{center}
+\section*{Adventure map}
 
-D13 is deliberately outside this chain: it proves acquisition separately.
-RGB is not sole evidence because color may be confused or a channel may fail.
-The display never echoes entered digits. Serial may record audit intent, but
-it cannot replace any circuit observation.
+\[
+\text{keypad + D13}\rightarrow\text{RGB story}\rightarrow
+\text{paper-latch LED}\rightarrow\text{optional LCD words}\rightarrow
+\text{denial, lockout, recovery}
+\]
 
-\section*{2. Read the state policy}
+Use the canonical \texttt{Lesson018AccessTrainer} sketch throughout. It is
+configured with the harmless teaching pattern 1--2--3--4. Star clears an
+unfinished entry; Hash submits it. The adventure has a fixed two-minute
+deadline: it then blanks its visible outputs, holds that inactive command for
+250\,ms, releases resources in reverse order, and waits for reset. Key presses
+cannot postpone or skip that ending.
+
+\section*{Stage 1: make the keypad answer}
+
+The authorized part has sixteen keys and eight tail conductors. This project
+uses its familiar twelve-key area: rows R0--R3 and columns C0--C2. Identify all
+eight conductors with USB removed, using the continuity method from Lesson 016.
+Tape C3---the A/B/C/D column conductor---by itself. It touches no Mega pin,
+5\,V, GND, rail, or neighboring conductor.
 
 \begin{center}
-\begin{tikzpicture}[>=Latex,node distance=13mm,
-state/.style={draw,rounded corners,fill=soft,minimum width=21mm,
-minimum height=9mm,align=center}]
-\node[state] (ready) {Ready};
-\node[state,right=of ready] (enter) {Entering};
-\node[state,right=of enter,yshift=13mm] (grant) {Granted};
-\node[state,right=of enter,yshift=-13mm] (deny) {Denied};
-\node[state,right=of deny] (lock) {LockedOut};
-\node[state,below=22mm of enter] (fault) {Fault};
-\draw[->] (ready)--node[above]{digit}(enter);
-\draw[->] (enter)--node[above,sloped]{correct \#}(grant);
-\draw[->] (enter)--node[below,sloped]{wrong \#}(deny);
-\draw[->] (grant) to[bend left] node[above]{deadline}(ready);
-\draw[->] (deny) to[bend right] node[below]{retry}(ready);
-\draw[->] (deny)--node[above]{limit}(lock);
-\draw[->] (lock) to[bend left] node[above]{deadline}(ready);
-\draw[->] (ready)--(fault);\draw[->] (enter)--(fault);
-\draw[->] (grant)--(fault);\draw[->] (deny)--(fault);
-\end{tikzpicture}
+\includegraphics[width=\linewidth,height=0.48\textheight,keepaspectratio]
+{016-matrix-keypad-pencil.png}
 \end{center}
+\textbf{Plate 1: actual paired header and keypad.} D22--D25 are R0--R3;
+D26--D28 are C0--C2. D29 is empty. C3 is individually insulated.
 
-Digits append to a bounded teaching entry. \texttt{Star} clears.
-\texttt{Hash} submits. Wrong length and wrong value have the same public
-behavior. Three failures enter timed lockout. A keypad fault, component fault,
-clock rollback, or internal failure enters \texttt{Fault}, requests closed
-intent, and requires explicit reset after the fault clears.
+Upload the sketch. D13 flashes for about a quarter second only after the
+project has acquired its pins. Press 1, then Star, then 1 again. The later
+indicators will turn that same clean key event into a visible story. If D13
+never flashes, unplug USB and compare every one of the seven active conductors
+with Plate 1; adding more parts cannot repair a wrong keypad map.
 
-\begin{tabularx}{\linewidth}{@{}lXXX@{}}
-\toprule
-State & RGB & Display & D30\\\midrule
-Ready & blue & READY & off\\
-Entering & white & ENTER + count & off\\
-Granted & green & GRANTED & on\\
-Denied & amber & DENIED & off\\
-LockedOut & slow amber pulse & LOCKED OUT & off\\
-Fault & red & FAULT & off\\
-\bottomrule
-\end{tabularx}
+\section*{Stage 2: let color narrate the entry}
 
-\section*{3. Keep the engine pure}
+Place a common-cathode RGB LED across the breadboard center gap. Confirm its
+leg order from the part documentation: RGB packages are not all alike. Connect
+D5, D6, and D7 to the three color legs through three separate resistors.
+Connect the common cathode to the negative rail, then join that rail to Mega
+GND. Never copy a guessed leg order from the drawing.
 
-\texttt{AccessTrainer} owns no pin, timer, display, storage, callback, or
-clock. The application supplies \texttt{TimePoint} and a
-\texttt{KeypadSnapshot}; the resulting \texttt{AccessSnapshot} publishes state,
-status, LED intent, soft-latch intent, counts, and one audit intent. The typed
-intent is \texttt{SoftLatchIntent}. The example consumes each audit intent
-immediately into a fixed one-record display sink: row two shows its four-digit
-presentation sequence and kind for one second, then returns to entry count.
-There is no hidden audit history, allocation, credential copy, or callback.
+\begin{center}
+\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]
+{018-indicator-breadboard.png}
+\end{center}
+\textbf{Plate 2: actual paired header and breadboard paths.} The left LED is
+the RGB package; its three resistor paths return through one confirmed common
+cathode. The right LED belongs to Stage 3.
 
-\begin{lstlisting}[style=adkcpp]
-const adk::TimePoint now (millis ());
+Restore USB. Blue means ready. Each accepted digit changes the state to white.
+Star returns to blue. The color change is the reward and the diagnosis: if
+the keypad is mapped correctly but one channel is absent, check that channel's
+resistor path and the package's documented common leg.
 
-const adk::KeypadSnapshot operatorInput = observeOperator (now);
-const adk::AccessSnapshot decision      = decideAccess    (
-    now, operatorInput);
+\section*{Stage 3: build a latch that cannot pinch}
 
-if (!presentAccess (decision))
-{
-    enterVisibleFault (now);
-}
-\end{lstlisting}
+Draw a tiny latch on paper and tape an ordinary LED behind its ``open'' mark.
+Connect D30 through its own resistor to the LED's long leg; connect the short
+leg to the negative rail as Plate 2 shows. This is a lighted paper prop:
+D30 means only ``the program is showing open intent.''
 
-The emerging Lesson 017 types can translate a future \texttt{SoftLatchIntent} into
-a bounded position. This lesson instead translates \texttt{softLatchOpen} to
-D30. That adapter choice preserves the high-level story while keeping hardware
-inert.
+Type 1--2--3--4 and press Hash. Green and the D30 LED appear together for
+three seconds, then both return automatically to ready. A missing D30 reward
+now points to only one small branch: D30, its resistor, LED orientation, or
+the ground rail. Do not add a servo, relay, motor, solenoid, lock, or external
+power supply.
 
-\section*{4. Predict exact traces}
+\section*{Stage 4: optional words on the screen}
 
-Use a fixed four-key teaching fixture. Do not use a real PIN or reuse any
-credential. For every row, predict state, entered count, failed attempts,
-D30, and whether one audit intent appears.
+Only build this stage for the exact parallel LCD identity described in the
+parts section. The base sketch defaults
+\texttt{ADK\_LESSON018\_USE\_LCD} to 0, so an absent screen cannot block the
+keypad, RGB, or paper latch. For this exact display, change that one definition
+to 1, compile again, and then wire Plate 3. RGB and D30 still tell the complete
+story if the LCD stage is skipped.
 
-\begin{tabularx}{\linewidth}{@{}lXXXXX@{}}
-\toprule
-Input/time & State & Count & Failures & D30 & Audit\\\midrule
-boot/reset & & & & &\\
-first digit & & & & &\\
-\texttt{Star} & & & & &\\
-correct + \texttt{Hash} & & & & &\\
-grant deadline $-1$ & & & & &\\
-grant deadline & & & & &\\
-wrong submit ×3 & & & & &\\
-lockout deadline $-1$ & & & & &\\
-lockout deadline & & & & &\\
-keypad fault & & & & &\\
-\bottomrule
-\end{tabularx}
+\begin{center}
+\includegraphics[width=\linewidth,height=0.48\textheight,keepaspectratio]
+{018-lcd-wiring.png}
+\end{center}
+\textbf{Plate 3: literal LCD1602 header.} LCD RS/E/D4/D5/D6/D7 go to Mega
+D34/D35/D36/D37/D38/D39. VSS and RW go to GND; VDD goes to 5\,V. VO is the
+wiper of a correctly wired 10\,k\(\Omega\) contrast potentiometer. Leave A/K
+open until the exact module's backlight polarity and current limit are known.
 
-\textbf{Rollover exercise.} Start a grant immediately before
-\texttt{uint32\_t} time wraps. Supply the same elapsed intervals on two runs.
-Snapshots and audit records must match byte for byte.
+Power up. After LCD startup, row one should say \texttt{READY}; the second row
+shows the entry count. If the indicators work but the screen is blank, turn
+power off and check identity, contrast wiring, RS/E order, and D4--D7 order.
+Do not disturb the already-working keypad and indicators.
 
-\section*{5. Test failures before the breadboard}
+\section*{Stage 5: discover the whole little drama}
+
+\begin{center}
+\includegraphics[width=\linewidth,height=0.27\textheight,keepaspectratio]
+{018-visible-states.png}
+\end{center}
+\textbf{Plate 4: expected visible states.} The words and D30 state repeat the
+meaning of color, so color is never the only clue.
 
 \begin{enumerate}
-\item empty, one-key, maximum-length, extra-key, clear, and submit paths;
-\item wrong length and wrong value with indistinguishable public timing;
-\item failure threshold and lockout one tick before, at, and after deadline;
-\item chord/stuck behavior without appended digits;
-\item keypad and component faults from every active state;
-\item time rollback and timestamp wrap;
-\item audit capacity without hidden allocation or entered digits;
-\item reset and shutdown from every state, always with closed intent;
-\item two identical traces with identical snapshots and audit records;
-\item hardware claim failure and rollback for keypad, RGB, LCD, D30, and D13.
+\item Enter 1--2, press Star, and watch white return to blue.
+\item Enter 1--2--3--4, press Hash, and enjoy green plus the paper latch.
+\item Enter 1--1--1--1 and submit. Amber means denied; it clears after one
+second.
+\item Do that three times. Amber now pulses for ten seconds while D30 stays
+off. Key presses cannot skip the pause.
+\item Wait. Blue \texttt{READY} returns by itself, and the good pattern works
+again.
+\item Before two minutes expire, try any keys you like. At the fixed deadline,
+every visible output goes inactive; after a quarter second the pins release.
+Press Reset for another adventure.
 \end{enumerate}
 
-\begin{lstlisting}[style=adkcpp]
-make host-test-access-trainer
-make quality-fast
-make arduino-Lesson018AccessTrainer
-\end{lstlisting}
+This sequence is hard to fake accidentally: the green/D30 payoff requires
+four correct debounced key events followed by Hash. A wrong map, held key,
+two-key chord, missing ground, or failed output prevents the later reward
+rather than awarding it anyway.
 
-Host evidence establishes policy, not security or physical acceptance.
+\section*{When the story stops}
 
-\section*{6. Run the circuit-native experiment}
-
-\begin{lstlisting}[style=adkcpp]
-make boards
-make arduino-Lesson018AccessTrainer
-make upload EXAMPLE=Lesson018AccessTrainer PORT=/dev/ttyACM0
-make hardware-card LESSON=018
-make monitor PORT=/dev/ttyACM0 BAUD=115200
-\end{lstlisting}
-
-\begin{enumerate}
-\item With USB removed, continuity-check keypad identity, LED resistors, common
-ground, and absence of every actuator/load connection.
-\item Apply USB. D13 should turn on only after all resources initialize.
-\item Probe TP-R0 and press one key. Interpret scan activity separately from
-the accepted entry shown by RGB/LCD.
-\item Replay correct, denied, lockout, clear, invalid chord, and fault traces.
-Confirm each audit event appears briefly as \texttt{A\#\#\#\# KIND} before row two
-returns to entry count.
-\item During lockout, confirm the amber RGB state alternates 500\,ms on and
-500\,ms off while the LCD remains \texttt{LOCKED OUT}.
-\item At every non-granted state, verify D30 is off. During granted, say
-``open requested,'' not ``open.''
-\item Invoke the published shutdown path. Verify indicators inactive, then use
-an instrument to check released pins rather than inferring from darkness.
-\end{enumerate}
-
-\begin{tabularx}{\linewidth}{@{}p{0.22\linewidth}p{0.30\linewidth}X@{}}
+\begin{tabularx}{\linewidth}{@{}p{0.28\linewidth}X@{}}
 \toprule
-Observation & Next check & Interpretation\\\midrule
-D13 off & initialization status and claims & acquisition failed; no state claim\\
-TP-R0 active, no entry & keypad column identity and snapshot & scan exists;
-event may not\\
-state changes, D30 fixed & probe D30 before LED resistor & separates command
-from load wiring\\
-D30 on outside grant & remove USB immediately; inspect adapter & policy/presentation
-contract violated\\
-RGB and LCD disagree & enter fault and close intent & presentation evidence is
-contradictory\\
-Serial disagrees & trust neither; replay host trace and circuit evidence &
-text is supporting evidence only\\
+What you see & Smallest useful move\\\midrule
+No short D13 flash & unplug; compare the seven keypad wires with Plate 1\\
+D13 flashes, no color & check RGB identity, three resistors, and common ground\\
+Color works, D30 does not & check only the D30 resistor/LED branch\\
+Indicators work, LCD blank & keep the successful circuit; check exact LCD
+identity, contrast, and Plate 3\\
+Red \texttt{FAULT} & release all keys, unplug, inspect for a chord or loose
+wire, then reconnect; the project restarts closed\\
+Amber keeps pulsing & wait ten seconds; this is the intended lockout story\\
 \bottomrule
 \end{tabularx}
 
-\section*{7. Explain the deferred motion gate}
+Unplugging USB ends the adventure. The program turns indicators off before
+releasing its pins whenever its normal shutdown path runs. After a fault,
+remove power, correct the one bad connection, and restart from Stage 1's D13
+flash. There is no instructor sign-off and no learner test sheet.
 
-\texttt{ServoOutput} construction is inert and owns its signal pin and timer
-transactionally. \texttt{BoundedServo} rejects positions outside validated
-calibration. Those software properties do not make motion accepted.
+\section*{Change the story}
 
-Do not add a servo to this circuit. A later E2 variant first requires Lesson
-017 physical acceptance with an identified servo, external current-limited
-supply, physical switch in servo-positive, common-ground review, D44/Timer5
-waveform evidence, restrained paper pointer, current measurements, motion
-envelope, and an independent load-power stop. No door, lock, linkage, relay,
-solenoid, or useful load is admitted. A destructor is not a stop switch.
-
-\section*{Acceptance record}
-
-\begin{tabularx}{\linewidth}{@{}>{\bfseries}lX@{}}
-Board, USB supply, date &\\
-Keypad identity / unpowered map &\\
-LED and LCD ratings/resistors &\\
-D13 acquisition observation &\\
-TP-R0 observation &\\
-Ready/Entering/Granted/Denied/LockedOut/Fault evidence &\\
-D30 closed/open-intent evidence &\\
-Reset and shutdown pin evidence &\\
-Host replay and audit result &\\
-Deviations and reviewer &\\
-\end{tabularx}
-
-\checkbox\ no actuator or load supply \quad
-\checkbox\ no real credential \quad
-\checkbox\ acquisition and output evidence separate \quad
-\checkbox\ physical acceptance recorded, not inferred
+Try one change at a time: choose a different four-key teaching pattern that is
+not a real credential; shorten the green reward; rename the LCD prompts; or
+draw a new paper prop. Keep the prop inert and keep D30 described as a program
+intent, not proof that something physical happened.
 
 \vfill\small
-\textbf{Companion material.} HTML carries current API signatures, source
-links, errata, and searchable CLI procedures. This PDF carries predictions,
-state traces, diagnosis, and bench sign-off. The orientation drawing was
-generated with the built-in image tool; the schematic and net table govern.
-
-\href{https://docs.arduino.cc/hardware/mega-2560/}{Arduino Mega 2560}\quad
-\href{https://www.microchip.com/en-us/product/ATmega2560}{ATmega2560}
+\textbf{Companion material.} The HTML page carries searchable pin tables and
+source links. This printable lesson carries the staged wiring plates and
+visible story. Automated host checks remain behind the scenes in the
+repository; the learner progresses by making each circuit reward work.
 \end{document}
