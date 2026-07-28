@@ -83,7 +83,8 @@ namespace adk {
             config_.negativeRelease >= config_.positiveRelease ||
             config_.positiveRelease >= config_.positiveActivate ||
             config_.positiveActivate > config_.qualifiedMaximum ||
-            config_.qualifiedMaximum > AnalogInput::maximumReading)
+            config_.qualifiedMaximum > AnalogInput::maximumReading ||
+            config_.dwell.milliseconds () >= halfRange)
         {
             snapshot_.status = StatusCode::InvalidConfiguration;
             return snapshot_.status;
@@ -107,9 +108,6 @@ namespace adk {
 
     void LinearHall::update (TimePoint now) noexcept
     {
-        snapshot_.activationEvent   = false;
-        snapshot_.deactivationEvent = false;
-
         if (!initialized_)
         {
             snapshot_.status = StatusCode::NotInitialized;
@@ -121,6 +119,9 @@ namespace adk {
             snapshot_.status = StatusCode::InvalidArgument;
             return;
         }
+
+        snapshot_.activationEvent   = false;
+        snapshot_.deactivationEvent = false;
 
         input_.update ();
 
@@ -322,7 +323,8 @@ namespace adk {
             return snapshot_.status;
         }
 
-        if (!validPull (config_.pull) || !validLevel (config_.closedLevel))
+        if (!validPull (config_.pull) || !validLevel (config_.closedLevel) ||
+            config_.dwell.milliseconds () >= halfRange)
         {
             snapshot_.status = StatusCode::InvalidConfiguration;
             return snapshot_.status;
@@ -346,9 +348,6 @@ namespace adk {
 
     void MagneticContact::update (TimePoint now) noexcept
     {
-        snapshot_.activationEvent   = false;
-        snapshot_.deactivationEvent = false;
-
         if (!initialized_)
         {
             snapshot_.status = StatusCode::NotInitialized;
@@ -360,6 +359,9 @@ namespace adk {
             snapshot_.status = StatusCode::InvalidArgument;
             return;
         }
+
+        snapshot_.activationEvent   = false;
+        snapshot_.deactivationEvent = false;
 
         input_.update ();
 

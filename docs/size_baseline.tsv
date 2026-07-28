@@ -32,4 +32,5 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	1	Lesson031AnalogJoystick	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6250	16384	273	512
 1	1	Lesson032QuadratureEncoder	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5910	16384	265	512
 1	1	Lesson033CalibrationConsole	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	14114	24576	767	1024
-1	1	Lesson034MagneticObservation	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	4872	16384	218	512
+1	1	Lesson034MagneticObservation	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	4932	16384	218	512
+1	1	Lesson035PassageQualifier	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6564	16384	481	768
