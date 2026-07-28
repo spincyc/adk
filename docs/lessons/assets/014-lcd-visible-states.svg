@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520">
+  <defs>
+    <filter id="pencil"><feTurbulence baseFrequency=".025" numOctaves="2" seed="16" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale=".8"/></filter>
+    <style>.paper{fill:#faf9f4}.ink{fill:none;stroke:#222;stroke-width:3}.label{font-size:25px;font-family:"Go";fill:#222}.lcd{font-size:25px;font-family:"Go Mono";fill:#222}</style>
+  </defs>
+  <rect class="paper" width="1200" height="520"/>
+  <g filter="url(#pencil)">
+    <text class="label" x="70" y="55">THE SCREEN TELLS THE STORY — RESET REPLAYS IT</text>
+    <g transform="translate(55 100)"><rect class="ink" width="330" height="150" rx="12"/><text class="lcd" x="22" y="62">LCD READY</text><text class="lcd" x="22" y="108">watch the story</text><text class="label" x="75" y="190">1. startup succeeds</text></g>
+    <g transform="translate(435 100)"><rect class="ink" width="330" height="150" rx="12"/><text class="lcd" x="22" y="62">sample 0002</text><text class="lcd" x="22" y="108">T=21.60 H=45.8</text><text class="label" x="70" y="190">2. values advance</text></g>
+    <g transform="translate(815 100)"><rect class="ink" width="330" height="150" rx="12"/><text class="lcd" x="22" y="62">sample 0003</text><text class="lcd" x="22" y="108">SENSOR TIMEOUT</text><text class="label" x="50" y="190">3. fault is visible</text></g>
+    <path class="ink" d="M1020 330 C930 420 745 420 650 330"/>
+    <text class="label" x="665" y="455">next screen recovers automatically</text>
+    <path class="ink" d="M395 175 H425 M775 175 H805"/>
+  </g>
+</svg>

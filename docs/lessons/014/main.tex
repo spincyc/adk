@@ -72,10 +72,10 @@
 \end{center}
 
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
-Lesson & 014 --- component & Time & 120--180 minutes\\
+Lesson & 014 --- component & Time & about 45 minutes\\
 Prerequisites & Lessons 001--013 & Board & Arduino Mega 2560\\
-Evidence & D13 acquisition, LCD text, TP14 enable & Status &
-host verified; physical acceptance open\\
+Progress & D13 blink, welcome screen, values, fault, recovery & Output &
+LCD text plus optional stable records\\
 Safety & E1; USB-powered low-current circuit only\\
 \end{tabularx}
 
@@ -87,7 +87,7 @@ control that places a rail across the potentiometer wiper incorrectly, or any
 disagreement between the identified module and the literal table. Remove USB
 power to stop the experiment.}
 
-\section{Mission}
+\section{Mission: make the little screen tell a story}
 
 Present a deterministic climate snapshot without making the display the source
 of truth:
@@ -102,16 +102,17 @@ of truth:
 \right.
 \]
 
-The canonical sketch replays four fixed samples. This isolates presentation
+The canonical sketch first displays a welcome screen, then replays four fixed
+samples. This isolates presentation
 from sensing: the same sample selects both LCD text and a record, while neither
 path modifies the sample. Lesson 015 will replace the fixed table with the
 scheduled sensor from lesson 013.
 
 \begin{enumerate}
-  \item Predict the first two lines and the next sequence number.
-  \item Observe D13 before expecting text, then observe the LCD update.
-  \item Observe TP14 only as transport evidence.
-  \item Interpret the record and display as two views of one immutable sample.
+  \item A short D13 blink says its own pin and all six LCD pins were acquired.
+  \item \texttt{LCD READY} rewards correct supply, contrast, and signal wiring.
+  \item Two changing values show the display is alive.
+  \item \texttt{SENSOR TIMEOUT} appears, then the next view recovers by itself.
 \end{enumerate}
 
 \section{The four boundaries}
@@ -149,31 +150,36 @@ operation, not an application schedule. \texttt{shutdown()} commands display
 off when possible, drives owned pins low, releases them to high impedance, and
 is idempotent. Destruction repeats this safely.
 
-\section{Parts and orientation}
+\section{The exact build}
 
 \begin{tabularx}{\linewidth}{@{}l l X@{}}
 \toprule
 Quantity & Part & Requirement\\
 \midrule
 1 & Mega 2560 & USB powered\\
-1 & HD44780-compatible 16-by-2 LCD & exact module and pin order identified\\
+1 & independently identified LCD1602 & parallel 1--16 / VSS--K header required\\
 1 & 10\,k\(\Omega\) linear potentiometer & contrast control only\\
-1 & backlight resistor & only if required by the identified module data\\
+0 & backlight connection & A/K stay open until the exact module rating is known\\
 1 & D13 indicator & built-in LED or external resistor-limited LED\\
-1 & multimeter & continuity and released-state checks\\
-1 & logic analyzer or oscilloscope & optional TP14 enable-pulse evidence\\
+1 & breadboard and jumpers & route by LCD pin number, not wire color\\
 \bottomrule
 \end{tabularx}
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[width=0.98\linewidth]{014-character-display-pencil.png}
-  \caption{Pencil orientation of the Mega, LCD, contrast control, D13 evidence,
-  and TP14. This is not an authoritative schematic; some drawn board labels
-  are illustrative. Use the literal table and the exact module documentation.
-  Alternative text: six Mega signal wires reach LCD RS, E, and D4 through D7;
-  RW and VSS return to ground; VDD reaches 5 V; a potentiometer supplies VO;
-  D13 separately indicates resource acquisition; TP14 is the E node.}
+  \includegraphics[width=0.98\linewidth]{014-mega-lcd-pin-map.png}
+  \caption{Pencil pin map. Follow the printed Mega socket numbers and the
+  LCD1602 pin numbers. Alternative text: D22 through D27 map respectively to
+  LCD pins 4, 6, 11, 12, 13, and 14.}
+\end{figure}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.98\linewidth]{014-lcd-breadboard.png}
+  \caption{Breadboard close-up with the LCD facing you and pin 1 at the left.
+  Alternative text: LCD supply and RW reach the rails, VO reaches the
+  potentiometer wiper, six signals reach the Mega, D0--D3 remain empty, and
+  backlight pins A and K remain disconnected.}
 \end{figure}
 
 \section{Literal wiring}
@@ -192,15 +198,18 @@ data bit 5 & D25 & D25 to identified D5\\
 data bit 6 & D26 & D26 to identified D6\\
 data bit 7 & D27 & D27 to identified D7\\
 unused data & none & D0--D3 remain unconnected in four-bit mode\\
-backlight & A and K & connect only per identified module rating and polarity\\
-acquisition & D13 & built-in LED, or D13 through 330 \(\Omega\) to LED anode\\
+backlight & pins 15 A and 16 K & leave disconnected in this lesson\\
+acquisition & D13 & use the Mega's built-in LED; no extra wiring\\
 \bottomrule
 \end{tabularx}
 
 Inspect every path with USB removed. Set the contrast control near its midpoint
-before power. If using an external D13 LED, return its cathode to GND and
-record its resistor value. TP14 is measured relative to the same named GND.
-Place analyzer clips while unpowered.
+before power. This lesson drives only the LCD logic supply. It makes no
+backlight-current assumption: pins 15 and 16 stay open. The retail family name
+does not establish a controller or revision. Continue only after the actual
+part independently shows a parallel 16-pin row whose labels run VSS, VDD, VO,
+RS, RW, E, D0--D7, A, K in that order. An I2C backpack, missing labels, or a
+different order is a different specimen.
 
 \section{Startup and incremental work}
 
@@ -221,6 +230,35 @@ longer than 16 characters without touching the LCD.
 Each later \texttt{update(now)} compares desired and shown buffers and writes
 one changed cell. A loop therefore remains responsive while a whole line
 changes. The desired snapshot is stable until another \texttt{show()} call.
+
+\section{Build it as five quick wins}
+
+Keep USB unplugged while moving wires. Power up only to enjoy the next win,
+then unplug again.
+
+\begin{enumerate}
+  \item \textbf{Rails and contrast.} Connect LCD pins 1, 2, 3, and 5. Turning
+        the potentiometer may reveal dark character blocks; their absence does
+        not diagnose the circuit.
+  \item \textbf{Control pair.} Add RS on D22 and E on D23. Label the E wire
+        TP14 so it is easy to recognize later.
+  \item \textbf{Four-bit data.} Add LCD D4--D7 in order to Mega D24--D27.
+        Pins D0--D3 remain empty. The first promised payoff is a short D13
+        blink followed by \texttt{LCD READY}.
+  \item \textbf{Watch it move.} The first and second sample views advance
+        without clearing or flicker.
+  \item \textbf{Watch it recover.} The third view says
+        \texttt{SENSOR TIMEOUT}; the fourth returns to values automatically.
+        Press RESET whenever you want to replay the whole sequence.
+\end{enumerate}
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.98\linewidth]{014-lcd-visible-states.png}
+  \caption{The visible reward sequence. Alternative text: LCD READY leads to
+  changing climate values, then SENSOR TIMEOUT, followed by automatic
+  recovery on the next screen.}
+\end{figure}
 
 \begin{lstlisting}[style=adkcpp]
 void loop ()
@@ -259,14 +297,14 @@ caller supplies a buffer. A too-small buffer is terminated and reports
 this record. It is optional evidence: the LCD and TP14 provide the required
 non-Serial paths.
 
-\section{Predict, observe, interpret}
+\section{What each clue means}
 
 \begin{tabularx}{\linewidth}{@{}p{0.19\linewidth} X X@{}}
 \toprule
 Claim & Prediction and observation & Interpretation\\
 \midrule
-resource acquisition & D13 turns on after all seven objects' pin claims succeed &
-D13 off means setup did not complete; it says nothing about LCD text\\
+resource acquisition & D13 blinks for 250 ms after its own pin and all six LCD
+pins are acquired & no blink means setup did not complete\\
 safe startup & before ready, signal pins start low and the LCD may remain blank &
 blank during the specified startup interval is not yet a sensor fault\\
 transport & TP14 has bounded enable pulses as cells change &
@@ -275,64 +313,15 @@ presentation & fixed samples appear in the documented order &
 text order tests the presentation table and incremental flush\\
 record identity & sequence increases once per displayed sample &
 one sample produced both views; locale cannot alter field punctuation\\
-safe shutdown & D13 turns off and D22--D27 become high impedance &
-resource release is separate from the last visible LCD pixels\\
+reset & D13 blinks and the welcome screen returns &
+the complete story is replayable without rewiring\\
 \bottomrule
 \end{tabularx}
 
-\evidencebox{\textbf{Important distinction.} An LCD can retain visible pixels
-after MCU pins become high impedance. That persistence is not evidence that
-ADK still owns or drives the pins. Measure the released electrical state at a
-named signal pin; use the display only as semantic evidence.}
-
-\section{Host experiments}
-
-Run the registered repository target after integration:
-
-\begin{verbatim}
-make host-test
-make host-test-sanitize
-make arduino-compile
-make monitor PORT=/dev/ttyACM0 BAUD=115200
-\end{verbatim}
-
-The deterministic tests cover:
-
-\begin{itemize}
-  \item stopped, repeated-start, repeated-shutdown, and destructor behavior;
-  \item staged startup from supplied timestamps;
-  \item invalid rows, null text, nonprinting characters, and capacity limits;
-  \item duplicate pins, resource conflict, configuration rollback, and reuse;
-  \item one-cell incremental flushing and stable desired-line snapshots;
-  \item exact signed values, every state name, maximum timestamps, and small
-        record buffers;
-  \item injected transport-write failures without hidden retries.
-\end{itemize}
-
-Run the same trace twice. Compare the transport operation sequence and record
-bytes. Identical inputs must produce identical outputs.
-
-\section{Bench procedure}
-
-\begin{enumerate}
-  \item \textbf{Predict.} Write the first line pair and first record below.
-  \item Remove USB. Identify the module pin-one mark and backlight rating.
-  \item Wire only supply, contrast, RW, and the six signal paths. Leave the
-        backlight disconnected unless its current path is known.
-  \item Check for shorts from 5 V to GND and verify RW-to-GND continuity.
-  \item Place the TP14 and GND clips while unpowered.
-  \item Apply USB. Confirm D13 turns on before interpreting LCD behavior.
-  \item Adjust contrast slowly. Observe four fixed views in order.
-  \item Observe TP14 during changes. Do not infer timing from this drawing;
-        record the instrument and measured pulse range.
-  \item Invoke or instrument shutdown. Confirm D13 off, then measure one signal
-        pin as released rather than inferring release from the retained text.
-  \item Remove USB. Confirm the display and D13 are unpowered.
-\end{enumerate}
-
-Predicted first view: \blank{0.72\linewidth}
-
-Predicted first record: \blank{0.68\linewidth}
+\evidencebox{\textbf{Behind the scenes.} Automated checks still exercise
+startup timing, rollback, bad text, resource conflicts, repeat shutdown,
+incremental updates, record boundaries, and transport failures. The learner
+gets the screen story instead of a test worksheet.}
 
 \section{Diagnosis}
 
@@ -341,60 +330,27 @@ Predicted first record: \blank{0.68\linewidth}
 Observation & Likely boundary & Next safe check\\
 \midrule
 D13 remains off & claim or initialization failure & remove power; check distinct D22--D27 wiring and conflicts\\
-D13 on, no blocks or text & supply, contrast, or startup & remove power; verify VSS/VDD/VO and module identity\\
+D13 blink, no blocks or text & supply, contrast, or startup & remove power; verify VSS/VDD/VO and module identity\\
 blocks but no text & RS/E/data mapping & remove power; compare every literal path\\
 wrong characters & D4--D7 order or intermittent connection & remove power; continuity-check each data path\\
-TP14 quiet while text queued & loop halted or transport failure & inspect D13 and deterministic host trace\\
+TP14 quiet while text queued & loop halted or transport failure & press RESET and watch the welcome sequence\\
 TP14 active, unreadable LCD & contrast, supply, or data mapping & do not treat transport as presentation proof\\
-record differs by locale & unsupported formatter introduced & compare exact bytes to the stable grammar\\
-old pixels after shutdown & normal LCD memory persistence & measure high impedance at a named MCU signal\\
+record differs by locale & unsupported formatter introduced & return to the canonical sketch\\
+old pixels after unplugging & LCD charge fading normally & wait for it to fade; reconnect and replay\\
 \bottomrule
 \end{tabularx}
 
-\section{Exercises}
+\section{Make it yours}
 
 \begin{enumerate}
-  \item Explain why a display object owns pins while a presentation table owns
-        no hardware.
-  \item Add a fourth record consumer that counts states without parsing LCD
-        text. What boundary should it accept?
-  \item Calculate the maximum number of loop calls needed to replace both
-        16-character lines when one dirty cell flushes per call.
-  \item Add a test for \(-32768\) centi-degrees and explain why negation first
-        widens to 32 bits.
-  \item Design a 20-by-4 extension without changing the climate sample or
-        stable-record grammar. Which dimensions become configuration?
-  \item Inject a write failure on the enable-low operation. Predict the status,
-        desired snapshot, and caller's safe response.
-  \item Explain why LCD pixel persistence cannot prove output shutdown.
+  \item Replace the welcome screen with a family message of at most 16
+        printable characters per line.
+  \item Turn the four fixed views into a tiny weather-story animation.
+  \item Change one character at a time and watch how smoothly the adapter
+        updates only the cells that changed.
+  \item Unplug USB during the timeout view, reconnect it, and watch the story
+        restart cleanly from the welcome screen.
 \end{enumerate}
-
-\section{Acceptance record}
-
-\begin{tabularx}{\linewidth}{@{}l X@{}}
-\toprule
-Item & Record\\
-\midrule
-Board and USB supply & \blank{0.63\linewidth}\\
-LCD manufacturer/module/revision & \blank{0.54\linewidth}\\
-Primary pinout source & \blank{0.62\linewidth}\\
-Backlight rating/path, or disconnected & \blank{0.49\linewidth}\\
-Contrast potentiometer measured value & \blank{0.49\linewidth}\\
-D13 evidence behavior & \blank{0.61\linewidth}\\
-TP14 instrument and pulse observation & \blank{0.47\linewidth}\\
-Four displayed views in order & \blank{0.57\linewidth}\\
-Stable record bytes checked & \blank{0.58\linewidth}\\
-Shutdown pin and measured released state & \blank{0.45\linewidth}\\
-Reset and power-removal observations & \blank{0.49\linewidth}\\
-Deviation, reviewer, date & \blank{0.62\linewidth}\\
-\bottomrule
-\end{tabularx}
-
-\textbf{Current release statement:} implementation and deterministic host
-tests are complete for this package. Mega compilation and size evidence are
-recorded by the integrator. Physical behavior, electrical levels, contrast,
-backlight current, timing, shutdown, reset, and power removal remain
-\textbf{open} until the table above contains measured results.
 
 \section{Next}
 
