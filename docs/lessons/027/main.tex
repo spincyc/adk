@@ -50,8 +50,6 @@
     breaklines=true,
     tabsize=4
 }
-\newcommand{\checkbox}{\(\square\)}
-\newcommand{\blank}[1]{\rule{#1}{0.4pt}}
 \newcommand{\lessonbox}[1]{%
   \begin{center}
   \fcolorbox{Ink}{white}{\parbox{0.92\linewidth}{#1}}
@@ -66,7 +64,7 @@
 \end{center}
 
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
-Lesson & 027 --- project & Time & 240--330 minutes\\
+Lesson & 027 --- project & Time & deterministic 18-second fixture\\
 Prerequisites & Lessons 001--026 & Board & Arduino Mega 2560\\
 Evidence & RGB cadence and D13 & Status & host verification; bench open\\
 Energy class & E1: USB, passive buttons, resistor-limited LEDs\\
@@ -137,12 +135,13 @@ Source fixtures & deterministic observation evidence & compiled-in, owned lab va
 \bottomrule
 \end{tabularx}
 
-\textbf{Unpowered prediction.} Circle every resource owner in the final sketch.
-For each borrower, draw an arrow to the owner that must outlive it. Confirm
-button wiring, one resistor per RGB channel, common ground, and no display,
-sounder, relay, external load supply, transmitter, or mains connection.
+The runtime owns every endpoint. The project borrows the console, buttons,
+presentation, and record sink; each borrower has a shorter lifetime than its
+owner. The starter circuit has one resistor per RGB channel, common ground, and
+no display, sounder, relay, external load supply, transmitter, or mains
+connection.
 
-\section{Vocabulary worksheet}
+\section{Vocabulary}
 
 \begin{tabularx}{\linewidth}{@{}l X X@{}}
 \toprule
@@ -166,31 +165,16 @@ prove a remote clock.
 \begin{lstlisting}[style=adkcpp]
 observeTelemetrySources (now);
 decideConsoleState      (now);
-presentConsoleState     (now);
-recordConsoleEvidence   (now);
+presentConsoleState     ();
+recordConsoleEvidence   ();
 \end{lstlisting}
 
 \texttt{observe} builds the fixed observation fixture. \texttt{decide} submits
 one complete configured-slot view through \texttt{TelemetryConsoleProject}.
 \texttt{present} checks the RGB presentation result. \texttt{record} checks
-the bounded record result. No stage hides time or allocates memory.
-
-\subsection{Object-order exercise}
-
-Number these in construction order: \blank{.25in} console,
-\blank{.25in} runtime, \blank{.25in} project,
-\blank{.25in} fixture observations, \blank{.25in} buttons,
-\blank{.25in} record sink, \blank{.25in} RGB presentation.
-
-Then answer:
-
-\begin{enumerate}
-  \item Which object decides source health? \blank{2.4in}
-  \item Which object decides whether one stable record is pending? \blank{2.1in}
-  \item Which failure may silence a cue without changing health? \blank{2.0in}
-  \item Why is packet arrival order excluded from source selection?
-        \blank{2.5in}
-\end{enumerate}
+the bounded record result. No stage hides time or allocates memory. The sketch
+uses wrap-safe elapsed time and shuts down after 18 seconds regardless of
+button input. Shutdown turns off both evidence paths and releases their pins.
 
 \section{Health precedence}
 
@@ -210,20 +194,6 @@ Fault dominates degraded; degraded dominates healthy; startup is not silently
 healthy. When several conditions coexist, the same input snapshot must always
 choose the same result.
 
-\subsection{Precedence worksheet}
-
-\begin{tabularx}{\linewidth}{@{}X l l l@{}}
-\toprule
-Input set & Prediction & Observation & Interpretation\\
-\midrule
-all valid/fresh & \blank{.7in} & \blank{.7in} & \blank{1.3in}\\
-one aging + one gap & \blank{.7in} & \blank{.7in} & \blank{1.3in}\\
-one stale + one aging & \blank{.7in} & \blank{.7in} & \blank{1.3in}\\
-duplicate identity & \blank{.7in} & \blank{.7in} & \blank{1.3in}\\
-missing configured slot & \blank{.7in} & \blank{.7in} & \blank{1.3in}\\
-\bottomrule
-\end{tabularx}
-
 \section{Operator intent is not evidence}
 
 The next action selects a configured slot, not a source ID or packet-arrival
@@ -241,10 +211,9 @@ sounder only as the extension exercise. Acknowledgement does not:
   \item prevent a new fault from being announced.
 \end{itemize}
 
-\textbf{Experiment.} Enter fault, acknowledge it, and keep the fault present.
-Predict fast red evidence will remain. Inspect the replay snapshot to see
-\texttt{Attention} become \texttt{Notice}. Recover, then introduce a new fault
-and predict \texttt{Attention} again.
+The automated replay holds a fault across acknowledgement: fast red evidence
+remains while \texttt{Attention} becomes \texttt{Notice}. Recovery followed by
+a different fault produces \texttt{Attention} again.
 
 \section{Presentation and record separation}
 
@@ -269,55 +238,30 @@ attention extension & health and record intent & red evidence remains\\
 \bottomrule
 \end{tabularx}
 
-\subsection{Golden-record worksheet}
+\section{Deterministic fixture progression}
 
-Copy one released canonical record exactly:
+The canonical sketch supplies this fixed, dependent progression. Each row
+retains every source introduced by the preceding row:
 
-\vspace{0.2in}
-\hrule
-\vspace{0.2in}
-\hrule
-
-\begin{tabularx}{\linewidth}{@{}l X@{}}
-Trigger reason & \blank{3.4in}\\
-Caller capacity & \blank{1.0in} bytes\\
-Encoded size & \blank{1.0in} bytes\\
-First differing byte after corruption & \blank{1.2in}\\
-Retry byte-identical? & yes / no; evidence: \blank{2.0in}\\
-\end{tabularx}
-
-\section{Deterministic replay lab}
-
-Prepare one exact trace:
-
-\begin{enumerate}
-  \item start with all three slots missing;
-  \item recover temperature, humidity, then contact in configured order;
-  \item deliver later packets in a different arrival order;
-  \item age one source to the exact degraded boundary;
-  \item cross the stale boundary;
-  \item acknowledge attention while fault remains;
-  \item recover, then introduce a different fault;
-  \item inject one record failure and bounded retry;
-  \item shut down from the active fault state.
-\end{enumerate}
-
-\begin{tabularx}{\linewidth}{@{}r l l l l@{}}
+\begin{tabularx}{\linewidth}{@{}r X l@{}}
 \toprule
-Time & Source change & Expected health & Selected slot & Record reason\\
+Elapsed time & Source set & Expected health\\
 \midrule
-\blank{.5in} & all missing & \blank{.8in} & \blank{.5in} & \blank{.9in}\\
-\blank{.5in} & first recovery & \blank{.8in} & \blank{.5in} & \blank{.9in}\\
-\blank{.5in} & all recovered & \blank{.8in} & \blank{.5in} & \blank{.9in}\\
-\blank{.5in} & exact aging & \blank{.8in} & \blank{.5in} & \blank{.9in}\\
-\blank{.5in} & exact stale & \blank{.8in} & \blank{.5in} & \blank{.9in}\\
-\blank{.5in} & acknowledge & \blank{.8in} & \blank{.5in} & \blank{.9in}\\
+0--2 s & all configured sources missing & Starting\\
+2--3 s & temperature present, startup grace active & Starting\\
+3--4 s & temperature present, startup grace expired & Fault\\
+4--6 s & temperature and humidity present & Fault\\
+6--9 s & all three sources fresh & Healthy\\
+9--12 s & humidity aging & Degraded\\
+12--15 s & humidity stale & Fault\\
+15--18 s & all three sources fresh again & Healthy\\
+18 s & fixed shutdown, independent of button input & Stopped\\
 \bottomrule
 \end{tabularx}
 
-Replay the same timestamps, packet bytes, and button events twice. Compare
-health, signal intent, selected slot, record reasons, and record bytes. Every
-difference is a failure until explained.
+The host suite separately replays identical timestamps, packet bytes, and
+button events twice and compares health, signal intent, selected slot, record
+reasons, and record bytes.
 
 \section{Predict, observe, interpret}
 
@@ -366,72 +310,27 @@ different second replay & hidden clock, mutable fixture, uninitialized padding, 
 \bottomrule
 \end{tabularx}
 
-\section{CLI workflow and acceptance}
+\section{Automated verification}
 
 \begin{lstlisting}[style=adkcpp]
 make host-test
 make host-test-sanitize
-make telemetry-fixtures-check
 make arduino-Lesson027TelemetryConsole
-make size-Lesson027TelemetryConsole
-make lessons
+make size-check
+make doc/lessons/027.pdf
 make lessons-check
 make site-check
-make upload EXAMPLE=Lesson027TelemetryConsole PORT=/dev/ttyACM0
-make hardware-card LESSON=027 BOARD=mega2560
 \end{lstlisting}
 
-These targets verify code and publication, not the open physical card. There is
-intentionally no transmit, replay, clone, brute-force, scan, or protocol-export
-target.
-
-\subsection{Unsigned physical acceptance card}
-
-\begin{itemize}
-  \item \checkbox\ Exact Mega revision, buttons, LEDs, supply, and instrument
-        recorded.
-  \item \checkbox\ Wiring and resistor values checked with USB removed.
-  \item \checkbox\ Startup acquisition evidence observed.
-  \item \checkbox\ Healthy, degraded, fault, acknowledgement, reannouncement,
-        and recovery evidence observed.
-  \item \checkbox\ Record failure kept separate from source health.
-  \item \checkbox\ Shutdown output state measured at named test points.
-  \item \checkbox\ No transmitter, actuator, relay, external load, or mains
-        circuit present.
-\end{itemize}
-
-\begin{tabularx}{\linewidth}{@{}l X@{}}
-Board and revision & \blank{3.8in}\\
-Exact specimens and markings & \blank{3.2in}\\
-Supply and instruments & \blank{3.45in}\\
-Firmware commit and tool versions & \blank{2.65in}\\
-Predictions & \blank{4.45in}\\
-Observations & \blank{4.35in}\\
-Interpretation and deviations & \blank{3.25in}\\
-Operator and date & \blank{3.8in}\\
-\end{tabularx}
-
-\lessonbox{\textbf{Open gate.} Host replay, firmware compilation, a generated
-PDF, and visual inspection are not physical verification. Leave this card
-blank until the released circuit is measured on a Mega 2560.}
-
-\section{Further work}
-
-\begin{enumerate}
-  \item Add a fourth generated source without changing arrival-order behavior.
-  \item Design an explicit log-full policy with no heap and no silent overwrite.
-  \item Explain what cryptographic authentication would require and why CRC,
-        source ID, sequence, and freshness do not provide it.
-  \item Add a bounded sounder for attention while retaining the RGB state as
-        equivalent non-audible evidence.
-  \item Audit the final object graph for ownership, rollback, shutdown order,
-        and exception-unwinding safety in a caller.
-\end{enumerate}
+These targets verify code and publication. They do not establish physical
+verification. There is intentionally no transmit, replay, clone, brute-force,
+scan, or protocol-export target.
 
 \section*{Package status}
 
 The interface, deterministic host tests, canonical Mega sketch, and printable
-package are present. Physical Mega acceptance remains open. The exercise makes
-no live-radio or multi-room hardware claim.
+package are present. Physical Mega acceptance remains open in the repository's
+separate acceptance campaign. The exercise makes no live-radio or multi-room
+hardware claim.
 
 \end{document}
