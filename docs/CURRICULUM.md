@@ -8,7 +8,7 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--061 have first-class implementation work, deterministic host
+Lessons 001--062 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
 bench cards remain open. Lessons 037--039 use documented C&K and SparkFun
 reference fixtures; incoming conformance and physical acceptance remain open.
@@ -64,17 +64,23 @@ actuation remains E2-open. Lessons 058--060 are host verified under the
 [display timing desk plan](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md);
 their exact powered displays, transports, electrical behavior, and physical
 acceptance remain E1-open.
-Lesson 061 is host verified under the
+Lessons 061--062 are host verified under the
 [museum-case monitor plan](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md).
-It publishes `ResistiveProbeObservationPolicy` over copied acquisition
+They publish `ResistiveProbeObservationPolicy` and
+`ThermalRadiantObservationPolicy` over copied acquisition
 evidence, with calibration, excitation-off, ordering, freshness, and bounded
-corrosion-duty results. Its ordinary Mega replay measures 5,662/624 bytes of
+corrosion-duty results. Lesson 061's ordinary Mega replay measures 5,662/624 bytes of
 flash/static SRAM; the isolated no-LTO probe measures 3,566 bytes flash,
 169 bytes static SRAM, 123 bytes conservative synchronous stack, and a
-69-byte object, leaving 7,772 bytes of residual SRAM. No powered probe,
-wiring, liquid classification, discharge behavior, or physical safe state is
-claimed; exact specimen qualification and E1a bench acceptance remain open.
-Lessons 062--063 remain active behind this published component boundary.
+69-byte object, leaving 7,772 bytes of residual SRAM. Lesson 062's ordinary
+Mega replay measures 10,076/1,133 bytes; its reviewed static-SRAM target miss
+remains below the 1,536-byte hard limit. Its isolated no-LTO probe measures
+5,156 bytes flash, 279 bytes static SRAM, 264 bytes conservative synchronous
+stack, and a 112-byte object, leaving 7,521 bytes of residual SRAM. No powered
+probe, module, wiring, liquid classification, discharge behavior, stimulus,
+or physical safe state is
+claimed; exact specimen qualification and E1a/E1b bench acceptance remain open.
+Lesson 063 remains active behind these published component boundaries.
 The later blocks are ordered for early learner engagement while retaining
 prerequisite, authorization, safety, and evidence gates: interactive motion
 and display projects precede the more methodical environmental and
@@ -171,6 +177,7 @@ For every lesson, the queued implementation order is:
 | 059 | Host verified; E1 MAX7219 fixture open | `Max7219PresentationPolicy` | Register command/receipt, partial-prefix, cleanup, generation, and blank-request cells |
 | 060 | Host verified; combined E1 fixture open | `DualDisplayTimingDesk` | One stopwatch snapshot, two side-specific frames, self-test, agreement, and fault attribution |
 | 061 | Host verified; exact powered probe/E1a bench open | `ResistiveProbeObservationPolicy` | Copied calibration, excitation-off, freshness, ordering, corrosion-duty, provenance, and quality evidence without a powered adapter |
+| 062 | Host verified; exact powered modules/E1b bench open | `ThermalRadiantObservationPolicy` | Three distinct copied roles preserve thermistor uncertainty, categorical Digital Temperature and radiant evidence, independent ages, disagreement, and saturation |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation

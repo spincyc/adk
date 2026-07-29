@@ -1,7 +1,6 @@
 # Lesson 062 thermal-radiant architecture stress pass
 
-Status: initial pre-implementation review; all powered specimens remain
-E1b-open.
+Status: terminal E0 promotion review; all powered specimens remain E1b-open.
 
 This pass reviews the
 [Lessons 061--063 implementation plan](LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md).
@@ -17,7 +16,7 @@ categorical threshold/radiant evidence.
 | Ownership and lifecycle | One fixed configuration and copied envelope; inert construction, initialize/reset, no caller pointers, transport, endpoint, callback, heap, or hidden acquisition. |
 | Time and ordering | Each source retains its own sequence/time/age. Delayed values are never presented as simultaneous. Radiant active/candidate state has total pulse/sustained boundaries; duplicates do not extend it and reset clears it. |
 | Errors and status | Producer/lifecycle/structural failures use `Status`; uncertainty, disagreement, saturation, stale, pulse, sustained, and ambient saturation remain domain quality. |
-| Resources | E0 claims zero hardware. The plan's canonical Lesson 062 row controls; exhaustive enum/struct/ownership/caller-buffer/hidden-return probes are promotion gates. |
+| Resources | E0 claims zero hardware. The canonical Mega replay is 10,076/1,133 bytes flash/static SRAM; the independently accepted 1,133-byte target miss remains below the 1,536-byte hard limit. Exact no-LTO evidence is 5,156 flash, 279 static, 264 synchronous stack, 112 object, 135 caller-retained, and 7,521 residual SRAM. |
 | Deterministic proof | Signed extremes, widened upper-bound uncertainty arithmetic plus an independent explanatory lower-bound oracle, fixed Digital Temperature categorical mapping, every equality/crossing and disagreement combination, complete pulse/sustained/duplicate/reset edges, saturation, source collision, lifecycle, and replay are required. |
 | Packaging/public surface | One policy package and synthetic Mega replay. No thermistor curve adapter, single-wire transport, module pin map, flame stimulus, wiring, or schematic at E0. |
 | Downstream effects | Lesson 063 consumes this observation. Lessons 064--066 retain 18B20/single-wire scope; Lessons 070--072 retain module characterization. |
@@ -66,9 +65,12 @@ the Lesson 063 liquid/reed/audit collision.
   calibrated radiant unit would require separate evidence and review
 - Remediation owner and next action: Lesson 062 implementation lane supplies
   exhaustive arithmetic/order tests and exact resource probes
-- Verification commands and results: document review only; implementation
-  commands are pending
-- Maximum-composition scenario and proof: specified above; deterministic
-  aggregate fixture pending
+- Verification commands and results: strict C++11 host tests, ASan/UBSan,
+  style, Mega compilation, exact resource gate, lesson build, monochrome and
+  pencil-policy checks, and strict site build pass at promotion
+- Maximum-composition scenario and proof: the canonical nine-frame replay and
+  exhaustive host matrix cover the specified arithmetic, ordering, collision,
+  duration, saturation, rollover, reset, and atomic-rejection boundaries;
+  Lesson 063 aggregate composition remains the next gate
 - Promotion permitted: yes for E0 implementation; no for powered adapters,
   calibrated physical claims, or flame-related work
