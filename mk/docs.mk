@@ -175,6 +175,17 @@ doc/lessons/051.pdf: docs/lessons/051/main.tex \
 		docs/lessons/assets/051-audit-pairs-pencil.png \
 		docs/lessons/assets/051-invariant-path-pencil.png \
 		docs/lessons/assets/051-joint-preview-pencil.png
+doc/lessons/055.pdf: docs/lessons/055/main.tex \
+		docs/lessons/assets/055-clue-wall-pencil.png \
+		docs/lessons/assets/055-freshness-pencil.png \
+		docs/lessons/assets/055-provenance-pencil.png \
+		docs/lessons/assets/055-rule-dag-pencil.png \
+		docs/lessons/assets/055-troubleshooting-pencil.png
+doc/lessons/056.pdf: docs/lessons/056/main.tex \
+		docs/lessons/assets/051-joint-preview-pencil.png
+doc/lessons/057.pdf: docs/lessons/057/main.tex \
+		docs/lessons/assets/057-atomic-solve-pencil.png \
+		docs/lessons/assets/057-six-station-console-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons

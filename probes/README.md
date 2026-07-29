@@ -31,3 +31,33 @@ conservative live-stack bound is 888 B:
 The script uses tools discovered beside the compiler recorded by
 `arduino-cli`, checks every result exactly, and removes its temporary build
 directory.
+
+Run the Lessons 055--057 escape-console probe with:
+
+```sh
+make escape-console-resource-check
+```
+
+The probe builds each available canonical Mega fixture with LTO and jump
+tables disabled and statically reserves outgoing arguments. It retains a link
+map and combines compiler stack-usage records with the linked AVR call graph.
+Direct calls add the Mega's three-byte return address; tail jumps add none.
+Reachable dynamic or unresolved transfers, recursion, and non-static stack
+records fail the probe instead of becoming estimates.
+
+The JSON evidence in
+`build/evidence/escape-console-resource-probe.json` records the exact commands,
+tool versions, flash, static SRAM, object sizes, synchronous stack path, and
+every target and hard-gate disposition. Lesson 057 additionally reserves 128 B
+for interrupt context and must leave at least 2,048 B of Mega SRAM. Until the
+Lesson 057 implementation and its real maximum-composition fixture both
+exist, that boundary is explicitly `pending`; use `--require-complete` for a
+promotion gate that rejects pending evidence. The Make target enables that
+promotion behavior.
+
+A target miss is `review-required`, not a hard-gate exception. The checked-in
+`escape_console_resource_reviews.json` may accept only an exact
+lesson/metric/observed/target/hard tuple and must cite its controlling design
+authority. A changed measurement makes that review stale and fails the probe.
+Reviewed target misses permit the command to succeed; hard-ceiling and
+residual-SRAM failures are never reviewable.
