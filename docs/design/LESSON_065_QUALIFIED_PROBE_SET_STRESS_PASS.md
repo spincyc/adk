@@ -42,22 +42,27 @@ The public value model must retain these facts without caller pointers:
 - `Ds18b20Resolution`: exactly 9, 10, 11, or 12 bits;
 - one configuration record for each of the four ROMs, including expected
   resolution, maximum age, and maximum step in sixteenths Celsius;
-- one copied set envelope with nonzero source/configuration/cycle identity,
-  supplied observation time, up to four chained copied `SearchRomPass`
-  request/result witnesses, explicit completion/over-capacity state, and one
-  role-specific conversion/read record per returned device;
-- each copied transaction's Lesson 064 owner, lifecycle/configuration,
-  transaction sequence/generation, addressed ROM, operation, reset/presence,
-  exact byte count and bytes, start/completion times, disposition, and complete
-  `Status`; and
+- one caller-owned, lifetime-reused staged cycle builder with nonzero
+  source/configuration/cycle identity, supplied observation time, up to four
+  compact chained `SearchRomPass` witnesses, explicit
+  completion/over-capacity state, and one normalized conversion/read witness
+  per returned device;
+- transient validation of each complete copied Lesson 064 snapshot, including
+  common owner/lifecycle/configuration, request and transaction
+  sequence/generation, addressed ROM, operation, supply mode, request status,
+  accepted-slot count, reset/presence, confirmed release, exact returned
+  bytes, start/completion times, disposition, and terminal `Status`; and
 - one four-slot snapshot retaining configured ROM, expected resolution, latest
   copied transaction attribution, decoded signed temperature in sixteenths
   Celsius, age, current-cycle presence, quality, and status.
 
 The required lifecycle is inert construction, `initialize()`, `reset()`,
-caller-owned `update(now, envelope, result)`, `snapshot()`, and
-`initialized()`. The policy is non-copyable and non-movable, allocates no heap
-memory, invokes no callback, reads no clock, and performs no transaction.
+`beginCycle()`, role-specific one-transaction-at-a-time ingestion,
+`finalizeCycle()`, `snapshot()`, and `initialized()`. The staged builder is
+caller-owned, opaque, noncopyable, nonmovable, and reused across cycles. Its
+storage is private and only policy methods may mutate it. Only finalization can
+mutate policy state. The policy is non-copyable and non-movable, allocates no heap memory,
+invokes no callback, reads no clock, and performs no transaction.
 Reset retains the four configured identities but clears ordering, conversion,
 last-value, presence, and step history to four `Unqualified` slots.
 
@@ -66,7 +71,6 @@ The quality vocabulary must distinguish at least:
 - `Unqualified`;
 - `Current`;
 - `ConversionPending`;
-- `RomCrcFault`;
 - `ScratchpadCrcFault`;
 - `ResolutionMismatch`;
 - `ResetDefaultWithoutConversion`;
@@ -108,9 +112,11 @@ configuration for a configured role. The policy never repairs a ROM, trusts a
 printed serial number instead of bytes, truncates identity to a hash, or uses
 discovery order as identity.
 
-Every successful complete search cycle contains up to four retained Lesson 064
-pass witnesses. Each witness copies both its request `OneWireSearchState` and
-its completed `searchResult`. The first request is empty; every later request
+Every successful complete search cycle contains up to four normalized Lesson
+064 pass witnesses. Ingestion validates the complete transaction snapshot but
+retains only its compact transaction reference plus the request
+`OneWireSearchState` and completed `searchResult`. The first request is empty;
+every later request
 must equal the preceding completed result fieldwise, and no pass may follow a
 result with `lastDevice == true`. The terminal retained result must set
 `lastDevice` when the cycle is complete. Returned ROMs are derived only from
@@ -123,7 +129,7 @@ search is `DuplicateIdentity`, never silent de-duplication. A valid unexpected
 ROM remains bounded, attributable set-fault evidence and is never inserted or
 substituted for a missing configured probe. An explicit over-capacity marker
 is valid only when four retained results end with `lastDevice == false`, which
-proves another result exists beyond the envelope. It is mutually exclusive
+proves another result exists beyond the builder. It is mutually exclusive
 with a complete enumeration and cannot silently discard the extra device.
 
 A scratchpad read is exactly nine bytes. Its final byte must equal the
@@ -135,8 +141,10 @@ temperature, freshness, conversion, presence, or step baseline.
 
 Conversion request, completion evidence, and scratchpad read must correlate on
 the exact ROM, Lesson 064 owner/lifecycle/configuration, and one nonzero
-conversion generation. Evidence from different probes, lifecycles, or
-generations rejects before mutation.
+conversion generation. Completion and scratchpad witnesses explicitly bind
+the predecessor conversion-start transaction generation. Evidence from
+different probes, lifecycles, predecessors, or generations rejects before
+mutation.
 
 The scratchpad configuration resolution must be one of 9, 10, 11, or 12 bits
 and must equal that configured slot's expected resolution. The decoder treats
@@ -144,6 +152,9 @@ resolution-dependent low temperature bits only according to the proved
 scratchpad resolution. Mixed resolutions across the four slots are supported;
 one slot's deadline or bit mask is never applied to another.
 
+`ConversionPending` is valid only before the resolution maximum. Pending at
+or after that maximum, and completed-high evidence after the maximum, is
+`TransportFault`; completed-high evidence before the maximum is valid.
 `ConversionPending` retains the previous trusted temperature and its original
 observation time and age. It does not read an incomplete scratchpad, refresh
 freshness, or publish a cold/default value. The documented `+85 °C` power-on
@@ -152,8 +163,12 @@ completed conversion precedes the read. The same numeric value after a fully
 correlated completed conversion is a valid possible reading and cannot be
 rejected by heuristic.
 
-Freshness begins at the correlated completed scratchpad observation time, not
-policy-update, search, request, or polling time. CRC failures, transport
+Freshness begins at the per-scratchpad policy-clock `TimePoint` supplied in
+the same ingestion call as the correlated completed scratchpad transaction,
+not policy-update, search, request, or polling time. The caller owns the
+correlation between the transaction's microsecond clock and this policy clock;
+the compact witness binds both, and Lesson 065 validates chronology in each
+domain without inventing a shared epoch. CRC failures, transport
 failures, incomplete conversion, and duplicate replay do not refresh it. Age
 at the configured maximum remains current; one millisecond older is `Stale`.
 
@@ -166,7 +181,7 @@ incomplete search is `TransportFault`; it cannot prove absence. Exactly four
 configured slots does not require four discoveries: a terminal enumeration of
 one through four devices can prove absent configured identities. Encountering
 a fifth device exceeds the bounded evidence capacity and cannot prove the
-four-slot set complete. A zero-pass envelope cannot claim a complete
+four-slot set complete. A zero-pass builder cannot claim a complete
 enumeration because it has no completed Lesson 064 search result; no-presence
 evidence remains `TransportFault` and cannot prove all four configured roles
 missing at this boundary.
@@ -190,15 +205,22 @@ surface, immersion, absolute accuracy, response-time, or waterproof behavior.
 
 ## Ordering and atomicity
 
-The complete set envelope has nonzero source/configuration/cycle identity.
+The completed staged cycle has nonzero source/configuration/cycle identity.
 Equal cycle sequence and observation time accept only a byte-identical full
 duplicate. A changed duplicate rejects atomically. An identical duplicate at
 a later valid policy time is idempotent: it does not extend conversion state,
 refresh a value, age a disappearance counter, or change step history.
+Duplicate equality covers the complete normalized cycle image fieldwise,
+including all normalized witnesses and stage state; it never compares padding,
+a digest, or only the fields relevant to the winning quality. Each failed
+begin/ingest/finish call leaves the builder byte-identical. Failed
+finalization leaves both the policy, including its retained prior normalized
+cycle, and the caller output byte-identical.
 
-Forward sequence and time use modular half-range ordering. Regression,
+Forward sequence and time use modular half-range ordering. `UINT32_MAX` to
+`1` is the valid nonzero cycle-sequence rollover. Zero, regression,
 backward time, exact-half-range ambiguity, source/configuration/lifecycle
-change, sequence exhaustion, a search-pass count above four, crossed conversion
+change, a search-pass count above four, crossed conversion
 identity, contradictory search completion/over-capacity flags, broken
 request/result search continuity, or any partial transaction rejects the
 complete update without advancing one slot. A structurally valid explicit
@@ -206,10 +228,17 @@ over-capacity marker on four nonterminal results instead commits bounded
 `TransportFault` evidence; it never masquerades as a complete search.
 
 A structurally valid complete cycle commits all four side outcomes together.
-One CRC fault or missing slot does not erase three current slots. Deterministic
-returned-status precedence follows configured slot order after set-level
-structural and transport failures; the complete snapshot retains every
-collision.
+One scratchpad CRC fault or missing slot does not erase three current slots.
+An invalid-family or invalid-CRC discovered ROM is instead a set-level
+`TransportFault`; it is never attributed to a configured slot as
+`RomCrcFault`. Set quality precedence is structural rejection, producer/search
+transport or invalid discovered identity, duplicate identity, CRC-valid
+unknown identity, proved missing, then complete. The snapshot masks are
+frozen: `presentMask` marks exactly the configured ROMs derived from a
+structurally complete search, `validCount` counts exactly `Current` slots, and
+`faultMask` marks every non-`Current` configured slot. Deterministic returned
+status precedence follows configured slot order after set-level structural and
+transport failures; the complete snapshot retains every collision.
 
 ## Deterministic proof matrix
 
@@ -232,7 +261,8 @@ Host tests must include:
 - all four resolutions in one set, resolution mismatch, and
   resolution-specific low-bit handling;
 - conversion request/pending/completion/read at immediately before, at, and
-  after each resolution-dependent deadline;
+  after each resolution-dependent maximum, including early completed-high and
+  pending/completed-high at and after the maximum;
 - crossed ROM, generation, owner, lifecycle, configuration, transaction
   sequence, and completion evidence;
 - `+85 °C` without a completed conversion and the same value after a
@@ -244,8 +274,13 @@ Host tests must include:
 - one bad slot with three current slots, all simultaneous quality collisions,
   and deterministic configured-slot status precedence;
 - byte-identical duplicate, changed duplicate, regression, rollover,
-  exact-half-range ambiguity, sequence exhaustion, reset, restart, and
-  byte-identical full replay.
+  exact-half-range ambiguity, `UINT32_MAX`-to-`1` cycle rollover, nested
+  Lesson 064 sequence exhaustion, reset, restart, and
+  byte-identical full replay; and
+- canary and complete-image comparisons proving every failed
+  begin/search/finish/start/status/scratchpad ingestion leaves the builder
+  byte-identical, and every failed finalization leaves the retained policy and
+  caller output byte-identical.
 
 The compile-only Mega replay copies fixed transactions and observations into
 named volatile result cells. It requests no bus or hardware resource and never
@@ -261,8 +296,8 @@ decision, timestamp rollover, reset, and restart with faults present.
 
 | Composition pressure | Applicability and required evidence |
 |---|---|
-| Scheduler and time load | Applicable. One bounded four-slot update performs no polling, retry, bus search, catch-up, or blocking conversion. Prove fixed iteration bounds, resolution-specific copied deadlines, simultaneous cycle handling, rollover, and missed-update freshness. |
-| Total memory and hardware resources | Applicable. Measure four configurations, four observations, complete copied envelope/result, policy object, canonical sketch static SRAM/flash, conservative stack, and linked Lesson 066 maximum composition. E0 hardware claims remain exactly zero. |
+| Scheduler and time load | Applicable. Bounded one-transaction ingestion plus one bounded four-slot finalization performs no polling, retry, bus search, catch-up, or blocking conversion. Prove fixed iteration bounds, resolution-specific copied deadlines, simultaneous cycle handling, rollover, and missed-update freshness. |
+| Total memory and hardware resources | Applicable. Measure four configurations, four observations, one lifetime-reused staged builder and transient Lesson 064 snapshot, result, policy object, canonical sketch static SRAM/flash, conservative stack, and linked Lesson 066 maximum composition. E0 hardware claims remain exactly zero. |
 | Shared bus or transport | Not applicable inside Lesson 065: the API accepts only completed copied Lesson 064 values and cannot call, borrow, arbitrate, or restart a bus. Lesson 064 and E1 own any physical shared-bus pressure. |
 | Persistence and recovery | Not applicable: configured identities are firmware configuration and all observation/conversion history is volatile. Lesson 065 makes no RTC, SD, EEPROM, media, power-loss, or durable-record claim. |
 | Motion, external power, or stored energy | Not applicable at E0 because no actuation or supply path exists. Parasite power, strong pull-up, switched rail, immersion, and thermal stimuli remain E1 exclusions until exact qualification. |
@@ -280,8 +315,49 @@ These are promotion gates, not measurements:
 | ordinary Mega replay static SRAM | 1,024 B | 1,536 B |
 | conservative synchronous stack | 448 B | 640 B |
 | `Qualified18B20ProbeSetPolicy` object | 512 B | 768 B |
-| each caller-owned envelope/result buffer | 256 B | 512 B |
+| caller-owned staged cycle builder | 448 B | 512 B |
+| caller-owned snapshot/result | 256 B | 512 B |
 | residual Mega SRAM after static, stack, and 128 B reserve | 3,072 B | 2,048 B floor |
+
+The rejected monolithic full-evidence draft was approximately 980 bytes before
+the clock-domain repair and could not satisfy the 512-byte hard gate. The
+staged design validates complete Lesson 064 snapshots one at a time, retains
+the common owner/lifecycle/configuration tuple once, and normalizes only facts
+required for final atomic qualification. Its declared-field budget is about
+446 bytes before ABI padding: approximately 180 bytes for four normalized
+search witnesses, 240 bytes for four normalized probe witnesses, and 26 bytes
+for common cycle attribution and state. Exact AVR `sizeof` must be at most 448
+bytes to meet target and 512 bytes to proceed. The canonical maximum
+composition lifetime-reuses one staged builder and one transient Lesson 064
+snapshot; neither the rejected envelope nor a second active builder is live.
+The policy nevertheless retains one exact 446-byte prior normalized cycle for
+collision-free changed-duplicate rejection. The resulting draft AVR-like
+sizes are builder 446 bytes, snapshot 164 bytes, and policy 713 bytes. The
+policy's 201-byte object-target miss is reviewable because exact replay
+identity cannot be replaced by a digest; 713 remains 55 bytes below the
+768-byte hard limit.
+
+The recurring Lesson 065 placement is exactly one 713-byte policy (including
+its retained prior cycle) plus one 446-byte active builder: 1,159 bytes of
+persistent storage. The 164-byte caller output and one 84-byte transient
+Lesson 064 snapshot are phase-scoped caller/stack temporaries; the transaction
+snapshot is reused for every ingestion call. Finalization creates no second
+output or normalized cycle. Exact static and conservative stack probes must
+measure that real placement independently.
+
+For Lesson 066, the active builder cannot be overlaid: the next acquisition
+cycle must remain stageable while the mapper and last accepted set remain
+live. The recurring composition therefore starts with the 254-byte Lesson 064
+object, 713-byte Lesson 065 object, 446-byte builder, and estimated 480-byte
+mapper, about 1,893 bytes before runtime values. Mapper result and transient
+transaction evidence are phase-scoped and lifetime-reused, with no by-value
+duplicate of the 164-byte qualified snapshot. This forces a documented
+downstream revision of the Lesson 066 aggregate static target/hard gate from
+1,536/2,048 bytes to 2,048/3,072 bytes. The 2,048-byte residual floor,
+1,024-byte stack hard limit, and exact measurement remain unchanged. This
+wide consequence is accepted at plan level because overlay would break
+recurring operation; it is not a fit claim, and Lesson 066 header freeze
+remains gated on the exact aggregate tuple.
 
 The exact gate must fingerprint compiler, core, flags, sources, commands, and
 input evidence; assert all public enum and structure sizes/alignments/traits;
