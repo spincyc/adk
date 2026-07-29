@@ -56,5 +56,6 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	1	Lesson055ClueConstraintModel	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	8596	20480	1261	2048
 1	1	Lesson056FaultAwareOperatorPanel	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	16028	28672	1454	3072
 1	1	Lesson057InertEscapeConsole	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	32332	40960	3655	4608
-1	1	Lesson058MultiplexedDigits	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6234	12288	759	768
+1	2	Lesson058MultiplexedDigits	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6540	12288	781	1024
 1	1	Lesson059Max7219Presentation	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5480	16384	640	1024
+1	1	Lesson060DualDisplayTimingDesk	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	19518	32768	1348	2048

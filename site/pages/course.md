@@ -55,13 +55,13 @@ lesson number divisible by three is project-bearing.
 | 057 | Atomic clue and panel composition | Inert escape-room console | Host verified; E0 replay only |
 | 058 | Supplied-time blank/segment/select transactions | Nonblocking multiplexed digits | Host verified; E0 intent only |
 | 059 | Bounded MAX7219 register command/receipt transactions | Matrix presentation policy | Host verified; E0 intent only |
+| 060 | Stopwatch and two display policies | Dual-display timing desk | Host verified; E0 intent only |
 
-The retained Lessons 060–081 sequence is front-loaded for learner engagement.
+The retained Lessons 061–081 sequence is front-loaded for learner engagement.
 This is planned work, not a support or bench-verification claim:
 
 | Lessons | Planned focus | Project |
 |---:|---|---|
-| 060 | Multiplexed and MAX7219 presentation composition | Dual-display timing desk |
 | 061–063 | Resistive and thermal/radiant observations | Museum-case monitor |
 | 064–066 | Single-wire probes and qualified thermal sets | Thermal gradient mapper |
 | 067–069 | Normalized inertial records and source qualification | Interchangeable motion recorder |
