@@ -683,38 +683,55 @@ probes are not claimed.
 
 ## Lessons 064--066: multi-probe thermal mapper
 
+The controlling
+[implementation-depth plan](../design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md)
+defines the E0 contracts, capacities, deterministic fixtures, and resource
+gates. E0 is copied-policy work only: it owns no pin, bus, endpoint, supply,
+display, clock, or storage medium.
+
 ### 064 — Owned single-wire transactions
 
-Add an owned, bounded single-wire transaction endpoint with explicit reset,
-presence, bit-slot, strong-pull-up policy, timeout, and rollback. Add DS18B20
-identity, scratchpad, CRC, resolution, and conversion-state handling above it;
-do not hide timing or parasite-power requirements in the sensor class.
+Add a bounded transaction policy over copied line receipts with explicit reset,
+presence, bit-slot, external-power policy, timeout, and rollback. A future E1
+adapter may own an exact single-wire endpoint; E0 emits inert transaction intent
+and cannot drive a pin or strong pull-up. DS18B20 identity, scratchpad, CRC,
+resolution, and conversion-state handling remain above transport in Lesson 065.
 
 ### 065 — Qualified thermal probe sets
 
-Compose fixed-capacity probe identities and readings into a thermal snapshot.
-Duplicate identities, disappearance, conversion-in-progress, CRC failure,
-stale values, implausible steps, and mixed resolutions remain visible.
+Compose exactly four configured ROM identities and copied transaction results
+into a qualified thermal snapshot. This exact-four source contract is distinct
+from Lesson 066's configured two-to-four-probe spatial subset. Duplicate
+identities, disappearance, conversion-in-progress, CRC failure, stale values,
+implausible steps, and mixed resolutions remain visible.
 
 ### 066 — Project: thermal gradient mapper
 
-Two or more identified probes measure a safe tabletop gradient produced by
-room-temperature and hand-warmed objects. The LCD pages through probe identity,
-temperature, age, and validity while LEDs show which probe is being presented.
-RTC/SD records use the stable sensor identity rather than discovery order.
+At E0, two to four identities selected from Lesson 065's exact four-probe
+source are arranged in configured spatial order. The mapper consumes copied
+observations and controls, then emits inert presentation intent and a
+fixed-field record image inside the caller-owned result. It does not write RTC,
+SD, EEPROM, or any other medium. A future E1 fixture may page an LCD and LEDs
+through probe identity, temperature, age, and validity, and may separately
+qualify a durable adapter that keys records by stable identity rather than
+discovery order.
 
 Deterministic evidence includes reset/presence slots, ROM search fixtures,
 CRC vectors, resolution-dependent deadlines, duplicate and disappearing
-probes, timestamp wrap, and interrupted records. The data line, switched probe
-rail, and conversion-activity LED provide non-Serial evidence; a fault pattern
+probes, timestamp wrap, and exact caller-owned record images. E0 result cells
+and byte-stable replay are the non-Serial observation path. Future E1 work may
+qualify the data line, a direct probe-VDD test point, and a
+conversion-activity LED; no switched probe rail is promised. A fault pattern
 cannot be mistaken for a cold reading.
 
-The specimen gate records the exact DS18B20 marking, package, pull-up,
-waterproof-probe construction if present, supply mode, and datasheet. No
-immersion, hot surface, parasite-power, or unknown three-pin module is used
-until its electrical and material construction is established.
+All powered work is E1-only. Its specimen gate records the exact DS18B20
+marking, package, pinout, pull-up, waterproof-probe construction if present,
+supply mode, direct VDD test point, and datasheet. No immersion, hot surface,
+parasite-power, or unknown three-pin module is used until its electrical and
+material construction is established.
 
-Planned specimen coverage: DS18B20 variants, LCD, RTC, SD, buttons, and LEDs.
+Planned E1 specimen coverage: DS18B20 variants, LCD, RTC, SD, buttons, and
+LEDs.
 
 ## Lessons 067--069: interchangeable motion recorder
 
