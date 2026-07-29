@@ -16,7 +16,7 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--063 use the first-class per-object
+ADK is early-stage software. Lessons 001--064 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
@@ -57,6 +57,11 @@ Lesson 063 composes the copied environmental roles with qualified reed,
 acknowledgement, and receipt evidence into additive hazard, alarm/cooldown,
 presentation, relay-lamp, and audit intent. It owns no powered endpoint,
 storage transport, relay, lamp, display, clock, or physical alarm.
+Lesson 064 publishes a closed, bounded copied 1-Wire transaction policy at
+E0. It expands typed operations into semantic line intents and validates
+correlated receipts without owning a pin, endpoint, pull-up, clock, interrupt,
+bus, or powered circuit. Exact externally powered and parasite-powered
+endpoints remain separate E1a and E1b campaigns.
 
 The hierarchy is developed in dependency order:
 
@@ -68,11 +73,11 @@ The per-object lifecycle uses transactional `initialize()`, idempotent
 `shutdown() noexcept`, and destructor-driven cleanup. The original
 global-registration preview is frozen under [Legacy](legacy/index.md).
 
-The latest completed project arc is Lessons 058--060: supplied-time multiplex
-intent and bounded MAX7219 transactions composed into a deterministic
-dual-display timing desk. Exact powered displays and E1 acceptance remain
-open. Lesson 063 completes the latest published project arc; Lesson 064 is the
-next active implementation boundary. See the
+The latest completed project arc is Lessons 061--063: copied environmental
+observations composed into an inert museum-case monitor. Powered sensors,
+adapters, presentation, loads, and physical acceptance remain open.
+[Lesson 064](lessons/064.md) is the latest published component boundary.
+Lesson 065 is the next implementation boundary. See the
 [course map](course.md) for that order and the
 [roadmap](docs/ROADMAP.md) for the full sequence.
 

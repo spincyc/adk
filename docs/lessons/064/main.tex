@@ -1,0 +1,454 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.60in]{geometry}
+\usepackage{booktabs,enumitem,fancyhdr,graphicx,listings,tabularx,titlesec,xcolor}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{docs/lessons/assets/}{assets/}}
+\hypersetup{
+ pdftitle={ADK Lesson 064: Owned Single-Wire Transactions},
+ pdfauthor={Kevin Shanahan},
+ pdfsubject={A bounded copied intent and receipt policy for typed DS18B20-family single-wire transactions},
+ pdflang={en-US}}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\textsc{ADK Lesson 064}}\rhead{Owned Single-Wire Transactions}
+\cfoot{\thepage}\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{3pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.5em}{}
+\newcommand{\lessonbox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{#1}}\end{center}}
+\newcommand{\blankline}{\rule{0.76in}{0.4pt}}
+\newcommand{\longblank}{\rule{1.35in}{0.4pt}}
+\lstset{
+ basicstyle=\ttfamily\footnotesize,
+ columns=fullflexible,
+ breaklines=true,
+ frame=single,
+ rulecolor=\color{black},
+ showstringspaces=false}
+
+\begin{document}
+\small
+\begin{center}
+ {\Huge\bfseries Owned Single-Wire Transactions}\\[3pt]
+ {\Large Prove a bounded policy before touching a bus}\\[7pt]
+ \fbox{\textbf{E0 SYNTHETIC REPLAY --- NO PIN, PULL-UP, OR SENSOR}}
+\end{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 064 --- component & Time & 180--240 minutes\\
+Status & host verified and published at E0 & Board & compile-only Mega replay\\
+Input & copied requests and line receipts & Observation & named intent/snapshot cells\\
+\end{tabularx}
+
+\lessonbox{\textbf{Responsibility.}
+\texttt{OneWireTransactionPolicy} expands one reviewed typed operation into a
+bounded sequence of copied line intents, validates one correlated copied
+receipt at a time, retains an attributable accepted prefix, and requests
+release during completion or rollback. It cannot drive, sample, power, or
+release a physical line.}
+
+\section{Separate protocol policy from electrical execution}
+The DS18B20 data sheet describes an open-drain 1-Wire interface, reset and
+presence behavior, read and write slots, ROM commands, supply modes, and
+device timing limits.\footnote{\href{https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf}{Analog Devices, \emph{DS18B20 Programmable Resolution 1-Wire Digital Thermometer}, Rev. 6.}}
+Those facts explain what a future qualified adapter must implement. They do
+not prove that an unidentified kit part, a Mega pin, or a particular pull-up
+meets the requirements.
+
+Lesson 064 therefore stops at a copied evidence boundary. The policy emits
+semantic values such as \texttt{DriveLow}, \texttt{Release}, and
+\texttt{Sample}. A synthetic producer returns a copied receipt saying what it
+applied or observed. E0 proves only that the policy processes that evidence
+deterministically.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.85in,keepaspectratio]
+ {064-evidence-boundary-pencil.png}
+
+\small\textit{Alternative text: a graphite policy box hands two blank copied
+cards toward a locked gate; a faint generic sensor silhouette remains isolated
+beyond the gate, and no physical connection crosses it.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}X X@{}}
+\toprule
+E0 can establish & E0 cannot establish\\
+\midrule
+typed phase order and receipt correlation & pin ownership, voltage, or open-drain behavior\\
+configured timing-window acceptance & physical pulse width, rise time, or interrupt margin\\
+bounded rollback and release intent & a physical line reached idle\\
+byte-stable replay from copied evidence & genuine DS18B20 identity or thermal behavior\\
+\bottomrule
+\end{tabularx}
+
+There is no formal electrical schematic or wiring exercise in this lesson.
+An authoritative schematic requires an exact specimen, package and pinout,
+ordinary pull-up and supply choice, endpoint ownership, measured rails and
+waveforms, and separate resource and safe-state evidence.
+
+\section{Use a closed operation vocabulary}
+The public request chooses one reviewed operation. Reset/presence, one bounded
+ROM-search pass, and single-drop ROM read cover identification mechanics.
+Addressed operations cover power-supply read, conversion start, one conversion
+status continuation, and scratchpad read. Their public enum spellings are
+\texttt{ResetPresence}, \texttt{SearchRomPass},
+\texttt{ReadRomSingleDrop}, the four \texttt{MatchRom...} operations. No
+request accepts arbitrary command bytes, captured pulse trains, or an unknown
+replay script.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.75in,keepaspectratio]
+ {064-typed-operations-pencil.png}
+
+\small\textit{Alternative text: four graphite index cards progress through a
+reset gesture, an identity tag, bounded slot marks, and an open-hand release
+gesture; the surrounding prose supplies the operation names.}
+\end{center}
+
+Addressed operations reject only the all-zero ROM. Every other complete
+64-bit value is transported byte-for-byte, including a wrong-family or
+bad-CRC value. Lesson 064 does not call it valid. Lesson 065 exclusively owns
+family-\texttt{0x28} and Dallas CRC qualification.
+
+\texttt{ReadRomSingleDrop} is admitted only when configuration explicitly
+names a single-drop fixture. Multidrop work uses exactly one bounded
+\texttt{SearchRomPass}. The manufacturer search algorithm explains why each
+device's 64-bit ROM participates in a discrepancy tree,\footnote{\href{https://www.analog.com/en/resources/app-notes/1wire-search-algorithm.html}{Analog Devices, \emph{1-Wire Search Algorithm}, Application Note 187.}}
+but its enumeration order is evidence order, never physical position.
+
+Every ordinary operation begins with reset and presence.
+\texttt{ResetPresence} stops there without sending a command. The sole reset
+exception is \texttt{MatchRomReadConversionStatus}: it is admitted only as a
+one-slot continuation of this policy's immediately preceding completed
+\texttt{MatchRomStartConversion} for the same nonzero ROM. A free-standing
+status request rejects atomically.
+
+Why should a wrong-family nonzero ROM be transported rather than ``fixed'' by
+Lesson 064? \longblank.
+
+\section{Make microsecond time explicit}
+The repository's millisecond time type cannot represent single-wire slot
+windows. Lesson 064 uses a dedicated unsigned 32-bit
+\texttt{MicrosecondTimePoint} and \texttt{MicrosecondDuration}. Configuration
+names independent lower and upper limits for reset low, reset release,
+presence start, presence low, write-zero low, write-one low, read initiation,
+read sampling, complete slot, recovery, and the whole transaction deadline.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.70in,keepaspectratio]
+ {064-microsecond-window-pencil.png}
+
+\small\textit{Alternative text: a graphite timeline on torn paper has four
+ticks and a shaded admissible window between the middle ticks; a separate
+clock card represents caller-supplied microsecond time.}
+\end{center}
+
+Tests inspect immediately below, exactly at, and immediately above every lower
+and upper boundary. All configured durations stay strictly below the modular
+half range. Backward time and an exact half-range difference are ambiguous
+and reject atomically; an ordinary unsigned rollover with a valid forward
+distance is accepted.
+
+Analog Devices' software guidance emphasizes that recovery and sample timing
+depend on the device and network conditions.\footnote{\href{https://www.analog.com/en/resources/design-notes/1wirereg-extended-network-standard.html}{Analog Devices, \emph{1-Wire Extended Network Standard}, discussing Application Note 126 and network-dependent timing.}}
+The configured E0 windows are copied-evidence acceptance rules, not a claim
+that any physical waveform met them.
+
+\section{Correlate every intent and receipt}
+An operation request carries request sequence, typed operation, optional
+addressed ROM or fixed search state, supplied start time, supply mode, and
+producer status. Every emitted intent binds owner, lifecycle and configuration
+revisions, request and transaction generations, phase sequence, slot index,
+operation, line intent, legal action window, and addressed ROM.
+
+A receipt carries producer source and configuration, its own sequence and
+observation time, then repeats owner, lifecycle, request, transaction,
+operation, phase, phase sequence, slot, and applied-line correlation. It adds
+the copied sampled level, acceptance bit, and producer status. The addressed
+ROM and legal window remain in the owed intent and are checked through that
+binding; they are not receipt fields.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.65in,keepaspectratio]
+ {064-intent-receipt-pencil.png}
+
+\small\textit{Alternative text: two graphite cards face each other with the
+same ordered set of geometric seals and opposing arrows, representing exact
+field correlation and one return receipt.}
+\end{center}
+
+A matching receipt advances at most one phase or slot. A byte-identical
+duplicate is idempotent. Changed duplicates, crossed transactions, a foreign
+source, wrong generation, wrong operation, or wrong phase or slot reject
+atomically. A structurally matching receipt outside its inclusive window is
+retained as attributed timeout evidence and starts one release rollback; it
+does not advance the requested operation.
+
+Sequence regression and half-range ambiguity reject atomically. If a call
+cannot leave a unique next transaction, phase, lifecycle, receipt, or cleanup
+correlation, the entire call returns \texttt{CapacityExceeded} without
+mutation. No counter wraps to zero.
+
+\begin{enumerate}
+ \item If every field matches except the slot index, should the policy use the
+       sampled bit? \blankline.
+ \item If a byte-identical receipt is presented twice, how many phase
+       transitions occur in total? \blankline.
+ \item A receipt has valid correlation but producer failure. Does structure
+       reject, or does rollback begin?\\[2pt] \longblank.
+\end{enumerate}
+
+\section{Serialize least-significant bits first}
+The DS18B20 protocol sends data and commands least-significant bit first.
+Lesson 064 freezes the request at \texttt{begin()}, expands the allowlisted
+operation into bounded private slot mechanics, and assembles copied read bits
+back into bytes in the same order.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.65in,keepaspectratio]
+ {064-lsb-prefix-pencil.png}
+
+\small\textit{Alternative text: eight graphite cards with progressively
+darkened dots run left to right into a folder, representing least-significant
+first slot order and an attributable accumulated prefix.}
+\end{center}
+
+Partial read bytes are prefix evidence, not a completed device response. A
+failure at the first, middle, or final slot preserves exactly the admitted
+prefix and moves to cleanup. Neither an incomplete scratchpad nor a copied
+search branch becomes a temperature.
+
+For copied bits \(1,0,1,1,0,0,0,1\) in slot order, write the assembled byte
+in binary: \blankline. Which bit becomes the most significant bit?
+\blankline.
+
+\section{Treat release as an owed transaction}
+The policy never emits ``drive high.'' Its canonical inactive and cleanup
+line intent is \texttt{Release}. Initialization, reset, cancellation, timeout,
+producer failure, and shutdown may all leave one correlated release receipt
+owed. Exhaustion is the exception: if no unique cleanup correlation can be
+minted, the entire triggering call rejects atomically rather than promising
+an unconfirmable release.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=2.05in,keepaspectratio]
+ {064-release-cleanup-pencil.png}
+
+\small\textit{Alternative text: four separated graphite trays show active
+work, placement of an open-hand release card, a pending stack, and a confirmed
+card; a failed card lies separately below and does not overlap the path.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Evidence & Permitted statement\\
+\midrule
+policy emitted \texttt{Release} & software requested line release\\
+matching copied release receipt & producer reported applying the request\\
+future E1 waveform observation & qualified physical line reached its idle window\\
+\bottomrule
+\end{tabularx}
+
+\texttt{confirmCleanup()} is the sole closing seam. Reset becomes ready only
+after its matching copied release receipt. Shutdown remains initialized in a
+closing state so it can accept that receipt, then becomes inert. Shutdown
+supersedes any earlier pending cleanup with a fresh lifecycle and correlated
+\texttt{Release}; the earlier receipt becomes stale. Without the closing
+receipt, the snapshot remains \texttt{ReleaseUnconfirmed}; E0 never says the
+physical bus is idle.
+
+\texttt{completedEvidence()} returns \texttt{ResourceBusy} after successful
+data slots while terminal release remains unconfirmed. It returns
+\texttt{Ok} with the complete attributed snapshot only after that receipt,
+and returns \texttt{NotInitialized} for every other state.
+
+\section{Advance deadlines without polling}
+Ordinary phase transitions require one receipt through \texttt{update()}.
+The receipt-free \texttt{advance(now,intent)} path does only one job: inspect
+supplied time. At or before the deadline it leaves the owed phase unchanged.
+Only the first supplied time strictly after the deadline emits at most one
+correlated release intent. It never polls, retries, catches up, invents phase
+evidence, or synthesizes a cleanup receipt.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.85in,keepaspectratio]
+ {064-deadline-cleanup-pencil.png}
+
+\small\textit{Alternative text: a graphite hourglass runs, then empties beside
+one open-hand release card, which remains in a tray as the same unresolved
+cleanup obligation on later calls.}
+\end{center}
+
+\texttt{MatchRomReadConversionStatus} is a one-slot continuation, not a
+free-standing poll transaction. It is available only after this policy
+completed \texttt{MatchRomStartConversion} for the same ROM, and it reports
+one copied bit. A later status check requires another completed conversion
+start; the component hides no poll loop.
+
+Predict the result of calling \texttt{advance()} repeatedly after a timeout
+but before cleanup confirmation: number of successful phase receipts invented
+\blankline; cleanup quality \longblank.
+
+\section{Keep physical external-power evidence open}
+Only the copied \texttt{ExternallyPowered} supply-mode value is admitted at
+E0; admitting that enum does not energize or qualify a circuit.
+\texttt{ParasitePower} returns \texttt{Unsupported} before state changes.
+There is no strong-pull-up phase or intent. Ordinary \texttt{Release} must
+never be reinterpreted as output-high drive or strong-pull power.
+
+The data sheet explains that parasite operation uses the data line for power
+and imposes additional strong-pull requirements during operations such as
+temperature conversion. That is precisely why it is excluded here. A future
+parasite-power endpoint needs separate topology, current, rail, timing,
+exclusivity, rollback, stuck-on handling, and independent power-removal
+evidence.
+
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+Request & E0 disposition & Reason\\
+\midrule
+externally powered typed operation & eligible & copied protocol policy only\\
+parasite-powered operation & \texttt{Unsupported} & no reviewed power capability\\
+arbitrary captured transaction & invalid & outside closed operation surface\\
+scratchpad EEPROM copy & absent & endurance and strong-pull work excluded\\
+\bottomrule
+\end{tabularx}
+
+\section{Replay the state machine}
+The compile-only Mega sketch supplies microsecond values, requests, receipts,
+and fixed caller-owned output buffers. It does not include a GPIO adapter and
+must not be uploaded as a bus driver.
+
+\begin{lstlisting}
+OneWireStepIntent intent = {};
+OneWireTransactionSnapshot snapshot = {};
+OneWireTransactionSnapshot evidence = {};
+
+OneWireTransactionPolicy transaction(config);
+Status status = transaction.initialize(now, intent);
+status = transaction.confirmCleanup(now, releaseReceipt);
+status = transaction.begin(now, request, intent);
+status = transaction.update(now, phaseReceipt, intent);
+status = transaction.snapshot(snapshot);
+status = transaction.completedEvidence(evidence);
+\end{lstlisting}
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.80in,keepaspectratio]
+ {064-replay-ledger-pencil.png}
+
+\small\textit{Alternative text: a stack of graphite request cards and a
+separate receipt stack enter an abstract policy box, which fills five blank
+result cells in a row for the replay ledger.}
+\end{center}
+
+The canonical sketch records only baseline cleanup confirmation, parasite
+rejection, one reset/presence transaction and its terminal release,
+receipt-provenance predictions, one strictly-post-deadline timeout and
+rollback confirmation, and shutdown confirmation. Its named result cells do
+not claim to replay addressed reads, Search ROM, or malformed receipts.
+
+The host proof matrix separately covers every timing neighbor; presence absent, valid, early,
+late, and stuck; both copied read values; least-significant-first assembly;
+first, middle, and final slot failures; fieldwise changed duplicates; crossed
+correlation; single-drop restrictions; bounded search branches and collision;
+parasite rejection; timeout; cancellation; reset and shutdown cleanup;
+rollover and exhaustion; and two independent policies producing byte-stable
+results from the same trace.
+
+\section{Inspect gates before making a claim}
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Gate & E0 evidence & Still open\\
+\midrule
+resources & zero hardware owners and exact compiler report & physical pin/timer/interrupt ownership\\
+protocol & typed phases and copied timing boundaries & measured pulse, sample, rise, and recovery timing\\
+cleanup & correlated Release intent and receipt & physical high-impedance/idle voltage\\
+identity & byte-exact nonzero ROM transport & family, CRC, specimen authenticity\\
+power & parasite requests reject atomically & any strong-pull topology or campaign\\
+\bottomrule
+\end{tabularx}
+
+The ordinary Mega replay measures 10,390 bytes of flash and 735 bytes of
+static SRAM. The exact isolated no-LTO probe measures 12,116 bytes of flash,
+735 bytes of static SRAM, and 199 bytes of conservative synchronous stack.
+The policy object is 254 bytes: an independently accepted miss above the
+192-byte target, subject to a zero-growth constraint, and only two bytes below
+the 256-byte hard limit. Caller-owned request, search, intent, receipt, and
+snapshot values measure 29, 10, 45, 39, and 84 bytes, or 207 bytes together.
+After the specified reserve and stack accounting, 7,130 bytes of Mega SRAM
+remain.
+
+The ordinary sketch and exact isolated probe are separate measurement
+boundaries; their flash and static-SRAM values must not be added. These
+compiler measurements do not establish electrical timing, physical cleanup,
+or sensor behavior. Independent review accepts both flash target misses and
+the object target miss; every hard and residual gate passes. The stable
+evidence fingerprint is
+\texttt{266a24ec9cfa519756326a15563b6037a7be77e0b4f68a597efb9bb2d3f843b4}.
+
+\lessonbox{\textbf{E1a remains open.}
+Before any powered adapter, qualify an exact externally powered specimen and
+ordinary external pull-up. Record package and pinout, genuine/compatible
+evidence, supply and current, drive-low and release rails, rise time,
+reset/presence/slot waveforms, interrupt effects, timeout cleanup, stuck-low
+behavior, startup/reset/shutdown, and an independent physical line-release
+observation. Parasite power remains E1b-closed.}
+
+\section{Completion record}
+\begin{tabularx}{\linewidth}{@{}X X@{}}
+\toprule
+Check & Result or evidence\\
+\midrule
+Closed typed operation and nonzero-ROM transport boundary & \\
+\addlinespace[1.1em]
+Every configured microsecond-window neighbor and rollover & \\
+\addlinespace[1.1em]
+Intent/receipt correlation, duplicate, regression, and exhaustion & \\
+\addlinespace[1.1em]
+Least-significant-first slots and attributable partial prefix & \\
+\addlinespace[1.1em]
+Timeout, cancellation, reset, shutdown, and cleanup confirmation & \\
+\addlinespace[1.1em]
+Parasite rejection and absence of hidden polling/retry & \\
+\addlinespace[1.1em]
+Canonical replay, exact resource evidence, and open E1 gates & \\
+\addlinespace[1.1em]
+\bottomrule
+\end{tabularx}
+
+\begin{center}
+\fbox{\parbox{0.90\linewidth}{
+\textbf{Completion statement:} I can distinguish copied protocol evidence
+from electrical execution, correlate every bounded phase, preserve partial
+prefix and cleanup debt, explain why release is not proof of an idle bus, and
+name the physical evidence still required.
+
+\vspace{0.10in}
+Learner: \longblank\quad Reviewer: \longblank\quad Date: \blankline
+}}
+\end{center}
+
+\section*{Primary references}
+\begin{itemize}
+ \item Analog Devices, \emph{DS18B20 Programmable Resolution 1-Wire Digital
+       Thermometer}, Rev. 6,
+       \href{https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf}{manufacturer data-sheet PDF}.
+ \item Analog Devices, \emph{1-Wire Search Algorithm}, Application Note 187:
+       \href{https://www.analog.com/en/resources/app-notes/1wire-search-algorithm.html}{manufacturer application-note page}.
+ \item Analog Devices, \emph{1-Wire Extended Network Standard}, including its
+       discussion of Application Note 126:
+       \href{https://www.analog.com/en/resources/design-notes/1wirereg-extended-network-standard.html}{manufacturer design-note page}.
+\end{itemize}
+
+This print edition is untagged. Its text is searchable and copyable, and the
+HTML lesson provides the hardware-independent alternative. No PDF/UA, WCAG,
+or other PDF accessibility-conformance claim is made.
+
+\end{document}

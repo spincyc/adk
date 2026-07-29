@@ -8,7 +8,7 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--063 have first-class implementation work, deterministic host
+Lessons 001--064 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
 bench cards remain open. Lessons 037--039 use documented C&K and SparkFun
 reference fixtures; incoming conformance and physical acceptance remain open.
@@ -86,17 +86,18 @@ exact no-LTO aggregate measures 22,980 bytes flash, 1,405 bytes static SRAM,
 819 bytes stack, and 709 bytes of child/monitor objects, leaving 5,840 bytes
 residual SRAM. Powered presentation, combined sensing, persistence, and relay
 fixtures remain E1c/E1d/E2-open.
-Lessons 064--066 are specified, but not implemented, under the
-[implementation-depth E0 plan](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md).
-Their initial architecture stress passes cover the
-[single-wire transaction](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md),
-[qualified probe set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md),
+Lesson 064 is host verified and published at E0 under the
+[thermal-mapper plan](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) and
+[single-wire transaction stress pass](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md).
+It publishes `OneWireTransactionPolicy` over copied requests, semantic line
+intents, copied receipts, and caller-supplied microsecond time. Lessons 065
+and 066 remain planned under the
+[qualified probe-set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md)
 and
-[thermal gradient mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md)
-boundaries. E0 is limited to copied receipts, configured identities, supplied
-time, and inert presentation/record intent. Exact powered specimens,
-single-wire electrical behavior, thermal accuracy, persistence, and every
-bench acceptance level remain open.
+[thermal-gradient mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md)
+boundaries. Exact powered specimens, electrical single-wire behavior, thermal
+accuracy, presentation, persistence, and every E1a--E1d bench acceptance
+level remain open.
 The later blocks are ordered for early learner engagement while retaining
 prerequisite, authorization, safety, and evidence gates: interactive motion
 and display projects precede the more methodical environmental and
@@ -195,6 +196,7 @@ For every lesson, the queued implementation order is:
 | 061 | Host verified; exact powered probe/E1a bench open | `ResistiveProbeObservationPolicy` | Copied calibration, excitation-off, freshness, ordering, corrosion-duty, provenance, and quality evidence without a powered adapter |
 | 062 | Host verified; exact powered modules/E1b bench open | `ThermalRadiantObservationPolicy` | Three distinct copied roles preserve thermistor uncertainty, categorical Digital Temperature and radiant evidence, independent ages, disagreement, and saturation |
 | 063 | Host verified; E1c/E1d/E2 fixtures open | `MuseumCaseMonitor` | Additive hazards, alarm latch, fresh acknowledgement/cooldown, inert output intent, and bounded copied audit delivery |
+| 064 | Host verified; exact powered endpoint/E1a bench open | `OneWireTransactionPolicy` | Closed typed requests, semantic line intents, exact copied receipts, bounded search, timeout, rollback, cleanup, and byte-stable replay without owning a bus |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation

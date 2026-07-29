@@ -43,7 +43,8 @@ The public value model must retain these facts without caller pointers:
 - one configuration record for each of the four ROMs, including expected
   resolution, maximum age, and maximum step in sixteenths Celsius;
 - one copied set envelope with nonzero source/configuration/cycle identity,
-  supplied observation time, complete bounded search evidence, and one
+  supplied observation time, up to four chained copied `SearchRomPass`
+  request/result witnesses, explicit completion/over-capacity state, and one
   role-specific conversion/read record per returned device;
 - each copied transaction's Lesson 064 owner, lifecycle/configuration,
   transaction sequence/generation, addressed ROM, operation, reset/presence,
@@ -107,12 +108,23 @@ configuration for a configured role. The policy never repairs a ROM, trusts a
 printed serial number instead of bytes, truncates identity to a hash, or uses
 discovery order as identity.
 
-Every successful complete search cycle validates the CRC of every returned
-ROM before matching. A configured ROM always maps to its configured slot,
-regardless of returned permutation. Repeating one ROM in the same complete
+Every successful complete search cycle contains up to four retained Lesson 064
+pass witnesses. Each witness copies both its request `OneWireSearchState` and
+its completed `searchResult`. The first request is empty; every later request
+must equal the preceding completed result fieldwise, and no pass may follow a
+result with `lastDevice == true`. The terminal retained result must set
+`lastDevice` when the cycle is complete. Returned ROMs are derived only from
+these completed results, then CRC-validated before matching; there is no
+parallel caller-supplied ROM list.
+
+A configured ROM always maps to its configured slot, regardless of derived
+search-result permutation. Repeating one derived ROM in the same complete
 search is `DuplicateIdentity`, never silent de-duplication. A valid unexpected
 ROM remains bounded, attributable set-fault evidence and is never inserted or
-substituted for a missing configured probe.
+substituted for a missing configured probe. An explicit over-capacity marker
+is valid only when four retained results end with `lastDevice == false`, which
+proves another result exists beyond the envelope. It is mutually exclusive
+with a complete enumeration and cannot silently discard the extra device.
 
 A scratchpad read is exactly nine bytes. Its final byte must equal the
 specified CRC-8 of the preceding eight before temperature, resolution, or
@@ -147,9 +159,17 @@ at the configured maximum remains current; one millisecond older is `Stale`.
 
 ## Missing, reappearance, and step semantics
 
-Only a structurally complete successful search cycle can prove that a
-configured ROM is `Missing`. A failed, truncated, capacity-exceeded, or
-otherwise incomplete search is `TransportFault`; it cannot prove absence.
+Only a structurally complete successful chained search cycle with a terminal
+`lastDevice` result can prove that a configured ROM is `Missing`. A failed,
+truncated, discontinuous, unterminated, capacity-exceeded, or otherwise
+incomplete search is `TransportFault`; it cannot prove absence. Exactly four
+configured slots does not require four discoveries: a terminal enumeration of
+one through four devices can prove absent configured identities. Encountering
+a fifth device exceeds the bounded evidence capacity and cannot prove the
+four-slot set complete. A zero-pass envelope cannot claim a complete
+enumeration because it has no completed Lesson 064 search result; no-presence
+evidence remains `TransportFault` and cannot prove all four configured roles
+missing at this boundary.
 
 A missing slot retains its configured identity, last trusted temperature,
 original observation time, and increasing age. It never collapses the array,
@@ -178,9 +198,12 @@ refresh a value, age a disappearance counter, or change step history.
 
 Forward sequence and time use modular half-range ordering. Regression,
 backward time, exact-half-range ambiguity, source/configuration/lifecycle
-change, sequence exhaustion, malformed counts, over-capacity evidence,
-crossed conversion identity, or any partial transaction rejects the complete
-update without advancing one slot.
+change, sequence exhaustion, a search-pass count above four, crossed conversion
+identity, contradictory search completion/over-capacity flags, broken
+request/result search continuity, or any partial transaction rejects the
+complete update without advancing one slot. A structurally valid explicit
+over-capacity marker on four nonterminal results instead commits bounded
+`TransportFault` evidence; it never masquerades as a complete search.
 
 A structurally valid complete cycle commits all four side outcomes together.
 One CRC fault or missing slot does not erase three current slots. Deterministic
@@ -195,8 +218,12 @@ Host tests must include:
 - four configured ROMs with literal known-good CRCs, family mismatch, one
   corruption in every ROM byte, and duplicate configuration;
 - search permutations across all four identities proving invariant slot order;
-- returned counts below, at, and above four; unknown, missing, duplicated, and
-  unknown-plus-missing combinations;
+- exact initial state, request/result continuity, early and missing
+  `lastDevice`, a pass after terminal state, and explicit fourth-result
+  nonterminal over-capacity;
+- derived result counts below and at four, explicit beyond-four
+  over-capacity, and unknown, missing, duplicated, and unknown-plus-missing
+  combinations;
 - complete successful search versus reset failure, truncated search, partial
   ROM, transport failure, and capacity failure;
 - scratchpad CRC vectors plus one corruption in every scratchpad byte;

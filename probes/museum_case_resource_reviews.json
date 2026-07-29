@@ -3,25 +3,25 @@
     {
       "authority": "docs/design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md#canonical-e0-resource-gates",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "e4741f352099f3c8fcbc9c27499b8c31c6ae7a78f6ff4089d8202d99e3d36dec",
+      "fingerprint_sha256": "e61f2c01f818bfb6616b44d01dacf3e0b386a21f04c52bfe35611d435c16c445",
       "hard_bytes": 1536,
       "lesson": "062",
       "metric": "ordinary_static_sram",
       "observed_bytes": 1133,
       "rationale": "The inspectable nine-frame E0 replay ledger accounts for the target overage; exact policy, stack, caller-buffer, and residual gates pass, while PROGMEM would add AVR-specific copying and stack pressure to the narrative fixture.",
-      "reviewer": "l062_resource_review",
+      "reviewer": "museum-fingerprint-review/current-toolchain",
       "target_bytes": 1024
     },
     {
       "authority": "docs/design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md#canonical-e0-resource-gates",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "d376c43b63f42f2ed48c768d9afcaa2583d5a2b4e194a45f9a3f125694e41543",
+      "fingerprint_sha256": "e4ca2bc54e86966ba91933da7bdc3717e0133edcbceac2dd961b5550266de978",
       "hard_bytes": 896,
       "lesson": "063",
       "metric": "synchronous_stack",
       "observed_bytes": 819,
       "rationale": "The corrected canonical linked fixture owns one global caller envelope; remaining bounded stack is attributable to the inspectable replay frame and atomic audit/state transaction, while every hard, caller-buffer, object, static, flash, and residual gate passes.",
-      "reviewer": "l063_stack_review",
+      "reviewer": "museum-fingerprint-review/current-toolchain",
       "target_bytes": 640
     }
   ],

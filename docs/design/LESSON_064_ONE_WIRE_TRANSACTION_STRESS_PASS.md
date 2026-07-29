@@ -1,8 +1,8 @@
 # Lesson 064 1-Wire transaction architecture stress pass
 
-Status: initial pre-implementation review; the E0 copied intent/receipt policy
-is permitted, while every powered endpoint and physical timing claim remains
-open.
+Status: implementation reconciliation; the E0 copied intent/receipt policy
+matches the boundaries below and awaits final review against a frozen core,
+while every powered endpoint and physical timing claim remains open.
 
 Lesson 064 introduces a bounded transaction policy for the listed DS18B20
 family. It does not introduce a GPIO driver, delay-based bit banging, a
@@ -61,10 +61,11 @@ enum struct OneWireTransactionQuality : uint8_t
 };
 ```
 
-An operation request names a nonzero owner token, lifecycle generation,
-configuration revision, request sequence, typed operation, optional complete
-64-bit ROM identity where the operation is addressed, supplied start time,
-external-power mode, and producer `Status`. Search state is a fixed copied
+An operation request carries a nonzero request sequence, typed operation,
+optional complete 64-bit ROM identity where the operation is addressed,
+supplied start time, external-power mode, and producer `Status`. Owner token
+and configuration revision are frozen policy configuration; lifecycle and
+transaction generations are policy-assigned. Search state is a fixed copied
 value, not a callback or dynamically growing device list.
 
 Each emitted phase intent binds the complete request identity, transaction
@@ -114,10 +115,15 @@ unchanged, and at a deadline crossing it emits at most one correlated release
 intent. It never accepts or invents phase evidence, polls, retries, or
 synthesizes a cleanup receipt.
 
-`MatchRomReadConversionStatus` is a distinct allowlisted transaction, not a
-hidden poll loop. One request performs one addressed read slot and reports the
-copied status bit. A caller may schedule another request only after the prior
-transaction and its cleanup are complete.
+`MatchRomReadConversionStatus` is a distinct allowlisted continuation, not a
+new reset/Match ROM/Convert T transaction and not a hidden poll loop. It is
+admitted only immediately after a successful
+`MatchRomStartConversion` transaction and its final release confirmation,
+with the same nonzero ROM copied in the new request. That request-bound ROM
+proves which completed conversion is being continued; it is not repeated in
+the phase receipt. One continuation performs exactly one direct read slot and
+reports the copied status bit. Another status request requires another
+completed conversion request; the policy never retries or polls implicitly.
 
 ## Atomicity and cleanup
 
@@ -136,8 +142,13 @@ The policy never drives high. Its canonical inactive and cleanup intent is
 | E1 voltage/timing observation | physical line reached the qualified idle window |
 
 Reset and shutdown invalidate all earlier receipts. Reinitialization advances
-the lifecycle generation. Generation or phase-sequence exhaustion faults
-before wrapping to zero and leaves release intent asserted.
+the lifecycle generation. Before admitting a transaction, the policy reserves
+the complete phase-sequence budget and rejects lifecycle, transaction,
+phase-sequence, or prior-receipt-sequence exhaustion atomically with
+`CapacityExceeded`; no counter wraps and no new operation is partially
+started. Cleanup transitions likewise reject if their generation or phase
+sequence cannot advance. An already emitted cleanup intent remains owed until
+its matching receipt; exhaustion never fabricates confirmation.
 
 Initialization, reset, rollback, timeout, cancellation, and shutdown can
 leave a correlated release receipt outstanding. `confirmCleanup(now,
@@ -158,11 +169,12 @@ Host tests must include:
   evidence;
 - write-zero, write-one, and read-slot phase ordering;
 - both read values without treating either as a transport failure;
-- exact `MatchRomReadConversionStatus` Match ROM and addressed read-slot
-  trace, with both copied status-bit values and no implicit retry;
+- exact `MatchRomReadConversionStatus` continuation-only direct read-slot
+  trace, same-ROM request binding, rejection without the immediately prior
+  confirmed conversion, both copied status-bit values, and no implicit retry;
 - fieldwise changed duplicates and byte-identical idempotence;
-- request, phase, lifecycle, owner, configuration, ROM, and receipt
-  correlation failures;
+- request-bound ROM, phase, lifecycle, owner, configuration, and receipt
+  correlation failures, without pretending the receipt carries a ROM field;
 - single-drop `ReadRom` rejection when multidrop is configured;
 - bounded Search ROM branch, collision, completion, cancellation, and replay
   fixtures without assigning location meaning to enumeration order;
@@ -176,6 +188,9 @@ Host tests must include:
   matching, and duplicate release receipts, including reset readiness and
   shutdown remaining initialized while closing and becoming inert only after
   confirmation;
+- `completedEvidence()` remaining busy after successful operation semantics
+  until the exact final `Release` receipt is confirmed, then publishing the
+  successful copied operation evidence;
 - rejection of parasite-power and every invalid enum value before mutation;
 - exhaustion before sequence or generation wrap; and
 - two independent policies producing byte-identical canonical witnesses from
