@@ -31,14 +31,19 @@ The implemented boundary passes exhaustive glyph/decimal/leading-zero cases,
 all four polarity pairs, frame boundaries, invalid configuration, first-call
 and ordinary timing/loss edges, wrap and exact-half-range rejection,
 transactional preview ownership, terminal lifecycle exhaustion, deterministic
-replay, and independent code/example/publication review. The canonical sketch
-measures 6,234/759 bytes flash/static SRAM. The exact no-LTO gate measures
-6,044 bytes flash, 759 bytes static SRAM, 187 bytes synchronous stack, and a
-59-byte object; every target and hard gate passes.
+replay, and independent code/example/publication review. After Lesson 060's
+bounded diagnostic-glyph extension, the canonical sketch measures 6,540/781
+bytes flash/static SRAM. The exact no-LTO gate measures 6,254 bytes flash, 781
+bytes static SRAM, 196 bytes synchronous stack, and a 67-byte object, leaving
+7,087 bytes of residual SRAM. The 781-byte static-SRAM result is a reviewed
+miss against the 768-byte target and remains below the 1,024-byte hard limit;
+every other target and every hard gate passes.
 
-Lesson 060 still requires a terminal composition reassessment against the
-implemented policy. Exact powered-display topology, current, waveform,
-optical behavior, resource ownership, and observed blanking remain E1-open.
+The terminal Lesson 060 composition reassessment found that the diagnostic
+extension remains bounded and natural; it does not expose a raw segment mask
+or change the transactional ownership model. Exact powered-display topology,
+current, waveform, optical behavior, resource ownership, and observed
+blanking remain E1-open.
 
 The bounded diagnostic-glyph extension raises exact static SRAM to 781 bytes.
 That exceeds the 768-byte target by 13 bytes but remains 243 bytes below the

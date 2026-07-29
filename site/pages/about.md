@@ -16,7 +16,7 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--059 use the first-class per-object
+ADK is early-stage software. Lessons 001--060 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
@@ -40,6 +40,9 @@ Lessons 055--057 publish a fixed clue-constraint model, a copied-image
 fault-aware operator panel, and their inert escape-console composition. Their
 E0 boundary owns no live input, storage transport, display, latch, lamp,
 relay, servo, lock, or access-control mechanism.
+Lessons 058--060 publish supplied-time multiplexing, bounded MAX7219
+command/receipt policy, and a dual-display timing-desk composition at E0.
+They own no powered display, transport, current path, or optical fixture.
 
 The hierarchy is developed in dependency order:
 
@@ -51,10 +54,10 @@ The per-object lifecycle uses transactional `initialize()`, idempotent
 `shutdown() noexcept`, and destructor-driven cleanup. The original
 global-registration preview is frozen under [Legacy](legacy/index.md).
 
-The latest completed project arc is Lessons 055--057: copied clue evidence, a
-fault-aware operator model, and an inert escape-console transaction that
-cannot command physical access or actuation. Lessons 058--059 now publish the
-engagement-first multiplex and MAX7219 presentation policies. See the
+The latest completed project arc is Lessons 058--060: supplied-time multiplex
+intent and bounded MAX7219 transactions composed into a deterministic
+dual-display timing desk. Exact powered displays and E1 acceptance remain
+open. See the
 [course map](course.md) for that order and the
 [roadmap](docs/ROADMAP.md) for the full sequence.
 

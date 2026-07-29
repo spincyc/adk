@@ -87,6 +87,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_contact_dynamics \
 	$(BUILD_DIR)/host/test_course_marshal \
 	$(BUILD_DIR)/host/test_dht11_sensor \
+	$(BUILD_DIR)/host/test_dual_display_timing_desk \
 	$(BUILD_DIR)/host/test_environmental_station \
 	$(BUILD_DIR)/host/test_greenhouse_controller \
 	$(BUILD_DIR)/host/test_greenhouse_health_pattern \
@@ -936,6 +937,19 @@ $(BUILD_DIR)/host/test_max7219_presentation_policy: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/max7219_presentation_policy.cpp \
 		tests/test_max7219_presentation_policy.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_dual_display_timing_desk: $(HOST_CORE_SOURCES) \
+		src/multiplexed_digit_policy.cpp \
+		src/max7219_presentation_policy.cpp \
+		src/dual_display_timing_desk.cpp \
+		tests/test_dual_display_timing_desk.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/multiplexed_digit_policy.cpp \
+		src/max7219_presentation_policy.cpp \
+		src/dual_display_timing_desk.cpp \
+		tests/test_dual_display_timing_desk.cpp \
 		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_shift_register: $(HOST_IO_SOURCES) \

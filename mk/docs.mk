@@ -198,6 +198,17 @@ doc/lessons/059.pdf: docs/lessons/059/main.tex \
 		docs/lessons/assets/059-orientation-pencil.png \
 		docs/lessons/assets/059-recording-seam-pencil.png \
 		docs/lessons/assets/059-register-envelope-pencil.png
+doc/lessons/060.pdf: docs/lessons/060/main.tex \
+		docs/lessons/assets/060-bench-gates-pencil.png \
+		docs/lessons/assets/060-control-envelope-pencil.png \
+		docs/lessons/assets/060-disagreement-pencil.png \
+		docs/lessons/assets/060-generation-gate-pencil.png \
+		docs/lessons/assets/060-lap-hold-pencil.png \
+		docs/lessons/assets/060-one-story-pencil.png \
+		docs/lessons/assets/060-perimeter-dial-pencil.png \
+		docs/lessons/assets/060-receipt-ledger-pencil.png \
+		docs/lessons/assets/060-self-test-pencil.png \
+		docs/lessons/assets/060-stopwatch-states-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons

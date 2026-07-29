@@ -86,7 +86,7 @@ Status meanings:
 | Inert escape-console project | `InertEscapeConsole` | Host verified; E0 replay only | [Lesson 057](lessons/057.md) |
 | Multiplexed digit policy | `MultiplexedDigitPolicy` | Host verified; E0 intent only | [Lesson 058](lessons/058.md) |
 | MAX7219 presentation policy | `Max7219PresentationPolicy` | Host verified; E0 intent only | [Lesson 059](lessons/059.md) |
-| Planned timing-desk composition | `DualDisplayTimingDesk` | Active integration | Lesson 060 |
+| Dual-display timing desk | `DualDisplayTimingDesk` | Host verified; E0 intent only | [Lesson 060](lessons/060.md) |
 | Planned museum arc | Resistive and thermal/radiant observations | Queued | Lessons 061–063 |
 | Planned thermal arc | Single-wire probes and thermal mapping | Queued | Lessons 064–066 |
 | Planned motion arc | Normalized inertial records and source qualification | Queued | Lessons 067–069 |

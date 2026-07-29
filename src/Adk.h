@@ -23,6 +23,7 @@
 #include "digital_input.h"
 #include "digital_output.h"
 #include "dht11_sensor.h"
+#include "dual_display_timing_desk.h"
 #include "environmental_station.h"
 #include "fault_aware_operator_panel.h"
 #include "fixed_storage.h"

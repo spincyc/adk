@@ -11,7 +11,7 @@ are complete.
 
 ## Current status
 
-Lessons 001--054 are host verified with their bench cards open. Lessons
+Lessons 001--060 are host verified with their bench cards open. Lessons
 037--039 use documented external reference fixtures; incoming conformance and
 E1 acceptance remain open. The earlier Elegoo exact-specimen requirements
 were superseded only as blockers for canonical publication and remain
@@ -55,6 +55,11 @@ maximum composition measures 21,864/3,531 bytes. The Lesson 054 object is
 407 B with a caller-owned 400 B pulse buffer, while its conservative 888 B
 stack estimate leaves 3,773 B after static storage and stack. None of these
 host measurements is an optical or powered-fixture claim.
+Lessons 055--057 publish an inert escape-console composition over copied clue,
+operator, presentation, and audit evidence. Lessons 058--060 publish
+supplied-time multiplexing, bounded MAX7219 command/receipt policy, and a dual-display
+timing desk at E0. Exact powered display identities, transports, electrical
+behavior, optical behavior, and physical acceptance remain open E1 gates.
 See the [authoritative work
 queue](WORK_QUEUE.md) for the complete ledger.
 
@@ -143,7 +148,7 @@ explicit open item.
 | [051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Host verified; powered endpoints/media/motion bench open | Copied identity/key evidence, fixed caller-owned record-image recovery, bounded logical homing, confirmation, cancellation, stop-dominance, attributable terminal reconciliation, fault, and byte-identical replay traces | E0 retains in-memory result cells plus fixture-owned position, zero-coil atomic-step, gate, presentation, and audit-intent mirrors; Lesson 047 retains staged coil teaching, qualified powered inputs/indicators/nonvolatile adapters remain E1-open, and stepper/servo power, restrained motion, and physical position remain E2-open |
 | [054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | Host verified; exact powered fixtures and bench acceptance open | Copied-evidence provenance, categorical disposition, immutable-catalog authority, different-symbol allowlist translation, cancellation, self-echo suppression, attribution, fault, and byte-stable replay traces | E0 named result cells expose receive source/disposition, candidate, inert carrier-envelope intent, attribution, suppression, and fault without claiming optical activity; E1 requires separately qualified TX-intent, RX-activity, and fault indicators plus exact electrical/optical test points |
 | [057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Host verified; exact passive fixtures/restrained demonstration bench open | Clue, permutation, fault, reset, stop, audit-recovery, and atomic intent traces | E0 result cells; exact passive presentation remains E1 and any restrained demonstration actuation remains E2 |
-| [060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Active integration; exact powered fixtures open | Digit refresh, register failure, attributed disagreement, and shutdown traces | Lessons 058--059 provide host-verified E0 result cells; independent physical display self-tests and transport points remain E1 |
+| [060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Host verified; exact powered fixtures open | Digit refresh, register failure, attributed disagreement, and shutdown traces | Lessons 058--060 provide host-verified E0 result cells; independent physical display self-tests and transport points remain E1 |
 | 063 | Queued; detailed plan required | Water Level, thermistor, Digital Temperature, radiant, reed, latch, and record traces | Health/fault display and inert alarm lamp |
 | 066 | Queued; detailed plan required | Single-wire, CRC, conversion, identity, and record traces | Data/rail/activity test points and explicit invalid state |
 | 069 | Queued; detailed plan required | Normalization, provenance, qualification, and replay traces | Display self-test, orientation, and dominant fault |

@@ -10,7 +10,7 @@ the Arduino Mega 2560.
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–059 are published, host verified at E0, and
+> **Current boundary:** Lessons 001–060 are published, host verified at E0, and
 > compiled for the Mega 2560. All lessons remain experimental, physical
 > acceptance remains open, and the exact electrical revisions used by Lessons
 > 031–036 are not yet qualified. Lessons 037–039 use documented external
@@ -24,11 +24,11 @@ the Arduino Mega 2560.
 > Lessons 052–054 publish copied infrared evidence, a closed locally authored
 > emission catalog, and inert allowlisted translation. Lessons 055–057 publish
 > copied clue constraints, fault-aware panel policy, and an inert escape-console
-> composition. These E0 publications do not claim powered inputs, displays,
+> composition. Lessons 058–060 publish multiplexed-digit and MAX7219 intent
+> composed into a dual-display timing desk. These E0 publications do not claim powered inputs, displays,
 > storage, actuators, wiring, physical output, or bench acceptance. Planned
 > rows below are commitments, not support claims.
-> [Lesson 059](lessons/059.md) is the current
-> published component lesson.
+> [Lesson 060](lessons/060.md) is the current published project lesson.
 
 ## What ADK provides
 
@@ -69,6 +69,7 @@ a printable PDF companion. Each row links to the first lesson in its arc.
 | 055–057 · [start at 055](https://spincyc.github.io/adk/lessons/055/) | Copied clue constraints and fault-aware operator policy | Inert escape-console intent with atomic evidence and replayable audit images |
 | 058 · [open lesson](https://spincyc.github.io/adk/lessons/058/) | Supplied-time multiplex policy with ordered blank/segment/select intent | Four-digit logical presentation with explicit refresh loss and no powered-display claim |
 | 059 · [open lesson](https://spincyc.github.io/adk/lessons/059/) | MAX7219 register presentation policy | Bounded command/receipt evidence, partial-prefix attribution, and no powered-matrix claim |
+| 060 · [open lesson](https://spincyc.github.io/adk/lessons/060/) | Dual-display timing desk | One stopwatch snapshot, two generation-bound display intents, self-test, and attributed disagreement |
 
 [View the complete lesson index](https://spincyc.github.io/adk/lessons/) or the
 [supported API](https://spincyc.github.io/adk/api-supported/).
@@ -102,8 +103,7 @@ These entries are deliberately linkless. A planned subject becomes a link only
 after its implementation, deterministic tests, Mega example, size evidence,
 HTML reference, and PDF lesson exist.
 
-- **060–063:** Dual-display timing desk composition; corrected authorized
-  environmental sensing for a museum-case
+- **061–063:** Corrected authorized environmental sensing for a museum-case
   monitor.
 - **064–072:** qualified single-wire 18B20 thermal probes for a gradient
   mapper; inertial normalization and source qualification for an
