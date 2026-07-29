@@ -8,7 +8,7 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--064 have first-class implementation work, deterministic host
+Lessons 001--065 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
 bench cards remain open. Lessons 037--039 use documented C&K and SparkFun
 reference fixtures; incoming conformance and physical acceptance remain open.
@@ -86,12 +86,18 @@ exact no-LTO aggregate measures 22,980 bytes flash, 1,405 bytes static SRAM,
 819 bytes stack, and 709 bytes of child/monitor objects, leaving 5,840 bytes
 residual SRAM. Powered presentation, combined sensing, persistence, and relay
 fixtures remain E1c/E1d/E2-open.
-Lesson 064 is host verified and published at E0 under the
+Lessons 064--065 are host verified and published at E0 under the
 [thermal-mapper plan](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) and
 [single-wire transaction stress pass](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md).
-It publishes `OneWireTransactionPolicy` over copied requests, semantic line
-intents, copied receipts, and caller-supplied microsecond time. Lessons 065
-and 066 remain planned under the
+They publish `OneWireTransactionPolicy` over copied requests, semantic line
+intents, copied receipts, and caller-supplied microsecond time, followed by
+`Qualified18B20ProbeSetPolicy` over fixed identities and correlated search,
+conversion, scratchpad, CRC, freshness, disappearance, and replay evidence.
+Its canonical Mega replay measures 13,662 bytes flash and 1,438 bytes static
+SRAM; the exact no-LTO replay measures 16,196/1,438 bytes with 533 bytes of
+conservative synchronous stack, a 764-byte policy, a 477-byte caller-owned
+builder, and a 180-byte snapshot.
+Lesson 066 remains planned under the
 [qualified probe-set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md)
 and
 [thermal-gradient mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md)
@@ -197,6 +203,7 @@ For every lesson, the queued implementation order is:
 | 062 | Host verified; exact powered modules/E1b bench open | `ThermalRadiantObservationPolicy` | Three distinct copied roles preserve thermistor uncertainty, categorical Digital Temperature and radiant evidence, independent ages, disagreement, and saturation |
 | 063 | Host verified; E1c/E1d/E2 fixtures open | `MuseumCaseMonitor` | Additive hazards, alarm latch, fresh acknowledgement/cooldown, inert output intent, and bounded copied audit delivery |
 | 064 | Host verified; exact powered endpoint/E1a bench open | `OneWireTransactionPolicy` | Closed typed requests, semantic line intents, exact copied receipts, bounded search, timeout, rollback, cleanup, and byte-stable replay without owning a bus |
+| 065 | Host verified; exact probes/powered endpoint/E1a--E1c bench open | `Qualified18B20ProbeSetPolicy` | Four fixed ROM identities, correlated conversion chains, CRC, resolution, range, step, freshness, disappearance, and byte-stable replay without owning probes or a bus |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation

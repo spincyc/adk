@@ -10,7 +10,7 @@ the Arduino Mega 2560.
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–064 are published, host verified at E0, and
+> **Current boundary:** Lessons 001–065 are published, host verified at E0, and
 > compiled for the Mega 2560. All lessons remain experimental, physical
 > acceptance remains open, and the exact electrical revisions used by Lessons
 > 031–036 are not yet qualified. Lessons 037–039 use documented external
@@ -33,11 +33,14 @@ the Arduino Mega 2560.
 > observations with qualified reed and acknowledgement evidence into inert
 > alarm, presentation, relay-lamp, and audit intent. Lesson 064 adds bounded
 > copied 1-Wire transaction intent, correlated receipts, explicit rollback,
-> and release confirmation without owning a bus. These E0 publications do not
+> and release confirmation without owning a bus. Lesson 065 turns copied
+> transaction evidence into four fixed, identity-qualified thermal slots with
+> explicit conversion, CRC, freshness, disappearance, and replay state. These
+> E0 publications do not
 > claim powered inputs, displays,
 > storage, actuators, wiring, physical output, or bench acceptance. Planned
 > rows below are commitments, not support claims.
-> [Lesson 064](lessons/064.md) is the current published lesson.
+> [Lesson 065](lessons/065.md) is the current published lesson.
 
 ## What ADK provides
 
@@ -83,6 +86,15 @@ a printable PDF companion. Each row links to the first lesson in its arc.
 | 062 · [open lesson](https://spincyc.github.io/adk/lessons/062/) | Copied thermal and radiant observations | Independent identity, age, uncertainty, disagreement, pulse/sustained timing, and saturation without powered-sensor claims |
 | 063 · [open lesson](https://spincyc.github.io/adk/lessons/063/) | Inert museum-case monitor | Simultaneous hazard evidence, latched acknowledgement/cooldown, and bounded audit intent without powered or durable claims |
 | 064 · [open lesson](https://spincyc.github.io/adk/lessons/064/) | Bounded copied 1-Wire transactions | Typed microsecond intent/receipt sequencing, bounded ROM search, and release-confirmed rollback without a powered bus claim |
+| 065 · [open lesson](https://spincyc.github.io/adk/lessons/065/) | Qualified four-probe 18B20 set | Fixed identities, correlated conversion evidence, CRC, freshness, disappearance, and byte-stable replay without a powered-probe claim |
+
+[Lesson 065 PDF](https://spincyc.github.io/adk/downloads/lesson-065.pdf) ·
+[Mega example](https://github.com/spincyc/adk/tree/main/examples/Lesson065Qualified18B20ProbeSet) ·
+[public API](https://github.com/spincyc/adk/blob/main/src/qualified_18b20_probe_set_policy.h) ·
+[identity tests](https://github.com/spincyc/adk/blob/main/tests/test_qualified_18b20_probe_set_identity.cpp) ·
+[conversion tests](https://github.com/spincyc/adk/blob/main/tests/test_qualified_18b20_probe_set_conversion.cpp) ·
+[decode tests](https://github.com/spincyc/adk/blob/main/tests/test_qualified_18b20_probe_set_decode.cpp) ·
+[state tests](https://github.com/spincyc/adk/blob/main/tests/test_qualified_18b20_probe_set_state.cpp)
 
 [View the complete lesson index](https://spincyc.github.io/adk/lessons/) or the
 [supported API](https://spincyc.github.io/adk/api-supported/).
@@ -116,7 +128,7 @@ These entries are deliberately linkless. A planned subject becomes a link only
 after its implementation, deterministic tests, Mega example, size evidence,
 HTML reference, and PDF lesson exist.
 
-- **065–072:** complete qualified 18B20 probe sets and the gradient mapper;
+- **066–072:** complete the thermal gradient mapper;
   inertial normalization and source qualification for an
   interchangeable motion recorder; threshold characterization for a module
   bench.

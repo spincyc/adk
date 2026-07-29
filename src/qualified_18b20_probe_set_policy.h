@@ -43,18 +43,10 @@ namespace adk {
 
     struct Ds18b20NormalizedTransactionRef
     {
-        uint32_t                  requestSequence;
-        uint32_t                  transactionGeneration;
-        MicrosecondTimePoint      startedAt;
-        MicrosecondTimePoint      completedAt;
-        uint16_t                  acceptedSlotCount;
-        OneWireOperation          operation;
-        OneWireSupplyMode         supplyMode;
-        OneWireTransactionQuality quality;
-        bool                      presenceSeen;
-        bool                      releaseConfirmed;
-        Status                    requestStatus;
-        Status                    status;
+        uint32_t             requestSequence;
+        uint32_t             transactionGeneration;
+        MicrosecondTimePoint startedAt;
+        MicrosecondTimePoint completedAt;
     };
 
     struct Ds18b20NormalizedSearchPass
@@ -66,21 +58,15 @@ namespace adk {
 
     struct Ds18b20NormalizedProbeWitness
     {
-        OneWireRomCode       rom;
-        uint32_t             conversionGeneration;
-        uint32_t             conversionStartTransactionGeneration;
-        uint32_t             conversionStatusTransactionGeneration;
-        uint32_t             conversionStatusPredecessorGeneration;
-        uint32_t             scratchpadTransactionGeneration;
-        uint32_t             scratchpadPredecessorGeneration;
-        MicrosecondTimePoint conversionStartedAt;
-        MicrosecondTimePoint conversionStatusAt;
-        MicrosecondTimePoint scratchpadCompletedAt;
-        TimePoint            scratchpadObservedAt;
-        uint8_t              scratchpad[9];
-        bool                 conversionCompletedHigh;
-        bool                 present;
-        Status               status;
+        OneWireRomCode                    rom;
+        uint32_t                          conversionGeneration;
+        Ds18b20NormalizedTransactionRef   conversionStart;
+        Ds18b20NormalizedTransactionRef   conversionStatus;
+        Ds18b20NormalizedTransactionRef   scratchpadRead;
+        TimePoint                         scratchpadObservedAt;
+        uint8_t                           scratchpad[9];
+        bool                              conversionCompletedHigh;
+        bool                              conversionStatusPresent;
     };
 
     struct Qualified18B20ProbeSetPolicy;
@@ -101,6 +87,7 @@ namespace adk {
         uint16_t                      configurationRevision;
         uint32_t                      cycleSequence;
         TimePoint                     observedAt;
+        uint32_t                      policyGeneration;
         uint32_t                      oneWireOwnerToken;
         uint32_t                      oneWireLifecycleGeneration;
         uint16_t                      oneWireConfigurationRevision;
@@ -108,6 +95,9 @@ namespace adk {
         Ds18b20NormalizedProbeWitness probes[4];
         uint8_t                       searchPassCount;
         uint8_t                       probeCount;
+        uint8_t                       lastTransactionTag;
+        bool                          cycleBegun;
+        bool                          searchFinished;
         bool                          searchComplete;
         bool                          searchOverCapacity;
         Status                        status;
@@ -131,6 +121,7 @@ namespace adk {
         uint32_t            conversionGeneration;
         uint32_t            readTransactionGeneration;
         TimePoint           observedAt;
+        TimePoint           freshThrough;
         int16_t             rawSixteenths;
         int16_t             lowerRawSixteenths;
         int16_t             upperRawSixteenths;
@@ -213,6 +204,7 @@ namespace adk {
         QualifiedDs18b20SetConfig config_;
         QualifiedDs18b20Snapshot  snapshot_;
         Ds18b20CycleBuilder       lastCycle_;
+        uint32_t                  policyGeneration_;
         bool                      initialized_;
         bool                      hasLastCycle_;
     };

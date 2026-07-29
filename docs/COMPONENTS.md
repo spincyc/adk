@@ -157,7 +157,7 @@ architectural layers.
 | LDR module | `AnalogInput`, optional threshold `DigitalInput` | 008 |
 | Water Level | E0 copied resistive-probe observation and corrosion-duty evidence; future exact endpoint | 061 host verified; E1a exact board/bench open |
 | Digital Temperature | E0 copied categorical evidence; adapter pending exact specimen identity and not assumed to be 18B20 | 062--063 host verified; E1b unidentified |
-| 18B20 Temp | E0 copied single-wire transaction policy; qualified thermal values remain planned; exact powered transport remains gated | 064 host verified; 065--066 planned; E1a--E1d open |
+| 18B20 Temp | E0 copied single-wire transaction and fixed four-probe qualification policies; exact powered transport and thermal accuracy remain gated | 064--065 host verified; 066 planned; E1a--E1d open |
 | Metal Touch | `InteractionIntentPolicy` accepts copied E0 tactile/directional evidence; exact powered input adapters remain gated | 046--048 host verified; E1 adapter open |
 | Sound sensor | Relative ADC envelope and optional qualified threshold input | 038 published against an external reference; Elegoo substitution open |
 | HC-SR04 | `UltrasonicRanger` | 019 |

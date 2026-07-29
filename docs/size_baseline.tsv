@@ -63,3 +63,4 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	1	Lesson062ThermalRadiantObservation	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	10076	12288	1133	1536
 1	1	Lesson063MuseumCaseMonitor	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	21348	24576	1405	2048
 1	1	Lesson064OwnedSingleWireTransactions	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	10390	14336	735	1024
+1	1	Lesson065Qualified18B20ProbeSet	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	13662	16384	1438	1536

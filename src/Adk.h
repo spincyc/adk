@@ -75,6 +75,7 @@
 #include "pulse_capture.h"
 #include "pwm_output.h"
 #include "quadrature_encoder.h"
+#include "qualified_18b20_probe_set_policy.h"
 #include "reaction_timer.h"
 #include "record_sink.h"
 #include "resistive_probe_observation.h"
