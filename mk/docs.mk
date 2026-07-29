@@ -218,6 +218,15 @@ doc/lessons/061.pdf: docs/lessons/061/main.tex \
 		docs/lessons/assets/061-replay-ledger-pencil.png \
 		docs/lessons/assets/061-sample-card-pencil.png \
 		docs/lessons/assets/061-validation-gate-pencil.png
+doc/lessons/062.pdf: docs/lessons/062/main.tex \
+		docs/lessons/assets/062-evidence-boundary-pencil.png \
+		docs/lessons/assets/062-independent-ages-pencil.png \
+		docs/lessons/assets/062-radiant-timeline-pencil.png \
+		docs/lessons/assets/062-replay-ledger-pencil.png \
+		docs/lessons/assets/062-thermal-agreement-pencil.png \
+		docs/lessons/assets/062-three-source-envelope-pencil.png \
+		docs/lessons/assets/062-uncertainty-intervals-pencil.png \
+		docs/lessons/assets/062-validation-gates-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons
