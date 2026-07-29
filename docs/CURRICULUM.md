@@ -8,7 +8,7 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--060 have first-class implementation work, deterministic host
+Lessons 001--061 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
 bench cards remain open. Lessons 037--039 use documented C&K and SparkFun
 reference fixtures; incoming conformance and physical acceptance remain open.
@@ -64,6 +64,17 @@ actuation remains E2-open. Lessons 058--060 are host verified under the
 [display timing desk plan](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md);
 their exact powered displays, transports, electrical behavior, and physical
 acceptance remain E1-open.
+Lesson 061 is host verified under the
+[museum-case monitor plan](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md).
+It publishes `ResistiveProbeObservationPolicy` over copied acquisition
+evidence, with calibration, excitation-off, ordering, freshness, and bounded
+corrosion-duty results. Its ordinary Mega replay measures 5,662/624 bytes of
+flash/static SRAM; the isolated no-LTO probe measures 3,566 bytes flash,
+169 bytes static SRAM, 123 bytes conservative synchronous stack, and a
+69-byte object, leaving 7,772 bytes of residual SRAM. No powered probe,
+wiring, liquid classification, discharge behavior, or physical safe state is
+claimed; exact specimen qualification and E1a bench acceptance remain open.
+Lessons 062--063 remain active behind this published component boundary.
 The later blocks are ordered for early learner engagement while retaining
 prerequisite, authorization, safety, and evidence gates: interactive motion
 and display projects precede the more methodical environmental and
@@ -159,6 +170,7 @@ For every lesson, the queued implementation order is:
 | 058 | Host verified; E1 digit fixture open | `MultiplexedDigitPolicy` | Ordered blank/segment/select intent, frame generation, refresh-loss, and shutdown cells |
 | 059 | Host verified; E1 MAX7219 fixture open | `Max7219PresentationPolicy` | Register command/receipt, partial-prefix, cleanup, generation, and blank-request cells |
 | 060 | Host verified; combined E1 fixture open | `DualDisplayTimingDesk` | One stopwatch snapshot, two side-specific frames, self-test, agreement, and fault attribution |
+| 061 | Host verified; exact powered probe/E1a bench open | `ResistiveProbeObservationPolicy` | Copied calibration, excitation-off, freshness, ordering, corrosion-duty, provenance, and quality evidence without a powered adapter |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation

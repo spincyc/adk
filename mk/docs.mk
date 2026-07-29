@@ -209,6 +209,15 @@ doc/lessons/060.pdf: docs/lessons/060/main.tex \
 		docs/lessons/assets/060-receipt-ledger-pencil.png \
 		docs/lessons/assets/060-self-test-pencil.png \
 		docs/lessons/assets/060-stopwatch-states-pencil.png
+doc/lessons/061.pdf: docs/lessons/061/main.tex \
+		docs/lessons/assets/061-calibration-slopes-pencil.png \
+		docs/lessons/assets/061-duty-window-pencil.png \
+		docs/lessons/assets/061-evidence-boundary-pencil.png \
+		docs/lessons/assets/061-freshness-rollover-pencil.png \
+		docs/lessons/assets/061-quality-precedence-pencil.png \
+		docs/lessons/assets/061-replay-ledger-pencil.png \
+		docs/lessons/assets/061-sample-card-pencil.png \
+		docs/lessons/assets/061-validation-gate-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons

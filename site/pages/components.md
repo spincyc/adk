@@ -87,7 +87,8 @@ Status meanings:
 | Multiplexed digit policy | `MultiplexedDigitPolicy` | Host verified; E0 intent only | [Lesson 058](lessons/058.md) |
 | MAX7219 presentation policy | `Max7219PresentationPolicy` | Host verified; E0 intent only | [Lesson 059](lessons/059.md) |
 | Dual-display timing desk | `DualDisplayTimingDesk` | Host verified; E0 intent only | [Lesson 060](lessons/060.md) |
-| Planned museum arc | Resistive and thermal/radiant observations | Queued | Lessons 061–063 |
+| Resistive-probe observation policy | `ResistiveProbeObservationPolicy` | Host verified; E0 copied evidence only; E1a open | [Lesson 061](lessons/061.md) |
+| Active museum arc | Thermal/radiant observations and inert monitor composition | Active | Lessons 062–063 |
 | Planned thermal arc | Single-wire probes and thermal mapping | Queued | Lessons 064–066 |
 | Planned motion arc | Normalized inertial records and source qualification | Queued | Lessons 067–069 |
 | Planned characterization arc | Threshold descriptors and supplied sweeps | Queued | Lessons 070–072 |

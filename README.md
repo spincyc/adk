@@ -10,7 +10,7 @@ the Arduino Mega 2560.
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–060 are published, host verified at E0, and
+> **Current boundary:** Lessons 001–061 are published, host verified at E0, and
 > compiled for the Mega 2560. All lessons remain experimental, physical
 > acceptance remains open, and the exact electrical revisions used by Lessons
 > 031–036 are not yet qualified. Lessons 037–039 use documented external
@@ -25,10 +25,12 @@ the Arduino Mega 2560.
 > emission catalog, and inert allowlisted translation. Lessons 055–057 publish
 > copied clue constraints, fault-aware panel policy, and an inert escape-console
 > composition. Lessons 058–060 publish multiplexed-digit and MAX7219 intent
-> composed into a dual-display timing desk. These E0 publications do not claim powered inputs, displays,
+> composed into a dual-display timing desk. Lesson 061 publishes copied
+> resistive-probe observations with explicit calibration, ordering, freshness,
+> discharge, and corrosion-duty evidence. These E0 publications do not claim powered inputs, displays,
 > storage, actuators, wiring, physical output, or bench acceptance. Planned
 > rows below are commitments, not support claims.
-> [Lesson 060](lessons/060.md) is the current published project lesson.
+> [Lesson 061](lessons/061.md) is the current published lesson.
 
 ## What ADK provides
 
@@ -70,6 +72,7 @@ a printable PDF companion. Each row links to the first lesson in its arc.
 | 058 · [open lesson](https://spincyc.github.io/adk/lessons/058/) | Supplied-time multiplex policy with ordered blank/segment/select intent | Four-digit logical presentation with explicit refresh loss and no powered-display claim |
 | 059 · [open lesson](https://spincyc.github.io/adk/lessons/059/) | MAX7219 register presentation policy | Bounded command/receipt evidence, partial-prefix attribution, and no powered-matrix claim |
 | 060 · [open lesson](https://spincyc.github.io/adk/lessons/060/) | Dual-display timing desk | One stopwatch snapshot, two generation-bound display intents, self-test, and attributed disagreement |
+| 061 · [open lesson](https://spincyc.github.io/adk/lessons/061/) | Copied resistive-probe observations | Calibration, excitation-off evidence, freshness, ordering, and bounded corrosion duty without a powered-probe claim |
 
 [View the complete lesson index](https://spincyc.github.io/adk/lessons/) or the
 [supported API](https://spincyc.github.io/adk/api-supported/).
@@ -103,8 +106,8 @@ These entries are deliberately linkless. A planned subject becomes a link only
 after its implementation, deterministic tests, Mega example, size evidence,
 HTML reference, and PDF lesson exist.
 
-- **061–063:** Corrected authorized environmental sensing for a museum-case
-  monitor.
+- **062–063:** Thermal/radiant observations and the composing museum-case
+  monitor complete the active 061–063 arc.
 - **064–072:** qualified single-wire 18B20 thermal probes for a gradient
   mapper; inertial normalization and source qualification for an
   interchangeable motion recorder; threshold characterization for a module

@@ -59,3 +59,4 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	2	Lesson058MultiplexedDigits	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	6540	12288	781	1024
 1	1	Lesson059Max7219Presentation	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5480	16384	640	1024
 1	1	Lesson060DualDisplayTimingDesk	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	19518	32768	1348	2048
+1	1	Lesson061ResistiveProbeObservation	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5662	8192	624	768

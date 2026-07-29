@@ -17,7 +17,7 @@ recorded in
 Its findings must be reconciled through bounded tasks; the audit itself does
 not promote work or replace this ledger.
 
-- Lessons 001--060 are promoted and host verified; physical cards remain open.
+- Lessons 001--061 are promoted and host verified; physical cards remain open.
 - Lesson 030 has an independently reviewed composition core, canonical Mega
   example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
@@ -84,6 +84,7 @@ qualified.
 | [052--054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | Host verified; exact powered fixtures/bench open | Preserve copied receive provenance, the immutable local catalog, and fixed different-symbol translation as inert E0 policy; retain exact receiver/emitter fixtures, electrical and optical endpoints, observation paths, and measured acceptance as open E1 gates |
 | [055--057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Host verified; exact passive fixtures/restrained demonstration bench open | Preserve the fixed clue graph, copied audit-image recovery, stop precedence, atomic solve transaction, and inert presentation/release intent; retain passive input/presentation qualification at E1 and any restrained no-load demonstration fixture at E2 |
 | [058--060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Host verified; exact powered display fixtures open | Preserve supplied-time digit transactions, bounded MAX7219 command/receipt evidence, and the timing-desk composition, including explicit refresh loss, partial-prefix attribution, cleanup, generation binding, self-test, disagreement attribution, and the zero-hardware E0 boundary |
+| [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Active integration; Lesson 061 host verified, E1a open | Preserve the published copied resistive-probe policy and implement Lesson 062 thermal/radiant observations next; exact powered specimens, persistence, and relay work remain separately gated |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -128,7 +129,7 @@ work; retail kit names are not electrical identities.
 | [052--054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | Host verified; exact powered fixtures/bench open | `CapturedIrEvidence`, `KnownIrEmissionPolicy`, and `InertIrTranslator` publish copied Lesson 025 receive evidence, immutable locally authored catalog intent, and fixed different-symbol translation at E0; exact receiver/emitter fixtures and E1 acceptance remain open |
 | [055--057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Host verified; exact passive fixtures/restrained demonstration bench open | Fixed clue-constraint model, copied-value fault-aware panel, and inert escape-room console |
 | [058--060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Host verified; exact powered display fixtures open | Multiplexed digits, MAX7219 presentation, and the dual-display timing desk are published at E0; exact powered endpoints and physical acceptance remain separate E1 gates |
-| [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Active; implementation-depth E0 plan reviewed | Copied resistive-probe and qualified thermal/radiant observations compose with copied qualified reed evidence into an inert museum-case monitor; powered specimens, persistence, and relay work remain separately gated |
+| [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Active; Lesson 061 host verified, E1a open | `ResistiveProbeObservationPolicy` is published over copied evidence; implement Lesson 062 thermal/radiant observations next, then compose copied qualified reed evidence into the inert monitor; powered specimens, persistence, and relay work remain separately gated |
 | [064--066](projects/component_project_cadence.md) | Queued | Single-wire transport, listed 18B20 temperature family, thermal mapper |
 | [067--069](projects/component_project_cadence.md) | Queued | Normalized inertial records, source qualification, motion recorder |
 | [070--072](projects/component_project_cadence.md) | Queued | Threshold descriptors, characterization, module test bench |
@@ -262,6 +263,19 @@ below its hard limit. Exact display identities, electrical transports,
 current, waveform and optical behavior, self-test observation, and bench
 acceptance remain E1-open.
 
+Lesson 061 publishes `ResistiveProbeObservationPolicy` as E0 copied
+acquisition policy. Calibration slope, excitation-off evidence, per-cycle
+duty, sequence ordering, freshness, provenance, and quality precedence remain
+explicit, while rejected samples leave state unchanged. Its canonical Mega
+replay measures 5,662/624 bytes flash/static SRAM. The isolated no-LTO gate
+measures 3,566 bytes flash, 169 bytes static SRAM, 123 bytes conservative
+synchronous stack, and a 69-byte object; caller-owned input/output buffers
+measure 27+37 bytes and residual SRAM is 7,772 bytes after the specified ISR
+reserve. Exact probe identity, adapter, wiring, excitation timing, discharge,
+corrosion behavior, liquid response, non-Serial observation, and physical
+safe state remain E1a-open. Lesson 062 is the next implementation boundary;
+the 061--063 arc remains active until the museum-case composition is promoted.
+
 Lessons 058--063 now have implementation-depth E0 plans. Cadence entries for
 Lessons 064--081 are not implementation-ready lesson plans. Before code begins
 for each later three-lesson arc, expand it to the
@@ -326,8 +340,8 @@ out of scope. Controller high availability remains explicitly deferred.
 The landing page now uses one canonical source, a compact top navigation,
 linked published arcs, and linkless planned rows through Lesson 081 plus the
 retained research tracks. Preserve that scan-first hierarchy as work advances.
-The newest published lesson is Lesson 060. The post-deploy verifier follows
-Lesson 060 and has a regression check that
+The newest published lesson is Lesson 061. The post-deploy verifier follows
+the configured publication boundary and has a regression check that
 must advance with the newest published lesson.
 
 At the next clean hierarchy boundary:

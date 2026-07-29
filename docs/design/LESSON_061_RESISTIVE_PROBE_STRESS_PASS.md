@@ -1,6 +1,6 @@
 # Lesson 061 resistive-probe architecture stress pass
 
-Status: initial pre-implementation review; powered specimen remains E1a-open.
+Status: terminal E0 review passed; powered specimen remains E1a-open.
 
 This pass reviews the
 [Lessons 061--063 implementation plan](LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md).
@@ -16,8 +16,8 @@ measured de-energization.
 | Ownership and lifecycle | Fixed configuration and one copied observation only; inert construction, explicit initialize/reset, no pins, clocks, pointers, callbacks, heap, or copy/move ownership ambiguity. |
 | Time and ordering | Supplied time, producer sequence, cycle time, on-time, age, duplicate, rollover, regression, and half-range behavior are explicit and bounded. Per-cycle duty is not misrepresented as cumulative corrosion history. |
 | Errors and status | `Status` retains lifecycle/structural/producer failures. `ProbeQuality` retains dry/damp/wet, saturation, disconnected, excitation fault, and stale outcomes without calling them transport success. |
-| Resources | E0 claims no hardware resource. The plan's canonical Lesson 061 numeric row controls; exhaustive enum/struct/ownership/caller-buffer/hidden-return probes are promotion gates. |
-| Deterministic proof | Both calibration slopes, declared ADC maximum, exact two-low-values disconnected predicate, full-scale saturation, thresholds, drift, missing-off/backfeed, per-cycle duty, stale, producer fault, ordering, reset, and byte-stable replay are required. |
+| Resources | E0 claims no hardware resource. The canonical replay measures 5,662 B flash and 624 B static SRAM. The exact no-LTO probe measures 3,566 B flash, 169 B static SRAM, 123 B synchronous stack, and a 69 B policy object; its 27 B input plus 37 B output buffers are counted once, leaving 7,772 B after the 128 B ISR reserve. |
+| Deterministic proof | Host tests pass both calibration slopes, the declared ADC maximum, exact two-low-values disconnected predicate, full-scale saturation, threshold neighbors, a contamination-drift ramp, named stuck/backfeed traces, per-cycle duty, stale, producer fault, ordering, reset, sequence exhaustion, and a literal 37-byte canonical replay witness. |
 | Packaging/public surface | One standalone header/implementation/test/example/HTML/PDF/probe inventory; no powered sketch, wiring, or schematic at E0. |
 | Downstream effects | Lesson 063 consumes the copied observation. Lesson 070 may later characterize the authorized probe, but must not reinterpret this E0 quality as electrical qualification. |
 
@@ -62,11 +62,14 @@ remain one bounded update with source-specific attribution.
   drying, calibration stability, and physical observation
 - Required discussion or decision IDs: none for E0; any shared switched-power
   endpoint proposal requires a second concrete consumer and separate review
-- Remediation owner and next action: Lesson 061 implementation lane adds the
-  exact E0 tests and resource probes; E1a remains a separate specimen task
-- Verification commands and results: document review only; implementation
-  commands are pending
-- Maximum-composition scenario and proof: specified above; deterministic
-  aggregate fixture pending
-- Promotion permitted: yes for E0 implementation; no for powered work or
-  support claims
+- Remediation owner and next action: no E0 remediation remains; E1a remains a
+  separate exact-specimen task
+- Verification commands and results: focused strict host and sanitizer tests,
+  standalone-header checks, canonical Mega compilation,
+  `make museum-case-resource-check`, PDF policy checks, and independent
+  core/example/publication/resource reviews pass
+- Maximum-composition scenario and proof: the Lesson 061 boundary passes its
+  exact isolated and canonical replay gates; the full Lesson 063 composition
+  remains a later gate and is not implied by these measurements
+- Promotion permitted: yes for the E0 Lesson 061 component and learner
+  artifacts; no for powered work or physical support claims
