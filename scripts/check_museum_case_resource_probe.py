@@ -19,6 +19,7 @@ if SPEC is None or SPEC.loader is None:
     raise RuntimeError("could not load the shared exact AVR probe implementation")
 probe = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(probe)
+BASE_COMPILE_SKETCH = probe.compile_sketch
 
 BOARD_SRAM = 8192
 ISR_RESERVE = 128
@@ -39,6 +40,16 @@ PUBLIC_VALUES = {
         "ThermalRadiantEnvelope",
         "ThermalRadiantConfig",
         "ThermalRadiantObservation",
+    ),
+    "063": (
+        "MuseumReedEvidence",
+        "MuseumAcknowledgeEvidence",
+        "MuseumAuditIntent",
+        "MuseumAuditReceipt",
+        "MuseumCaseConfig",
+        "MuseumCaseEnvelope",
+        "MuseumCaseIntent",
+        "MuseumCaseResult",
     ),
 }
 
@@ -69,11 +80,45 @@ BOUNDARIES = (
         "object_target": 320,
         "object_hard": 448,
     },
+    {
+        "lesson": "063",
+        "sketch": "examples/Lesson063MuseumCaseMonitor",
+        "object_symbol": "museumCaseMaximumOwnedObjectsBytes",
+        "flash_target": 24 * 1024,
+        "flash_hard": 32 * 1024,
+        "sram_target": 2048,
+        "sram_hard": 3072,
+        "stack_target": 640,
+        "stack_hard": 896,
+        "object_target": 768,
+        "object_hard": 1024,
+    },
 )
 
 RESOURCE_LAYOUTS = {}
 ORDINARY_EVIDENCE = {}
 LOADED_REVIEWS = {}
+ACTIVE_LESSONS = set()
+LINKED_STORAGE = {}
+
+
+def compile_exact_sketch(arguments, root, temporary, boundary):
+    build_directory, elf_path, command = BASE_COMPILE_SKETCH(
+        arguments, root, temporary, boundary
+    )
+    nm = probe.tool_beside(build_directory, "avr-nm")
+    symbols = {}
+    for line in probe.output(
+        (str(nm), "--print-size", "--size-sort", str(elf_path))
+    ).splitlines():
+        match = re.match(
+            r"^[0-9a-fA-F]+\s+([0-9a-fA-F]+)\s+([bBdD])\s+(.+)$",
+            line,
+        )
+        if match:
+            symbols[match.group(3)] = int(match.group(1), 16)
+    LINKED_STORAGE[boundary["lesson"]] = symbols
+    return build_directory, elf_path, command
 
 
 def object_sizes(compiler, nm, root, temporary, unused):
@@ -89,8 +134,10 @@ def object_sizes(compiler, nm, root, temporary, unused):
         "-fno-rtti",
         "-Isrc",
     ]
-    if (root / "src/thermal_radiant_observation.h").is_file():
+    if "062" in ACTIVE_LESSONS:
         command.append("-DADK_HAS_LESSON_062=1")
+    if "063" in ACTIVE_LESSONS:
+        command.append("-DADK_HAS_LESSON_063=1")
     command.extend(
         (
             str(root / "probes/museum_case_object_sizes.cpp"),
@@ -107,6 +154,9 @@ def object_sizes(compiler, nm, root, temporary, unused):
 #include <resistive_probe_observation.h>
 #if defined (ADK_HAS_LESSON_062)
 #include <thermal_radiant_observation.h>
+#endif
+#if defined (ADK_HAS_LESSON_063)
+#include <museum_case_monitor.h>
 #endif
 #define ADK_LAYOUT(type) \\
     unsigned char type##Bytes[sizeof (adk::type)]; \\
@@ -143,6 +193,24 @@ unsigned char thermalRadiantInputCallerBufferBytes
 unsigned char thermalRadiantOutputCallerBufferBytes
     [sizeof (adk::ThermalRadiantObservation)];
 #endif
+
+#if defined (ADK_HAS_LESSON_063)
+unsigned char MuseumCaseHealthBytes[sizeof (adk::MuseumCaseHealth)];
+unsigned char MuseumHazardBytes[sizeof (adk::MuseumHazard)];
+ADK_LAYOUT (MuseumReedEvidence);
+ADK_LAYOUT (MuseumAcknowledgeEvidence);
+ADK_LAYOUT (MuseumAuditIntent);
+ADK_LAYOUT (MuseumAuditReceipt);
+ADK_LAYOUT (MuseumCaseConfig);
+ADK_LAYOUT (MuseumCaseEnvelope);
+ADK_LAYOUT (MuseumCaseIntent);
+ADK_LAYOUT (MuseumCaseResult);
+
+unsigned char museumCaseInputCallerBufferBytes
+    [sizeof (adk::MuseumCaseEnvelope)];
+unsigned char museumCaseOutputCallerBufferBytes
+    [sizeof (adk::MuseumCaseResult)];
+#endif
 """.lstrip(),
         encoding="utf-8",
     )
@@ -158,8 +226,10 @@ unsigned char thermalRadiantOutputCallerBufferBytes
         "-fno-rtti",
         "-Isrc",
     ]
-    if (root / "src/thermal_radiant_observation.h").is_file():
+    if "062" in ACTIVE_LESSONS:
         layout_command.append("-DADK_HAS_LESSON_062=1")
+    if "063" in ACTIVE_LESSONS:
+        layout_command.append("-DADK_HAS_LESSON_063=1")
     layout_command.extend((str(layout_path), "-o", str(layout_object)))
     probe.run(layout_command, cwd=root)
 
@@ -172,6 +242,9 @@ unsigned char thermalRadiantOutputCallerBufferBytes
 #include <resistive_probe_observation.h>
 #if defined (ADK_HAS_LESSON_062)
 #include <thermal_radiant_observation.h>
+#endif
+#if defined (ADK_HAS_LESSON_063)
+#include <museum_case_monitor.h>
 #endif
 #include <type_traits>
 
@@ -223,6 +296,39 @@ static_assert (
         adk::ThermalRadiantObservation>::value,
     "ThermalRadiantObservation must remain trivially destructible");
 #endif
+#if defined (ADK_HAS_LESSON_063)
+static_assert (
+    !std::is_copy_constructible<adk::MuseumCaseMonitor>::value,
+    "MuseumCaseMonitor must remain non-copyable");
+static_assert (
+    !std::is_move_constructible<adk::MuseumCaseMonitor>::value,
+    "MuseumCaseMonitor must remain non-movable");
+static_assert (
+    std::is_trivially_destructible<adk::MuseumReedEvidence>::value,
+    "MuseumReedEvidence must remain trivially destructible");
+static_assert (
+    std::is_trivially_destructible<
+        adk::MuseumAcknowledgeEvidence>::value,
+    "MuseumAcknowledgeEvidence must remain trivially destructible");
+static_assert (
+    std::is_trivially_destructible<adk::MuseumAuditIntent>::value,
+    "MuseumAuditIntent must remain trivially destructible");
+static_assert (
+    std::is_trivially_destructible<adk::MuseumAuditReceipt>::value,
+    "MuseumAuditReceipt must remain trivially destructible");
+static_assert (
+    std::is_trivially_destructible<adk::MuseumCaseConfig>::value,
+    "MuseumCaseConfig must remain trivially destructible");
+static_assert (
+    std::is_trivially_destructible<adk::MuseumCaseEnvelope>::value,
+    "MuseumCaseEnvelope must remain trivially destructible");
+static_assert (
+    std::is_trivially_destructible<adk::MuseumCaseIntent>::value,
+    "MuseumCaseIntent must remain trivially destructible");
+static_assert (
+    std::is_trivially_destructible<adk::MuseumCaseResult>::value,
+    "MuseumCaseResult must remain trivially destructible");
+#endif
 """.lstrip(),
         encoding="utf-8",
     )
@@ -232,16 +338,24 @@ static_assert (
         "-std=c++11",
         "-Isrc",
     ]
-    if (root / "src/thermal_radiant_observation.h").is_file():
+    if "062" in ACTIVE_LESSONS:
         trait_command.append("-DADK_HAS_LESSON_062=1")
+    if "063" in ACTIVE_LESSONS:
+        trait_command.append("-DADK_HAS_LESSON_063=1")
     trait_command.append(str(trait_path))
     probe.run(trait_command, cwd=root)
+    layout_symbols = read_symbols(nm, layout_object)
     RESOURCE_LAYOUTS["061"] = {
         "commands": (layout_command, trait_command),
-        "symbols": read_symbols(nm, layout_object),
+        "symbols": layout_symbols,
     }
-    if (root / "src/thermal_radiant_observation.h").is_file():
+    if "062" in ACTIVE_LESSONS:
         RESOURCE_LAYOUTS["062"] = RESOURCE_LAYOUTS["061"]
+    if "063" in ACTIVE_LESSONS:
+        RESOURCE_LAYOUTS["063"] = {
+            "commands": (),
+            "symbols": {**layout_symbols, **sizes},
+        }
     return sizes, command
 
 
@@ -274,6 +388,7 @@ def compile_ordinary(arguments, boundaries):
             example_names = {
                 "061": "Lesson061ResistiveProbeObservation",
                 "062": "Lesson062ThermalRadiantObservation",
+                "063": "Lesson063MuseumCaseMonitor",
             }
             example_path = ROOT / "examples" / example_names[lesson]
             if not example_path.is_dir():
@@ -593,11 +708,11 @@ def enrich_evidence(evidence_path):
                 "trivially_copyable": True,
                 "trivially_destructible": True,
             }
-        enum_names = (
-            ("ProbeQuality",)
-            if lesson == "061"
-            else ("ThresholdState", "ThermalQuality", "RadiantQuality")
-        )
+        enum_names = {
+            "061": ("ProbeQuality",),
+            "062": ("ThresholdState", "ThermalQuality", "RadiantQuality"),
+            "063": ("MuseumCaseHealth", "MuseumHazard"),
+        }[lesson]
         measurements["public_enums"] = {
             name: {"size_bytes": symbols[f"{name}Bytes"]} for name in enum_names
         }
@@ -606,7 +721,11 @@ def enrich_evidence(evidence_path):
             "copy_constructible": False,
             "move_constructible": False,
         }
-        prefix = "resistiveProbe" if lesson == "061" else "thermalRadiant"
+        prefix = {
+            "061": "resistiveProbe",
+            "062": "thermalRadiant",
+            "063": "museumCase",
+        }[lesson]
         input_bytes = symbols[f"{prefix}InputCallerBufferBytes"]
         output_bytes = symbols[f"{prefix}OutputCallerBufferBytes"]
         aggregate = input_bytes + output_bytes
@@ -614,8 +733,90 @@ def enrich_evidence(evidence_path):
             "input_sample_bytes": input_bytes,
             "output_observation_bytes": output_bytes,
             "aggregate_bytes": aggregate,
-            "linked_once_only_fixture": True,
         }
+        if lesson == "063":
+            liquid_policy = symbols["resistiveProbeObservationPolicyObjectBytes"]
+            environment_policy = symbols[
+                "thermalRadiantObservationPolicyObjectBytes"
+            ]
+            monitor = symbols["museumCaseMonitorObjectBytes"]
+            aggregate_objects = liquid_policy + environment_policy + monitor
+            if aggregate_objects != measurements["object_bytes"]:
+                raise probe.ProbeError(
+                    "Lesson 063 aggregate object symbol does not equal its "
+                    "value-owned maximum-composition objects"
+                )
+            measurements["owned_objects"] = {
+                "resistive_probe_policy_bytes": liquid_policy,
+                "thermal_radiant_policy_bytes": environment_policy,
+                "museum_case_monitor_bytes": monitor,
+                "aggregate_bytes": aggregate_objects,
+            }
+            linked = LINKED_STORAGE.get("063", {})
+
+            def linked_symbol(suffix):
+                matches = [
+                    (name, size)
+                    for name, size in linked.items()
+                    if name.endswith(suffix)
+                ]
+                if len(matches) != 1:
+                    raise probe.ProbeError(
+                        f"Lesson 063 linked fixture requires exactly one {suffix} "
+                        f"symbol, found {matches}"
+                    )
+                return matches[0]
+
+            required_linked = {
+                "liquid_policy": (
+                    "liquidPolicyE",
+                    liquid_policy,
+                ),
+                "environment_policy": (
+                    "environmentPolicyE",
+                    environment_policy,
+                ),
+                "monitor": ("museumMonitorE", monitor),
+                "outstanding_audit": (
+                    "outstandingAuditE",
+                    symbols["MuseumAuditIntentBytes"],
+                ),
+                "working_result": (
+                    "workingResultE",
+                    output_bytes,
+                ),
+                "working_envelope": (
+                    "workingEnvelopeE",
+                    input_bytes,
+                ),
+                "result_cells": (
+                    "museumResultCellsE",
+                    9 * 23,
+                ),
+                "replay_result_cell": ("replayResultCellE", 8),
+            }
+            linked_evidence = {}
+            for name, (suffix, expected_size) in required_linked.items():
+                symbol_name, observed_size = linked_symbol(suffix)
+                if observed_size != expected_size:
+                    raise probe.ProbeError(
+                        f"Lesson 063 linked {name} is {observed_size} B, "
+                        f"expected {expected_size} B"
+                    )
+                linked_evidence[name] = {
+                    "symbol": symbol_name,
+                    "size_bytes": observed_size,
+                    "symbol_count": 1,
+                }
+            measurements["linked_maximum_fixture"] = {
+                "canonical_example": (
+                    "examples/Lesson063MuseumCaseMonitor/"
+                    "Lesson063MuseumCaseMonitor.ino"
+                ),
+                "global_storage": linked_evidence,
+                "caller_storage_instantiated_once": True,
+            }
+            measurements["caller_buffers"]["linked_once_only_fixture"] = True
         for name, value in (
             ("input_caller_buffer", input_bytes),
             ("output_caller_buffer", output_bytes),
@@ -654,67 +855,109 @@ def enrich_evidence(evidence_path):
             )
         )
         report["status"] = probe.merge_status(report["status"], state["status"])
-    source_paths = [
+    common_source_paths = [
+        "probes/museum_case_object_sizes.cpp",
+        "scripts/check_museum_case_resource_probe.py",
+    ]
+    lesson_source_paths = {
+        "061": (
         "src/resistive_probe_observation.h",
         "src/resistive_probe_observation.cpp",
         "examples/Lesson061ResistiveProbeObservation/"
         "Lesson061ResistiveProbeObservation.ino",
         "extras/probes/Lesson061MuseumCaseResourceProbe/"
         "Lesson061MuseumCaseResourceProbe.ino",
-        "probes/museum_case_object_sizes.cpp",
-        "scripts/check_museum_case_resource_probe.py",
-    ]
-    if any(state["lesson"] == "062" for state in report["boundaries"]):
-        source_paths.extend(
-            (
-                "src/thermal_radiant_observation.h",
-                "src/thermal_radiant_observation.cpp",
-                "examples/Lesson062ThermalRadiantObservation/"
-                "Lesson062ThermalRadiantObservation.ino",
-                "extras/probes/Lesson062MuseumCaseResourceProbe/"
-                "Lesson062MuseumCaseResourceProbe.ino",
-            )
+        ),
+        "062": (
+            "src/thermal_radiant_observation.h",
+            "src/thermal_radiant_observation.cpp",
+            "examples/Lesson062ThermalRadiantObservation/"
+            "Lesson062ThermalRadiantObservation.ino",
+            "extras/probes/Lesson062MuseumCaseResourceProbe/"
+            "Lesson062MuseumCaseResourceProbe.ino",
+        ),
+        "063": (
+            "src/museum_case_monitor.h",
+            "src/museum_case_monitor.cpp",
+            "examples/Lesson063MuseumCaseMonitor/"
+            "Lesson063MuseumCaseMonitor.ino",
+        ),
+    }
+    boundary_fingerprints = {}
+    for state in report["boundaries"]:
+        lesson = state["lesson"]
+        through_lessons = sorted(
+            candidate for candidate in ORDINARY_EVIDENCE if candidate <= lesson
         )
-    source_hashes = {
-        path: probe.sha256(ROOT / path)
-        for path in source_paths
-    }
-    fingerprint_payload = {
-        "schema": 1,
-        "fqbn": report["fqbn"],
-        "core_package": ORDINARY_EVIDENCE["061"]["core_package"],
-        "core_version": ORDINARY_EVIDENCE["061"]["core_version"],
-        "f_cpu_hz": ORDINARY_EVIDENCE["061"]["f_cpu_hz"],
-        "tools": report["tools"],
-        "commands": json.loads(normalized(report["commands"])),
-        "ordinary_compile_units": {
-            lesson: evidence["compile_units"]
-            for lesson, evidence in sorted(ORDINARY_EVIDENCE.items())
-        },
-        "linker_executable": ORDINARY_EVIDENCE["061"]["linker_executable"],
-        "linker_version": ORDINARY_EVIDENCE["061"]["linker_version"],
-        "resolved_link_recipe": ORDINARY_EVIDENCE["061"][
-            "resolved_link_recipe"
-        ],
-        "source_hashes": source_hashes,
-        "thresholds": report["constants"],
-    }
-    fingerprint_sha256 = hashlib.sha256(
-        json.dumps(
-            fingerprint_payload, sort_keys=True, separators=(",", ":")
-        ).encode("utf-8")
-    ).hexdigest()
-    report["fingerprint"] = {
-        **fingerprint_payload,
-        "sha256": fingerprint_sha256,
-        "optimization": "ordinary core defaults plus exact no-LTO -Os probe",
-        "language_standard": "gnu++11",
-    }
+        source_paths = list(common_source_paths)
+        for candidate in through_lessons:
+            source_paths.extend(lesson_source_paths[candidate])
+        exact_commands = [
+            command
+            for command in report["commands"]
+            if any(
+                boundary["sketch"] in " ".join(map(str, command))
+                for boundary in BOUNDARIES
+                if boundary["lesson"] <= lesson
+            )
+        ]
+        fingerprint_payload = {
+            "schema": 2,
+            "lesson_through": lesson,
+            "fqbn": report["fqbn"],
+            "core_package": ORDINARY_EVIDENCE["061"]["core_package"],
+            "core_version": ORDINARY_EVIDENCE["061"]["core_version"],
+            "f_cpu_hz": ORDINARY_EVIDENCE["061"]["f_cpu_hz"],
+            "tools": report["tools"],
+            "exact_commands": json.loads(normalized(exact_commands)),
+            "ordinary_commands": json.loads(
+                normalized(
+                    [
+                        command
+                        for candidate in through_lessons
+                        for command in (
+                            ORDINARY_EVIDENCE[candidate]["command"],
+                            ORDINARY_EVIDENCE[candidate]["properties_command"],
+                        )
+                    ]
+                )
+            ),
+            "ordinary_compile_units": {
+                candidate: ORDINARY_EVIDENCE[candidate]["compile_units"]
+                for candidate in through_lessons
+            },
+            "linker_executable": ORDINARY_EVIDENCE["061"]["linker_executable"],
+            "linker_version": ORDINARY_EVIDENCE["061"]["linker_version"],
+            "resolved_link_recipe": ORDINARY_EVIDENCE["061"][
+                "resolved_link_recipe"
+            ],
+            "source_hashes": {
+                path: probe.sha256(ROOT / path) for path in source_paths
+            },
+            "thresholds": report["constants"],
+        }
+        fingerprint_sha256 = hashlib.sha256(
+            json.dumps(
+                fingerprint_payload, sort_keys=True, separators=(",", ":")
+            ).encode("utf-8")
+        ).hexdigest()
+        state["fingerprint_sha256"] = fingerprint_sha256
+        boundary_fingerprints[lesson] = {
+            **fingerprint_payload,
+            "sha256": fingerprint_sha256,
+            "optimization": "ordinary core defaults plus exact no-LTO -Os probe",
+            "language_standard": "gnu++11",
+        }
+    report["boundary_fingerprints"] = boundary_fingerprints
+    report["fingerprint"] = boundary_fingerprints[
+        max(boundary_fingerprints)
+    ]
     for review in LOADED_REVIEWS.values():
-        if review["fingerprint_sha256"] != fingerprint_sha256:
+        expected = boundary_fingerprints[review["lesson"]]["sha256"]
+        if review["fingerprint_sha256"] != expected:
             raise probe.ProbeError(
                 "target-miss review fingerprint is stale: "
-                f"{review['fingerprint_sha256']} != {fingerprint_sha256}"
+                f"{review['fingerprint_sha256']} != {expected}"
             )
     evidence_path.write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n",
@@ -724,11 +967,12 @@ def enrich_evidence(evidence_path):
 
 
 def main():
+    global ACTIVE_LESSONS
     parser = argparse.ArgumentParser()
     parser.add_argument("--arduino-cli", default="arduino-cli")
     parser.add_argument("--fqbn", default="arduino:avr:mega")
     parser.add_argument(
-        "--require-through", choices=("061", "062"), default="061"
+        "--require-through", choices=("061", "062", "063"), default="063"
     )
     parser.add_argument(
         "--evidence-json",
@@ -744,8 +988,10 @@ def main():
         for boundary in BOUNDARIES
         if boundary["lesson"] <= arguments.require_through
     )
+    ACTIVE_LESSONS = {boundary["lesson"] for boundary in selected_boundaries}
     compile_ordinary(arguments, selected_boundaries)
     probe.BOUNDARIES = selected_boundaries
+    probe.compile_sketch = compile_exact_sketch
     probe.object_sizes = object_sizes
     probe.load_reviews = load_reviews
     sys.argv = [

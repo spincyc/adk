@@ -390,12 +390,12 @@ were simultaneous.
 ```cpp
 enum struct MuseumCaseHealth : uint8_t
 {
-    Qualifying,
-    Healthy,
-    Warning,
-    Alarm,
-    Fault,
-    Cooldown
+    Qualifying = 0,
+    Healthy    = 1,
+    Warning    = 2,
+    Alarm      = 3,
+    Fault      = 4,
+    Cooldown   = 5
 };
 
 enum struct MuseumHazard : uint8_t
@@ -484,6 +484,10 @@ struct MuseumCaseConfig
     uint8_t  expectedRadiantSourceId;
     uint16_t expectedRadiantConfigurationRevision;
     uint16_t expectedRadiantCalibrationRevision;
+    Duration maximumLiquidAge;
+    Duration maximumThermistorAge;
+    Duration maximumDigitalTemperatureAge;
+    Duration maximumRadiantAge;
     uint8_t  expectedReedSourceId;
     uint16_t expectedReedConfigurationRevision;
     uint8_t  expectedAcknowledgeSourceId;
@@ -534,7 +538,8 @@ struct MuseumCaseMonitor
 
     Status           initialize (TimePoint now) noexcept;
     Status           reset      (TimePoint now) noexcept;
-    MuseumCaseResult update     (const MuseumCaseEnvelope& envelope) noexcept;
+    Status           update     (const MuseumCaseEnvelope& envelope,
+                                 MuseumCaseResult& result) noexcept;
     Status           shutdown   () noexcept;
     MuseumCaseIntent snapshot   () const noexcept;
     bool             initialized() const noexcept;
@@ -544,6 +549,12 @@ struct MuseumCaseMonitor
 The implementation may replace the bit mask with explicit fields if that is
 safer under the repository style, but it must retain simultaneous hazards and
 source attribution. A single “highest alarm” enum is insufficient evidence.
+
+The caller-owned result is deliberate: the complete result is too large for an
+unmeasured hidden AVR return buffer. Structural rejection writes one canonical
+failure result and does not mutate monitor state. An accepted degraded frame
+may commit `Fault` evidence while returning `Status::Ok`; `Status` therefore
+distinguishes update validity from the committed domain health.
 
 The reed wrapper preserves the complete qualified `MagneticObservation`:
 `source == ContactDigital`, raw value, raw level, observation time, polarity,
@@ -569,6 +580,25 @@ valid frame:
 7. any hazard or sensing fault during cooldown relatches alarm/fault;
 8. only a completed healthy cooldown returns to `Healthy`.
 
+The first complete current nonhazardous frame may become `Healthy`; cooldown
+is recovery from a latched alarm, not a startup delay. A warning does not erase
+an alarm latch and interrupts an active cooldown. A pressed acknowledgement
+observed while a hazard or sensing fault is active is consumed as ineffective
+and cannot be banked. Cooldown requires a fresh pressed sequence after the
+frame is current and hazard-free, and begins at processing `envelope.now`.
+Acknowledgement without a latch is ineffective. `Qualifying` is the inert
+construction/initialize/reset state and the accepted result of valid
+unqualified child evidence; an initial `Cooldown` decision is not reachable.
+
+The monitor owns independent maximum ages for liquid, thermistor, Digital
+Temperature, radiant, reed, and acknowledgement evidence. It recomputes each
+age from the underlying producer observation time and `envelope.now`; it never
+trusts a child policy's earlier derived age as current. `initialize(now)` and
+`reset(now)` establish the lifecycle time epoch. Source evidence must advance
+fieldwise under its own immutable producer sequence. Equal monitor time permits
+receipt-only progress with identical producer evidence, but not changed source
+evidence.
+
 A record-creating decision publishes one outstanding immutable audit intent. Its full
 witness contains owner, lifecycle and configuration revisions, record
 sequence, observation time, health/hazard mask, and all six contributing
@@ -591,10 +621,11 @@ sequences `{1,2,3,4,5,6}` in the order above. Its digest is `0x4086e509`.
 Exactly one record may be outstanding. Each update returns at most that one
 immutable intent and never calls storage. A receipt must match owner,
 lifecycle, configuration revision, record sequence, every copied witness
-field, digest, and current attempt. Acceptance retires the record. Failure or
-deadline loss adds `Recording`, increments the bounded
-attempt, and reissues the same witness on a later call; it never retries in a
-loop or changes sequence/digest. Missing receipt through the inclusive
+field, digest, and current attempt. Acceptance retires the record and clears a
+transient recording failure. Failure or deadline loss adds `Recording`,
+increments the bounded attempt, and reissues the same witness on a later valid
+call; it never reissues in the failing call, retries in a loop, or changes
+sequence/digest. Missing receipt through the inclusive
 deadline remains pending; the next valid tick records loss. At
 `maximumAuditAttempts`, failure is terminal until explicit `reset()`. Foreign,
 stale, future, crossed, wrong-digest, or changed-duplicate receipts reject
@@ -606,7 +637,7 @@ Record creation uses one exact semantic decision key:
 fields, but a fresh sample with the same semantic key does not by itself
 create another record. After each `initialize()` or `reset()`, the first valid
 complete expected-source frame creates an initial record for its derived key,
-including `Healthy`, `Warning`, `Alarm`, `Fault`, or `Cooldown`. The
+including `Healthy`, `Warning`, `Alarm`, or `Fault`. The
 construction-time and just-initialized `Qualifying` output is not a sensed
 decision and creates no record; a later transition back to `Qualifying`
 caused by valid policy state does create one.
@@ -633,11 +664,17 @@ qualifying key change is noticed, while several changes may coalesce only to
 the latest successor the one-slot contract can retain. A same-key fresh
 sample merely refreshes live provenance and does not dirty the slot. The slot
 has no record sequence, digest, delivery attempt, or deadline until promotion,
-so it cannot masquerade as a submitted record.
+so it cannot masquerade as a submitted record. This is net-latest coalescing:
+returning to the outstanding key clears the dirty slot; remaining on the dirty
+key refreshes its complete producer provenance; changing to another key
+replaces it. When no record is outstanding, a change from the last represented
+decision creates a new record. The bounded slot notices each key change but
+does not claim durable preservation of every intermediate key.
 
-When a matching accepted receipt and changed decision arrive in the same
-update, order is fixed: validate the entire envelope and receipt; derive and
-store the latest successor; retire the accepted record; increment
+When a receipt and changed decision arrive in the same update, order is fixed:
+validate the entire envelope and receipt; apply the receipt outcome to delivery
+state; derive the final semantic key including the resulting `Recording` bit;
+reconcile the latest successor; retire an accepted record; increment
 `recordSequence`; bind that sequence and the existing lifecycle/configuration
 to the successor; compute its digest; and return the successor immediately as
 attempt one. If `dirty` was already set, the current update replaces it before
@@ -663,14 +700,14 @@ dirty successor remain frozen with no retry, then proves reset invalidates
 both and advances lifecycle generation.
 
 The record-predicate matrix additionally proves: first complete `Healthy`,
-`Warning`, `Alarm`, `Fault`, and `Cooldown` decisions each create an initial
+`Warning`, `Alarm`, and `Fault` decisions each create an initial
 record in separate lifecycle fixtures; same-key sequence/age refresh creates
 none; every health transition creates one; each individual hazard bit add and
 remove creates one while health is held constant; combined-mask change creates
 one; ineffective acknowledgement creates none; acknowledgement-to-cooldown
 and cooldown-to-healthy recovery each create one; fault-to-warning and
-fault-to-healthy recovery each create one; evidence-driven `Qualifying`
-creates one; shutdown creates none; and reinitialize creates exactly one
+fault-to-healthy recovery each create one; accepted unqualified evidence may
+create `Qualifying`; shutdown creates none; and reinitialize creates exactly one
 record for its first complete decision.
 
 `recordSequence` and nonzero `lifecycleGeneration` use modular half-range
@@ -727,9 +764,6 @@ byte-identical.
 
 These are the only planning numbers; the stress passes reference this table.
 
-Resource-review: lesson=062 metric=ordinary_static_sram observed=1133
-target=1024 hard=1536 disposition=accepted-target-miss
-
 | Lesson | Flash target/hard | Static SRAM target/hard | Stack target/hard | Object target/hard |
 |---:|---:|---:|---:|---:|
 | 061 | 8/12 KiB | 768/1,024 B | 320/448 B | 192/256 B |
@@ -737,6 +771,8 @@ target=1024 hard=1536 disposition=accepted-target-miss
 | 063 aggregate | 24/32 KiB | 2,048/3,072 B | 640/896 B | 768/1,024 B |
 
 Resource-review: lesson=062 metric=ordinary_static_sram observed=1133 target=1024 hard=1536 disposition=accepted-target-miss
+
+Resource-review: lesson=063 metric=synchronous_stack observed=819 target=640 hard=896 disposition=accepted-target-miss
 
 Exact probes measure ordinary sketch flash/static SRAM, no-LTO flash,
 synchronous stack, each child and complete coordinator object, every

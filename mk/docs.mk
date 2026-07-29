@@ -227,6 +227,15 @@ doc/lessons/062.pdf: docs/lessons/062/main.tex \
 		docs/lessons/assets/062-three-source-envelope-pencil.png \
 		docs/lessons/assets/062-uncertainty-intervals-pencil.png \
 		docs/lessons/assets/062-validation-gates-pencil.png
+doc/lessons/063.pdf: docs/lessons/063/main.tex \
+		docs/lessons/assets/063-alarm-cooldown-pencil.png \
+		docs/lessons/assets/063-audit-collision-pencil.png \
+		docs/lessons/assets/063-audit-witness-pencil.png \
+		docs/lessons/assets/063-composition-boundary-pencil.png \
+		docs/lessons/assets/063-hazard-frame-pencil.png \
+		docs/lessons/assets/063-inert-output-intent-pencil.png \
+		docs/lessons/assets/063-precedence-ladder-pencil.png \
+		docs/lessons/assets/063-replay-ledger-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons

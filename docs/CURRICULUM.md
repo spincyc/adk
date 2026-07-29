@@ -8,7 +8,7 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--062 have first-class implementation work, deterministic host
+Lessons 001--063 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
 bench cards remain open. Lessons 037--039 use documented C&K and SparkFun
 reference fixtures; incoming conformance and physical acceptance remain open.
@@ -64,7 +64,7 @@ actuation remains E2-open. Lessons 058--060 are host verified under the
 [display timing desk plan](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md);
 their exact powered displays, transports, electrical behavior, and physical
 acceptance remain E1-open.
-Lessons 061--062 are host verified under the
+Lessons 061--063 are host verified under the
 [museum-case monitor plan](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md).
 They publish `ResistiveProbeObservationPolicy` and
 `ThermalRadiantObservationPolicy` over copied acquisition
@@ -80,7 +80,12 @@ stack, and a 112-byte object, leaving 7,521 bytes of residual SRAM. No powered
 probe, module, wiring, liquid classification, discharge behavior, stimulus,
 or physical safe state is
 claimed; exact specimen qualification and E1a/E1b bench acceptance remain open.
-Lesson 063 remains active behind these published component boundaries.
+Lesson 063 publishes `MuseumCaseMonitor` as a copied-evidence E0 composition.
+Its ordinary Mega replay measures 21,348/1,405 bytes of flash/static SRAM; the
+exact no-LTO aggregate measures 22,980 bytes flash, 1,405 bytes static SRAM,
+819 bytes stack, and 709 bytes of child/monitor objects, leaving 5,840 bytes
+residual SRAM. Powered presentation, combined sensing, persistence, and relay
+fixtures remain E1c/E1d/E2-open.
 The later blocks are ordered for early learner engagement while retaining
 prerequisite, authorization, safety, and evidence gates: interactive motion
 and display projects precede the more methodical environmental and
@@ -178,6 +183,7 @@ For every lesson, the queued implementation order is:
 | 060 | Host verified; combined E1 fixture open | `DualDisplayTimingDesk` | One stopwatch snapshot, two side-specific frames, self-test, agreement, and fault attribution |
 | 061 | Host verified; exact powered probe/E1a bench open | `ResistiveProbeObservationPolicy` | Copied calibration, excitation-off, freshness, ordering, corrosion-duty, provenance, and quality evidence without a powered adapter |
 | 062 | Host verified; exact powered modules/E1b bench open | `ThermalRadiantObservationPolicy` | Three distinct copied roles preserve thermistor uncertainty, categorical Digital Temperature and radiant evidence, independent ages, disagreement, and saturation |
+| 063 | Host verified; E1c/E1d/E2 fixtures open | `MuseumCaseMonitor` | Additive hazards, alarm latch, fresh acknowledgement/cooldown, inert output intent, and bounded copied audit delivery |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation
