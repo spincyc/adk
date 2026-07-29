@@ -72,8 +72,10 @@ namespace {
     uint8_t imageSlots[adk::localIdentitySlotCount * adk::localIdentityImageBytes];
     uint8_t candidateImage[adk::localIdentityImageBytes];
 
+    // This single constructed fixture lifetime owns epoch 1. A reconstructed
+    // registry must receive a fresh epoch before accepting retained handles.
     const adk::LocalIdentityRegistryConfig registryConfig = {
-        0x04900001UL, 4, 2, adk::Duration (100), adk::Duration (50)};
+        0x04900001UL, 1, 4, 2, adk::Duration (100), adk::Duration (50)};
 
     adk::LocalIdentityRegistry
         registry (registryConfig, liveBindings, adk::maximumLocalIdentities, imageSlots,

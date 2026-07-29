@@ -1,17 +1,19 @@
 #include "local_identity_registry.h"
 
+#include <limits.h>
 #include <stddef.h>
 #include <string.h>
 
 namespace adk {
+    // clang-format off
     namespace {
         constexpr uint8_t entryBytes  = 16;
         constexpr uint8_t entryOffset = 16;
-
         uint16_t read16 (const uint8_t* bytes) noexcept
         {
             return static_cast<uint16_t> (bytes[0]) |
-                   static_cast<uint16_t> (static_cast<uint16_t> (bytes[1]) << 8);
+                   static_cast<uint16_t> (
+                       static_cast<uint16_t> (bytes[1]) * UINT16_C (256));
         }
 
         uint32_t read32 (const uint8_t* bytes) noexcept
@@ -41,12 +43,17 @@ namespace adk {
             uint16_t crc = 0xffff;
             for (uint16_t index = 0; index < length; ++index)
             {
-                crc ^= static_cast<uint16_t> (bytes[index]) << 8;
+                const uint16_t highByte = static_cast<uint16_t> (
+                    static_cast<uint16_t> (bytes[index]) * UINT16_C (256));
+                crc = static_cast<uint16_t> (crc ^ highByte);
                 for (uint8_t bit = 0; bit < 8; ++bit)
                 {
                     crc = (crc & 0x8000) != 0
-                              ? static_cast<uint16_t> ((crc << 1) ^ 0x1021)
-                              : static_cast<uint16_t> (crc << 1);
+                              ? static_cast<uint16_t> (
+                                    static_cast<uint32_t> (crc) * UINT32_C (2) ^
+                                    0x1021UL)
+                              : static_cast<uint16_t> (
+                                    static_cast<uint32_t> (crc) * UINT32_C (2));
                 }
             }
             return crc;
@@ -138,7 +145,8 @@ namespace adk {
                 return IdentityDisposition::ImageUnsupported;
             }
             if (bytes[3] != 0 || read16 (bytes + 4) != localIdentityImageBytes ||
-                read32 (bytes + 6) != configurationId || bytes[15] != 0 ||
+                read32                            (bytes + 6) != configurationId ||
+                bytes[15] != 0 ||
                 bytes[14] > capacity || !allValue (bytes + 144, 14, 0))
             {
                 return IdentityDisposition::ImageCorrupt;
@@ -166,9 +174,10 @@ namespace adk {
                 binding.identity.length = entry[0];
                 memcpy (binding.identity.bytes, entry + 1, maximumLocalIdentityBytes);
                 binding.binId    = entry[11];
-                binding.revision = read16 (entry + 12);
-                binding.checksum = read16 (entry + 14);
-                if (!identityValid (binding.identity) || binding.binId >= binCount ||
+                binding.revision = read16        (entry + 12);
+                binding.checksum = read16        (entry + 14);
+                if (!identityValid               (binding.identity) ||
+                    binding.binId >= binCount ||
                     binding.revision == 0 || binding.checksum != crc16 (entry, 14))
                 {
                     return IdentityDisposition::ImageCorrupt;
@@ -189,7 +198,7 @@ namespace adk {
         void encodeImage (uint8_t* bytes, uint32_t configurationId, uint32_t generation,
                           const IdentityBinding* bindings, uint8_t count) noexcept
         {
-            memset (bytes, 0, localIdentityImageBytes);
+            memset  (bytes, 0, localIdentityImageBytes);
             write16 (bytes, localIdentityImageMagic);
             bytes[2] = localIdentityImageVersion;
             write16 (bytes + 4, localIdentityImageBytes);
@@ -228,22 +237,18 @@ namespace adk {
         : config_ (config), liveStorage_ (liveStorage),
           imageSlotBytes_ (imageSlotBytes), candidateImageBytes_ (candidateImageBytes),
           snapshot_{}, lastIdentity_{}, lastSource_{}, candidate_{},
-          imageSlotByteExtent_ (imageSlotByteExtent),
-          imageSlotStride_ (imageSlotStride),
-          candidateImageCapacity_ (candidateImageCapacity),
-          owner_ (static_cast<uint32_t> (
-              reinterpret_cast<uintptr_t> (this) ^
-              (static_cast<uintptr_t> (config.registryConfigurationId) << 1))),
-          candidateGeneration_ (0), operationId_ (0), candidateSequence_ (0),
-          lastObservedAt_ (), candidateObservedAt_ (), lockoutStartedAt_ (),
-          candidateSource_{}, capacity_ (capacity), imageSlotCount_ (imageSlotCount),
-          activeSlot_ (0), initialized_ (false), hasObservation_ (false),
-          reconciliationRequired_ (false), installedEvidenceValid_ (false)
+          imageSlotByteExtent_        (imageSlotByteExtent),
+          imageSlotStride_            (imageSlotStride),
+          candidateImageCapacity_     (candidateImageCapacity),
+          owner_                      (config.instanceEpoch),
+          candidateGeneration_        (0), operationId_ (0), candidateSequence_ (0),
+          lastObservedAt_             (), candidateObservedAt_ (), lockoutStartedAt_ (),
+          candidateSource_{},
+          capacity_                   (capacity),
+          imageSlotCount_             (imageSlotCount),
+          activeSlot_                 (0), initialized_ (false), hasObservation_ (false),
+          reconciliationRequired_     (false), installedEvidenceValid_ (false)
     {
-        if (owner_ == 0)
-        {
-            owner_ = 1;
-        }
         snapshot_.status = Status (StatusCode::NotInitialized);
     }
 
@@ -253,10 +258,11 @@ namespace adk {
         {
             return Status ();
         }
-        if (config_.registryConfigurationId == 0 || config_.binCount == 0 ||
+        if (config_.registryConfigurationId == 0 || config_.instanceEpoch == 0 ||
+            config_.binCount == 0 ||
             config_.binCount > maximumCarouselBins || config_.maximumFailures == 0 ||
-            config_.lockoutDuration.milliseconds () == 0 ||
-            config_.lockoutDuration.milliseconds () >= 0x80000000UL ||
+            config_.lockoutDuration.milliseconds    () == 0 ||
+            config_.lockoutDuration.milliseconds    () >= 0x80000000UL ||
             config_.maximumEvidenceAge.milliseconds () > 0x7fffffffUL ||
             liveStorage_ == nullptr || capacity_ == 0 ||
             capacity_ > maximumLocalIdentities || imageSlotBytes_ == nullptr ||
@@ -394,8 +400,8 @@ namespace adk {
 
         uint32_t age = 0;
         if (!evidence.status.ok () || !sourceValid (evidence.source) ||
-            !identityValid (evidence.identity) ||
-            !presentOrPast (now, evidence.observedAt, age) ||
+            !identityValid                                (evidence.identity) ||
+            !presentOrPast                                (now, evidence.observedAt, age) ||
             age > config_.maximumEvidenceAge.milliseconds ())
         {
             snapshot_.disposition            = IdentityDisposition::Malformed;
@@ -425,8 +431,8 @@ namespace adk {
                 snapshot_.disposition            = IdentityDisposition::Duplicate;
                 snapshot_.selectedBin            = 0;
                 snapshot_.matchedBindingRevision = 0;
-                snapshot_.status                 = Status ();
-                return Status ();
+                snapshot_.status                 = Status                        ();
+                return                             Status                        ();
             }
             if (!sourceEqual (evidence.source, lastSource_))
             {
@@ -477,8 +483,8 @@ namespace adk {
             if (elapsed < config_.lockoutDuration.milliseconds ())
             {
                 snapshot_.disposition = IdentityDisposition::LockedOut;
-                snapshot_.status      = Status ();
-                return Status ();
+                snapshot_.status      = Status                 ();
+                return                  Status                 ();
             }
             snapshot_.failedAttempts = 0;
         }
@@ -491,8 +497,8 @@ namespace adk {
                 snapshot_.selectedBin            = liveStorage_[index].binId;
                 snapshot_.matchedBindingRevision = liveStorage_[index].revision;
                 snapshot_.failedAttempts         = 0;
-                snapshot_.status                 = Status ();
-                return Status ();
+                snapshot_.status                 = Status                        ();
+                return                             Status                        ();
             }
         }
 
@@ -509,8 +515,8 @@ namespace adk {
         {
             snapshot_.disposition = IdentityDisposition::Unknown;
         }
-        snapshot_.status = Status ();
-        return Status ();
+        snapshot_.status = Status            ();
+        return             Status            ();
     }
 
     Result<EnrollmentCandidate> LocalIdentityRegistry::previewEnrollment (
@@ -542,8 +548,8 @@ namespace adk {
         }
         uint32_t age = 0;
         if (!evidence.status.ok () || !sourceValid (evidence.source) ||
-            !identityValid (evidence.identity) ||
-            !presentOrPast (now, evidence.observedAt, age) ||
+            !identityValid                                (evidence.identity) ||
+            !presentOrPast                                (now, evidence.observedAt, age) ||
             age > config_.maximumEvidenceAge.milliseconds ())
         {
             const Status status = !evidence.status.ok ()
@@ -690,9 +696,14 @@ namespace adk {
             evidence.reconciledImage.slot == candidate_.scratchIndex &&
             evidence.synchronized && evidence.rereadValidated &&
             evidence.durableStatus.ok () &&
-            memcmp (evidence.reconciledImage.bytes, candidateImageBytes_,
+            memcmp                    (evidence.reconciledImage.bytes,
+                                       candidateImageBytes_,
                     localIdentityImageBytes) == 0;
 
+        if (!candidateMatches)
+        {
+            return Status (StatusCode::InvalidArgument);
+        }
         if (installedEvidenceValid_ && candidateMatches && durableIdentityMatches &&
             snapshot_.imageGeneration == evidence.reconciledImage.generation)
         {
@@ -705,7 +716,7 @@ namespace adk {
         const bool evidenceMatches =
             durableIdentityMatches &&
             evidence.reconciledImage.generation == snapshot_.imageGeneration + 1;
-        if (!snapshot_.enrollmentPending || !candidateMatches || !evidenceMatches)
+        if (!snapshot_.enrollmentPending || !evidenceMatches)
         {
             reconciliationRequired_         = snapshot_.enrollmentPending;
             snapshot_.externalCommitPending = reconciliationRequired_;
@@ -778,4 +789,5 @@ namespace adk {
     {
         return snapshot_;
     }
+    // clang-format on
 } // namespace adk

@@ -53,6 +53,9 @@ third lesson for a deterministic integration project.
 | [Lesson 046 — Copied tactile and directional intent](046.md) | Copied contact and directional evidence | Atomic qualification produces bounded interaction intent |
 | [Lesson 047 — Bounded logical step sequencing](047.md) | Explicit commands and supplied time | Logical position and coil intent remain bounded and replayable |
 | [Lesson 048 — Transactional kinetic light sculpture](048.md) | Interaction, logical motion, and light intent | Independent stop evidence dominates atomic E0 composition |
+| [Lesson 049 — Local identity records](049.md) | Copied identity evidence and fixed record images | Explicit reconciliation admits local bindings without a durability claim |
+| [Lesson 050 — Bounded logical homing](050.md) | Copied home and stop evidence | Release-first homing produces bounded semantic step intent |
+| [Lesson 051 — Inert tabletop parts carousel](051.md) | Identity, confirmation, homing, logical motion, and audit images | An acknowledged start-record image gates inert carousel intent |
 
 These interfaces are host verified and their canonical examples compile for the
 Mega 2560. Every circuit remains experimental until its physical acceptance
@@ -66,7 +69,6 @@ published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 049–051 | Inert parts carousel |
 | 052–054 | IR command translator |
 | 055–057 | Inert escape-room console |
 | 058–060 | Dual-display timing desk |

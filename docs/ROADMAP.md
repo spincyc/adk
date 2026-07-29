@@ -71,7 +71,9 @@ publication ledger.
 38. copied inertial evidence, pure orientation and presentation policy, and a
     stationary balance-table composition in lessons 043--045; and
 39. copied tactile/directional evidence, bounded logical stepper intent, and
-    transactional kinetic-sculpture composition in lessons 046--048.
+    transactional kinetic-sculpture composition in lessons 046--048; and
+40. copied local-identity evidence, bounded logical homing, and acknowledged
+    inert parts-carousel composition in lessons 049--051.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
@@ -107,11 +109,14 @@ logical coil intent. Mega replays measure 6,956/733, 8,068/1,053, and
 22,216/1,470 bytes of flash/static SRAM. Powered inputs and indicators remain
 E1-open; the exact 28BYJ-48/ULN2003 and energized sculpture remain E2-open.
 
-Lessons 049--051 are the active next
-[implementation-depth E0 plan](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md):
+Lessons 049--051 are the host-verified
+[implementation-depth E0 slice](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md):
 fixed local identity records over copied evidence, bounded logical homing, and
-an inert parts-carousel composition. The plan claims no implementation or
-support exists yet; its E0 boundary is permitted and implementation-ready.
+an inert parts-carousel composition. Deterministic host tests, compile-only
+Mega replays, measured size gates, HTML references, and pencil-drawing PDFs
+pass. The Lesson 051 coordinator intentionally publishes zero coil intent
+after each atomic one-step application and reconciles an attributable terminal
+after every exposed start record.
 RFID/keypad/home inputs, powered indicators, and nonvolatile storage remain
 E1-gated; exact stepper/driver and servo hardware, powered motion, restraint,
 independent stop and power removal, and measured acceptance remain E2-gated.

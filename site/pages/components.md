@@ -75,7 +75,9 @@ Status meanings:
 | Interaction intent policy | `InteractionIntentPolicy` | Host verified; E0 replay only | [Lesson 046](lessons/046.md) |
 | Bounded logical step sequencing | `BoundedStepperSequence` | Host verified; E0 replay only | [Lesson 047](lessons/047.md) |
 | Kinetic-light project | `KineticLightSculpture` | Host verified; E0 replay only | [Lesson 048](lessons/048.md) |
-| Planned carousel arc | Identity records and homing | Queued | Lessons 049–051 |
+| Local identity registry | `LocalIdentityRegistry` | Host verified; E0 replay only | [Lesson 049](lessons/049.md) |
+| Bounded logical homing | `BoundedHomingPolicy` | Host verified; E0 replay only | [Lesson 050](lessons/050.md) |
+| Inert parts-carousel project | `InertPartsCarousel` | Host verified; E0 replay only | [Lesson 051](lessons/051.md) |
 | Planned IR arc | Known-family capture and bounded emission | Queued; exact emitter gated | Lessons 052–054 |
 | Planned escape-console arc | Constraint and fault-aware operator models | Queued | Lessons 055–057 |
 | Planned display arc | Multiplexed digits and matrix presentation | Queued | Lessons 058–060 |
@@ -165,6 +167,17 @@ stop path and semantic light intent. These E0 policies own no GPIO, clock,
 timer, interrupt, motor driver, coil, supply, or physical position. Exact
 tactile and directional adapters remain E1-gated; exact stepper, ULN2003,
 power, restraint, and moving-sculpture acceptance remain E2-gated.
+
+Lessons 049--051 keep copied identity, key, home, stop, and presentation
+evidence separate from endpoints and media. `LocalIdentityRegistry` validates
+fixed caller-owned record images and exposes explicit external-commit
+reconciliation. `BoundedHomingPolicy` publishes at most one bounded semantic
+step request per accepted frame and never treats logical position as measured
+position. `InertPartsCarousel` composes both policies with a private logical
+step sequencer, closed/open gate intent, and paired audit records. E0 owns no
+RFID, keypad, switch, display, storage transport, driver, motor, servo, or
+supply. Exact inert endpoints and media remain E1-gated; energized motion and
+gate actuation remain E2-gated.
 
 - [Exact API](api-supported.md)
 - [Full component catalog](docs/COMPONENTS.md)

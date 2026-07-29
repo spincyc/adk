@@ -11,7 +11,7 @@ are complete.
 
 ## Current status
 
-Lessons 001--048 are host verified with their bench cards open. Lessons
+Lessons 001--051 are host verified with their bench cards open. Lessons
 037--039 use documented external reference fixtures; incoming conformance and
 E1 acceptance remain open. The earlier Elegoo exact-specimen requirements
 were superseded only as blockers for canonical publication and remain
@@ -37,6 +37,11 @@ transactional composition evidence. Their Mega replays measure 6,956/733,
 8,068/1,053, and 22,216/1,470 bytes of flash/static SRAM. Powered inputs and
 indicators remain E1-open; the exact 28BYJ-48/ULN2003 and sculpture remain
 E2-open.
+Lessons 049--051 are host verified under the
+[implementation-depth E0 plan](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md).
+Their copied identity, key, home, and stop evidence drives bounded logical
+policy only. Exact powered inputs, storage, and presentation remain E1-open;
+restrained stepper/servo motion and physical position remain E2-open.
 See the [authoritative work
 queue](WORK_QUEUE.md) for the complete ledger.
 
@@ -86,7 +91,7 @@ may claim hardware verification until its measured record is published.
 | 040--042 | Optical observations and presence policy | Tabletop course marshal |
 | [043--045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | E0 copied inertial samples and pure orientation/presentation intent | Stationary hand-operated tabletop balance instrument |
 | [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | E0 copied tactile/directional evidence and bounded logical stepper intent | Transactional kinetic light sculpture |
-| 049--051 | Local identity records and bounded homing | Tabletop parts carousel |
+| [049--051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Local identity records and bounded homing | Tabletop parts carousel |
 | 052--054 | Known-kit IR capture and exactly qualified transmission | IR command translator |
 | 055--057 | Constraint model and fault-aware panel | Inert escape-room console |
 | 058--060 | Multiplexed digits and MAX7219 presentation | Dual-display timing desk |
@@ -122,7 +127,7 @@ explicit open item.
 | 042 | Host verified; powered adapter and bench open | Calibration, source identity, eligibility, explicit authorization, checkpoint-order, range, timeout, and invalid-run traces | Powered exact-specimen checkpoints and E1 acceptance remain open |
 | [045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Host verified; powered composition and bench open | Copied-sample validation, stationary orientation, sensitivity, freeze, health, simultaneous-event, and byte-identical replay traces | Host result cells only; powered indicators, controls, bus points, wiring, schematic, and E1 acceptance remain gated |
 | [048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Host verified; powered composition open | Copied-input authorization, logical coil-frame, cancellation, stop-dominance, fault, and byte-identical replay traces | E0 light-intent cells only; powered indicators and inputs remain E1-open, while energized stepper motion and sculpture acceptance remain E2-open |
-| [051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Active integration; implementation-depth E0 plan | Copied identity/key evidence, fixed caller-owned record-image recovery, bounded logical homing, confirmation, cancellation, stop-dominance, fault, and byte-identical replay traces | E0 retains in-memory result cells plus fixture-owned position, gate, presentation, and audit-intent mirrors; qualified powered inputs, indicators, and nonvolatile adapters remain E1-open, while stepper/servo power, restrained motion, and physical position remain E2-open |
+| [051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Host verified; powered endpoints/media/motion bench open | Copied identity/key evidence, fixed caller-owned record-image recovery, bounded logical homing, confirmation, cancellation, stop-dominance, attributable terminal reconciliation, fault, and byte-identical replay traces | E0 retains in-memory result cells plus fixture-owned position, zero-coil atomic-step, gate, presentation, and audit-intent mirrors; Lesson 047 retains staged coil teaching, qualified powered inputs/indicators/nonvolatile adapters remain E1-open, and stepper/servo power, restrained motion, and physical position remain E2-open |
 | 054 | Queued; detailed plan required | Encode/decode, malformed-frame, policy, and cancellation traces | Separate transmit/receive/fault indications |
 | 057 | Queued; detailed plan required | Clue, permutation, fault, reset, and stop traces | Raw/accepted/fault clue states and inert intent |
 | 060 | Queued; detailed plan required | Digit refresh, SPI failure, disagreement, and shutdown traces | Independent display self-tests and transport points |

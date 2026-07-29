@@ -57,8 +57,15 @@
   duplicate suppression, position corroboration, and fault recovery.
 - Added the deterministic magnetic passage logger with two-slot recovery,
   byte-identical retries, and presentation that follows durable commit.
+- Added host-verified optical, presence, inertial, interaction, bounded
+  stepper, local-identity, and bounded-homing policies through Lesson 050.
+- Added the E0 course-marshal, balance-table, kinetic-sculpture, and inert
+  parts-carousel compositions with deterministic replay, measured Mega size
+  gates, HTML references, and pencil-drawing PDF lessons.
+- Added attributable start/terminal record-image reconciliation and the
+  intentional zero-coil atomic-step result for the Lesson 051 carousel.
 
-Interfaces through lesson 036 are host verified and experimental. Physical
+Interfaces through lesson 051 are host verified and experimental. Physical
 Mega 2560 acceptance, USB/HDMI endpoint hardware, interoperability, and
 performance evidence remain open and are not implied by this version.
 

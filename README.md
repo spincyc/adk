@@ -10,7 +10,7 @@ the Arduino Mega 2560.
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–048 are published, host verified, and
+> **Current boundary:** Lessons 001–051 are published, host verified, and
 > compiled for the Mega 2560. All lessons remain experimental, physical
 > acceptance remains open, and the exact electrical revisions used by Lessons
 > 031–036 are not yet qualified. Lessons 037–039 use documented external
@@ -19,9 +19,11 @@ the Arduino Mega 2560.
 > powered adapters and exact specimens remain gated. Lessons 043–045 publish
 > E0 copied-value inertial, orientation, and balance-table policies. Lessons
 > 046–048 publish copied tactile/directional evidence, bounded logical stepper
-> intent, and transactional kinetic-sculpture policy. They do not claim
-> powered input adapters, an energized stepper, wiring, or bench acceptance.
-> Planned rows below are commitments, not support claims. [Lesson 048](lessons/048.md) is
+> intent, and transactional kinetic-sculpture policy. Lessons 049–051 publish
+> synthetic local identity, bounded homing, and inert parts-carousel policy.
+> They do not claim powered input adapters, durable media, energized
+> actuators, wiring, or bench acceptance. Planned rows below are commitments,
+> not support claims. [Lesson 051](lessons/051.md) is
 > the current published project.
 
 ## What ADK provides
@@ -58,6 +60,7 @@ a printable PDF companion. Each row links to the first lesson in its arc.
 | 040–042 · [start at 040](https://spincyc.github.io/adk/lessons/040/) | Optical and presence evidence | Explicitly authorized, replayable tabletop course runs |
 | 043–045 · [start at 043](https://spincyc.github.io/adk/lessons/043/) | Copied inertial and orientation evidence | Stationary, hand-operated balance-table intent from E0 replay |
 | 046–048 · [start at 046](https://spincyc.github.io/adk/lessons/046/) | Copied tactile/directional evidence and bounded stepper intent | Transactional kinetic light-sculpture intent from E0 replay |
+| 049–051 · [start at 049](https://spincyc.github.io/adk/lessons/049/) | Local identity records and bounded logical homing | Inert parts-carousel intent with acknowledged record-image reconciliation |
 
 [View the complete lesson index](https://spincyc.github.io/adk/lessons/) or the
 [supported API](https://spincyc.github.io/adk/api-supported/).
@@ -91,8 +94,8 @@ These entries are deliberately linkless. A planned subject becomes a link only
 after its implementation, deterministic tests, Mega example, size evidence,
 HTML reference, and PDF lesson exist.
 
-- **049–054:** local identity and homing for a tabletop parts carousel; known IR captures
-  and bounded known-code transmission for an IR command translator.
+- **052–054:** known IR captures and bounded known-code transmission for an IR
+  command translator.
 - **055–063:** constraints and a fault-aware panel for an inert escape-room
   console; multiplexed digits and MAX7219 presentation for a dual-display
   timing desk; corrected authorized environmental sensing for a museum-case
@@ -121,6 +124,14 @@ paths or working endpoint products. No endpoint hardware, native enumeration,
 local-loop video, shared-LAN capacity, QoS, PoE, congestion behavior, or
 simultaneous load has been qualified. USB/IP remains a learning prototype;
 nominal USB, HDMI, and Ethernet rates are not performance evidence.
+
+## The queue that never stopped stopping
+
+A durable AI work queue promised never to stop. It stopped at least eight
+documented times, politely analyzed each recurrence, and eventually learned to
+treat “why did you stop?” as both a command to resume and a bug report against
+itself. [Read the technically informative, machine-readable, and increasingly
+self-referential story](journal-story.md).
 
 [Source](https://github.com/spincyc/adk) ·
 [Roadmap](docs/ROADMAP.md) ·

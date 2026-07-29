@@ -19,6 +19,15 @@ an API change; increasing one requires a reviewed budget change and evidence.
 | Largest supported object | 128 B | Prevents accidental state aggregation |
 | Largest project-owned fixed buffer | 512 B | Requires a named purpose and boundary tests |
 
+The 128-byte object ceiling applies to reusable components. A reviewed
+project-composition coordinator may exceed it only when aggregation is the
+explicit purpose of that type, its children remain independently bounded, and
+the complete composition is measured. The Lesson 051 `InertPartsCarousel`
+coordinator is the first such exception: its reviewed AVR target is `320 B`
+and its hard ceiling is `384 B`. This does not relax the ceiling for
+`LocalIdentityRegistry`, `BoundedHomingPolicy`, `BoundedStepperSequence`, or
+any future reusable component.
+
 No supported library path may allocate dynamically. `new`, `delete`, `malloc`,
 `calloc`, `realloc`, owning standard containers, exceptions, RTTI, and hidden
 function-local static state are prohibited. A non-owning view may refer to
@@ -101,6 +110,7 @@ separately from maximum call depth and local storage.
 | Operator panel or rover dashboard | 56 KiB | 2,560 B | 1,024 B |
 | Greenhouse controller | 64 KiB | 3,072 B | 1,024 B |
 | Inert show-cue simulator | 80 KiB | 3,584 B | 1,280 B |
+| Inert parts carousel | 28 KiB | 2,048 B | 768 B |
 
 A lesson example should be much smaller than its nearest project ceiling.
 Debug text and serial diagnostics count; acceptance measurements use the

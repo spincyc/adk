@@ -701,6 +701,50 @@ RAM for Lesson 046, 8,068 / 1,053 for Lesson 047, and 22,216 / 1,470 for Lesson
 048. These compile measurements are software evidence, not powered or physical
 acceptance.
 
+## Local identity, bounded homing, and inert carousel policy
+
+`LocalIdentityRegistry` admits copied `IdentityEvidence`, matches fixed local
+bindings, bounds failed attempts and lockout, and exports a caller-owned
+candidate image. Enrollment becomes current only after synchronized,
+reread-validated, byte-matching external-commit evidence; that protocol is not
+a claim about any physical medium.
+
+`BoundedHomingPolicy` consumes copied home and independent-stop evidence with
+explicit commands and time. It releases an initially active home indication,
+requires a qualified acquisition edge, and emits at most one signed semantic
+step request per accepted frame. Its session-local logical coordinate is not
+measured shaft position.
+
+`InertPartsCarousel` coordinates a borrowed identity registry and homing policy
+with one private logical step sequencer. Exact confirmation and an acknowledged
+start-audit image gate homing, bounded positioning, semantic gate intent, and
+paired terminal reconciliation. Independent stop clears coil and gate intent;
+the project owns no endpoint, media transport, actuator, supply, or mechanism.
+
+[Lessons 049](lessons/049.md), [050](lessons/050.md), and
+[051](lessons/051.md) provide deterministic host replay and compile-only Mega
+examples at E0. Exact RFID, keypad, home, stop, display, indicator, and media
+adapters remain E1-gated. Exact motor, driver, servo, actuator power,
+restraint, independent power removal, and physical acceptance remain E2-gated.
+
+- Local identity registry: [source](https://github.com/spincyc/adk/blob/main/src/local_identity_registry.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_local_identity_registry.cpp),
+  [Mega replay](downloads/sketches/Lesson049LocalIdentityRegistry.ino), and
+  [Lesson 049](lessons/049.md)
+- Bounded homing policy: [source](https://github.com/spincyc/adk/blob/main/src/bounded_homing_policy.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_bounded_homing_policy.cpp),
+  [Mega replay](downloads/sketches/Lesson050BoundedHomingPolicy.ino), and
+  [Lesson 050](lessons/050.md)
+- Inert parts carousel: [source](https://github.com/spincyc/adk/blob/main/src/inert_parts_carousel.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_inert_parts_carousel.cpp),
+  [Mega replay](downloads/sketches/Lesson051InertPartsCarousel.ino), and
+  [Lesson 051](lessons/051.md)
+
+The canonical Mega 2560 builds measure 7,026 bytes flash / 1,113 bytes static
+RAM for Lesson 049, 8,272 / 574 for Lesson 050, and 26,014 / 1,933 for Lesson
+051. These compile measurements are software evidence, not powered, durable,
+or physical acceptance.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.

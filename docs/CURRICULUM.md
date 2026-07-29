@@ -8,7 +8,7 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--048 have first-class implementation work, deterministic host
+Lessons 001--051 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
 bench cards remain open. Lessons 037--039 use documented C&K and SparkFun
 reference fixtures; incoming conformance and physical acceptance remain open.
@@ -36,6 +36,14 @@ coil intent. Their Mega replays measure 6,956/733, 8,068/1,053, and
 22,216/1,470 bytes of flash/static SRAM. Powered tactile and directional
 adapters and physical indicators remain E1-open; an energized
 28BYJ-48/ULN2003 and kinetic sculpture remain E2-open.
+Lessons 049--051 are host verified under the
+[implementation-depth E0 plan](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md).
+They publish `LocalIdentityRegistry`, `BoundedHomingPolicy`, and
+`InertPartsCarousel` over copied evidence and caller-owned record images.
+Exposed starts receive attributable terminal reconciliation, while the
+project's atomic one-step application intentionally publishes zero coil
+intent. Exact powered inputs, storage, and presentation remain E1-open;
+restrained powered motion remains E2-open.
 The later blocks are ordered for early learner engagement while retaining
 prerequisite, authorization, safety, and evidence gates: interactive motion
 and display projects precede the more methodical environmental and
@@ -119,6 +127,9 @@ For every lesson, the queued implementation order is:
 | 046 | Host verified; powered inputs and indicators open | `InteractionIntentPolicy` copied tactile/directional evidence | Source identity, contact timing, direction, validity, and atomic replay without powered endpoints |
 | 047 | Host verified; powered indicators and stepper open | `BoundedStepperSequence` logical coil intent | Exact logical coil frames, bounded travel, cancellation, stop, and shutdown replay |
 | 048 | Host verified; powered composition open | `KineticLightSculpture` transactional composition | Authorization, stop dominance, light intent, and frame-for-frame E0 replay without energized motion |
+| 049 | Host verified; powered inputs/storage open | `LocalIdentityRegistry` copied-evidence records | Fixed record images, corruption, interrupted handoff, recovery, duplicate, capacity, and lockout replay |
+| 050 | Host verified; powered home/stop inputs and motion open | `BoundedHomingPolicy` logical home and position | Bounded release/acquire, exact limits, interruption, stop, fault, and preview replay |
+| 051 | Host verified; powered endpoints/media/motion bench open | `InertPartsCarousel` acknowledged E0 composition | Attributable terminal reconciliation, zero-coil atomic step, gate/presentation intent, and byte-identical audit replay |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation
@@ -184,7 +195,7 @@ supplies the shortest planned path through the library.
 | 048 | Project-bearing | Kinetic light sculpture | Existing indicators mirror bounded motion intent before motor power is used |
 | 049 | Component | Local identity records | Copied UID-shaped evidence forms bounded local identifiers, not authentication; caller-owned record images deterministically model interrupted writes and recovery without claiming physical-media durability |
 | 050 | Component | Bounded logical homing and positioning | Copied home and stop evidence establishes only a volatile session home, logical position, and inert coil intent; physical home and motion remain unproved |
-| 051 | Project-bearing | Inert tabletop parts carousel | Copied identity, key, home, and stop evidence composes with deterministic audit-image recovery and acknowledged durable-start admission before logical motion or gate intent; E1 reserves exact inputs, storage, and display, while E2 reserves powered stepper and servo motion |
+| 051 | Project-bearing | Inert tabletop parts carousel | Copied identity, key, home, and stop evidence composes with deterministic audit-image recovery, acknowledged durable-start admission, attributable stopped-terminal reconciliation, and atomic one-step logical position with intentionally zero published coil intent; Lesson 047 retains staged coil teaching, E1 reserves exact inputs/storage/display, and E2 reserves powered stepper/servo motion |
 | 052 | Component | Captured IR pulse trains | Known, repeated, unknown, and malformed receive evidence remain distinct |
 | 053 | Component | Known-code IR transmission | Only documented learner-created codes use a bounded, cancellable emitter |
 | 054 | Project-bearing | IR command translator | Adjacent, exactly qualified transmitter and receiver fixtures replay known harmless commands |

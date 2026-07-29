@@ -53,9 +53,10 @@ class DeployedSiteTest(unittest.TestCase):
         calls: list[str] = []
         delays: list[float] = []
 
-        def fail(url: str, timeout: float) -> bytes:
+        def fail(url: str, timeout: float, max_response_bytes: int) -> bytes:
             calls.append(url)
             self.assertEqual(timeout, 3.0)
+            self.assertGreater(max_response_bytes, 0)
             raise OSError("fixture unavailable")
 
         publication = configured_publication()
@@ -79,7 +80,10 @@ class DeployedSiteTest(unittest.TestCase):
         publication = configured_publication()
         attempts: dict[str, int] = {}
 
-        def eventually_valid(url: str, timeout: float) -> bytes:
+        def eventually_valid(
+            url: str, timeout: float, max_response_bytes: int
+        ) -> bytes:
+            self.assertGreater(max_response_bytes, 0)
             attempts[url] = attempts.get(url, 0) + 1
             if attempts[url] == 1:
                 return b""
@@ -111,6 +115,49 @@ class DeployedSiteTest(unittest.TestCase):
             [],
         )
         self.assertEqual(set(attempts.values()), {2})
+
+    def test_pdf_uses_larger_response_limit(self):
+        publication = configured_publication()
+        observed: dict[str, int] = {}
+
+        def bounded_fixture(
+            url: str, timeout: float, max_response_bytes: int
+        ) -> bytes:
+            observed[url] = max_response_bytes
+            if url.endswith(".pdf"):
+                return b"%PDF-1.7\n" + b"x" * (2 * 1024 * 1024)
+            if url.endswith(".ino"):
+                return canonical_example(publication).read_bytes()
+            if url.endswith(publication.lesson_page):
+                return (
+                    b"Lesson "
+                    + publication.number.encode()
+                    + b" Status: Energy class: Safety boundary:"
+                )
+            return (
+                b"Lessons 001\xe2\x80\x93"
+                + publication.number.encode()
+                + b" Planned course"
+            )
+
+        self.assertEqual(
+            check_deployment(
+                "https://example.invalid/adk/",
+                retries=0,
+                fetch=bounded_fixture,
+                publication=publication,
+            ),
+            [],
+        )
+        pdf_url = next(url for url in observed if url.endswith(".pdf"))
+        self.assertEqual(observed[pdf_url], 50 * 1024 * 1024)
+        self.assertTrue(
+            all(
+                limit == 2 * 1024 * 1024
+                for url, limit in observed.items()
+                if url != pdf_url
+            )
+        )
 
     def test_checks_follow_newest_published_lesson(self):
         publication = configured_publication()

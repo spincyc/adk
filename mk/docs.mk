@@ -164,6 +164,17 @@ doc/lessons/047.pdf: docs/lessons/047/main.tex \
 doc/lessons/048.pdf: docs/lessons/048/main.tex \
 		docs/lessons/assets/048-staged-authorization-pencil.png \
 		docs/lessons/assets/048-stop-flow-pencil.png
+doc/lessons/049.pdf: docs/lessons/049/main.tex \
+		docs/lessons/assets/049-fixed-record-anatomy-pencil.png \
+		docs/lessons/assets/049-lockout-timeline-pencil.png \
+		docs/lessons/assets/049-token-bin-map-pencil.png
+doc/lessons/050.pdf: docs/lessons/050/main.tex \
+		docs/lessons/assets/050-logical-bounds-pencil.png \
+		docs/lessons/assets/050-release-acquire-pencil.png
+doc/lessons/051.pdf: docs/lessons/051/main.tex \
+		docs/lessons/assets/051-audit-pairs-pencil.png \
+		docs/lessons/assets/051-invariant-path-pencil.png \
+		docs/lessons/assets/051-joint-preview-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons

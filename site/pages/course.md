@@ -44,13 +44,15 @@ lesson number divisible by three is project-bearing.
 | 046 | Copied tactile and directional evidence | Interaction intent policy | Host verified; E0 replay only |
 | 047 | Bounded logical step intent | Step sequence policy | Host verified; E0 replay only |
 | 048 | Transactional interaction and motion composition | Kinetic-light sculpture | Host verified; E0 replay only |
+| 049 | Local identity records and copied evidence | Identity registry | Host verified; E0 replay only |
+| 050 | Bounded logical homing and positioning | Homing policy | Host verified; E0 replay only |
+| 051 | Identity, homing, step, gate, and audit composition | Inert parts carousel | Host verified; E0 replay only |
 
-The retained Lessons 049–081 sequence is front-loaded for learner engagement.
+The retained Lessons 052–081 sequence is front-loaded for learner engagement.
 This is planned work, not a support or bench-verification claim:
 
 | Lessons | Planned focus | Project |
 |---:|---|---|
-| 049–051 | Local identity records and homing | Inert parts carousel |
 | 052–054 | Known-family IR capture and bounded emission | IR command translator |
 | 055–057 | Constraint and fault-aware operator models | Inert escape-room console |
 | 058–060 | Multiplexed digits and matrix presentation | Dual-display timing desk |
