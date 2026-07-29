@@ -103,6 +103,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_reaction_timer \
 	$(BUILD_DIR)/host/test_record_sink \
 	$(BUILD_DIR)/host/test_resistive_probe_observation \
+	$(BUILD_DIR)/host/test_thermal_radiant_observation \
 	$(BUILD_DIR)/host/test_pwm_output \
 	$(BUILD_DIR)/host/test_quadrature_encoder \
 	$(BUILD_DIR)/host/test_rgb_led \
@@ -960,6 +961,15 @@ $(BUILD_DIR)/host/test_resistive_probe_observation: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/resistive_probe_observation.cpp \
 		tests/test_resistive_probe_observation.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_thermal_radiant_observation: $(HOST_CORE_SOURCES) \
+		src/thermal_radiant_observation.cpp \
+		tests/test_thermal_radiant_observation.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/thermal_radiant_observation.cpp \
+		tests/test_thermal_radiant_observation.cpp \
 		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_shift_register: $(HOST_IO_SOURCES) \

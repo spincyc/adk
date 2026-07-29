@@ -332,11 +332,13 @@ struct ThermalRadiantObservationPolicy
 ```
 
 Source identities for the three roles must be distinct. The thermistor warning
-is below the alarm threshold. Thermal bounds use widened signed arithmetic:
-`lower = value - uncertainty` and `upper = value + uncertainty`.
-`upper < warning` is `Normal`; `upper >= alarm` is `Alarm`; otherwise
-`upper >= warning` is `Warning`. Equality and any uncertainty interval that
-reaches alarm are therefore conservatively alarm.
+is below the alarm threshold. The copied value and uncertainty define widened
+explanatory endpoints `lower = value - uncertainty` and
+`upper = value + uncertainty`. The policy computes only the upper endpoint
+because it alone controls conservative hazard classification. `upper <
+warning` is `Normal`; `upper >= alarm` is `Alarm`; otherwise `upper >=
+warning` is `Warning`. Equality and any uncertainty interval that reaches
+alarm are therefore conservatively alarm.
 
 The Digital Temperature mapping is fixed: `AtOrAbove` means categorical
 `Alarm`; `Below` means categorical normal. `AtOrAbove` makes the combined
@@ -725,11 +727,16 @@ byte-identical.
 
 These are the only planning numbers; the stress passes reference this table.
 
+Resource-review: lesson=062 metric=ordinary_static_sram observed=1133
+target=1024 hard=1536 disposition=accepted-target-miss
+
 | Lesson | Flash target/hard | Static SRAM target/hard | Stack target/hard | Object target/hard |
 |---:|---:|---:|---:|---:|
 | 061 | 8/12 KiB | 768/1,024 B | 320/448 B | 192/256 B |
 | 062 | 12/16 KiB | 1,024/1,536 B | 384/576 B | 320/448 B |
 | 063 aggregate | 24/32 KiB | 2,048/3,072 B | 640/896 B | 768/1,024 B |
+
+Resource-review: lesson=062 metric=ordinary_static_sram observed=1133 target=1024 hard=1536 disposition=accepted-target-miss
 
 Exact probes measure ordinary sketch flash/static SRAM, no-LTO flash,
 synchronous stack, each child and complete coordinator object, every

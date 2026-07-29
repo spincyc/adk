@@ -27,16 +27,25 @@ RESIDUAL_SRAM_HARD = 2048
 FIXED_BUFFER_TARGET = 256
 FIXED_BUFFER_HARD = 512
 
-PUBLIC_VALUES = (
-    "ResistiveProbeSample",
-    "ResistiveProbeConfig",
-    "ResistiveProbeObservation",
-)
+PUBLIC_VALUES = {
+    "061": (
+        "ResistiveProbeSample",
+        "ResistiveProbeConfig",
+        "ResistiveProbeObservation",
+    ),
+    "062": (
+        "ConvertedThermalSample",
+        "CategoricalThresholdSample",
+        "ThermalRadiantEnvelope",
+        "ThermalRadiantConfig",
+        "ThermalRadiantObservation",
+    ),
+}
 
 BOUNDARIES = (
     {
         "lesson": "061",
-        "sketch": "probes/Lesson061MuseumCaseResourceProbe",
+        "sketch": "extras/probes/Lesson061MuseumCaseResourceProbe",
         "object_symbol": "resistiveProbeObservationPolicyObjectBytes",
         "flash_target": 8 * 1024,
         "flash_hard": 12 * 1024,
@@ -46,6 +55,19 @@ BOUNDARIES = (
         "stack_hard": 448,
         "object_target": 192,
         "object_hard": 256,
+    },
+    {
+        "lesson": "062",
+        "sketch": "extras/probes/Lesson062MuseumCaseResourceProbe",
+        "object_symbol": "thermalRadiantObservationPolicyObjectBytes",
+        "flash_target": 12 * 1024,
+        "flash_hard": 16 * 1024,
+        "sram_target": 1024,
+        "sram_hard": 1536,
+        "stack_target": 384,
+        "stack_hard": 576,
+        "object_target": 320,
+        "object_hard": 448,
     },
 )
 
@@ -66,10 +88,16 @@ def object_sizes(compiler, nm, root, temporary, unused):
         "-fno-exceptions",
         "-fno-rtti",
         "-Isrc",
-        str(root / "probes/museum_case_object_sizes.cpp"),
-        "-o",
-        str(object_path),
     ]
+    if (root / "src/thermal_radiant_observation.h").is_file():
+        command.append("-DADK_HAS_LESSON_062=1")
+    command.extend(
+        (
+            str(root / "probes/museum_case_object_sizes.cpp"),
+            "-o",
+            str(object_path),
+        )
+    )
     probe.run(command, cwd=root)
     sizes = read_symbols(nm, object_path)
 
@@ -77,6 +105,9 @@ def object_sizes(compiler, nm, root, temporary, unused):
     layout_path.write_text(
         """
 #include <resistive_probe_observation.h>
+#if defined (ADK_HAS_LESSON_062)
+#include <thermal_radiant_observation.h>
+#endif
 #define ADK_LAYOUT(type) \\
     unsigned char type##Bytes[sizeof (adk::type)]; \\
     unsigned char type##Alignment[alignof (adk::type)]; \\
@@ -96,6 +127,22 @@ unsigned char resistiveProbeInputCallerBufferBytes
     [sizeof (adk::ResistiveProbeSample)];
 unsigned char resistiveProbeOutputCallerBufferBytes
     [sizeof (adk::ResistiveProbeObservation)];
+
+#if defined (ADK_HAS_LESSON_062)
+unsigned char ThresholdStateBytes[sizeof (adk::ThresholdState)];
+unsigned char ThermalQualityBytes[sizeof (adk::ThermalQuality)];
+unsigned char RadiantQualityBytes[sizeof (adk::RadiantQuality)];
+ADK_LAYOUT (ConvertedThermalSample);
+ADK_LAYOUT (CategoricalThresholdSample);
+ADK_LAYOUT (ThermalRadiantEnvelope);
+ADK_LAYOUT (ThermalRadiantConfig);
+ADK_LAYOUT (ThermalRadiantObservation);
+
+unsigned char thermalRadiantInputCallerBufferBytes
+    [sizeof (adk::ThermalRadiantEnvelope)];
+unsigned char thermalRadiantOutputCallerBufferBytes
+    [sizeof (adk::ThermalRadiantObservation)];
+#endif
 """.lstrip(),
         encoding="utf-8",
     )
@@ -110,10 +157,10 @@ unsigned char resistiveProbeOutputCallerBufferBytes
         "-fno-exceptions",
         "-fno-rtti",
         "-Isrc",
-        str(layout_path),
-        "-o",
-        str(layout_object),
     ]
+    if (root / "src/thermal_radiant_observation.h").is_file():
+        layout_command.append("-DADK_HAS_LESSON_062=1")
+    layout_command.extend((str(layout_path), "-o", str(layout_object)))
     probe.run(layout_command, cwd=root)
 
     host_compiler = shutil.which("c++")
@@ -123,6 +170,9 @@ unsigned char resistiveProbeOutputCallerBufferBytes
     trait_path.write_text(
         """
 #include <resistive_probe_observation.h>
+#if defined (ADK_HAS_LESSON_062)
+#include <thermal_radiant_observation.h>
+#endif
 #include <type_traits>
 
 static_assert (
@@ -143,6 +193,36 @@ static_assert (
     std::is_trivially_destructible<
         adk::ResistiveProbeObservation>::value,
     "ResistiveProbeObservation must remain trivially destructible");
+#if defined (ADK_HAS_LESSON_062)
+static_assert (
+    !std::is_copy_constructible<
+        adk::ThermalRadiantObservationPolicy>::value,
+    "ThermalRadiantObservationPolicy must remain non-copyable");
+static_assert (
+    !std::is_move_constructible<
+        adk::ThermalRadiantObservationPolicy>::value,
+    "ThermalRadiantObservationPolicy must remain non-movable");
+static_assert (
+    std::is_trivially_destructible<
+        adk::ConvertedThermalSample>::value,
+    "ConvertedThermalSample must remain trivially destructible");
+static_assert (
+    std::is_trivially_destructible<
+        adk::CategoricalThresholdSample>::value,
+    "CategoricalThresholdSample must remain trivially destructible");
+static_assert (
+    std::is_trivially_destructible<
+        adk::ThermalRadiantEnvelope>::value,
+    "ThermalRadiantEnvelope must remain trivially destructible");
+static_assert (
+    std::is_trivially_destructible<
+        adk::ThermalRadiantConfig>::value,
+    "ThermalRadiantConfig must remain trivially destructible");
+static_assert (
+    std::is_trivially_destructible<
+        adk::ThermalRadiantObservation>::value,
+    "ThermalRadiantObservation must remain trivially destructible");
+#endif
 """.lstrip(),
         encoding="utf-8",
     )
@@ -151,13 +231,17 @@ static_assert (
         "-fsyntax-only",
         "-std=c++11",
         "-Isrc",
-        str(trait_path),
     ]
+    if (root / "src/thermal_radiant_observation.h").is_file():
+        trait_command.append("-DADK_HAS_LESSON_062=1")
+    trait_command.append(str(trait_path))
     probe.run(trait_command, cwd=root)
     RESOURCE_LAYOUTS["061"] = {
         "commands": (layout_command, trait_command),
         "symbols": read_symbols(nm, layout_object),
     }
+    if (root / "src/thermal_radiant_observation.h").is_file():
+        RESOURCE_LAYOUTS["062"] = RESOURCE_LAYOUTS["061"]
     return sizes, command
 
 
@@ -182,106 +266,121 @@ def normalized(value):
     return re.sub(r"/tmp/adk-[^/\" ]+", "<temporary>", text)
 
 
-def compile_ordinary(arguments):
+def compile_ordinary(arguments, boundaries):
     temporary = pathlib.Path(tempfile.mkdtemp(prefix="adk-museum-ordinary."))
     try:
-        build_directory = temporary / "lesson-061"
-        command = [
-            arguments.arduino_cli,
-            "compile",
-            "--fqbn",
-            arguments.fqbn,
-            "--library",
-            str(ROOT),
-            "--build-path",
-            str(build_directory),
-            str(ROOT / "examples/Lesson061ResistiveProbeObservation"),
-        ]
-        probe.run(command, cwd=ROOT)
-        elf_paths = list(build_directory.glob("*.elf"))
-        if len(elf_paths) != 1:
-            raise probe.ProbeError(
-                f"ordinary Lesson 061 build produced {len(elf_paths)} ELF files"
-            )
-        size_tool = probe.tool_beside(build_directory, "avr-size")
-        flash, static_sram = probe.section_sizes(size_tool, elf_paths[0])
-        compile_commands = json.loads(
-            (build_directory / "compile_commands.json").read_text(
-                encoding="utf-8"
-            )
-        )
-        normalized_units = []
-        for unit in compile_commands:
-            arguments_list = unit.get("arguments")
-            if not isinstance(arguments_list, list):
+        for boundary in boundaries:
+            lesson = boundary["lesson"]
+            example_names = {
+                "061": "Lesson061ResistiveProbeObservation",
+                "062": "Lesson062ThermalRadiantObservation",
+            }
+            example_path = ROOT / "examples" / example_names[lesson]
+            if not example_path.is_dir():
                 raise probe.ProbeError(
-                    "ordinary compile database lacks argument arrays"
+                    f"ordinary Lesson {lesson} example is unavailable: {example_path}"
                 )
-            normalized_units.append(
-                {
-                    "file": normalized(unit.get("file", "")),
-                    "arguments": json.loads(normalized(arguments_list)),
-                }
+            build_directory = temporary / f"lesson-{lesson}"
+            command = [
+                arguments.arduino_cli,
+                "compile",
+                "--fqbn",
+                arguments.fqbn,
+                "--library",
+                str(ROOT),
+                "--build-path",
+                str(build_directory),
+                str(example_path),
+            ]
+            probe.run(command, cwd=ROOT)
+            elf_paths = list(build_directory.glob("*.elf"))
+            if len(elf_paths) != 1:
+                raise probe.ProbeError(
+                    f"ordinary Lesson {lesson} build produced "
+                    f"{len(elf_paths)} ELF files"
+                )
+            size_tool = probe.tool_beside(build_directory, "avr-size")
+            flash, static_sram = probe.section_sizes(size_tool, elf_paths[0])
+            compile_commands = json.loads(
+                (build_directory / "compile_commands.json").read_text(
+                    encoding="utf-8"
+                )
             )
-        normalized_units.sort(
-            key=lambda unit: (
-                unit["file"],
-                json.dumps(unit["arguments"], separators=(",", ":")),
+            normalized_units = []
+            for unit in compile_commands:
+                arguments_list = unit.get("arguments")
+                if not isinstance(arguments_list, list):
+                    raise probe.ProbeError(
+                        "ordinary compile database lacks argument arrays"
+                    )
+                normalized_units.append(
+                    {
+                        "file": normalized(unit.get("file", "")),
+                        "arguments": json.loads(normalized(arguments_list)),
+                    }
+                )
+            normalized_units.sort(
+                key=lambda unit: (
+                    unit["file"],
+                    json.dumps(unit["arguments"], separators=(",", ":")),
+                )
             )
-        )
-        flattened = " ".join(
-            argument
-            for unit in normalized_units
-            for argument in unit["arguments"]
-        )
-        if "-DF_CPU=16000000L" not in flattened:
-            raise probe.ProbeError("ordinary build does not resolve F_CPU=16000000L")
-        core_document = json.loads(
-            probe.output(
-                (
-                    arguments.arduino_cli,
-                    "core",
-                    "list",
-                    "--format",
-                    "json",
-                ),
-                stderr=subprocess.STDOUT,
+            flattened = " ".join(
+                argument
+                for unit in normalized_units
+                for argument in unit["arguments"]
             )
-        )
-        avr_platforms = [
-            platform
-            for platform in core_document.get("platforms", [])
-            if platform.get("id") == "arduino:avr"
-        ]
-        if len(avr_platforms) != 1:
-            raise probe.ProbeError("installed Arduino AVR core is ambiguous")
-        core_version = avr_platforms[0].get("installed_version")
-        if not core_version:
-            raise probe.ProbeError("Arduino AVR core version is unavailable")
-        properties_command = [
-            arguments.arduino_cli,
-            "compile",
-            "--fqbn",
-            arguments.fqbn,
-            "--show-properties=expanded",
-            str(ROOT / "examples/Lesson061ResistiveProbeObservation"),
-        ]
-        properties = {}
-        for line in probe.output(
-            properties_command, stderr=subprocess.STDOUT
-        ).splitlines():
-            if "=" in line:
-                key, value = line.split("=", 1)
-                properties[key] = value
-        link_recipe = properties.get("recipe.c.combine.pattern")
-        if not link_recipe:
-            raise probe.ProbeError("resolved AVR linker recipe is unavailable")
-        compiler = pathlib.Path(compile_commands[0]["arguments"][0])
-        linker = compiler.parent / "avr-gcc"
-        if not linker.is_file():
-            raise probe.ProbeError("resolved AVR linker executable is unavailable")
-        ORDINARY_EVIDENCE.update(
-            {
+            if "-DF_CPU=16000000L" not in flattened:
+                raise probe.ProbeError(
+                    "ordinary build does not resolve F_CPU=16000000L"
+                )
+            core_document = json.loads(
+                probe.output(
+                    (
+                        arguments.arduino_cli,
+                        "core",
+                        "list",
+                        "--format",
+                        "json",
+                    ),
+                    stderr=subprocess.STDOUT,
+                )
+            )
+            avr_platforms = [
+                platform
+                for platform in core_document.get("platforms", [])
+                if platform.get("id") == "arduino:avr"
+            ]
+            if len(avr_platforms) != 1:
+                raise probe.ProbeError("installed Arduino AVR core is ambiguous")
+            core_version = avr_platforms[0].get("installed_version")
+            if not core_version:
+                raise probe.ProbeError("Arduino AVR core version is unavailable")
+            properties_command = [
+                arguments.arduino_cli,
+                "compile",
+                "--fqbn",
+                arguments.fqbn,
+                "--show-properties=expanded",
+                str(example_path),
+            ]
+            properties = {}
+            for line in probe.output(
+                properties_command, stderr=subprocess.STDOUT
+            ).splitlines():
+                if "=" in line:
+                    key, value = line.split("=", 1)
+                    properties[key] = value
+            link_recipe = properties.get("recipe.c.combine.pattern")
+            if not link_recipe:
+                raise probe.ProbeError("resolved AVR linker recipe is unavailable")
+            compiler = pathlib.Path(compile_commands[0]["arguments"][0])
+            linker = compiler.parent / "avr-gcc"
+            if not linker.is_file():
+                raise probe.ProbeError(
+                    "resolved AVR linker executable is unavailable"
+                )
+            ORDINARY_EVIDENCE[lesson] = {
                 "command": command,
                 "properties_command": properties_command,
                 "flash_bytes": flash,
@@ -295,7 +394,6 @@ def compile_ordinary(arguments):
                 "linker_version": probe.tool_version(linker),
                 "resolved_link_recipe": link_recipe,
             }
-        )
     finally:
         shutil.rmtree(temporary)
 
@@ -328,7 +426,7 @@ def load_reviews(root, review_path):
     for review in document["reviews"]:
         if set(review) != required:
             raise probe.ProbeError(f"invalid target-miss review fields: {review}")
-        if review["lesson"] != "061":
+        if review["lesson"] not in {boundary["lesson"] for boundary in BOUNDARIES}:
             raise probe.ProbeError(f"target-miss review names unknown lesson: {review}")
         if review["disposition"] != "accepted-target-miss":
             raise probe.ProbeError(f"invalid target-miss disposition: {review}")
@@ -372,17 +470,21 @@ def load_reviews(root, review_path):
 
 
 def apply_enriched_reviews(state):
+    lesson = state["lesson"]
+    boundary = next(
+        boundary for boundary in BOUNDARIES if boundary["lesson"] == lesson
+    )
     measurements = state["measurements"]
     limits = {
         "ordinary_flash": (
             measurements["ordinary_flash_bytes"],
-            BOUNDARIES[0]["flash_target"],
-            BOUNDARIES[0]["flash_hard"],
+            boundary["flash_target"],
+            boundary["flash_hard"],
         ),
         "ordinary_static_sram": (
             measurements["ordinary_static_sram_bytes"],
-            BOUNDARIES[0]["sram_target"],
-            BOUNDARIES[0]["sram_hard"],
+            boundary["sram_target"],
+            boundary["sram_hard"],
         ),
         "input_caller_buffer": (
             measurements["caller_buffers"]["input_sample_bytes"],
@@ -403,6 +505,8 @@ def apply_enriched_reviews(state):
         *limits,
     }
     for (lesson, metric), review in LOADED_REVIEWS.items():
+        if lesson != state["lesson"]:
+            continue
         if metric not in supported:
             raise probe.ProbeError(
                 f"unsupported reviewed metric for Lesson {lesson}: {metric}"
@@ -429,8 +533,15 @@ def enrich_evidence(evidence_path):
     if not evidence_path.is_file() or "061" not in RESOURCE_LAYOUTS:
         return 0
     report = json.loads(evidence_path.read_text(encoding="utf-8"))
-    report["commands"].insert(0, ORDINARY_EVIDENCE["command"])
-    report["commands"].insert(1, ORDINARY_EVIDENCE["properties_command"])
+    ordinary_commands = []
+    for lesson in sorted(ORDINARY_EVIDENCE):
+        ordinary_commands.extend(
+            (
+                ORDINARY_EVIDENCE[lesson]["command"],
+                ORDINARY_EVIDENCE[lesson]["properties_command"],
+            )
+        )
+    report["commands"][0:0] = ordinary_commands
     report["commands"].extend(RESOURCE_LAYOUTS["061"]["commands"])
     report["constants"].update(
         {
@@ -442,35 +553,38 @@ def enrich_evidence(evidence_path):
             "fixed_buffer_hard_bytes": FIXED_BUFFER_HARD,
         }
     )
-    symbols = RESOURCE_LAYOUTS["061"]["symbols"]
     for state in report["boundaries"]:
-        if state["lesson"] != "061" or "measurements" not in state:
+        lesson = state["lesson"]
+        if lesson not in RESOURCE_LAYOUTS or "measurements" not in state:
             continue
+        boundary = next(
+            boundary for boundary in BOUNDARIES if boundary["lesson"] == lesson
+        )
+        ordinary = ORDINARY_EVIDENCE[lesson]
+        symbols = RESOURCE_LAYOUTS[lesson]["symbols"]
         measurements = state["measurements"]
-        measurements["ordinary_flash_bytes"] = ORDINARY_EVIDENCE["flash_bytes"]
-        measurements["ordinary_static_sram_bytes"] = ORDINARY_EVIDENCE[
-            "static_sram_bytes"
-        ]
+        measurements["ordinary_flash_bytes"] = ordinary["flash_bytes"]
+        measurements["ordinary_static_sram_bytes"] = ordinary["static_sram_bytes"]
         state["gates"]["ordinary_flash"] = probe.gate(
             measurements["ordinary_flash_bytes"],
-            BOUNDARIES[0]["flash_target"],
-            BOUNDARIES[0]["flash_hard"],
+            boundary["flash_target"],
+            boundary["flash_hard"],
         )
         state["gates"]["ordinary_static_sram"] = probe.gate(
             measurements["ordinary_static_sram_bytes"],
-            BOUNDARIES[0]["sram_target"],
-            BOUNDARIES[0]["sram_hard"],
+            boundary["sram_target"],
+            boundary["sram_hard"],
         )
         for gate_name in ("ordinary_flash", "ordinary_static_sram"):
             if state["gates"][gate_name] == "target-miss":
                 state["gates"][gate_name] = "review-required"
         public_values = {}
-        for name in PUBLIC_VALUES:
+        for name in PUBLIC_VALUES[lesson]:
             size_symbol = f"{name}Bytes"
             alignment_symbol = f"{name}Alignment"
             if size_symbol not in symbols or alignment_symbol not in symbols:
                 raise probe.ProbeError(
-                    f"Lesson 061 public layout symbol is missing: {name}"
+                    f"Lesson {lesson} public layout symbol is missing: {name}"
                 )
             public_values[name] = {
                 "size_bytes": symbols[size_symbol],
@@ -479,16 +593,22 @@ def enrich_evidence(evidence_path):
                 "trivially_copyable": True,
                 "trivially_destructible": True,
             }
+        enum_names = (
+            ("ProbeQuality",)
+            if lesson == "061"
+            else ("ThresholdState", "ThermalQuality", "RadiantQuality")
+        )
         measurements["public_enums"] = {
-            "ProbeQuality": {"size_bytes": symbols["ProbeQualityBytes"]}
+            name: {"size_bytes": symbols[f"{name}Bytes"]} for name in enum_names
         }
         measurements["public_values"] = public_values
         measurements["policy_traits"] = {
             "copy_constructible": False,
             "move_constructible": False,
         }
-        input_bytes = symbols["resistiveProbeInputCallerBufferBytes"]
-        output_bytes = symbols["resistiveProbeOutputCallerBufferBytes"]
+        prefix = "resistiveProbe" if lesson == "061" else "thermalRadiant"
+        input_bytes = symbols[f"{prefix}InputCallerBufferBytes"]
+        output_bytes = symbols[f"{prefix}OutputCallerBufferBytes"]
         aggregate = input_bytes + output_bytes
         measurements["caller_buffers"] = {
             "input_sample_bytes": input_bytes,
@@ -534,16 +654,27 @@ def enrich_evidence(evidence_path):
             )
         )
         report["status"] = probe.merge_status(report["status"], state["status"])
-    source_paths = (
+    source_paths = [
         "src/resistive_probe_observation.h",
         "src/resistive_probe_observation.cpp",
         "examples/Lesson061ResistiveProbeObservation/"
         "Lesson061ResistiveProbeObservation.ino",
-        "probes/Lesson061MuseumCaseResourceProbe/"
+        "extras/probes/Lesson061MuseumCaseResourceProbe/"
         "Lesson061MuseumCaseResourceProbe.ino",
         "probes/museum_case_object_sizes.cpp",
         "scripts/check_museum_case_resource_probe.py",
-    )
+    ]
+    if any(state["lesson"] == "062" for state in report["boundaries"]):
+        source_paths.extend(
+            (
+                "src/thermal_radiant_observation.h",
+                "src/thermal_radiant_observation.cpp",
+                "examples/Lesson062ThermalRadiantObservation/"
+                "Lesson062ThermalRadiantObservation.ino",
+                "extras/probes/Lesson062MuseumCaseResourceProbe/"
+                "Lesson062MuseumCaseResourceProbe.ino",
+            )
+        )
     source_hashes = {
         path: probe.sha256(ROOT / path)
         for path in source_paths
@@ -551,15 +682,20 @@ def enrich_evidence(evidence_path):
     fingerprint_payload = {
         "schema": 1,
         "fqbn": report["fqbn"],
-        "core_package": ORDINARY_EVIDENCE["core_package"],
-        "core_version": ORDINARY_EVIDENCE["core_version"],
-        "f_cpu_hz": ORDINARY_EVIDENCE["f_cpu_hz"],
+        "core_package": ORDINARY_EVIDENCE["061"]["core_package"],
+        "core_version": ORDINARY_EVIDENCE["061"]["core_version"],
+        "f_cpu_hz": ORDINARY_EVIDENCE["061"]["f_cpu_hz"],
         "tools": report["tools"],
         "commands": json.loads(normalized(report["commands"])),
-        "ordinary_compile_units": ORDINARY_EVIDENCE["compile_units"],
-        "linker_executable": ORDINARY_EVIDENCE["linker_executable"],
-        "linker_version": ORDINARY_EVIDENCE["linker_version"],
-        "resolved_link_recipe": ORDINARY_EVIDENCE["resolved_link_recipe"],
+        "ordinary_compile_units": {
+            lesson: evidence["compile_units"]
+            for lesson, evidence in sorted(ORDINARY_EVIDENCE.items())
+        },
+        "linker_executable": ORDINARY_EVIDENCE["061"]["linker_executable"],
+        "linker_version": ORDINARY_EVIDENCE["061"]["linker_version"],
+        "resolved_link_recipe": ORDINARY_EVIDENCE["061"][
+            "resolved_link_recipe"
+        ],
         "source_hashes": source_hashes,
         "thresholds": report["constants"],
     }
@@ -591,7 +727,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--arduino-cli", default="arduino-cli")
     parser.add_argument("--fqbn", default="arduino:avr:mega")
-    parser.add_argument("--require-through", choices=("061",), default="061")
+    parser.add_argument(
+        "--require-through", choices=("061", "062"), default="061"
+    )
     parser.add_argument(
         "--evidence-json",
         default="build/evidence/museum-case-resource-probe.json",
@@ -601,8 +739,13 @@ def main():
         default="probes/museum_case_resource_reviews.json",
     )
     arguments = parser.parse_args()
-    compile_ordinary(arguments)
-    probe.BOUNDARIES = BOUNDARIES
+    selected_boundaries = tuple(
+        boundary
+        for boundary in BOUNDARIES
+        if boundary["lesson"] <= arguments.require_through
+    )
+    compile_ordinary(arguments, selected_boundaries)
+    probe.BOUNDARIES = selected_boundaries
     probe.object_sizes = object_sizes
     probe.load_reviews = load_reviews
     sys.argv = [

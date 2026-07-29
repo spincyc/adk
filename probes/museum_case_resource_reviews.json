@@ -1,4 +1,17 @@
 {
-  "reviews": [],
+  "reviews": [
+    {
+      "authority": "docs/design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md#canonical-e0-resource-gates",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "9277d5e79d68afff248f759c6d6e6035df01fd06afe707be1dd6efa82e239628",
+      "hard_bytes": 1536,
+      "lesson": "062",
+      "metric": "ordinary_static_sram",
+      "observed_bytes": 1133,
+      "rationale": "The inspectable nine-frame E0 replay ledger accounts for the target overage; exact policy, stack, caller-buffer, and residual gates pass, while PROGMEM would add AVR-specific copying and stack pressure to the narrative fixture.",
+      "reviewer": "l062_resource_review",
+      "target_bytes": 1024
+    }
+  ],
   "schema": 1
 }

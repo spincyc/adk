@@ -97,6 +97,7 @@
 #include "telemetry_console_project.h"
 #include "telemetry_record.h"
 #include "spi_bus.h"
+#include "thermal_radiant_observation.h"
 #include "threshold_input.h"
 #include "time.h"
 #include "traffic_junction.h"
