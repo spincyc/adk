@@ -80,8 +80,10 @@ class LinkedDesignDocumentsTest(unittest.TestCase):
         entry = self.staged / "index.md"
         for name in ("FENCE.md", "SPAN.md", "COMMENT.md"):
             (self.source_design / name).write_text("must not publish\n")
+        (self.source_design / "TILDE.md").write_text("must not publish\n")
         entry.write_text(
             "```\n[fence](docs/design/FENCE.md)\n```\n"
+            "~~~text\n[tilde](docs/design/TILDE.md)\n~~~\n"
             "`[span](docs/design/SPAN.md)`\n"
             "<!-- [comment](docs/design/COMMENT.md) -->\n"
         )
@@ -89,6 +91,15 @@ class LinkedDesignDocumentsTest(unittest.TestCase):
         self.stage_from(entry)
 
         self.assertFalse((self.staged_docs / "design").exists())
+
+    def test_preserves_percent_encoded_reserved_filename_characters(self):
+        entry = self.staged / "index.md"
+        (self.source_design / "PLAN#A.md").write_text("# Plan\n")
+        entry.write_text("[plan](docs/design/PLAN%23A.md#scope)\n")
+
+        self.stage_from(entry)
+
+        self.assertTrue((self.staged_docs / "design/PLAN#A.md").is_file())
 
     def test_handles_cycles_once(self):
         entry = self.staged / "index.md"

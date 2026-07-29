@@ -81,7 +81,13 @@ class MarkdownLinkParser(HTMLParser):
 
 def markdown_link_targets(text: str) -> list[str]:
     parser = MarkdownLinkParser()
-    parser.feed(markdown.markdown(text, output_format="html"))
+    parser.feed(
+        markdown.markdown(
+            text,
+            extensions=("fenced_code",),
+            output_format="html",
+        )
+    )
     return parser.targets
 
 
@@ -111,12 +117,12 @@ def stage_linked_design_documents(
         text = resolved_document.read_text(encoding="utf-8")
         for raw_target in markdown_link_targets(text):
             try:
-                parsed = urlsplit(unquote(raw_target))
+                parsed = urlsplit(raw_target)
             except ValueError:
                 continue
             if parsed.scheme or parsed.netloc or not parsed.path:
                 continue
-            target = Path(parsed.path)
+            target = Path(unquote(parsed.path))
             if target.is_absolute() or target.suffix.lower() != ".md":
                 continue
             try:
