@@ -196,9 +196,9 @@ supplies the shortest planned path through the library.
 | 049 | Component | Local identity records | Copied UID-shaped evidence forms bounded local identifiers, not authentication; caller-owned record images deterministically model interrupted writes and recovery without claiming physical-media durability |
 | 050 | Component | Bounded logical homing and positioning | Copied home and stop evidence establishes only a volatile session home, logical position, and inert coil intent; physical home and motion remain unproved |
 | 051 | Project-bearing | Inert tabletop parts carousel | Copied identity, key, home, and stop evidence composes with deterministic audit-image recovery, acknowledged durable-start admission, attributable stopped-terminal reconciliation, and atomic one-step logical position with intentionally zero published coil intent; Lesson 047 retains staged coil teaching, E1 reserves exact inputs/storage/display, and E2 reserves powered stepper/servo motion |
-| 052 | Component | Captured IR pulse trains | Known, repeated, unknown, and malformed receive evidence remain distinct |
-| 053 | Component | Known-code IR transmission | Only documented learner-created codes use a bounded, cancellable emitter |
-| 054 | Project-bearing | IR command translator | Adjacent, exactly qualified transmitter and receiver fixtures replay known harmless commands |
+| 052 | Component | Copied IR capture evidence | Existing Lesson 025 pulse values become stable copied evidence with provenance and categorical strength; known, repeat, unknown, and malformed evidence remain distinct, while an exact receiver fixture remains E1-open |
+| 053 | Component | Closed symbolic IR transmission intent | Only immutable firmware-authored learner symbols produce bounded, cancellable inert intent; captured or raw values cannot enter the catalog, and an exact emitter fixture remains E1-open |
+| 054 | Project-bearing | Inert IR command translator | A fixed allowlist maps one known-valid, attributable receive symbol to a different harmless local response symbol; unknown, malformed, and repeat evidence cannot transmit, while exact receiver and emitter fixtures remain E1-open |
 | 055 | Component | Constraint and clue model | Fixed-capacity rules reject cycles and consume only explicit observations |
 | 056 | Component | Fault-aware operator panel | Inputs, presentation, acknowledgement, stop, and storage compose deterministically |
 | 057 | Project-bearing | Inert escape-room console | Replayable clues can request only lightweight, bounded actuator intent |
@@ -287,7 +287,7 @@ the external-power boundary introduced in `017`.
 | Joystick and encoder input | 031--032 | 033 | 046, 048, 055 |
 | Contact, acoustic, and optical observations | 034--042 | 036--042 | 046, 055, 070 |
 | Revision-neutral inertial observations | 043--044, 067--068 | 045, 069 | Recorded comparison |
-| Authorized tactile inputs, stepper, identity, homing, and exactly qualified IR output | 046--053 | 048--054 | 055 |
+| Authorized tactile inputs, stepper, identity, homing, and closed symbolic IR intent | 046--053 | 048--054 | Exact IR output remains E1-open; later models start at 055 |
 | Rule and operator-panel models | 055--056 | 057 | 081 |
 | Multiplexed and MAX7219 displays | 058--059 | 060 | Timing presentation |
 | Authorized environmental observations | 061--062 | 063 | Recorded monitoring |
