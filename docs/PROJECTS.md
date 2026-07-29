@@ -114,7 +114,7 @@ may claim hardware verification until its measured record is published.
 | 055--057 | Constraint model and fault-aware panel | Inert escape-room console |
 | 058--060 | Multiplexed digits and MAX7219 presentation | Dual-display timing desk |
 | [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | E0 copied resistive-probe, thermal, radiant, and qualified reed evidence | Inert museum-case monitor |
-| 064--066 | Single-wire transport and qualified 18B20 probes | Thermal gradient mapper |
+| [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | E0 copied single-wire transaction receipts and qualified synthetic 18B20 observations | Inert thermal-gradient presentation and record intent |
 | 067--069 | Inertial records and source qualification | Interchangeable motion recorder |
 | 070--072 | Identified threshold descriptors and sweeps | Module characterization bench |
 | 073--075 | Authorized-family replacements pending | Project pending re-scope |
@@ -150,7 +150,7 @@ explicit open item.
 | [057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Host verified; exact passive fixtures/restrained demonstration bench open | Clue, permutation, fault, reset, stop, audit-recovery, and atomic intent traces | E0 result cells; exact passive presentation remains E1 and any restrained demonstration actuation remains E2 |
 | [060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Host verified; exact powered fixtures open | Digit refresh, register failure, attributed disagreement, and shutdown traces | Lessons 058--060 provide host-verified E0 result cells; independent physical display self-tests and transport points remain E1 |
 | [063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Active; implementation-depth E0 plan reviewed | Copied Water Level, thermistor, distinct Digital Temperature, radiant, and qualified reed traces; latch, acknowledgement, cooldown, bounded audit-intent receipt, recovery, and replay evidence | E0 health/fault, sound, LCD, and inert relay-lamp intent cells; powered presentation is E1c/E1d, durable RTC/media remains deferred, and the exact extra-low-voltage relay/lamp fixture is E2 |
-| 066 | Queued; detailed plan required | Single-wire, CRC, conversion, identity, and record traces | Data/rail/activity test points and explicit invalid state |
+| [066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Implementation-depth E0 plan reviewed; implementation pending | Copied line-receipt transactions, configured family-`0x28` ROM identities, synthetic scratchpad CRC/conversion/freshness/disappearance, ordered interval-gradient, fault-dominance, and inert record-intent traces | E0 result cells only; exact DS18B20 specimens, bus timing and pull-up circuits, multi-probe qualification, powered presentation, persistence, and bench evidence remain separate E1 gates |
 | 069 | Queued; detailed plan required | Normalization, provenance, qualification, and replay traces | Display self-test, orientation, and dominant fault |
 | 072 | Queued; detailed plan required | Descriptor, sweep, disagreement, and record traces | Raw, comparator, validity, and switched-power evidence |
 | 075 | Re-scope required | Deterministic artifacts depend on the authorized families selected for 073--074 | Observation paths depend on the authorized replacement specimens |

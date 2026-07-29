@@ -86,6 +86,17 @@ exact no-LTO aggregate measures 22,980 bytes flash, 1,405 bytes static SRAM,
 819 bytes stack, and 709 bytes of child/monitor objects, leaving 5,840 bytes
 residual SRAM. Powered presentation, combined sensing, persistence, and relay
 fixtures remain E1c/E1d/E2-open.
+Lessons 064--066 are specified, but not implemented, under the
+[implementation-depth E0 plan](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md).
+Their initial architecture stress passes cover the
+[single-wire transaction](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md),
+[qualified probe set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md),
+and
+[thermal gradient mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md)
+boundaries. E0 is limited to copied receipts, configured identities, supplied
+time, and inert presentation/record intent. Exact powered specimens,
+single-wire electrical behavior, thermal accuracy, persistence, and every
+bench acceptance level remain open.
 The later blocks are ordered for early learner engagement while retaining
 prerequisite, authorization, safety, and evidence gates: interactive motion
 and display projects precede the more methodical environmental and
