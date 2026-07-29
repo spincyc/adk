@@ -53,7 +53,7 @@ BOUNDARIES = (
     },
     {
         "lesson": "057",
-        "sketch": "probes/EscapeConsoleMaximumComposition",
+        "sketch": "extras/probes/EscapeConsoleMaximumComposition",
         "object_symbol": "inertEscapeConsoleObjectBytes",
         "flash_target": 32 * 1024,
         "flash_hard": 40 * 1024,
