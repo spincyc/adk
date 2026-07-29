@@ -178,9 +178,13 @@ def stage() -> None:
         "LESSONS_043_045_BALANCE_TABLE_PLAN.md",
         "LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md",
         "LESSONS_049_051_PARTS_CAROUSEL_PLAN.md",
+        "LESSONS_052_054_IR_TRANSLATOR_PLAN.md",
         "LESSON_049_IDENTITY_STRESS_PASS.md",
         "LESSON_050_HOMING_STRESS_PASS.md",
         "LESSON_051_CAROUSEL_STRESS_PASS.md",
+        "LESSON_052_CAPTURE_EVIDENCE_STRESS_PASS.md",
+        "LESSON_053_KNOWN_IR_EMISSION_STRESS_PASS.md",
+        "LESSON_054_IR_TRANSLATOR_STRESS_PASS.md",
     )
     for name in design_documents:
         source = ROOT / "docs/design" / name

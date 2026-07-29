@@ -487,43 +487,54 @@ stepper/driver, servo, and restrained paper-bin mechanism at E2.
 
 ## Lessons 052--054: infrared protocol workbench
 
-### 052 — Captured pulse trains
+### 052 — Copied IR capture evidence
 
 Extend receive-only IR work into bounded carrier-demodulated pulse records,
-decoder confidence, repeat frames, unknown frames, and fixture export.
+categorical evidence strength, repeat frames, unknown frames, and fixture
+export. This reuses the Lesson 025 capture and decoder stack rather than
+creating a second receiver path.
 
-### 053 — Known-code infrared transmission
+### 053 — Closed symbolic IR transmission intent
 
-Add an IR LED endpoint for documented, learner-created codes only. Carrier
-timer ownership, duty, burst duration, cancellation, and eye-safe
-current-limited operation are explicit. This does not authorize replay of
-access controls or unknown devices.
+Add a pure logical emission policy for documented, learner-created codes only.
+A future exactly qualified IR LED endpoint makes carrier-timer ownership, duty,
+burst duration, cancellation, and current-limited, exposure-bounded operation
+explicit; no eye-safety claim is made. This does not authorize replay of
+captures, access controls, appliances, or unknown devices.
 
 ### 054 — Project: IR command translator
 
-A keypad chooses one of several locally defined commands. The station sends it
-between two adjacent breadboards, decodes it, and displays source, command,
-confidence, and round-trip timing. Unknown remote captures are displayed but
-cannot enter the transmit table.
+At E0, the station translates one allowlisted, known-valid synthetic receive
+symbol into a different locally defined logical response and presentation
+intent. A future E1 station sends those known harmless commands between two
+adjacent owned fixtures only after exact transmitter and receiver
+qualification. It displays source, command, categorical evidence, and
+round-trip timing. Repeat, unknown, malformed, self-echo, and unlisted captures
+remain observable but cannot enter the transmit catalog.
 
 Deterministic evidence:
 
 - golden encode/decode vectors and malformed/truncated/noisy pulse trains;
-- repeat handling, timeout, timer conflict, cancellation, and queue capacity;
-- receiver saturation and missing carrier;
+- repeat handling, timeout, cancellation, and one-operation busy capacity;
 - source policy proving unknown captures are never transmitted; and
-- round-trip replay at exact timestamp boundaries.
+- E0 known-code fixture traces at exact timestamp boundaries.
+
+Future E1 evidence adds timer conflicts, receiver saturation, missing carrier,
+and measured adjacent-fixture round trips.
 
 Circuit-native observation:
 
-- transmit and receive activity use separate LEDs;
-- a phototransistor or phone camera can confirm IR LED activity;
-- LCD displays decoded command and confidence;
-- timer conflict produces a distinct fault pattern; and
-- all emitters are inactive after cancellation and shutdown.
+- logical transmit intent and receive activity use separate LEDs;
+- an exactly qualified adjacent receiver is the optical activity evidence; a
+  phone camera is only an optional alignment hint;
+- LCD displays decoded command and categorical evidence;
+- a future E1 timer conflict produces a distinct fault pattern; and
+- E0 emission intent is inactive after cancellation and shutdown; future E1
+  evidence must prove measured carrier and optical output are inactive.
 
-Planned specimen coverage: IR receiver, IR emitter, remote, keypad, LCD, timers,
-buttons, LEDs.
+Planned specimen coverage: exact IR receiver; externally sourced exact IR
+emitter whose future E1 selection remains open; owned harmless remote, keypad,
+LCD, timers, buttons, and LEDs.
 
 ## Lessons 055--057: cooperative escape-room console
 

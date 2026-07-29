@@ -122,7 +122,7 @@ work; retail kit names are not electrical identities.
 | [043--045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Host verified; powered adapter/bench open | Copied inertial samples, pure orientation/presentation intent, and stationary hand-operated tabletop balance instrument are published as E0 replay; no powered adapter, I2C, wiring, schematic, or E1 claim |
 | [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Host verified; powered input/motion bench open | `InteractionIntentPolicy`, `BoundedStepperSequence`, and `KineticLightSculpture` publish copied tactile/directional evidence, bounded logical coil intent, transactional authorization, independent stop precedence, and semantic light intent at E0; powered inputs remain E1-gated and energized motion remains E2-gated |
 | [049--051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Host verified; powered endpoints/media/motion bench open | `LocalIdentityRegistry`, `BoundedHomingPolicy`, and `InertPartsCarousel` publish copied evidence, bounded logical home/position, acknowledged record-image reconciliation, atomic one-step application, and intentional zero-coil intent at E0; E1 endpoints/media and E2 motion remain open |
-| [052--054](projects/component_project_cadence.md) | Queued; exact emitter gated | Known-kit IR capture, bounded listed IR-emission family, command translator |
+| [052--054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | Active integration; E0 implementation authorized; E1 exact fixtures open | Copied Lesson 025 receive evidence, immutable locally authored emission policy, and fixed inert command translator |
 | [055--057](projects/component_project_cadence.md) | Queued | Constraint model, fault-aware panel, inert escape-room console |
 | [058--060](projects/component_project_cadence.md) | Queued | Multiplexed digits, MAX7219 display transport, timing desk |
 | [061--063](projects/component_project_cadence.md) | Queued; corrected authorized scope | Resistive probes and qualified thermal/radiant observations composed into a museum-case monitor |
@@ -200,7 +200,21 @@ stepper/driver and servo identities, independently switchable current-limited
 actuator power, restraint, stop and power removal, and measured homing,
 position, gate, current, thermal, and motion acceptance.
 
-Cadence entries for Lessons 052--081 are not implementation-ready lesson
+Lessons 052--054 have a clean-reviewed
+[implementation-depth plan](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md);
+their E0 integration and implementation are authorized. E0 reuses Lesson 025
+without changing its public API, copies attributable receive evidence, admits
+transmission intent only from an immutable firmware-authored catalog, and
+translates a fixed allowlist of valid receive symbols to different local
+symbols. Repeat, unknown, malformed, self-echo, and arbitrary captured
+evidence can never become transmit authority. E0 owns no receiver, emitter,
+pin, timer, interrupt, carrier output, or optical power path. Exact receiver,
+emitter, driver, resistor, timer/channel/pin allocation, supply, observation
+path, and bench acceptance remain open E1 gates. The authorized Elegoo
+inventory does not establish that the kit contains an IR emitter, so this arc
+makes no known-kit-emitter claim.
+
+Cadence entries for Lessons 055--081 are not implementation-ready lesson
 plans. Before code begins for each later three-lesson arc, expand it to the
 same depth as 031--033: public values and interfaces, resource and pin budgets,
 deterministic fixture and failure matrices, narrative example flow, staged

@@ -121,9 +121,18 @@ RFID/keypad/home inputs, powered indicators, and nonvolatile storage remain
 E1-gated; exact stepper/driver and servo hardware, powered motion, restraint,
 independent stop and power removal, and measured acceptance remain E2-gated.
 
-Development then follows lessons 052--081, one implementation-depth
-three-lesson brief at a time. That future arc remains engagement-first: IR,
-escape-console, and display projects before the more methodical environmental,
+Lessons 052--054 are in active E0 implementation against the clean-reviewed
+[infrared-translator plan](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md).
+This boundary adds copied receive evidence, a pure immutable local-command
+emission policy, and an inert fixed-allowlist translator without owning an
+optical or electrical endpoint. Exact receiver, emitter, driver, resistor,
+timer, pin, supply, observation path, and powered acceptance remain gated to
+the separately qualified E1 fixture; E0 does not authorize unknown-protocol
+replay or make an eye-safety claim.
+
+Development then follows lessons 055--081, one implementation-depth
+three-lesson brief at a time. That later arc remains engagement-first:
+escape-console and display projects before the more methodical environmental,
 18B20, motion-recording, and characterization blocks. Authorization,
 prerequisite, exact-specimen, safety, and evidence gates still control
 activation; the ordering is not a support claim.

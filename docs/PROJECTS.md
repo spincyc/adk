@@ -42,6 +42,14 @@ Lessons 049--051 are host verified under the
 Their copied identity, key, home, and stop evidence drives bounded logical
 policy only. Exact powered inputs, storage, and presentation remain E1-open;
 restrained stepper/servo motion and physical position remain E2-open.
+Lessons 052--054 are in active implementation under the
+[implementation-depth E0 plan](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md).
+They extend Lesson 025 with copied receive evidence, an immutable
+firmware-authored local-command catalog, and a fixed allowlist that produces
+only inert semantic transmission intent. Unknown, malformed, repeat, and raw
+captured values cannot become transmit authority. Exact receiver, emitter,
+driver, resistor, carrier endpoint, controls, displays, indicators, and
+physical acceptance remain E1-open.
 See the [authoritative work
 queue](WORK_QUEUE.md) for the complete ledger.
 
@@ -92,7 +100,7 @@ may claim hardware verification until its measured record is published.
 | [043--045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | E0 copied inertial samples and pure orientation/presentation intent | Stationary hand-operated tabletop balance instrument |
 | [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | E0 copied tactile/directional evidence and bounded logical stepper intent | Transactional kinetic light sculpture |
 | [049--051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Local identity records and bounded homing | Tabletop parts carousel |
-| 052--054 | Known-kit IR capture and exactly qualified transmission | IR command translator |
+| [052--054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | E0 copied IR receive evidence and immutable local-command intent; exact powered fixtures remain E1-open | Inert fixed-allowlist IR command translator |
 | 055--057 | Constraint model and fault-aware panel | Inert escape-room console |
 | 058--060 | Multiplexed digits and MAX7219 presentation | Dual-display timing desk |
 | 061--063 | Authorized Water Level, thermistor, Digital Temperature, radiant, and reed observations | Museum-case monitor |
@@ -128,7 +136,7 @@ explicit open item.
 | [045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Host verified; powered composition and bench open | Copied-sample validation, stationary orientation, sensitivity, freeze, health, simultaneous-event, and byte-identical replay traces | Host result cells only; powered indicators, controls, bus points, wiring, schematic, and E1 acceptance remain gated |
 | [048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Host verified; powered composition open | Copied-input authorization, logical coil-frame, cancellation, stop-dominance, fault, and byte-identical replay traces | E0 light-intent cells only; powered indicators and inputs remain E1-open, while energized stepper motion and sculpture acceptance remain E2-open |
 | [051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Host verified; powered endpoints/media/motion bench open | Copied identity/key evidence, fixed caller-owned record-image recovery, bounded logical homing, confirmation, cancellation, stop-dominance, attributable terminal reconciliation, fault, and byte-identical replay traces | E0 retains in-memory result cells plus fixture-owned position, zero-coil atomic-step, gate, presentation, and audit-intent mirrors; Lesson 047 retains staged coil teaching, qualified powered inputs/indicators/nonvolatile adapters remain E1-open, and stepper/servo power, restrained motion, and physical position remain E2-open |
-| 054 | Queued; detailed plan required | Encode/decode, malformed-frame, policy, and cancellation traces | Separate transmit/receive/fault indications |
+| [054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | E0 implementation active; exact powered fixtures and bench acceptance open | Copied-evidence provenance, categorical disposition, immutable-catalog authority, different-symbol allowlist translation, cancellation, self-echo suppression, attribution, fault, and byte-stable replay traces | E0 named result cells expose receive source/disposition, candidate, inert carrier-envelope intent, attribution, suppression, and fault without claiming optical activity; E1 requires separately qualified TX-intent, RX-activity, and fault indicators plus exact electrical/optical test points |
 | 057 | Queued; detailed plan required | Clue, permutation, fault, reset, and stop traces | Raw/accepted/fault clue states and inert intent |
 | 060 | Queued; detailed plan required | Digit refresh, SPI failure, disagreement, and shutdown traces | Independent display self-tests and transport points |
 | 063 | Queued; detailed plan required | Water Level, thermistor, Digital Temperature, radiant, reed, latch, and record traces | Health/fault display and inert alarm lamp |
