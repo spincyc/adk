@@ -372,7 +372,6 @@ enum struct Ds18b20ProbeQuality : uint8_t
     Unqualified,
     ConversionPending,
     Current,
-    RomCrcFault,
     ScratchpadCrcFault,
     ResolutionMismatch,
     ResetDefaultWithoutConversion,
@@ -393,53 +392,76 @@ enum struct Ds18b20SetQuality : uint8_t
     Missing
 };
 
-struct OneWireTransactionEvidence
+struct Ds18b20NormalizedTransactionRef
 {
-    uint32_t               ownerToken;
-    uint32_t               lifecycleGeneration;
-    uint16_t               configurationRevision;
-    uint32_t               transactionGeneration;
-    uint32_t               requestSequence;
-    OneWireOperation       operation;
-    OneWireRomCode         addressedRom;
-    bool                   presenceSeen;
-    uint8_t                bytes[9];
-    uint8_t                byteCount;
-    MicrosecondTimePoint   startedAt;
-    MicrosecondTimePoint   completedAt;
+    uint32_t                  requestSequence;
+    uint32_t                  transactionGeneration;
+    MicrosecondTimePoint      startedAt;
+    MicrosecondTimePoint      completedAt;
+    uint16_t                  acceptedSlotCount;
+    OneWireOperation          operation;
+    OneWireSupplyMode         supplyMode;
     OneWireTransactionQuality quality;
-    Status                 status;
+    bool                      presenceSeen;
+    bool                      releaseConfirmed;
+    Status                    requestStatus;
+    Status                    status;
 };
 
-struct OneWireSearchPassEvidence
+struct Ds18b20NormalizedSearchPass
 {
-    OneWireTransactionEvidence transaction;
-    OneWireSearchState         requestSearch;
-    OneWireSearchState         completedSearch;
+    Ds18b20NormalizedTransactionRef transaction;
+    OneWireSearchState              requestSearch;
+    OneWireSearchState              completedSearch;
 };
 
-struct Ds18b20ConversionReadEvidence
+struct Ds18b20NormalizedProbeWitness
 {
-    OneWireRomCode            rom;
-    uint32_t                  conversionGeneration;
-    OneWireTransactionEvidence conversionRequest;
-    OneWireTransactionEvidence conversionCompletion;
-    OneWireTransactionEvidence scratchpadRead;
+    OneWireRomCode        rom;
+    uint32_t              conversionGeneration;
+    uint32_t              conversionStartTransactionGeneration;
+    uint32_t              conversionStatusTransactionGeneration;
+    uint32_t              conversionStatusPredecessorGeneration;
+    uint32_t              scratchpadTransactionGeneration;
+    uint32_t              scratchpadPredecessorGeneration;
+    MicrosecondTimePoint  conversionStartedAt;
+    MicrosecondTimePoint  conversionStatusAt;
+    MicrosecondTimePoint  scratchpadCompletedAt;
+    TimePoint             scratchpadObservedAt;
+    uint8_t               scratchpad[9];
+    bool                  conversionCompletedHigh;
+    bool                  present;
+    Status                status;
 };
 
-struct Ds18b20SetEnvelope
+struct Qualified18B20ProbeSetPolicy;
+
+struct Ds18b20CycleBuilder
 {
-    uint8_t                       sourceId;
-    uint16_t                      configurationRevision;
-    uint32_t                      cycleSequence;
-    TimePoint                     observedAt;
-    OneWireSearchPassEvidence     searchPasses[4];
-    uint8_t                       searchPassCount;
-    bool                          searchComplete;
-    bool                          searchOverCapacity;
-    Ds18b20ConversionReadEvidence reads[4];
-    uint8_t                       readCount;
-    Status                        status;
+    Ds18b20CycleBuilder () noexcept;
+
+    Ds18b20CycleBuilder (const Ds18b20CycleBuilder&) = delete;
+    Ds18b20CycleBuilder& operator= (const Ds18b20CycleBuilder&) = delete;
+    Ds18b20CycleBuilder (Ds18b20CycleBuilder&&) = delete;
+    Ds18b20CycleBuilder& operator= (Ds18b20CycleBuilder&&) = delete;
+
+  private:
+    friend struct Qualified18B20ProbeSetPolicy;
+
+    uint8_t                         sourceId;
+    uint16_t                        configurationRevision;
+    uint32_t                        cycleSequence;
+    TimePoint                       observedAt;
+    uint32_t                        oneWireOwnerToken;
+    uint32_t                        oneWireLifecycleGeneration;
+    uint16_t                        oneWireConfigurationRevision;
+    Ds18b20NormalizedSearchPass     searchPasses[4];
+    Ds18b20NormalizedProbeWitness   probes[4];
+    uint8_t                         searchPassCount;
+    uint8_t                         probeCount;
+    bool                            searchComplete;
+    bool                            searchOverCapacity;
+    Status                          status;
 };
 
 struct Ds18b20ProbeConfig
@@ -499,12 +521,48 @@ struct Qualified18B20ProbeSetPolicy
 
     Status initialize () noexcept;
     void   reset      () noexcept;
-    Status update     (TimePoint                         now,
-                       const Ds18b20SetEnvelope&         envelope,
-                       QualifiedDs18b20Snapshot&         snapshot) noexcept;
+    Status beginCycle (TimePoint            now,
+                       uint8_t              sourceId,
+                       uint16_t             configurationRevision,
+                       uint32_t             cycleSequence,
+                       TimePoint            observedAt,
+                       Ds18b20CycleBuilder& builder) const noexcept;
+    Status ingestSearchPass (
+        Ds18b20CycleBuilder&              builder,
+        const OneWireTransactionSnapshot& transaction,
+        const OneWireSearchState&          requestSearch) const noexcept;
+    Status finishSearch (
+        Ds18b20CycleBuilder& builder,
+        bool                 searchComplete,
+        bool                 searchOverCapacity,
+        Status               producerStatus) const noexcept;
+    Status ingestConversionStart (
+        Ds18b20CycleBuilder&              builder,
+        uint32_t                          conversionGeneration,
+        const OneWireTransactionSnapshot& transaction) const noexcept;
+    Status ingestConversionStatus (
+        Ds18b20CycleBuilder&              builder,
+        uint32_t                          conversionGeneration,
+        const OneWireTransactionSnapshot& transaction) const noexcept;
+    Status ingestScratchpad (
+        Ds18b20CycleBuilder&              builder,
+        uint32_t                          conversionGeneration,
+        TimePoint                         scratchpadObservedAt,
+        const OneWireTransactionSnapshot& transaction) const noexcept;
+    Status finalizeCycle (
+        TimePoint                         now,
+        const Ds18b20CycleBuilder&        builder,
+        QualifiedDs18b20Snapshot&         snapshot) noexcept;
 
     Status snapshot    (QualifiedDs18b20Snapshot& snapshot) const noexcept;
     bool   initialized () const noexcept;
+
+  private:
+    QualifiedDs18b20SetConfig config_;
+    QualifiedDs18b20Snapshot  snapshot_;
+    Ds18b20CycleBuilder       lastCycle_;
+    bool                      initialized_;
+    bool                      hasLastCycle_;
 };
 ```
 
@@ -514,10 +572,24 @@ duplicate ROMs, wrong family/ROM CRC, invalid signed raw-sixteenth ranges, and
 resolution/deadline mismatch. Dallas CRC-8 uses reflected polynomial `0x8c`,
 initial value zero, least-significant bit first, and no final XOR.
 
-The set envelope preserves up to four chained completed `SearchRomPass`
-records and the full Lesson 064 owner/lifecycle/configuration/request/
-transaction attribution for every search pass, conversion request, conversion
-completion, and scratchpad read.
+The caller lifetime-reuses one fixed, opaque `Ds18b20CycleBuilder`. It is
+noncopyable and nonmovable; only `Qualified18B20ProbeSetPolicy` may mutate its
+private storage. Each ingestion
+call validates one complete Lesson 064 snapshot transiently, including
+operation, addressed ROM, supply mode, request status, accepted-slot count,
+presence, confirmed release, request/transaction sequence and generation,
+start/completion times, quality, and terminal status. The builder retains the
+common Lesson 064 owner/lifecycle/configuration once and only the compact
+normalized facts needed by final qualification. It does not export or make a
+claim about the underlying receipt producer. Only `finalizeCycle()` mutates
+policy state, so a partially staged cycle is never a partially committed set.
+Every failed begin/ingest/finish operation leaves every byte of the builder
+unchanged. Every failed finalization leaves both the policy and caller output
+byte-identical. Replay equality is fieldwise over the complete normalized
+cycle image and every normalized witness; no
+partial witness, subset, digest, or padding participates in equality.
+
+The builder preserves up to four chained completed `SearchRomPass` records.
 Each search record retains both its request search state and completed search
 result. The first request is the empty initial state. Every later request must
 equal the immediately preceding completed result, including ROM,
@@ -526,15 +598,17 @@ equal the immediately preceding completed result, including ROM,
 `searchComplete == true`, `searchOverCapacity == false`, and
 `lastDevice == true` on its final retained result. `searchOverCapacity` is
 valid only with four retained results and `lastDevice == false` on the fourth,
-which proves that enumeration has another result beyond the envelope. It is
+which proves that enumeration has another result beyond the builder. It is
 mutually exclusive with `searchComplete` and commits transport/capacity fault
 evidence.
 Returned ROM identity and order are derived only from each retained completed
 search result. There is no independently supplied returned-ROM list that can
 diverge from the transaction witnesses.
 Conversion/read correlation requires the exact ROM and one nonzero conversion
-generation. Crossed ROM, lifecycle, configuration, request, transaction, or
-generation rejects the complete set atomically.
+generation. Each compact completion/read witness explicitly binds its
+predecessor conversion-start transaction generation. Crossed ROM, lifecycle,
+configuration, request, transaction, predecessor, or conversion generation
+rejects the complete set atomically.
 
 Only a structurally complete successful search can prove `Missing`. Truncated,
 failed, discontinuous, unterminated, or over-capacity search is
@@ -544,7 +618,7 @@ substitutes for a configured identity. Search-result permutation never changes
 configured slot order. Exactly four configured slots does not imply exactly
 four discovered devices: one through four terminally enumerated results can
 prove the remaining configured identities missing, while a fifth result
-exceeds the envelope and cannot be silently dropped. A zero-pass envelope
+exceeds the builder and cannot be silently dropped. A zero-pass builder
 cannot claim a complete enumeration because Lesson 064 supplies no completed
 search result to witness it; no-presence evidence remains a transport outcome
 and cannot prove all four configured identities missing at this boundary.
@@ -566,7 +640,13 @@ complete interval represented by their unavailable low bits. No
 
 `+85 C` is `ResetDefaultWithoutConversion` only without an exactly correlated
 completed conversion. After a matching completed conversion it is a valid
-possible raw value. `ConversionPending` retains the last trusted value,
+possible raw value. Freshness begins at the caller-supplied policy-clock
+`scratchpadObservedAt` provided in the same ingestion call as the correlated
+completed scratchpad transaction. The caller asserts the mapping between the
+microsecond transaction clock and millisecond policy clock; Lesson 065 binds
+both times in one witness and validates chronology in each domain, but does
+not infer an epoch between independent clocks. `ConversionPending` retains the
+last trusted value,
 interval, observation time, and age without refreshing them. Step comparison
 uses widened absolute subtraction between consecutive correlated current raw
 values for one ROM.
@@ -574,18 +654,21 @@ values for one ROM.
 Completion evidence is a typed Lesson 064
 `MatchRomReadConversionStatus` transaction for the same exact ROM and
 conversion generation, with a correlated completed-high read receipt. Elapsed
-time alone never proves completion. Configured externally powered conversion
+time alone never proves completion. Completed-high evidence may arrive before
+the resolution maximum. Pending at or after that maximum, and completed-high
+after it, is `TransportFault`, not a late pending/current result. Configured
+externally powered conversion
 ceilings are exactly 94, 188, 375, and 750 milliseconds for 9-, 10-, 11-, and
 12-bit roles respectively; a configured deadline may be no greater than its
 resolution ceiling and equality is explicit.
 
-The set `cycleSequence` is nonzero and strictly monotonically forward without
-wrap. `UINT32_MAX` exhausts before zero; only supplied time may cross ordinary
-modular rollover. Nested Lesson 064 request, phase, and transaction
+The set `cycleSequence` is nonzero and modularly forward. `UINT32_MAX`
+followed by `1` is the defined nonzero successor; zero, regression, and exact
+half-range ambiguity reject. Nested Lesson 064 request, phase, and transaction
 generations obey their own no-wrap exhaustion.
 
-Structural equality and duplicate checks are fieldwise over the complete
-envelope and nested transactions; padding is never compared. Set-level
+Structural equality and duplicate checks are fieldwise over the completed
+builder image; padding is never compared. Set-level
 structural/transport failure precedes slot qualities. For a valid complete
 cycle, all four side qualities commit together and returned `Status`
 precedence follows configured slot order.
@@ -600,12 +683,15 @@ Set-level precedence and status mapping are exact:
    search commits
    `Ds18b20SetQuality::TransportFault` and returns the complete producer
    `Status`;
-3. duplicate derived result ROM commits `DuplicateIdentity` with
+3. a derived result with invalid family or ROM CRC commits set-level
+   `TransportFault`; it is never assigned to a configured slot as
+   `RomCrcFault`;
+4. duplicate derived result ROM commits `DuplicateIdentity` with
    `StatusCode::Ok`;
-4. a CRC-valid foreign derived result ROM commits `UnknownIdentity` with
+5. a CRC-valid foreign derived result ROM commits `UnknownIdentity` with
    `StatusCode::Ok`;
-5. absence proved by complete search commits `Missing` with `StatusCode::Ok`;
-6. otherwise the set is `Complete`, with per-slot ROM CRC, scratchpad CRC,
+6. absence proved by complete search commits `Missing` with `StatusCode::Ok`;
+7. otherwise the set is `Complete`, with per-slot scratchpad CRC,
    resolution, reset-default, pending, stale, and step outcomes retained in
    configured slot order. Domain qualities do not replace `Status`; a nested
    producer failure returns the first complete non-OK status in configured
@@ -618,10 +704,13 @@ complete versus incomplete search;
 unknown/duplicate/missing collisions; every owner/lifecycle/configuration/
 request/transaction/conversion/read correlation field; all signed raw
 endpoints and resolution masks/reserved bits; quantization intervals; `+85 C`
-with and without completed conversion; deadline equality; pending/current/
-stale/missing/recovery; exact step boundaries; fieldwise duplicate,
-regression, rollover, half-range ambiguity, exhaustion, reset, atomic
-rejection, and byte-stable replay.
+with and without completed conversion; early completion and pending/completed
+status immediately before, at, and after each resolution maximum;
+pending/current/stale/missing/recovery; exact step boundaries; fieldwise
+duplicate, regression, `UINT32_MAX`-to-`1` rollover, half-range ambiguity,
+reset, atomic
+rejection, byte-stable replay, failed-ingestion builder canaries, and failed
+finalization policy/output canaries.
 
 ## Lesson 066 -- thermal gradient mapper
 
@@ -906,10 +995,47 @@ promotion and may not be claimed before the implementation exists.
 |---:|---:|---:|---:|---:|
 | 064 | 10/14 KiB | 768/1,024 B | 320/448 B | 192/256 B |
 | 065 | 12/16 KiB | 1,024/1,536 B | 448/640 B | 512/768 B |
-| 066 aggregate | 16/24 KiB | 1,536/2,048 B | 768/1,024 B | mapper 512/768 B |
+| 066 aggregate | 16/24 KiB | 2,048/3,072 B | 768/1,024 B | mapper 512/768 B |
 
-Lesson 064 caller buffers target/hard-limit 128/256 bytes; Lesson 065 uses
-256/512 bytes; Lesson 066 uses 256/384 bytes. Residual SRAM is
+Lesson 064 caller buffers target/hard-limit 128/256 bytes; the Lesson 065
+caller-owned staged builder targets 448 bytes with a 512-byte hard limit, and
+its snapshot/result targets 256/512 bytes; Lesson 066 uses 256/384 bytes.
+The rejected monolithic Lesson 065 full-evidence envelope was approximately
+980 bytes and could not satisfy its non-reviewable 512-byte hard limit. The
+staged field-content budget and draft AVR-like size are 446 bytes:
+four normalized search witnesses consume about 180 bytes, four normalized
+probe witnesses about 240 bytes, and common cycle attribution/state about 26
+bytes. Exact AVR `sizeof` must be at most 448 bytes to meet target and 512
+bytes to proceed at all. The 713-byte policy retains one exact prior
+446-byte normalized cycle for collision-free changed-duplicate rejection;
+replacing it with a digest is forbidden. This misses the 512-byte object
+target by 201 bytes but remains 55 bytes below the 768-byte hard limit and
+requires an exact tuple-bound independent disposition.
+
+The simultaneous lifetime placement is frozen. During Lesson 065 staging, the
+713-byte policy (including its retained prior cycle) and 446-byte active
+builder are recurring persistent storage: 1,159 bytes. The 164-byte caller
+output and one 84-byte transient Lesson 064 snapshot are phase-scoped
+stack/caller temporaries, and the same transaction snapshot storage is reused
+for every ingestion call. Finalization reuses the output and creates no second
+normalized cycle. Exact static and conservative synchronous-stack probes must
+measure this placement; adding all four values into one undifferentiated
+static total is not the canonical fixture.
+
+The Lesson 066 recurring persistent set retains the active builder; overlaying
+it was rejected because the next acquisition cycle must be stageable without
+destroying the mapper or the last accepted set. Before other runtime state it
+contains the 254-byte Lesson 064 policy, 713-byte Lesson 065 policy, 446-byte
+active builder, and an estimated 480-byte mapper, about 1,893 bytes. Mapper
+input/output and transient transaction evidence are phase-scoped,
+lifetime-reused caller/stack values, with no by-value second qualified
+snapshot. This new component therefore changes the Lesson 066 aggregate
+static target/hard gate from 1,536/2,048 bytes to 2,048/3,072 bytes. The
+residual-SRAM hard floor, stack hard limit, no-duplicate rule, and exact
+measurement remain unchanged. This is a wide downstream budget consequence,
+not evidence that the future mapper fits: Lesson 066 header freeze still
+requires exact object, static, stack, caller-value, and residual measurements.
+Residual SRAM is
 `8192 - static - synchronous_stack - 128`; the Lesson 066 aggregate target is
 4,096 bytes and the non-reviewable hard floor is 2,048 bytes. Hard/residual
 failures cannot be waived. Target misses require current tuple-bound
