@@ -113,6 +113,8 @@ that configuration into domain meaning.
 | `IndicatorPump` / `InertLoadPanel` | Three borrowed output channels | Transactional all-off exclusion; resistor-limited LEDs only | 024 |
 | `WateringController` | Moisture samples, `PumpOutput`, supplied time | Hysteresis, lockout, stale/fault stop, deterministic recovery | 024 |
 | `InfraredReceiver` | `PulseInput` or serial endpoint | Raw timing evidence separated from decoder | 027 |
+| `CapturedIrEvidence` | Borrowed decoder and caller-owned pulse storage | Copies attributable receive evidence while disposition, strength, provenance, and pulse words remain distinct | 054 |
+| `KnownIrEmissionPolicy` | Supplied time and immutable firmware catalog | Closed symbolic catalog produces only copied transactional envelope intent with cancellation and terminal attribution | 054 |
 | `RadioObserver` | Receive-only bus/serial device | Passive timestamped observations; no transmit API | 027 |
 | `ContinuityModel` | Injected samples, no energetic load | Open/closed/short/stale simulation | 030 |
 | `CueAuditBuffer` / `CueAuditEncoder` | Caller-owned fixed storage | Append-only decisions and byte-stable records | 029 |
@@ -173,7 +175,7 @@ architectural layers.
 | Relay module | `Relay` + inert test load and isolation review | 023--024 |
 | IR receiver/remote | `InfraredReceiver` + decoder | 025--027 |
 | RFID module | `LocalIdentityRegistry` (049), `BoundedHomingPolicy` (050), and `InertPartsCarousel` (051) are host-verified zero-resource E0 surfaces; exact RFID, input, and storage adapters remain E1-gated, and powered motion remains E2-gated | 049--051 host verified; E1/E2 open |
-| Listed IR-emission module | Exact-specimen output + known local-code encoder | 052--054 queued; identity gated |
+| Listed IR-emission module | `KnownIrEmissionPolicy` publishes inert known-code intent; an exact-specimen output adapter remains gated | 052--054 host verified E0; exact identity and E1 fixture open |
 | Receive-capable RF module | Inventory-gated future adapter | Deferred |
 
 Adapters outside the canonical numbered curriculum are extension lessons. They
@@ -198,6 +200,7 @@ pins behind a component's back.
 | Telemetry console | Configured packet observations | Health/signal/log intents | Recorded packet and fault trace | 027 |
 | Cue simulator | Confirmations, continuity simulation, clock | Inert cue/audit intent | Full replay, fault matrix, redundant-state model | 030 |
 | `CalibrationConsole` | Joystick/encoder/button snapshots and time | Preview, committed values, acknowledgement, and fault state | Supplied input/time replay | 033 |
+| `InertIrTranslator` | Copied receive evidence, immutable local catalog, supplied time, and caller-owned pulse storage | Fixed different-symbol allowlist translation with cancellation, self-echo suppression, and attributable round-trip results | Exact synthetic fixtures, field-mutation matrix, timing boundaries, and byte-identical replay | 054 |
 
 ## Mega 2560 profile
 

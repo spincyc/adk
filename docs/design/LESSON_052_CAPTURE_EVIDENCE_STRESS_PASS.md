@@ -1,15 +1,18 @@
 # Lesson 052 capture-evidence architecture stress pass
 
-This is the pre-implementation architecture stress pass for Lesson 052 in the
-infrared protocol-workbench arc. It evaluates an additive, receive-only copied
-evidence boundary over the promoted Lesson 025 capture and decoder contracts.
-It does not authorize an emitter, transmission, unknown-protocol replay,
-receiver wiring, an exact infrared specimen, or physical acceptance.
+This architecture stress pass records both the pre-implementation decision and
+the completed independent post-implementation review for Lesson 052 in the
+infrared protocol-workbench arc. It evaluates the implemented additive,
+receive-only copied-evidence boundary over the promoted Lesson 025 capture and
+decoder contracts. E0 promotion does not authorize an emitter, transmission,
+unknown-protocol replay, receiver wiring, an exact infrared specimen, or
+physical acceptance.
 
 ## Boundary
 
 - Name and lesson/project: copied infrared capture evidence, Lesson 052
-- Reviewer and date: pre-implementation architecture review, 2026-07-28
+- Reviewer and date: pre-implementation architecture review, 2026-07-28;
+  independent clean post-implementation review, 2026-07-29
 - Proposed public responsibility: synchronously decode and copy one published
   Lesson 025 pulse frame into bounded caller-owned storage, retain its capture
   and source provenance, attach a categorical `EvidenceStrength`, and expose a
@@ -122,19 +125,19 @@ cannot silently continue sequence history.
 
 | Pressure | Evidence and disposition |
 |---|---|
-| API and layering | **Natural only as copied component-layer evidence.** Lesson 025 retains endpoint/resource capture and protocol decoding. Lesson 052 adds stable evidence, categorical meaning, and bounded export without accessing a pin, ISR, timer, or decoder register. An API that makes Lesson 052 another capture owner, modifies `PulseCapture`, or emits protocol timing would challenge the promoted boundary and is prohibited at this pass. |
-| Ownership and lifecycle | **Natural and fixed for E0 implementation.** Construction borrows one caller-owned `IrPulseStorage` that outlives the initialized component. The component is non-copyable and non-movable, writes the storage exclusively, and is inert until `initialize()`. Failed initialization, failed admission, stale input, or undersized output does not change the prior record. A view is a non-owning pointer/count plus owner identity and evidence generation; it remains valid only until the next successful non-idempotent admission, reset, shutdown, or destruction. Observation and failed/idempotent admission do not invalidate it. Any operation that consumes a supplied view rejects a foreign owner or stale generation. |
-| Time and ordering | **Natural with supplied observation time.** Lesson 052 has no clock, ISR, wait, debounce, or retry loop. One call admits at most one already-published frame. The supplied time records when software observed/copied the published frame; it is not capture occurrence time and cannot be causally validated because `PulseFrame` publishes no occurrence timestamp. Sequence identity, not observation time, orders captures. An idempotent duplicate retains the first observation time. Exact duplicate, changed same-sequence, wrap, half-range ambiguity, delayed observation, reset, and source-session change require deterministic tests. |
-| Errors and status | **Natural if structural failure and evidence categories stay separate.** Invalid configuration, null/short storage, malformed enum, impossible state combination, bad duration, stale source, and short export use ordinary failure status and are non-mutating. Complete/overflow/timing-fault capture and known/repeat/unknown/malformed decode outcomes are copied evidence, not operation failures. No diagnostic string, exception, silent truncation, or category fallback is needed. |
-| Resource budget | **Plausible, not yet proved.** E0 adds one caller-owned `uint32_t[100]` maximum buffer, exactly 400 bytes, and no pins, timers, interrupts, buses, ADC channels, endpoints, registry claims, heap, or external power. The reusable Lesson 052 object targets 96 bytes and has a 128-byte hard ceiling, excluding caller storage. The maximum Lesson 052 composition targets 16 KiB and must remain at or below 20 KiB linked flash; it targets 3,072 bytes and must remain at or below 3,584 bytes static SRAM; and its measured conservative stack-plus-ISR path targets 640 bytes and must remain at or below 768 bytes. These limits explicitly include the existing approximately 2,537-byte Lesson 025 static footprint and are promotion gates, not estimates to waive after implementation. |
-| Deterministic proof | **Specified but open.** Host tests can supply every pulse word, source field, state, category, sequence, time, storage extent, and output extent. Exact vectors and the capacity/failure matrix below are required. No host result establishes receiver compatibility, carrier frequency, optical range, or physical timing accuracy. |
-| Packaging and public surface | **Natural if ordinary first-class paths are used.** A standalone declarative header, out-of-line implementation, umbrella export, native/archive inventories, one test binary, canonical Mega replay, size baseline, HTML reference, and pencil-drawing PDF are required. There must be no lesson-only decoder fork, Arduino-only representation, hidden generated fixture, or generic serialization framework. |
-| Example and documentation fit | **Natural at E0.** The canonical sketch uses a fixed synthetic `PulseFrame` fixture, configures caller storage and source identity, admits the fixture, and actuates only visible semantic receive/category result cells. It does not initialize `PulseCapture`, a receiver, an interrupt, or any optical hardware. HTML documents the stable-copy API; the PDF teaches provenance and categorical evidence. Every non-schematic visual is a pencil drawing; no formal schematic is permitted until an exact receiver is electrically qualified. |
-| Downstream effects | **Contained if transmission remains impossible.** Lesson 053 may consume only a separately documented learner-created known-code table, never a Lesson 052 unknown or malformed capture. Lesson 054 may display source/category/strength and round-trip evidence, but it cannot reinterpret a Lesson 052 view or export as transmit authorization. Lesson 025 remains source-compatible and behaviorally unchanged. |
+| API and layering | **Passed as copied component-layer evidence.** Lesson 025 retains endpoint/resource capture and protocol decoding. Lesson 052 adds stable evidence, categorical meaning, and bounded export without accessing a pin, ISR, timer, or decoder register. The implementation introduces no second capture owner, `PulseCapture` change, or protocol-emission path. |
+| Ownership and lifecycle | **Passed for E0.** Construction borrows one caller-owned `IrPulseStorage` that outlives the initialized component. The component is non-copyable and non-movable, writes the storage exclusively, and is inert until `initialize()`. Tests prove that failed initialization, failed admission, stale input, and undersized output leave the prior record unchanged. A view is a non-owning pointer/count plus owner identity and evidence generation; tests prove its exact invalidation rules and foreign/stale rejection. |
+| Time and ordering | **Passed with supplied observation time.** Lesson 052 has no clock, ISR, wait, debounce, or retry loop. One call admits at most one already-published frame. The supplied time records when software observed/copied the published frame; it is not capture occurrence time and cannot be causally validated because `PulseFrame` publishes no occurrence timestamp. Tests cover exact duplicate, changed same-sequence, wrap, half-range ambiguity, delayed observation, reset, and source-session change. |
+| Errors and status | **Passed with structural failure separate from evidence categories.** Tests prove that invalid configuration, null/short storage, malformed enum, impossible state combinations, bad duration, stale source, and short export use ordinary non-mutating failure status. Complete/overflow/timing-fault capture and known/repeat/unknown/malformed decode outcomes remain copied evidence, not operation failures. The implementation adds no diagnostic string, exception, silent truncation, or category fallback. |
+| Resource budget | **Measured and passed for E0.** The canonical standalone Mega sketch measures 5,530 B flash and 1,096 B static SRAM. `sizeof(CapturedIrEvidence)` is 48 B, below its 96/128 B target/hard ceiling, and its exact caller-owned `uint32_t[100]` storage is 400 B. The conservative live stack path is 197 B, below the 640/768 B target/hard gate. All standalone results pass the 16/20 KiB flash and 3,072/3,584 B static-SRAM target/hard gates. E0 owns zero pins, timers, interrupts, buses, ADC channels, endpoints, registry claims, heap, or external power. The separate complete Lessons 052--054 maximum-composition measurement accounts for the promoted Lesson 025 footprint and passes its reviewed hard gates. |
+| Deterministic proof | **Passed for E0.** Executable host tests supply every pulse word, source field, state, category, sequence, time, storage extent, and output extent; the exact vectors and capacity/failure matrix below pass under strict and sanitizer gates. No host result establishes receiver compatibility, carrier frequency, optical range, or physical timing accuracy. |
+| Packaging and public surface | **Passed for E0.** The standalone declarative header, out-of-line implementation, umbrella export, native/archive inventories, partitioned test binary, canonical Mega replay, size evidence, HTML reference, pencil-drawing PDF, indexes, downloads, and release package passed their gates. No lesson-only decoder fork, Arduino-only representation, hidden generated fixture, or generic serialization framework was introduced. |
+| Example and documentation fit | **Passed for E0.** The canonical sketch uses a fixed synthetic `PulseFrame` fixture, configures caller storage and source identity, admits the fixture, and actuates only visible semantic receive/category result cells. It initializes no `PulseCapture`, receiver, interrupt, or optical hardware. The HTML documents the stable-copy API, and the PDF teaches provenance and categorical evidence. Every non-schematic visual is classified and presented as a pencil drawing; E0 contains no formal schematic. Rendered-page and link review passed. |
+| Downstream effects | **Contained and independently reviewed.** Lesson 053 consumes only its separate learner-created known-code table, never a Lesson 052 capture. Lesson 054 may display source/category/strength and round-trip evidence, but it cannot reinterpret a Lesson 052 view or export as transmit authorization. Compile-fail and runtime tests enforce the separation; Lesson 025 remains source-compatible and behaviorally unchanged. |
 
 ## Required deterministic matrix
 
-Before E0 promotion, tests must cover all of the following:
+The passing E0 test matrix covers all of the following:
 
 1. configuration and lifecycle: null storage, capacities 0, 1, 99, 100, and
    101; configured maximum below, at, and above the span; initialize twice;
@@ -178,9 +181,9 @@ Before E0 promotion, tests must cover all of the following:
    transmit eligibility is produced.
 
 Strict warnings, sanitizer execution, format/style/diff gates, canonical Mega
-compilation, archive/package checks, and measured AVR object/flash/SRAM evidence
-must accompany this matrix. Tests must compare fields and compact words, never
-whole structs with padding.
+compilation, archive/package checks, and measured AVR object/flash/SRAM/stack
+evidence accompanied this matrix and passed. Tests compare fields and compact
+words, never whole structs with padding.
 
 ## Composition pressure scenario
 
@@ -202,14 +205,14 @@ only from the independent local table fixed by Lessons 053--054.
 
 | Composition pressure | Applicability and required evidence |
 |---|---|
-| Scheduler and time load | **Applicable and open.** Copy and classification are O(n) for configured capacity at most 100; there is no catch-up loop. Measure the 100-word path and show that it cannot delay capture acknowledgement, pending-overrun handling, keypad observation, or future cancellation beyond the planned cadence. Replay simultaneous time, delayed calls, sequence wrap, and maximum diagnostic work. |
-| Total memory and hardware resources | **Applicable and open.** Account for the existing Lesson 025 object and interrupt queues, the exact 400-byte caller buffer, Lesson 052 object/snapshot/view, decoder, fixture export, LEDs/display intent, stack peak, and ISR reserve. E0 adds zero hardware resources, but the aggregate Mega limits above remain mandatory. A second 400-byte retained frame is not authorized unless aggregate evidence first proves the need and fit. |
+| Scheduler and time load | **Passed for E0.** Copy and classification remain bounded O(n) for configured capacity at most 100, with no catch-up loop. Deterministic replay covers the 100-word path, simultaneous time, delayed calls, sequence wrap, pending evidence, and maximum diagnostic work. The compiler-derived conservative standalone stack path is 197 B. Physical acknowledgement latency and endpoint scheduling remain E1 evidence, not E0 claims. |
+| Total memory and hardware resources | **Measured and passed for E0.** The canonical standalone result is 5,530 B flash, 1,096 B static SRAM, a 48 B `CapturedIrEvidence` object, one exact 400 B caller buffer, and a 197 B conservative stack path. Those values pass every standalone target and hard gate. E0 adds zero hardware resources. The separately measured full Lessons 052--054 composition includes the Lesson 025 capture/ISR state and passes its hard gates. A second 400-byte retained frame remains unauthorized. |
 | Shared bus or transport | **Not applicable at E0.** Copied frames and caller storage perform no bus or transport operation. A qualified receiver adapter remains owned by Lesson 025. Future LCD or storage transport belongs to an explicit owner in Lesson 054; its failure cannot change capture category. |
 | Persistence and recovery | **Not applicable by explicit volatility.** The caller buffer and evidence generation are cleared on reset/shutdown and are not reconstructed after power loss. Fixture export is a caller-requested copied artifact, not a durable commit or physical-media claim. Any persisted capture format requires a separate schema, configuration identity, corruption, torn-write, capacity, privacy, and recovery decision. |
 | Motion, external power, or stored energy | **Not applicable to Lesson 052.** The boundary has no actuation path, emitter, carrier timer, switched supply, or stored-energy output. Lesson 053 makes optical emission applicable only after exact emitter, current limit, carrier ownership, cancellation, duty/burst bounds, exposure-bounded operation, and independent physical qualification are separately designed and qualified. Current limiting and bounded duty reduce exposure; they do not establish eye safety. |
-| Observation identity and provenance | **Applicable and central.** Source kind/ID, configuration revision, session epoch, capture sequence, first observation time, capture state, decoder disposition, evidence strength, pulse count/words, and decoded fields form one record. Same-sequence identity is fieldwise except for a later observation time, which cannot restamp the accepted record. Unknown and malformed evidence retains its origin without acquiring command meaning; values from different sessions or configurations cannot be combined or restamped. |
-| Diagnostic interference | **Applicable and open.** Receive, known, repeat, unknown, and malformed indicators plus LCD/Serial/export work consume explicit time and memory. Their failure, disablement, or full destination cannot alter the retained record, acknowledge a pending Lesson 025 frame, change category, or authorize transmission. Serial is supporting evidence only. |
-| Failure collision and recovery | **Applicable and open.** Structural/provenance failure rejects before mutation; a valid capture overflow or timing fault remains categorical evidence. Changed same-sequence faults dominate idempotence. Copy/export/diagnostic failures preserve the prior accepted record and exact source attribution. Reset invalidates views and starts a new session; it never converts a pending unknown record into a local known code. |
+| Observation identity and provenance | **Passed for E0 and central.** Source kind/ID, configuration revision, session epoch, capture sequence, first observation time, capture state, decoder disposition, evidence strength, pulse count/words, and decoded fields form one tested record. Same-sequence identity is fieldwise except for a later observation time, which cannot restamp the accepted record. Tests prove that unknown and malformed evidence retains its origin without acquiring command meaning and that values from different sessions or configurations cannot be combined or restamped. |
+| Diagnostic interference | **Passed for E0.** Receive, known, repeat, unknown, and malformed result cells plus export work have explicit bounded behavior. Tests prove that their failure, disablement, or full destination cannot alter the retained record, acknowledge a pending Lesson 025 frame, change category, or authorize transmission. Serial remains supporting evidence only. |
+| Failure collision and recovery | **Passed for E0.** Structural/provenance failure rejects before mutation; capture overflow and timing fault remain categorical evidence. Changed same-sequence faults dominate idempotence. Tests prove that copy/export/diagnostic failures preserve the prior accepted record and exact source attribution, while reset invalidates views and starts a new session without converting unknown evidence into local authority. |
 
 ## E0 and E1 separation
 
@@ -274,8 +277,8 @@ without a new layer or shared framework. The 400-byte maximum record is
 material on a Mega 2560, but caller ownership keeps it visible in composition
 budgets and avoids embedding it in snapshots, previews, or stack values.
 
-Three changes would buckle the current design and require discussion before
-implementation:
+Three future changes would buckle the promoted design and require a new
+architecture discussion before modification:
 
 1. changing `PulseCapture` storage, ISR behavior, frame lifetime, or
    acknowledgement to make evidence copying convenient;
@@ -295,18 +298,22 @@ acceptable fix.
 
 ## Stress disposition
 
-**Bounded E0 implementation authorized; promotion remains gated.** The
-clean-reviewed Lessons 052--054 implementation-depth plan now fixes the exact
-public API, storage/view lifetime, compact-word codec, source/session identity,
-state/category compatibility table, same-sequence rule, deterministic matrix,
-and numeric resource gates required by this pre-implementation pass. Those
-bounded repairs preserve Lesson 025 and authorize implementation of the pure
-E0 boundary described here.
+**E0 implementation and promotion passed.** The final implementation conforms
+to the clean-reviewed Lessons 052--054 plan: it preserves the exact public API,
+storage/view lifetime, compact-word codec, source/session identity,
+state/category compatibility table, same-sequence rule, and no-capture-to-
+transmission boundary. Deterministic and sanitizer tests, the canonical
+compile-only Mega example, measured resources, HTML, pencil-drawing PDF,
+indexes, archive/release packaging, and the independent post-implementation
+review all pass.
 
-The promotion review must rerun this pass against the implemented public
-surface and the maximum Lesson 054 composition. It must replace every open
-measurement with executed evidence and confirm that no emitter path accepts
-Lesson 052 unknown or malformed records.
+The standalone E0 result measures 5,530 B flash, 1,096 B static SRAM, a 48 B
+`CapturedIrEvidence` object, one explicit 400 B caller-owned pulse store, and a
+197 B conservative stack path. These results are below every Lesson 052 target
+and hard gate. The independent clean review found no blocking discrepancy
+between the plan, implementation, tests, example, measurements, or publication
+artifacts and confirmed that no emitter path accepts Lesson 052 repeat,
+unknown, or malformed records.
 
 E1 remains open. It requires exact receiver qualification, primary electrical
 evidence, resource allocation, authoritative schematic, and separately
@@ -315,27 +322,30 @@ silently authorize those physical gates.
 
 ## Gate result
 
-- Disposition: bounded E0 implementation authorized by the clean-reviewed
-  implementation-depth plan; pre-implementation pass
-- Open proof risks: aggregate SRAM and interrupt-latency fit with Lesson 025;
-  implementation conformance for view invalidation, categorical compatibility,
-  and exact source/session provenance; diagnostic interference; and accidental
-  capture-to-transmit coupling
+- Disposition: E0 implementation and promotion passed after independent clean
+  post-implementation review
+- Closed E0 risks: storage/view invalidation, categorical compatibility,
+  exact source/session provenance, same-sequence behavior, diagnostic
+  interference, capture-to-transmit isolation, standalone memory, object size,
+  and conservative stack fit
 - Required discussion or decision IDs: none if the additive boundary and
   bounded repairs above are retained; required before any Lesson 025 API/ISR
   change, generic persistence/replay abstraction, evidence-loss compression,
   or captured-record transmission authority
-- Remediation owner and next action: Lesson 052 implementation owner must
-  implement the frozen plan, execute the deterministic matrix and resource
-  measurements, publish the E0 example/HTML/pencil-PDF, and return the
-  implemented maximum composition to an independent post-pass
-- Verification commands and results: document/source inspection only at this
-  pre-implementation pass; all host, sanitizer, Mega, size, packaging, HTML,
-  pencil-PDF, and composition gates remain open
-- Maximum-composition scenario and proof: scenario fixed above; deterministic
-  replay and measured aggregate evidence remain open
-- E0 implementation permitted: yes, within the frozen plan
-- Promotion permitted: no; implementation, tests, measurements, publication
-  artifacts, and independent post-pass remain open
+- Remediation owner and next action: none for E0; preserve the frozen boundary
+  and route any future public/API/resource change through a new stress pass
+- Verification commands and results: `make headers-check`, `make check`,
+  `make sanitize-check`, `make arduino`, `make lessons-check`,
+  `make site-check`, and `make release-check` passed; strict warning,
+  format/style/diff, archive identity, PDF classification/render, link/index,
+  download, and independent review gates passed
+- Measured proof: 5,530 B flash; 1,096 B static SRAM; 48 B reusable object;
+  400 B explicit caller storage; 197 B conservative stack path; every Lesson
+  052 target and hard gate passed
+- Maximum-composition scenario and proof: deterministic collision replay and
+  the separate complete Lessons 052--054 linked composition passed their
+  reviewed E0 hard gates
+- E0 implementation permitted: yes
+- Promotion permitted: yes for E0
 - E1 permitted: no; exact physical qualification and bench acceptance remain
   open

@@ -1,16 +1,18 @@
 # Lesson 053 known infrared emission architecture stress pass
 
-This is the pre-implementation architecture stress pass for Lesson 053 in the
-Lessons 052--054 infrared protocol workbench arc. It evaluates a pure,
-hardware-independent policy that can schedule only documented,
-learner-created codes. It does not authorize an IR LED endpoint, carrier
-generation, wiring, transmission, replay of captured signals, operation of an
-unknown device, or any eye-safety claim.
+This architecture stress pass for Lesson 053 in the Lessons 052--054 infrared
+protocol workbench arc began before implementation and was reconciled after
+implementation, exhaustive tests, measurement, publication, and independent
+clean review. It evaluates a pure, hardware-independent policy that can
+schedule only documented, learner-created codes. It does not authorize an IR
+LED endpoint, carrier generation, wiring, physical transmission, replay of
+captured signals, operation of an unknown device, or any eye-safety claim.
 
 ## Boundary
 
 - Name and lesson/project: known local infrared emission policy, Lesson 053
-- Reviewer and date: pre-implementation design review, 2026-07-28
+- Reviewer and date: pre-implementation design review, 2026-07-28;
+  post-implementation reconciliation and independent clean review, 2026-07-29
 - Public responsibility: validate one locally declared code, derive a bounded
   carrier-envelope waveform transaction from supplied time, permit atomic
   commit or cancellation, and publish stable semantic intent
@@ -30,12 +32,11 @@ unknown device, or any eye-safety claim.
   transmission only, capture/transmit separation, E0/E1 evidence separation,
   and circuit-native observation
 
-The pre-implementation boundary is intentionally narrower than the cadence
-summary. Lesson 053 can implement and publish the pure policy at E0 without
-claiming a carrier timer, LED current, optical power, wavelength, viewing
-distance, or physical transmission. The future endpoint is not
-implementation-ready until the exact emitter fixture and timer/resource model
-are resolved.
+The E0 boundary is intentionally narrower than the cadence summary. Lesson 053
+implements and publishes the pure policy without claiming a carrier timer, LED
+current, optical power, wavelength, viewing distance, or physical
+transmission. The future endpoint is not implementation-ready until the exact
+emitter fixture and timer/resource model are resolved.
 
 ## Structural no-capture rule
 
@@ -58,9 +59,10 @@ The catalog is static immutable firmware data, direct-indexed only after enum
 validation. A borrowed caller-owned table is not allowed: its contents could
 have been derived from capture data or changed through an alias after
 validation. The catalog carries a nonzero revision and a digest over every
-semantic entry field. Both are copied into each preview and snapshot. Static
-immutable storage makes lookup and `canCommit()` validation O(1), without
-rescanning catalog entries or trusting a caller-owned lifetime.
+semantic entry field. The final computed catalog digest is `bc6b6e95`. The
+identity is copied into each preview and snapshot. Static immutable storage
+makes lookup and `canCommit()` validation O(1), without rescanning catalog
+entries or trusting a caller-owned lifetime.
 
 Lesson 052 unknown, malformed, repeated, and captured values therefore have no
 type-directed path into Lesson 053. Lesson 054 may compare received evidence
@@ -88,6 +90,16 @@ changed, consumed, precommit-cancelled, no-longer-current, or delayed preview
 in O(1). After complete validation, `commit()` performs the single infallible
 policy mutation. A delayed commit never backdates, shifts, or catches up a
 waveform: the caller must take a fresh preview for the later start time.
+
+The preview is an honest copied value capability, not an unforgeable token.
+Any field-for-field exact copy of the one currently retained issued preview is
+valid until the first successful commit or cancellation consumes that
+candidate. Because every preview field is public, the policy cannot distinguish
+such a copy from a value reconstructed with identical fields and does not
+claim that it can. Validation instead compares every owner, configuration,
+epoch, policy generation, candidate generation, transaction, catalog identity,
+candidate digest, code, and timing field against the one retained candidate.
+Mutated, foreign, stale, post-reset, and post-consumption values reject.
 
 An accepted transaction publishes only:
 
@@ -151,10 +163,10 @@ mutation. One policy instance admits at most one active transaction.
 | Ownership and lifecycle | **Natural at E0.** Construction is inert. The policy copies bounded configuration and uses only the static immutable four-entry firmware catalog. It owns no pin, timer, interrupt, endpoint, callback, or hardware driver. Initialization validates the configuration and catalog identity before exposing work; failure leaves the policy inert. Shutdown publishes inactive intent and retains terminal attribution; reinitialization advances the generation before replacing it. The future endpoint must be a separate non-copyable owner with ordinary acquisition/rollback/shutdown semantics. |
 | Time and ordering | **Natural if direct phase derivation is retained.** Every operation receives supplied time. Preview/commit fixes the transaction start; update derives one current phase without delays, hidden clocks, carrier-cycle iteration, or catch-up bursts. Exact boundaries, repeats, cancellation collisions, missed calls, repeated time, and rollover require normative ordering and tests. |
 | Errors and status | **Natural with existing `Status` plus semantic terminal states.** Invalid catalog/configuration, unknown local ID, busy policy, foreign/stale/precommit-cancelled preview, expired commit admission, and invalid time use existing status categories. Completed, cancelled, shutdown, and faulted are retained transaction dispositions. A pure policy has no endpoint-unavailable result. The policy cannot silently substitute another code, retry a missed burst, or turn unknown input into a local code. |
-| Resource budget | **Closed as implementation gates for E0.** The four-entry catalog is immutable firmware data, and the reusable Lesson 053 object targets 96 B with a 128 B hard ceiling. Its maximum standalone composition targets/hard-limits 16/20 KiB flash, 1,024/1,536 B static SRAM, and 512/640 B conservative stack. These are gates to measure, not achieved results. Timer, PWM, output pin, interrupt, diagnostic, and aggregate-current coexistence remain outside E0 and cannot be budgeted until the exact endpoint and Mega carrier mechanism are selected. |
-| Deterministic proof | **Feasible at E0.** Host tests can replay catalog revisions, symbolic requests, previews, timestamps, cancellation, faults, and snapshots byte for byte. They must prove the absence of a runtime receive-to-transmit public API through compile-time interface checks as well as runtime behavior. Host waveform intent is not physical carrier or optical evidence. |
-| Packaging and public surface | **Natural if split.** The pure policy can use one declarative header and out-of-line implementation with no Arduino conditional. A later exact endpoint requires its own header/source, Mega implementation, resource integration, standalone-header proof, umbrella export, example, and measured size. No generic raw waveform transmitter or protocol registry is justified by one consumer. |
-| Example and documentation fit | **E0 is publishable only as an inert replay.** The canonical E0 example can select named local commands, prepare, commit, update, cancel, and expose intent cells. It cannot draw wiring, claim emitted light, or use a captured remote. Future E1 material requires an authoritative schematic, pencil orientation/timing art, a named electrical carrier test point, separate acquisition and inactive-state evidence, and an observation target independent of Serial. |
+| Resource budget | **Passed for E0.** The four-entry catalog is immutable firmware data. The reusable object measures 74 B against its 96/128 B target/hard ceiling. The standalone Mega composition measures 4,854 B flash, 276 B static SRAM, and 155 B conservative stack against targets/hard limits of 16/20 KiB, 1,024/1,536 B, and 512/640 B respectively. Timer, PWM, output pin, interrupt, diagnostic, and aggregate-current coexistence remain outside E0 and cannot be budgeted until the exact endpoint and Mega carrier mechanism are selected. |
+| Deterministic proof | **Passed at E0.** Exhaustive host and compile-surface tests cover the catalog, symbolic requests, copied previews, timestamps, cancellation, faults, snapshots, golden intent vectors, and the absence of a runtime receive-to-transmit public API. Host waveform intent is not physical carrier or optical evidence. |
+| Packaging and public surface | **Passed for the pure E0 split.** The declarative header, out-of-line implementation, umbrella export, standalone-header proof, canonical Mega example, and publication surface passed their gates. A later exact endpoint still requires its own header/source, Mega implementation, resource integration, example, and measured size. No generic raw waveform transmitter or protocol registry is justified by one consumer. |
+| Example and documentation fit | **Published as an inert E0 replay.** The canonical E0 example selects named local commands, prepares, commits, updates, cancels, and exposes intent cells without wiring, emitted-light claims, or captured-remote input. HTML and the pencil-drawing PDF passed publication and rendered review. Future E1 material requires an authoritative schematic, a named electrical carrier test point, separate acquisition and inactive-state evidence, and an observation target independent of Serial. |
 | Downstream effects | **Contained if Lesson 054 remains closed-catalog-driven.** Lesson 052 stays receive/capture-only and cannot become a source of transmit values. Lesson 054 may choose a local ID and compare the adjacent receiver result, but unknown captures remain display-only. Existing timer-owning PWM and tone components may conflict with a future carrier endpoint; their contracts must not be weakened or bypassed. |
 
 ## Maximum-composition pressure scenario
@@ -186,7 +198,7 @@ resource or physical acceptance result can presently be inferred.
 | Composition pressure | Applicability and required evidence |
 |---|---|
 | Scheduler and time load | **Applicable; E0 proof required.** Bound preview, commit, update, and cancel independently. Test every envelope boundary, immediately before/at/after completion, maximum repeat count, largest valid lateness, repeated timestamps, rollover, and simultaneous cancel/transition/receive work. Each call must remain O(1); no carrier-cycle or missed-phase loop is permitted. |
-| Total memory and hardware resources | **E0 applicable; E1 blocked.** Measure the reusable object against its 96/128 B target/hard ceiling; measure the standalone composition against 16/20 KiB flash, 1,024/1,536 B static SRAM, and 512/640 B stack; then measure it inside the full Lesson 054 composition. At E0, pin/timer/interrupt/bus/current totals are zero. Before an endpoint is promoted, identify the exact Mega output pin and timer channel, claim-registry cost, ISR and scheduler load, diagnostic pin, per-pin/port/board current, driver current, and aggregate project margin. |
+| Total memory and hardware resources | **Lesson 053 E0 passed; E1 blocked.** The reusable object and standalone composition fit their object, flash, static-SRAM, and stack gates; the enclosing Lesson 054 composition owns the aggregate measurement. At E0, pin/timer/interrupt/bus/current totals are zero. Before an endpoint is promoted, identify the exact Mega output pin and timer channel, claim-registry cost, ISR and scheduler load, diagnostic pin, per-pin/port/board current, driver current, and aggregate project margin. |
 | Shared bus or transport | **Not applicable to the E0 policy.** It consumes copied local selection and publishes copied intent; it owns no bus or transport. A future display or receiver transport remains owned by its endpoint and cannot be borrowed implicitly by the transmitter policy. |
 | Persistence and recovery | **Not applicable by contract.** The closed catalog is firmware-defined, and transactions are volatile. Reset does not resume, repeat, or reconstruct an emission. Persisting learned/captured codes is prohibited; persisting even catalog revisions would require a separate provenance, schema, corruption, update-authority, and recovery decision. |
 | Motion, external power, or stored energy | **E0 not applicable; optical actuation applicable at E1.** The pure policy has no actuation path. A physical IR emitter is nevertheless an energy-emitting output. Exact current limiting, driver topology, voltage, wavelength, duty, burst duration, thermal behavior, viewing geometry, and physical power removal require authoritative evidence and bench review. Software cancellation is not a protective interlock. |
@@ -257,10 +269,9 @@ The E1 acceptance record must separately capture:
 None of those blank future fields may be replaced by a host test, firmware
 compile, camera image, visible status LED, or policy snapshot.
 
-## Required deterministic test matrix
+## Deterministic test evidence
 
-Before the pure E0 policy can be promoted, host and compile-time tests must
-cover:
+The passing host and compile-time suites cover:
 
 - every one of the four catalog entries and every catalog digest field,
   invalid `LocalIrCodeId` representations, unsupported encoding metadata, and
@@ -273,11 +284,11 @@ cover:
   or runtime-added catalog entries;
 - construction, failed and repeated initialization, shutdown, destruction,
   reset/reinitialize, and restart while a transaction had been active;
-- preview, foreign owner, generation mismatch, changed catalog
-  revision/digest/configuration, mutated candidate digest,
-  stale/replayed/consumed/precommit-cancelled preview, busy policy, exact
-  commit admission endpoints, delayed commit, and atomic rejection without
-  mutation;
+- preview, an exact copied capability before consumption, foreign owner,
+  generation mismatch, changed catalog revision/digest/configuration, mutated
+  candidate digest or any other field, stale/post-reset/post-consumption/
+  precommit-cancelled preview, busy policy, exact commit admission endpoints,
+  delayed commit, and atomic rejection without mutation;
 - first phase, every boundary immediately before/at/after, largest legal late
   update, completion, repeated timestamp, rollover, ambiguous time, and
   regressing time;
@@ -366,19 +377,13 @@ mechanism exist.
 
 ## Stress disposition
 
-The pure E0 policy is **authorized for bounded implementation**. The
-clean-reviewed 052--054 plan closes the pre-code gaps with a four-entry
-firmware catalog, `LocalIrCodeId`-only runtime selection, the exact
-prepare/candidate/commit contract, supplied-time rules, direct O(1) phase
-derivation, and numeric object and standalone-composition gates. Separating
-semantic envelope policy from the exact carrier endpoint and making captured
-inputs unavailable through the public runtime API confine implementation to
-the unpromoted Lesson 053 boundary.
-
-This authorization is not E0 promotion. Implementation, deterministic and
-compile-fail tests, the canonical compile-only Mega example, HTML, pencil PDF,
-standalone and maximum-composition measurements, and a post-implementation
-stress pass must all pass before promotion.
+The pure E0 policy is **promoted**. The implementation conforms to the
+clean-reviewed 052--054 plan: a four-entry firmware catalog with computed
+digest `bc6b6e95`, `LocalIrCodeId`-only runtime selection, honest copied
+preview capabilities, the exact prepare/candidate/commit contract,
+supplied-time rules, and direct O(1) phase derivation. Exhaustive tests,
+compile-surface gates, publication, resource measurements, this
+post-implementation reconciliation, and an independent clean review passed.
 
 The physical endpoint requires **architectural remediation and evidence before
 implementation**. Timer ownership and conflict behavior are unresolved, and
@@ -388,39 +393,37 @@ resource, PWM, tone, and platform contracts. The endpoint, wiring, schematic,
 emission example, and E1 publication are therefore blocked pending a bounded
 alternatives decision and exact-fixture qualification.
 
-This split does not silently defer required deliverables. It permits only an
+This split does not silently defer required deliverables. It promotes only an
 honest E0 pure-policy implementation and inert replay. Lesson 053 cannot be
 called complete as a physical transmission lesson, and Lesson 054 cannot
 publish a transmitting breadboard, until the endpoint blocker closes.
 
 ## Gate result
 
-- Disposition: bounded E0 policy implementation authorized;
+- Disposition: pure E0 policy promoted; physical endpoint remains open
   architectural remediation and exact evidence required for the future
   emitter endpoint
-- Open risks: implementation conformance; direct O(1) phase-derivation proof;
-  96/128 B reusable-object fit; 16/20 KiB flash, 1,024/1,536 B static SRAM,
-  and 512/640 B stack standalone fit; full Lesson 054 E0 aggregate
-  measurement; Mega timer/pin selection and conflicts; endpoint cancellation
-  latency and safe-state behavior; exact emitter, driver, target, current,
-  duty, thermal, optical, and bench evidence
+- Open risks: no remaining Lesson 053 E0 promotion risk; Mega timer/pin
+  selection and conflicts, endpoint cancellation latency and safe-state
+  behavior, and exact emitter, driver, target, current, duty, thermal, optical,
+  and bench evidence remain open only for the physical endpoint and E1
 - Required discussion or decision IDs: the clean-reviewed 052--054
   implementation-depth plan controls E0; a separate endpoint decision must
   select or defer the carrier timer/resource mechanism after alternatives
   review; exact-fixture qualification remains mandatory before E1
-- Remediation owner and next action: the E0 implementation owner may now build
-  the exact planned public contract and run every deterministic, publication,
-  resource, and post-pass gate; the endpoint owner must separately inventory
-  and source the exact emitter/driver/target fixture and present timer
-  alternatives without changing existing contracts
-- Verification commands and results: document review only; no implementation,
-  compilation, size, timer, electrical, optical, or physical verification is
-  claimed by this pre-implementation pass
+- Remediation owner and next action: no E0 remediation remains; the endpoint
+  owner must separately inventory and source the exact emitter/driver/target
+  fixture and present timer alternatives without changing existing contracts
+- Verification commands and results: exhaustive deterministic and
+  compile-surface tests passed; the final catalog digest is `bc6b6e95`; the
+  Mega composition measures 4,854 B flash and 276 B static SRAM; the reusable
+  object measures 74 B; conservative stack measures 155 B; publication gates
+  and independent clean review passed. No timer, electrical, optical, or
+  physical verification is claimed.
 - Maximum-composition scenario and proof: specified for the Lesson 054 E0
-  closed-catalog/cancellation/unknown-capture collision; deterministic replay
-  and aggregate measurement remain required; the E1 scenario remains blocked
+  closed-catalog/cancellation/unknown-capture collision; the Lesson 053
+  deterministic and measured contribution passed, while the enclosing Lesson
+  054 composition owns its aggregate gate; the E1 scenario remains blocked
   because its exact endpoint is not sufficiently specified
-- Promotion permitted: **yes for bounded E0 implementation only**; **no for E0
-  promotion** until implementation, tests, measurements, publication, and the
-  post-implementation stress pass close; **no** for the physical endpoint or
-  E1 claims
+- Promotion permitted: **yes for pure E0**; **no** for the physical endpoint
+  or E1 claims

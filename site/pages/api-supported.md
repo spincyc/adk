@@ -745,6 +745,63 @@ RAM for Lesson 049, 8,272 / 574 for Lesson 050, and 26,014 / 1,933 for Lesson
 051. These compile measurements are software evidence, not powered, durable,
 or physical acceptance.
 
+## Copied IR evidence, known emission intent, and inert translation
+
+`CapturedIrEvidence` synchronously copies one published Lesson 025 pulse frame
+into caller-owned storage and preserves its source, configuration, sequence,
+observation time, shape, and integrity classification. Known commands,
+repeats, unknown shapes, malformed timing, overflow, and source faults remain
+receive evidence; none grants transmission authority.
+
+`KnownIrEmissionPolicy` accepts only an immutable firmware-authored
+`LocalIrCodeId`. Its transactional preview publishes bounded
+`CarrierOn`/`CarrierOff` envelope intent against explicit time, catalog
+revision, and catalog digest. It accepts no pulse frame, decoded raw command,
+duration array, arbitrary bytes, or learned entry.
+
+`InertIrTranslator` composes those policies through one fixed allowlist. Only
+valid attributable receive evidence may map to a different local catalog
+symbol. Repeat, unknown, malformed, self-echo, stale, and arbitrary captured
+evidence cannot reach the emission policy.
+
+[Lessons 052](lessons/052.md), [053](lessons/053.md), and
+[054](lessons/054.md) publish a host-verified E0 boundary with deterministic
+host replay and compile-only Mega examples. This is not powered or optical
+support. The arc owns no receiver, emitter,
+pin, timer, interrupt, carrier endpoint, optical power path, or controlled
+device. Exact fixtures, resource allocation, authoritative schematic,
+acquisition and safe-state evidence, and physical acceptance remain E1-gated.
+
+- Captured IR evidence: [source](https://github.com/spincyc/adk/blob/main/src/captured_ir_evidence.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_captured_ir_evidence.cpp),
+  [Mega replay](downloads/sketches/Lesson052CapturedIrEvidence.ino), and
+  [Lesson 052](lessons/052.md)
+- Known IR emission policy: [source](https://github.com/spincyc/adk/blob/main/src/known_ir_emission_policy.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_known_ir_emission_policy.cpp),
+  [Mega replay](downloads/sketches/Lesson053KnownIrEmission.ino), and
+  [Lesson 053](lessons/053.md)
+- Inert IR translator: [source](https://github.com/spincyc/adk/blob/main/src/inert_ir_translator.h),
+  [deterministic tests](https://github.com/spincyc/adk/blob/main/tests/test_inert_ir_translator.cpp),
+  [Mega replay](downloads/sketches/Lesson054IrTranslator.ino), and
+  [Lesson 054](lessons/054.md)
+
+Fresh Mega 2560 measurements for this published E0 boundary are 5,530
+bytes flash / 1,096 bytes static SRAM for Lesson 052, 4,854 / 276 for Lesson
+053, and 16,162 / 1,343 for Lesson 054. The maximum E0 composition measures
+21,864 bytes flash and 3,531 bytes static SRAM. Its conservative compiler
+call-chain stack estimate is approximately 888 bytes, leaving 3,773 bytes of
+Mega SRAM after static storage and that estimate. The stack result misses the
+800-byte target but passes the 1,024-byte hard limit; it is compiler evidence,
+not a runtime high-water measurement.
+
+On the AVR ABI, `CapturedIrEvidence` is 48 bytes,
+`KnownIrEmissionPolicy` is 74 bytes, and `InertIrTranslator` is 406 bytes.
+Lesson 054 deliberately keeps its required 100-word copied-pulse buffer in
+caller-owned storage: the buffer is exactly 400 bytes, so the translator plus
+that buffer is 806 bytes without embedding or duplicating the buffer inside
+the coordinator. These are software resource measurements, not
+powered-operation, optical-output, or bench evidence.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.

@@ -19,6 +19,7 @@ nav:
   - Course:
       - Course map: course.md
       - Lesson index: lessons/index.md
+      - Current project — IR command translator: lessons/054.md
       - Command-line workflow: docs/CLI.md
   - Library:
       - Components: components.md

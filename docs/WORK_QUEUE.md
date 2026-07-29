@@ -17,7 +17,7 @@ recorded in
 Its findings must be reconciled through bounded tasks; the audit itself does
 not promote work or replace this ledger.
 
-- Lessons 001--051 are promoted and host verified; physical cards remain open.
+- Lessons 001--054 are promoted and host verified; physical cards remain open.
 - Lesson 030 has an independently reviewed composition core, canonical Mega
   example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
@@ -81,6 +81,7 @@ qualified.
 | [043--045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Host verified; powered adapter/bench open | Preserve the E0 synthetic-replay publication; qualify exact MPU/QMI specimens independently before powered adapters, wiring, schematics, or E1 acceptance |
 | [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Host verified; powered input/motion bench open | Preserve the E0 copied-evidence and logical-intent publication; qualify exact inputs at E1 and the exact restrained stepper system independently at E2 |
 | [049--051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Host verified; powered endpoints/media/motion bench open | Preserve the E0 synthetic identity, bounded homing, and inert carousel policies, including attributable `Stopped` reconciliation after an exposed start and the intentional zero-coil atomic-step result; the Lesson 051 object is 380 B (320 B target miss, 384 B hard pass); retain exact powered endpoints/media at E1 and restrained motion at E2 as separate open gates |
+| [052--054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | Host verified; exact powered fixtures/bench open | Preserve copied receive provenance, the immutable local catalog, and fixed different-symbol translation as inert E0 policy; retain exact receiver/emitter fixtures, electrical and optical endpoints, observation paths, and measured acceptance as open E1 gates |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -122,7 +123,7 @@ work; retail kit names are not electrical identities.
 | [043--045](design/LESSONS_043_045_BALANCE_TABLE_PLAN.md) | Host verified; powered adapter/bench open | Copied inertial samples, pure orientation/presentation intent, and stationary hand-operated tabletop balance instrument are published as E0 replay; no powered adapter, I2C, wiring, schematic, or E1 claim |
 | [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Host verified; powered input/motion bench open | `InteractionIntentPolicy`, `BoundedStepperSequence`, and `KineticLightSculpture` publish copied tactile/directional evidence, bounded logical coil intent, transactional authorization, independent stop precedence, and semantic light intent at E0; powered inputs remain E1-gated and energized motion remains E2-gated |
 | [049--051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Host verified; powered endpoints/media/motion bench open | `LocalIdentityRegistry`, `BoundedHomingPolicy`, and `InertPartsCarousel` publish copied evidence, bounded logical home/position, acknowledged record-image reconciliation, atomic one-step application, and intentional zero-coil intent at E0; E1 endpoints/media and E2 motion remain open |
-| [052--054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | Active integration; E0 implementation authorized; E1 exact fixtures open | Copied Lesson 025 receive evidence, immutable locally authored emission policy, and fixed inert command translator |
+| [052--054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | Host verified; exact powered fixtures/bench open | `CapturedIrEvidence`, `KnownIrEmissionPolicy`, and `InertIrTranslator` publish copied Lesson 025 receive evidence, immutable locally authored catalog intent, and fixed different-symbol translation at E0; exact receiver/emitter fixtures and E1 acceptance remain open |
 | [055--057](projects/component_project_cadence.md) | Queued | Constraint model, fault-aware panel, inert escape-room console |
 | [058--060](projects/component_project_cadence.md) | Queued | Multiplexed digits, MAX7219 display transport, timing desk |
 | [061--063](projects/component_project_cadence.md) | Queued; corrected authorized scope | Resistive probes and qualified thermal/radiant observations composed into a museum-case monitor |
@@ -143,7 +144,7 @@ payoff rather than inventory taxonomy alone. The
 inputs. Coverage is not complete until every claimed module has an exact
 inventory record and the relevant block passes its gates.
 
-Lessons 031--051 have complete design briefs and are host verified. Lessons
+Lessons 031--054 have complete design briefs and are host verified. Lessons
 037--039 are published against exact external reference
 fixtures; incoming conformance and E1 physical acceptance remain open. The six
 earlier Elegoo exact-specimen requirements are preserved as historical
@@ -178,8 +179,8 @@ ULN2003 identities, winding and clamp topology, separate current-limited
 supply, coil current and thermal limits, mechanical restraint, independent
 stop and power removal, and measured motion acceptance remain E2-gated.
 Lessons 049--081 remain canonical subjects in the engagement order above.
-Lessons 049--051 are published and therefore precede the later-arc planning
-hold. Their
+Lessons 049--054 are published and therefore precede the later-arc planning
+hold. The 049--051
 [implementation-depth plan](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md)
 and the Lesson
 [049 identity](design/LESSON_049_IDENTITY_STRESS_PASS.md),
@@ -200,9 +201,9 @@ stepper/driver and servo identities, independently switchable current-limited
 actuator power, restraint, stop and power removal, and measured homing,
 position, gate, current, thermal, and motion acceptance.
 
-Lessons 052--054 have a clean-reviewed
-[implementation-depth plan](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md);
-their E0 integration and implementation are authorized. E0 reuses Lesson 025
+Lessons 052--054 are host verified under their clean-reviewed
+[implementation-depth plan](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md).
+E0 reuses Lesson 025
 without changing its public API, copies attributable receive evidence, admits
 transmission intent only from an immutable firmware-authored catalog, and
 translates a fixed allowlist of valid receive symbols to different local
@@ -210,7 +211,13 @@ symbols. Repeat, unknown, malformed, self-echo, and arbitrary captured
 evidence can never become transmit authority. E0 owns no receiver, emitter,
 pin, timer, interrupt, carrier output, or optical power path. Exact receiver,
 emitter, driver, resistor, timer/channel/pin allocation, supply, observation
-path, and bench acceptance remain open E1 gates. The authorized Elegoo
+path, and bench acceptance remain open E1 gates. Canonical Mega replays measure
+5,530/1,096, 4,854/276, and 16,162/1,343 bytes of flash/static SRAM. The
+maximum composition measures 21,864/3,531 bytes; the Lesson 054 object is
+407 B with a caller-owned 400 B pulse buffer, and the conservative stack
+estimate is 888 B with 3,773 B remaining after static storage and stack.
+These measurements do not establish powered, optical, or physical behavior.
+The authorized Elegoo
 inventory does not establish that the kit contains an IR emitter, so this arc
 makes no known-kit-emitter claim.
 
@@ -277,8 +284,8 @@ out of scope. Controller high availability remains explicitly deferred.
 The landing page now uses one canonical source, a compact top navigation,
 linked published arcs, and linkless planned rows through Lesson 081 plus the
 retained research tracks. Preserve that scan-first hierarchy as work advances.
-The newest published lesson is Lesson 051. The post-deploy verifier follows
-Lesson 051 and has a regression check that
+The newest published lesson is Lesson 054. The post-deploy verifier follows
+Lesson 054 and has a regression check that
 must advance with the newest published lesson.
 
 At the next clean hierarchy boundary:

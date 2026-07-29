@@ -25,6 +25,16 @@ The named lesson target becomes available with the lesson. `BOARD_FQBN`
 defaults to `arduino:avr:mega` and remains overridable. The generic form remains
 available as `make upload EXAMPLE=Lesson007AnalogInput PORT=/dev/ttyACM0`.
 
+The compile-only Lessons 052--054 aggregate resource fixture has its own exact
+Mega 2560 gate:
+
+```sh
+make ir-resource-check
+```
+
+It verifies flash, static SRAM, object size, and the documented conservative
+stack formula. This command does not upload or provide physical evidence.
+
 ## Observe
 
 Circuit-native evidence is primary. Serial is an optional second view:
@@ -167,6 +177,7 @@ route-profile tests.
 ## size                      Report firmware sizes against reviewed baselines.
 ## size-check                Reject firmware-size budget regressions.
 ## size-update               Refresh reviewed firmware-size baselines.
+## ir-resource-check         Verify the Lessons 052--054 aggregate resource budget.
 ## usb-matrix-check          Test the experimental Linux USB/IP adapter.
 ## usb-matrix-doctor         Check phase-one USB/IP command dependencies.
 ## usb-matrix-discover       Discover local and optionally remote USB/IP devices.

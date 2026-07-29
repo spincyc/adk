@@ -6,6 +6,7 @@ include mk/hardware.mk
 include mk/package.mk
 include mk/native_package.mk
 include mk/size.mk
+include mk/resource_probes.mk
 include mk/docs.mk
 include mk/site.mk
 include mk/style.mk
