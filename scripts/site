@@ -8,7 +8,11 @@ import hashlib
 import shutil
 import subprocess
 import sys
+from html.parser import HTMLParser
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
+
+import markdown
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,6 +20,7 @@ BUILD_ROOT = ROOT / "build"
 SOURCE_ROOT = BUILD_ROOT / "site-source"
 SITE_ROOT = BUILD_ROOT / "site"
 CONFIG = ROOT / "mkdocs.yml"
+MAX_LINKED_DESIGN_DOCUMENTS = 256
 
 
 class SiteError(RuntimeError):
@@ -53,6 +58,97 @@ def copy_tree(source: Path, destination: Path, *, required: bool = True) -> None
             raise SiteError(f"missing site input directory: {source.relative_to(ROOT)}")
         return
     shutil.copytree(source, destination, dirs_exist_ok=True)
+
+
+class MarkdownLinkParser(HTMLParser):
+    """Collect destinations from Markdown-rendered links."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.targets: list[str] = []
+
+    def handle_starttag(
+        self,
+        tag: str,
+        attributes: list[tuple[str, str | None]],
+    ) -> None:
+        if tag != "a":
+            return
+        for name, value in attributes:
+            if name == "href" and value is not None:
+                self.targets.append(value)
+
+
+def markdown_link_targets(text: str) -> list[str]:
+    parser = MarkdownLinkParser()
+    parser.feed(markdown.markdown(text, output_format="html"))
+    return parser.targets
+
+
+def stage_linked_design_documents(
+    staged_documents: list[Path],
+    source_design_root: Path,
+    staged_docs_root: Path,
+) -> None:
+    """Stage the bounded closure of canonical Markdown links into docs/design."""
+    source_design_root = source_design_root.resolve()
+    source_draft_root = (source_design_root / "drafts").resolve()
+    staged_design_root = (staged_docs_root / "design").resolve()
+    pending = list(staged_documents)
+    visited: set[Path] = set()
+    staged_design: set[Path] = set()
+
+    while pending:
+        document = pending.pop()
+        try:
+            resolved_document = document.resolve(strict=True)
+        except OSError:
+            continue
+        if resolved_document in visited:
+            continue
+        visited.add(resolved_document)
+
+        text = resolved_document.read_text(encoding="utf-8")
+        for raw_target in markdown_link_targets(text):
+            try:
+                parsed = urlsplit(unquote(raw_target))
+            except ValueError:
+                continue
+            if parsed.scheme or parsed.netloc or not parsed.path:
+                continue
+            target = Path(parsed.path)
+            if target.is_absolute() or target.suffix.lower() != ".md":
+                continue
+            try:
+                staged_target = (
+                    resolved_document.parent / target
+                ).resolve()
+                relative_design_path = staged_target.relative_to(staged_design_root)
+                source_target = (
+                    source_design_root / relative_design_path
+                ).resolve(strict=True)
+                source_target.relative_to(source_design_root)
+            except (OSError, ValueError):
+                continue
+            if (
+                source_target == source_draft_root
+                or source_draft_root in source_target.parents
+            ):
+                continue
+            if not source_target.is_file():
+                continue
+
+            if source_target not in staged_design:
+                if len(staged_design) >= MAX_LINKED_DESIGN_DOCUMENTS:
+                    raise SiteError(
+                        "linked design-document closure exceeds "
+                        f"{MAX_LINKED_DESIGN_DOCUMENTS} files"
+                    )
+                destination = staged_docs_root / "design" / relative_design_path
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(source_target, destination)
+                staged_design.add(source_target)
+            pending.append(staged_target)
 
 
 def copy_lesson_materials() -> None:
@@ -164,7 +260,7 @@ def stage() -> None:
         destination = SOURCE_ROOT / "docs/projects" / project.name
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(project, destination)
-    design_documents = (
+    historical_design_documents = (
         "CANONICAL_PUBLICATION_COUPLING_STRESS_PASS.md",
         "ELEGOO_MEGA_KIT_COVERAGE_2026-07-27.md",
         "KIT_MODULE_SAFETY_TAXONOMY.md",
@@ -186,7 +282,7 @@ def stage() -> None:
         "LESSON_053_KNOWN_IR_EMISSION_STRESS_PASS.md",
         "LESSON_054_IR_TRANSLATOR_STRESS_PASS.md",
     )
-    for name in design_documents:
+    for name in historical_design_documents:
         source = ROOT / "docs/design" / name
         destination = SOURCE_ROOT / "docs/design" / name
         destination.parent.mkdir(parents=True, exist_ok=True)
@@ -219,6 +315,11 @@ def stage() -> None:
     )
     copy_tree(ROOT / "site/pages", SOURCE_ROOT, required=False)
     shutil.copy2(readme, SOURCE_ROOT / "index.md")
+    stage_linked_design_documents(
+        list(SOURCE_ROOT.rglob("*.md")),
+        ROOT / "docs/design",
+        SOURCE_ROOT / "docs",
+    )
     published_lessons = {
         source.stem for source in (ROOT / "doc/lessons").glob("*.pdf")
     }
