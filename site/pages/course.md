@@ -50,13 +50,15 @@ lesson number divisible by three is project-bearing.
 | 052 | Copied infrared frames and attributable classification | Captured IR evidence | Host verified; E0 replay only |
 | 053 | Immutable local command catalog and bounded envelope intent | Known IR emission policy | Host verified; E0 replay only |
 | 054 | Fixed receive-to-local-symbol allowlist | Inert IR command translator | Host verified; E0 replay only |
+| 055 | Fixed clue graph and copied attributable evidence | Constraint and clue model | Host verified; E0 replay only |
+| 056 | Copied audit images, stop precedence, and presentation intent | Fault-aware operator panel | Host verified; E0 replay only |
+| 057 | Atomic clue and panel composition | Inert escape-room console | Host verified; E0 replay only |
 
-The retained Lessons 055–081 sequence is front-loaded for learner engagement.
+The retained Lessons 058–081 sequence is front-loaded for learner engagement.
 This is planned work, not a support or bench-verification claim:
 
 | Lessons | Planned focus | Project |
 |---:|---|---|
-| 055–057 | Constraint and fault-aware operator models | Inert escape-room console |
 | 058–060 | Multiplexed digits and matrix presentation | Dual-display timing desk |
 | 061–063 | Resistive and thermal/radiant observations | Museum-case monitor |
 | 064–066 | Single-wire probes and qualified thermal sets | Thermal gradient mapper |

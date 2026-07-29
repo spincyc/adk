@@ -81,7 +81,9 @@ Status meanings:
 | Captured infrared evidence | `CapturedIrEvidence` | Host verified; E0 replay only | [Lesson 052](lessons/052.md) |
 | Known infrared emission policy | `KnownIrEmissionPolicy` | Host verified; E0 replay only | [Lesson 053](lessons/053.md) |
 | Inert IR translator project | `InertIrTranslator` | Host verified; E0 replay only | [Lesson 054](lessons/054.md) |
-| Planned escape-console arc | Constraint and fault-aware operator models | Queued | Lessons 055–057 |
+| Clue constraint policy | `ClueConstraintModel` | Host verified; E0 replay only | [Lesson 055](lessons/055.md) |
+| Fault-aware operator panel | `FaultAwareOperatorPanel` | Host verified; E0 replay only | [Lesson 056](lessons/056.md) |
+| Inert escape-console project | `InertEscapeConsole` | Host verified; E0 replay only | [Lesson 057](lessons/057.md) |
 | Planned display arc | Multiplexed digits and matrix presentation | Queued | Lessons 058–060 |
 | Planned museum arc | Resistive and thermal/radiant observations | Queued | Lessons 061–063 |
 | Planned thermal arc | Single-wire probes and thermal mapping | Queued | Lessons 064–066 |

@@ -37,12 +37,23 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_bus \
 	$(BUILD_DIR)/host/test_calibration_console \
 	$(BUILD_DIR)/host/test_captured_ir_evidence \
+	$(BUILD_DIR)/host/test_clue_constraint_model_evaluation \
+	$(BUILD_DIR)/host/test_clue_constraint_model_prepared \
 	$(BUILD_DIR)/host/test_io \
 	$(BUILD_DIR)/host/test_cue_audit \
+	$(BUILD_DIR)/host/test_fault_aware_operator_panel_lifecycle \
+	$(BUILD_DIR)/host/test_fault_aware_operator_panel_interaction \
+	$(BUILD_DIR)/host/test_fault_aware_operator_panel_recovery \
+	$(BUILD_DIR)/host/test_fault_aware_operator_panel_project \
 	$(BUILD_DIR)/host/test_inert_load_interlock \
 	$(BUILD_DIR)/host/test_inert_load_panel \
 	$(BUILD_DIR)/host/test_inert_channel_assessor \
 	$(BUILD_DIR)/host/test_inert_cue_scheduler \
+	$(BUILD_DIR)/host/test_inert_escape_console_configuration \
+	$(BUILD_DIR)/host/test_inert_escape_console_admission \
+	$(BUILD_DIR)/host/test_inert_escape_console_restart \
+	$(BUILD_DIR)/host/test_inert_escape_console_replay \
+	$(BUILD_DIR)/host/test_inert_escape_console_audit \
 	$(BUILD_DIR)/host/test_inert_show_simulator \
 	$(BUILD_DIR)/host/test_inertial_observation \
 	$(BUILD_DIR)/host/test_inert_ir_translator \
@@ -168,6 +179,115 @@ $(BUILD_DIR)/host/test_core: $(HOST_CORE_SOURCES) tests/test_core.cpp \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) tests/test_core.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_clue_constraint_model_evaluation: $(HOST_CORE_SOURCES) \
+		src/clue_constraint_model.cpp src/pulse_input.cpp \
+		tests/test_clue_constraint_model.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/clue_constraint_model.cpp src/pulse_input.cpp \
+		-DADK_CLUE_CONSTRAINT_TEST_PART=1 \
+		tests/test_clue_constraint_model.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_clue_constraint_model_prepared: $(HOST_CORE_SOURCES) \
+		src/clue_constraint_model.cpp src/pulse_input.cpp \
+		tests/test_clue_constraint_model.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/clue_constraint_model.cpp src/pulse_input.cpp \
+		-DADK_CLUE_CONSTRAINT_TEST_PART=2 \
+		tests/test_clue_constraint_model.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_fault_aware_operator_panel_lifecycle: $(HOST_CORE_SOURCES) \
+		src/fault_aware_operator_panel.cpp src/pulse_input.cpp \
+		tests/test_fault_aware_operator_panel.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/fault_aware_operator_panel.cpp src/pulse_input.cpp \
+		-DADK_FAULT_AWARE_PANEL_TEST_PART=1 \
+		tests/test_fault_aware_operator_panel.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_fault_aware_operator_panel_interaction: $(HOST_CORE_SOURCES) \
+		src/fault_aware_operator_panel.cpp src/pulse_input.cpp \
+		tests/test_fault_aware_operator_panel.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/fault_aware_operator_panel.cpp src/pulse_input.cpp \
+		-DADK_FAULT_AWARE_PANEL_TEST_PART=2 \
+		tests/test_fault_aware_operator_panel.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_fault_aware_operator_panel_recovery: $(HOST_CORE_SOURCES) \
+		src/fault_aware_operator_panel.cpp src/pulse_input.cpp \
+		tests/test_fault_aware_operator_panel.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/fault_aware_operator_panel.cpp src/pulse_input.cpp \
+		-DADK_FAULT_AWARE_PANEL_TEST_PART=3 \
+		tests/test_fault_aware_operator_panel.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_fault_aware_operator_panel_project: $(HOST_CORE_SOURCES) \
+		src/fault_aware_operator_panel.cpp src/pulse_input.cpp \
+		tests/test_fault_aware_operator_panel.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/fault_aware_operator_panel.cpp src/pulse_input.cpp \
+		-DADK_FAULT_AWARE_PANEL_TEST_PART=4 \
+		tests/test_fault_aware_operator_panel.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_inert_escape_console_configuration: $(HOST_CORE_SOURCES) \
+		src/clue_constraint_model.cpp src/fault_aware_operator_panel.cpp \
+		src/inert_escape_console.cpp src/pulse_input.cpp \
+		tests/test_inert_escape_console.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/clue_constraint_model.cpp src/fault_aware_operator_panel.cpp \
+		src/inert_escape_console.cpp src/pulse_input.cpp \
+		-DADK_ESCAPE_CONSOLE_TEST_PART=1 \
+		tests/test_inert_escape_console.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_inert_escape_console_admission: $(HOST_CORE_SOURCES) \
+		src/clue_constraint_model.cpp src/fault_aware_operator_panel.cpp \
+		src/inert_escape_console.cpp src/pulse_input.cpp \
+		tests/test_inert_escape_console.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/clue_constraint_model.cpp src/fault_aware_operator_panel.cpp \
+		src/inert_escape_console.cpp src/pulse_input.cpp \
+		-DADK_ESCAPE_CONSOLE_TEST_PART=2 \
+		tests/test_inert_escape_console.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_inert_escape_console_restart: $(HOST_CORE_SOURCES) \
+		src/clue_constraint_model.cpp src/fault_aware_operator_panel.cpp \
+		src/inert_escape_console.cpp src/pulse_input.cpp \
+		tests/test_inert_escape_console.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/clue_constraint_model.cpp src/fault_aware_operator_panel.cpp \
+		src/inert_escape_console.cpp src/pulse_input.cpp \
+		-DADK_ESCAPE_CONSOLE_TEST_PART=3 \
+		tests/test_inert_escape_console.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_inert_escape_console_replay: $(HOST_CORE_SOURCES) \
+		src/clue_constraint_model.cpp src/fault_aware_operator_panel.cpp \
+		src/inert_escape_console.cpp src/pulse_input.cpp \
+		tests/test_inert_escape_console.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/clue_constraint_model.cpp src/fault_aware_operator_panel.cpp \
+		src/inert_escape_console.cpp src/pulse_input.cpp \
+		-DADK_ESCAPE_CONSOLE_TEST_PART=4 \
+		tests/test_inert_escape_console.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_inert_escape_console_audit: $(HOST_CORE_SOURCES) \
+		src/clue_constraint_model.cpp src/fault_aware_operator_panel.cpp \
+		src/inert_escape_console.cpp src/pulse_input.cpp \
+		tests/test_inert_escape_console.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/clue_constraint_model.cpp src/fault_aware_operator_panel.cpp \
+		src/inert_escape_console.cpp src/pulse_input.cpp \
+		-DADK_ESCAPE_CONSOLE_TEST_PART=5 \
+		tests/test_inert_escape_console.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_captured_ir_evidence: $(HOST_CORE_SOURCES) \
 		src/board.cpp src/captured_ir_evidence.cpp src/infrared_decoder.cpp \

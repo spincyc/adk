@@ -10,7 +10,7 @@ the Arduino Mega 2560.
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–054 are published, host verified at E0, and
+> **Current boundary:** Lessons 001–057 are published, host verified at E0, and
 > compiled for the Mega 2560. All lessons remain experimental, physical
 > acceptance remains open, and the exact electrical revisions used by Lessons
 > 031–036 are not yet qualified. Lessons 037–039 use documented external
@@ -22,11 +22,12 @@ the Arduino Mega 2560.
 > intent, and transactional kinetic-sculpture policy. Lessons 049–051 publish
 > synthetic local identity, bounded homing, and inert parts-carousel policy.
 > Lessons 052–054 publish copied infrared evidence, a closed locally authored
-> emission catalog, and inert allowlisted translation. This E0 publication
-> does not claim a
-> powered receiver, emitter, carrier endpoint, wiring, optical output, or
-> bench acceptance. Planned rows below are commitments, not support claims.
-> [Lesson 054](https://spincyc.github.io/adk/lessons/054/) is the current
+> emission catalog, and inert allowlisted translation. Lessons 055–057 publish
+> copied clue constraints, fault-aware panel policy, and an inert escape-console
+> composition. These E0 publications do not claim powered inputs, displays,
+> storage, actuators, wiring, physical output, or bench acceptance. Planned
+> rows below are commitments, not support claims.
+> [Lesson 057](lessons/057.md) is the current
 > published project.
 
 ## What ADK provides
@@ -65,6 +66,7 @@ a printable PDF companion. Each row links to the first lesson in its arc.
 | 046–048 · [start at 046](https://spincyc.github.io/adk/lessons/046/) | Copied tactile/directional evidence and bounded stepper intent | Transactional kinetic light-sculpture intent from E0 replay |
 | 049–051 · [start at 049](https://spincyc.github.io/adk/lessons/049/) | Local identity records and bounded logical homing | Inert parts-carousel intent with acknowledged record-image reconciliation |
 | 052–054 · [start at 052](https://spincyc.github.io/adk/lessons/052/) | Copied infrared evidence and closed known-code emission | Fixed allowlisted translation with no captured-waveform replay |
+| 055–057 · [start at 055](https://spincyc.github.io/adk/lessons/055/) | Copied clue constraints and fault-aware operator policy | Inert escape-console intent with atomic evidence and replayable audit images |
 
 [View the complete lesson index](https://spincyc.github.io/adk/lessons/) or the
 [supported API](https://spincyc.github.io/adk/api-supported/).
@@ -98,8 +100,7 @@ These entries are deliberately linkless. A planned subject becomes a link only
 after its implementation, deterministic tests, Mega example, size evidence,
 HTML reference, and PDF lesson exist.
 
-- **055–063:** constraints and a fault-aware panel for an inert escape-room
-  console; multiplexed digits and MAX7219 presentation for a dual-display
+- **058–063:** multiplexed digits and MAX7219 presentation for a dual-display
   timing desk; corrected authorized environmental sensing for a museum-case
   monitor.
 - **064–072:** qualified single-wire 18B20 thermal probes for a gradient

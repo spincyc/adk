@@ -17,7 +17,7 @@ recorded in
 Its findings must be reconciled through bounded tasks; the audit itself does
 not promote work or replace this ledger.
 
-- Lessons 001--054 are promoted and host verified; physical cards remain open.
+- Lessons 001--057 are promoted and host verified; physical cards remain open.
 - Lesson 030 has an independently reviewed composition core, canonical Mega
   example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
@@ -82,6 +82,7 @@ qualified.
 | [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Host verified; powered input/motion bench open | Preserve the E0 copied-evidence and logical-intent publication; qualify exact inputs at E1 and the exact restrained stepper system independently at E2 |
 | [049--051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Host verified; powered endpoints/media/motion bench open | Preserve the E0 synthetic identity, bounded homing, and inert carousel policies, including attributable `Stopped` reconciliation after an exposed start and the intentional zero-coil atomic-step result; the Lesson 051 object is 380 B (320 B target miss, 384 B hard pass); retain exact powered endpoints/media at E1 and restrained motion at E2 as separate open gates |
 | [052--054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | Host verified; exact powered fixtures/bench open | Preserve copied receive provenance, the immutable local catalog, and fixed different-symbol translation as inert E0 policy; retain exact receiver/emitter fixtures, electrical and optical endpoints, observation paths, and measured acceptance as open E1 gates |
+| [055--057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Host verified; exact passive fixtures/restrained demonstration bench open | Preserve the fixed clue graph, copied audit-image recovery, stop precedence, atomic solve transaction, and inert presentation/release intent; retain passive input/presentation qualification at E1 and any restrained no-load demonstration fixture at E2 |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -124,7 +125,7 @@ work; retail kit names are not electrical identities.
 | [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Host verified; powered input/motion bench open | `InteractionIntentPolicy`, `BoundedStepperSequence`, and `KineticLightSculpture` publish copied tactile/directional evidence, bounded logical coil intent, transactional authorization, independent stop precedence, and semantic light intent at E0; powered inputs remain E1-gated and energized motion remains E2-gated |
 | [049--051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Host verified; powered endpoints/media/motion bench open | `LocalIdentityRegistry`, `BoundedHomingPolicy`, and `InertPartsCarousel` publish copied evidence, bounded logical home/position, acknowledged record-image reconciliation, atomic one-step application, and intentional zero-coil intent at E0; E1 endpoints/media and E2 motion remain open |
 | [052--054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | Host verified; exact powered fixtures/bench open | `CapturedIrEvidence`, `KnownIrEmissionPolicy`, and `InertIrTranslator` publish copied Lesson 025 receive evidence, immutable locally authored catalog intent, and fixed different-symbol translation at E0; exact receiver/emitter fixtures and E1 acceptance remain open |
-| [055--057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Active integration; E0 implementation authorized; E1/E2 exact fixtures open | Fixed clue-constraint model, copied-value fault-aware panel, and inert escape-room console |
+| [055--057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Host verified; exact passive fixtures/restrained demonstration bench open | Fixed clue-constraint model, copied-value fault-aware panel, and inert escape-room console |
 | [058--060](projects/component_project_cadence.md) | Queued | Multiplexed digits, MAX7219 display transport, timing desk |
 | [061--063](projects/component_project_cadence.md) | Queued; corrected authorized scope | Resistive probes and qualified thermal/radiant observations composed into a museum-case monitor |
 | [064--066](projects/component_project_cadence.md) | Queued | Single-wire transport, listed 18B20 temperature family, thermal mapper |
@@ -221,13 +222,18 @@ The authorized Elegoo
 inventory does not establish that the kit contains an IR emitter, so this arc
 makes no known-kit-emitter claim.
 
-Lessons 055--057 now have an independently reviewed implementation-depth plan
-and three pre-implementation architecture stress passes. Their E0
-implementation is authorized within the fixed copied-evidence, caller-owned
-audit-image, inert-intent, zero-hardware boundary. Exact passive
-input/presentation fixtures remain E1-open; restrained servo/relay
-demonstration work remains E2-open and may never control access, confinement,
-egress, or safety.
+Lessons 055--057 are host verified under their independently reviewed
+implementation-depth plan and terminal architecture stress passes. Their E0
+publication provides a fixed clue graph, copied attributable evidence,
+caller-supplied two-slot audit images, stop-dominant panel policy, and one
+atomic inert escape-console transaction. Canonical Mega replays measure
+8,596/1,261, 16,028/1,454, and 32,332/3,655 bytes of flash/static SRAM.
+The exact no-LTO resource gate records 412/636, 569/365, and 951/1,024 bytes
+of synchronous stack/object storage for Lessons 055--057 respectively, with
+reviewed target misses and every hard/residual gate passing. Exact passive
+input/presentation fixtures remain E1-open; restrained no-load servo or inert
+current-limited relay/lamp demonstration work remains E2-open and may never
+control access, confinement, egress, or safety.
 
 Cadence entries for Lessons 058--081 are not implementation-ready lesson
 plans. Before code begins for each later three-lesson arc, expand it to the

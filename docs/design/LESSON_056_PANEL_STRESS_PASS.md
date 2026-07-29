@@ -303,7 +303,7 @@ ordinary control resumes.
 | Composition pressure | Applicability and required evidence |
 |---|---|
 | Scheduler and time load | **Applicable; proof open.** Bound one complete envelope validation, two-record checksum/classification, preview comparison, precedence application, and presentation publication. Prove O(1) work at the fastest authorized cadence, worst collision, exact freshness bound, delayed calls, simultaneous timestamps, rollover, and half-range rejection. No checksum, reconciliation, or navigation catch-up loop may delay stop classification. |
-| Total memory and hardware resources | **Applicable; measurement open.** Add the Lesson 055 model, Lesson 056 policy/private image/candidates/input/snapshot, Lesson 057 coordinator and intents, canonical sketch state, diagnostic cells, maximum live call stack, and 128-byte ISR reserve. Record target and hard flash/SRAM/object/stack gates before code, then measure below/at/above every fixed capacity. E0 hardware totals remain zero. |
+| Total memory and hardware resources | **Applicable, measured, and passed for E0.** Lesson 056 measures 18,118 B flash, 1,454 B static SRAM, 569 B stack, and 365 B object, all within targets. Final Lesson 057 measures 34,978/3,655/951/1,024 B flash/static/stack/object with 3,458 B residual. E0 hardware totals remain zero. |
 | Shared bus or transport | **Not applicable to E0.** The corrected boundary exchanges complete copied values and owns no bus or transport. Future keypad and display adapters require explicit owners, bounded transactions, resource arbitration, rollback, and separate E1 qualification; their failure cannot change stop or acknowledgement truth. A physical storage adapter is outside this arc and requires a separate safety and scope decision. |
 | Persistence and recovery | **Applicable as a value protocol, not as durability.** The two-slot image defines canonical prepared/committed recovery, the empty-image sequence-one bootstrap, predecessor, and sequence rules. E0 must replay clean, prepared, torn, corrupt, indeterminate, repeated reconciliation through `update()`, future time, reset, and power-loss simulations. It owns no medium and proves no atomic physical write, retention, wear, corruption rate, or power-fail durability. Physical nonvolatile storage is outside both E0 and this arc's E1 scope. |
 | Motion, external power, or stored energy | **Not applicable to E0 by absence of an actuation path.** The panel publishes presentation intent only. Lesson 057's latch/lamp outputs are inert semantic values. E2 requires an exact restrained demonstration load, independent load-power removal, electrical bounds, safe startup/shutdown, command expiry, collision behavior, and measured acceptance; it can never control a door, lock, occupied enclosure, egress, alarm, or safety system. |
@@ -467,53 +467,44 @@ its values.
 
 ## Stress disposition
 
-**Bounded local remediation accepted; E0 implementation permitted.** The
-planning owner repaired the unpromoted Lesson 056/057 signatures with a
-configuration-only constructor, one complete copied image in the atomic input,
-and no retained caller reference. This preserves prior decisions and intended
-behavior while making deterministic audit validation expressible. The plan
-also freezes the empty-image sequence-one bootstrap, later-prepared
-predecessor rule, structural `Corrupt` versus relational `Indeterminate`
-mapping, the two acknowledgeable recovery diagnostics and their mandatory
-audit record, rejection of externally supplied recovery diagnostics, exact
-stop fields and restoration/release protocol, domain-separated FNV-1a field
-encodings, exact audit magic/version, per-kind audit authority, the complete
-image disposition table, simultaneous-live address-identity capability
-tokens plus nonzero monotonic lifecycle generations and fail-closed
-wrap exhaustion, with no reconstruction/authentication claim,
-simultaneous-acknowledgement
-rejection, canonical-zero failed results, the private pure-preflight/infallible
-apply seam for parent composition, and exclusion of physical storage from E1.
+**Natural E0 fit after completed bounded remediation.** The implemented
+configuration-only panel retains no caller image reference and admits complete
+copied images through one atomic envelope. Strict host and ASan/UBSan suites
+now prove empty-image bootstrap, predecessor/slot ordering, corrupt versus
+indeterminate images, every audit kind and checksum/digest mutation,
+stop-assert/release recovery, limited acknowledgement, external-recovery
+rejection, owner/lifecycle fencing and exhaustion, simultaneous collisions,
+canonical-zero failed results, parent project preflight, and fieldwise replay.
 
-Implementation must now prove the specified stop, acknowledgement, audit,
-alias-independence, lifecycle, collision, and fieldwise replay matrices.
-Quantitative object/input/preview, flash, SRAM, stack, and maximum-composition
-evidence remains open. The post-implementation pass and all publication gates
-must close those items before promotion.
+The canonical Mega fixture measures 18,118 B flash and 1,454 B static SRAM.
+The object is 365 B and the largest synchronous path is 569 B; flash, static
+SRAM, object, and stack all pass their targets after remediation. The final
+Lesson 057 composition measures 34,978 B flash, 3,655 B static SRAM, 951 B
+stack, 1,024 B object, and 3,458 B residual. The private
+`preflightProjectUpdate()` uses only a synchronous internal
+`ProjectUpdateView`; Lesson 057 owns the complete copied `PreparedUpdate`
+output on its stack, and no input borrow survives return.
 
 ## Gate result
 
-- Disposition: bounded local remediation accepted; natural copied-value fit
-  after the planning repair
-- Open risks: deterministic implementation proof of the frozen digest,
-  checksum, image, kind-admission, owner-token/lifecycle-exhaustion, stop,
-  acknowledgement, preflight/apply, failed-result, and image-form semantics;
-  unmeasured object/input/preview, flash, SRAM, stack, and
-  maximum-composition budgets; passive-input/presentation E1 evidence and all
-  E2 physical evidence
-- Required discussion or decision IDs: none for E0 implementation; any return
-  to borrowed storage or change to shared contracts requires a new durable
-  decision
-- Remediation owner and next action: Lesson 056 implementation owner must
-  implement the repaired config-only and atomic copied-image contract, close
-  the deterministic and quantitative gates, and rerun this pass before
-  promotion
-- Verification commands and results: template, implementation-depth plan,
-  development, testing, safety, packaging, PDF, curriculum, work-queue, and
-  prior Lesson 049--054 stress patterns inspected; document-only diff checked;
-  no implementation, build, hardware, or physical verification performed
-- Maximum-composition scenario and proof: scenario fixed above; copied-image
-  contract is repaired, while deterministic replay and measured aggregate
-  proof remain open for implementation
+- Disposition: natural E0 copied-value fit after bounded remediation
+- Open risks: exact passive inputs, indicators/display, physical storage
+  adapter/media, wiring, resource/safe-state evidence, and bench acceptance
+  remain open E1; energized latch/relay work remains open E2
+- Required discussion or decision IDs: none for the published E0 contract;
+  borrowed retention, shared-contract changes, or any physical durability
+  claim require a new review
+- Remediation owner and next action: E0 remediation complete; preserve copied
+  image/atomic semantics and qualify physical adapters separately
+- Verification commands and results: focused strict host and ASan/UBSan
+  tests, canonical Mega compile, exact standalone and maximum-composition
+  resource probes, style/header/diff checks, lesson/PDF/site/package
+  publication gates, and independent review pass
+- Maximum-composition scenario and proof: exact two-slot image, all audit and
+  stop transitions, collisions, restart/recovery, and parent composition pass
+  deterministic replay and measured aggregate gates
 - E0 implementation permitted: yes
-- Promotion permitted: no
+- Promotion permitted: yes, for host-verified E0 publication
+- E1 permitted: no; exact passive-input, presentation, and storage fixtures
+  require qualification and bench acceptance
+- E2 permitted: no; no energized actuator is authorized by Lesson 056

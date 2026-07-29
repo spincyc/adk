@@ -59,12 +59,15 @@ third lesson for a deterministic integration project.
 | [Lesson 052 — Copied infrared capture evidence](052.md) | Attributable copied receive evidence | Known, repeat, unknown, malformed, overflow, and source-fault results remain receive-only |
 | [Lesson 053 — Known local infrared emission](053.md) | Immutable local catalog and bounded envelope intent | Only locally authored symbolic commands can produce inert carrier intent |
 | [Lesson 054 — Inert IR command translator](054.md) | Fixed receive-to-local-symbol allowlist | Valid known evidence maps to a different local symbol without captured-waveform replay |
+| [Lesson 055 — Constraint and clue model](055.md) | Fixed copied clue observations and project-specific rules | Explicit freshness, contradictions, and dependencies produce deterministic puzzle dispositions |
+| [Lesson 056 — Fault-aware operator panel](056.md) | Atomic copied operator, presentation, and audit evidence | Stop dominance, diagnostics, acknowledgement, and restart-safe intent remain replayable |
+| [Lesson 057 — Six stations, one quiet console](057.md) | Clue model and fault-aware panel composition | Six fixed clue families produce only inert, bounded console intent |
 
-Lessons 001--054 are host verified and their canonical examples compile for
-the Mega 2560. Lessons 052--054 publish E0 replay only: exact powered fixtures,
-optical output, and bench acceptance remain open. Every circuit remains
-experimental until its physical acceptance card is recorded. Historical
-preview lessons are preserved under
+Lessons 001--057 are host verified and their canonical examples compile for
+the Mega 2560. Lessons 055--057 publish E0 replay only: exact inputs,
+presentation, storage, actuators, and bench acceptance remain open. Every
+circuit remains experimental until its physical acceptance card is recorded.
+Historical preview lessons are preserved under
 [Legacy](../legacy/index.md).
 
 ## Planned engagement-first sequence
@@ -74,7 +77,6 @@ published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 055–057 | Inert escape-room console |
 | 058–060 | Dual-display timing desk |
 | 061–063 | Museum-case monitor |
 | 064–066 | Thermal gradient mapper |

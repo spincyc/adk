@@ -1,0 +1,35 @@
+{
+  "reviews": [
+    {
+      "authority": "docs/design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md#resource-budgets-and-mandatory-probes",
+      "disposition": "accepted-target-miss",
+      "hard_bytes": 640,
+      "lesson": "055",
+      "metric": "object",
+      "observed_bytes": 636,
+      "rationale": "The lossless owner-owned fixed-capacity clue and rule state is required; borrowed storage would relocate SRAM and weaken lifetime ownership.",
+      "target_bytes": 512
+    },
+    {
+      "authority": "docs/design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md#resource-budgets-and-mandatory-probes",
+      "disposition": "accepted-target-miss",
+      "hard_bytes": 512,
+      "lesson": "055",
+      "metric": "synchronous_stack",
+      "observed_bytes": 412,
+      "rationale": "The exact linked path retains the lossless proposed state and remains within the reviewed hard ceiling.",
+      "target_bytes": 384
+    },
+    {
+      "authority": "docs/design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md#resource-budgets-and-mandatory-probes",
+      "disposition": "accepted-target-miss",
+      "hard_bytes": 40960,
+      "lesson": "057",
+      "metric": "flash",
+      "observed_bytes": 34978,
+      "rationale": "The required panel preflight, parent update, and maximum-fixture loop dominate linked flash; further bounded cleanup did not recover the target gap, while the hard margin remains 5982 bytes.",
+      "target_bytes": 32768
+    }
+  ],
+  "schema": 1
+}

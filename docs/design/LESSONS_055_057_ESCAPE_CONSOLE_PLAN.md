@@ -316,8 +316,22 @@ and no model mutation.
 Every failed `Result<T>` in this arc carries a canonical-zero `T`.
 
 Public `update()` wraps the private pure `preflightUpdate()` and then the
-infallible `applyPreparedUpdate()`. Only the friend `InertEscapeConsole` may
-use this seam to preflight all parent and child work before mutation.
+infallible `applyPreparedUpdate()`. `PreparedUpdate` is an owner-owned,
+lossless transition value: it contains the complete proposed
+`ClueConstraintSnapshot`, the complete proposed `ClueEvidenceSnapshot` for
+each selected clue, the selected-evidence mask, and all proposed rule state
+needed by `applyPreparedUpdate()`. It contains no borrowed pointer, view,
+callback, or digest standing in for those values. Only the friend
+`InertEscapeConsole` may inspect this private value. The console uses its
+proposed snapshot and selected proposed evidence to derive the six family
+summaries and the exact panel diagnostic before either child mutates.
+
+The friend seam is pure: `preflightUpdate()` cannot reserve a candidate,
+advance a generation, write caller storage, or mutate retained evidence.
+`applyPreparedUpdate()` accepts only the exact value produced for the current
+owner and lifecycle generation and is infallible after the parent completes
+all child and parent checks. This does not create a public graph transaction
+API; standalone callers continue to use `update()`.
 
 ### Lesson 055 deterministic proof
 
@@ -592,10 +606,17 @@ struct FaultAwareOperatorPanelSnapshot
     uint32_t                  instanceEpoch;
     uint32_t                  generation;
     bool                      stopped;
+    bool                      stopEvidencePresent;
+    OperatorStopEvidence      stopEvidence;
+    bool                      stopTransitionPending;
     uint8_t                   selectedCell;
     OperatorChordDisposition  chordDisposition;
     PanelDiagnostic           diagnostic;
     uint32_t                  diagnosticGeneration;
+    PanelDiagnostic           externalDiagnostic;
+    uint32_t                  externalDiagnosticGeneration;
+    PanelDiagnostic           derivedClueDiagnostic;
+    uint32_t                  derivedClueGeneration;
     PanelAuditDisposition     auditDisposition;
     PanelPresentationIntent   presentation;
     Status                    status;
@@ -652,6 +673,24 @@ private:
              MicrosecondTimePoint now) noexcept;
     Status preflightUpdate
         (const FaultAwareOperatorPanelInput& input,
+         PreparedUpdate& prepared) const noexcept;
+    Status preflightProjectUpdate
+        (MicrosecondTimePoint now,
+         bool auditImagePresent,
+         const PanelAuditImage& auditImage,
+         bool stopPresent,
+         const OperatorStopEvidence& stop,
+         bool controlPresent,
+         const OperatorControlEvidence& control,
+         bool auditAcknowledgePresent,
+         const PanelAuditPreview& auditAcknowledge,
+         bool acknowledgePresent,
+         const PanelAcknowledgePreview& acknowledge,
+         bool presentationPresent,
+         const PanelPresentationEvidence& presentation,
+         PanelDiagnostic derivedClueDiagnostic,
+         uint32_t derivedClueGeneration,
+         bool puzzleSolveEligible,
          PreparedUpdate& prepared) const noexcept;
     void applyPreparedUpdate
         (const PreparedUpdate& prepared) noexcept;
@@ -816,6 +855,25 @@ rejects atomically; neither acknowledgement receives priority. Public
 `update()` uses the same private pure `preflightUpdate()` plus infallible
 `applyPreparedUpdate()` seam available only to the friend parent, after the
 parent has preflighted its complete envelope.
+
+`preflightProjectUpdate()` is a separate friend-only composition seam. On every
+accepted parent envelope it replaces the retained parent-derived clue
+diagnostic with the supplied canonical value and exact proposed Lesson 055
+generation. Supplying `PanelDiagnostic::None` explicitly clears that derived
+channel. It does not reuse `FaultAwareOperatorPanelInput::diagnosticPresent`,
+does not alter or acknowledge an externally admitted panel diagnostic, and
+cannot manufacture `InputRecovered` or `PresentationRecovered`. The parent
+may supply only `None`, `ClueIncomplete`, `ClueInvalid`, `ClueStale`,
+`ClueContradictory`, `SourceFault`, `ConfigurationFault`, or `TimingFault`;
+every other value rejects without mutation. Thus a clue diagnostic cannot
+stick after the proposed clue state becomes healthy, impersonate recovery, or
+become acknowledgeable through the public panel path. When an external panel
+diagnostic and the derived clue channel coexist, fixed precedence selects
+the primary `diagnostic`/`diagnosticGeneration` presentation pair while
+`externalDiagnostic`/`externalDiagnosticGeneration` and
+`derivedClueDiagnostic`/`derivedClueGeneration` preserve both attributions
+independently. A derived replacement never edits the external pair.
+
 For a valid envelope it applies:
 
 1. preserve invalid-configuration or internal-fault attribution;
@@ -1059,6 +1117,14 @@ struct InertEscapeConsole
     Result<EscapeConsolePreview>
         prepareSolve (uint32_t operationId,
                       MicrosecondTimePoint now) noexcept;
+    Result<PanelAuditPreview>
+        preparePanelAudit (uint32_t operationId,
+                           PanelAuditKind kind,
+                           MicrosecondTimePoint now) noexcept;
+    Result<PanelAcknowledgePreview>
+        preparePanelAcknowledge
+            (uint32_t operationId,
+             MicrosecondTimePoint now) noexcept;
     bool canCommit
         (const EscapeConsolePreview& preview) const noexcept;
     Status update
@@ -1103,9 +1169,42 @@ representation are excluded.
 audit acknowledgement, diagnostic acknowledgement, presentation evidence, and
 solve commit. There is no independent `observeClue()`, `stop()`, `acknowledge()`,
 `show()`, or actuation call. The coordinator validates the complete envelope
-without mutation, derives the one panel diagnostic from the proposed clue
-result, preflights both children, and then applies at most one atomic child and
-parent transition.
+without mutation. It obtains the Lesson 055 private prepared value, derives
+the panel diagnostic and six family summaries from that value's complete
+proposed snapshot and selected lossless proposed evidence, preflights the
+owned panel through `preflightProjectUpdate()`, and then applies at most one
+atomic child and parent transition. The parent-derived clue diagnostic is
+replaced or explicitly cleared on every accepted envelope; it is not routed
+through the public external-diagnostic field and cannot stick or impersonate
+recovery.
+For composition, the private internal `ProjectUpdateView` adapts the input
+references synchronously inside the panel. No input reference survives the
+call. The Lesson 057 caller supplies the full
+`FaultAwareOperatorPanel::PreparedUpdate` output on its own update stack; the
+panel copies every proposed field into that caller-owned value before return,
+and no borrow remains afterward. The parent then performs final atomic checks
+and passes the same copied value to infallible `applyPreparedUpdate()`. This
+exact arrangement explains the measured 951 B maximum synchronous stack while
+keeping the object at 1,024 B; it is a private friend adapter, not a public
+transaction/view API.
+It never derives same-envelope meaning from a hash, borrowed view, or the old
+retained clue snapshot.
+
+The two `preparePanel*()` operations are narrow capability forwarders required
+because the console owns the panel. `preparePanelAudit()` forwards only an
+operation, closed `PanelAuditKind`, and supplied time; it accepts no record
+payload, storage image, diagnostic, clue result, or generic event.
+`PanelAuditKind::PuzzleSolved` always rejects on this public path.
+`preparePanelAcknowledge()` forwards only an operation and supplied time and
+returns the panel's closed acknowledgement capability. Neither operation
+writes or reconciles storage, commits panel state, changes puzzle truth, or
+publishes intent. Every call attempt, including one that returns failure,
+first invalidates any retained parent solve candidate and every nested child
+audit or acknowledgement candidate before forwarding. This occurs even when
+the request is malformed or otherwise fails; only a capability returned by a
+successful new forwarding call may then be live. `update()` remains the sole ingress that can apply either
+capability, acknowledge an image, commit child state, or change the console
+snapshot.
 
 The frozen primary precedence is:
 
@@ -1132,11 +1231,31 @@ Presentation is computed last and cannot affect the primary result. The
 project never exposes a relay state, servo angle, PWM duty, pin level, render
 buffer, storage operation, or endpoint reference.
 
+One narrower rule applies to the parent-private `PuzzleSolved` transaction:
+the owned panel may preflight its candidate, but it cannot consume or commit
+that candidate until the complete combined panel/parent preflight proves the
+normal solve tier. Same-envelope stop, clue evidence or its derived
+diagnostic, presentation fault, invalid operator chord, audit ambiguity, or
+any higher-precedence cause suppresses both child consumption and parent solve
+publication atomically. Presentation failure still cannot rewrite or erase
+the independently retained primary cause; it merely makes a solve transaction
+ineligible. Ordinary public stop-transition audit and limited diagnostic
+acknowledgement retain the Lesson 056 precedence defined for their own
+non-solve envelopes.
+
 ### Atomic solve and audit publication
 
 `prepareSolve()` succeeds only when the exact retained Lesson 055 generation
-is solved, stop is qualified and deasserted, the panel has no dominant
-diagnostic, the audit image is ready, and no candidate is live. It reserves
+is solved, the panel retains a present, qualified, deasserted stop observation,
+there is no prepared or unreconciled stop transition, the panel has no
+dominant diagnostic, no candidate is live, and the audit disposition is
+either `Ready` or `PrepareRequired`. A default
+`FaultAwareOperatorPanelSnapshot::stopped == false` is insufficient: absence
+of qualified stop evidence, stale/faulted stop evidence, or a pending
+`StopAsserted`/`StopReleased` record rejects. `PrepareRequired` is the canonical empty-image bootstrap:
+the child may prepare sequence-one `PuzzleSolved` directly, without requiring
+an unrelated manufactured record. `AcknowledgeRequired`, `Indeterminate`, and
+`Corrupt` always reject solve preparation. It reserves
 one exact child audit candidate and returns a copied parent preview binding:
 
 - parent owner revision/epoch/generation and operation;
@@ -1146,12 +1265,21 @@ one exact child audit candidate and returns a copied parent preview binding:
 - the exact solved inputs from which inert latch/lamp/presentation intent is
   recomputed.
 
+The explicit call to `prepareSolve()` is the deliberate operator confirmation
+for this inert demonstration. `PanelControl::Select`, selected-cell state, and
+any clue observation are not hidden confirmation predicates and cannot
+prepare or commit a solve. A caller must make the named preparation call and
+later return its exact parent/child capabilities through `update()`.
+
 The explicit preview above carries the binding fields; resulting intent is
 recomputed and fieldwise compared during preflight rather than accepted from a
 caller. An independently constructed exact fieldwise copy is valid while the
 sole retained parent and child candidates remain live. Any mutation, foreign
 owner, stale clue/panel generation, stop, new clue evidence, diagnostic,
-reset, shutdown, reconcile, or prior consumption invalidates it.
+reset, shutdown, reconcile, prior consumption, or any attempted
+`preparePanelAudit()` or `preparePanelAcknowledge()` call invalidates it. The
+forwarding attempt invalidates first, so failure cannot leave an older solve
+candidate live.
 
 `EscapeConsolePreview::ownerToken` distinguishes exact simultaneously live
 console objects, while its nested preview tokens distinguish simultaneously
@@ -1186,7 +1314,26 @@ audit acknowledgement and the exact parent preview through the same atomic
 update envelope, with `solvePreviewPresent` selecting `solvePreview`. The
 coordinator fieldwise validates every parent binding, the complete child
 preview and image digest, the currently observed canonical image, and the
-recomputed result intent before mutation. `canCommit()` checks only retained
+recomputed result intent before mutation. Solve pairing uses both children's
+complete **proposed** state, not their retained pre-envelope snapshots. Any
+same-envelope change to clue generation, clue fault or derived diagnostic,
+control state, panel generation, presentation evidence or intent, stop, or
+audit state suppresses solve consumption even when the supplied previews still
+match the earlier retained state.
+
+The compact public preview does not duplicate panel generation, diagnostic, or
+presentation fields. Equivalent authority comes from its complete nested
+`PanelAuditPreview`, the panel's live retained candidate,
+`canAcknowledgeAudit()`, and the current proposed child/panel state evaluated
+inside the same parent preflight, combined with the parent configuration,
+generation, clue generation/mask, and policy digest. The implementation
+fieldwise compares the nested preview and every carried parent field, then
+requires that the current/proposed panel remains acknowledgeable and normal.
+Any intervening panel generation, diagnostic, presentation, control, stop,
+audit, reset, or lifecycle change invalidates that current-state check even
+though it is not redundantly serialized into `EscapeConsolePreview`.
+
+`canCommit()` checks only retained
 parent-candidate liveness and the fields carried directly by
 `EscapeConsolePreview`: owner revision/epoch, console generation, operation,
 clue generation, satisfied-rule mask, policy digest, and the complete copied
@@ -1203,6 +1350,11 @@ publishes the same operation, `Solved` disposition,
 `RequestDemonstrationRelease` latch intent, and `Solved` lamp intent in one
 mutation. If implementation cannot preserve this property, promotion stops:
 sequential best-effort child mutation may not be called atomic.
+In particular, a matching child `PuzzleSolved` acknowledgement remains
+pending until the parent has also proved normal solve precedence, including
+the absence of a same-envelope clue-generation or fault change, stop, derived
+clue diagnostic, control or panel-generation change, presentation change or
+fault, invalid chord, or audit ambiguity.
 
 Solved intent is volatile. Reset, restart, shutdown, stop, fault, ambiguous or
 corrupt audit image, and a new configuration start with latch intent inactive.
@@ -1222,26 +1374,58 @@ The host matrix includes:
   collisions against the canonical six-family fixture;
 - solved, one-term-missing, one-rule-blocked, degraded, invalid, stale,
   contradictory, source-faulted, and timing-faulted evidence in every family;
+- solve preparation with qualified deasserted stop, absent/default stop,
+  asserted, stale, source-faulted, and timing-faulted stop, plus pending
+  `StopAsserted` and `StopReleased` records; only the first admits;
+- `Select`, every other ordinary control, and no control with solved clues,
+  proving none prepares or commits a solve and the explicit `prepareSolve()`
+  call is the sole deliberate operator confirmation;
 - every meaningful permutation of clue update, stop, control, audit
   acknowledgement, diagnostic acknowledgement, and presentation evidence at
   one timestamp, including every presence mask and noncanonical absent value;
 - pairwise and maximum collision rows for every precedence tier, proving the
   frozen order is independent of conceptual source order and latch intent is
   inactive for every non-normal tier;
+- an exact live parent/child solve pair crossed individually and jointly with
+  stop, every clue-derived diagnostic, presentation fault, invalid chord,
+  `AcknowledgeRequired`, `Indeterminate`, and `Corrupt`, proving neither solve
+  candidate is consumed and no solve record or intent is published;
+- the same live solve pair crossed with a same-envelope clue-generation
+  advance, healthy-to-fault and fault-to-healthy derived clue diagnostic,
+  navigation/control change, panel-generation change, successful and failed
+  presentation evidence, and presentation-intent change, proving pairing is
+  against proposed child state and every change suppresses solve consumption;
+- consecutive accepted parent envelopes that derive fault, the same fault,
+  a different fault, and `None`, proving replacement and explicit clearing;
+  coexistence with each public external diagnostic; rejection of every
+  forbidden friend-only diagnostic value; and proof the derived channel can
+  neither emit nor acknowledge either recovery diagnostic;
 - all 16 operator masks within the full console, with every invalid chord
   crossed against stop, evidence fault, audit state, solved clues, and
   presentation failure;
 - prepare/commit candidate mutation one field at a time; exact fieldwise
   copies, foreign owner, stale clue/panel generation, changed policy digest,
   stopped, reset, reconciled, shutdown, consumed, and reused candidates;
+- each public `preparePanelAudit()` kind and
+  `preparePanelAcknowledge()`, before and after solve preparation, proving
+  closed child capability types only, public `PuzzleSolved` rejection, no
+  storage or snapshot mutation, and unconditional parent plus nested-child
+  candidate invalidation on successful and failed attempts;
+- proposed-family and panel-diagnostic derivation from the Lesson 055 private
+  prepared snapshot and selected lossless proposed evidence, including a clue
+  that changes family state in the same envelope; mutation of every selected
+  evidence field; and proof that retained-old-snapshot, pointer-lifetime, and
+  digest-only substitutions are impossible;
 - both solve-preview presence states, canonical absent payload, the exact
   parent-plus-child commit pair, and every parent/child cross-mismatch;
 - failure injection before each parent preflight, after each child preflight,
   and at every allowed atomic mutation boundary, proving rejection leaves both
   children, audit image, parent generation, and intents unchanged;
 - clean, prepared, acknowledged, torn, indeterminate, corrupt, rollover,
-  and ambiguous audit images across restart; repeated reconciliation and fresh
-  solve admission after recovery;
+  and ambiguous audit images across restart; direct sequence-one solve
+  preparation from a canonical empty `PrepareRequired` image; ordinary solve
+  from `Ready`; rejection from `AcknowledgeRequired`, `Indeterminate`, and
+  `Corrupt`; repeated reconciliation and fresh solve admission after recovery;
 - timing at one tick before, exactly at, and one tick after every freshness
   boundary; future evidence, rollover, regression, exact-half-range ambiguity,
   and large elapsed jumps;
@@ -1284,6 +1468,21 @@ one panel transition, one candidate transition, and one fixed six-family
 summary. Runtime graph traversal is iterative and fixed; no recursive DFS is
 permitted.
 
+The Lesson 055 private prepared value adds one complete proposed clue snapshot,
+up to 12 selected complete evidence values, and bounded proposed rule state to
+the largest synchronous Lesson 057 preflight path. The resource probe counts
+that value in full. It also counts the caller-owned full panel prepared output,
+private synchronous `ProjectUpdateView`, nested exact panel audit preview, the
+live current-state/`canAcknowledgeAudit()` checks, and the panel snapshot's
+separate external and derived diagnostic pairs. Those semantic checks may not
+be replaced by a digest merely because the compact parent preview avoids
+duplicating them. The two panel forwarding methods
+add no persistent image or buffer and may retain only the panel's already
+budgeted candidate. If this
+path misses the stack hard ceiling or residual-SRAM gate, remediation must
+reduce copied value shapes or split bounded internal work without borrowing
+caller memory, replacing evidence with a hash, or weakening atomicity.
+
 `Status` reports invocation/configuration success or failure. Domain
 dispositions remain in snapshots and are not collapsed into transport status.
 A semantically stale clue can therefore be a successfully admitted update
@@ -1306,7 +1505,7 @@ export. It proves:
 | Audit indeterminate + invalid chord/solve | Audit tier primary, chord retained diagnostically, latch inactive |
 | Invalid chord + otherwise solved | Invalid chord primary, no acknowledgement or release |
 | Normal solved + exact live audit acknowledgement | One atomic solved audit/result publication and inert release intent |
-| Presentation absent/delayed/failed in every row | Primary result and canonical audit image unchanged |
+| Presentation absent/delayed/failed in every row | Primary cause unchanged; failure suppresses solve-candidate consumption, and the canonical audit image remains unchanged |
 
 Every valid-payload presence mask is exercised. For co-inputs whose conceptual
 arrival order could differ, tests enumerate every permutation used to assemble
@@ -1367,6 +1566,13 @@ The staged replay covers incomplete clues, all families eligible, operator
 confirmation, prepared audit image, acknowledged solve, stop, contradiction,
 torn restart image, `update()` reconciliation, and fresh recovery. No helper
 is named `unlockDoor`; the vocabulary is `requestDemonstrationRelease`.
+It also bootstraps the first solve record directly from the canonical empty
+audit image, then demonstrates ordinary panel audit and diagnostic
+acknowledgement preparation through the console's narrow forwarders.
+Preparation alone changes neither puzzle progress nor the image, and even a
+failed forwarding attempt invalidates an earlier solve preview; the caller
+must prepare a fresh solve and return its exact capabilities through
+`update()`.
 
 Each example has a corresponding host replay using exactly the same fixture
 values and timestamps. Serial may describe results, but it is not credited as
@@ -1454,18 +1660,84 @@ capacity:
 | Lesson 056 standalone maximum | 24 / 28 KiB | 2,560 / 3,072 B | 640 / 768 B | 384 / 512 B |
 | Lesson 057 complete maximum composition | 32 / 40 KiB | 4,096 / 4,608 B | 1,024 / 1,280 B | 1,024 / 1,280 B |
 
+The first AVR layout/stack gate produced actionable pre-promotion evidence:
+
+| Boundary | Initial object | Initial synchronous stack | Disposition |
+|---|---:|---:|---|
+| Lesson 055 | 636 B | 412 B | Both hard gates pass; both targets miss |
+| Lesson 056 | 496 B | 745 B | Both hard gates pass; both targets miss |
+| Lesson 057, before composition refactor | 1,348 B | 1,967 B | Both 1,280 B hard gates fail |
+
+These are remediation inputs, not final acceptance measurements. The Lesson
+057 hard failures trigger a compact retained parent candidate plus a
+friend-only `preflightProjectUpdate()` seam. Its private `ProjectUpdateView`
+borrows input references only synchronously inside the call, while the Lesson
+057 caller owns the full copied `PreparedUpdate` output on its stack. No input
+borrow survives return. Canonical state, candidates, prepared output, and
+applied transitions remain owned values. This
+repair neither weakens the public API nor replaces Lesson 055's lossless
+owner-owned prepared value, and it does not authorize partial mutation. At
+this initial-review boundary, final object, stack, static-SRAM, flash, and
+residual-margin measurements were pending the post-refactor rerun recorded
+next.
+
+The stabilized full gate records:
+
+| Lesson | Flash | Static SRAM | Stack | Object | Residual |
+|---:|---:|---:|---:|---:|---:|
+| 055 | 8,886 B | 1,261 B | 412 B | 636 B | Not an aggregate gate |
+| 056 | 18,118 B | 1,454 B | 569 B | 365 B | Not an aggregate gate |
+| 057 | 34,978 B | 3,655 B | 951 B | 1,024 B | 3,458 B |
+
+Lesson 056 passes every target after remediation and needs no target-miss
+review. Lesson 055's object and stack miss their 512 B and 384 B targets while
+passing 640 B and 512 B hard ceilings.
+
+The contract-preserving compact-parent refactor achieves the exact 1,024 B
+Lesson 057 object target while retaining child ownership, exact public
+snapshots, candidate fieldwise validation, lifecycle invalidation, atomic
+preflight/apply, and the synchronous nonretained friend view. Stack, static
+SRAM, object, and residual SRAM pass without review. Flash is 34,978 B: a
+2,210 B target miss with 5,982 B remaining to the 40 KiB hard ceiling.
+
+The compact representation costs 772 B more linked flash than the superseded
+precompact 34,206 B build. Independent review attributes the retained code
+primarily to required bounded behavior: approximately 6,504 B in panel
+preflight, 2,618 B in parent update, and 2,012 B in the maximum fixture loop.
+No dead dispatch table or bounded 2,210 B cleanup was found. Removing enough
+code to meet the flash target would weaken validation, recovery, candidate
+atomicity, or the canonical maximum fixture. The flash target miss is
+therefore accepted; the 40 KiB hard gate and 2,048 B residual gate remain
+non-reviewable.
+
+The resource mechanism carries one exact reviewed marker per target-miss
+metric and stale-fails when code, compiler/core version, flags, fixture, or
+linked inventory changes it. These controlling-authority anchors are
+intentional machine-readable lines:
+
+Resource-review: lesson=055 metric=object observed=636 target=512 hard=640 disposition=accepted-target-miss
+
+Resource-review: lesson=055 metric=synchronous_stack observed=412 target=384 hard=512 disposition=accepted-target-miss
+
+Resource-review: lesson=057 metric=flash observed=34978 target=32768 hard=40960 disposition=accepted-target-miss
+
+Target passes need no review marker. Object, stack, static-SRAM, flash,
+per-buffer, and 2,048 B residual **hard** failures are never reviewable
+exceptions.
+
 The Lesson 055 object gate is intentionally larger than an ordinary reusable
-component. An AVR layout probe estimates 527 B for the lossless private state
-required by twelve copied rule definitions, twelve complete evidence records,
-runtime results, topology, and metadata. Borrowing roughly 480 B of caller
+component. The initial complete AVR object probe measured 636 B for the
+lossless private state required by twelve copied rule definitions, twelve
+complete evidence records, runtime results, topology, and metadata, superseding
+an earlier partial-layout estimate of 527 B. Borrowing roughly 480 B of caller
 storage would reduce the nominal object while leaving aggregate SRAM nearly
 unchanged and introducing alias/lifetime coupling; reducing capacity would
 change the curriculum. The reviewed bounded remediation therefore keeps
 ownership explicit and raises the target/hard gate to 512/640 B. The target
-requires a compact representation or bounded recomputation while the hard
-ceiling admits the transparent lossless layouts measured by the probe. Because
-Lesson 057 owns that child, its coordinator gate is provisionally raised to
-1,024/1,280 B until the maximum AVR probe supplies a final measurement.
+miss is accepted for bounded local size remediation while the 640 B hard
+ceiling passes. Because Lesson 057 owns that child, its coordinator gate
+remains 1,024/1,280 B; the compact-candidate/nonretained-view repair is
+complete at the exact 1,024 B target.
 
 Lesson 057 must leave at least 2,048 B after maximum measured static SRAM plus
 the conservative maximum stack/interrupt reserve:

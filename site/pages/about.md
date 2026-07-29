@@ -16,7 +16,7 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--054 use the first-class per-object
+ADK is early-stage software. Lessons 001--057 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
@@ -36,6 +36,10 @@ bounded inert carrier-envelope intent from an immutable local catalog, and a
 fixed allowlisted translator. Their E0 boundary owns no
 receiver, emitter, pin, timer, interrupt, carrier endpoint, optical power path,
 or controlled device.
+Lessons 055--057 publish a fixed clue-constraint model, a copied-image
+fault-aware operator panel, and their inert escape-console composition. Their
+E0 boundary owns no live input, storage transport, display, latch, lamp,
+relay, servo, lock, or access-control mechanism.
 
 The hierarchy is developed in dependency order:
 
@@ -47,10 +51,10 @@ The per-object lifecycle uses transactional `initialize()`, idempotent
 `shutdown() noexcept`, and destructor-driven cleanup. The original
 global-registration preview is frozen under [Legacy](legacy/index.md).
 
-The latest promoted arc is Lessons 052--054: copied infrared evidence, a
-closed locally authored emission catalog, and an inert command translator
-that cannot replay unknown captures. The planned sequence from Lesson 055
-remains engagement-first. See the
+The latest promoted arc is Lessons 055--057: copied clue evidence, a
+fault-aware operator model, and an inert escape-console transaction that
+cannot command physical access or actuation. The planned sequence from
+Lesson 058 remains engagement-first. See the
 [course map](course.md) for that order and the
 [roadmap](docs/ROADMAP.md) for the full sequence.
 

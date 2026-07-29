@@ -1,13 +1,13 @@
 # Lesson 055 constraint-model architecture stress pass
 
-This pre-implementation architecture stress pass evaluates the exact
+This architecture stress pass records the pre-implementation review and
+completed post-implementation reassessment of the exact
 `ClueConstraintModel` contract in the Lessons 055--057 inert escape-console
-plan. The proposed boundary is a natural component-layer policy. A bounded
+plan. The boundary is a natural component-layer policy. A bounded
 pre-implementation representation probe found that the required copied state
-does not fit the original object ceiling, but does fit a revised provisional
-budget without changing ownership, capacity, or public semantics. This record
-therefore permits E0 implementation under that bounded remediation; measured
-AVR evidence remains a promotion gate.
+did not fit the original object ceiling. The implemented 636 B model now
+passes its reviewed 640 B hard gate without changing ownership, capacity, or
+public semantics, and the measured E0 publication gates pass.
 
 ## Boundary
 
@@ -121,11 +121,11 @@ the policy itself.
 | API and layering | **Natural.** A fixed puzzle-rule evaluator is component-layer circuit meaning over copied values. Electrical acquisition, sampling, debounce, and safe pin lifetime remain below it and outside E0. The public API exposes domain values rather than pins, callbacks, graph nodes, allocator hooks, or an implementation-owned clock. It deliberately avoids a generic solver until a second consumer exists. |
 | Ownership and lifecycle | **Natural.** The model owns its copied configuration, exact expected identity per clue, and current copied evidence, is inert after construction, and is non-copyable/non-movable. It borrows nothing and can make failed initialization, rejected update, reset, repeated shutdown, destruction, and restart deterministic. A private prepared update carries `ownerToken` to distinguish simultaneously live object/address identities and the exact nonzero `lifecycleGeneration` to distinguish boundaries within that lifetime. The generation advances before an actual uninitialized-to-initialized transition, every explicit reset, and an actual initialized-to-shutdown transition; repeated idempotent initialize/shutdown calls neither advance it nor invalidate preparations. It never resets in that lifetime, and each advancing boundary plus destruction invalidates older preparation context. At attempted wrap, initialize returns `StatusCode::CapacityExceeded`; void reset/shutdown completes the inert transition and retains/publishes that status. Every exhausted case invalidates candidates and permanently prevents new work for that object. Neither field is persisted, authenticates the object, forms an unforgeable capability, or proves continuity after same-address reconstruction. The adopted remediation preserves this contract rather than moving storage to the caller. |
 | Time and ordering | **Natural.** `now` and every observation time are explicit. The inclusive freshness interval, per-source sequence order, simultaneous observations, rollover, future values, regression, and half-range ambiguity are specified without a clock, wait, retry, catch-up loop, or scheduler dependency. Update-array position expresses clue identity only: slot `i` equals clue ID `i` equals mask bit `i`, so iteration or caller insertion order has no semantic role. One update performs fixed scans over at most twelve observations/rules and four terms/prerequisites per rule. |
-| Errors and status | **Natural with one implementation check.** Ordinary malformed configuration/envelope and lifecycle failures can use existing `Status`; evidence quality and model/rule dispositions remain semantic data rather than new status codes. Rejection preserves retained state and returns the operation status. Invalid evidence/rule IDs return existing `StatusCode::InvalidArgument` plus a fieldwise canonical-zero record, and all failed `Result<T>` values follow that rule. Implementation tests must verify that `InvalidConfiguration` and `InternalFault` snapshot values do not silently replace failed-operation status or mutate a previously valid generation. |
-| Resource budget | **Bounded local remediation approved for implementation.** AVR layout estimates are 527--557 B for transparent lossless representations, with a credible compact representation near 481 B. The revised provisional Lesson 055 target/hard ceiling is 512/640 B, preserving all twelve rules, twelve full evidence records, owned copied state, and public semantics. Lesson 057's provisional object target/hard ceiling is correspondingly 1,024/1,280 B. Actual compiled object, static SRAM, stack, flash, aggregate composition, and remaining-margin measurements still block promotion. |
-| Deterministic proof | **Specified but not executed.** The plan names exhaustive four-rule DAG enumeration, maximum graph shapes, capacity boundaries, every evidence-quality position, sequence/time boundaries, canonical padding, lifecycle, rejection atomicity, and independent replay. That is sufficient test intent, but no implementation or measured fixture exists yet. Raw-struct byte comparison remains prohibited; replay must compare fields and canonical arrays. |
-| Packaging and public surface | **Natural but unproven.** A declarative standalone header, out-of-line implementation, umbrella export, native/archive inventories, canonical Mega example, size evidence, HTML, and PDF fit existing packaging without a new framework. Nothing is implemented or packaged yet; promotion awaits the ordinary packaging and measurement gates. |
-| Example and documentation fit | **Natural.** The planned evidence-wall replay can read as acquire/configure/start and observe/evaluate/present. Its twelve labeled clue cells, rule dispositions, and solved result provide non-Serial semantic presentation without implying hardware sampling or actuation. The E0 PDF needs pencil drawings only and no formal schematic; exact powered inputs and authoritative wiring remain E1 work. |
+| Errors and status | **Natural and verified.** Ordinary malformed configuration/envelope and lifecycle failures use existing `Status`; evidence quality and model/rule dispositions remain semantic data rather than new status codes. Rejection preserves retained state and returns the operation status. Invalid evidence/rule IDs return `StatusCode::InvalidArgument` plus a fieldwise canonical-zero record. Tests verify that `InvalidConfiguration` and `InternalFault` snapshot values never replace failed-operation status or mutate a previously valid generation. |
+| Resource budget | **Measured and passed with reviewed target misses.** Lesson 055 is 8,886 B flash, 1,261 B static SRAM, 412 B stack, and 636 B object. Object and stack pass reviewed 640/512 B hard gates. Final Lesson 057 is 34,978/3,655/951/1,024 B flash/static/stack/object with 3,458 B residual. |
+| Deterministic proof | **Executed and passed.** Strict host and sanitizer suites cover exhaustive four-rule DAG enumeration, maximum graph shapes, capacity boundaries, every evidence-quality position, sequence/time boundaries, lifecycle, rejection atomicity, private parent preflight, and two-instance fieldwise replay. Raw struct bytes remain excluded. |
+| Packaging and public surface | **Passed for E0.** The standalone header/out-of-line implementation, umbrella export, native/archive inventories, canonical Mega example, exact size evidence, HTML, pencil-drawing PDF, downloads, and indexes pass packaging/publication review. |
+| Example and documentation fit | **Passed for E0.** The evidence-wall replay uses acquire/configure/start and observe/evaluate/present; twelve clue cells, rule dispositions, and solved result provide non-Serial semantic presentation without implying hardware sampling or actuation. Powered inputs and wiring remain E1-open. |
 | Downstream effects | **Contained behaviorally, material structurally.** Lesson 057 is the first and only authorized owner/consumer and depends on exact expected source identities, copied provenance, masks, generation, dispositions, and bounded evaluation. Its friend-only access to the private pure-preflight/infallible-apply seam is a narrow composition mechanism, not a public transaction framework. Changing ownership, capacity, provenance, preflight atomicity, or the object ceiling affects the frozen project plan, aggregate SRAM/stack proof, canonical example, tests, HTML/PDF vocabulary, and acceptance gates. Lessons 001--054 need no API change. |
 
 ## Representation lower bound and bounded remediation
@@ -150,18 +150,16 @@ bit-packing can reduce the rule graph and enum storage, but it cannot erase
 the required 32-bit provenance/time fields or full status of twelve
 independent observations.
 
-The bounded representation study estimates 527--557 B for transparent
-lossless AVR layouts and about 481 B for a credible compact private layout.
-The adopted remediation raises the Lesson 055 provisional object target/hard
-ceiling to 512/640 B and the
-Lesson 057 provisional object target/hard ceiling to 1,024/1,280 B. It
+The bounded representation study initially estimated 527--557 B for
+transparent lossless AVR layouts. The implemented model is 636 B and passes
+the reviewed 512/640 B target/hard gate; final Lesson 057 reaches its
+1,024 B object target. The remediation
 preserves owned copied state, the exact 12/12 capacities, all provenance, and
 the public API. No caller-owned Lesson 055 storage, reduced evidence, or
 capacity change is authorized.
 
-These estimates permit implementation; they are not promotion evidence. The
-implementation must report actual AVR `sizeof`/alignment and linked aggregate
-measurements. A target miss requires size-focused review. A hard-ceiling or
+The exact AVR and linked aggregate measurements above are promotion evidence.
+Target misses have stale-failing reviews. A hard-ceiling or
 project remaining-margin miss stops promotion and requires a new durable
 decision rather than silent compression, dropped provenance, or borrowed
 storage.
@@ -193,14 +191,14 @@ state and reproduce the same fieldwise result only after fresh admission.
 
 | Composition pressure | Applicability and required evidence |
 |---|---|
-| Scheduler and time load | **Applicable and bounded in design, unmeasured.** One update scans at most 12 mask positions, validates at most 12 observations, and evaluates 12 rules with at most four prerequisites and four terms each. No recursion or catch-up is allowed. Tests must bound worst-case validation plus evaluation at one timestamp, zero-age same-time evidence, exact freshness edges, simultaneous inputs, rollover, half-range rejection, and missed calls. The private preflight is pure and apply is infallible; neither may repeat input-sized work through a retry loop. The implementation must report the largest call path and prove no parent/diagnostic work can induce starvation. |
-| Total memory and hardware resources | **Applicable; bounded remediation permits implementation.** E0 owns zero pins, timers, interrupts, buses, ADC channels, registry claims, power domains, or physical test points. Memory is nevertheless a hard resource. Standalone gates are 16/20 KiB flash, 1,536/2,048 B static SRAM, 384/512 B stack, and 512/640 B reusable object; transparent lossless AVR estimates are 527--557 B and the credible compact estimate is about 481 B. The complete project provisionally permits a 1,024/1,280 B object and must still satisfy 4,096/4,608 B static SRAM, 1,024/1,280 B stack, every caller buffer at most 512 B, and at least 2,048 B remaining after static SRAM plus stack/interrupt reserve. Actual measurements govern promotion. |
+| Scheduler and time load | **Applicable, bounded, and passed.** One update scans at most 12 observations and 12 rules × four prerequisites/four terms with no recursion, catch-up, or retry. Boundary and maximum-composition tests pass; measured standalone stack is 412 B and final project stack is 951 B. |
+| Total memory and hardware resources | **Passed for E0.** E0 owns zero hardware resources. Lesson 055 measures 8,886/1,261/412/636 B flash/static/stack/object; reviewed object/stack misses pass hard gates. Lesson 057 measures 34,978/3,655/951/1,024 B with 3,458 B residual. |
 | Shared bus or transport | **Not applicable at E0 by contract.** The model accepts copied values and owns no endpoint, display, storage medium, bus borrower, queue, address, or transport. Any future input or presentation bus belongs to separately qualified E1 endpoints and cannot alter constraint evaluation semantics. |
 | Persistence and recovery | **Not applicable by explicit volatility.** Configuration and evidence are runtime copies; reset/shutdown clear live evaluation state, and no medium, schema, commit, wear, corruption recovery, or power-loss durability is claimed. Lesson 056's audit image is a separate caller-owned volatile protocol and is not a Lesson 055 dependency. |
 | Motion, external power, or stored energy | **Not applicable by absence of an actuation path.** `ClueConstraintModel` publishes dispositions and masks only. It has no latch/lamp/servo/relay command, switched supply, retained energy, or physical output. Lesson 057 may map solved policy to inert semantic intent, while any restrained E2 demonstration remains separately gated and can never control a door, lock, occupied space, or egress. |
-| Observation identity and provenance | **Applicable and central.** Every configured clue has one exact expected source identity, and every retained clue value must match and keep its source ID, configuration revision, session epoch, sequence, observation time, quality, category, and full status. Slot `i`, clue ID `i`, and mask bit `i` are one identity; there is no caller-defined or array-order precedence. Whole-envelope validation prevents mixing an accepted subset with rejected fields. Tests must prove every expected-source field match/mismatch, slot/ID/bit match/mismatch, canonical absent slots, same-sequence collision, attempted identity change, delayed/future observations, simultaneous sources, reset/reconstruction, and replay. The revised budget preserves these fields; a later size repair may not drop or conflate them silently. |
+| Observation identity and provenance | **Applicable, central, and verified.** Every configured clue has one exact expected source identity, and every retained clue value keeps its source ID, configuration revision, session epoch, sequence, observation time, quality, category, and full status. Slot `i`, clue ID `i`, and mask bit `i` are one identity. Tests prove every identity match/mismatch, canonical absent slot, same-sequence collision, attempted identity change, delayed/future observation, simultaneous source, reset/reconstruction, and replay case. |
 | Diagnostic interference | **Applicable.** Evidence-wall cells, rule indicators, solved/fault presentation, trace/export storage, and Serial must be included in aggregate time/SRAM/resource accounting. Disablement, failure, saturation, or full trace storage must not change admission, rule precedence, masks, generation, or solved state. Serial cannot be the sole observation. Presentation failure is downstream evidence and cannot mutate the model. |
-| Failure collision and recovery | **Applicable.** Structural invalidity rejects the whole envelope before semantic precedence. For a valid envelope, source/timing/invalid quality precedes stale, stale precedes contradictory, contradictory precedes missing, and mismatch remains ordinary unsatisfied evidence; failed prerequisites precede terms. Parent composition must prove all child preflights complete before any apply, a foreign/stale/mutated `ownerToken` or mismatched `lifecycleGeneration` preparation cannot apply, and every apply after successful complete preflight is infallible. Actual initialize/shutdown transitions and every explicit reset must invalidate candidates before their effects become observable; repeated idempotent initialize/shutdown calls must preserve both generation and candidates. Wrap-to-zero must never publish zero or reuse an earlier generation: initialize returns `StatusCode::CapacityExceeded`, while void reset/shutdown completes inert transition and retains/publishes that status; all three invalidate candidates and fail closed against later work. Tests must retain every independent attribution, prove no partial copied generation, and cover reset/shutdown/reinitialize while faults persist. No diagnostic or later project intent may reclassify a source fault as a solved result. |
+| Failure collision and recovery | **Applicable and verified.** Structural invalidity rejects the whole envelope before semantic precedence; valid-envelope precedence remains fixed. Parent-composition tests prove every child preflight completes before apply, foreign/stale/mutated owner or lifecycle preparations cannot apply, and successful complete preflight makes apply infallible. Lifecycle, idempotence, wrap exhaustion, retained attribution, no-partial-generation, persistent-fault restart, and source-fault non-reclassification cases all pass. |
 
 ## Required deterministic proof
 
@@ -305,13 +303,13 @@ route, alarm, access decision, or life-safety system.
 | Inert construction and explicit lifecycle | **Preserved.** Configuration may be copied at construction, while no observable active behavior exists before successful `initialize()`. Failed initialization and shutdown remain atomic/inert. |
 | Explicit time, modular half-range order, and bounded update work | **Preserved.** Every time enters in the update/observation values, and fixed scans replace recursion or catch-up. |
 | Ordinary `Status`/semantic-value separation | **Preserved.** Operation rejection uses `Status`; clue qualities and model/rule dispositions remain copied domain evidence. |
-| Fixed storage, no heap, no recursion, no callbacks | **Preserved through bounded remediation.** The revised 512/640 B Lesson 055 ceiling accommodates the 527--557 B transparent lossless estimates below the hard gate and gives the credible compact estimate of about 481 B a path below target, without changing owned fixed storage. |
+| Fixed storage, no heap, no recursion, no callbacks | **Preserved and verified through bounded remediation.** The exact 636 B owned model passes its reviewed 640 B hard gate without changing fixed storage. |
 | Stable snapshots and copied provenance | **Preserved and central.** There are no borrowed observation views or pointers, and rejection retains the prior generation. |
 | Project-specific policy before shared abstraction | **Preserved.** No generic constraint solver, scripting language, dynamic graph, or shared puzzle framework is introduced. |
 | Lesson 057 sole composition ownership | **Preserved behaviorally.** Lesson 055 does not refer to Lesson 056 and owns no cross-child precedence or actuator intent. Any storage-contract revision must be reconciled with Lesson 057 construction and aggregate budgets. |
 | Circuit-native observation and diagnostic isolation | **Extended.** The evidence wall provides visible semantic results while diagnostics remain outside correctness and physical endpoints remain gated. |
 | E0/E1/E2 evidence and safety separation | **Preserved.** “Solved” remains inert puzzle policy with explicit prohibition on access control, confinement, egress, and safety use. |
-| Mega resource gates in the exact Lessons 055--057 plan | **Extended by bounded remediation.** Lesson 055 now uses a provisional 512/640 B object target/hard ceiling and Lesson 057 uses 1,024/1,280 B. All other static SRAM, stack, flash, caller-buffer, and 2,048 B remaining-margin gates remain controlling. |
+| Mega resource gates in the exact Lessons 055--057 plan | **Extended and passed.** Lesson 055 passes reviewed object/stack hard gates; Lesson 057 reaches the 1,024 B object target and leaves 3,458 B residual. All hard gates remain controlling. |
 | Pencil visuals and formal-schematic exception | **Preserved.** E0 uses pencil visuals; only an exact, electrically authoritative later schematic may use the exception. |
 
 ## Design-buckling review
@@ -345,46 +343,40 @@ fieldwise replay proof.
 
 ## Stress disposition
 
-**Bounded local remediation; E0 implementation permitted.** API layering,
-lifecycle, timing, status, deterministic proof strategy, packaging,
-documentation, and safety scope are natural fits. The representation study
-identified and bounded the only current strain: 527--557 B transparent
-lossless AVR estimates and a credible compact estimate near 481 B replace the
-impossible original ceiling with a 512/640 B Lesson 055 target/hard ceiling.
-The complete Lesson 057 object's
-provisional target/hard ceiling is 1,024/1,280 B.
+**Natural E0 fit after completed bounded representation remediation.** The
+implemented owned 12-clue/12-rule model preserves the frozen API, full copied
+provenance, iterative bounded evaluation, exact topology and lifecycle rules,
+and private lossless parent preflight. Strict host and ASan/UBSan suites cover
+the exhaustive four-node DAG oracle, maximum graphs, all observation masks,
+relations, freshness/sequence/rollover boundaries, lifecycle and
+same-sequence collisions, atomic rejection, and two-instance fieldwise replay.
 
-This remediation is confined to the unpromoted Lessons 055--057 boundary. It
-preserves owned copied state, exact capacity, provenance, behavior, public
-API, and prior consumers. Implementation may proceed, but promotion remains
-blocked until compiled AVR measurements and the complete maximum-composition
-proof pass every revised object, static SRAM, stack, flash, buffer, and
-remaining-margin gate.
+The canonical Mega fixture measures 8,886 B flash and 1,261 B static SRAM.
+`sizeof(ClueConstraintModel)` is 636 B: it misses the 512 B target but passes
+the reviewed 640 B hard gate. The largest synchronous path is 412 B: it misses
+the reviewed 384 B target but passes 512 B hard. Exact stale-failing
+target-miss markers are recorded in the controlling plan. Lesson 057's final
+34,978/3,655/951/1,024 B flash/static/stack/object composition with 3,458 B
+residual proves this owned child fits its authorized maximum consumer.
 
 ## Gate result
 
-- Disposition: bounded local remediation; natural-fit behavior with revised
-  provisional resource ceilings
-- Open risks: actual AVR object/layout, stack, flash, static SRAM, aggregate
-  Lesson 057 fit, and 2,048 B remaining margin are unmeasured; all
-  deterministic tests and publication artifacts remain unimplemented
-- Required discussion or decision IDs: no further discussion if the adopted
-  512/640 B Lesson 055 and 1,024/1,280 B Lesson 057 ceilings and exact owned
-  contract are retained; a new decision is required for any hard-gate miss,
-  caller-storage/API change, capacity reduction, or provenance loss
-- Remediation owner and next action: Lessons 055--057 implementation owner;
-  implement the exact owned contract, report actual AVR layout and complete
-  composition measurements, run the deterministic matrix, and rerun this
-  stress pass before promotion
-- Verification commands and results: documentation structure and diff hygiene
-  only at this pre-implementation stage; no implementation, host, sanitizer,
-  Arduino, size, package, lesson, or hardware result exists
-- Maximum-composition scenario and proof: scenario specified above;
-  pre-implementation estimates permit work, while executable and measured
-  proof remains a promotion gate
-- E0 implementation permitted: yes, under the bounded remediation
-- Promotion permitted: no
+- Disposition: natural E0 fit after bounded remediation
+- Open risks: exact powered clue adapters, indicators, wiring, resource
+  acquisition/safe-state evidence, and bench acceptance remain open E1 work
+- Required discussion or decision IDs: none for the published E0 contract;
+  any capacity/provenance/ownership change or hard-gate miss requires review
+- Remediation owner and next action: E0 remediation complete; preserve exact
+  markers and proceed only through separately qualified physical adapters
+- Verification commands and results: focused strict host and ASan/UBSan
+  tests, canonical Mega compile, exact resource probe, full maximum-composition
+  probe, style/header/diff checks, lesson/PDF/site/package publication gates,
+  and independent review pass
+- Maximum-composition scenario and proof: exact 12-clue/12-rule,
+  four-term/four-prerequisite and six-family consumer passes deterministic
+  replay and measured aggregate gates
+- E0 implementation permitted: yes
+- Promotion permitted: yes, for host-verified E0 publication
 - E1 permitted: no; exact physical qualification and bench acceptance remain
   open
-- E2 permitted: no; exact restrained-actuation qualification and bench
-  acceptance remain open
+- E2 permitted: no; no Lesson 055 physical actuation boundary exists
