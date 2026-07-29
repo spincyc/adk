@@ -619,32 +619,40 @@ Planned specimen coverage: four-digit seven-segment display, MAX7219 matrix,
 buttons, SPI, and status LEDs. PCF8574 LCD backpacks remain inventory-gated
 planning work and are not claimed by this arc.
 
-## Lessons 061--063: leak and thermal alarm trainer
+## Lessons 061--063: museum-case monitor
 
 ### 061 — Water-level observations
 
-Add the authorized Water Level adapter over switched-power `AnalogInput`.
-Teach corrosion-aware duty cycles, dry/wet calibration, contamination,
-disconnected probes, and the limits of absolute readings.
+Qualify copied Water Level acquisition evidence without owning an ADC channel
+or excitation endpoint. Teach corrosion-aware per-cycle duty limits, dry/wet
+calibration, contamination, discharged/off evidence, disconnected predicates,
+and the limits of absolute readings. An exact switched-power `AnalogInput`
+adapter, electrical identity, current, corrosion, spills, and drying remain
+E1a work.
 
 ### 062 — Thermal and radiant observations
 
-Compare the thermistor, the distinct authorized Digital Temperature module,
-and flame/radiant IR module. Preserve units, uncertainty, threshold state,
-validity, age, and sensor identity. Use a TV remote or controlled low-energy
-IR source for the radiant experiment; an open flame is unnecessary.
+Compare copied already-converted thermistor evidence, copied categorical
+evidence from the distinct authorized Digital Temperature family, and copied
+raw radiant-threshold evidence. Preserve each role's identity, calibration or
+configuration revision, units where justified, uncertainty, threshold state,
+validity, age, disagreement, and saturation. Exact powered specimens and
+adapters remain E1b; any radiant stimulus is a controlled harmless low-energy
+IR source, never a flame, heater, laser, or unknown-protocol replay.
 
 ### 063 — Project: museum-case monitor
 
 A model display case watches for liquid, excessive temperature, abrupt radiant
-IR, and unauthorized opening. It presents health locally, logs timestamped
-events, and drives only an inert relay indicator.
+IR, and a reed-open condition. At E0 it consumes copied qualified observations
+and emits only health, presentation, alarm, bounded audit-record, and
+relay-lamp intent. It owns no clock, persistent medium, display, sounder, or
+relay.
 
 ```text
 water level ------+
-temperature ------+--> validated hazard model --> LCD/status/alarm intent
-radiant IR -------+             |                --> inert relay lamp
-reed contact -----+             +---------------> RTC/SD audit record
+temperature ------+--> validated hazard model --> copied presentation intent
+radiant IR -------+             |                --> inert relay-lamp intent
+reed contact -----+             +---------------> copied audit intent/receipt
 ```
 
 Deterministic evidence:
@@ -655,17 +663,23 @@ Deterministic evidence:
 - alarm latch, acknowledgement, cooldown, restart, and log-write interruption;
 - invariant: invalid sensing can never request the “healthy” indication.
 
-Circuit-native observation:
+Planned physical observation after independent specimen qualification:
 
 - RGB state is healthy/warning/alarm/fault with a grayscale-safe blink code;
 - LCD always includes sample age or fault;
 - water-sensor supply has a measurable duty-cycle test point;
-- the inert relay drives a current-limited lamp only; and
+- an exact extra-low-voltage relay may drive a current-limited inert lamp only;
+  and
 - the alarm output is inactive after shutdown.
 
-Planned specimen coverage: authorized Water Level sensor, thermistor, distinct
-Digital Temperature module, flame/radiant sensor, reed, relay, LCD, RTC, SD,
-and RGB LED. Rain and soil-moisture probes are not claimed.
+E1a independently qualifies the Water Level fixture; E1b independently
+qualifies the thermistor, distinct Digital Temperature, and radiant fixtures;
+E1c qualifies reed and local presentation; and E1d qualifies their passive
+combination. Durable RTC/media hardware remains deferred under Lessons 022 and
+024. E2 separately qualifies an exact extra-low-voltage inert relay/lamp
+fixture with independent removal; no mains, security, access-control,
+preservation, or life-safety function is claimed. Rain and soil-moisture
+probes are not claimed.
 
 ## Lessons 064--066: multi-probe thermal mapper
 
@@ -862,9 +876,9 @@ individually identified retail boards.
 | Hall variants, reed | 036 | 051, 057, 063 |
 | Tilt, knock, vibration, shock, sound | 039 | 048, 057 |
 | Tracking, Avoidance, Photo-Interrupter | 042 | 057, 072 |
-| Authorized Water Level sensor | 063 | 072 |
-| Thermistor and distinct Digital Temperature module | 063 | 072 |
-| Flame/radiant detector | 063, controlled IR only | 072 |
+| Water Level copied-observation policy; exact sensor deferred | 063 E0 policy; E1a fixture open | 072 |
+| Thermistor and distinct Digital Temperature copied evidence; exact modules deferred | 063 E0 policy; E1b fixtures open | 072 |
+| Passive radiant copied evidence; exact detector deferred | 063 E0 policy; controlled low-energy IR only at E1b | 072 |
 | Listed Metal Touch, contact/tilt switches, and joystick | 048 | 057, 072 |
 | Stepper and ULN2003 | 048 | 051, 057 |
 | RFID | 051 | 057 |
