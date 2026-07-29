@@ -50,3 +50,6 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	1	Lesson049LocalIdentityRegistry	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	7026	16384	1113	1280
 1	1	Lesson050BoundedHomingPolicy	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	8272	16384	574	1024
 1	2	Lesson051InertPartsCarousel	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	26014	28672	1933	2048
+1	1	Lesson052CapturedIrEvidence	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5530	20480	1096	3584
+1	1	Lesson053KnownIrEmission	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	4854	20480	276	1536
+1	1	Lesson054IrTranslator	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	16162	32768	1343	4096

@@ -56,10 +56,15 @@ third lesson for a deterministic integration project.
 | [Lesson 049 — Local identity records](049.md) | Copied identity evidence and fixed record images | Explicit reconciliation admits local bindings without a durability claim |
 | [Lesson 050 — Bounded logical homing](050.md) | Copied home and stop evidence | Release-first homing produces bounded semantic step intent |
 | [Lesson 051 — Inert tabletop parts carousel](051.md) | Identity, confirmation, homing, logical motion, and audit images | An acknowledged start-record image gates inert carousel intent |
+| [Lesson 052 — Copied infrared capture evidence](052.md) | Attributable copied receive evidence | Known, repeat, unknown, malformed, overflow, and source-fault results remain receive-only |
+| [Lesson 053 — Known local infrared emission](053.md) | Immutable local catalog and bounded envelope intent | Only locally authored symbolic commands can produce inert carrier intent |
+| [Lesson 054 — Inert IR command translator](054.md) | Fixed receive-to-local-symbol allowlist | Valid known evidence maps to a different local symbol without captured-waveform replay |
 
-These interfaces are host verified and their canonical examples compile for the
-Mega 2560. Every circuit remains experimental until its physical acceptance
-card is recorded. Historical preview lessons are preserved under
+Lessons 001--054 are host verified and their canonical examples compile for
+the Mega 2560. Lessons 052--054 publish E0 replay only: exact powered fixtures,
+optical output, and bench acceptance remain open. Every circuit remains
+experimental until its physical acceptance card is recorded. Historical
+preview lessons are preserved under
 [Legacy](../legacy/index.md).
 
 ## Planned engagement-first sequence
@@ -69,7 +74,6 @@ published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 052–054 | IR command translator |
 | 055–057 | Inert escape-room console |
 | 058–060 | Dual-display timing desk |
 | 061–063 | Museum-case monitor |

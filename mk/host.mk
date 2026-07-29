@@ -36,6 +36,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_bounded_stepper_sequence \
 	$(BUILD_DIR)/host/test_bus \
 	$(BUILD_DIR)/host/test_calibration_console \
+	$(BUILD_DIR)/host/test_captured_ir_evidence \
 	$(BUILD_DIR)/host/test_io \
 	$(BUILD_DIR)/host/test_cue_audit \
 	$(BUILD_DIR)/host/test_inert_load_interlock \
@@ -44,10 +45,13 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_inert_cue_scheduler \
 	$(BUILD_DIR)/host/test_inert_show_simulator \
 	$(BUILD_DIR)/host/test_inertial_observation \
+	$(BUILD_DIR)/host/test_inert_ir_translator \
+	$(BUILD_DIR)/host/test_inert_ir_translator_integrity \
 	$(BUILD_DIR)/host/test_inert_parts_carousel_operation \
 	$(BUILD_DIR)/host/test_inert_parts_carousel_audit \
 	$(BUILD_DIR)/host/test_interaction_intent_policy \
 	$(BUILD_DIR)/host/test_kinetic_sculpture \
+	$(BUILD_DIR)/host/test_known_ir_emission_policy \
 	$(BUILD_DIR)/host/test_local_identity_registry \
 	$(BUILD_DIR)/host/test_orientation_presentation \
 	$(BUILD_DIR)/host/test_infrared_decoder \
@@ -164,6 +168,52 @@ $(BUILD_DIR)/host/test_core: $(HOST_CORE_SOURCES) tests/test_core.cpp \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) tests/test_core.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_captured_ir_evidence: $(HOST_CORE_SOURCES) \
+		src/board.cpp src/captured_ir_evidence.cpp src/infrared_decoder.cpp \
+		src/pulse_capture.cpp src/pulse_input.cpp \
+		tests/test_captured_ir_evidence.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/board.cpp src/captured_ir_evidence.cpp src/infrared_decoder.cpp \
+		src/pulse_capture.cpp src/pulse_input.cpp \
+		tests/test_captured_ir_evidence.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_known_ir_emission_policy: $(HOST_CORE_SOURCES) \
+		src/known_ir_emission_policy.cpp src/pulse_input.cpp \
+		tests/test_known_ir_emission_policy.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/known_ir_emission_policy.cpp src/pulse_input.cpp \
+		tests/test_known_ir_emission_policy.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_inert_ir_translator: $(HOST_CORE_SOURCES) \
+		src/board.cpp src/captured_ir_evidence.cpp src/infrared_decoder.cpp \
+		src/inert_ir_translator.cpp src/known_ir_emission_policy.cpp \
+		src/pulse_capture.cpp src/pulse_input.cpp \
+		tests/test_inert_ir_translator.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/board.cpp src/captured_ir_evidence.cpp src/infrared_decoder.cpp \
+		src/inert_ir_translator.cpp src/known_ir_emission_policy.cpp \
+		src/pulse_capture.cpp src/pulse_input.cpp \
+		-DADK_IR_TRANSLATOR_TEST_PART=1 tests/test_inert_ir_translator.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_inert_ir_translator_integrity: $(HOST_CORE_SOURCES) \
+		src/board.cpp src/captured_ir_evidence.cpp src/infrared_decoder.cpp \
+		src/inert_ir_translator.cpp src/known_ir_emission_policy.cpp \
+		src/pulse_capture.cpp src/pulse_input.cpp \
+		tests/test_inert_ir_translator.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/board.cpp src/captured_ir_evidence.cpp src/infrared_decoder.cpp \
+		src/inert_ir_translator.cpp src/known_ir_emission_policy.cpp \
+		src/pulse_capture.cpp src/pulse_input.cpp \
+		-DADK_IR_TRANSLATOR_TEST_PART=2 tests/test_inert_ir_translator.cpp \
+		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_cue_audit: $(HOST_CORE_SOURCES) src/cue_audit.cpp \
 		tests/test_cue_audit.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host

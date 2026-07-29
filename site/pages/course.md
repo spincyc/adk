@@ -47,13 +47,15 @@ lesson number divisible by three is project-bearing.
 | 049 | Local identity records and copied evidence | Identity registry | Host verified; E0 replay only |
 | 050 | Bounded logical homing and positioning | Homing policy | Host verified; E0 replay only |
 | 051 | Identity, homing, step, gate, and audit composition | Inert parts carousel | Host verified; E0 replay only |
+| 052 | Copied infrared frames and attributable classification | Captured IR evidence | Host verified; E0 replay only |
+| 053 | Immutable local command catalog and bounded envelope intent | Known IR emission policy | Host verified; E0 replay only |
+| 054 | Fixed receive-to-local-symbol allowlist | Inert IR command translator | Host verified; E0 replay only |
 
-The retained Lessons 052–081 sequence is front-loaded for learner engagement.
+The retained Lessons 055–081 sequence is front-loaded for learner engagement.
 This is planned work, not a support or bench-verification claim:
 
 | Lessons | Planned focus | Project |
 |---:|---|---|
-| 052–054 | Known-family IR capture and bounded emission | IR command translator |
 | 055–057 | Constraint and fault-aware operator models | Inert escape-room console |
 | 058–060 | Multiplexed digits and matrix presentation | Dual-display timing desk |
 | 061–063 | Resistive and thermal/radiant observations | Museum-case monitor |

@@ -393,7 +393,11 @@ The four-entry catalog is immutable firmware data. Each entry has a symbolic
 ID, harmless local meaning, encoding revision, bounded bit fields and repeat
 count. The catalog revision and digest cover every semantic entry field and
 are copied into every preview and snapshot. There is no public catalog-mutating
-operation. Direct indexing by validated enum yields the entry in O(1).
+operation. The digest is 32-bit FNV-1a over entries in catalog order. Each
+entry contributes the one-byte code ID, the four payload bytes least
+significant first, the one-byte encoding revision, and the one-byte repeat
+count, in that order. Direct indexing by validated enum yields the entry in
+O(1).
 
 The policy never returns or retains a large waveform. From catalog metadata,
 transaction start, and supplied `now`, it directly computes the single current
@@ -405,14 +409,19 @@ reserves exactly one candidate. The returned preview is a small capability
 bound to the exact internally retained owner, configuration revision, instance
 epoch, policy generation, candidate generation, transaction, catalog digest,
 candidate digest, and start time. A second prepare while reserved returns
-`Busy`. Reconstructing the same field values without the live retained
-candidate, or changing any field, rejects.
+`Busy`. Preview values have copied-capability semantics, not authenticity:
+exact fieldwise copies of the sole retained issued preview are valid while that
+candidate remains current. Mutating any field, presenting a foreign/stale
+generation, or presenting any copy after the first successful commit or
+precommit cancellation rejects.
 
 `canCommit()` and `commit()` require `now == preview.startAt`; delayed commits
 reject instead of backdating or shifting. After full validation, commit is one
 infallible mutation from the retained candidate to the active transaction.
-Foreign, stale, reconstructed, consumed, cancelled, changed-digest, or
-post-reset previews reject. Before commit,
+Foreign, mutated, stale, consumed, cancelled, changed-digest, or post-reset
+previews reject. The contract does not claim it can distinguish an issued
+preview from an independently reconstructed field-identical value while the
+sole matching retained candidate is live. Before commit,
 `cancel(preview, now)` must identify that exact retained candidate and records
 `CancelledBeforeCommit`; it cannot cancel by code ID or an approximate match.
 After commit, `cancel(transactionId, now)` validates the exact active identity,
@@ -431,11 +440,17 @@ generation.
 
 ### Lesson 053 proof and publication
 
-Tests cover every catalog entry and digest field, invalid enum representations,
-all duration/repeat/overflow bounds, exact envelope vectors, direct lookup,
-prepare reservation, candidate identity and generation, reconstructed preview,
-exact commit timestamp, delayed commit, exact preview cancellation before
-commit, cancellation during every active phase, same-time cancel dominance,
+Tests derive the catalog digest independently from every semantic field of
+every entry and flip each field in turn to prove the digest changes. Golden
+vectors inspect code-dependent data boundaries for every catalog entry:
+first/last data bit, every zero-to-one and one-to-zero transition, first/last
+mark and space, repeat boundary, and exact terminal boundary. The remaining
+matrix covers invalid enum representations, all duration/repeat/overflow
+bounds, exact envelope vectors, direct lookup, prepare reservation, candidate
+identity and generation, exact copied preview acceptance, every single-field
+mutation, foreign/stale/post-consumption copies, exact commit timestamp,
+delayed commit, exact preview cancellation before commit, cancellation during
+every active phase, same-time cancel dominance,
 one tick before/at/after every boundary, missed service, repeated time,
 rollover, atomic regressing/half-range rejection, reset, distinct prepared/
 active shutdown attribution, restart, and byte-stable replay. Compile-time and
@@ -461,12 +476,16 @@ review. E0 has no wiring or formal schematic.
 
 ### Genuine fixed translation
 
-The translator owns its `InfraredDecoder`, 100-word Lesson 052 storage,
-`CapturedIrEvidence`, and `KnownIrEmissionPolicy`. Construction is inert and
+The translator owns its `InfraredDecoder`, `CapturedIrEvidence`, and
+`KnownIrEmissionPolicy`, but borrows one caller-owned `IrPulseStorage` of
+exactly 100 words for the receive child. The mutable storage must outlive the
+translator, remains exclusively writable by the initialized translator, and
+must not overlap another live component's storage. Construction is inert and
 the coordinator is non-copyable/non-movable. Initialization validates the
-complete immutable mapping and initializes children in dependency order;
-failure rolls back in reverse order. Shutdown first publishes cancellation and
-inactive intent, then shuts down children.
+storage and complete immutable mapping, then initializes children in dependency
+order; failure rolls back in reverse order. Shutdown first publishes
+cancellation and inactive intent, shuts down children, and invalidates every
+view/generation before releasing its exclusive use of the borrowed storage.
 
 The fixed mapping is deliberately not identity:
 
@@ -484,6 +503,56 @@ immutable receive allowlist. Repeat, unknown, malformed, truncated, overflow,
 source fault, self-echo, stale, and unlisted valid frames never select output.
 The mapping digest covers receive tuple, receive source constraint, and output
 symbol.
+
+The E0 test/example seam is frozen as public read-only receive-fixture data:
+
+```cpp
+struct SyntheticIrReceiveFixture
+{
+    InfraredProtocol protocol;
+    uint32_t         address;
+    uint32_t         command;
+    LocalIrCodeId    receivedCode;
+    LocalIrCodeId    translatedCode;
+    bool             transmissionAllowed;
+};
+
+static constexpr uint16_t syntheticIrMappingRevision = 1;
+static constexpr uint8_t  syntheticIrFixtureCount    = 4;
+static constexpr uint32_t syntheticIrMappingDigest   =
+    UINT32_C (0xa8f94d6b);
+
+extern const IrSourceIdentity syntheticIrReceiveSource;
+extern const SyntheticIrReceiveFixture
+    syntheticIrReceiveFixtures[syntheticIrFixtureCount];
+```
+
+`syntheticIrReceiveSource` is exactly
+`{IrSourceKind::SyntheticFixture, 52, 1, 1}`. The entries, in enum/index
+order, are:
+
+| Protocol | Address | Command | Received symbol | Translated symbol | Allowed |
+|---|---:|---:|---|---|---|
+| NEC | `0x00000052` | `0x00000010` | `StationPing` | `StationReady` | yes |
+| NEC | `0x00000052` | `0x00000020` | `StationReady` | `StationAcknowledge` | yes |
+| NEC | `0x00000052` | `0x00000030` | `StationCancel` | canonical `StationPing` placeholder | no; cancellation only |
+| NEC | `0x00000052` | `0x00000040` | `StationAcknowledge` | `StationPing` | yes |
+
+The digest is 32-bit FNV-1a (offset `0x811c9dc5`, prime `0x01000193`) over
+canonical bytes: little-endian mapping revision; source kind, ID,
+little-endian configuration revision and session epoch; then, for each table
+row, protocol byte, little-endian 32-bit address and command, received-symbol
+byte, and translated-symbol byte (`0xff` when transmission is not allowed).
+Thus the third row contributes `0xff`, not its canonical in-memory placeholder.
+Tests recompute and compare `0xa8f94d6b`; examples use the exported const table
+without mutable casting.
+
+These tuples are synthetic, harmless, and receive-only. They are sufficient to
+construct Lesson 025 golden `PulseFrame` fixtures and validate Lesson 054's
+allowlist. No public operation accepts one of their protocol/address/command
+fields for transmission, and the Lesson 053 catalog is not populated from this
+table. Changing any tuple, source constraint, mapping, encoding order, revision,
+or digest is an explicit plan/configuration revision, never runtime learning.
 
 ```cpp
 enum struct IrTranslationDisposition : uint8_t
@@ -523,6 +592,7 @@ struct IrTranslatorConfig
     uint16_t               configurationRevision;
     uint32_t               instanceEpoch;
     uint32_t               mappingDigest;
+    MicrosecondDuration    maximumEnvelopeDuration;
     IrSourceIdentity       qualifiedReceiveSource;
     IrSourceIdentity       localEmitterSource;
     MicrosecondDuration    echoGuard;
@@ -594,8 +664,9 @@ struct IrTranslatorUpdateInput
 
 struct InertIrTranslator
 {
-    explicit InertIrTranslator
-        (const IrTranslatorConfig& config) noexcept;
+    InertIrTranslator
+        (const IrTranslatorConfig& config,
+         IrPulseStorage receiveStorage) noexcept;
     ~InertIrTranslator () noexcept;
 
     InertIrTranslator& operator= (const InertIrTranslator&) = delete;
@@ -619,6 +690,18 @@ struct InertIrTranslator
     KnownIrEmissionSnapshot emissionSnapshot () const noexcept;
 };
 ```
+
+`IrTranslatorConfig` field order is normative: configuration revision,
+instance epoch, mapping digest, `maximumEnvelopeDuration`, qualified receive
+source, local emitter source, echo guard, then response window. Aggregate
+initializers, golden fixtures, examples, and tests use that order.
+
+`maximumEnvelopeDuration` is mandatory, nonzero, within the unambiguous
+microsecond half range, and copied directly into the owned Lesson 053 child's
+`KnownIrEmissionConfig`. The translator cannot silently choose a wider child
+duration, derive it from a capture, or leave the owned child partially
+configured. Initialization rejects when the immutable catalog's longest
+envelope exceeds this bound.
 
 `update()` is the sole coordinator ingress. One copied update envelope
 represents one microsecond scheduling boundary and can carry cancellation,
@@ -655,6 +738,12 @@ exact child candidate. The returned preview binds full copied provenance,
 the coordinator `instanceEpoch`, translator `configurationRevision`,
 `mappingDigest`, immutable emission catalog revision/digest, parent
 generation, operation ID, input digest, and the Lesson 053 child preview.
+The parent preview is a copied capability, not an authenticity token. Exact
+fieldwise copies are valid while the sole internally retained parent candidate
+and its child candidate remain live. The coordinator does not claim it can
+distinguish an issued preview from an independently reconstructed
+field-identical value during that interval. A mutated, foreign, stale,
+post-reset, post-shutdown, or post-consumption copy rejects.
 Parent
 `canCommit()` verifies all parent and child fields before mutation.
 The caller returns the preview only through `commitPreview` in the atomic
@@ -755,11 +844,23 @@ diagnostic LEDs, LCD, Serial, and a camera are not protective interlocks.
 
 ### Lesson 054 proof and publication
 
-Tests cover every fixed mapping and digest field; proof that outputs differ
-from inputs; valid, repeat, unknown, malformed, self-echo, stale, source-fault,
-and unlisted-valid receive evidence; attempts to use captured values as catalog
-authority; foreign/stale/reused/reconstructed candidates; atomic failure at
-each preflight boundary; every presence-mask combination in
+Tests recompute the frozen fixture digest from every canonical byte, compare
+all four exported tuples and source fields, reject every single-field
+mutation/revision mismatch, and prove the cancel row never reaches Lesson 053.
+They also cover `maximumEnvelopeDuration` at zero, one tick below, exactly at,
+and one tick above the longest catalog envelope; translator receive storage
+with null data, capacities 0, 99, 100, and 101; two translators with disjoint
+buffers; compile-time/documentation checks that identify overlapping live
+storage as a caller contract violation rather than promising an undetectable
+global runtime registry; storage unchanged on failed initialization; and
+generation/view invalidation on reset, shutdown, and destruction. The
+remaining matrix covers every fixed mapping and digest field; proof that
+outputs differ from inputs; valid, repeat, unknown, malformed, self-echo,
+stale, source-fault, and unlisted-valid receive evidence; attempts to use
+captured values as catalog authority; exact copied parent-preview acceptance;
+every single-field mutation; foreign/stale/reset/shutdown/post-consumption
+copies; atomic failure at each preflight boundary; every presence-mask
+combination in
 `IrTranslatorUpdateInput`; noncanonical absent fields; and all permutations of
 same-timestamp cancel, prepared commit, valid/malformed/unknown receive,
 actual-emission transition, child fault, and presentation failure, proving one
@@ -770,7 +871,10 @@ exclusive response end; echo/window addition overflow and half-range
 ambiguity; exact elapsed-from-actual-completion values; missed service;
 rollover; atomic regressing/half-range rejection; reset and
 shutdown from every phase; suppressed-count
-saturation; source/configuration/session/operation/mapping/catalog mismatch;
+saturation through direct compile-time proof that the saturating increment
+helper maps `UINT32_MAX` to `UINT32_MAX`, plus an ordinary reachable increment
+test through the public coordinator path (not a `2^32`-event runtime replay);
+source/configuration/session/operation/mapping/catalog mismatch;
 atomic round-trip publication with every actual-time/catalog/disposition/
 strength/provenance field; canonical incomplete result; and fieldwise
 byte-stable replay.
@@ -784,9 +888,12 @@ commit produces inert envelope and attribution result cells. Repeat, unknown,
 malformed, unlisted, and self-echo stages visibly end without a transmit
 candidate.
 
-The E0 example owns both child policies and replays copied receive, actual-
-emission, and cancellation evidence through explicit acquire/configure/start
-and observe/decide/actuate flow. Actuation is inert semantic intent. HTML
+The E0 example declares one `uint32_t receiveWords[100]`, constructs
+`IrPulseStorage {receiveWords, 100}`, and passes it with the canonically ordered
+configuration to the translator. The translator owns both child policies while
+the sketch owns the buffer. It replays copied receive, actual-emission, and
+cancellation evidence through explicit acquire/configure/start and
+observe/decide/actuate flow. Actuation is inert semantic intent. HTML
 documents translation, attribution, atomicity, and E1 limits and links directly
 to both child references, header, implementation, tests, canonical sketch
 download, PDF, and a “Use with” section that distinguishes E0 copied fixtures
@@ -806,14 +913,36 @@ The following are promotion gates, not measurements:
 | Lesson 053 maximum standalone composition | 16 / 20 KiB | 1,024 / 1,536 B | 512 / 640 B |
 | Lesson 054 complete maximum composition | 28 / 32 KiB | 3,584 / 4,096 B | 800 / 1,024 B |
 
+The implemented E0 boundary produced the following measured evidence:
+
+| Boundary | Flash | Static SRAM | Object/storage | Conservative stack |
+|---|---:|---:|---:|---:|
+| Lesson 052 standalone | 5,530 B | 1,096 B | 48 B object | 197 B |
+| Lesson 053 standalone | 4,854 B | 276 B | 74 B object | 155 B |
+| Lesson 054 standalone | 16,162 B | 1,343 B | 407 B object + 400 B caller storage | measured in maximum path |
+| Lessons 052--054 maximum composition | 21,864 B | 3,531 B | all live objects and caller storage included | 888 B |
+
+All flash, static-SRAM, child-object, coordinator-object, and fixed-buffer hard
+gates pass. The maximum 888 B conservative stack path misses the 800 B target
+by 88 B but passes the 1,024 B hard ceiling by 136 B. This target miss was
+evaluated against the complete linked composition rather than waived: 3,531 B
+static SRAM plus 888 B stack leaves 3,773 B of the Mega's 8,192 B SRAM. The
+hard safety margin is therefore retained, and 888 B becomes the measured
+promotion evidence; growth beyond the 1,024 B hard ceiling still blocks
+promotion.
+
 Lesson 025 currently measures 12,400 B flash and 2,537 B static SRAM;
 `PulseCapture` is 2,069 B. Lesson 052 must wrap rather than duplicate it.
 The reusable Lesson 052 and Lesson 053 child objects each target at most 96 B
 and have a 128 B hard ceiling, excluding caller storage. The named Lesson 052
 `uint32_t[100]` storage is exactly 400 B and is approved under the repository's
-512 B fixed-buffer limit. Lesson 054 is explicitly approved as an oversized
-project coordinator because it naturally owns both children and that named
-buffer: its object targets 512 B and has a 640 B hard ceiling. These are
+512 B fixed-buffer limit. An embedded version measured 805 B and failed the
+Lesson 054 640 B object hard gate; it is rejected. The bounded remediation
+keeps the 400 B buffer caller-owned while the translator owns both child
+policies. Lesson 054 remains explicitly approved as an oversized project
+coordinator: its object, excluding caller storage, targets 512 B and has a
+640 B hard ceiling. The aggregate measurement still includes the coordinator
+and its one required 400 B buffer. These are
 implementation measurement gates, not estimates that waive promotion review;
 crossing one requires a size-focused repair or durable budget decision.
 

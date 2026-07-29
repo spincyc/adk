@@ -78,7 +78,9 @@ Status meanings:
 | Local identity registry | `LocalIdentityRegistry` | Host verified; E0 replay only | [Lesson 049](lessons/049.md) |
 | Bounded logical homing | `BoundedHomingPolicy` | Host verified; E0 replay only | [Lesson 050](lessons/050.md) |
 | Inert parts-carousel project | `InertPartsCarousel` | Host verified; E0 replay only | [Lesson 051](lessons/051.md) |
-| Planned IR arc | Known-family capture and bounded emission | Queued; exact emitter gated | Lessons 052–054 |
+| Captured infrared evidence | `CapturedIrEvidence` | Host verified; E0 replay only | [Lesson 052](lessons/052.md) |
+| Known infrared emission policy | `KnownIrEmissionPolicy` | Host verified; E0 replay only | [Lesson 053](lessons/053.md) |
+| Inert IR translator project | `InertIrTranslator` | Host verified; E0 replay only | [Lesson 054](lessons/054.md) |
 | Planned escape-console arc | Constraint and fault-aware operator models | Queued | Lessons 055–057 |
 | Planned display arc | Multiplexed digits and matrix presentation | Queued | Lessons 058–060 |
 | Planned museum arc | Resistive and thermal/radiant observations | Queued | Lessons 061–063 |

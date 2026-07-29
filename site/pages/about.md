@@ -16,7 +16,7 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--051 use the first-class per-object
+ADK is early-stage software. Lessons 001--054 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
@@ -31,6 +31,11 @@ They own no live input, motor driver, coil, timer, or moving hardware.
 Lessons 049--051 publish synthetic local identity, bounded logical homing, and
 an inert parts-carousel transaction at E0. They own no RFID, keypad, home or
 stop endpoint, durable-media transport, energized actuator, or mechanism.
+Lessons 052--054 publish host-verified E0 copied infrared receive evidence,
+bounded inert carrier-envelope intent from an immutable local catalog, and a
+fixed allowlisted translator. Their E0 boundary owns no
+receiver, emitter, pin, timer, interrupt, carrier endpoint, optical power path,
+or controlled device.
 
 The hierarchy is developed in dependency order:
 
@@ -42,10 +47,10 @@ The per-object lifecycle uses transactional `initialize()`, idempotent
 `shutdown() noexcept`, and destructor-driven cleanup. The original
 global-registration preview is frozen under [Legacy](legacy/index.md).
 
-The latest promoted arc is Lessons 049--051: local identity records, bounded
-logical homing, and an inert parts carousel with explicit audit-image
-reconciliation. The planned sequence from Lesson 052 remains
-engagement-first. See the
+The latest promoted arc is Lessons 052--054: copied infrared evidence, a
+closed locally authored emission catalog, and an inert command translator
+that cannot replay unknown captures. The planned sequence from Lesson 055
+remains engagement-first. See the
 [course map](course.md) for that order and the
 [roadmap](docs/ROADMAP.md) for the full sequence.
 

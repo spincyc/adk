@@ -8,7 +8,7 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--051 have first-class implementation work, deterministic host
+Lessons 001--054 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
 bench cards remain open. Lessons 037--039 use documented C&K and SparkFun
 reference fixtures; incoming conformance and physical acceptance remain open.
@@ -44,6 +44,19 @@ Exposed starts receive attributable terminal reconciliation, while the
 project's atomic one-step application intentionally publishes zero coil
 intent. Exact powered inputs, storage, and presentation remain E1-open;
 restrained powered motion remains E2-open.
+Lessons 052--054 are host verified under the
+[implementation-depth E0 plan](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md).
+They publish `CapturedIrEvidence`, `KnownIrEmissionPolicy`, and
+`InertIrTranslator`: copied attributable receive evidence, immutable
+firmware-authored local-command intent, and fixed different-symbol
+translation with cancellation, self-echo suppression, and attributable
+round-trip results. Their canonical Mega replays measure 5,530/1,096,
+4,854/276, and 16,162/1,343 bytes of flash/static SRAM; the maximum
+composition measures 21,864/3,531 bytes. The Lesson 054 object is 407 B with
+a caller-owned 400 B pulse buffer; its conservative stack estimate is 888 B,
+leaving 3,773 B after static storage and stack. E0 owns no optical or
+electrical endpoint. Exact receiver, emitter, driver, resistor, timer, pin,
+supply, observation path, and measured acceptance remain E1-open.
 The later blocks are ordered for early learner engagement while retaining
 prerequisite, authorization, safety, and evidence gates: interactive motion
 and display projects precede the more methodical environmental and
@@ -130,6 +143,9 @@ For every lesson, the queued implementation order is:
 | 049 | Host verified; powered inputs/storage open | `LocalIdentityRegistry` copied-evidence records | Fixed record images, corruption, interrupted handoff, recovery, duplicate, capacity, and lockout replay |
 | 050 | Host verified; powered home/stop inputs and motion open | `BoundedHomingPolicy` logical home and position | Bounded release/acquire, exact limits, interruption, stop, fault, and preview replay |
 | 051 | Host verified; powered endpoints/media/motion bench open | `InertPartsCarousel` acknowledged E0 composition | Attributable terminal reconciliation, zero-coil atomic step, gate/presentation intent, and byte-identical audit replay |
+| 052 | Host verified; exact powered receiver/bench open | `CapturedIrEvidence` copied receive evidence | Provenance, categorical disposition and strength, exact copied pulse words, and stale-view rejection without owning a receiver |
+| 053 | Host verified; exact powered emitter/bench open | `KnownIrEmissionPolicy` immutable local-command intent | Closed catalog identity, copied prepare/commit authority, cancellation, exact inert envelope intent, and terminal attribution without carrier output |
+| 054 | Host verified; exact powered fixtures/bench open | `InertIrTranslator` fixed different-symbol composition | Allowlisted translation, rejection, cancellation, self-echo suppression, attributable round trips, and byte-identical replay without optical activity |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation

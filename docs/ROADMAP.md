@@ -121,14 +121,19 @@ RFID/keypad/home inputs, powered indicators, and nonvolatile storage remain
 E1-gated; exact stepper/driver and servo hardware, powered motion, restraint,
 independent stop and power removal, and measured acceptance remain E2-gated.
 
-Lessons 052--054 are in active E0 implementation against the clean-reviewed
+Lessons 052--054 are the host-verified E0 slice under the clean-reviewed
 [infrared-translator plan](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md).
 This boundary adds copied receive evidence, a pure immutable local-command
 emission policy, and an inert fixed-allowlist translator without owning an
 optical or electrical endpoint. Exact receiver, emitter, driver, resistor,
 timer, pin, supply, observation path, and powered acceptance remain gated to
 the separately qualified E1 fixture; E0 does not authorize unknown-protocol
-replay or make an eye-safety claim.
+replay or make an eye-safety claim. Canonical Mega replays measure
+5,530/1,096, 4,854/276, and 16,162/1,343 bytes of flash/static SRAM. The
+maximum composition measures 21,864/3,531 bytes; the Lesson 054 object is
+407 B plus a caller-owned 400 B pulse buffer, and its conservative 888 B stack
+estimate leaves 3,773 B after static storage and stack. These host results do
+not claim powered or optical verification.
 
 Development then follows lessons 055--081, one implementation-depth
 three-lesson brief at a time. That later arc remains engagement-first:
