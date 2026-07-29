@@ -128,7 +128,7 @@ work; retail kit names are not electrical identities.
 | [052--054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | Host verified; exact powered fixtures/bench open | `CapturedIrEvidence`, `KnownIrEmissionPolicy`, and `InertIrTranslator` publish copied Lesson 025 receive evidence, immutable locally authored catalog intent, and fixed different-symbol translation at E0; exact receiver/emitter fixtures and E1 acceptance remain open |
 | [055--057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Host verified; exact passive fixtures/restrained demonstration bench open | Fixed clue-constraint model, copied-value fault-aware panel, and inert escape-room console |
 | [058--060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Host verified; exact powered display fixtures open | Multiplexed digits, MAX7219 presentation, and the dual-display timing desk are published at E0; exact powered endpoints and physical acceptance remain separate E1 gates |
-| [061--063](projects/component_project_cadence.md) | Queued; corrected authorized scope | Resistive probes and qualified thermal/radiant observations composed into a museum-case monitor |
+| [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Active; implementation-depth E0 plan reviewed | Copied resistive-probe and qualified thermal/radiant observations compose with copied qualified reed evidence into an inert museum-case monitor; powered specimens, persistence, and relay work remain separately gated |
 | [064--066](projects/component_project_cadence.md) | Queued | Single-wire transport, listed 18B20 temperature family, thermal mapper |
 | [067--069](projects/component_project_cadence.md) | Queued | Normalized inertial records, source qualification, motion recorder |
 | [070--072](projects/component_project_cadence.md) | Queued | Threshold descriptors, characterization, module test bench |
@@ -262,8 +262,8 @@ below its hard limit. Exact display identities, electrical transports,
 current, waveform and optical behavior, self-test observation, and bench
 acceptance remain E1-open.
 
-Lessons 058--060 now have an implementation-depth E0 plan. Cadence entries for
-Lessons 061--081 are not implementation-ready lesson plans. Before code begins
+Lessons 058--063 now have implementation-depth E0 plans. Cadence entries for
+Lessons 064--081 are not implementation-ready lesson plans. Before code begins
 for each later three-lesson arc, expand it to the
 same depth as 031--033: public values and interfaces, resource and pin budgets,
 deterministic fixture and failure matrices, narrative example flow, staged

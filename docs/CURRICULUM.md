@@ -234,8 +234,8 @@ supplies the shortest planned path through the library.
 | 058 | Component | Nonblocking multiplexed digits | Supplied-time digit frames expose polarity, blanking, overflow, and refresh loss |
 | 059 | Component | MAX7219 matrix presentation | E0 register intents expose partial-prefix and blank-request evidence without hiding transport faults; future E1 owned SPI and observed blanking remain gated |
 | 060 | Project-bearing | Dual-display timing desk | Multiplexed digits and matrix progress present one stopwatch snapshot |
-| 061 | Component | Authorized environmental observations | Water Level, thermistor, distinct Digital Temperature, radiant, and reed observations retain specimen identity, validity, age, and disagreement |
-| 062 | Component | Environmental qualification and presentation | Switched-power, calibration, uncertainty, corrosion, and sensor-health evidence remain explicit for each distinct authorized family |
+| 061 | Component | Resistive-probe observation policy | Copied Water Level acquisition evidence retains calibration, freshness, ordering, discharge, and corrosion-duty limits without claiming a powered adapter |
+| 062 | Component | Thermal and radiant observation policy | Copied thermistor temperature, distinct categorical Digital Temperature, and radiant evidence retain identity, uncertainty, age, disagreement, and saturation |
 | 063 | Project-bearing | Museum-case monitor | Qualified environmental and reed evidence, inert alarm intent, and records reproduce each decision |
 | 064 | Component | Single-wire transactions | Reset, presence, slots, pull-up policy, timeout, rollback, and DS18B20 identity are explicit |
 | 065 | Component | Qualified 18B20 thermal probe sets | Fixed-capacity identities retain conversion, CRC, stale, and disappearance state |

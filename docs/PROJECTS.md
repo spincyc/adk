@@ -113,7 +113,7 @@ may claim hardware verification until its measured record is published.
 | [052--054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | E0 copied IR receive evidence and immutable local-command intent; exact powered fixtures remain E1-open | Inert fixed-allowlist IR command translator |
 | 055--057 | Constraint model and fault-aware panel | Inert escape-room console |
 | 058--060 | Multiplexed digits and MAX7219 presentation | Dual-display timing desk |
-| 061--063 | Authorized Water Level, thermistor, Digital Temperature, radiant, and reed observations | Museum-case monitor |
+| [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | E0 copied resistive-probe, thermal, radiant, and qualified reed evidence | Inert museum-case monitor |
 | 064--066 | Single-wire transport and qualified 18B20 probes | Thermal gradient mapper |
 | 067--069 | Inertial records and source qualification | Interchangeable motion recorder |
 | 070--072 | Identified threshold descriptors and sweeps | Module characterization bench |
@@ -149,7 +149,7 @@ explicit open item.
 | [054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | Host verified; exact powered fixtures and bench acceptance open | Copied-evidence provenance, categorical disposition, immutable-catalog authority, different-symbol allowlist translation, cancellation, self-echo suppression, attribution, fault, and byte-stable replay traces | E0 named result cells expose receive source/disposition, candidate, inert carrier-envelope intent, attribution, suppression, and fault without claiming optical activity; E1 requires separately qualified TX-intent, RX-activity, and fault indicators plus exact electrical/optical test points |
 | [057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Host verified; exact passive fixtures/restrained demonstration bench open | Clue, permutation, fault, reset, stop, audit-recovery, and atomic intent traces | E0 result cells; exact passive presentation remains E1 and any restrained demonstration actuation remains E2 |
 | [060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Host verified; exact powered fixtures open | Digit refresh, register failure, attributed disagreement, and shutdown traces | Lessons 058--060 provide host-verified E0 result cells; independent physical display self-tests and transport points remain E1 |
-| 063 | Queued; detailed plan required | Water Level, thermistor, Digital Temperature, radiant, reed, latch, and record traces | Health/fault display and inert alarm lamp |
+| [063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Active; implementation-depth E0 plan reviewed | Copied Water Level, thermistor, distinct Digital Temperature, radiant, and qualified reed traces; latch, acknowledgement, cooldown, bounded audit-intent receipt, recovery, and replay evidence | E0 health/fault, sound, LCD, and inert relay-lamp intent cells; powered presentation is E1c/E1d, durable RTC/media remains deferred, and the exact extra-low-voltage relay/lamp fixture is E2 |
 | 066 | Queued; detailed plan required | Single-wire, CRC, conversion, identity, and record traces | Data/rail/activity test points and explicit invalid state |
 | 069 | Queued; detailed plan required | Normalization, provenance, qualification, and replay traces | Display self-test, orientation, and dominant fault |
 | 072 | Queued; detailed plan required | Descriptor, sweep, disagreement, and record traces | Raw, comparator, validity, and switched-power evidence |
