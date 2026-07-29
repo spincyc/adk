@@ -327,6 +327,214 @@ namespace {
                      !policy.initialized (),
                  "initialize cannot reuse an exhausted lifecycle");
     }
+
+    uint8_t diagnosticLevels (
+        adk::MultiplexedDigitDiagnosticGlyph glyph) noexcept
+    {
+        switch (glyph)
+        {
+        case adk::MultiplexedDigitDiagnosticGlyph::SegmentA: return 0x01U;
+        case adk::MultiplexedDigitDiagnosticGlyph::SegmentB: return 0x02U;
+        case adk::MultiplexedDigitDiagnosticGlyph::SegmentC: return 0x04U;
+        case adk::MultiplexedDigitDiagnosticGlyph::SegmentD: return 0x08U;
+        case adk::MultiplexedDigitDiagnosticGlyph::SegmentE: return 0x10U;
+        case adk::MultiplexedDigitDiagnosticGlyph::SegmentF: return 0x20U;
+        case adk::MultiplexedDigitDiagnosticGlyph::SegmentG: return 0x40U;
+        case adk::MultiplexedDigitDiagnosticGlyph::DecimalPoint: return 0x80U;
+        case adk::MultiplexedDigitDiagnosticGlyph::DigitIdentification:
+            return 0x7fU;
+        case adk::MultiplexedDigitDiagnosticGlyph::AllOn: return 0xffU;
+        case adk::MultiplexedDigitDiagnosticGlyph::AllOff: return 0x00U;
+        case adk::MultiplexedDigitDiagnosticGlyph::None: return 0x00U;
+        }
+        return 0;
+    }
+
+    void testBoundedDiagnosticGlyphs ()
+    {
+        const adk::MultiplexedDigitDiagnosticGlyph glyphs[] = {
+            adk::MultiplexedDigitDiagnosticGlyph::SegmentA,
+            adk::MultiplexedDigitDiagnosticGlyph::SegmentB,
+            adk::MultiplexedDigitDiagnosticGlyph::SegmentC,
+            adk::MultiplexedDigitDiagnosticGlyph::SegmentD,
+            adk::MultiplexedDigitDiagnosticGlyph::SegmentE,
+            adk::MultiplexedDigitDiagnosticGlyph::SegmentF,
+            adk::MultiplexedDigitDiagnosticGlyph::SegmentG,
+            adk::MultiplexedDigitDiagnosticGlyph::DecimalPoint,
+            adk::MultiplexedDigitDiagnosticGlyph::DigitIdentification,
+            adk::MultiplexedDigitDiagnosticGlyph::AllOn,
+            adk::MultiplexedDigitDiagnosticGlyph::AllOff};
+        const adk::SevenSegmentPolarity polarities[] = {
+            adk::SevenSegmentPolarity::CommonCathode,
+            adk::SevenSegmentPolarity::CommonAnode};
+
+        uint32_t source = 1;
+        for (const auto polarity : polarities)
+        {
+            for (const auto glyph : glyphs)
+            {
+                for (uint8_t selected = 0; selected < 4; ++selected)
+                {
+                    adk::MultiplexedDigitPolicy policy (config (polarity));
+
+                    require (
+                        policy.initialize (adk::TimePoint ()).ok (),
+                             "diagnostic fixture initializes");
+                    adk::MultiplexedDigitPreview preview;
+
+                    const uint8_t digitMask =
+                        static_cast<uint8_t> (1U << selected);
+                    const auto previewStatus = policy.previewDiagnostic (
+                        glyph, digitMask, source++, preview);
+                    require (previewStatus.ok (),
+                        "bounded diagnostic preview succeeds");
+                    require (policy.canCommit (preview) &&
+                                 policy.commit (preview).ok (),
+                             "diagnostic preview retains commit attribution");
+
+                    for (uint8_t digit = 0; digit < 4; ++digit)
+                    {
+                        const auto transaction =
+                            policy.refresh (adk::TimePoint (digit)).value ();
+                        const uint8_t logical =
+                            glyph !=
+                                        adk::MultiplexedDigitDiagnosticGlyph::
+                                            AllOff &&
+                                    digit == selected
+                                ? diagnosticLevels (glyph)
+                                : 0;
+                        const uint8_t expected =
+                            polarity == adk::SevenSegmentPolarity::CommonCathode
+                                ? logical
+                                : static_cast<uint8_t> (~logical);
+                        require (transaction.segmentLevels[2] == expected,
+                                 "diagnostic pattern is bounded and cell-local");
+                    }
+                    const auto frame = policy.snapshot ().activeFrame;
+                    for (uint8_t digit = 0; digit < 4; ++digit)
+                    {
+                        const auto expected =
+                            glyph !=
+                                        adk::MultiplexedDigitDiagnosticGlyph::
+                                            AllOff &&
+                                    digit == selected
+                                ? glyph
+                                : adk::MultiplexedDigitDiagnosticGlyph::None;
+                        require (frame.diagnosticGlyphs[digit] == expected,
+                                 "snapshot retains named diagnostic intent");
+                        require (frame.glyphs[digit] ==
+                                     adk::SevenSegmentGlyph::Blank,
+                                 "diagnostic frame cannot smuggle numeric glyphs");
+                    }
+                    require (!frame.overflow && frame.decimalMask == 0,
+                             "diagnostic frame cannot smuggle numeric metadata");
+                }
+            }
+        }
+
+        adk::MultiplexedDigitPolicy policy (config ());
+        adk::MultiplexedDigitPreview candidate;
+        require (policy
+                     .previewDiagnostic (
+                         adk::MultiplexedDigitDiagnosticGlyph::SegmentA, 1, 1,
+                         candidate)
+                     .error () == adk::StatusCode::NotInitialized,
+                 "diagnostic preview before initialization rejects");
+        require (policy.initialize (adk::TimePoint ()).ok (),
+                 "invalid diagnostic fixture initializes");
+        require (policy
+                     .previewDiagnostic (
+                         adk::MultiplexedDigitDiagnosticGlyph::None, 0, 1,
+                         candidate)
+                     .error () == adk::StatusCode::InvalidArgument,
+                 "internal none glyph is not public diagnostic input");
+        require (policy
+                     .previewDiagnostic (
+                         static_cast<adk::MultiplexedDigitDiagnosticGlyph> (12),
+                         0, 1, candidate)
+                     .error () == adk::StatusCode::InvalidArgument,
+                 "unknown diagnostic glyph rejects");
+        require (policy
+                     .previewDiagnostic (
+                         adk::MultiplexedDigitDiagnosticGlyph::SegmentA, 0, 1,
+                         candidate)
+                     .error () == adk::StatusCode::InvalidArgument,
+                 "empty diagnostic digit mask rejects");
+        require (policy
+                     .previewDiagnostic (
+                         adk::MultiplexedDigitDiagnosticGlyph::SegmentA, 0x10U,
+                         1, candidate)
+                     .error () == adk::StatusCode::InvalidArgument,
+                 "out-of-range diagnostic digit mask rejects");
+        require (policy
+                     .previewDiagnostic (
+                         adk::MultiplexedDigitDiagnosticGlyph::SegmentA, 0, 0,
+                         candidate)
+                     .error () == adk::StatusCode::InvalidArgument,
+                 "zero diagnostic source sequence rejects");
+
+        const auto multiStatus = policy.previewDiagnostic (
+            adk::MultiplexedDigitDiagnosticGlyph::SegmentG, 0x0aU, 2, candidate);
+        require (multiStatus.ok () && policy.commit (candidate).ok (),
+                 "multi-position diagnostic mask commits");
+        for (uint8_t digit = 0; digit < 4; ++digit)
+        {
+            const auto transaction =
+                policy.refresh (adk::TimePoint (digit)).value ();
+            const uint8_t expected = (digit == 1 || digit == 3) ? 0x40U : 0;
+            require (transaction.segmentLevels[2] == expected,
+                     "multi-position mask preserves exact positions");
+        }
+
+        policy.reset (adk::TimePoint (5));
+
+        require (policy
+                     .previewDiagnostic (
+                         adk::MultiplexedDigitDiagnosticGlyph::SegmentA, 1, 1,
+                         candidate)
+                     .ok (),
+                 "diagnostic preview for lifecycle test succeeds");
+        policy.reset (adk::TimePoint (1));
+
+        require (!policy.canCommit (candidate) &&
+                     policy.commit (candidate).error () ==
+                         adk::StatusCode::InvalidArgument,
+                 "reset invalidates diagnostic preview");
+
+        require (policy
+                     .previewDiagnostic (
+                         adk::MultiplexedDigitDiagnosticGlyph::SegmentA, 1, 2,
+                         candidate)
+                     .ok (),
+                 "cross-owner diagnostic preview succeeds");
+        adk::MultiplexedDigitPolicy other (config ());
+
+        require (other.initialize (adk::TimePoint ()).ok (),
+                 "cross-owner fixture initializes");
+        require (!other.canCommit (candidate) &&
+                     other.commit (candidate).error () ==
+                         adk::StatusCode::InvalidArgument,
+                 "diagnostic preview cannot cross owners");
+
+        adk::MultiplexedDigitPreview first;
+        adk::MultiplexedDigitPreview second;
+        require (policy
+                     .previewDiagnostic (
+                         adk::MultiplexedDigitDiagnosticGlyph::SegmentB, 1, 3,
+                         first)
+                     .ok () &&
+                     policy
+                         .previewDiagnostic (
+                             adk::MultiplexedDigitDiagnosticGlyph::SegmentC, 2,
+                             4, second)
+                         .ok () &&
+                     policy.commit (first).ok (),
+                 "diagnostic pending fixture commits first candidate");
+        require (!policy.canCommit (second) &&
+                     policy.commit (second).error () ==
+                         adk::StatusCode::ResourceBusy,
+                 "diagnostic commit preserves one-outstanding-frame rule");
+    }
 } // namespace
 
 int main ()
@@ -336,6 +544,7 @@ int main ()
     testCycleBoundaryAndPolarity            ();
     testAllPolarityPairsAndDecimalSemantics ();
     testLifecycleExhaustionIsTerminal       ();
+    testBoundedDiagnosticGlyphs             ();
     std::cout << "multiplexed digit policy tests passed\n";
     return EXIT_SUCCESS;
 }

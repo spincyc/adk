@@ -35,4 +35,24 @@ unsigned char max7219PresentationPreviewBytes
 #if defined (ADK_HAS_LESSON_060)
 unsigned char dualDisplayTimingDeskObjectBytes
     [sizeof (adk::DualDisplayTimingDesk)];
+unsigned char timingDeskStopwatchStateBytes
+    [sizeof (adk::TimingDeskStopwatchState)];
+unsigned char timingDeskQualificationBytes
+    [sizeof (adk::TimingDeskQualification)];
+unsigned char timingDeskPresentationDispositionBytes
+    [sizeof (adk::TimingDeskPresentationDisposition)];
+unsigned char timingDeskFaultOwnerBytes[sizeof (adk::TimingDeskFaultOwner)];
+unsigned char timingDeskControlIdentityBytes
+    [sizeof (adk::TimingDeskControlIdentity)];
+unsigned char timingDeskControlEvidenceBytes
+    [sizeof (adk::TimingDeskControlEvidence)];
+unsigned char digitFrameReceiptBytes[sizeof (adk::DigitFrameReceipt)];
+unsigned char matrixFrameReceiptBytes[sizeof (adk::MatrixFrameReceipt)];
+unsigned char dualDisplayTimingDeskConfigBytes
+    [sizeof (adk::DualDisplayTimingDeskConfig)];
+unsigned char dualDisplayEnvelopeBytes[sizeof (adk::DualDisplayEnvelope)];
+unsigned char dualDisplayTimingDeskResultBytes
+    [sizeof (adk::DualDisplayTimingDeskResult)];
+unsigned char dualDisplayTimingDeskSnapshotBytes
+    [sizeof (adk::DualDisplayTimingDeskSnapshot)];
 #endif
