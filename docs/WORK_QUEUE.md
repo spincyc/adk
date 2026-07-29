@@ -124,7 +124,7 @@ work; retail kit names are not electrical identities.
 | [046--048](design/LESSONS_046_048_KINETIC_SCULPTURE_PLAN.md) | Host verified; powered input/motion bench open | `InteractionIntentPolicy`, `BoundedStepperSequence`, and `KineticLightSculpture` publish copied tactile/directional evidence, bounded logical coil intent, transactional authorization, independent stop precedence, and semantic light intent at E0; powered inputs remain E1-gated and energized motion remains E2-gated |
 | [049--051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Host verified; powered endpoints/media/motion bench open | `LocalIdentityRegistry`, `BoundedHomingPolicy`, and `InertPartsCarousel` publish copied evidence, bounded logical home/position, acknowledged record-image reconciliation, atomic one-step application, and intentional zero-coil intent at E0; E1 endpoints/media and E2 motion remain open |
 | [052--054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | Host verified; exact powered fixtures/bench open | `CapturedIrEvidence`, `KnownIrEmissionPolicy`, and `InertIrTranslator` publish copied Lesson 025 receive evidence, immutable locally authored catalog intent, and fixed different-symbol translation at E0; exact receiver/emitter fixtures and E1 acceptance remain open |
-| [055--057](projects/component_project_cadence.md) | Queued | Constraint model, fault-aware panel, inert escape-room console |
+| [055--057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Active integration; E0 implementation authorized; E1/E2 exact fixtures open | Fixed clue-constraint model, copied-value fault-aware panel, and inert escape-room console |
 | [058--060](projects/component_project_cadence.md) | Queued | Multiplexed digits, MAX7219 display transport, timing desk |
 | [061--063](projects/component_project_cadence.md) | Queued; corrected authorized scope | Resistive probes and qualified thermal/radiant observations composed into a museum-case monitor |
 | [064--066](projects/component_project_cadence.md) | Queued | Single-wire transport, listed 18B20 temperature family, thermal mapper |
@@ -221,7 +221,15 @@ The authorized Elegoo
 inventory does not establish that the kit contains an IR emitter, so this arc
 makes no known-kit-emitter claim.
 
-Cadence entries for Lessons 055--081 are not implementation-ready lesson
+Lessons 055--057 now have an independently reviewed implementation-depth plan
+and three pre-implementation architecture stress passes. Their E0
+implementation is authorized within the fixed copied-evidence, caller-owned
+audit-image, inert-intent, zero-hardware boundary. Exact passive
+input/presentation fixtures remain E1-open; restrained servo/relay
+demonstration work remains E2-open and may never control access, confinement,
+egress, or safety.
+
+Cadence entries for Lessons 058--081 are not implementation-ready lesson
 plans. Before code begins for each later three-lesson arc, expand it to the
 same depth as 031--033: public values and interfaces, resource and pin budgets,
 deterministic fixture and failure matrices, narrative example flow, staged

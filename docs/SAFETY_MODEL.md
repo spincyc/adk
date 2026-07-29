@@ -207,6 +207,38 @@ audit results remain simulated decisions over caller-owned memory.
   loss, jam, and communication-loss behavior; and proof that removing load
   power leaves the mechanism closed and inactive.
 
+### Lessons 055--057 clue and escape-console boundaries
+
+Lessons 055--057 are E0 policy work until the separately qualified E1 and E2
+gates are recorded. The constraint model, operator-panel policy, audit image,
+and escape-console coordinator are puzzle-teaching models. They are not access
+control, authentication, authorization, security, confinement, egress,
+emergency release, life-safety, or protective interlock systems, and no person
+or animal may depend on them to enter, leave, summon help, or remain safe.
+
+- E0 owns no endpoint, pin, interrupt, timer, display, storage medium, servo,
+  relay, lamp, latch, door, lock, or power path. Copied clues, button evidence,
+  presentation, audit, latch, lamp, and stop values are logical evidence or
+  semantic intents only.
+- A clue result cannot identify or authenticate a person, grant access, secure
+  property, confine an occupant, or establish that a physical room is safe.
+  The six Lesson 057 clue families are fictional puzzle categories only.
+- Operator acknowledgement may clear only an acknowledgeable diagnostic or
+  audit condition. It cannot override stop, invalid configuration, internal
+  failure, stale or contradictory evidence, a full or indeterminate audit
+  image, or an invalid input chord.
+- Restart, torn or corrupt audit-image recovery, storage failure, display
+  failure, source loss, timing ambiguity, and contradictory clues leave latch
+  intent inert and fault presentation requested. Software stop state is not an
+  emergency stop and never substitutes for physical power removal.
+- E1 may qualify only exact passive inputs, low-voltage current-limited
+  indicators, and presentation hardware while servo, relay, latch, lock, and
+  other powered actuation remain physically absent.
+- E2 may use only a restrained demonstration servo or an inert,
+  current-limited low-voltage relay-and-lamp load with independent physical
+  load-power removal. It must not attach to a door, gate, lock, occupied
+  enclosure, alarm, emergency lighting, egress route, or life-safety system.
+
 ## Project hazard gates
 
 Every project first passes all component gates it composes. It then records the
@@ -228,6 +260,7 @@ following project-specific evidence.
 | 048 | Kinetic sculpture | E0/E1/E2 | E0 uses memory-only intent and has no hardware side effect; E1 qualifies the exact inert inputs and indicators with the motor absent; E2 requires the exact restrained motor, ULN driver, separate current-limited load supply, and independent physical load-power removal before motion |
 | 051 | Tabletop parts carousel | E0/E1/E2 | E0 admits only copied identity, home, stop, key, record-image, and logical actuator intent; E1 separately qualifies the exact RFID, keypad, home/stop, display, and storage fixture with actuators absent; E2 requires restrained stepper/servo motion, independent actuator-power removal, and measured bench acceptance |
 | 054 | Infrared command translator | E0/E1 | E0 is inert and produces no physical output; E1 requires an exact current-limited, burst-bounded, fail-off fixture aimed only at an owned harmless adjacent target and admits only fixed local catalog commands—never consumer/security control or unknown capture replay; cancellation and missed service force emission off, physical power removal remains the stop method, and acquisition, inactive-state, and optical-emission evidence are recorded separately |
+| 057 | Inert escape-room console | E0/E1/E2 | E0 is copied puzzle policy with inert latch and lamp intent; it provides no access-control, security, confinement, egress, or life-safety function; E1 admits exact passive inputs and presentation with actuators absent; E2 admits only a restrained demonstration servo or inert low-voltage relay/lamp load with independent physical load-power removal and no door, lock, occupied enclosure, or safety-system connection |
 
 Project 018 does not secure property. Project 021 carries no person, animal,
 hot item, sharp tool, or hazardous material. Project 027 does not monitor a
@@ -245,6 +278,12 @@ Software stop state is not an emergency stop, logical position is not physical
 position, and a durable-start acknowledgment is not evidence of a physical
 write. Restart leaves the gate closed, actuator intent off, and position
 unknown until the applicable E1 and E2 gates are separately accepted.
+Project 057 does not secure property, control access, confine an occupant, or
+provide emergency release, egress, alarm, or life-safety behavior. Puzzle
+completion and operator acknowledgement can request only inert semantic intent
+at E0. Any later demonstration actuator remains incapable of controlling a
+real door or occupied enclosure and requires independent physical load-power
+removal.
 
 ## Lesson release record
 
