@@ -16,7 +16,7 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--048 use the first-class per-object
+ADK is early-stage software. Lessons 001--051 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
@@ -28,6 +28,9 @@ powered sensor adapter, wiring, or physical measurement is claimed.
 Lessons 046--048 publish copied tactile and directional intent, bounded
 logical step sequencing, and transactional kinetic-light composition at E0.
 They own no live input, motor driver, coil, timer, or moving hardware.
+Lessons 049--051 publish synthetic local identity, bounded logical homing, and
+an inert parts-carousel transaction at E0. They own no RFID, keypad, home or
+stop endpoint, durable-media transport, energized actuator, or mechanism.
 
 The hierarchy is developed in dependency order:
 
@@ -39,10 +42,10 @@ The per-object lifecycle uses transactional `initialize()`, idempotent
 `shutdown() noexcept`, and destructor-driven cleanup. The original
 global-registration preview is frozen under [Legacy](legacy/index.md).
 
-The latest promoted arc is Lessons 046--048: copied interaction evidence,
-bounded logical motion intent, and a transactional kinetic-light sculpture.
-The planned sequence from Lesson 049 remains engagement-first: a parts
-carousel leads the remaining sensor and display arcs. See the
+The latest promoted arc is Lessons 049--051: local identity records, bounded
+logical homing, and an inert parts carousel with explicit audit-image
+reconciliation. The planned sequence from Lesson 052 remains
+engagement-first. See the
 [course map](course.md) for that order and the
 [roadmap](docs/ROADMAP.md) for the full sequence.
 

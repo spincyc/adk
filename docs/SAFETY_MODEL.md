@@ -181,6 +181,13 @@ audit results remain simulated decisions over caller-owned memory.
   preview/export/acknowledge sequence over deterministic caller-owned record
   images. It demonstrates recovery policy, not a completed EEPROM, SD, flash,
   or other physical-media write.
+- Once that model exposes an authorization-start record, stop must retain its
+  operation identity and reconcile an attributable `Stopped` terminal; it
+  cannot silently discard the open operation.
+- Lesson 051's atomic one-step logical composition intentionally publishes
+  zero coil intent because `holdAtRest` is false. This is neither an energized
+  coil observation nor evidence of physical motion; Lesson 047 retains the
+  staged logical-coil teaching surface.
 - Startup and every restart begin closed and off, with physical position and
   home unknown. Persisted identity or audit data cannot restore position
   authority, energize motion, open the gate, or bypass a fresh qualified

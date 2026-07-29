@@ -451,9 +451,15 @@ E0 retained evidence:
   authorization epoch, home evidence, logical position, and fault attribution;
 - fixture-owned mirrors retain exact coil, bounded gate, presentation, stop,
   and all-off intents;
+- the project retains the Lesson 050 preview and applies each Lesson 047
+  command as one atomic step; with project-fixed `holdAtRest = false`, the
+  published coil mirror is intentionally zero, while Lesson 047 retains the
+  staged nonzero-coil teaching surface;
 - fixed-capacity audit records and explicitly supplied two-slot restart images
   make authorization-start admission, terminal reconciliation, every
   interrupted-write cut, and replay byte-checkable;
+- once a start record is exposed, stop requires an attributable `Stopped`
+  terminal for the same operation rather than abandoning reconciliation;
 - an indeterminate simulated commit is reconstructed before retry so one
   logical operation cannot be duplicated under a new identity; and
 - stop clears logical motion and gate intent independently of presentation or

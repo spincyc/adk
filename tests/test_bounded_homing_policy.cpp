@@ -460,9 +460,11 @@ namespace {
 
         malformed.frameAt          = adk::TimePoint (999);
 
+        malformed.frameSequence    = 0;
+
         require (apply (policy, 40, malformed, command (false, true, 4)).ok (),
 
-                 "independently valid stop dominates malformed home/frame");
+                 "stop dominates malformed zero ordinary provenance");
 
         require (policy.snapshot ().phase == adk::HomingPhase::Stopped &&
 
@@ -470,9 +472,33 @@ namespace {
 
                      policy.snapshot ().positionKnown &&
 
-                     policy.snapshot ().fault == adk::HomingFault::None,
+                     policy.snapshot ().fault == adk::HomingFault::None &&
 
-                 "idle stop dominates command and preserves known position");
+                     policy.snapshot ().acceptedFrameSequence == 3,
+
+                 "stop preserves position and accepted ordinary envelope");
+
+        require (apply (policy, 41, input (41, 5, true), command ()).ok () &&
+
+                     policy.snapshot ().acceptedFrameSequence == 5,
+
+                 "next monotonic ordinary frame remains admissible");
+
+        const adk::HomingSnapshot afterOrdinary = policy.snapshot ();
+
+        adk::HomingInput replay = input (42, 3, true);
+
+        replay.stop             = evidence (adk::CarouselSourceKind::SyntheticStop,
+
+                                            42, 6, false, 9);
+
+        require (!apply (policy, 42, replay, command ()).ok (),
+
+                 "old ordinary frame remains rejected after stop");
+
+        require (equal (afterOrdinary, policy.snapshot ()),
+
+                 "ordinary replay rejection after stop is atomic");
 
 
 

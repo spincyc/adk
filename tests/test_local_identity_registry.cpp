@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <new>
 #include <type_traits>
 
 // clang-format off
@@ -34,17 +35,20 @@ namespace {
 
 
         {
-            crc ^= static_cast<uint16_t> (bytes[index]) << 8U;
+            const uint32_t widenedByte =
+                static_cast<uint32_t> (bytes[index]) << 8U;
+            crc = static_cast<uint16_t> (static_cast<uint32_t> (crc) ^ widenedByte);
 
 
             for (uint8_t bit = 0; bit < 8; ++bit)
 
 
             {
+                const uint32_t widenedCrc = static_cast<uint32_t> (crc);
                 crc = static_cast<uint16_t> (
-
-
-                    (crc & 0x8000U) != 0U ? (crc << 1U) ^ 0x1021U : crc << 1U);
+                    (widenedCrc & 0x8000U) != 0U
+                        ? (widenedCrc << 1U) ^ 0x1021U
+                        : widenedCrc << 1U);
             }
         }
         return crc;
@@ -241,8 +245,9 @@ namespace {
         adk::LocalIdentityRegistry make (adk::LocalIdentityRegistryConfig config = {
 
 
-                                             configurationId, adk::maximumCarouselBins,
-                                             3, adk::Duration (10), adk::Duration (20)})
+                                             configurationId, 1,
+                                             adk::maximumCarouselBins, 3,
+                                             adk::Duration (10), adk::Duration (20)})
 
 
         {
@@ -474,7 +479,8 @@ namespace {
         {
             Fixture fixture;
             auto    registry =
-                fixture.make ({0, 8, 3, adk::Duration (10), adk::Duration (20)});
+                fixture.make ({0, 1, 8, 3, adk::Duration (10),
+                               adk::Duration (20)});
 
 
             require (registry.initialize ().error () ==
@@ -485,7 +491,16 @@ namespace {
         }
         {
             Fixture fixture;
-            auto    registry = fixture.make ({Fixture::configurationId, 0, 3,
+            auto registry = fixture.make ({Fixture::configurationId, 0, 8, 3,
+                                           adk::Duration (10),
+                                           adk::Duration (20)});
+            require (registry.initialize ().error () ==
+                         adk::StatusCode::InvalidConfiguration,
+                     "zero lifecycle epoch rejects");
+        }
+        {
+            Fixture fixture;
+            auto    registry = fixture.make ({Fixture::configurationId, 1, 0, 3,
 
 
                                               adk::Duration (10), adk::Duration (20)});
@@ -497,7 +512,7 @@ namespace {
         }
         {
             Fixture fixture;
-            auto    registry = fixture.make ({Fixture::configurationId, 8, 0,
+            auto    registry = fixture.make ({Fixture::configurationId, 1, 8, 0,
 
 
                                               adk::Duration (10), adk::Duration (20)});
@@ -512,7 +527,7 @@ namespace {
             adk::LocalIdentityRegistry registry (
 
 
-                {Fixture::configurationId, 8, 3, adk::Duration (10),
+                {Fixture::configurationId, 1, 8, 3, adk::Duration (10),
 
 
                  adk::Duration (20)},
@@ -532,7 +547,7 @@ namespace {
             adk::LocalIdentityRegistry registry (
 
 
-                {Fixture::configurationId, 8, 3, adk::Duration (10),
+                {Fixture::configurationId, 1, 8, 3, adk::Duration (10),
 
 
                  adk::Duration (20)},
@@ -554,7 +569,7 @@ namespace {
             adk::LocalIdentityRegistry registry (
 
 
-                {Fixture::configurationId, 8, 3, adk::Duration (10),
+                {Fixture::configurationId, 1, 8, 3, adk::Duration (10),
 
 
                  adk::Duration (20)},
@@ -574,7 +589,7 @@ namespace {
             adk::LocalIdentityRegistry registry (
 
 
-                {Fixture::configurationId, 8, 3, adk::Duration (10),
+                {Fixture::configurationId, 1, 8, 3, adk::Duration (10),
 
 
                  adk::Duration (20)},
@@ -1271,6 +1286,124 @@ namespace {
 
                  "cancel preserves committed directory");
     }
+
+    void testSameAddressReconstructionRejectsStaleTransactions ()
+    {
+        Fixture fixture;
+        alignas (adk::LocalIdentityRegistry)
+            uint8_t registryStorage[sizeof (adk::LocalIdentityRegistry)] = {};
+        const auto enrollmentEvidence = evidence (5, 1, identity (0xa0));
+
+        auto* first = new (registryStorage) adk::LocalIdentityRegistry (
+            {Fixture::configurationId, 17, 8, 3, adk::Duration (10),
+             adk::Duration (20)},
+            fixture.bindings, 8, fixture.slots, sizeof (fixture.slots), imageBytes,
+            2, fixture.candidate, imageBytes);
+
+        require (first->initialize ().ok (), "first same-address registry initializes");
+
+        const auto firstCandidate = first->previewEnrollment (
+            adk::TimePoint (5), enrollmentEvidence, 2);
+
+        require (firstCandidate.ok (), "first construction previews enrollment");
+
+        const auto firstExport = first->previewExport (firstCandidate.value ());
+
+        require (firstExport.ok (), "first construction exports enrollment");
+
+        uint8_t* durableSlot =
+            fixture.slots +
+            static_cast<uint16_t> (firstExport.value ().slot) * imageBytes;
+
+        std::memcpy (durableSlot, firstExport.value ().bytes, imageBytes);
+
+        const adk::IdentityDurableCommitEvidence staleEvidence = {
+            firstCandidate.value ().owner,
+
+            firstCandidate.value ().candidateGeneration,
+
+            firstCandidate.value ().operationId,
+
+            firstExport.value ().slot,
+
+            {durableSlot, firstExport.value ().length, firstExport.value ().slot,
+             firstExport.value ().generation},
+            true,
+            true,
+            adk::StatusCode::Ok};
+        first->shutdown ();
+
+        first->~LocalIdentityRegistry ();
+
+        encodeImage (fixture.slots, Fixture::configurationId, 1, nullptr, 0);
+
+        std::memcpy (fixture.slots + imageBytes, fixture.slots, imageBytes);
+
+        auto* second = new (registryStorage) adk::LocalIdentityRegistry (
+            {Fixture::configurationId, 18, 8, 3, adk::Duration (10),
+             adk::Duration (20)},
+            fixture.bindings, 8, fixture.slots, sizeof (fixture.slots), imageBytes,
+            2, fixture.candidate, imageBytes);
+
+        require (second->initialize ().ok (), "second same-address registry initializes");
+
+        const auto secondCandidate = second->previewEnrollment (
+            adk::TimePoint (5), enrollmentEvidence, 2);
+
+        require (secondCandidate.ok (), "second construction previews enrollment");
+        require (secondCandidate.value ().owner != firstCandidate.value ().owner,
+                 "distinct lifecycle epochs produce distinct handle owners");
+
+        const auto pending = second->snapshot ();
+
+        require (!second->previewExport (firstCandidate.value ()).ok (),
+                 "stale candidate rejects after same-address reconstruction");
+
+        require (sameSnapshot (second->snapshot (), pending),
+                 "stale candidate rejection preserves replacement transaction");
+
+        require (!second
+                      ->acknowledgeExternalCommit (firstCandidate.value (),
+                                                  staleEvidence)
+                      .ok (),
+                 "stale durable evidence rejects after same-address reconstruction");
+
+        require (sameSnapshot (second->snapshot (), pending),
+                 "stale acknowledgement preserves replacement transaction");
+
+        const auto secondExport = second->previewExport (secondCandidate.value ());
+
+        require (secondExport.ok (), "replacement candidate remains exportable");
+
+        durableSlot =
+            fixture.slots +
+            static_cast<uint16_t> (secondExport.value ().slot) * imageBytes;
+
+        std::memcpy (durableSlot, secondExport.value ().bytes, imageBytes);
+
+        const adk::IdentityDurableCommitEvidence currentEvidence = {
+            secondCandidate.value ().owner,
+
+            secondCandidate.value ().candidateGeneration,
+
+            secondCandidate.value ().operationId,
+
+            secondExport.value ().slot,
+
+            {durableSlot, secondExport.value ().length, secondExport.value ().slot,
+             secondExport.value ().generation},
+            true,
+            true,
+            adk::StatusCode::Ok};
+        require (second
+                     ->acknowledgeExternalCommit (secondCandidate.value (),
+                                                 currentEvidence)
+                     .ok (),
+                 "replacement transaction still commits");
+        second->shutdown ();
+
+        second->~LocalIdentityRegistry ();
+    }
 } // namespace
 
 int main ()
@@ -1300,6 +1433,7 @@ int main ()
 
     testEnrollmentRejectionsAndCancel ();
 
+    testSameAddressReconstructionRejectsStaleTransactions ();
 
     std::cout << "local identity registry tests passed\n";
 }

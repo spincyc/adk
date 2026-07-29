@@ -73,9 +73,11 @@ namespace adk {
 
         bool withinSkew (TimePoint left, TimePoint right, Duration limit) noexcept
         {
-            const uint32_t forward = left.elapsedSince (right).milliseconds ();
+            // clang-format off
+            const uint32_t forward = left.elapsedSince  (right).milliseconds ();
             const uint32_t reverse = right.elapsedSince (left).milliseconds ();
             const uint32_t delta   = forward < reverse ? forward : reverse;
+            // clang-format on
             return delta < halfRange && delta <= limit.milliseconds ();
         }
 
@@ -203,11 +205,13 @@ namespace adk {
             return StatusCode::Ok;
         }
 
-        const uint32_t releaseDuration = config_.maximumReleaseDuration.milliseconds ();
-        const uint32_t searchDuration  = config_.maximumSearchDuration.milliseconds ();
-        const uint32_t interval        = config_.stepInterval.milliseconds ();
-        const uint32_t evidenceAge     = config_.maximumEvidenceAge.milliseconds ();
-        const uint32_t inputSkew       = config_.maximumInputSkew.milliseconds ();
+        // clang-format off
+        const uint32_t releaseDuration = config_.maximumReleaseDuration   .milliseconds ();
+        const uint32_t searchDuration  = config_.maximumSearchDuration    .milliseconds ();
+        const uint32_t interval        = config_.stepInterval             .milliseconds ();
+        const uint32_t evidenceAge     = config_.maximumEvidenceAge       .milliseconds ();
+        const uint32_t inputSkew       = config_.maximumInputSkew         .milliseconds ();
+        // clang-format on
         const int64_t releaseEnd = -static_cast<int64_t> (config_.homeSearchDirection) *
                                    config_.maximumReleaseSteps;
         const int64_t searchEnd  = static_cast<int64_t> (config_.homeSearchDirection) *
@@ -243,11 +247,13 @@ namespace adk {
             emptySnapshot (initialized_ ? StatusCode::Ok : StatusCode::NotInitialized);
         snapshot_.phase =
             initialized_ ? HomingPhase::PositionUnknown : HomingPhase::Uninitialized;
+        // clang-format off
         lastHome_                  = emptyEvidence (CarouselSourceKind::SyntheticHome);
         lastStop_                  = emptyEvidence (CarouselSourceKind::SyntheticStop);
-        lastUpdateAt_              = TimePoint ();
-        phaseStartedAt_            = TimePoint ();
-        nextStepAt_                = TimePoint ();
+        lastUpdateAt_              = TimePoint     ();
+        phaseStartedAt_            = TimePoint     ();
+        nextStepAt_                = TimePoint     ();
+        // clang-format on
         targetLogicalPosition_     = 0;
         attemptQualificationEpoch_ = 0;
         lastHomeEpoch_             = 0;
@@ -295,18 +301,18 @@ namespace adk {
             return candidate.status;
         }
 
+        // clang-format off
         if (!evidenceShapeValid (input.stop, CarouselSourceKind::SyntheticStop) ||
-            !evidenceTimeValid (now, input.stop, config_.maximumEvidenceAge) ||
+            !evidenceTimeValid  (now, input.stop, config_.maximumEvidenceAge) ||
             !sequenceAdmissible (input.stop, lastStop_, hasLastStop_))
+        // clang-format on
         {
             return StatusCode::InvalidArgument;
         }
 
-        candidate.owner_         = this;
-        candidate.lastStop_      = input.stop;
-        candidate.hasLastStop_   = true;
-        candidate.lastUpdateAt_  = now;
-        candidate.hasLastUpdate_ = true;
+        candidate.owner_       = this;
+        candidate.lastStop_    = input.stop;
+        candidate.hasLastStop_ = true;
 
         const bool qualifiedStop =
             input.stop.status.ok () && input.stop.qualified && input.stop.active;
@@ -334,10 +340,9 @@ namespace adk {
             candidate.snapshot.stopIntent             = true;
             candidate.snapshot.homingSteps            = 0;
             candidate.snapshot.homeEpoch = interrupted ? 0 : snapshot_.homeEpoch;
-            candidate.snapshot.acceptedFrameSequence = input.frameSequence;
-            candidate.snapshot.status                = StatusCode::Ok;
-            candidate.status                         = StatusCode::Ok;
-            candidate.hasNextStep_                   = false;
+            candidate.snapshot.status    = StatusCode::Ok;
+            candidate.status             = StatusCode::Ok;
+            candidate.hasNextStep_       = false;
             return StatusCode::Ok;
         }
 
@@ -349,18 +354,22 @@ namespace adk {
             return candidate.status;
         }
 
+        const bool updateTimeValid =
+            !hasLastUpdate_ || forwardOrEqual (now, lastUpdateAt_);
         if (input.frameSequence == 0 || !forwardOrEqual (now, input.frameAt) ||
             now.elapsedSince (input.frameAt).milliseconds () >
                 config_.maximumEvidenceAge.milliseconds () ||
-            (hasLastUpdate_ && !forwardOrEqual (now, lastUpdateAt_)) ||
+            // clang-format off
+            !updateTimeValid ||
             !evidenceShapeValid (input.home, CarouselSourceKind::SyntheticHome) ||
-            !evidenceTimeValid (now, input.home, config_.maximumEvidenceAge) ||
-            !withinSkew (input.frameAt, input.home.observedAt,
-                         config_.maximumInputSkew) ||
-            !withinSkew (input.frameAt, input.stop.observedAt,
-                         config_.maximumInputSkew) ||
-            !withinSkew (input.home.observedAt, input.stop.observedAt,
-                         config_.maximumInputSkew) ||
+            !evidenceTimeValid  (now, input.home, config_.maximumEvidenceAge) ||
+            !withinSkew         (input.frameAt, input.home.observedAt,
+                                 config_.maximumInputSkew) ||
+            !withinSkew         (input.frameAt, input.stop.observedAt,
+                                 config_.maximumInputSkew) ||
+            !withinSkew         (input.home.observedAt, input.stop.observedAt,
+                                 config_.maximumInputSkew) ||
+            // clang-format on
             !sequenceAdmissible (input.home, lastHome_, hasLastHome_) ||
             (command.requestHome && command.requestMove))
         {
@@ -387,6 +396,8 @@ namespace adk {
 
         candidate.lastHome_                       = input.home;
         candidate.hasLastHome_                    = true;
+        candidate.lastUpdateAt_                   = now;
+        candidate.hasLastUpdate_                  = true;
         candidate.snapshot.stepRequested          = false;
         candidate.snapshot.requestedStepDirection = 0;
         candidate.snapshot.stopIntent             = false;

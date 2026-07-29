@@ -50,6 +50,8 @@ namespace adk {
     struct LocalIdentityRegistryConfig
     {
         uint32_t registryConfigurationId;
+        // Caller-unique across every concurrent or reconstructed registry lifetime.
+        uint32_t instanceEpoch;
         uint8_t  binCount;
         uint8_t  maximumFailures;
         Duration lockoutDuration;
@@ -109,7 +111,8 @@ namespace adk {
         Status reset      () noexcept;
         void   shutdown   () noexcept;
 
-        Status observe (TimePoint now, const IdentityEvidence& evidence) noexcept;
+        Status observe                                (
+            TimePoint now, const IdentityEvidence& evidence) noexcept;
         Result<EnrollmentCandidate> previewEnrollment (
             TimePoint now, const IdentityEvidence& evidence, uint8_t binId) noexcept;
         Result<IdentityImageView> previewExport (

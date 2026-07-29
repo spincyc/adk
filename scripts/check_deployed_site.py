@@ -28,6 +28,7 @@ DEFAULT_TIMEOUT_SECONDS = 10.0
 DEFAULT_RETRIES = 2
 DEFAULT_RETRY_DELAY_SECONDS = 0.25
 MAX_RESPONSE_BYTES = 2 * 1024 * 1024
+MAX_PDF_RESPONSE_BYTES = 50 * 1024 * 1024
 
 
 @dataclass(frozen=True)
@@ -36,6 +37,7 @@ class Check:
     description: str
     prefix: bytes | None = None
     markers: tuple[bytes, ...] = ()
+    max_response_bytes: int = MAX_RESPONSE_BYTES
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
@@ -76,6 +78,7 @@ def deployment_checks(publication: PublishedLesson) -> tuple[Check, ...]:
             publication.pdf_path,
             f"Lesson {publication.number} PDF",
             b"%PDF-",
+            max_response_bytes=MAX_PDF_RESPONSE_BYTES,
         ),
         Check(
             publication.sketch_path,
@@ -109,7 +112,7 @@ def normalize_base_url(raw_base_url: str) -> str:
     return raw_base_url.rstrip("/") + "/"
 
 
-def read_url(url: str, timeout: float) -> bytes:
+def read_url(url: str, timeout: float, max_response_bytes: int) -> bytes:
     """Fetch one URL, bounding both the request time and response size."""
     if urlsplit(url).scheme == "file" and urlsplit(url).path.endswith("/"):
         url = urljoin(url, "index.html")
@@ -128,9 +131,9 @@ def read_url(url: str, timeout: float) -> bytes:
         status = getattr(response, "status", None)
         if status is not None and status != 200:
             raise OSError(f"unexpected HTTP status {status}")
-        data = response.read(MAX_RESPONSE_BYTES + 1)
-    if len(data) > MAX_RESPONSE_BYTES:
-        raise OSError(f"response exceeds {MAX_RESPONSE_BYTES} bytes")
+        data = response.read(max_response_bytes + 1)
+    if len(data) > max_response_bytes:
+        raise OSError(f"response exceeds {max_response_bytes} bytes")
     return data
 
 
@@ -166,7 +169,7 @@ def check_deployment(
     retries: int = DEFAULT_RETRIES,
     timeout: float = DEFAULT_TIMEOUT_SECONDS,
     retry_delay: float = DEFAULT_RETRY_DELAY_SECONDS,
-    fetch: Callable[[str, float], bytes] = read_url,
+    fetch: Callable[[str, float, int], bytes] = read_url,
     sleep: Callable[[float], None] = time.sleep,
     publication: PublishedLesson | None = None,
 ) -> list[str]:
@@ -189,7 +192,7 @@ def check_deployment(
         failure = ""
         for attempt in range(retries + 1):
             try:
-                data = fetch(url, timeout)
+                data = fetch(url, timeout, check.max_response_bytes)
                 validation_error = validate_response(check, data, canonical_sketch)
                 if validation_error is None:
                     failure = ""

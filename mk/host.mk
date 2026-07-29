@@ -44,6 +44,8 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_inert_cue_scheduler \
 	$(BUILD_DIR)/host/test_inert_show_simulator \
 	$(BUILD_DIR)/host/test_inertial_observation \
+	$(BUILD_DIR)/host/test_inert_parts_carousel_operation \
+	$(BUILD_DIR)/host/test_inert_parts_carousel_audit \
 	$(BUILD_DIR)/host/test_interaction_intent_policy \
 	$(BUILD_DIR)/host/test_kinetic_sculpture \
 	$(BUILD_DIR)/host/test_local_identity_registry \
@@ -265,6 +267,26 @@ $(BUILD_DIR)/host/test_local_identity_registry: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
 		src/local_identity_registry.cpp \
 		tests/test_local_identity_registry.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_inert_parts_carousel_operation: $(HOST_CORE_SOURCES) \
+		src/bounded_homing_policy.cpp src/bounded_stepper_sequence.cpp \
+		src/local_identity_registry.cpp src/inert_parts_carousel.cpp \
+		tests/test_inert_parts_carousel.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		-DADK_INERT_PARTS_CAROUSEL_TEST_PART=1 $(HOST_CORE_SOURCES) \
+		src/bounded_homing_policy.cpp src/bounded_stepper_sequence.cpp \
+		src/local_identity_registry.cpp src/inert_parts_carousel.cpp \
+		tests/test_inert_parts_carousel.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_inert_parts_carousel_audit: $(HOST_CORE_SOURCES) \
+		src/bounded_homing_policy.cpp src/bounded_stepper_sequence.cpp \
+		src/local_identity_registry.cpp src/inert_parts_carousel.cpp \
+		tests/test_inert_parts_carousel.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		-DADK_INERT_PARTS_CAROUSEL_TEST_PART=2 $(HOST_CORE_SOURCES) \
+		src/bounded_homing_policy.cpp src/bounded_stepper_sequence.cpp \
+		src/local_identity_registry.cpp src/inert_parts_carousel.cpp \
+		tests/test_inert_parts_carousel.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/inert_show_trace_runner: $(HOST_CORE_SOURCES) \
 		src/inert_channel_assessor.cpp src/cue_audit.cpp \

@@ -1,10 +1,10 @@
 # Lessons 049--051 identity-controlled parts-carousel plan
 
-Status: implementation-depth E0 plan, 2026-07-28.
+Status: host-verified E0 publication, 2026-07-28.
 
 This block follows the kinetic-light-sculpture work with a tangible
 identity-and-position project while preserving the repository's electrical,
-motion, storage, and evidence gates. The authorized implementation is E0:
+motion, storage, and evidence gates. The published implementation is E0:
 copied synthetic identity/key evidence, fixed caller-owned record images, a pure bounded
 homing policy, transactional project composition, and inert actuator and
 presentation intent. It does not authorize an RFID transaction, keypad GPIO,
@@ -29,8 +29,8 @@ fixture.
 The older cadence prose says that the carousel “homes and moves,” the servo
 “opens,” audit records “survive” an interrupted write, and position LEDs work
 before motors are powered. Those sentences describe future E1/E2 experiments,
-not the active implementation boundary. They are stale as authorization and
-must be reconciled when this plan is integrated:
+not the published E0 boundary. The promotion checkpoint reconciled them as
+follows:
 
 - E0 emits exact logical step, coil, and semantic gate intents but performs no homing motion,
   gate movement, endpoint write, or durable storage operation.
@@ -54,20 +54,13 @@ model.
 | 050 | Pure bounded homing and logical-position policy | copied home/stop evidence and semantic signed-step intent | Lesson 047 child, coil driver, timer, interrupt, sensor endpoint, physical-position claim, autonomous retry |
 | 051 | Transactional inert parts-carousel coordinator | Lessons 049--050, one project-owned Lesson 047 sequencer, semantic gate/presentation and audit records | Servo child, powered motion, hidden endpoint ownership, automatic dispensing, physical-media durability claim |
 
-Implementation order is strict:
-
-1. integrate the reviewed plan into the cadence, curriculum, project catalog,
-   work queue, and task state without claiming implementation;
-2. complete a pre-implementation architecture stress pass for each lesson;
-3. implement Lesson 049 and its exhaustive host fixtures;
-4. implement Lesson 050 and its exhaustive host fixtures;
-5. complete the Lesson 051 maximum-composition stress pass;
-6. implement the transactional coordinator and complete replay matrix;
-7. add one compile-only Mega replay per lesson, measured size evidence, HTML,
-   pencil-drawing PDFs, indexes, and generated documents;
-8. run post-implementation stress passes against measured aggregate budgets;
-9. promote only after every non-hardware gate passes; and
-10. retain E1 and E2 as independently open work.
+The completed integration followed this strict order: canonical-plan
+reconciliation; pre-implementation stress passes; Lesson 049 and Lesson 050
+policies with exhaustive host fixtures; the Lesson 051 maximum-composition
+pass and transactional coordinator; compile-only Mega replays, measured size
+evidence, HTML, pencil-drawing PDFs, indexes, and generated documents; and
+post-implementation review against the measured aggregate budgets. E1 and E2
+remain independently open work.
 
 No generic identity provider, motion controller, transaction framework, or
 durability abstraction is introduced. Existing lower-layer contracts change
@@ -210,6 +203,7 @@ struct IdentityImageView
 struct LocalIdentityRegistryConfig
 {
     uint32_t registryConfigurationId;
+    uint32_t instanceEpoch;
     uint8_t  binCount;
     uint8_t  maximumFailures;
     Duration lockoutDuration;
@@ -259,7 +253,7 @@ length/configuration ID, noncanonical bytes, malformed entries, and checksum
 failure are rejected.
 
 Files are `src/local_identity_registry.h` and
-`src/local_identity_registry.cpp`. The intended surface is:
+`src/local_identity_registry.cpp`. The published surface is:
 
 ```cpp
 struct EnrollmentCandidate
@@ -324,7 +318,8 @@ struct LocalIdentityRegistry
 
 Construction is inert and copies the small configuration value; it borrows
 only the explicitly sized storage. Initialization validates nonzero
-`registryConfigurationId`, configuration, non-null
+`registryConfigurationId`, nonzero caller-supplied `instanceEpoch`,
+configuration, non-null
 storage, capacity `1..8`, and exactly two supplied canonical image slots.
 Their extent must cover `2 * 160`, stride must equal `160`, and candidate
 capacity must equal `160`; undersized, oversized/ambiguous, or overlapping
@@ -360,13 +355,20 @@ after admission.
 Enrollment is explicit and cannot be triggered by ordinary observation.
 Preview rejects a known identity, occupied bin, stale evidence, full table, or
 active lockout without mutation. The registry is the exclusive writer of one
-caller-owned 160-byte canonical candidate buffer and privately owns its owner
-token and monotonically advancing candidate generation; returned candidates are copies
-bound to the registry owner, base-image generation, operation ID, scratch
-index, and checksum. `previewExport()` returns a bounded view of that same
-complete canonical byte image and is retryable without consuming the
-candidate. The view remains valid only until cancel, reset, shutdown, commit,
-or the next successful preview on that registry. An external
+caller-owned 160-byte canonical candidate buffer. The candidate `owner` is
+exactly the nonzero caller-supplied `instanceEpoch`; it is never derived from
+an address, process state, retained static counter, or other hidden identity.
+The caller must supply an epoch unique across every concurrent or reconstructed
+registry lifetime. Two live registries using the same epoch violate the public
+contract even when their storage does not overlap, and a reconstructed
+registry must never reuse an epoch from an earlier lifetime.
+The registry privately owns the monotonically advancing candidate generation;
+returned candidates are copies bound to the instance epoch, base-image
+generation, operation ID, scratch index, and checksum.
+`previewExport()` returns a bounded view of that same complete canonical byte
+image and is retryable without consuming the candidate. The view remains valid
+only until cancel, reset, shutdown, commit, or the next successful preview on
+that registry. An external
 persistence coordinator writes the candidate to the inactive one of exactly
 two durable slots, synchronizes it, reads and validates it, then reports the
 same operation, generation, slot, reconciled canonical bytes, synchronization
@@ -405,7 +407,8 @@ in the object.
 ### Lesson 049 deterministic matrix
 
 - every identity length, canonical padding, byte position, checksum, revision,
-  bin `0..binCount-1`, capacity, null storage, and duplicate table case;
+  bin `0..binCount-1`, capacity, null storage, zero instance epoch, and
+  duplicate table case;
 - known, unknown, repeat, rapidly repeated, duplicate enrollment, occupied
   bin, full table, cancel, commit, double commit, foreign owner, stale
   generation, and mutated candidate;
@@ -413,7 +416,12 @@ in the object.
   expiry, rollover, future time, half-range ambiguity, and regression;
 - source failure, stale evidence, malformed identity, corrupt initial image,
   changed same-sequence payload, and no partial mutation;
-- reset and restart from identical fixed images;
+- reset and restart from identical fixed images, including reconstruction with
+  a distinct caller-supplied instance epoch and rejection of an earlier
+  lifetime's candidate;
+- concurrent independent registries with distinct epochs, cross-instance
+  candidate rejection, and explicit same-epoch concurrency as a caller
+  contract violation;
 - fieldwise byte-identical replay without `memcmp` over padded structs; and
 - non-copyable/non-movable traits and measured AVR object size.
 
@@ -999,24 +1007,27 @@ directions are therefore legal around native zero without wrap or a hidden offse
 constructs the child with those validated bounds, minimum and maximum interval both equal to
 `logicalStepInterval`, `maximumStepCommandAge`, and project-fixed
 `holdAtRest = false`. No caller can substitute a differently configured
-sequencer. Aggregate coordinator-plus-child size and stack are measured; a
-failure of the existing `128 B` public-object ceiling stops implementation for
-design review rather than changing Lesson 047.
+sequencer. Aggregate coordinator-plus-child size and stack are measured. The
+coordinator uses the reviewed project-composition exception documented in the
+resource budget; every reusable child remains under the `128 B` ceiling.
 
 There is no E0 servo child. `CarouselGateIntent::Open` and `Closed` plus the
 explicit expiry are semantic project results only. A future E2 adapter may
 translate them through a separately configured `BoundedServo`, but no servo
 position, pulse, timer, endpoint, or physical gate state enters E0.
 
-For each ordinary non-stop motion frame, Lesson 051 first derives a Lesson 050
-`HomingPreview`. A requested signed step becomes an exact one-step Lesson 047
-command. It then derives the Lesson 047 preview, verifies both
-owner/generation identities and both `canCommit()` results, and commits each
-exactly once with no fallible work remaining. Failure of either preview mutates
-neither. The published coil bits come only from the committed Lesson 047
-snapshot; Lesson 050 never sees them. This project-local joint preflight
-preserves the existing Lesson 047 API and keeps its logical coil/position
-meaning separate from home evidence.
+For each ordinary non-stop motion frame, Lesson 051 first derives and retains a
+Lesson 050 `HomingPreview`. A requested signed step becomes an exact one-step
+Lesson 047 command. After the retained Lesson 050 preview passes all remaining
+preflight, the coordinator commits that preview and then applies the Lesson 047
+command as one bounded atomic step. The project-fixed `holdAtRest = false`
+means that atomic one-step composition intentionally publishes
+`coilBits == 0`: the child advances its logical position and immediately
+returns all coil intent to off. Lesson 051 therefore makes no nonzero-coil
+observation claim. Lesson 047 remains the lesson that teaches and exposes
+staged preview/commit coil states. This bounded project decision preserves the
+existing Lesson 047 API and keeps logical position separate from home
+evidence.
 
 Stop is the deliberate safety exception to joint preview. After independently
 validating stop, and before unrelated frame validation, the coordinator
@@ -1256,14 +1267,15 @@ consumers, promotion stops for a bounded design decision and migration review.
 Project-local duplication is preferable to a premature generic transaction or
 motion framework.
 
-### Pre-implementation stress-pass closure
+### Architecture stress-pass closure
 
 This plan closes the bounded local blockers in the three companion stress
 passes without changing a published dependency:
 
 - Lesson 049 now fixes canonical versioned images, exact two-slot recovery,
   retryable preview/export/external-acknowledge/commit ordering, private
-  owner/generation identity, and caller-owned memory.
+  candidate generation, explicit caller-supplied instance-epoch ownership, and
+  caller-owned memory.
 - Lesson 050 now fixes qualified edge provenance, independent release/search
   step and time bounds, checked arithmetic, exact collision precedence, and a
   standalone preview/commit semantic step-intent seam.
@@ -1273,11 +1285,10 @@ passes without changing a published dependency:
   fixed audit capacity/encoding, bounded recovery, and the only Lesson 047
   preview/commit composition.
 
-Implementation remains subject to the stress passes' requested independent
-review and measured proofs. If the published Lesson 047 seam cannot make the
-stated joint commit infallible after preflight, or if the external record
-protocol requires changing `Storage`, this closure is invalid and promotion
-stops for architectural remediation.
+Independent review and measured proofs closed the companion stress passes.
+The retained Lesson 050 preview and bounded atomic Lesson 047 application
+avoid a fallible split commit while preserving the published Lesson 047 seam;
+the external record protocol does not require changing `Storage`.
 
 ## Resource, size, and packaging budgets
 
@@ -1289,9 +1300,22 @@ moving hardware.
 
 | Lesson | AVR object target | AVR hard ceiling | Sketch flash | Sketch static SRAM |
 |---:|---:|---:|---:|---:|
-| 049 | 112 B | 128 B | 16,384 B | 1,024 B |
-| 050 | 112 B | 128 B | 16,384 B | 1,024 B |
-| 051 coordinator and each child | 112 B each | 128 B each | 28,672 B | 2,048 B |
+| 049 reusable registry | 112 B | 128 B | 16,384 B | 1,280 B |
+| 050 reusable homing policy | 112 B | 128 B | 16,384 B | 1,024 B |
+| 051 project coordinator | 320 B | 384 B | 28,672 B | 2,048 B |
+
+The global `128 B` ceiling continues to govern reusable components, including
+every Lesson 051 child. The `320/384 B` Lesson 051 values are a reviewed
+project-composition exception for the coordinator that deliberately retains
+the bounded project snapshot and owned Lesson 047 sequencer. They are not a
+new reusable-component allowance.
+
+The promoted clean AVR measurements are: Lesson 049 is `121 B`, 7,026 B
+flash, and 1,113 B static SRAM;
+Lesson 050 is `126 B` (`HomingPreview` is `92 B`), 8,272 B flash, and 574 B
+static SRAM. Lesson 051 measures 26,014 B flash and 1,933 B static SRAM. Its
+coordinator measures `380 B`: it misses the `320 B` target and passes the
+reviewed `384 B` hard ceiling by only 4 B. The numeric resource gate passes.
 
 Caller-owned fixture, identity, and audit arrays are counted in complete-sketch
 static SRAM. The Lesson 051 acceptance record must also reserve at least
@@ -1300,12 +1324,19 @@ estimate. If that margin cannot be met, reduce capacities or snapshot
 retention; do not hide storage on the heap or relax the gate.
 
 Stack/ISR evidence is mandatory, not absorbed into the static-SRAM column.
-Lessons 049 and 050 each require a documented conservative stack plus ISR
-allowance of at least `256 B` and at least `768 B` remaining after globals and
-that allowance. Lesson 051 requires at least `512 B` stack plus ISR allowance
-and the stated `1,024 B` remaining afterward. Measurements include the largest
+Lesson 049 requires at least `512 B` of conservative stack plus ISR allowance
+(the measured conservative path is 357 B plus 128 B ISR). Lesson 050 requires
+at least `448 B` (the measured conservative path is 288 B plus 128 B ISR).
+Each requires at least
+`768 B` remaining after globals and that allowance. Lesson 051 requires at
+least `768 B` stack plus ISR allowance: its conservative live path is 227 B
+for `loop()`, 288 B for `update()`, and 99 B for `HomingPreview`, plus a 128 B
+ISR allowance, totaling 742 B before rounding up. The exact conservative path
+leaves 5,517 B, while the rounded 768 B planning reserve leaves 5,491 B; both
+exceed the stated `1,024 B` requirement. Measurements include the largest
 simultaneously live preview/image candidate; tests fail if compiler layout
-pushes any public object above `128 B` or any aggregate margin below its gate.
+pushes a reusable public object above `128 B`, the Lesson 051 project
+coordinator above `384 B`, or any aggregate margin below its gate.
 
 Every header compiles alone. Sources are registered in the strict host,
 sanitizer, archive, Arduino, package-consumer, and umbrella-header inventories.
@@ -1382,7 +1413,7 @@ there is no formal schematic in the E0 PDFs. Filenames, grayscale, or a
 
 ## Promotion and persistence decisions
 
-Promotion requires:
+The promotion evidence includes:
 
 1. reviewed pre- and post-implementation stress passes for all three lessons;
 2. strict/custom/sanitizer tests and complete deterministic matrices;
@@ -1398,8 +1429,8 @@ Promotion requires:
 
 ### Exact canonical-document reconciliation
 
-Integration must edit these canonical claims in the same checkpoint; the plan
-does not silently supersede them:
+The promotion checkpoint reconciles these canonical claims; this plan does not
+silently supersede them:
 
 - `docs/projects/component_project_cadence.md`: Lessons 049--051 say E0
   replays copied identifiers, logical homing and gate intent, and supplied
@@ -1434,6 +1465,12 @@ The durable decisions carried forward are:
 - physical position is unknown until bounded homing succeeds in the current
   powered session;
 - stop is independent and has same-frame precedence;
+- an exposed durable authorization-start record always requires an attributable
+  terminal reconciliation; stop publishes a `Stopped` terminal for that same
+  operation and cannot merely discard it;
+- Lesson 051 retains the Lesson 050 preview, applies one atomic Lesson 047
+  step, and intentionally publishes zero coil intent under
+  `holdAtRest = false`; Lesson 047 retains the nonzero-coil teaching surface;
 - no gate-open intent precedes identity, confirmation, home, exact position,
   freshness, and health;
 - E0 owns no resource and makes no powered-observation claim;

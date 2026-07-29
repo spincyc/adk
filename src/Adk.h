@@ -34,6 +34,7 @@
 #include "inert_load_interlock.h"
 #include "inert_load_panel.h"
 #include "inertial_observation.h"
+#include "inert_parts_carousel.h"
 #include "interaction_intent_policy.h"
 #include "kinetic_sculpture.h"
 #include "keypad.h"

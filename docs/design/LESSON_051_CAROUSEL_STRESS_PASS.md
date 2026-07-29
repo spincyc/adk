@@ -2,23 +2,24 @@
 
 This record applies the
 [component design stress pass](../templates/component-design-stress-pass.md)
-to the planned Lesson 051 tabletop parts carousel. It is a pre-implementation
-architecture review updated after the detailed
+to the implemented Lesson 051 tabletop parts carousel. It is the terminal
+post-implementation architecture review of the detailed
 [Lessons 049--051 plan](LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) incorporated
-the bounded remediation. It is not an implementation or hardware
-qualification. It authorizes no RFID, keypad, Hall/reed, EEPROM/SD, LCD,
-stepper, servo, wiring, powered motion, or physical-position claim.
+with the bounded remediation and measured E0 evidence. It is not a hardware
+qualification and authorizes no RFID, keypad, Hall/reed, EEPROM/SD, LCD,
+stepper, servo, wiring, powered-motion, or physical-position claim.
 
 ## Boundary
 
 - Name and lesson/project: tabletop parts carousel, Lesson 051
-- Reviewer and date: pre-implementation architecture review, 2026-07-28
-- Public types and operations: planned copied identity request,
+- Reviewer and date: terminal post-implementation architecture review,
+  2026-07-28
+- Public types and operations: copied identity request,
   confirmation, homing/position evidence, interruption and stop observations;
   one bounded transactional update; copied gate, motion, display and audit
   intents; explicit lifecycle and inspectable snapshot
-- Direct dependencies: planned Lesson 049 fixed-size local identity records,
-  planned Lesson 050 bounded homing policy, one project-owned Lesson 047
+- Direct dependencies: Lesson 049 fixed-size local identity records, Lesson
+  050 bounded homing policy, one project-owned Lesson 047
   bounded logical step sequencer, semantic gate/presentation intent,
   project-local audit records, `Status`, explicit `TimePoint`/`Duration`, and
   fixed-size storage
@@ -35,14 +36,14 @@ stepper, servo, wiring, powered motion, or physical-position claim.
 | Pressure | Evidence and disposition |
 |---|---|
 | API and layering | **Natural only as a project-local coordinator.** Lesson 049 remains the authority for copied identifier/enrollment/storage outcomes and Lesson 050 for unknown/homing/known-position transitions. Lesson 051 alone owns a fixed Lesson 047 sequencer for logical coil vectors and emits only semantic open/closed gate intent with expiry; E0 has no gate-actuator policy. It may authorize and order those policies, but must not parse raw RFID traffic, scan a keypad, debounce a home switch, write EEPROM/SD, drive pins, infer authentication, or turn issued steps into position evidence. Electrical adapters and persistent transports remain below the project. |
-| Ownership and lifecycle | **Natural after the plan-fixed bounded remediation.** Construction is inert; caller-owned buffers explicitly outlive non-copyable/non-movable owners; child/candidate identities remain private; initialization completely prevalidates and rolls back in reverse order. The plan does not promise atomic rollback across an external durable write: retryable prepare/durable-admit/apply/terminal-reconcile stages publish one final E0 snapshot and a fixed fail-closed path. Shutdown clears authorization/home epochs and publishes closed/off intent before child teardown; endpoint owners separately prove de-energization. |
+| Ownership and lifecycle | **Natural after the plan-fixed bounded remediation.** Construction is inert; caller-owned buffers explicitly outlive non-copyable/non-movable owners; child/candidate identities remain private; initialization completely prevalidates and rolls back in reverse order. The implementation does not promise atomic rollback across an external durable write: retryable prepare/durable-admit/apply/terminal-reconcile stages publish one final E0 snapshot and a fixed fail-closed path. Shutdown clears authorization/home epochs and publishes closed/off intent before child teardown; endpoint owners separately prove de-energization. |
 | Time and ordering | **Natural if one supplied timestamp governs one admitted frame.** Identity freshness, confirmation expiry, duplicate/repeat suppression, home-sensor evidence, motion deadlines, gate dwell, audit ordering, retries, rollover and same-time changed input need explicit rules. Stop is inspected before new authorization. One call does bounded work and publishes at most one logical motion transition; no blocking home loop, storage wait, servo dwell or catch-up loop is permitted. Delayed inputs retain their original identities and cannot be restamped into one simultaneous transaction. |
 | Errors and status | **Natural with project-specific phase/fault enums over existing `Status`.** Outcomes must distinguish unknown/duplicate/locked identity, expired or conflicting confirmation, position unknown, missing/stuck home, travel exhaustion, interruption, storage unavailable/full/corrupt, audit commit indeterminate, diagnostic failure, stop and dependency failure. Precedence is stop or already-latched fault; invalid/unknown position; authorization/confirmation failure; audit-admission failure; ordinary progress; presentation. A display or audit diagnostic must not disguise a motion or gate failure. No diagnostic string, exception or silent fallback belongs in the core. |
-| Resource budget | **Limits fixed; measurement remains a promotion gate.** E0 owns zero hardware resources. The plan caps each public object at `128 B`, the Lesson 051 sketch at 28,672 B flash and 2,048 B static SRAM, counts caller-owned buffers and largest live candidates, reserves at least 512 B for conservative stack/ISR, and requires 1,024 B remaining afterward. Future E1/E2 work separately totals pins, claims, timers, buses, interrupts, actuator channels and current. A measured aggregate Mega image, not isolated sizes, establishes fit. |
-| Deterministic proof | **Matrix fixed; execution remains a promotion gate.** The repaired plan covers identity/confirmation permutations, expiry, qualified home edges, missing/stuck home, every-phase interruption, every bin, stop collisions, supplied interrupted record images, corruption, capacity bounds, dependency/audit/presentation collisions and two-instance fieldwise replay. Tests must prove the complete durable-start/current-home/exact-position gate-open invariant. Host results never prove physical movement, home detection or de-energization. |
-| Packaging and public surface | **Natural if project-local.** The eventual boundary needs an ordinary standalone header, out-of-line implementation, umbrella/archive/native inventories, tests, canonical Mega example, size baseline, HTML and pencil-drawing PDF. Public names describe identity records, homing evidence, authorization epochs, bin selection, gate/motion intents and audit disposition—not RFID registers, EEPROM addresses, GPIO polarity, coil pins or servo pulses. |
-| Example and documentation fit | **Natural as an E0-first progression.** The canonical sketch can replay copied evidence into fixed intent/result cells using acquire, configure, start and observe, decide, actuate flow. It must call identifiers local labels rather than credentials. Position, home, gate and stop evidence are separately visible. Every non-schematic PDF visual is a pencil drawing; only an exact qualified, electrically authoritative circuit can use the schematic exception. Powered input/indicator work is E1 and restrained stepper/servo work is E2. |
-| Downstream effects | **Contained only if no shared contract is bent for the composition.** Lessons 016--018, 022--024, 034--036, 046--048 and planned 049--050 retain their ownership, timing, persistence, motion and safety meanings. Existing audit buffers are volatile and existing persistent ledgers have domain-specific schemas; neither may be relabeled as a generic transactional project journal. If Lesson 051 needs cross-policy rollback, a shared transaction manager, a generic durable log, persisted physical position, or a new global failure convention, architectural remediation and migration review are required before implementation. |
+| Resource budget | **Passed for E0.** E0 owns zero hardware resources. Reusable children retain the `128 B` ceiling. The project-composition coordinator has a reviewed `320 B` target and `384 B` hard ceiling, consistent with the bounded composition treatment used for Lessons 045 and 048; its measured `380 B` object misses the target and passes the hard ceiling by only 4 B after adding the exact 40-byte idempotence baseline. This exception does not create a reusable-component allowance. The Lesson 051 sketch is capped at 28,672 B flash and 2,048 B static SRAM and measures 26,014 B flash and 1,933 B static SRAM. Its conservative live stack path is 227 B for `loop()`, 288 B for `update()`, and 99 B for `HomingPreview`, plus 128 B ISR, totaling 742 B; the reviewed reserve is therefore 768 B. The exact path leaves 5,517 B, and the rounded reserve leaves 5,491 B, both exceeding the required 1,024 B margin. Future E1/E2 work separately totals pins, claims, timers, buses, interrupts, actuator channels and current. |
+| Deterministic proof | **Passed for E0.** The exhaustive host matrix covers identity/confirmation permutations, expiry, qualified home edges, missing/stuck home, every-phase interruption, every bin, stop collisions, supplied interrupted record images, corruption, capacity bounds, dependency/audit/presentation collisions and two-instance fieldwise replay. It proves the durable-start/current-home/exact-position gate-open invariant, exact repeated-acknowledgement idempotence, changed-repeat rejection and terminal reconciliation. Host results do not prove physical movement, home detection or de-energization. |
+| Packaging and public surface | **Passed for E0.** The boundary has a standalone header, out-of-line implementation, umbrella/archive/native inventories, deterministic tests, canonical Mega example, size baseline, HTML and pencil-drawing PDF. Public names describe identity records, homing evidence, authorization epochs, bin selection, gate/motion intents and audit disposition—not RFID registers, EEPROM addresses, GPIO polarity, coil pins or servo pulses. |
+| Example and documentation fit | **Passed for E0.** The canonical sketch replays copied evidence into fixed intent/result cells using acquire, configure, start and observe, decide, actuate flow. It calls identifiers local labels rather than credentials. Position, home, gate and stop evidence are separately visible. Every non-schematic PDF visual is a pencil drawing; only an exact qualified, electrically authoritative circuit can use the schematic exception. Powered input/indicator work remains E1 and restrained stepper/servo work remains E2. |
+| Downstream effects | **Contained without bending a shared contract.** Lessons 016--018, 022--024, 034--036, 046--050 retain their ownership, timing, persistence, motion and safety meanings. The implementation uses its project-local canonical audit format and does not relabel an existing volatile audit buffer or persistent ledger as a generic transaction journal. A future request for a shared transaction manager, generic durable log, persisted physical position or new global failure convention still requires architectural and migration review. |
 
 ## Composition pressure scenario
 
@@ -64,14 +65,14 @@ authorization or completed move.
 
 | Composition pressure | Applicability and required evidence |
 |---|---|
-| Scheduler and time load | **Applicable; open.** Bound identity and confirmation admission, home-policy update, at most one logical step, semantic gate-intent policy, one bounded persistence operation and presentation at the fastest supported cadence. Prove stop inspection cannot be delayed by storage retry, LCD work, home search, chatter, large elapsed jumps or rollover. Retry and recovery advance one bounded stage per call. |
-| Total memory and hardware resources | **Applicable; open.** Measure the full canonical Mega ELF and worst-live stack with all policies, candidates, dual persistent slots/scratch, audit capacity, display buffers, result cells and core ISR allowance. Future E1/E2 evidence additionally accounts for every pin, timer, interrupt, bus/address, claim entry, current and power domain. Test capacities immediately below, at and above every supported limit. |
-| Shared bus or transport | **Applicable to the planned physical composition, absent from E0.** RFID, LCD and optional SD may contend for SPI/I2C or another transport depending on exact specimens. Before any powered plan, name each bus owner, borrower lifetime, chip-select/address, bounded transaction, arbitration order, partial-acquisition rollback and participant restart. An RFID or display transaction may not hold a bus while motion/stop processing waits. E0 consumes copied records only and proves no transport behavior. |
-| Persistence and recovery | **Applicable and promotion-blocking.** “Audit records survive a simulated interrupted write” requires a named fixed-size schema, configuration/project identity, monotonic generation/sequence rules, checksum, capacity/full policy, commit marker and synchronization semantics, exact cut-point fault injection, corruption/erased/ambiguous-slot recovery, retry identity and wear budget. Authorization must not become effective merely because an intent to append exists. An indeterminate commit is recovered from durable bytes before retry; the same logical event cannot be duplicated under a new identity. Persisted step counts never establish physical position after reset: recovery starts gate-closed, motion-off and position-unknown, then requires fresh bounded homing. |
+| Scheduler and time load | **Passed for E0.** Identity and confirmation admission, home-policy update, at most one logical step, semantic gate-intent policy, one bounded persistence operation and presentation remain bounded at the supported cadence. The collision matrix proves that storage retry, presentation failure, home search, chatter, large elapsed jumps and rollover do not displace stop precedence. Retry and recovery advance one bounded stage per call. |
+| Total memory and hardware resources | **Passed for E0; physical resources remain E1/E2.** The canonical Mega ELF measures 26,014 B flash and 1,933 B static SRAM. The 742 B conservative live stack-plus-ISR path receives a 768 B reviewed reserve, leaving 5,491 B against the required 1,024 B margin. Capacity boundaries are covered. Future E1/E2 evidence additionally accounts for every pin, timer, interrupt, bus/address, claim entry, current and power domain. |
+| Shared bus or transport | **Absent from E0; open for the physical composition.** RFID, LCD and optional SD may contend for SPI/I2C or another transport depending on exact specimens. Before any powered plan, name each bus owner, borrower lifetime, chip-select/address, bounded transaction, arbitration order, partial-acquisition rollback and participant restart. An RFID or display transaction may not hold a bus while motion/stop processing waits. E0 consumes copied records only and proves no transport behavior. |
+| Persistence and recovery | **Passed for the E0 supplied-image boundary; physical media remains E1.** The fixed-size schema, project and operation identity, modular sequence rules, checksum, even-capacity/full policy, synchronization evidence, exact interruption images, corruption/erased/ambiguous-slot recovery and retry identity are explicit and tested. Authorization does not become effective before exact durable-start acknowledgement. An indeterminate commit retains the same candidate and operation identity; an exposed start must receive an attributable terminal. Persisted records never establish physical position after reset: recovery starts gate-closed, motion-off and position-unknown, then requires fresh bounded homing. |
 | Motion, external power, or stored energy | **Applicable; E2 remains independently blocked.** E0 publishes only copied intent. E1 may qualify exact inputs, storage and inert indicators with actuators absent. E2 requires exact stepper/driver, servo, supplies, protection, current limits, restraint, guarded lightweight paper parts, bounded homing/travel, gate geometry, command expiry, de-energized startup/reset/fault/shutdown and independent physical removal of actuator power. Stop intent and a stop LED are not an emergency stop or proof of removed power. A gate cannot open while position is unknown, homing, moving, interrupted or faulted. |
-| Observation identity and provenance | **Applicable; open.** Each frame preserves source kind/ID, timestamp and sequence, validity/status, configuration revision, identity-record generation, confirmation epoch, home-evidence epoch, homing generation, target bin and audit event identity. Evidence from different epochs cannot be combined. A repeated RFID presentation or held key cannot authorize a new cycle after expiry, reset or recovery. The audit record links the authorization and terminal outcome without claiming the identifier authenticates a person. |
-| Diagnostic interference | **Applicable; open.** LCD, position LEDs, home LED, coil and semantic gate-intent mirrors, stop LED, optional Serial and audit storage share time, memory, transports and possibly pins. Filling, disabling, disconnecting or failing any diagnostic cannot change authorization, homing, travel, gate-close intent or stop precedence. If durable audit admission is an explicit precondition to starting a cycle, its failure prevents new motion; that is policy, not diagnostic side effect. Once motion exists, audit failure still forces the named safe transition without delaying close/off intent. |
-| Failure collision and recovery | **Applicable; open.** Structural malformed input without independent stop/fault rejects without mutation. A separately valid stop commits closed-gate/all-off intent and invalidates pending authorization and position even when another field is malformed. Before any new motion, identity plus confirmation plus target must be admitted, the authorization-start audit event must be durably resolved, and homing state must be valid for the commanded phase. If later audit persistence fails, primary safe-state intent publishes first while terminal evidence remains pending/failed and attributable. Recovery reads durable state, reports ambiguity, starts inhibited and unknown, then requires faults absent, a fresh identity/confirmation epoch and successful homing; it never resumes an interrupted move or gate dwell. |
+| Observation identity and provenance | **Passed for E0.** Each frame preserves source kind/ID, timestamp and sequence, validity/status, configuration revision, identity-record generation, confirmation epoch, home-evidence epoch, homing generation, target bin and audit event identity. Evidence from different epochs cannot be combined. Repeated presentation or held-key evidence cannot authorize a new cycle after expiry, reset or recovery. The audit pair links authorization and terminal outcome without claiming that an identifier authenticates a person. |
+| Diagnostic interference | **Passed for E0; electrical contention remains E1/E2.** Presentation evidence is preflight-only and its failure cannot alter authorization, homing, travel, gate-close intent, stop precedence or audit meaning. Durable audit admission is an explicit policy precondition to motion. E1/E2 must separately prove that physical indicators, transports and storage cannot delay safe output application. |
+| Failure collision and recovery | **Passed for E0.** Malformed input without independent stop/fault rejects without mutation. A separately valid stop publishes closed-gate/all-off intent even beside malformed unrelated evidence, preserves any exposed operation identity and requires an attributable `Stopped` terminal record. Exact repeated acknowledgements are idempotent; changed repeats fault without mutation. Recovery starts inhibited and unknown, accepts only a canonical prefix, reconciles an interrupted start into its reserved terminal slot and never resumes an interrupted move or gate dwell. |
 
 The transactional composition cannot promise one atomic commit across RAM
 policies, durable media and eventual physical writes. The bounded local
@@ -96,8 +97,8 @@ durability remains E1.
 
 ## Post-remediation closure
 
-The repaired detailed plan closes every bounded pre-implementation issue
-identified above without changing a published dependency:
+The repaired detailed plan and implementation close every bounded
+architecture issue identified above without changing a published dependency:
 
 - `InertPartsCarousel` is a project-local coordinator. Lesson 049 owns local
   identity/image semantics, Lesson 050 owns session-local homing, and Lesson
@@ -149,9 +150,11 @@ identified above without changing a published dependency:
   the completed entry is compared with the selected bin's configured code,
   never raw identifier bytes.
 - E0 owns zero pins, timers, interrupts, buses, claims, endpoints, supplies and
-  storage transports. The plan caps the coordinator and each child at `128 B`,
-  the sketch at 28,672 B flash and 2,048 B static SRAM, requires a conservative
-  stack/ISR allowance of at least 512 B, and requires 1,024 B remaining after
+  storage transports. Reusable children retain the `128 B` ceiling; the
+  project coordinator has the reviewed `320/384 B` target/hard-ceiling
+  exception. The sketch is capped at 28,672 B flash and 2,048 B static SRAM,
+  requires a conservative stack/ISR allowance of at least 768 B, and requires
+  1,024 B remaining after
   globals plus that allowance.
 - The deterministic matrix now names all identity/confirmation/bin cases,
   qualified home edges and bounds, every-phase stop collisions, interrupted
@@ -159,28 +162,13 @@ identified above without changing a published dependency:
   and two-instance fieldwise replay. Packaging, compile-only examples, HTML,
   pencil-PDF publication and canonical-document reconciliation are explicit.
 
-These are architecture-plan closures, not test results. The following remain
-promotion gates:
-
-- implement the three plan-fixed surfaces and execute the exhaustive matrices
-  plus the eight-binding/eight-bin/eight-audit-slot maximum collision;
-- prove the published Lesson 047 preview/commit seam remains infallible after
-  the stated preflight without changing its public contract;
-- measure object sizes, complete Mega ELF flash/static SRAM, largest-live
-  stack/ISR margin, bounded update cadence and capacity below/at/above limits;
-- complete standalone-header, strict/custom/sanitizer, archive, Arduino,
-  package, umbrella, example, HTML, pencil-PDF, site and canonical-document
-  gates; and
-- retain exact E1 input/storage electrical and durability evidence and exact
-  E2 powered-motion, restraint, de-energization and named-person acceptance as
-  separate open work.
-
-The E0 implementation is explicitly permitted against this repaired plan.
-That permission authorizes writing and testing only the fixed E0 surfaces,
-workspaces, compile-only examples and inert publication artifacts. It does not
-grant promotion, powered work, durable-media claims or physical-position
-claims; promotion still awaits the evidence above and the post-implementation
-stress pass.
+The implementation and terminal review close the E0 gates named above. The
+exhaustive maximum fixture, Lesson 047 composition seam, object and Mega
+measurements, stack/ISR reserve, bounded capacities, standalone/strict/
+sanitizer/archive/Arduino/package/example and publication surfaces all pass.
+Exact E1 input/storage electrical and durability evidence and exact E2
+powered-motion, restraint, de-energization and named-person acceptance remain
+separate open work.
 
 ### Latest normative closure addendum
 
@@ -234,11 +222,9 @@ and attribution requirements implementation-exact:
   replaces or downgrades an already latched `Fault` phase or its cause. A
   malformed stop cannot exercise the independent-stop exception.
 
-These additions remove representational ambiguity; they do not add evidence.
-They therefore preserve **E0 implementation permitted: yes** and
-**Promotion permitted: no** until the implementation, exhaustive malformed
-layout/pair/acknowledgement/recovery matrix, measured gates and
-post-implementation stress pass succeed.
+The implementation follows these representation rules. Exhaustive malformed
+layout/pair/acknowledgement/recovery tests, measured gates and this terminal
+post-implementation review close the corresponding E0 evidence.
 
 ### Final child-and-input closure addendum
 
@@ -317,13 +303,33 @@ preserving the transactional, storage and safety closures:
   than weakening Lesson 047 or hiding state.
 
 This addendum is the controlling final composition where it differs from
-earlier review text. It keeps **E0 implementation permitted: yes** because the
-joint preflight, semantic gate, copied batch/presentation evidence and audit
-binding are fully specified. **Promotion permitted remains no** until their
-exhaustive implementation, aggregate measurement and post-implementation
-review pass.
+earlier review text. The joint preflight, semantic gate, copied
+batch/presentation evidence and audit binding are implemented and covered by
+the exhaustive matrix. E0 promotion is permitted.
 
-The implementation matrix must specifically prove:
+### Final bounded implementation decision
+
+Implementation retained the Lesson 050 preview but intentionally did not
+publish the earlier two-child staged-preview model. After all fallible
+preflight, Lesson 051 commits the retained Lesson 050 preview and applies one
+atomic Lesson 047 step command. Because its owned sequencer is fixed at
+`holdAtRest = false`, the one-step call advances logical position and returns
+coil intent to off before publication. `coilBits == 0` is therefore the
+specified Lesson 051 result, not missing observation evidence. Lesson 051
+makes no nonzero-coil claim; Lesson 047 remains the canonical staged
+preview/commit lesson for inspecting logical coil patterns.
+
+An externally exposed authorization-start record creates a reconciliation
+obligation even if stop wins before ordinary progress. Stop must preserve the
+operation identity and produce an attributable `Stopped` terminal record; it
+cannot erase or abandon the exposed start. Recovery likewise remains
+inhibited until that terminal is reconciled. The measured coordinator object
+is `380 B`, missing its `320 B` target but passing its reviewed `384 B` hard
+ceiling by only 4 B. These decisions preserve the E0 memory-only surface; E1
+endpoint and media qualification and E2 powered-motion acceptance remain
+independently open.
+
+The implementation matrix proves:
 
 - Lesson 050 rejects nonzero home and either bound that does not strictly
   surround zero;
@@ -377,14 +383,13 @@ The implementation matrix must specifically prove:
   physical acceptance before powered claims: **preserved**.
 - Pencil presentation for every non-schematic PDF visual: **preserved**.
 
-No published interface is challenged. The repaired plan resolves the local
+No published interface is challenged. The implementation resolves the local
 cross-medium strain with project-local owner/candidate generations, operation
 and authorization identities, retryable external durable acknowledgement,
 bounded prepare/admit/apply stages, safe intent before terminal
-reconciliation, and canonical-prefix recovery. This remains a planned
-protocol until its exhaustive implementation fixtures pass.
+reconciliation, and canonical-prefix recovery. The exhaustive fixtures pass.
 
-If implementation requires a generic transaction manager, changes an
+If future work requires a generic transaction manager, changes an
 existing persistent-record schema, persists “known position” across reset,
 allows motion before durable audit resolution, needs unbounded recovery or
 storage queues, borrows endpoint/bus ownership into the project, changes
@@ -396,10 +401,10 @@ durable decision.
 
 ## Stress disposition
 
-**Natural fit after bounded local remediation.** The repaired detailed plan
-closes the pre-implementation architecture strain without changing a
-published dependency. It fixes exact child boundaries, caller-owned storage,
-private transaction identities, independent stop admission, durable
+**Natural fit after bounded local remediation; terminal E0 pass.** The
+implementation closes the architecture strain without changing a published
+dependency. It retains exact child boundaries, caller-owned storage, private
+transaction identities, independent stop admission, durable
 authorization-start acknowledgement before motion, gate-open invariants,
 terminal reconciliation, bounded recovery, quantitative E0 budgets and
 explicit E1/E2 exclusions.
@@ -411,38 +416,32 @@ de-energization or safety. Those remain separate E1/E2 gates.
 
 ## Gate result
 
-- Disposition: natural fit after bounded local remediation
-- E0 implementation permitted: yes, strictly against the repaired detailed
-  plan and without widening any E1/E2 or durability claim
-- Closed pre-implementation risks: project-local API/layering; caller-owned
+- Disposition: natural fit after bounded local remediation; terminal E0 pass
+- E0 promotion permitted: yes, without widening any E1/E2 or physical
+  durability claim
+- Closed E0 risks: project-local API/layering; caller-owned
   lifetimes; shared native logical-zero coordinate and full homing-excursion
   union; independent live/idle direct-stop and all-off fallback; qualified-home
   stop/reset/zero-off synchronization; prepare, durable-admit, apply and
   terminal-reconcile ordering; exact audit encoding/capacity/recovery;
   source/authorization/home/operation provenance; gate-open invariant;
   failure precedence; bounded work; quantitative E0 budgets; E1/E2 exclusions
-- Residual gates: exhaustive implementation and collision replay; proof that
-  the published Lesson 047 preview/commit and direct-stop/reset seams satisfy
-  the plan; native-zero/bin-plus-excursion union, live/idle/fallback stop, and
-  qualified-home stop/reset/verify/collision matrices;
-  object/flash/static-SRAM/stack/ISR/cadence measurement; packaging, example,
-  HTML, pencil-PDF, site and canonical-document integration; exact E1
-  storage/input evidence and exact E2 powered-motion acceptance
-- Required discussion or decision IDs: none for the repaired E0 plan; required
-  if implementation permits unaudited motion, persists known position,
+- Residual gates: exact E1 storage/input electrical and durability evidence,
+  and exact E2 powered-motion, restraint, de-energization and named-person
+  acceptance
+- Required discussion or decision IDs: none for the promoted E0 boundary;
+  required if later work permits unaudited motion, persists known position,
   changes `BoundedStepperSequence`, `FixedStorage`, status or lifecycle
   contracts, introduces an E0 gate-actuator child, cannot make the joint
   Lesson 050/047 preflight infallible after validation, or selects any
   remediation trigger above
-- Remediation owner and next action: Lessons 049--051 implementation owner
-  builds the plan-fixed surfaces and full maximum-composition fixture; the
-  post-implementation reviewer repeats this pass with measured evidence
-- Verification commands and results: canonical queue, cadence, curriculum,
-  project catalog, development, safety, PDF policy, stress template and
-  relevant existing motion/persistence surfaces and repaired detailed plan
-  inspected; implementation, compile, size, package, lesson, site and hardware
-  checks not run because this remains a pre-implementation pass
-- Maximum-composition scenario and proof: scenario and required collision
-  replay specified above; deterministic fixture, aggregate measurement and
-  all physical evidence remain open
-- Promotion permitted: no
+- Remediation owner and next action: E0 remediation is complete; E1/E2 owners
+  retain the separate physical acceptance work
+- Verification commands and results: the strict/custom/sanitizer host matrix,
+  standalone/archive/package/example gates, canonical Mega build and size
+  measurements, and lesson/site/PDF publication gates pass; no physical
+  hardware claim was run or inferred
+- Maximum-composition scenario and proof: deterministic maximum fixture and
+  collision replay pass; aggregate object and Mega measurements pass; all
+  physical evidence remains open
+- Promotion permitted: E0 yes; E1/E2 no
