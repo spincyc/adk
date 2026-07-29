@@ -17,7 +17,7 @@ recorded in
 Its findings must be reconciled through bounded tasks; the audit itself does
 not promote work or replace this ledger.
 
-- Lessons 001--063 are promoted and host verified; physical cards remain open.
+- Lessons 001--064 are promoted and host verified; physical cards remain open.
 - Lesson 030 has an independently reviewed composition core, canonical Mega
   example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
@@ -85,7 +85,7 @@ qualified.
 | [055--057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Host verified; exact passive fixtures/restrained demonstration bench open | Preserve the fixed clue graph, copied audit-image recovery, stop precedence, atomic solve transaction, and inert presentation/release intent; retain passive input/presentation qualification at E1 and any restrained no-load demonstration fixture at E2 |
 | [058--060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Host verified; exact powered display fixtures open | Preserve supplied-time digit transactions, bounded MAX7219 command/receipt evidence, and the timing-desk composition, including explicit refresh loss, partial-prefix attribution, cleanup, generation binding, self-test, disagreement attribution, and the zero-hardware E0 boundary |
 | [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Host verified; E1a--E1d/E2 open | Preserve the published copied-evidence policies and inert museum monitor; exact powered specimens, persistence, presentation, and relay work remain separately gated |
-| [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Active planning; not implemented | Review the implementation-depth E0 plan and the [Lesson 064 transaction](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md), [Lesson 065 probe-set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md), and [Lesson 066 mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md) stress passes before dependency-ordered implementation; retain exact specimens, powered single-wire behavior, thermal accuracy, presentation, persistence, and E1a--E1d acceptance as open gates |
+| [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Host verified through 064; Lessons 065--066 planned | Preserve the published E0 [Lesson 064 transaction](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md); implement the [Lesson 065 probe set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md) and [Lesson 066 mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md) in dependency order; retain exact specimens, powered single-wire behavior, thermal accuracy, presentation, persistence, and E1a--E1d acceptance as open gates |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -131,7 +131,7 @@ work; retail kit names are not electrical identities.
 | [055--057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Host verified; exact passive fixtures/restrained demonstration bench open | Fixed clue-constraint model, copied-value fault-aware panel, and inert escape-room console |
 | [058--060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Host verified; exact powered display fixtures open | Multiplexed digits, MAX7219 presentation, and the dual-display timing desk are published at E0; exact powered endpoints and physical acceptance remain separate E1 gates |
 | [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Host verified; E1a--E1d/E2 open | Copied resistive, thermal/radiant, reed, acknowledgement, and receipt evidence compose into an inert monitor; powered specimens, persistence, presentation, and relay work remain separately gated |
-| [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Active planning; not implemented | Implementation-depth E0 plan and [064 transaction](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md), [065 probe-set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md), and [066 mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md) stress passes are active; no code, powered adapter, wiring, thermal-accuracy, persistence, or E1 support claim |
+| [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Host verified through 064; Lessons 065--066 planned | `OneWireTransactionPolicy` is published at E0 with copied requests, semantic line intents, exact copied receipts, bounded search, timeout, rollback, and cleanup; [065 probe-set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md) and [066 mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md) implementation remain planned; no powered adapter, wiring, thermal-accuracy, persistence, or E1 support claim |
 | [067--069](projects/component_project_cadence.md) | Queued | Normalized inertial records, source qualification, motion recorder |
 | [070--072](projects/component_project_cadence.md) | Queued | Threshold descriptors, characterization, module test bench |
 | [073--075](projects/component_project_cadence.md) | Re-scope required | DS1302, BMP180, and PCF8591 are not in the authorized Elegoo union; retain numbers but replace subjects before activation |
@@ -292,16 +292,18 @@ aggregate objects, leaving 5,840 bytes residual SRAM. The stack target miss is
 independently reviewed below its hard limit. E1c/E1d powered
 presentation/combined sensing and E2 relay-lamp acceptance remain open.
 
-Lessons 058--063 are host verified. Lessons 064--066 have an active
-[implementation-depth E0 plan](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md)
-and initial architecture stress passes for the
-[bounded transaction](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md),
-[qualified probe set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md),
+Lessons 058--064 are host verified. Lesson 064 publishes the E0
+`OneWireTransactionPolicy` under the
+[implementation-depth plan](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md)
 and
-[thermal mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md).
-They are planning artifacts, not an implementation or support claim. Exact
-powered specimens, electrical single-wire behavior, thermal accuracy,
-presentation, persistence, and E1a--E1d acceptance remain open.
+[bounded-transaction stress pass](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md).
+Lessons 065 and 066 remain planned under the
+[qualified probe-set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md)
+and
+[thermal-mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md)
+stress passes. Exact powered specimens, electrical single-wire behavior,
+thermal accuracy, presentation, persistence, and E1a--E1d acceptance remain
+open.
 
 Cadence entries for Lessons 067--081 are not implementation-ready lesson
 plans. Before code begins for each later three-lesson arc, expand it to the

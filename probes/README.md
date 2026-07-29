@@ -103,3 +103,23 @@ entry in `museum_case_resource_reviews.json` is required for any target miss;
 hard ceilings and residual-SRAM floors remain non-reviewable. Fingerprints are
 lesson-scoped so adding a later boundary does not invalidate an unchanged
 earlier review.
+
+Run the thermal-gradient probe through Lesson 064 with:
+
+```sh
+make thermal-gradient-resource-check
+```
+
+This gate compiles the canonical owned single-wire replay both with the
+ordinary Arduino settings and as an exact no-LTO fixture. It measures linked
+flash, static SRAM, synchronous stack, the policy object, every public value,
+and the request, search, intent, receipt, and snapshot caller buffers. The
+linked fixture must contain exactly one of each required storage object.
+Evidence and its compiler/core/flag/source fingerprint are written to
+`build/evidence/thermal-gradient-resource-probe.json`.
+
+An exact marker in the resource-budget section of the controlling Lessons
+064--066 plan and a matching fingerprinted entry in
+`thermal_gradient_resource_reviews.json` are required for a target miss.
+Changed measurements or sources invalidate the review. Hard ceilings and the
+residual-SRAM hard floor are non-reviewable.

@@ -802,6 +802,41 @@ that buffer is 806 bytes without embedding or duplicating the buffer inside
 the coordinator. These are software resource measurements, not
 powered-operation, optical-output, or bench evidence.
 
+## Bounded copied 1-Wire transactions
+
+`OneWireTransactionPolicy` is the host-verified Lesson 064 E0 policy for a
+closed set of typed 1-Wire operations. It expands one request into bounded
+semantic `DriveLow`, `Release`, and `Sample` intents, then accepts only fully
+correlated copied receipts. It is not a hardware bus or GPIO adapter and owns
+no pin, pull-up, timer, interrupt, clock, supply, callback, or heap allocation.
+
+The admitted operations are reset/presence, one bounded Search ROM pass,
+single-drop Read ROM, and addressed power-supply, conversion-start,
+single-status-read, and scratchpad-read transactions. Arbitrary opcodes,
+captured pulse scripts, unknown-protocol replay, unbounded polling, EEPROM
+copy, and parasite-power operation are outside the published contract.
+
+Initialization, reset, cancellation, timeout, producer failure, and shutdown
+all preserve explicit release-request and release-confirmation state. The
+policy cannot claim a physical idle voltage: `Release` is semantic intent, and
+a copied cleanup receipt is only producer evidence. A future E1 endpoint must
+separately prove open-drain-safe ownership, pull-up behavior, line voltage,
+slot timing, rollback, and shutdown.
+
+- One-wire policy:
+  [source](https://github.com/spincyc/adk/blob/main/src/one_wire_transaction_policy.h),
+  [implementation](https://github.com/spincyc/adk/blob/main/src/one_wire_transaction_policy.cpp),
+  [core tests](https://github.com/spincyc/adk/blob/main/tests/test_one_wire_transaction_policy.cpp),
+  [timing tests](https://github.com/spincyc/adk/blob/main/tests/test_one_wire_transaction_policy_timing.cpp),
+  [search tests](https://github.com/spincyc/adk/blob/main/tests/test_one_wire_transaction_policy_search.cpp),
+  [interrupt-pressure tests](https://github.com/spincyc/adk/blob/main/tests/test_one_wire_transaction_policy_interrupt.cpp),
+  [Mega replay](downloads/sketches/Lesson064OwnedSingleWireTransactions.ino),
+  and [Lesson 064](lessons/064.md)
+
+The canonical Mega replay and the isolated no-LTO/resource probes are software
+evidence only. Exact externally powered and parasite-powered endpoints remain
+separate E1a and E1b qualification campaigns.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.

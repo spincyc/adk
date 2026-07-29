@@ -1,0 +1,41 @@
+{
+  "reviews": [
+    {
+      "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "266a24ec9cfa519756326a15563b6037a7be77e0b4f68a597efb9bb2d3f843b4",
+      "hard_bytes": 14336,
+      "lesson": "064",
+      "metric": "ordinary_flash",
+      "observed_bytes": 10390,
+      "rationale": "The deployed fixture is 150 B above target with 3,946 B of hard-limit margin; its typed and provenance-bound transactions, monotonic deadlines, Search ROM framing, and release-confirmed rollback are required deterministic evidence.",
+      "reviewer": "independent-resource-review/l064-ordinary-flash-10390-terminal-v2",
+      "target_bytes": 10240
+    },
+    {
+      "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "266a24ec9cfa519756326a15563b6037a7be77e0b4f68a597efb9bb2d3f843b4",
+      "hard_bytes": 14336,
+      "lesson": "064",
+      "metric": "flash",
+      "observed_bytes": 12116,
+      "rationale": "The attribution build deliberately disables LTO and jump tables for exact stack and map evidence; it retains 2,220 B of hard-limit margin, and removing transaction, correlation, deadline, or rollback paths would weaken the approved deterministic contract.",
+      "reviewer": "independent-resource-review/l064-exact-flash-12116-terminal-v2",
+      "target_bytes": 10240
+    },
+    {
+      "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "266a24ec9cfa519756326a15563b6037a7be77e0b4f68a597efb9bb2d3f843b4",
+      "hard_bytes": 256,
+      "lesson": "064",
+      "metric": "object",
+      "observed_bytes": 254,
+      "rationale": "The padding-free object owns the complete configuration and snapshot, exact receipt correlation, monotonic and deadline anchors, and lifecycle, phase, and search state; its 2 B hard margin imposes zero growth and requires fresh review after any ABI change.",
+      "reviewer": "independent-resource-review/l064-object-254-terminal-v2",
+      "target_bytes": 192
+    }
+  ],
+  "schema": 1
+}

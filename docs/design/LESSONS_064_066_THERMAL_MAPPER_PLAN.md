@@ -56,8 +56,10 @@ Implementation order is strict:
 ## Shared ordering and status rules
 
 Every copied producer value has nonzero source/configuration identity,
-sequence, observation time, and `Status`. Supplied time is the only policy
-clock. Every duration is nonzero and below the modular half range. Equal time
+sequence, observation time, and `Status`. Operation ROM identity remains
+bound through the copied request and emitted intent; the receipt does not
+duplicate a ROM field. Supplied time is the only policy clock. Every duration
+is nonzero and below the modular half range. Equal time
 is idempotent only for byte-identical evidence or an explicitly receipt-only
 transition. Changed duplicates, future/backward evidence, exact half-range
 ambiguity, identity change, sequence regression, and exhaustion reject
@@ -282,6 +284,9 @@ emits at most one release intent and never polls or synthesizes a receipt.
 Shutdown enters a closing cleanup state that remains initialized only for its
 matching release receipt; `confirmCleanup()` then makes the policy inert.
 Without confirmation the snapshot remains `ReleaseUnconfirmed`.
+Successful operation semantics also emit one final correlated `Release`;
+`completedEvidence()` remains busy until its matching successful receipt
+confirms release, then publishes the completed copied evidence.
 
 The exact spelling may change during implementation review, but the
 information boundary may not weaken silently. Public large results are
@@ -299,6 +304,16 @@ request is frozen at `begin()`, and the closed operation enum is the only
 command surface: arbitrary bytes, captured pulse trains, and replay scripts
 are excluded.
 
+`MatchRomReadConversionStatus` is the sole continuation exception to the
+ordinary reset-and-command shape. It is admitted only after a successful
+`MatchRomStartConversion` and confirmation of that operation's final
+`Release`, with the same nonzero ROM bound in the new request. It emits one
+direct read slot: no reset, Match ROM, or new Convert T command is inserted.
+The receipt repeats intent correlation but has no ROM field; identity remains
+bound by the copied request and intent. A status continuation cannot follow
+another status continuation, so every additional observation requires a new
+completed conversion request rather than an implicit polling loop.
+
 The phase order is reset-low, released presence sample, bounded write slots,
 bounded read slots, then completion. Each matching
 receipt advances at most one phase or slot. A duplicate never advances.
@@ -311,10 +326,15 @@ line intent, and no E1 adapter may reinterpret `Release` as output-high or
 strong-pull power. Parasite execution requires a separate reviewed power
 capability and stress pass.
 
-Every timeout, cancellation, producer failure, contradictory receipt, or
-sequence exhaustion emits one canonical `Release` rollback intent. Only its
-matching receipt confirms rollback. Until then the snapshot remains
-rollback-pending. E0 never claims the physical line is released.
+Every timeout, cancellation, or accepted producer failure emits one canonical
+`Release` rollback intent. Only its matching receipt confirms rollback. Until
+then the snapshot remains rollback-pending. Capacity is preflighted before a
+transaction: lifecycle, transaction, phase-sequence reserve, and prior
+receipt-sequence exhaustion reject atomically with `CapacityExceeded`, without
+wrapping a counter or partially starting a new operation. Cleanup transitions
+also reject when their generation or phase sequence cannot advance; they do
+not fabricate a release receipt. E0 never claims the physical line is
+released.
 
 ### Deterministic proof
 
@@ -391,6 +411,13 @@ struct OneWireTransactionEvidence
     Status                 status;
 };
 
+struct OneWireSearchPassEvidence
+{
+    OneWireTransactionEvidence transaction;
+    OneWireSearchState         requestSearch;
+    OneWireSearchState         completedSearch;
+};
+
 struct Ds18b20ConversionReadEvidence
 {
     OneWireRomCode            rom;
@@ -406,10 +433,10 @@ struct Ds18b20SetEnvelope
     uint16_t                      configurationRevision;
     uint32_t                      cycleSequence;
     TimePoint                     observedAt;
-    OneWireTransactionEvidence    search;
-    OneWireRomCode                returnedRoms[4];
-    uint8_t                       returnedRomCount;
+    OneWireSearchPassEvidence     searchPasses[4];
+    uint8_t                       searchPassCount;
     bool                          searchComplete;
+    bool                          searchOverCapacity;
     Ds18b20ConversionReadEvidence reads[4];
     uint8_t                       readCount;
     Status                        status;
@@ -487,18 +514,40 @@ duplicate ROMs, wrong family/ROM CRC, invalid signed raw-sixteenth ranges, and
 resolution/deadline mismatch. Dallas CRC-8 uses reflected polynomial `0x8c`,
 initial value zero, least-significant bit first, and no final XOR.
 
-The set envelope preserves one complete bounded ROM-search result and the full
-Lesson 064 owner/lifecycle/configuration/request/transaction attribution for
-search, conversion request, conversion completion, and scratchpad read.
+The set envelope preserves up to four chained completed `SearchRomPass`
+records and the full Lesson 064 owner/lifecycle/configuration/request/
+transaction attribution for every search pass, conversion request, conversion
+completion, and scratchpad read.
+Each search record retains both its request search state and completed search
+result. The first request is the empty initial state. Every later request must
+equal the immediately preceding completed result, including ROM,
+`lastDiscrepancy`, and `lastDevice`; a pass cannot follow a result with
+`lastDevice == true`. A complete nonempty enumeration has
+`searchComplete == true`, `searchOverCapacity == false`, and
+`lastDevice == true` on its final retained result. `searchOverCapacity` is
+valid only with four retained results and `lastDevice == false` on the fourth,
+which proves that enumeration has another result beyond the envelope. It is
+mutually exclusive with `searchComplete` and commits transport/capacity fault
+evidence.
+Returned ROM identity and order are derived only from each retained completed
+search result. There is no independently supplied returned-ROM list that can
+diverge from the transaction witnesses.
 Conversion/read correlation requires the exact ROM and one nonzero conversion
 generation. Crossed ROM, lifecycle, configuration, request, transaction, or
 generation rejects the complete set atomically.
 
 Only a structurally complete successful search can prove `Missing`. Truncated,
-failed, or over-capacity search is `TransportFault`. Duplicate returned ROMs
-are `DuplicateIdentity`; a CRC-valid unknown ROM remains bounded set-fault
-evidence and never substitutes for a configured identity. Returned
-permutation never changes configured slot order.
+failed, discontinuous, unterminated, or over-capacity search is
+`TransportFault`. Duplicate derived result ROMs are `DuplicateIdentity`; a
+CRC-valid unknown derived result remains bounded set-fault evidence and never
+substitutes for a configured identity. Search-result permutation never changes
+configured slot order. Exactly four configured slots does not imply exactly
+four discovered devices: one through four terminally enumerated results can
+prove the remaining configured identities missing, while a fifth result
+exceeds the envelope and cannot be silently dropped. A zero-pass envelope
+cannot claim a complete enumeration because Lesson 064 supplies no completed
+search result to witness it; no-presence evidence remains a transport outcome
+and cannot prove all four configured identities missing at this boundary.
 
 A scratchpad is exactly nine bytes and its CRC is checked before decoding.
 The configuration-byte oracle requires bit 7 to be zero and bits 4--0 to be
@@ -544,13 +593,17 @@ precedence follows configured slot order.
 Set-level precedence and status mapping are exact:
 
 1. malformed structure, zero/changed identity, invalid enum, crossed
-   correlation, or count above four rejects atomically with
+   correlation, search-pass count above four, contradictory
+   complete/over-capacity flags, or broken search-state continuity rejects atomically with
    `InvalidArgument` or `CapacityExceeded`;
-2. producer failure or incomplete/failed search commits
+2. producer failure or incomplete, failed, unterminated, or over-capacity
+   search commits
    `Ds18b20SetQuality::TransportFault` and returns the complete producer
    `Status`;
-3. duplicate returned ROM commits `DuplicateIdentity` with `StatusCode::Ok`;
-4. a CRC-valid foreign ROM commits `UnknownIdentity` with `StatusCode::Ok`;
+3. duplicate derived result ROM commits `DuplicateIdentity` with
+   `StatusCode::Ok`;
+4. a CRC-valid foreign derived result ROM commits `UnknownIdentity` with
+   `StatusCode::Ok`;
 5. absence proved by complete search commits `Missing` with `StatusCode::Ok`;
 6. otherwise the set is `Complete`, with per-slot ROM CRC, scratchpad CRC,
    resolution, reset-default, pending, stale, and step outcomes retained in
@@ -559,7 +612,9 @@ Set-level precedence and status mapping are exact:
    slot order.
 
 Tests cover literal ROM and scratchpad CRC vectors with corruption in every
-byte; all search permutations/counts and complete versus incomplete search;
+byte; all search permutations/counts, exact request/result continuity,
+early/missing `lastDevice`, fourth-result nonterminal over-capacity, and
+complete versus incomplete search;
 unknown/duplicate/missing collisions; every owner/lifecycle/configuration/
 request/transaction/conversion/read correlation field; all signed raw
 endpoints and resolution masks/reserved bits; quantization intervals; `+85 C`
@@ -859,6 +914,33 @@ Lesson 064 caller buffers target/hard-limit 128/256 bytes; Lesson 065 uses
 4,096 bytes and the non-reviewable hard floor is 2,048 bytes. Hard/residual
 failures cannot be waived. Target misses require current tuple-bound
 independent review.
+
+The exact Lesson 064 policy object is 254 bytes. Its 62-byte target miss is
+accepted because the object must own the complete 96-byte configuration,
+84-byte caller-visible snapshot, exact 39-byte prior receipt for collision-free
+changed-duplicate rejection, cross-transaction monotonic-time anchor, and
+lifecycle state. Borrowing configuration,
+narrowing timing values, or replacing the exact receipt with a digest would
+weaken the approved contract. The object remains 2 bytes below the
+non-reviewable hard ceiling and therefore requires a fresh review after any
+ABI or member-layout change.
+
+Resource-review: lesson=064 metric=object observed=254 target=192 hard=256 disposition=accepted-target-miss
+
+The final ordinary fixture uses 10,390 bytes of flash, 150 bytes above the
+10 KiB target and 3,946 bytes below the hard ceiling. The exact no-LTO fixture
+uses 12,116 bytes, 1,876 bytes above target and 2,220 bytes below the hard
+ceiling. These target misses are accepted after independent review because the
+monotonic-time, deadline, provenance, and configuration repairs are contract
+correctness, and the linked typed operations, exact receipt correlation,
+Search ROM framing, and release-confirmed rollback paths cannot be removed or
+merged without weakening the approved deterministic semantics. Static SRAM is
+735 bytes, synchronous stack is 199 bytes, caller buffers total 207 bytes, and
+residual SRAM is 7,130 bytes; each SRAM gate passes.
+
+Resource-review: lesson=064 metric=ordinary_flash observed=10390 target=10240 hard=14336 disposition=accepted-target-miss
+
+Resource-review: lesson=064 metric=flash observed=12116 target=10240 hard=14336 disposition=accepted-target-miss
 
 No heap, virtual dispatch, callbacks, recursion, polling loop, retry loop,
 catch-up loop, arbitrary-length script interpreter, hidden clock, or hidden

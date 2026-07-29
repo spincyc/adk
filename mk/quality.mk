@@ -57,7 +57,8 @@ host-test-sanitize:
 		HOST_LDFLAGS="$(HOST_LDFLAGS) -fsanitize=address,undefined"
 
 firmware-size-check: size-check escape-console-resource-check \
-	display-timing-resource-check
+	display-timing-resource-check museum-case-resource-check \
+	thermal-gradient-resource-check
 	@echo "Firmware satisfies the recorded $(BOARD_FQBN) budgets."
 
 arduino-lint:

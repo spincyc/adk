@@ -60,6 +60,7 @@
 #include "multiplexed_digit_policy.h"
 #include "night_light.h"
 #include "observation_tracker.h"
+#include "one_wire_transaction_policy.h"
 #include "optical_observation.h"
 #include "orientation_presentation.h"
 #include "packet_receiver.h"

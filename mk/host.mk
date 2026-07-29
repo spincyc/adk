@@ -94,6 +94,10 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_greenhouse_health_pattern \
 	$(BUILD_DIR)/host/test_night_light \
 	$(BUILD_DIR)/host/test_observation_tracker \
+	$(BUILD_DIR)/host/test_one_wire_transaction_policy \
+	$(BUILD_DIR)/host/test_one_wire_transaction_policy_search \
+	$(BUILD_DIR)/host/test_one_wire_transaction_policy_timing \
+	$(BUILD_DIR)/host/test_one_wire_transaction_policy_interrupt \
 	$(BUILD_DIR)/host/test_optical_observation \
 	$(BUILD_DIR)/host/test_packet_receiver \
 	$(BUILD_DIR)/host/test_passage_ledger \
@@ -510,6 +514,40 @@ $(BUILD_DIR)/host/test_acoustic_envelope: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/acoustic_envelope.cpp \
 		tests/test_acoustic_envelope.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_one_wire_transaction_policy: $(HOST_CORE_SOURCES) \
+		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		tests/test_one_wire_transaction_policy.cpp $(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		tests/test_one_wire_transaction_policy.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_one_wire_transaction_policy_search: $(HOST_CORE_SOURCES) \
+		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		tests/test_one_wire_transaction_policy_search.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		tests/test_one_wire_transaction_policy_search.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_one_wire_transaction_policy_timing: $(HOST_CORE_SOURCES) \
+		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		tests/test_one_wire_transaction_policy_timing.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		-DADK_TESTING src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		tests/test_one_wire_transaction_policy_timing.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_one_wire_transaction_policy_interrupt: $(HOST_CORE_SOURCES) \
+		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		tests/test_one_wire_transaction_policy_interrupt.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		-DADK_TESTING src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		tests/test_one_wire_transaction_policy_interrupt.cpp \
+		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_optical_observation: $(HOST_CORE_SOURCES) \
 		src/optical_observation.cpp tests/test_optical_observation.cpp \
