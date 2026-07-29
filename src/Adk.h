@@ -75,6 +75,7 @@
 #include "quadrature_encoder.h"
 #include "reaction_timer.h"
 #include "record_sink.h"
+#include "resistive_probe_observation.h"
 #include "rgb_led.h"
 #include "rtc.h"
 #include "rover_controller.h"

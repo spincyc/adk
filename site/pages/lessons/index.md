@@ -65,12 +65,15 @@ third lesson for a deterministic integration project.
 | [Lesson 058 — Nonblocking multiplexed digits](058.md) | Supplied-time logical digit transactions | Blank-before-select ordering, atomic frame swaps, and explicit refresh loss |
 | [Lesson 059 — MAX7219 presentation policy](059.md) | Bounded register command/receipt transactions | Partial-prefix attribution, cleanup evidence, generation binding, and dark-start intent |
 | [Lesson 060 — Dual-display timing desk](060.md) | One stopwatch snapshot and two display policies | Self-test, generation-bound receipts, agreement, and attributed disagreement |
+| [Lesson 061 — Qualifying copied resistive-probe observations](061.md) | Copied Water Level acquisition evidence | Calibration, excitation-off, freshness, ordering, corrosion duty, and explicit quality precedence |
 
-Lessons 001--060 are host verified and their canonical examples compile for
+Lessons 001--061 are host verified and their canonical examples compile for
 the Mega 2560. Lessons 055--057 publish E0 replay only: exact inputs,
 presentation, storage, actuators, and bench acceptance remain open. Lessons
 058--060 likewise leave their exact powered display fixtures and bench
-acceptance open. Every
+acceptance open. Lesson 061 is copied-evidence E0 policy only; its exact
+powered probe, adapter, wiring, discharge behavior, and E1a bench acceptance
+remain open. Every
 circuit remains experimental until its physical acceptance card is recorded.
 Historical preview lessons are preserved under
 [Legacy](../legacy/index.md).
@@ -82,7 +85,7 @@ published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 061–063 | Museum-case monitor |
+| 062–063 | Complete the active museum-case monitor arc |
 | 064–066 | Thermal gradient mapper |
 | 067–069 | Interchangeable motion recorder |
 | 070–072 | Module characterization bench |
