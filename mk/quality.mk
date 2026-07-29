@@ -56,7 +56,8 @@ host-test-sanitize:
 		HOST_CXXFLAGS="$(HOST_CXXFLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer" \
 		HOST_LDFLAGS="$(HOST_LDFLAGS) -fsanitize=address,undefined"
 
-firmware-size-check: size-check escape-console-resource-check
+firmware-size-check: size-check escape-console-resource-check \
+	display-timing-resource-check
 	@echo "Firmware satisfies the recorded $(BOARD_FQBN) budgets."
 
 arduino-lint:

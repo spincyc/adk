@@ -186,6 +186,12 @@ doc/lessons/056.pdf: docs/lessons/056/main.tex \
 doc/lessons/057.pdf: docs/lessons/057/main.tex \
 		docs/lessons/assets/057-atomic-solve-pencil.png \
 		docs/lessons/assets/057-six-station-console-pencil.png
+doc/lessons/058.pdf: docs/lessons/058/main.tex \
+		docs/lessons/assets/058-diagnosis-tree-pencil.png \
+		docs/lessons/assets/058-frame-swap-pencil.png \
+		docs/lessons/assets/058-refresh-deadline-pencil.png \
+		docs/lessons/assets/058-scanbook-pencil.png \
+		docs/lessons/assets/058-three-stage-refresh-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons

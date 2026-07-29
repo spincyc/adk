@@ -8,7 +8,7 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--057 have first-class implementation work, deterministic host
+Lessons 001--058 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
 bench cards remain open. Lessons 037--039 use documented C&K and SparkFun
 reference fixtures; incoming conformance and physical acceptance remain open.
@@ -60,9 +60,10 @@ supply, observation path, and measured acceptance remain E1-open.
 Lessons 055--057 are host verified under the
 [inert escape-console plan](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md);
 exact passive presentation remains E1-open and any restrained demonstration
-actuation remains E2-open. Lessons 058--060 have an implementation-depth E0
-[display timing desk plan](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md)
-and remain active planning rather than promoted interfaces.
+actuation remains E2-open. Lesson 058 is host verified under the
+[display timing desk plan](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md);
+its exact powered display remains E1-open. Lessons 059--060 remain active
+implementation work rather than promoted interfaces.
 The later blocks are ordered for early learner engagement while retaining
 prerequisite, authorization, safety, and evidence gates: interactive motion
 and display projects precede the more methodical environmental and
@@ -155,7 +156,7 @@ For every lesson, the queued implementation order is:
 | 055 | Host verified; passive fixtures open | `ClueConstraintModel` fixed puzzle graph | Copied clue/result cells, bounded rule dispositions, and deterministic replay |
 | 056 | Host verified; presentation/storage fixtures open | `FaultAwareOperatorPanel` copied-value policy | Presentation, audit-image recovery, stop, acknowledgement, and fault result cells |
 | 057 | Host verified; E1/E2 demonstration gates open | `InertEscapeConsole` atomic puzzle composition | Solve, stop, audit, presentation, latch, and lamp intent cells without physical actuation |
-| 058 | Active planning; E1 digit fixture open | `MultiplexedDigitPolicy` | Ordered blank/segment/select intent, frame generation, refresh-loss, and shutdown cells |
+| 058 | Host verified; E1 digit fixture open | `MultiplexedDigitPolicy` | Ordered blank/segment/select intent, frame generation, refresh-loss, and shutdown cells |
 | 059 | Active planning; E1 MAX7219 fixture open | `Max7219PresentationPolicy` | Register command/receipt, partial-prefix, cleanup, generation, and blank-request cells |
 | 060 | Active planning; combined E1 fixture open | `DualDisplayTimingDesk` | One stopwatch snapshot, two side-specific frames, self-test, agreement, and fault attribution |
 

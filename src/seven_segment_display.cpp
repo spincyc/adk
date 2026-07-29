@@ -8,18 +8,6 @@ namespace adk {
             return polarity == SevenSegmentPolarity::CommonCathode ? 0x00U
                                                                    : 0xffU;
         }
-
-        bool validGlyph (SevenSegmentGlyph glyph) noexcept
-        {
-            return static_cast<uint8_t> (glyph) <=
-                   static_cast<uint8_t> (SevenSegmentGlyph::Blank);
-        }
-
-        bool validPolarity (SevenSegmentPolarity polarity) noexcept
-        {
-            return polarity == SevenSegmentPolarity::CommonCathode ||
-                   polarity == SevenSegmentPolarity::CommonAnode;
-        }
     }
 
     SevenSegmentDisplay::SevenSegmentDisplay (
@@ -40,7 +28,7 @@ namespace adk {
 
     Status SevenSegmentDisplay::initialize () noexcept
     {
-        if (!validPolarity (polarity_))
+        if (!validSevenSegmentPolarity (polarity_))
         {
             return StatusCode::InvalidArgument;
         }
@@ -59,22 +47,13 @@ namespace adk {
         SevenSegmentGlyph glyph,
         bool              decimalPoint) noexcept
     {
-        if (!validGlyph (glyph))
+        if (!validSevenSegmentGlyph (glyph))
         {
             return StatusCode::InvalidArgument;
         }
 
-        uint8_t value = segmentPattern (glyph);
-
-        if (decimalPoint)
-        {
-            value |= 0x80U;
-        }
-
-        if (polarity_ == SevenSegmentPolarity::CommonAnode)
-        {
-            value = static_cast<uint8_t> (~value);
-        }
+        const uint8_t value =
+            encodeSevenSegmentGlyph (glyph, polarity_, decimalPoint);
 
         const Status status = output_.show (value);
 
@@ -117,31 +96,4 @@ namespace adk {
         return output_.initialized ();
     }
 
-    uint8_t SevenSegmentDisplay::segmentPattern (
-        SevenSegmentGlyph glyph) noexcept
-    {
-        switch (glyph)
-        {
-        case SevenSegmentGlyph::Zero:  return 0x3fU;
-        case SevenSegmentGlyph::One:   return 0x06U;
-        case SevenSegmentGlyph::Two:   return 0x5bU;
-        case SevenSegmentGlyph::Three: return 0x4fU;
-        case SevenSegmentGlyph::Four:  return 0x66U;
-        case SevenSegmentGlyph::Five:  return 0x6dU;
-        case SevenSegmentGlyph::Six:   return 0x7dU;
-        case SevenSegmentGlyph::Seven: return 0x07U;
-        case SevenSegmentGlyph::Eight: return 0x7fU;
-        case SevenSegmentGlyph::Nine:  return 0x6fU;
-        case SevenSegmentGlyph::A:     return 0x77U;
-        case SevenSegmentGlyph::B:     return 0x7cU;
-        case SevenSegmentGlyph::C:     return 0x39U;
-        case SevenSegmentGlyph::D:     return 0x5eU;
-        case SevenSegmentGlyph::E:     return 0x79U;
-        case SevenSegmentGlyph::F:     return 0x71U;
-        case SevenSegmentGlyph::Dash:  return 0x40U;
-        case SevenSegmentGlyph::Blank: return 0x00U;
-        }
-
-        return 0x00U;
-    }
 }
