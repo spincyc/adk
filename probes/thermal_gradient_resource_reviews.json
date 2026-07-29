@@ -3,7 +3,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "266a24ec9cfa519756326a15563b6037a7be77e0b4f68a597efb9bb2d3f843b4",
+      "fingerprint_sha256": "e2a588c35c0e304c91aaf23ef4914f3f0b440afd3e9d37c87b171635ddb5e9bc",
       "hard_bytes": 14336,
       "lesson": "064",
       "metric": "ordinary_flash",
@@ -15,7 +15,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "266a24ec9cfa519756326a15563b6037a7be77e0b4f68a597efb9bb2d3f843b4",
+      "fingerprint_sha256": "e2a588c35c0e304c91aaf23ef4914f3f0b440afd3e9d37c87b171635ddb5e9bc",
       "hard_bytes": 14336,
       "lesson": "064",
       "metric": "flash",
@@ -27,7 +27,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "266a24ec9cfa519756326a15563b6037a7be77e0b4f68a597efb9bb2d3f843b4",
+      "fingerprint_sha256": "e2a588c35c0e304c91aaf23ef4914f3f0b440afd3e9d37c87b171635ddb5e9bc",
       "hard_bytes": 256,
       "lesson": "064",
       "metric": "object",

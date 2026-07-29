@@ -68,6 +68,83 @@ LOADED_REVIEWS = {}
 LINKED_STORAGE = {}
 COMPILE_DEPENDENCIES = {}
 AUTHORITY_MARKERS = ()
+REVIEW_PATH_MARKERS = {}
+
+
+def canonical_review_value(value, path_markers=None):
+    markers = REVIEW_PATH_MARKERS if path_markers is None else path_markers
+    if isinstance(value, dict):
+        return {
+            canonical_review_value(key, markers): canonical_review_value(
+                item, markers
+            )
+            for key, item in value.items()
+        }
+    if isinstance(value, list):
+        return [canonical_review_value(item, markers) for item in value]
+    if isinstance(value, tuple):
+        return tuple(canonical_review_value(item, markers) for item in value)
+    if not isinstance(value, str):
+        return value
+    result = value
+    for path, marker in sorted(
+        markers.items(), key=lambda entry: len(entry[0]), reverse=True
+    ):
+        result = result.replace(path, marker)
+    result = re.sub(
+        r"/[^\" ]*/(?:\\.cache/arduino/)?sketches/[0-9A-Fa-f]+",
+        "<arduino-sketch-cache>",
+        result,
+    )
+    return result
+
+
+def review_tool_identities(tools):
+    return {
+        name: identity
+        for name, identity in tools.items()
+        if name != "arduino_cli"
+    }
+
+
+def canonical_review_string(value):
+    result = canonical_review_value(value)
+    result = result.replace(str(ROOT), "<repo>")
+    return re.sub(r"/tmp/adk-[^/\" ]+", "<temporary>", result)
+
+
+def canonical_compile_units(compile_units):
+    units = canonical_review_value(compile_units)
+    units = json.loads(normalized(units))
+    units.sort(
+        key=lambda unit: (
+            unit.get("file", ""),
+            json.dumps(unit.get("arguments", ()), separators=(",", ":")),
+        )
+    )
+    return units
+
+
+def dependency_sha256(path):
+    if path.name.endswith(".ino.cpp"):
+        text = path.read_text(encoding="utf-8", errors="strict")
+        canonical = canonical_review_string(text)
+        return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    return probe.sha256(path)
+
+
+def is_orchestration_dependency(path):
+    return path.name.endswith(".ino.cpp.merged")
+
+
+def is_orchestration_manifest(dependency_path, target):
+    if dependency_path.name.endswith(".libsdetect.d"):
+        return True
+    identities = (dependency_path.name, target)
+    return any(
+        re.search(r"\.ino\.cpp\.merged(?:\.(?:d|o))?(?:$|[\"' ])", identity)
+        for identity in identities
+    )
 
 
 def dependency_manifest(build_directory):
@@ -76,31 +153,42 @@ def dependency_manifest(build_directory):
     for dependency_path in sorted(build_directory.rglob("*.d")):
         text = dependency_path.read_text(encoding="utf-8", errors="replace")
         flattened = text.replace("\\\n", " ")
-        _, separator, payload = flattened.partition(":")
+        target, separator, payload = flattened.partition(":")
         if not separator:
             raise probe.ProbeError(
                 f"compiler dependency manifest lacks a target: {dependency_path}"
             )
+        if is_orchestration_manifest(dependency_path, target):
+            continue
         entries = shlex.split(payload)
-        normalized_entries = []
+        canonical_entries = []
         for entry in entries:
             path = pathlib.Path(entry)
             if not path.is_absolute():
                 path = (ROOT / path).resolve()
-            normalized_path = normalized(str(path))
-            normalized_entries.append(normalized_path)
+            if is_orchestration_dependency(path):
+                continue
+            canonical_path = canonical_review_string(str(path))
+            canonical_entries.append(canonical_path)
             if not path.is_file():
                 raise probe.ProbeError(
                     "compiler dependency is not an existing regular file: "
                     f"{entry} resolved as {path}"
                 )
-            dependencies[normalized_path] = probe.sha256(path)
+            digest = dependency_sha256(path)
+            prior_digest = dependencies.get(canonical_path)
+            if prior_digest is not None and prior_digest != digest:
+                raise probe.ProbeError(
+                    "canonical compiler dependencies have conflicting content: "
+                    f"{canonical_path}"
+                )
+            dependencies[canonical_path] = digest
         manifests.append(
             {
-                "path": normalized(
+                "path": canonical_review_string(
                     str(dependency_path.relative_to(build_directory))
                 ),
-                "dependencies": sorted(set(normalized_entries)),
+                "dependencies": sorted(set(canonical_entries)),
             }
         )
     if not manifests:
@@ -108,7 +196,13 @@ def dependency_manifest(build_directory):
             f"compiler dependency manifests are absent: {build_directory}"
         )
     return {
-        "manifests": manifests,
+        "manifests": sorted(
+            manifests,
+            key=lambda manifest: (
+                manifest["path"],
+                json.dumps(manifest["dependencies"], separators=(",", ":")),
+            ),
+        ),
         "dependency_hashes": dict(sorted(dependencies.items())),
     }
 
@@ -147,7 +241,7 @@ def read_symbols(nm, object_path):
 
 
 def object_sizes(compiler, nm, root, temporary, unused):
-    global LAYOUT_COMMANDS, LAYOUT_SYMBOLS
+    global LAYOUT_COMMANDS, LAYOUT_SYMBOLS, REVIEW_PATH_MARKERS
     object_path = temporary / "thermal_gradient_object_sizes.o"
     object_command = [
         str(compiler),
@@ -228,6 +322,7 @@ unsigned char oneWireSnapshotCallerBufferBytes
     host_compiler = shutil.which("c++")
     if host_compiler is None:
         raise probe.ProbeError("host C++ compiler is unavailable for trait checks")
+    REVIEW_PATH_MARKERS[host_compiler] = "<host-cxx>"
     trait_path = temporary / "thermal_gradient_public_traits.cpp"
     trait_path.write_text(
         """
@@ -263,12 +358,15 @@ static_assert (
 
 
 def normalized(value):
-    text = json.dumps(value, sort_keys=True, separators=(",", ":"))
+    text = json.dumps(
+        canonical_review_value(value), sort_keys=True, separators=(",", ":")
+    )
     text = text.replace(str(ROOT), "<repo>")
     return re.sub(r"/tmp/adk-[^/\" ]+", "<temporary>", text)
 
 
 def compile_ordinary(arguments):
+    global REVIEW_PATH_MARKERS
     temporary = pathlib.Path(tempfile.mkdtemp(prefix="adk-thermal-ordinary."))
     try:
         sketch = ROOT / BOUNDARY["sketch"]
@@ -294,12 +392,6 @@ def compile_ordinary(arguments):
         flash, static_sram = probe.section_sizes(size_tool, elf_paths[0])
         compile_database = build / "compile_commands.json"
         compile_units = json.loads(compile_database.read_text(encoding="utf-8"))
-        compile_units.sort(
-            key=lambda unit: (
-                unit.get("file", ""),
-                json.dumps(unit.get("arguments", ()), separators=(",", ":")),
-            )
-        )
         flattened = " ".join(
             argument
             for unit in compile_units
@@ -353,6 +445,20 @@ def compile_ordinary(arguments):
         linker = compiler.parent / "avr-gcc"
         if not linker.is_file():
             raise probe.ProbeError("resolved AVR linker executable is unavailable")
+        platform_roots = {
+            str(pathlib.Path(unit["file"]).parents[2])
+            for unit in compile_units
+            if "/cores/arduino/" in unit.get("file", "")
+        }
+        if len(platform_roots) != 1:
+            raise probe.ProbeError(
+                "ordinary Lesson 064 build has an ambiguous AVR platform root"
+            )
+        REVIEW_PATH_MARKERS = {
+            str(compiler.parent.parent): "<avr-toolchain>",
+            platform_roots.pop(): "<arduino-avr-platform>",
+            arguments.arduino_cli: "<arduino-cli>",
+        }
         ORDINARY_EVIDENCE.update(
             {
                 "command": command,
@@ -360,13 +466,13 @@ def compile_ordinary(arguments):
                 "flash_bytes": flash,
                 "static_sram_bytes": static_sram,
                 "elf_sha256": probe.sha256(elf_paths[0]),
-                "compile_units": json.loads(normalized(compile_units)),
+                "compile_units": canonical_compile_units(compile_units),
                 "core_package": "arduino:avr",
                 "core_version": core_version,
                 "f_cpu_hz": 16000000,
-                "linker_executable": str(linker),
+                "linker_executable": canonical_review_value(str(linker)),
                 "linker_version": probe.tool_version(linker),
-                "resolved_link_recipe": link_recipe,
+                "resolved_link_recipe": canonical_review_value(link_recipe),
             }
         )
         COMPILE_DEPENDENCIES["ordinary"] = dependency_manifest(build)
@@ -767,13 +873,13 @@ def enrich_evidence(evidence_path):
         "Lesson064OwnedSingleWireTransactions.ino",
     )
     fingerprint_payload = {
-        "schema": 3,
+        "schema": 4,
         "lesson_through": "064",
         "fqbn": report["fqbn"],
         "core_package": ORDINARY_EVIDENCE["core_package"],
         "core_version": ORDINARY_EVIDENCE["core_version"],
         "f_cpu_hz": ORDINARY_EVIDENCE["f_cpu_hz"],
-        "tools": report["tools"],
+        "tools": review_tool_identities(report["tools"]),
         "commands": json.loads(normalized(report["commands"])),
         "ordinary_compile_units": ORDINARY_EVIDENCE["compile_units"],
         "compile_dependencies": COMPILE_DEPENDENCIES,
