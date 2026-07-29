@@ -580,17 +580,21 @@ meaningful integration test for the common kit.
 
 ### 058 — Nonblocking multiplexed digits
 
-Add a four-digit display owner whose supplied-time refresh emits bounded digit
-and segment frames. Common-anode/cathode polarity, blanking, leading zeros,
-decimal points, overflow, refresh loss, and shutdown blanking are explicit.
-The endpoint owns every digit-select and segment resource it drives.
+Add a fixed E0 multiplex policy whose supplied-time refresh emits bounded,
+ordered blank/segment/digit intent. Common-anode/cathode metadata, independent
+digit-select polarity, leading zeros, decimal points, overflow, refresh loss,
+and shutdown blank intent are explicit. A future E1 endpoint owns every
+digit-select and segment resource it drives and must qualify the exact driver
+topology before power.
 
 ### 059 — Register-driven display presentation
 
-Add a MAX7219 adapter over the existing owned SPI transaction boundary.
-Configuration, intensity, scan limit, decode mode, row writes, chip-select,
-transport faults, and blank-on-shutdown policy remain explicit. Frame
-generation stays independent of this adapter.
+Add a MAX7219 presentation policy over a recording transport seam.
+Configuration, intensity, scan limit, decode mode, row writes, chip-select
+intent, transport faults, partial-prefix attribution, and blank-on-shutdown
+request remain explicit. Frame generation stays independent. A future E1
+adapter reuses the existing owned `SpiDevice` boundary after terminal bus-fault
+recovery is resolved.
 
 ### 060 — Project: dual-display timing desk
 
@@ -600,10 +604,11 @@ project reports presentation disagreement rather than silently trusting one
 display.
 
 Deterministic evidence covers every glyph and digit phase, refresh jitter,
-timestamp wrap, SPI failure at each register, partial frame rollback,
-presentation disagreement, and shutdown. Digit-select, segment, clock, data,
-and chip-select test points expose transport; both displays run a distinct
-self-test before either presents time.
+timestamp wrap, SPI failure at each register, partial frame attribution,
+presentation-intent disagreement, and shutdown. E0 uses named result cells;
+future E1 digit-select, segment, clock, data, and chip-select test points
+expose transport. Both displays run a distinct safe self-test before either
+presents time.
 
 The specimen gate records display polarity and resistor network, MAX7219
 marking/module schematic, supply and logic levels, matrix orientation, maximum

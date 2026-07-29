@@ -8,7 +8,7 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--054 have first-class implementation work, deterministic host
+Lessons 001--057 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
 bench cards remain open. Lessons 037--039 use documented C&K and SparkFun
 reference fixtures; incoming conformance and physical acceptance remain open.
@@ -57,6 +57,12 @@ a caller-owned 400 B pulse buffer; its conservative stack estimate is 888 B,
 leaving 3,773 B after static storage and stack. E0 owns no optical or
 electrical endpoint. Exact receiver, emitter, driver, resistor, timer, pin,
 supply, observation path, and measured acceptance remain E1-open.
+Lessons 055--057 are host verified under the
+[inert escape-console plan](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md);
+exact passive presentation remains E1-open and any restrained demonstration
+actuation remains E2-open. Lessons 058--060 have an implementation-depth E0
+[display timing desk plan](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md)
+and remain active planning rather than promoted interfaces.
 The later blocks are ordered for early learner engagement while retaining
 prerequisite, authorization, safety, and evidence gates: interactive motion
 and display projects precede the more methodical environmental and
@@ -146,6 +152,12 @@ For every lesson, the queued implementation order is:
 | 052 | Host verified; exact powered receiver/bench open | `CapturedIrEvidence` copied receive evidence | Provenance, categorical disposition and strength, exact copied pulse words, and stale-view rejection without owning a receiver |
 | 053 | Host verified; exact powered emitter/bench open | `KnownIrEmissionPolicy` immutable local-command intent | Closed catalog identity, copied prepare/commit authority, cancellation, exact inert envelope intent, and terminal attribution without carrier output |
 | 054 | Host verified; exact powered fixtures/bench open | `InertIrTranslator` fixed different-symbol composition | Allowlisted translation, rejection, cancellation, self-echo suppression, attributable round trips, and byte-identical replay without optical activity |
+| 055 | Host verified; passive fixtures open | `ClueConstraintModel` fixed puzzle graph | Copied clue/result cells, bounded rule dispositions, and deterministic replay |
+| 056 | Host verified; presentation/storage fixtures open | `FaultAwareOperatorPanel` copied-value policy | Presentation, audit-image recovery, stop, acknowledgement, and fault result cells |
+| 057 | Host verified; E1/E2 demonstration gates open | `InertEscapeConsole` atomic puzzle composition | Solve, stop, audit, presentation, latch, and lamp intent cells without physical actuation |
+| 058 | Active planning; E1 digit fixture open | `MultiplexedDigitPolicy` | Ordered blank/segment/select intent, frame generation, refresh-loss, and shutdown cells |
+| 059 | Active planning; E1 MAX7219 fixture open | `Max7219PresentationPolicy` | Register command/receipt, partial-prefix, cleanup, generation, and blank-request cells |
+| 060 | Active planning; combined E1 fixture open | `DualDisplayTimingDesk` | One stopwatch snapshot, two side-specific frames, self-test, agreement, and fault attribution |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation
@@ -219,7 +231,7 @@ supplies the shortest planned path through the library.
 | 056 | Component | Fault-aware operator panel | Inputs, presentation, acknowledgement, stop, and storage compose deterministically |
 | 057 | Project-bearing | Inert escape-room console | Replayable clues can request only lightweight, bounded actuator intent |
 | 058 | Component | Nonblocking multiplexed digits | Supplied-time digit frames expose polarity, blanking, overflow, and refresh loss |
-| 059 | Component | MAX7219 matrix presentation | Owned SPI configuration and frames fail blank without hiding transport faults |
+| 059 | Component | MAX7219 matrix presentation | E0 register intents expose partial-prefix and blank-request evidence without hiding transport faults; future E1 owned SPI and observed blanking remain gated |
 | 060 | Project-bearing | Dual-display timing desk | Multiplexed digits and matrix progress present one stopwatch snapshot |
 | 061 | Component | Authorized environmental observations | Water Level, thermistor, distinct Digital Temperature, radiant, and reed observations retain specimen identity, validity, age, and disagreement |
 | 062 | Component | Environmental qualification and presentation | Switched-power, calibration, uncertainty, corrosion, and sensor-health evidence remain explicit for each distinct authorized family |
