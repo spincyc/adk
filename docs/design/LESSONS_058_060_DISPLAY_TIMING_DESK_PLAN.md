@@ -317,9 +317,10 @@ with the repository interrupt/return-edge reserve.
 The no-LTO AVR probe records tool/core/flags fingerprints, standalone linked
 maximum sketches, public value sizes/alignment/traits, every policy object and
 caller buffer, and the aggregate live fixture/diagnostics. Compiler-derived
-synchronous call paths include the 128 B interrupt reserve and 3 B per
-retained return edge. Each fixed buffer is target/hard 256/512 B. Residual SRAM is
-`8192 - static - synchronous stack`; target/hard is 3072/2048 B. Target misses
+synchronous call paths include 3 B per retained return edge; the residual
+calculation separately reserves 128 B for interrupt service. Each fixed buffer
+is target/hard 256/512 B. Residual SRAM is
+`8192 - static - synchronous stack - 128`; target/hard is 3072/2048 B. Target misses
 require stale-failing machine-readable review markers; hard or residual misses
 are non-reviewable blockers.
 

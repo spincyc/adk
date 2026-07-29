@@ -61,3 +61,23 @@ lesson/metric/observed/target/hard tuple and must cite its controlling design
 authority. A changed measurement makes that review stale and fails the probe.
 Reviewed target misses permit the command to succeed; hard-ceiling and
 residual-SRAM failures are never reviewable.
+
+Run the Lessons 058--060 display-timing probe through the current promoted
+boundary with:
+
+```sh
+make display-timing-resource-check
+```
+
+The initial promotion gate requires Lesson 058. It compiles the canonical
+Mega replay with LTO and jump tables disabled, measures the linked flash and
+static SRAM, derives the exact reachable synchronous stack from compiler
+records and the AVR call graph, and reads the policy object size from
+`display_timing_object_sizes.cpp`. Evidence is written to
+`build/evidence/display-timing-resource-probe.json`.
+
+The script accepts `--require-through 059` and `--require-through 060` as later
+promotion boundaries. A required lesson must have its canonical fixture.
+Target misses require an exact, authority-backed entry in
+`display_timing_resource_reviews.json`; changed measurements invalidate the
+review, and hard-ceiling failures remain non-reviewable.

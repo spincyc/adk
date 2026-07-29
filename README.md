@@ -10,7 +10,7 @@ the Arduino Mega 2560.
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–057 are published, host verified at E0, and
+> **Current boundary:** Lessons 001–058 are published, host verified at E0, and
 > compiled for the Mega 2560. All lessons remain experimental, physical
 > acceptance remains open, and the exact electrical revisions used by Lessons
 > 031–036 are not yet qualified. Lessons 037–039 use documented external
@@ -27,8 +27,8 @@ the Arduino Mega 2560.
 > composition. These E0 publications do not claim powered inputs, displays,
 > storage, actuators, wiring, physical output, or bench acceptance. Planned
 > rows below are commitments, not support claims.
-> [Lesson 057](lessons/057.md) is the current
-> published project.
+> [Lesson 058](lessons/058.md) is the current
+> published component lesson.
 
 ## What ADK provides
 
@@ -67,6 +67,7 @@ a printable PDF companion. Each row links to the first lesson in its arc.
 | 049–051 · [start at 049](https://spincyc.github.io/adk/lessons/049/) | Local identity records and bounded logical homing | Inert parts-carousel intent with acknowledged record-image reconciliation |
 | 052–054 · [start at 052](https://spincyc.github.io/adk/lessons/052/) | Copied infrared evidence and closed known-code emission | Fixed allowlisted translation with no captured-waveform replay |
 | 055–057 · [start at 055](https://spincyc.github.io/adk/lessons/055/) | Copied clue constraints and fault-aware operator policy | Inert escape-console intent with atomic evidence and replayable audit images |
+| 058 · [open lesson](https://spincyc.github.io/adk/lessons/058/) | Supplied-time multiplex policy with ordered blank/segment/select intent | Four-digit logical presentation with explicit refresh loss and no powered-display claim |
 
 [View the complete lesson index](https://spincyc.github.io/adk/lessons/) or the
 [supported API](https://spincyc.github.io/adk/api-supported/).
@@ -100,7 +101,7 @@ These entries are deliberately linkless. A planned subject becomes a link only
 after its implementation, deterministic tests, Mega example, size evidence,
 HTML reference, and PDF lesson exist.
 
-- **058–063:** multiplexed digits and MAX7219 presentation for a dual-display
+- **059–063:** MAX7219 presentation for a dual-display
   timing desk; corrected authorized environmental sensing for a museum-case
   monitor.
 - **064–072:** qualified single-wire 18B20 thermal probes for a gradient

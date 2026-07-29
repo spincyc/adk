@@ -53,13 +53,14 @@ lesson number divisible by three is project-bearing.
 | 055 | Fixed clue graph and copied attributable evidence | Constraint and clue model | Host verified; E0 replay only |
 | 056 | Copied audit images, stop precedence, and presentation intent | Fault-aware operator panel | Host verified; E0 replay only |
 | 057 | Atomic clue and panel composition | Inert escape-room console | Host verified; E0 replay only |
+| 058 | Supplied-time blank/segment/select transactions | Nonblocking multiplexed digits | Host verified; E0 intent only |
 
-The retained Lessons 058–081 sequence is front-loaded for learner engagement.
+The retained Lessons 059–081 sequence is front-loaded for learner engagement.
 This is planned work, not a support or bench-verification claim:
 
 | Lessons | Planned focus | Project |
 |---:|---|---|
-| 058–060 | Multiplexed digits and matrix presentation | Dual-display timing desk |
+| 059–060 | MAX7219 matrix presentation | Dual-display timing desk |
 | 061–063 | Resistive and thermal/radiant observations | Museum-case monitor |
 | 064–066 | Single-wire probes and qualified thermal sets | Thermal gradient mapper |
 | 067–069 | Normalized inertial records and source qualification | Interchangeable motion recorder |

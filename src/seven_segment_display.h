@@ -1,38 +1,11 @@
 #pragma once
 
+#include "seven_segment_glyph.h"
 #include "shift_register.h"
 
 #include <stdint.h>
 
 namespace adk {
-
-    enum struct SevenSegmentPolarity : uint8_t
-    {
-        CommonCathode,
-        CommonAnode
-    };
-
-    enum struct SevenSegmentGlyph : uint8_t
-    {
-        Zero,
-        One,
-        Two,
-        Three,
-        Four,
-        Five,
-        Six,
-        Seven,
-        Eight,
-        Nine,
-        A,
-        B,
-        C,
-        D,
-        E,
-        F,
-        Dash,
-        Blank
-    };
 
     // Q0..Q6 drive segments a..g; Q7 drives the decimal point.
     struct SevenSegmentDisplay
@@ -61,8 +34,6 @@ namespace adk {
         bool                 initialized  () const noexcept;
 
       private:
-        static uint8_t segmentPattern (SevenSegmentGlyph glyph) noexcept;
-
         ShiftRegisterOutput  output_;
         SevenSegmentPolarity polarity_;
         SevenSegmentGlyph    glyph_;

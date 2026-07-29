@@ -1,6 +1,6 @@
 # Lesson 058 multiplexed-digits architecture stress pass
 
-Status: pre-implementation review.
+Status: pre-implementation review and clean post-implementation reassessment.
 
 This pass reviews the
 [Lessons 058--060 implementation plan](LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md).
@@ -27,7 +27,15 @@ the refresh deadline and loss boundary, then one tick late. It must expose
 ordered blank/segment/select stages, never select two digits, never burst,
 swap only at digit zero, and remain blank after loss until explicit recovery.
 
-Promotion additionally requires exhaustive glyph/decimal/leading-zero cases,
-all frame boundaries, every invalid configuration, deterministic replay,
-resource measurement, and a second stress pass against the implemented
-Lesson 060 composition.
+The implemented boundary passes exhaustive glyph/decimal/leading-zero cases,
+all four polarity pairs, frame boundaries, invalid configuration, first-call
+and ordinary timing/loss edges, wrap and exact-half-range rejection,
+transactional preview ownership, terminal lifecycle exhaustion, deterministic
+replay, and independent code/example/publication review. The canonical sketch
+measures 6,234/759 bytes flash/static SRAM. The exact no-LTO gate measures
+6,044 bytes flash, 759 bytes static SRAM, 187 bytes synchronous stack, and a
+59-byte object; every target and hard gate passes.
+
+Lesson 060 still requires a terminal composition reassessment against the
+implemented policy. Exact powered-display topology, current, waveform,
+optical behavior, resource ownership, and observed blanking remain E1-open.

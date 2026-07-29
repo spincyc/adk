@@ -56,6 +56,31 @@ namespace {
         {
             const auto glyph = static_cast<adk::SevenSegmentGlyph> (index);
 
+            require (adk::validSevenSegmentGlyph (glyph),
+                     "canonical glyph is valid");
+            require (adk::encodeSevenSegmentGlyph (
+                         glyph,
+                         adk::SevenSegmentPolarity::CommonCathode) ==
+                         expected[index],
+                     "pure cathode glyph encoding");
+            require (adk::encodeSevenSegmentGlyph (
+                         glyph,
+                         adk::SevenSegmentPolarity::CommonAnode) ==
+                         static_cast<uint8_t> (~expected[index]),
+                     "pure anode glyph encoding");
+            require (adk::encodeSevenSegmentGlyph (
+                         glyph,
+                         adk::SevenSegmentPolarity::CommonCathode,
+                         true) ==
+                         static_cast<uint8_t> (expected[index] | 0x80U),
+                     "pure cathode decimal-point encoding");
+            require (adk::encodeSevenSegmentGlyph (
+                         glyph,
+                         adk::SevenSegmentPolarity::CommonAnode,
+                         true) ==
+                         static_cast<uint8_t> (
+                             ~ (expected[index] | 0x80U)),
+                     "pure anode decimal-point encoding");
             requireOk (display.show (glyph), "glyph is accepted");
             require   (display.glyph () == glyph, "glyph is remembered");
             require   (display.encodedValue () == expected[index],
@@ -119,6 +144,19 @@ namespace {
             "unknown glyph is rejected");
 
         require (fake::trace ().empty (), "unknown glyph touches no hardware");
+        require (!adk::validSevenSegmentGlyph (
+                     static_cast<adk::SevenSegmentGlyph> (255)),
+                 "pure encoder validation rejects unknown glyph");
+        require (adk::encodeSevenSegmentGlyph (
+                     static_cast<adk::SevenSegmentGlyph> (255),
+                     adk::SevenSegmentPolarity::CommonCathode,
+                     true) == 0x00U,
+                 "invalid cathode glyph encodes inactive");
+        require (adk::encodeSevenSegmentGlyph (
+                     static_cast<adk::SevenSegmentGlyph> (255),
+                     adk::SevenSegmentPolarity::CommonAnode,
+                     true) == 0xffU,
+                 "invalid anode glyph encodes inactive");
 
         requireOk (display.show (adk::SevenSegmentGlyph::Eight),
                    "active glyph is shown");
@@ -148,6 +186,9 @@ namespace {
                       "unknown polarity is rejected");
         require (!display.initialized (), "invalid display stays stopped");
         require (fake::trace ().empty (), "invalid polarity touches no hardware");
+        require (!adk::validSevenSegmentPolarity (
+                     static_cast<adk::SevenSegmentPolarity> (255)),
+                 "pure encoder validation rejects unknown polarity");
     }
 
     void testResourceConflictAndReuse ()

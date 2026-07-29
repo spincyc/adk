@@ -17,7 +17,7 @@ recorded in
 Its findings must be reconciled through bounded tasks; the audit itself does
 not promote work or replace this ledger.
 
-- Lessons 001--057 are promoted and host verified; physical cards remain open.
+- Lessons 001--058 are promoted and host verified; physical cards remain open.
 - Lesson 030 has an independently reviewed composition core, canonical Mega
   example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
@@ -83,6 +83,7 @@ qualified.
 | [049--051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Host verified; powered endpoints/media/motion bench open | Preserve the E0 synthetic identity, bounded homing, and inert carousel policies, including attributable `Stopped` reconciliation after an exposed start and the intentional zero-coil atomic-step result; the Lesson 051 object is 380 B (320 B target miss, 384 B hard pass); retain exact powered endpoints/media at E1 and restrained motion at E2 as separate open gates |
 | [052--054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | Host verified; exact powered fixtures/bench open | Preserve copied receive provenance, the immutable local catalog, and fixed different-symbol translation as inert E0 policy; retain exact receiver/emitter fixtures, electrical and optical endpoints, observation paths, and measured acceptance as open E1 gates |
 | [055--057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Host verified; exact passive fixtures/restrained demonstration bench open | Preserve the fixed clue graph, copied audit-image recovery, stop precedence, atomic solve transaction, and inert presentation/release intent; retain passive input/presentation qualification at E1 and any restrained no-load demonstration fixture at E2 |
+| [058](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Host verified; exact powered digit fixture open | Preserve supplied-time three-stage intent, atomic digit-zero frame swaps, explicit refresh loss, and the zero-hardware E0 boundary |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -126,7 +127,7 @@ work; retail kit names are not electrical identities.
 | [049--051](design/LESSONS_049_051_PARTS_CAROUSEL_PLAN.md) | Host verified; powered endpoints/media/motion bench open | `LocalIdentityRegistry`, `BoundedHomingPolicy`, and `InertPartsCarousel` publish copied evidence, bounded logical home/position, acknowledged record-image reconciliation, atomic one-step application, and intentional zero-coil intent at E0; E1 endpoints/media and E2 motion remain open |
 | [052--054](design/LESSONS_052_054_IR_TRANSLATOR_PLAN.md) | Host verified; exact powered fixtures/bench open | `CapturedIrEvidence`, `KnownIrEmissionPolicy`, and `InertIrTranslator` publish copied Lesson 025 receive evidence, immutable locally authored catalog intent, and fixed different-symbol translation at E0; exact receiver/emitter fixtures and E1 acceptance remain open |
 | [055--057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Host verified; exact passive fixtures/restrained demonstration bench open | Fixed clue-constraint model, copied-value fault-aware panel, and inert escape-room console |
-| [058--060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Active planning | Multiplexed-digit and MAX7219 presentation policies plus timing desk at E0; exact powered endpoints remain separate E1 gates |
+| [058--060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Active integration | Lesson 058 is host verified; MAX7219 presentation and timing desk remain active, with exact powered endpoints separate E1 gates |
 | [061--063](projects/component_project_cadence.md) | Queued; corrected authorized scope | Resistive probes and qualified thermal/radiant observations composed into a museum-case monitor |
 | [064--066](projects/component_project_cadence.md) | Queued | Single-wire transport, listed 18B20 temperature family, thermal mapper |
 | [067--069](projects/component_project_cadence.md) | Queued | Normalized inertial records, source qualification, motion recorder |
@@ -235,6 +236,15 @@ input/presentation fixtures remain E1-open; restrained no-load servo or inert
 current-limited relay/lamp demonstration work remains E2-open and may never
 control access, confinement, egress, or safety.
 
+Lesson 058 publishes `MultiplexedDigitPolicy` as E0 copied presentation
+policy. It owns no hardware and emits bounded three-stage
+blank/select/segment intent from supplied time. Its canonical Mega replay is
+6,234/759 bytes flash/static SRAM. The exact no-LTO gate measures 6,044 bytes
+flash, 759 bytes static SRAM, 187 bytes synchronous stack, and a 59-byte
+object; every target and hard gate passes. The exact powered digit fixture,
+driver topology, current, waveform, optical behavior, and observed blanking
+remain E1-open. Lessons 059--060 remain active implementation work.
+
 Lessons 058--060 now have an implementation-depth E0 plan. Cadence entries for
 Lessons 061--081 are not implementation-ready lesson plans. Before code begins
 for each later three-lesson arc, expand it to the
@@ -299,8 +309,8 @@ out of scope. Controller high availability remains explicitly deferred.
 The landing page now uses one canonical source, a compact top navigation,
 linked published arcs, and linkless planned rows through Lesson 081 plus the
 retained research tracks. Preserve that scan-first hierarchy as work advances.
-The newest published lesson is Lesson 057. The post-deploy verifier follows
-Lesson 057 and has a regression check that
+The newest published lesson is Lesson 058. The post-deploy verifier follows
+Lesson 058 and has a regression check that
 must advance with the newest published lesson.
 
 At the next clean hierarchy boundary:
