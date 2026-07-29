@@ -394,18 +394,10 @@ enum struct Ds18b20SetQuality : uint8_t
 
 struct Ds18b20NormalizedTransactionRef
 {
-    uint32_t                  requestSequence;
-    uint32_t                  transactionGeneration;
-    MicrosecondTimePoint      startedAt;
-    MicrosecondTimePoint      completedAt;
-    uint16_t                  acceptedSlotCount;
-    OneWireOperation          operation;
-    OneWireSupplyMode         supplyMode;
-    OneWireTransactionQuality quality;
-    bool                      presenceSeen;
-    bool                      releaseConfirmed;
-    Status                    requestStatus;
-    Status                    status;
+    uint32_t             requestSequence;
+    uint32_t             transactionGeneration;
+    MicrosecondTimePoint startedAt;
+    MicrosecondTimePoint completedAt;
 };
 
 struct Ds18b20NormalizedSearchPass
@@ -417,21 +409,15 @@ struct Ds18b20NormalizedSearchPass
 
 struct Ds18b20NormalizedProbeWitness
 {
-    OneWireRomCode        rom;
-    uint32_t              conversionGeneration;
-    uint32_t              conversionStartTransactionGeneration;
-    uint32_t              conversionStatusTransactionGeneration;
-    uint32_t              conversionStatusPredecessorGeneration;
-    uint32_t              scratchpadTransactionGeneration;
-    uint32_t              scratchpadPredecessorGeneration;
-    MicrosecondTimePoint  conversionStartedAt;
-    MicrosecondTimePoint  conversionStatusAt;
-    MicrosecondTimePoint  scratchpadCompletedAt;
-    TimePoint             scratchpadObservedAt;
-    uint8_t               scratchpad[9];
-    bool                  conversionCompletedHigh;
-    bool                  present;
-    Status                status;
+    OneWireRomCode                  rom;
+    uint32_t                        conversionGeneration;
+    Ds18b20NormalizedTransactionRef conversionStart;
+    Ds18b20NormalizedTransactionRef conversionStatus;
+    Ds18b20NormalizedTransactionRef scratchpadRead;
+    TimePoint                       scratchpadObservedAt;
+    uint8_t                         scratchpad[9];
+    bool                            conversionCompletedHigh;
+    bool                            conversionStatusPresent;
 };
 
 struct Qualified18B20ProbeSetPolicy;
@@ -452,6 +438,7 @@ struct Ds18b20CycleBuilder
     uint16_t                        configurationRevision;
     uint32_t                        cycleSequence;
     TimePoint                       observedAt;
+    uint32_t                        policyGeneration;
     uint32_t                        oneWireOwnerToken;
     uint32_t                        oneWireLifecycleGeneration;
     uint16_t                        oneWireConfigurationRevision;
@@ -459,6 +446,8 @@ struct Ds18b20CycleBuilder
     Ds18b20NormalizedProbeWitness   probes[4];
     uint8_t                         searchPassCount;
     uint8_t                         probeCount;
+    bool                            cycleBegun;
+    bool                            searchFinished;
     bool                            searchComplete;
     bool                            searchOverCapacity;
     Status                          status;
@@ -482,6 +471,7 @@ struct QualifiedDs18b20Probe
     uint32_t             conversionGeneration;
     uint32_t             readTransactionGeneration;
     TimePoint            observedAt;
+    TimePoint            freshThrough;
     int16_t              rawSixteenths;
     int16_t              lowerRawSixteenths;
     int16_t              upperRawSixteenths;
@@ -561,6 +551,7 @@ struct Qualified18B20ProbeSetPolicy
     QualifiedDs18b20SetConfig config_;
     QualifiedDs18b20Snapshot  snapshot_;
     Ds18b20CycleBuilder       lastCycle_;
+    uint32_t                  policyGeneration_;
     bool                      initialized_;
     bool                      hasLastCycle_;
 };
@@ -580,14 +571,37 @@ operation, addressed ROM, supply mode, request status, accepted-slot count,
 presence, confirmed release, request/transaction sequence and generation,
 start/completion times, quality, and terminal status. The builder retains the
 common Lesson 064 owner/lifecycle/configuration once and only the compact
-normalized facts needed by final qualification. It does not export or make a
+normalized facts needed by final qualification. Each normalized transaction
+reference is exactly request sequence, transaction generation, start time, and
+completion time. Search passes additionally retain request and completed
+search states; each probe retains exact conversion-start, optional-status, and
+scratchpad references plus its ROM, conversion generation, scratchpad bytes,
+policy time, and completed-high bit. It does not export or make a
 claim about the underlying receipt producer. Only `finalizeCycle()` mutates
 policy state, so a partially staged cycle is never a partially committed set.
 Every failed begin/ingest/finish operation leaves every byte of the builder
 unchanged. Every failed finalization leaves both the policy and caller output
-byte-identical. Replay equality is fieldwise over the complete normalized
-cycle image and every normalized witness; no
-partial witness, subset, digest, or padding participates in equality.
+byte-identical. The opaque builder begins as a whole-object zero-filled
+canonical byte image. The policy is its sole writer and preserves zero in
+every padding byte. Exact replay within the same compiled ABI compares and
+copies the complete canonical byte image; it is neither persisted nor used
+across ABIs. Public/output semantics remain field-defined, and no partial
+witness, subset, or digest substitutes for the private replay image.
+
+The builder's `cycleBegun` and `searchFinished` flags enforce the staging
+grammar. `beginCycle()` captures the policy's nonzero generation;
+initialize/reset advances that generation, and every later stage/finalization
+requires an exact match. A pre-reset builder therefore rejects atomically in
+the new epoch. Generation exhaustion disables the lifecycle rather than
+wrapping to zero.
+
+A committed witness-free producer-fault cycle must not erase the cross-cycle
+bus anchor. In that case the private retained canonical image carries the
+preceding common owner/lifecycle/configuration tuple and latest transaction
+reference through the zero-count cycle in otherwise unused private storage.
+The caller builder and public output remain unchanged, and immediate exact
+replay canonicalizes to the same local image. This preserves provenance
+without growing the policy beyond 764 bytes.
 
 The builder preserves up to four chained completed `SearchRomPass` records.
 Each search record retains both its request search state and completed search
@@ -651,6 +665,15 @@ interval, observation time, and age without refreshing them. Step comparison
 uses widened absolute subtraction between consecutive correlated current raw
 values for one ROM.
 
+Each output slot carries inclusive
+`freshThrough = scratchpadObservedAt + maximumAge`; it remains current at
+equality and becomes stale one millisecond later. Lesson 066 consumes this
+bound directly for fresh controls over an unchanged frame. A reset-default
+read publishes a coherent untrusted `+85 C` tuple with current read
+attribution and `freshThrough` equal to its observation time, discards any
+older trusted step baseline, and never becomes a baseline itself. The next
+correlated completed sample establishes a new baseline.
+
 Completion evidence is a typed Lesson 064
 `MatchRomReadConversionStatus` transaction for the same exact ROM and
 conversion generation, with a correlated completed-high read receipt. Elapsed
@@ -667,8 +690,8 @@ followed by `1` is the defined nonzero successor; zero, regression, and exact
 half-range ambiguity reject. Nested Lesson 064 request, phase, and transaction
 generations obey their own no-wrap exhaustion.
 
-Structural equality and duplicate checks are fieldwise over the completed
-builder image; padding is never compared. Set-level
+Structural equality and duplicate checks use the completed canonical
+same-ABI builder byte image, including its invariant zero padding. Set-level
 structural/transport failure precedes slot qualities. For a valid complete
 cycle, all four side qualities commit together and returned `Status`
 precedence follows configured slot order.
@@ -706,8 +729,8 @@ request/transaction/conversion/read correlation field; all signed raw
 endpoints and resolution masks/reserved bits; quantization intervals; `+85 C`
 with and without completed conversion; early completion and pending/completed
 status immediately before, at, and after each resolution maximum;
-pending/current/stale/missing/recovery; exact step boundaries; fieldwise
-duplicate, regression, `UINT32_MAX`-to-`1` rollover, half-range ambiguity,
+pending/current/stale/missing/recovery; exact step boundaries; canonical
+same-ABI byte-image duplicate, regression, `UINT32_MAX`-to-`1` rollover, half-range ambiguity,
 reset, atomic
 rejection, byte-stable replay, failed-ingestion builder canaries, and failed
 finalization policy/output canaries.
@@ -943,6 +966,11 @@ current accepted snapshot even when no new set cycle arrived; repeated/held
 record never duplicates it without a new control edge. A newly admitted frame
 without a record edge updates presentation but emits no record.
 
+For an unchanged accepted Lesson 065 frame, Lesson 066 uses each slot's
+inclusive `freshThrough` rather than recomputing freshness from age or control
+time. A fresh control at equality may page or record the unchanged frame; one
+millisecond later the affected slot is stale. Controls never extend the bound.
+
 Initialize/reset advance a nonzero lifecycle generation without wrap and
 restart record sequence at one for that lifecycle. Generation or record
 sequence exhaustion faults before zero. Shutdown emits no record and makes
@@ -1002,19 +1030,18 @@ caller-owned staged builder targets 448 bytes with a 512-byte hard limit, and
 its snapshot/result targets 256/512 bytes; Lesson 066 uses 256/384 bytes.
 The rejected monolithic Lesson 065 full-evidence envelope was approximately
 980 bytes and could not satisfy its non-reviewable 512-byte hard limit. The
-staged field-content budget and draft AVR-like size are 446 bytes:
-four normalized search witnesses consume about 180 bytes, four normalized
-probe witnesses about 240 bytes, and common cycle attribution/state about 26
-bytes. Exact AVR `sizeof` must be at most 448 bytes to meet target and 512
-bytes to proceed at all. The 713-byte policy retains one exact prior
-446-byte normalized cycle for collision-free changed-duplicate rejection;
-replacing it with a digest is forbidden. This misses the 512-byte object
-target by 201 bytes but remains 55 bytes below the 768-byte hard limit and
-requires an exact tuple-bound independent disposition.
+settled compact-provenance AVR tuple is builder 477 bytes, snapshot 180 bytes,
+and policy 764 bytes. The builder remains 35 bytes below its
+512-byte hard limit; the policy remains only 4 bytes below its 768-byte hard
+limit. The policy retains one exact prior normalized cycle for
+collision-free changed-duplicate rejection; replacing it or the exact compact
+transaction references with a digest is forbidden. Canonical byte-image
+comparison removes costly fieldwise replay code without weakening same-ABI
+identity. Both target misses have tuple-bound independent dispositions.
 
 The simultaneous lifetime placement is frozen. During Lesson 065 staging, the
-713-byte policy (including its retained prior cycle) and 446-byte active
-builder are recurring persistent storage: 1,159 bytes. The 164-byte caller
+764-byte policy (including its retained prior cycle) and 477-byte active
+builder are recurring persistent storage: 1,241 bytes. The 180-byte caller
 output and one 84-byte transient Lesson 064 snapshot are phase-scoped
 stack/caller temporaries, and the same transaction snapshot storage is reused
 for every ingestion call. Finalization reuses the output and creates no second
@@ -1025,8 +1052,8 @@ static total is not the canonical fixture.
 The Lesson 066 recurring persistent set retains the active builder; overlaying
 it was rejected because the next acquisition cycle must be stageable without
 destroying the mapper or the last accepted set. Before other runtime state it
-contains the 254-byte Lesson 064 policy, 713-byte Lesson 065 policy, 446-byte
-active builder, and an estimated 480-byte mapper, about 1,893 bytes. Mapper
+contains the 254-byte Lesson 064 policy, 764-byte Lesson 065 policy,
+477-byte active builder, and an estimated 480-byte mapper, about 1,975 bytes. Mapper
 input/output and transient transaction evidence are phase-scoped,
 lifetime-reused caller/stack values, with no by-value second qualified
 snapshot. This new component therefore changes the Lesson 066 aggregate
@@ -1040,6 +1067,33 @@ Residual SRAM is
 4,096 bytes and the non-reviewable hard floor is 2,048 bytes. Hard/residual
 failures cannot be waived. Target misses require current tuple-bound
 independent review.
+
+The settled Lesson 065 tuple is ordinary flash 13,662 bytes, exact no-LTO
+flash 16,196 bytes, ordinary and exact static SRAM 1,438 bytes, conservative
+synchronous stack 533 bytes, policy 764 bytes, builder 477 bytes, recurring
+owned storage 1,241 bytes, lifetime peak storage 1,421 bytes, snapshot 180
+bytes, and residual SRAM 6,093 bytes. The tuple-bound digest lives in the
+independent review JSON and generated resource evidence rather than this
+hashed design source. The snapshot passes its target and requires no
+target-miss marker.
+
+Resource-review: lesson=065 metric=ordinary_flash observed=13662 target=12288 hard=16384 disposition=accepted-target-miss
+
+Resource-review: lesson=065 metric=flash observed=16196 target=12288 hard=16384 disposition=accepted-target-miss
+
+Resource-review: lesson=065 metric=ordinary_static_sram observed=1438 target=1024 hard=1536 disposition=accepted-target-miss
+
+Resource-review: lesson=065 metric=static_sram observed=1438 target=1024 hard=1536 disposition=accepted-target-miss
+
+Resource-review: lesson=065 metric=synchronous_stack observed=533 target=448 hard=640 disposition=accepted-target-miss
+
+Resource-review: lesson=065 metric=object observed=764 target=512 hard=768 disposition=accepted-target-miss
+
+Resource-review: lesson=065 metric=builder_caller_buffer observed=477 target=448 hard=512 disposition=accepted-target-miss
+
+Resource-review: lesson=065 metric=recurring_owned_storage observed=1241 target=960 hard=1280 disposition=accepted-target-miss
+
+Resource-review: lesson=065 metric=lifetime_peak_storage observed=1421 target=1216 hard=1792 disposition=accepted-target-miss
 
 The exact Lesson 064 policy object is 254 bytes. Its 62-byte target miss is
 accepted because the object must own the complete 96-byte configuration,

@@ -16,7 +16,7 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--064 use the first-class per-object
+ADK is early-stage software. Lessons 001--065 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
@@ -62,6 +62,10 @@ E0. It expands typed operations into semantic line intents and validates
 correlated receipts without owning a pin, endpoint, pull-up, clock, interrupt,
 bus, or powered circuit. Exact externally powered and parasite-powered
 endpoints remain separate E1a and E1b campaigns.
+Lesson 065 publishes a fixed four-probe qualification policy over copied
+Lesson 064 evidence. It preserves configured identity, conversion generation,
+CRC, resolution, range, step, freshness, disappearance, and replay evidence
+without owning probes, a bus, a clock, or a powered fixture.
 
 The hierarchy is developed in dependency order:
 
@@ -76,8 +80,8 @@ global-registration preview is frozen under [Legacy](legacy/index.md).
 The latest completed project arc is Lessons 061--063: copied environmental
 observations composed into an inert museum-case monitor. Powered sensors,
 adapters, presentation, loads, and physical acceptance remain open.
-[Lesson 064](lessons/064.md) is the latest published component boundary.
-Lesson 065 is the next implementation boundary. See the
+[Lesson 065](lessons/065.md) is the latest published component boundary.
+Lesson 066 is the next implementation boundary. See the
 [course map](course.md) for that order and the
 [roadmap](docs/ROADMAP.md) for the full sequence.
 

@@ -98,6 +98,10 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_one_wire_transaction_policy_search \
 	$(BUILD_DIR)/host/test_one_wire_transaction_policy_timing \
 	$(BUILD_DIR)/host/test_one_wire_transaction_policy_interrupt \
+	$(BUILD_DIR)/host/test_qualified_18b20_probe_set_identity \
+	$(BUILD_DIR)/host/test_qualified_18b20_probe_set_conversion \
+	$(BUILD_DIR)/host/test_qualified_18b20_probe_set_decode \
+	$(BUILD_DIR)/host/test_qualified_18b20_probe_set_state \
 	$(BUILD_DIR)/host/test_optical_observation \
 	$(BUILD_DIR)/host/test_packet_receiver \
 	$(BUILD_DIR)/host/test_passage_ledger \
@@ -547,6 +551,50 @@ $(BUILD_DIR)/host/test_one_wire_transaction_policy_interrupt: $(HOST_CORE_SOURCE
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
 		-DADK_TESTING src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
 		tests/test_one_wire_transaction_policy_interrupt.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_qualified_18b20_probe_set_identity: $(HOST_CORE_SOURCES) \
+		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		src/qualified_18b20_probe_set_policy.cpp \
+		tests/test_qualified_18b20_probe_set_identity.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		src/qualified_18b20_probe_set_policy.cpp \
+		tests/test_qualified_18b20_probe_set_identity.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_qualified_18b20_probe_set_conversion: $(HOST_CORE_SOURCES) \
+		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		src/qualified_18b20_probe_set_policy.cpp \
+		tests/test_qualified_18b20_probe_set_conversion.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		src/qualified_18b20_probe_set_policy.cpp \
+		tests/test_qualified_18b20_probe_set_conversion.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_qualified_18b20_probe_set_decode: $(HOST_CORE_SOURCES) \
+		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		src/qualified_18b20_probe_set_policy.cpp \
+		tests/test_qualified_18b20_probe_set_decode.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		src/qualified_18b20_probe_set_policy.cpp \
+		tests/test_qualified_18b20_probe_set_decode.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_qualified_18b20_probe_set_state: $(HOST_CORE_SOURCES) \
+		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		src/qualified_18b20_probe_set_policy.cpp \
+		tests/test_qualified_18b20_probe_set_state.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
+		src/qualified_18b20_probe_set_policy.cpp \
+		tests/test_qualified_18b20_probe_set_state.cpp \
 		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_optical_observation: $(HOST_CORE_SOURCES) \

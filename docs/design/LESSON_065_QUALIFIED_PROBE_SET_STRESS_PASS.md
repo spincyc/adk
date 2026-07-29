@@ -1,8 +1,8 @@
 # Lesson 065 qualified-probe-set architecture stress pass
 
-Status: initial pre-implementation review; Lesson 064 transaction evidence,
-exact powered specimens, electrical adapters, and bench acceptance remain
-open.
+Status: implementation-depth architecture review; Lesson 065 implementation,
+exact final resource evidence, powered specimens, electrical adapters, and
+bench acceptance remain open.
 
 This pass reviews the Lesson 065 subject fixed by the
 [extended component/project cadence](../projects/component_project_cadence.md):
@@ -45,8 +45,9 @@ The public value model must retain these facts without caller pointers:
 - one caller-owned, lifetime-reused staged cycle builder with nonzero
   source/configuration/cycle identity, supplied observation time, up to four
   compact chained `SearchRomPass` witnesses, explicit
-  completion/over-capacity state, and one normalized conversion/read witness
-  per returned device;
+  begun/search-finished/completion/over-capacity state, a captured nonzero
+  policy reset epoch, and one normalized conversion/read witness per returned
+  device;
 - transient validation of each complete copied Lesson 064 snapshot, including
   common owner/lifecycle/configuration, request and transaction
   sequence/generation, addressed ROM, operation, supply mode, request status,
@@ -64,7 +65,11 @@ storage is private and only policy methods may mutate it. Only finalization can
 mutate policy state. The policy is non-copyable and non-movable, allocates no heap memory,
 invokes no callback, reads no clock, and performs no transaction.
 Reset retains the four configured identities but clears ordering, conversion,
-last-value, presence, and step history to four `Unqualified` slots.
+last-value, presence, and step history to four `Unqualified` slots. Initialize
+and reset advance a nonzero policy generation; every stage and finalization
+must match the generation captured by `beginCycle()`. A builder begun before
+reset therefore rejects without mutation, and generation exhaustion disables
+the lifecycle rather than wrapping to zero.
 
 The quality vocabulary must distinguish at least:
 
@@ -114,7 +119,8 @@ discovery order as identity.
 
 Every successful complete search cycle contains up to four normalized Lesson
 064 pass witnesses. Ingestion validates the complete transaction snapshot but
-retains only its compact transaction reference plus the request
+retains only the exact compact transaction reference
+`{requestSequence, transactionGeneration, startedAt, completedAt}` plus the request
 `OneWireSearchState` and completed `searchResult`. The first request is empty;
 every later request
 must equal the preceding completed result fieldwise, and no pass may follow a
@@ -142,7 +148,9 @@ temperature, freshness, conversion, presence, or step baseline.
 Conversion request, completion evidence, and scratchpad read must correlate on
 the exact ROM, Lesson 064 owner/lifecycle/configuration, and one nonzero
 conversion generation. Completion and scratchpad witnesses explicitly bind
-the predecessor conversion-start transaction generation. Evidence from
+exact compact references for conversion start, optional conversion status, and
+scratchpad read; an explicit presence flag distinguishes no status witness
+from a zero-like value. Evidence from
 different probes, lifecycles, predecessors, or generations rejects before
 mutation.
 
@@ -171,6 +179,10 @@ the compact witness binds both, and Lesson 065 validates chronology in each
 domain without inventing a shared epoch. CRC failures, transport
 failures, incomplete conversion, and duplicate replay do not refresh it. Age
 at the configured maximum remains current; one millisecond older is `Stale`.
+Each probe publishes inclusive
+`freshThrough = scratchpadObservedAt + maximumAge` under modular half-range
+rules. Lesson 066 may therefore process a fresh control edge over an unchanged
+frame without reconstructing or extending the freshness window.
 
 ## Missing, reappearance, and step semantics
 
@@ -200,6 +212,13 @@ physical change was impossible. The snapshot retains the new decoded value
 and both transactions' attribution, and the new valid sample becomes the next
 comparison baseline so one real step cannot permanently lock the slot.
 
+`ResetDefaultWithoutConversion` publishes a coherent but untrusted `+85 °C`
+tuple with current read attribution and `freshThrough` equal to its observation
+time. It is never a step baseline. Conservatively, admitting it discards any
+older trusted comparison baseline, so the next correlated completed sample
+establishes a new baseline instead of being compared across the reset-default
+gap.
+
 No Lesson 065 value claims medical, food, preservation, process-control, hot
 surface, immersion, absolute accuracy, response-time, or waterproof behavior.
 
@@ -210,12 +229,29 @@ Equal cycle sequence and observation time accept only a byte-identical full
 duplicate. A changed duplicate rejects atomically. An identical duplicate at
 a later valid policy time is idempotent: it does not extend conversion state,
 refresh a value, age a disappearance counter, or change step history.
-Duplicate equality covers the complete normalized cycle image fieldwise,
-including all normalized witnesses and stage state; it never compares padding,
-a digest, or only the fields relevant to the winning quality. Each failed
+The opaque builder begins as a whole-object zero-filled canonical byte image.
+The policy is its sole writer and keeps every padding byte zero. Exact replay
+within the same compiled ABI compares and copies that complete canonical byte
+image; it is not a persisted or cross-ABI representation. Public snapshot
+semantics remain field-defined, and no digest or winning-quality subset
+substitutes for the private replay witness. Each failed
 begin/ingest/finish call leaves the builder byte-identical. Failed
 finalization leaves both the policy, including its retained prior normalized
 cycle, and the caller output byte-identical.
+
+`cycleBegun` rejects stage calls before `beginCycle()`. `searchFinished` seals
+the search stage: no additional search pass or second finish is accepted, and
+conversion/read ingestion cannot begin before that seal. The captured policy
+generation makes these stage flags reset-safe rather than allowing a
+well-formed pre-reset builder to enter a new policy epoch.
+
+A committed witness-free producer-fault cycle must not erase the cross-cycle
+bus anchor. The private retained canonical image carries the preceding common
+owner/lifecycle/configuration tuple and latest transaction reference forward
+through a zero-count cycle in otherwise unused private storage. This
+canonicalization changes neither the caller's builder nor public output.
+Immediate exact replay canonicalizes to the same local image. Reusing private
+storage avoids ABI growth while preserving the 764-byte policy hard margin.
 
 Forward sequence and time use modular half-range ordering. `UINT32_MAX` to
 `1` is the valid nonzero cycle-sequence rollover. Zero, regression,
@@ -301,7 +337,7 @@ decision, timestamp rollover, reset, and restart with faults present.
 | Shared bus or transport | Not applicable inside Lesson 065: the API accepts only completed copied Lesson 064 values and cannot call, borrow, arbitrate, or restart a bus. Lesson 064 and E1 own any physical shared-bus pressure. |
 | Persistence and recovery | Not applicable: configured identities are firmware configuration and all observation/conversion history is volatile. Lesson 065 makes no RTC, SD, EEPROM, media, power-loss, or durable-record claim. |
 | Motion, external power, or stored energy | Not applicable at E0 because no actuation or supply path exists. Parasite power, strong pull-up, switched rail, immersion, and thermal stimuli remain E1 exclusions until exact qualification. |
-| Observation identity and provenance | Applicable. Every slot retains complete ROM, source/configuration, Lesson 064 owner/lifecycle/transaction/conversion generation, copied completion time, scratchpad CRC, expected resolution, age, quality, and status. |
+| Observation identity and provenance | Applicable. The policy and retained normalized cycle preserve common Lesson 064 owner/lifecycle/configuration and compact transaction references for exact replay and correlation. The public snapshot carries source/configuration at set level; each slot exposes ROM, cycle/conversion/read generations, observation and inclusive freshness times, decoded interval, resolution, age, quality, and status. CRC failure remains typed quality rather than exported scratchpad bytes. |
 | Diagnostic interference | Applicable in Lesson 066. Named result cells, future LCD/LED intent, Serial, and record intent cannot change CRC, identity, freshness, step, or disappearance decisions. Their exact resources remain aggregate gates. |
 | Failure collision and recovery | Applicable. Replay simultaneous incomplete search, duplicate/unknown ROM, pending conversion, scratchpad corruption, missing configured identity, stale value, and step warning. Structural failure rejects atomically; valid side faults remain independently attributable; reset returns four stable unqualified slots. |
 
@@ -323,23 +359,23 @@ The rejected monolithic full-evidence draft was approximately 980 bytes before
 the clock-domain repair and could not satisfy the 512-byte hard gate. The
 staged design validates complete Lesson 064 snapshots one at a time, retains
 the common owner/lifecycle/configuration tuple once, and normalizes only facts
-required for final atomic qualification. Its declared-field budget is about
-446 bytes before ABI padding: approximately 180 bytes for four normalized
-search witnesses, 240 bytes for four normalized probe witnesses, and 26 bytes
-for common cycle attribution and state. Exact AVR `sizeof` must be at most 448
-bytes to meet target and 512 bytes to proceed. The canonical maximum
+required for final atomic qualification. The current AVR-like implementation
+measurement is builder 477 bytes, snapshot 180 bytes, and policy 764 bytes.
+The builder misses its 448-byte target but remains 35 bytes below its hard
+limit; the policy misses its 512-byte target and remains only 4 bytes below
+its hard limit. The tuple-bound digest lives in the independent review JSON
+and generated resource evidence rather than this hashed design source.
+The canonical maximum
 composition lifetime-reuses one staged builder and one transient Lesson 064
 snapshot; neither the rejected envelope nor a second active builder is live.
-The policy nevertheless retains one exact 446-byte prior normalized cycle for
-collision-free changed-duplicate rejection. The resulting draft AVR-like
-sizes are builder 446 bytes, snapshot 164 bytes, and policy 713 bytes. The
-policy's 201-byte object-target miss is reviewable because exact replay
-identity cannot be replaced by a digest; 713 remains 55 bytes below the
-768-byte hard limit.
+The policy nevertheless retains one exact prior normalized cycle for
+collision-free changed-duplicate rejection. Compact provenance retains the
+four fields necessary to prove ordering and correlation; neither those fields
+nor the exact prior cycle may be replaced by a digest.
 
-The recurring Lesson 065 placement is exactly one 713-byte policy (including
-its retained prior cycle) plus one 446-byte active builder: 1,159 bytes of
-persistent storage. The 164-byte caller output and one 84-byte transient
+The recurring Lesson 065 placement is one 764-byte policy (including
+its retained prior cycle) plus one 477-byte active builder: 1,241 bytes of
+persistent storage. The 180-byte caller output and one 84-byte transient
 Lesson 064 snapshot are phase-scoped caller/stack temporaries; the transaction
 snapshot is reused for every ingestion call. Finalization creates no second
 output or normalized cycle. Exact static and conservative stack probes must
@@ -347,17 +383,18 @@ measure that real placement independently.
 
 For Lesson 066, the active builder cannot be overlaid: the next acquisition
 cycle must remain stageable while the mapper and last accepted set remain
-live. The recurring composition therefore starts with the 254-byte Lesson 064
-object, 713-byte Lesson 065 object, 446-byte builder, and estimated 480-byte
-mapper, about 1,893 bytes before runtime values. Mapper result and transient
+live. The current recurring composition estimate therefore starts with the
+254-byte Lesson 064 object, 764-byte Lesson 065 object, 477-byte builder, and
+estimated 480-byte mapper, about 1,975 bytes before runtime values. Mapper result and transient
 transaction evidence are phase-scoped and lifetime-reused, with no by-value
-duplicate of the 164-byte qualified snapshot. This forces a documented
+duplicate of the 180-byte qualified snapshot. This supports the documented
 downstream revision of the Lesson 066 aggregate static target/hard gate from
 1,536/2,048 bytes to 2,048/3,072 bytes. The 2,048-byte residual floor,
 1,024-byte stack hard limit, and exact measurement remain unchanged. This
 wide consequence is accepted at plan level because overlay would break
-recurring operation; it is not a fit claim, and Lesson 066 header freeze
-remains gated on the exact aggregate tuple.
+recurring operation. It is not a fit claim: current example and exact-resource
+work remain under optimization, and Lesson 066 header freeze remains gated on
+the final aggregate tuple.
 
 The exact gate must fingerprint compiler, core, flags, sources, commands, and
 input evidence; assert all public enum and structure sizes/alignments/traits;
@@ -366,6 +403,14 @@ instantiate caller-owned buffers exactly once. The Lesson 066 plan must freeze
 its aggregate target before Lesson 065 promotion. A target miss requires an
 independent reviewed disposition; a hard or residual-floor failure is not
 reviewable.
+
+The settled exact resource tuple is ordinary flash 13,662 bytes, exact no-LTO
+flash 16,196 bytes, ordinary and exact static SRAM 1,438 bytes, conservative
+synchronous stack 533 bytes, policy 764 bytes, builder 477 bytes, recurring
+owned storage 1,241 bytes, lifetime peak storage 1,421 bytes, snapshot 180
+bytes, and residual SRAM 6,093 bytes. Its tuple-bound digest lives in the
+independent review JSON and generated resource evidence. The snapshot passes
+its target and needs no target-miss review.
 
 ## E1 specimen and powered-adapter gates
 

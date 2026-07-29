@@ -1,8 +1,8 @@
 # Lesson 066 thermal-gradient-mapper architecture stress pass
 
-Status: initial pre-implementation E0 review; Lessons 064--065 public
-interfaces, exact resource evidence, powered specimens, presentation, and
-recording media remain open.
+Status: implementation-depth E0 review; Lesson 065 promotion, exact aggregate
+resource evidence, powered specimens, presentation, and recording media
+remain open.
 
 This pass reviews the queued Lesson 066 project boundary from the
 [extended component/project cadence](../projects/component_project_cadence.md).
@@ -16,7 +16,8 @@ driver, preservation instrument, or safety monitor.
 ## Boundary
 
 - Name and lesson/project: `ThermalGradientMapper`, Lesson 066
-- Review state: initial pre-implementation review
+- Review state: implementation-depth review against the settled Lesson 065
+  seam
 - Proposed public responsibility: validate one copied fixed-capacity qualified
   probe-set observation, project it into configured spatial slots, derive
   conservative adjacent raw-sixteenth intervals, and fill bounded inert
@@ -36,7 +37,7 @@ driver, preservation instrument, or safety monitor.
 | Ownership and lifecycle | Inert construction, noncopyable/nonmovable coordinator, fixed configuration, explicit `initialize`/`reset`/`shutdown`, and no heap, callback, retained caller pointer, child reference, or hidden clock. `update` fills caller-owned result and record-intent buffers synchronously and retains no reference to either. |
 | Time and ordering | `TimePoint now` is supplied. Probe adjacency is always configuration order, never discovery order, ROM numeric order, arrival order, current temperature, or display-page order. Equal accepted frame identity is idempotent only for a byte-identical copied observation. Changed duplicate, regression, future time, exact half-range ambiguity, and sequence exhaustion reject atomically. Wrap-valid stale evidence commits a fault result. |
 | Errors and status | Lifecycle and structural invalidity use `Status`. Valid but unhealthy child evidence remains domain state. Missing, disappeared, CRC-failed, conversion-in-progress, stale, implausible-step, mixed-resolution, or otherwise unqualified required slots dominate all numeric presentation: they can never be rendered as a cold value or a valid gradient. |
-| Resources | E0 claims zero pins, timers, interrupts, buses, endpoints, supplies, displays, LEDs, clocks, or media. Measure the linked Lessons 064--066 maximum composition with the exact-four Lesson 065 configuration and every permitted mapped-subset size. Planning targets are 16/24 KiB flash, 1,536/2,048 B static SRAM, 768/1,024 B conservative synchronous stack, and 512/768 B mapper object, with each fixed caller-owned ABI value at or below 256/384 B and at least 4 KiB formula residual SRAM. Targets/hard limits require exact implementation-plan review before code. |
+| Resources | E0 claims zero pins, timers, interrupts, buses, endpoints, supplies, displays, LEDs, clocks, or media. Measure the linked Lessons 064--066 maximum composition with the exact-four Lesson 065 configuration and every permitted mapped-subset size. Revised planning targets are 16/24 KiB flash, 2,048/3,072 B static SRAM, 768/1,024 B conservative synchronous stack, and 512/768 B mapper object, with each fixed caller-owned ABI value at or below 256/384 B and at least 4 KiB target residual SRAM. Exact implementation and independent review still gate promotion. |
 | Deterministic proof | Host fixtures can scramble discovery order while preserving configured position; inject every child quality, raw-sixteenth extreme, interval boundary, mapping error, stale/future/rollover condition, page transition, fresh record edge, replay, reset, and shutdown. Tests compare complete fixed result and caller-owned record images byte for byte and protect them with canaries. |
 | Packaging/public surface | One project header/source, strict host test, compile-only Mega replay, exact linked resource probe, HTML reference, and complementary pencil-drawing PDF. No adapter, single-wire command, LCD/LED driver, RTC/SD include, physical wiring, or formal schematic enters the E0 package. |
 | Example and documentation fit | The canonical replay presents acquire/configure/start and observe/decide/actuate phases over copied fixtures. Named result cells expose configured slot identity, raw-sixteenth interval, fault token, page intent, gradients, and record intent without making Serial the only evidence. |
@@ -101,6 +102,13 @@ and either a raw-sixteenth interval or an explicit fault token. Every adjacent
 gradient page contains both configured identities and either a conservative
 interval/classification or an explicit fault token.
 
+Lesson 065 supplies an inclusive `freshThrough` bound for each slot. The
+mapper compares its supplied `now` to that bound under the same modular
+half-range rules: equality remains fresh and the next representable
+millisecond is stale. This seam lets a fresh page or record control edge act
+on an unchanged accepted frame without refreshing, estimating, or extending
+child evidence.
+
 A required-slot fault makes the overall mapper health `Fault`. It also faults
 every incident gradient page. Healthy nonincident pages may retain their own
 valid evidence, but the overall page and record retain the complete fault
@@ -154,11 +162,11 @@ claim.
 | Composition pressure | Applicability and required evidence |
 |---|---|
 | Scheduler and time | Applicable. One bounded projection, fixed adjacent-pair pass, page selection, and fixed caller-owned ABI fill per update; no polling, search retry, conversion wait, storage retry, or catch-up loop. Bound worst-case work for all four Lesson 065 sources with the maximum four-source mapped subset and prove page/time rollover. |
-| Total memory and hardware resources | Applicable. Measure ordinary and isolated no-LTO Lesson 066 plus linked Lessons 064--066. Include all three live objects, copied-once exact-four child observation, mapper result, caller-owned record image, fixed identity/order tables, hidden-return probes, conservative stack, ISR reserve, and formula residual. Mapped-subset counts below two, at two, and at four are mandatory boundaries. |
+| Total memory and hardware resources | Applicable. Measure ordinary and isolated no-LTO Lesson 066 plus linked Lessons 064--066. The recurring placement keeps the Lesson 064 policy, Lesson 065 policy, active staged builder, and mapper live together; overlaying the builder is invalid because the next acquisition must remain stageable. Child snapshot, mapper result/record image, and transient transaction evidence are phase-scoped and lifetime-reused without by-value duplication. Include fixed identity/order tables, hidden-return probes, conservative stack, ISR reserve, and formula residual. Mapped-subset counts below two, at two, and at four are mandatory boundaries. |
 | Shared bus or transport | Not applicable at E0 because the mapper receives copied qualified values and makes no transport call. A future LCD, RTC, SD, or probe adapter requires its own owner, borrower lifetime, arbitration, bounded transaction, rollback, congestion, and restart evidence. |
 | Persistence and recovery | Not applicable as durable state. Record intent is volatile caller-owned output. Reset/shutdown invalidate mapper sequence and page history without claiming a stored record. RTC accuracy, media schema, atomic commit, corruption, torn write, capacity, wear, and power-loss recovery remain open. |
 | Motion, external power, or stored energy | Not applicable at E0 because no actuation or energized path exists. The physical lesson may use only qualified safe tabletop objects within specimen and material limits; no immersion, hot surface, heater, flame, ignition, medical target, or unattended heating is authorized. |
-| Observation identity and provenance | Applicable. Preserve exact probe-set source/configuration/calibration identity, accepted set/frame sequence, per-probe ROM identity, resolution, conversion/CRC/age/quality evidence, configured spatial slot, and transformation into every gradient and record field. Delayed or invalid values are never presented as simultaneous qualified measurements. |
+| Observation identity and provenance | Applicable. Preserve the public Lesson 065 seam: top-level source/configuration revision and cycle sequence; per-probe ROM, resolution, conversion/read generations, observation and inclusive freshness times, interval, age, quality, and status; configured spatial slot; and transformation into every gradient and record field. Delayed or invalid values are never presented as simultaneous qualified measurements. Richer calibration or private transaction-witness provenance would require an explicit ABI extension. |
 | Diagnostic interference | Applicable. Page selection, LCD/LED intent, result cells, Serial, and record-edge presence cannot reorder probes, change intervals, suppress a fault, or be required for classification. Future physical diagnostics enter the combined pin/timer/current/memory budget. |
 | Failure collision and recovery | Applicable. Reverse discovery order plus a disappearing middle mapped probe faults both incident gradients; a simultaneous healthy mapped endpoint, permitted unmapped source, page transition, fresh record edge, rollover, reset, and shutdown are exercised as a sequential atomic trace. Each accepted step retains attribution; each rejected step preserves the prior complete result and record image. Recovery requires a new complete accepted Lesson 065 frame and cannot reuse cached healthy display values. |
 
@@ -204,6 +212,9 @@ safe-state evidence.
 - The Lesson 065 validity contract is **preserved**: Lesson 066 consumes and
   exposes faults instead of requalifying, averaging, or silently substituting
   values.
+- The Lesson 065 freshness contract is **extended without reinterpretation**:
+  Lesson 066 consumes the inclusive `freshThrough` bound, so unchanged-frame
+  controls do not manufacture a new observation time.
 - Raw DS18B20 representation is **preserved**: interval arithmetic remains
   signed raw sixteenths with widened intermediates and no floating-point or
   extra-precision claim.
@@ -222,7 +233,7 @@ safe-state evidence.
   complete Lesson 065 copied observation, freezes configured spatial order,
   keeps raw-sixteenth interval arithmetic conservative, makes pages
   fault-dominant, and emits only caller-owned volatile record intent
-- Open risks: Lessons 064--065 public types and maximum capacity; exact
+- Open risks: Lesson 065 promotion and final public ABI; exact
   interval provenance; aggregate flash/SRAM/stack/object and caller-buffer
   sizes; exact DS18B20 specimens and supply mode; powered LCD/LED observation;
   any RTC/SD recorder
@@ -230,8 +241,9 @@ safe-state evidence.
   storage receipts/retries/durability, automatic source ordering, or a generic
   thermal abstraction requires a separate architectural decision
 - Remediation owner and next action: the Lessons 064--066 implementation-plan
-  owner freezes the exact Lesson 065 copied observation and capacity, then
-  replaces planning budgets with exact gates before code
+  owner promotes the exact Lesson 065 copied observation and final resource
+  tuple, then measures the natural recurring composition against the revised
+  2,048/3,072-byte static gates before Lesson 066 header freeze
 - Verification commands and results: document review only; strict host,
   sanitizer, style, standalone-header, Mega, exact resource, PDF, site, and
   publication gates remain pending

@@ -1,0 +1,410 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.60in]{geometry}
+\usepackage{amsmath,booktabs,enumitem,fancyhdr,graphicx,listings,tabularx,titlesec,xcolor}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{docs/lessons/assets/}{assets/}}
+\hypersetup{
+ pdftitle={ADK Lesson 065: Qualified Sets of Identified 18B20 Probes},
+ pdfauthor={Kevin Shanahan},
+ pdfsubject={Qualifying copied search, conversion, and scratchpad evidence for four configured DS18B20 identities},
+ pdflang={en-US}}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\textsc{ADK Lesson 065}}\rhead{Qualified 18B20 Probe Sets}
+\cfoot{\thepage}\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{3pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.5em}{}
+\newcommand{\lessonbox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{#1}}\end{center}}
+\newcommand{\blankline}{\rule{0.76in}{0.4pt}}
+\newcommand{\longblank}{\rule{1.35in}{0.4pt}}
+\lstset{
+ basicstyle=\ttfamily\footnotesize,
+ columns=fullflexible,
+ breaklines=true,
+ frame=single,
+ rulecolor=\color{black},
+ showstringspaces=false}
+
+\begin{document}
+\small
+\begin{center}
+ {\Huge\bfseries Qualified Sets of Identified 18B20 Probes}\\[3pt]
+ {\Large Keep four identities stable while evidence changes}\\[7pt]
+ \fbox{\textbf{E0 SYNTHETIC REPLAY --- NO BUS, PROBE, OR THERMAL CLAIM}}
+\end{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 065 --- component & Time & 180--240 minutes\\
+Prerequisite & Lesson 064 copied transactions & Board & compile-only Mega replay\\
+Input & copied search/conversion/read evidence & Observation & named snapshot cells\\
+\end{tabularx}
+
+\lessonbox{\textbf{Responsibility.}
+\texttt{Qualified18B20ProbeSetPolicy} qualifies one bounded copied cycle
+against exactly four configured family-\texttt{0x28} ROM identities. It
+publishes four stable attributed slots with signed temperature code-space
+intervals, age, quality, and status. It does not discover, power, sample, or
+calibrate a physical sensor.}
+
+\section{Qualify evidence, not a box of parts}
+Lesson 064 proves that a bounded policy can correlate copied single-wire
+transaction evidence. Lesson 065 gives some of those transactions DS18B20
+meaning: a chained ROM search, a conversion start and completion observation,
+and a nine-byte scratchpad read. Meaning arrives only after structure,
+identity, chronology, and CRC checks agree.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.95in,keepaspectratio]
+ {065-evidence-funnel-pencil.png}
+
+\small\textit{Alternative text: four graphite measuring bars with progressively
+finer tick marks sit beside four closed intervals that narrow from a broad
+shaded span to a single narrow band, illustrating resolution without claiming
+physical accuracy.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}X X@{}}
+\toprule
+E0 can establish & E0 cannot establish\\
+\midrule
+family byte and Dallas ROM CRC & genuine package, maker, or cable identity\\
+copied scratchpad CRC and resolution bits & electrical timing, rise time, or supply current\\
+stable configured-slot attribution & physical position or probe response time\\
+deterministic freshness and step policy & thermal accuracy, waterproofing, or safe use\\
+\bottomrule
+\end{tabularx}
+
+There is no wiring diagram or formal schematic at E0. A future powered lesson
+must qualify exact specimens, pin order, external supply, ordinary pull-up,
+rails, line timing, four-device loading, and independent non-Serial evidence.
+Parasite power, strong pull-up, immersion, medical, food, preservation, and
+unattended heat-source claims remain excluded.
+
+\newpage
+\section{Configure exactly four stable identities}
+Configuration contains four distinct complete ROM codes. Each must use family
+byte \texttt{0x28} and pass the Dallas CRC-8 over its first seven bytes. The
+algorithm begins at zero, processes each byte least-significant bit first,
+uses reflected polynomial \texttt{0x8c}, and applies no final XOR.
+\footnote{\href{https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf}{Analog Devices, \emph{DS18B20 Programmable Resolution 1-Wire Digital Thermometer}, Rev. 6.}}
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.85in,keepaspectratio]
+ {065-four-identity-slots-pencil.png}
+
+\small\textit{Alternative text: four numbered graphite storage bins each hold
+a deliberately different token shaped like a small probe, a visual metaphor
+for four identities that retain their assigned slots rather than depictions of
+qualified physical specimens.}
+\end{center}
+
+Each slot also configures 9-, 10-, 11-, or 12-bit resolution, a conversion
+deadline, maximum age, inclusive signed raw-sixteenth range, and maximum
+per-cycle step magnitude. There is no runtime count, empty wildcard, or
+replacement identity. Search order cannot change configured order.
+
+\begin{tabularx}{\linewidth}{@{}l l l X@{}}
+\toprule
+Resolution & Undefined raw bits & Maximum conversion & Represented interval\\
+\midrule
+9 bit  & 3 & 94 ms  & \([m,m+7]\) sixteenths\\
+10 bit & 2 & 188 ms & \([m,m+3]\) sixteenths\\
+11 bit & 1 & 375 ms & \([m,m+1]\) sixteenths\\
+12 bit & 0 & 750 ms & \([m,m]\) sixteenths\\
+\bottomrule
+\end{tabularx}
+
+Here \(m\) is the signed raw value after masking undefined low bits. The closed
+interval describes digital code space, not sensor accuracy or uncertainty.
+The final API requires the configured deadline to equal the resolution maximum
+for its slot; a shorter or longer value rejects configuration.
+
+\begin{enumerate}
+ \item A 9-bit scratchpad decodes to masked raw value \(400\). Record the
+       interval: \blankline\ through \blankline.
+ \item A search returns the same four ROMs in reverse order. Which configured
+       slot changes identity? \blankline.
+ \item Why is an all-zero optional ROM incompatible with this component?
+       \longblank.
+\end{enumerate}
+
+\section{Stage one complete cycle}
+A caller lifetime-reuses one opaque \texttt{Ds18b20CycleBuilder}. After
+\texttt{beginCycle()}, role-specific ingestion methods accept one complete
+Lesson 064 snapshot at a time. \texttt{finishSearch()} records whether
+enumeration completed or explicitly exceeded the four-result evidence
+capacity. Only \texttt{finalizeCycle()} may commit policy state.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.65in,keepaspectratio]
+ {065-staged-cycle-pencil.png}
+
+\small\textit{Alternative text: a graphite line runs from a loose probe-shaped
+token through a bounded geared mechanism, an hourglass, and a paper roll,
+representing copied input, staged processing, supplied time, and one published
+result rather than a physical circuit.}
+\end{center}
+
+\newpage
+\section{Make search continuity prove presence}
+The builder retains at most four
+\texttt{Ds18b20NormalizedSearchPass} records. Each record contains the
+normalized transaction reference plus its requested and completed
+\texttt{OneWireSearchState}.
+The first request uses empty search state. Every later request must equal the
+immediately preceding completed result, including ROM,
+\texttt{lastDiscrepancy}, and \texttt{lastDevice}. No pass may follow a
+terminal result. The request/result chain is the bounded policy rendering of
+the manufacturer's discrepancy-tree search procedure.\footnote{\href{https://www.analog.com/en/resources/app-notes/1wire-search-algorithm.html}{Analog Devices, \emph{1-Wire Search Algorithm}, Application Note 187.}}
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.95in,keepaspectratio]
+ {065-search-chain-pencil.png}
+
+\small\textit{Alternative text: eight distinct graphite beads form one
+connected chain, ending in a bead with a check mark; a magnifying glass above
+suggests inspecting each linked search result and its terminal evidence.}
+\end{center}
+
+A complete nonempty enumeration ends with \texttt{lastDevice} true. One
+through four returned devices may therefore prove configured identities
+missing. A zero-pass cycle cannot prove all four missing because it contains
+no completed search witness. Four results ending nonterminal may explicitly
+prove over-capacity; the fifth device is never silently dropped.
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Search evidence & Set result & What it does not imply\\
+\midrule
+complete terminal chain, known distinct ROMs & \texttt{Complete} or
+\texttt{Missing} & physical location\\
+duplicate returned ROM & \texttt{DuplicateIdentity} & two interchangeable probes\\
+CRC-valid foreign ROM & \texttt{UnknownIdentity} & permission to replace a slot\\
+bad-family or bad-CRC returned ROM & \texttt{TransportFault} & attributable configured identity\\
+truncated, failed, or over-capacity & \texttt{TransportFault} & proved absence\\
+\bottomrule
+\end{tabularx}
+
+\texttt{presentMask} marks configured identities proved present by a
+structurally complete search. \texttt{validCount} counts only
+\texttt{Current} slots. \texttt{faultMask} marks every slot that is not
+\texttt{Current}. These fields answer different questions and must not be
+collapsed.
+
+Predict a complete search that finds three configured ROMs and omits the
+fourth: set quality \blankline; missing slot still has its configured ROM?
+\blankline; array length \blankline.
+
+\section{Bind conversion and read evidence}
+For each returned device, conversion start, conversion-status continuation,
+and scratchpad read must agree on exact ROM, owner, lifecycle, configuration,
+predecessor transaction, and one nonzero conversion generation. A crossed
+witness rejects the entire cycle atomically.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.55in,keepaspectratio]
+ {065-correlation-braid-pencil.png}
+
+\small\textit{Alternative text: a graphite clock precedes four pinned evidence
+notes along one path; the path rises to two final notes, one clean and one
+shaded, illustrating that chronology and correlation determine the admitted
+outcome.}
+\end{center}
+
+Completion requires a correlated conversion-status receipt whose copied bit
+is high. Elapsed time alone does not prove completion. A high bit may arrive
+before the configured maximum. A low bit exactly at or after that maximum, or
+a high bit after it, is transport-fault evidence.
+
+\newpage
+\section{Decode scratchpads without inventing precision}
+A DS18B20 scratchpad is exactly nine bytes. Byte eight must equal the Dallas
+CRC-8 of bytes zero through seven before temperature or resolution is used.
+Configuration byte bit 7 must be zero and bits 4--0 must be one; bits 6--5
+encode resolution and must match the configured slot.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.95in,keepaspectratio]
+ {065-scratchpad-interval-pencil.png}
+
+\small\textit{Alternative text: a pencil points to a graphite notebook strip
+of ordered byte-like cells whose final cell bears an integrity shield and
+check mark, emphasizing validation before interpretation.}
+\end{center}
+
+The published numeric unit remains a signed sixteenth of a degree Celsius.
+Negative values use the signed 16-bit scratchpad representation. Widened
+arithmetic forms intervals and absolute step differences so endpoints do not
+overflow.
+
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Quality & Interpretation\\
+\midrule
+\texttt{Current} & correlated completion and CRC-valid, configured evidence\\
+\texttt{ScratchpadCrcFault} & nine bytes arrived, but integrity failed\\
+\texttt{ResolutionMismatch} & scratchpad resolution disagrees with its slot\\
+\texttt{ResetDefaultWithoutConversion} & raw \(+85^\circ\mathrm{C}\) lacks exact completed conversion\\
+\texttt{ImplausibleStep} & widened absolute step exceeds configured maximum\\
+\texttt{Stale} & last trusted value is older than maximum age\\
+\texttt{Missing} & complete search proves configured identity absent\\
+\texttt{TransportFault} & correlated transport/chronology evidence failed\\
+\bottomrule
+\end{tabularx}
+
+Raw \(+85^\circ\mathrm{C}\) is not automatically bad. Without exact correlated
+completion it is the reset-default quality; after correlated completion it is
+a possible current reading. Likewise, an implausible step is a domain warning,
+not proof that a physical event was impossible. The new valid sample becomes
+the next comparison baseline.
+
+\begin{enumerate}
+ \item One scratchpad byte changes but its old CRC is retained. Which numeric
+       fields may refresh? \blankline.
+ \item At the maximum configured step, is the new value admitted?
+       \blankline. One sixteenth beyond? \blankline.
+ \item Does a code-space interval authorize an accuracy claim? \blankline.
+\end{enumerate}
+
+\newpage
+\section{Preserve trusted values through pending and missing states}
+Freshness begins at the caller-supplied policy-clock time passed with the
+correlated scratchpad. Lesson 065 also retains transaction-clock times, but
+does not invent an epoch mapping between the two clocks. Age equal to
+\texttt{maximumAge} remains current; one millisecond older is stale.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.95in,keepaspectratio]
+ {065-quality-history-pencil.png}
+
+\small\textit{Alternative text: four numbered positions support separate
+stacks of graphite tags on pegs; the stacks differ in depth while positions
+one through four remain fixed, illustrating stable identity with retained
+history.}
+\end{center}
+
+\texttt{ConversionPending} retains the last trusted raw value, interval,
+observation time, and increasing age. It does not read an incomplete
+scratchpad or refresh freshness. \texttt{Missing} likewise retains the stable
+identity and prior trusted value. A later fully correlated current cycle
+returns that same identity to its original slot.
+
+Set-level structural and transport decisions precede per-slot qualities. A
+valid cycle commits all four slots together, so one CRC fault does not erase
+three current readings. Status precedence follows configured slot order after
+set-level failures; status and quality remain separate facts.
+
+\begin{tabularx}{\linewidth}{@{}l l l l@{}}
+\toprule
+Slot & Search & Evidence & Published quality\\
+\midrule
+0 & present & complete, CRC valid & \texttt{Current}\\
+1 & present & completion still low, before limit & \texttt{ConversionPending}\\
+2 & absent & complete terminal search & \texttt{Missing}\\
+3 & present & scratchpad CRC bad & \texttt{ScratchpadCrcFault}\\
+\bottomrule
+\end{tabularx}
+
+For this table, write \texttt{validCount} \blankline\ and the four-bit
+\texttt{faultMask} \blankline. Which rows may still retain an older trusted
+numeric value? \longblank.
+
+\section{Reject structural changes atomically}
+Cycle sequence is nonzero and modularly forward; \texttt{UINT32\_MAX} followed
+by 1 is its defined nonzero rollover. Zero, regression, backward time, and an
+exact half-range ambiguity reject. An equal sequence accepts only a
+field-for-field identical completed builder image.
+
+A fieldwise-identical normalized duplicate is idempotent: it cannot refresh age, extend a
+pending conversion, advance step history, or change disappearance evidence.
+A changed duplicate rejects without modifying policy state or the caller's
+output. Ingestion failure leaves every byte of the staged builder unchanged;
+failed finalization leaves policy and output unchanged.
+
+\newpage
+\section{Replay the policy on a Mega without touching hardware}
+The canonical sketch creates four fixed configurations, replays copied
+Lesson 064 snapshots into one reusable builder, finalizes one cycle, and
+copies selected results into named volatile cells. Compile and inspect those
+cells; do not upload this E0 exercise to claim a powered fixture.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.85in,keepaspectratio]
+ {065-mega-replay-pencil.png}
+
+\small\textit{Alternative text: an open graphite notebook has four numbered
+rows, distinct tool-like identity symbols, blank result rectangles, and
+different geometric quality marks; a pencil suggests recording the replay
+outcome without depicting a wired board.}
+\end{center}
+
+\begin{enumerate}
+ \item \textbf{Predict:} record configured slot order, expected qualities,
+       \texttt{presentMask}, \texttt{faultMask}, and \texttt{validCount}.
+ \item \textbf{Observe:} compile for Mega 2560, then inspect the named volatile
+       result cells in a debugger, simulator, or disassembly. Serial is
+       optional supporting context, not the only evidence.
+ \item \textbf{Interpret:} compare each stable ROM slot, quality, raw interval,
+       age, and status with the copied cycle. Explain any disagreement before
+       changing fixture data.
+\end{enumerate}
+
+This observation establishes software acquisition and deterministic result
+publication only. There is no electrical safe-state experiment because the E0
+component owns no endpoint. Future E1 resource acquisition and physical
+released-line evidence are separate checks.
+
+\section{Publisher verification and resource boundary}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X@{}}
+Mega replay & ordinary: 13,662 B flash, 1,438 B static SRAM; isolated no-LTO:
+16,196 B flash, 1,438 B static SRAM.\\
+Objects and stack & policy 764 B; reusable builder 477 B; snapshot 180 B;
+conservative synchronous stack 533 B.\\
+Placement & recurring policy plus builder 1,241 B; lifetime placement including
+one snapshot 1,421 B; residual SRAM 6,093 B after static, stack, and reserve.\\
+Evidence identity & \texttt{6e4f9d75a48398919dc764d386cb3c2c}\newline
+\texttt{0faf9fb11e9c874c9b0377c768ef0bc3}\\
+Publication evidence & Publisher-owned PDF validation and rendered pencil
+visual review passed; independent resource rereview reproduced the evidence
+cleanly.\\
+Physical evidence & Deferred; no powered specimen or bus is authorized.\\
+\end{tabularx}
+
+Planning hard limits are 16 KiB ordinary replay flash, 1,536 B static SRAM,
+640 B conservative synchronous stack, 768 B policy object, 512 B reusable
+builder, and 512 B caller-owned snapshot/result. Every hard gate and the
+residual floor pass. Ordinary flash and SRAM, stack, policy, and builder miss
+their planning targets but remain below their hard limits; independent review
+accepted those bounded misses without weakening replay identity or recurring
+operation. Exact specimen, electrical, and physical E1 acceptance remain open.
+
+\section{Exercises and next boundary}
+\begin{enumerate}
+ \item Construct a complete search permutation that leaves slot order
+       unchanged. Mark which evidence proves one configured ROM missing.
+ \item Corrupt each scratchpad byte in turn. Confirm that no corruption
+       partially refreshes value, age, presence, or step baseline.
+ \item Replay pending immediately before, exactly at, and immediately after
+       each resolution deadline. Explain the boundary outcomes.
+ \item Demonstrate current, pending, stale, missing, and reappeared states for
+       one ROM without ever changing its configured index.
+ \item Explain why Lesson 066 may use configured ROMs for spatial order but
+       cannot use search order as physical position.
+\end{enumerate}
+
+Lesson 066 will consume the complete copied four-slot snapshot and map a
+configured subset into spatial order, adjacent code-space gradients,
+fault-dominant presentation pages, and caller-owned record intent. It still
+will not drive a display, read an RTC, write storage, or turn these digital
+intervals into calibrated thermal accuracy.
+
+\textit{Stop at E0: qualify exact powered specimens and the complete
+four-device bus before adding wiring, schematics, or physical claims.}
+\end{document}

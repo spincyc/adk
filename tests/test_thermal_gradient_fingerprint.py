@@ -12,6 +12,135 @@ SPEC.loader.exec_module(thermal_probe)
 
 
 class ThermalGradientFingerprintPortabilityTest(unittest.TestCase):
+    def test_require_through_cutoff_selects_exact_boundary_prefix(self):
+        self.assertEqual(
+            [
+                boundary["lesson"]
+                for boundary in thermal_probe.selected_boundaries("064")
+            ],
+            ["064"],
+        )
+        self.assertEqual(
+            [
+                boundary["lesson"]
+                for boundary in thermal_probe.selected_boundaries("065")
+            ],
+            ["064", "065"],
+        )
+
+    def test_each_boundary_self_hashes_probe_implementation(self):
+        script = "scripts/check_thermal_gradient_resource_probe.py"
+        self.assertIn(script, thermal_probe.fingerprint_source_paths("064"))
+        self.assertIn(script, thermal_probe.fingerprint_source_paths("065"))
+        self.assertNotIn(
+            "probes/thermal_gradient_object_sizes_065.cpp",
+            thermal_probe.fingerprint_source_paths("064"),
+        )
+        self.assertIn(
+            "probes/thermal_gradient_object_sizes_065.cpp",
+            thermal_probe.fingerprint_source_paths("065"),
+        )
+
+    def test_link_recipe_canonicalizes_only_path_tokens(self):
+        local_sketch = (
+            ROOT
+            / "examples/Lesson064OwnedSingleWireTransactions/"
+            "Lesson064OwnedSingleWireTransactions.ino"
+        )
+        next_sketch = (
+            ROOT
+            / "examples/Lesson065Qualified18B20ProbeSet/"
+            "Lesson065Qualified18B20ProbeSet.ino"
+        )
+        local = (
+            f'"/tools/avr-gcc" -Os -o "{local_sketch}.elf" '
+            f'"{local_sketch}.o"'
+        )
+        next_lesson = (
+            f'"/tools/avr-gcc" -Os -o "{next_sketch}.elf" '
+            f'"{next_sketch}.o"'
+        )
+        changed_flags = next_lesson.replace("-Os", "-O2")
+        self.assertEqual(
+            thermal_probe.canonical_link_recipe(local, local_sketch),
+            thermal_probe.canonical_link_recipe(next_lesson, next_sketch),
+        )
+        self.assertNotEqual(
+            thermal_probe.canonical_link_recipe(local, local_sketch),
+            thermal_probe.canonical_link_recipe(
+                changed_flags, next_sketch
+            ),
+        )
+        cached_local = (
+            local.replace(
+                f"{local_sketch}.elf",
+                "/home/local/.cache/arduino/sketches/AA11/"
+                "Lesson064.ino.elf",
+            )
+            .replace(
+                f"{local_sketch}.o",
+                "/home/local/.cache/arduino/sketches/AA11/archive.a",
+            )
+        )
+        cached_next = (
+            next_lesson.replace(
+                f"{next_sketch}.elf",
+                "/home/local/.cache/arduino/sketches/BB22/"
+                "Lesson065.ino.elf",
+            )
+            .replace(
+                f"{next_sketch}.o",
+                "/home/local/.cache/arduino/sketches/BB22/archive.a",
+            )
+        )
+        self.assertEqual(
+            thermal_probe.canonical_link_recipe(
+                cached_local, local_sketch
+            ),
+            thermal_probe.canonical_link_recipe(
+                cached_next, next_sketch
+            ),
+        )
+
+    def test_later_review_marker_is_ignored_below_cutoff(self):
+        prior_boundaries = thermal_probe.probe.BOUNDARIES
+        try:
+            with tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                authority = (
+                    root
+                    / "docs/design/"
+                    "LESSONS_064_066_THERMAL_MAPPER_PLAN.md"
+                )
+                authority.parent.mkdir(parents=True)
+                authority.write_text(
+                    "## Resource budgets\n\n"
+                    "Resource-review: lesson=065 malformed\n\n"
+                    "## Next\n",
+                    encoding="utf-8",
+                )
+                review = root / "reviews.json"
+                review.write_text(
+                    '{"reviews": [], "schema": 1}\n',
+                    encoding="utf-8",
+                )
+                thermal_probe.probe.BOUNDARIES = (
+                    thermal_probe.BOUNDARY_064,
+                )
+                self.assertEqual(
+                    thermal_probe.load_reviews(
+                        root, pathlib.Path("reviews.json")
+                    ),
+                    {},
+                )
+                thermal_probe.probe.BOUNDARIES = thermal_probe.BOUNDARIES
+                with self.assertRaises(thermal_probe.probe.ProbeError):
+                    thermal_probe.load_reviews(
+                        root, pathlib.Path("reviews.json")
+                    )
+        finally:
+            thermal_probe.probe.BOUNDARIES = prior_boundaries
+
     def test_canonicalizes_equivalent_local_and_ci_paths(self):
         local = {
             "commands": [
