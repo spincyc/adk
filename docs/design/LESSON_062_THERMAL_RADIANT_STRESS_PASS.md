@@ -18,7 +18,7 @@ categorical threshold/radiant evidence.
 | Time and ordering | Each source retains its own sequence/time/age. Delayed values are never presented as simultaneous. Radiant active/candidate state has total pulse/sustained boundaries; duplicates do not extend it and reset clears it. |
 | Errors and status | Producer/lifecycle/structural failures use `Status`; uncertainty, disagreement, saturation, stale, pulse, sustained, and ambient saturation remain domain quality. |
 | Resources | E0 claims zero hardware. The plan's canonical Lesson 062 row controls; exhaustive enum/struct/ownership/caller-buffer/hidden-return probes are promotion gates. |
-| Deterministic proof | Signed extremes, widened lower/upper uncertainty arithmetic, fixed Digital Temperature categorical mapping, every equality/crossing and disagreement combination, complete pulse/sustained/duplicate/reset edges, saturation, source collision, lifecycle, and replay are required. |
+| Deterministic proof | Signed extremes, widened upper-bound uncertainty arithmetic plus an independent explanatory lower-bound oracle, fixed Digital Temperature categorical mapping, every equality/crossing and disagreement combination, complete pulse/sustained/duplicate/reset edges, saturation, source collision, lifecycle, and replay are required. |
 | Packaging/public surface | One policy package and synthetic Mega replay. No thermistor curve adapter, single-wire transport, module pin map, flame stimulus, wiring, or schematic at E0. |
 | Downstream effects | Lesson 063 consumes this observation. Lessons 064--066 retain 18B20/single-wire scope; Lessons 070--072 retain module characterization. |
 

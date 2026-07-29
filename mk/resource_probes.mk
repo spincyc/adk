@@ -21,4 +21,4 @@ museum-case-resource-check: arduino-check
 	python3 scripts/check_museum_case_resource_probe.py \
 		--arduino-cli "$(ARDUINO_CLI)" \
 		--fqbn "$(BOARD_FQBN)" \
-		--require-through 061
+		--require-through 062
