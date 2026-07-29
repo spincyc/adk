@@ -149,8 +149,8 @@ architectural layers.
 | Active buzzer | Future exact-specimen `DigitalOutput` semantic adapter | Deferred; not Lesson 005 support |
 | Passive buzzer | Timer and pin claims + `PiezoSounder` | 005 |
 | 74HC595 | `ShiftRegister` | 010 |
-| 4-digit seven-segment | Lesson 010 glyph/shift-register reuse; published multiplex policy and future exact endpoint | 058 host verified; 059--060 active |
-| 8x8 LED matrix | E0 MAX7219 presentation policy; future exact SPI endpoint | 058--060 active planning |
+| 4-digit seven-segment | Lesson 010 glyph/shift-register reuse; published multiplex policy and future exact endpoint | 058 host verified; 060 active |
+| 8x8 LED matrix | E0 MAX7219 presentation policy; future exact SPI endpoint | 059 host verified; 060 active |
 | HD44780 / I2C LCD | Parallel endpoints or `I2cDevice` + display model | 014 |
 | DHT11/DHT22 | Timed digital endpoint + validated sample | 013 |
 | TMP36 / LM35 | `AnalogInput` + linear calibration | Non-kit extension only; not an authorized Elegoo family |

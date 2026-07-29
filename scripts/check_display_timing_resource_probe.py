@@ -5,6 +5,7 @@ import importlib.util
 import json
 import pathlib
 import re
+import shutil
 import sys
 
 
@@ -15,6 +16,25 @@ if SPEC is None or SPEC.loader is None:
     raise RuntimeError("could not load the shared exact AVR probe implementation")
 probe = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(probe)
+
+BOARD_SRAM = 8192
+ISR_RESERVE = 128
+RESIDUAL_SRAM_TARGET = 3072
+RESIDUAL_SRAM_HARD = 2048
+FIXED_BUFFER_TARGET = 256
+FIXED_BUFFER_HARD = 512
+
+LESSON_059_PUBLIC_VALUES = (
+    "Max7219PresentationConfig",
+    "Max7219Frame",
+    "Max7219Command",
+    "Max7219Receipt",
+    "Max7219Failure",
+    "Max7219PresentationSnapshot",
+    "Max7219PresentationPreview",
+)
+
+RESOURCE_LAYOUTS = {}
 
 
 ALL_BOUNDARIES = (
@@ -97,7 +117,168 @@ def object_sizes(compiler, nm, root, temporary, unused):
         )
         if match:
             sizes[match.group(2)] = int(match.group(1), 16)
+    if (root / "src/max7219_presentation_policy.h").is_file():
+        layout_path = temporary / "display_timing_public_layouts.cpp"
+        layout_path.write_text(
+            """
+#include <max7219_presentation_policy.h>
+#define ADK_LAYOUT(type) \\
+    unsigned char type##Bytes[sizeof (adk::type)]; \\
+    unsigned char type##Alignment[alignof (adk::type)]; \\
+    static_assert (__is_standard_layout (adk::type), \\
+                   #type " must remain standard-layout"); \\
+    static_assert (__is_trivially_copyable (adk::type), \\
+                   #type " must remain trivially copyable")
+
+ADK_LAYOUT (Max7219PresentationConfig);
+ADK_LAYOUT (Max7219Frame);
+ADK_LAYOUT (Max7219Command);
+ADK_LAYOUT (Max7219Receipt);
+ADK_LAYOUT (Max7219Failure);
+ADK_LAYOUT (Max7219PresentationSnapshot);
+ADK_LAYOUT (Max7219PresentationPreview);
+
+unsigned char max7219LogicalRowsFixedBufferBytes[8];
+""".lstrip(),
+            encoding="utf-8",
+        )
+        layout_object = temporary / "display_timing_public_layouts.o"
+        layout_command = [
+            str(compiler),
+            "-c",
+            "-mmcu=atmega2560",
+            "-std=gnu++11",
+            "-Os",
+            "-fno-lto",
+            "-fno-exceptions",
+            "-fno-rtti",
+            "-Isrc",
+            str(layout_path),
+            "-o",
+            str(layout_object),
+        ]
+        probe.run(layout_command, cwd=root)
+        host_compiler = shutil.which("c++")
+        if host_compiler is None:
+            raise probe.ProbeError("host C++ compiler is unavailable for trait checks")
+        trait_path = temporary / "display_timing_public_traits.cpp"
+        trait_path.write_text(
+            """
+#include <max7219_presentation_policy.h>
+#include <type_traits>
+
+static_assert (
+    !std::is_copy_constructible<adk::Max7219PresentationPolicy>::value,
+    "Max7219PresentationPolicy must remain non-copyable");
+static_assert (
+    !std::is_move_constructible<adk::Max7219PresentationPolicy>::value,
+    "Max7219PresentationPolicy must remain non-movable");
+""".lstrip(),
+            encoding="utf-8",
+        )
+        trait_command = [
+            host_compiler,
+            "-fsyntax-only",
+            "-std=c++11",
+            "-Isrc",
+            str(trait_path),
+        ]
+        probe.run(trait_command, cwd=root)
+        layouts = {}
+        for line in probe.output(
+            (str(nm), "--print-size", "--size-sort", str(layout_object))
+        ).splitlines():
+            match = re.match(
+                r"^[0-9a-fA-F]+\s+([0-9a-fA-F]+)\s+\w\s+"
+                r"(\w+(?:Bytes|Alignment))$",
+                line,
+            )
+            if match:
+                layouts[match.group(2)] = int(match.group(1), 16)
+        RESOURCE_LAYOUTS["059"] = {
+            "commands": (layout_command, trait_command),
+            "symbols": layouts,
+        }
     return sizes, command
+
+
+def enrich_lesson_059_evidence(evidence_path):
+    if "059" not in RESOURCE_LAYOUTS or not evidence_path.is_file():
+        return 0
+    report = json.loads(evidence_path.read_text(encoding="utf-8"))
+    layout = RESOURCE_LAYOUTS["059"]
+    report["commands"].extend(layout["commands"])
+    report["constants"].update(
+        {
+            "display_timing_isr_reserve_bytes": ISR_RESERVE,
+            "display_timing_residual_sram_target_bytes": RESIDUAL_SRAM_TARGET,
+            "display_timing_residual_sram_hard_bytes": RESIDUAL_SRAM_HARD,
+            "fixed_buffer_target_bytes": FIXED_BUFFER_TARGET,
+            "fixed_buffer_hard_bytes": FIXED_BUFFER_HARD,
+        }
+    )
+    symbols = layout["symbols"]
+    for state in report["boundaries"]:
+        if state["lesson"] != "059" or "measurements" not in state:
+            continue
+        public_values = {}
+        for name in LESSON_059_PUBLIC_VALUES:
+            size_symbol = f"{name}Bytes"
+            alignment_symbol = f"{name}Alignment"
+            if size_symbol not in symbols or alignment_symbol not in symbols:
+                raise probe.ProbeError(
+                    f"Lesson 059 public layout symbol is missing: {name}"
+                )
+            public_values[name] = {
+                "size_bytes": symbols[size_symbol],
+                "alignment_bytes": symbols[alignment_symbol],
+                "standard_layout": True,
+                "trivially_copyable": True,
+            }
+        fixed_buffer = symbols.get("max7219LogicalRowsFixedBufferBytes")
+        if fixed_buffer is None:
+            raise probe.ProbeError("Lesson 059 fixed-buffer symbol is missing")
+        residual = (
+            BOARD_SRAM
+            - state["measurements"]["static_sram_bytes"]
+            - state["measurements"]["synchronous_stack_bytes"]
+            - ISR_RESERVE
+        )
+        state["measurements"]["public_values"] = public_values
+        state["measurements"]["policy_traits"] = {
+            "copy_constructible": False,
+            "move_constructible": False,
+        }
+        state["measurements"]["fixed_buffers"] = {
+            "logical_rows_bytes": fixed_buffer,
+        }
+        state["measurements"]["isr_reserve_bytes"] = ISR_RESERVE
+        state["measurements"]["residual_sram_bytes"] = residual
+        state["gates"]["fixed_buffers"] = probe.gate(
+            fixed_buffer,
+            FIXED_BUFFER_TARGET,
+            FIXED_BUFFER_HARD,
+        )
+        state["gates"]["residual_sram"] = (
+            "pass" if residual >= RESIDUAL_SRAM_TARGET else "hard-fail"
+        )
+        if state["gates"]["fixed_buffers"] == "target-miss":
+            state["gates"]["fixed_buffers"] = "review-required"
+        state["status"] = (
+            "hard-fail"
+            if "hard-fail" in state["gates"].values()
+            else (
+                "review-required"
+                if "review-required" in state["gates"].values()
+                else state["status"]
+            )
+        )
+        report["status"] = probe.merge_status(report["status"], state["status"])
+    evidence_path.write_text(
+        json.dumps(report, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return 1 if report["status"] in ("hard-fail", "review-required", "error") else 0
 
 
 def load_reviews(root, review_path):
@@ -192,7 +373,9 @@ def main():
         "--review-file",
         arguments.review_file,
     ]
-    return probe.main()
+    result = probe.main()
+    evidence_result = enrich_lesson_059_evidence(ROOT / arguments.evidence_json)
+    return result or evidence_result
 
 
 if __name__ == "__main__":

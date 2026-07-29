@@ -63,12 +63,13 @@ third lesson for a deterministic integration project.
 | [Lesson 056 — Fault-aware operator panel](056.md) | Atomic copied operator, presentation, and audit evidence | Stop dominance, diagnostics, acknowledgement, and restart-safe intent remain replayable |
 | [Lesson 057 — Six stations, one quiet console](057.md) | Clue model and fault-aware panel composition | Six fixed clue families produce only inert, bounded console intent |
 | [Lesson 058 — Nonblocking multiplexed digits](058.md) | Supplied-time logical digit transactions | Blank-before-select ordering, atomic frame swaps, and explicit refresh loss |
+| [Lesson 059 — MAX7219 presentation policy](059.md) | Bounded register command/receipt transactions | Partial-prefix attribution, cleanup evidence, generation binding, and dark-start intent |
 
-Lessons 001--058 are host verified and their canonical examples compile for
+Lessons 001--059 are host verified and their canonical examples compile for
 the Mega 2560. Lessons 055--057 publish E0 replay only: exact inputs,
 presentation, storage, actuators, and bench acceptance remain open. Lesson
-058 likewise leaves its exact powered display fixture and bench acceptance
-open. Every
+Lessons 058--059 likewise leave their exact powered display fixtures and bench
+acceptance open. Every
 circuit remains experimental until its physical acceptance card is recorded.
 Historical preview lessons are preserved under
 [Legacy](../legacy/index.md).
@@ -80,7 +81,7 @@ published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 059–060 | MAX7219 presentation and dual-display timing desk |
+| 060 | Dual-display timing desk |
 | 061–063 | Museum-case monitor |
 | 064–066 | Thermal gradient mapper |
 | 067–069 | Interchangeable motion recorder |

@@ -192,6 +192,12 @@ doc/lessons/058.pdf: docs/lessons/058/main.tex \
 		docs/lessons/assets/058-refresh-deadline-pencil.png \
 		docs/lessons/assets/058-scanbook-pencil.png \
 		docs/lessons/assets/058-three-stage-refresh-pencil.png
+doc/lessons/059.pdf: docs/lessons/059/main.tex \
+		docs/lessons/assets/059-dark-start-pencil.png \
+		docs/lessons/assets/059-fault-ledger-pencil.png \
+		docs/lessons/assets/059-orientation-pencil.png \
+		docs/lessons/assets/059-recording-seam-pencil.png \
+		docs/lessons/assets/059-register-envelope-pencil.png
 
 $(LESSON_PDFS): | $(BUILD_MARKER)
 	mkdir -p "$(BUILD_DIR)/lessons/$(basename $(notdir $@))" doc/lessons

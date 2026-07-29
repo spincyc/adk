@@ -1,6 +1,6 @@
 # Lesson 059 MAX7219 presentation architecture stress pass
 
-Status: pre-implementation review.
+Status: post-implementation assessment; host verified, E1 fixture open.
 
 This pass reviews the
 [Lessons 058--060 implementation plan](LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md).
@@ -16,7 +16,7 @@ blanking from a write-only device.
 | Partial writes | Desired, last-fully-submitted, partial-prefix, blank-requested, cleanup-pending/accepted, and physically-indeterminate states remain distinct. Cleanup is a later one-command service state, never a second command in the failing call. |
 | Errors | Preserve first failing operation/register/row/status and cleanup status. Cleanup is bounded and never overwrites primary provenance. |
 | SPI recovery | Existing terminal-driver-fault versus `SpiBus::initialized()` behavior is a cross-cutting blocker for the future adapter; resolve centrally before E1 promotion. |
-| Resources | E0 claims none. Initial target/hard gates are 16/20 KiB flash, 1,024/1,536 B SRAM, 384/512 B stack, and 192/256 B policy object. |
+| Resources | E0 claims none. The canonical Mega replay measures 5,480 B flash and 640 B static SRAM. The exact no-LTO gate measures 6,208 B flash, 640 B static SRAM, 210 B synchronous stack, and a 108 B policy object, leaving 7,214 B residual SRAM. Every target and hard gate passes. |
 | Composition | Lesson 060 compares generation-bound copied command receipts, not pixels. One outstanding command and one command per service call keep multiplex service bounded. |
 | E1 strain | Unknown module revision, RSET, decoupling, orientation, current, and MAX7219 timing keep the fixture unpowered. Display-test is excluded from routine self-test. |
 
@@ -27,8 +27,12 @@ partial prefix and both statuses after the later cleanup service, must leave
 chip-select inactive in the recording trace, and must label physical
 presentation indeterminate.
 
-Promotion requires golden register order, every pixel/orientation transform,
-recording-seam framing isolation, lifecycle and restart traces, byte-identical replay,
-resource evidence, and a post-implementation review. E1 additionally requires
-exact specimen and current qualification plus a repository-wide SPI recovery
-decision.
+The promoted implementation supplies golden register order, every
+pixel/orientation transform, recording-seam framing isolation, lifecycle and
+restart traces, byte-identical replay, resource evidence, and this
+post-implementation assessment. The architecture did not buckle under the
+component: the implementation retained the planned pure E0 policy boundary,
+one-command service cadence, copied receipts, bounded cleanup, and zero
+resource ownership without changing prior display or SPI contracts. E1 still
+requires exact specimen and current qualification plus a repository-wide SPI
+recovery decision.
