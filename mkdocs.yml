@@ -47,6 +47,7 @@ nav:
       - PDF policy: docs/PDF_POLICY.md
   - About:
       - About ADK: about.md
+      - The queue that never stopped stopping: journal-story.md
       - Accessibility: accessibility.md
       - Contributing: contributing.md
       - Legacy preview: legacy/index.md
