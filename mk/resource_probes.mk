@@ -15,4 +15,4 @@ display-timing-resource-check: arduino-check
 	python3 scripts/check_display_timing_resource_probe.py \
 		--arduino-cli "$(ARDUINO_CLI)" \
 		--fqbn "$(BOARD_FQBN)" \
-		--require-through 058
+		--require-through 059

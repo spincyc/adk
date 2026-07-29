@@ -19,7 +19,7 @@ nav:
   - Course:
       - Course map: course.md
       - Lesson index: lessons/index.md
-      - Current lesson — multiplexed digits: lessons/058.md
+      - Current lesson — MAX7219 presentation: lessons/059.md
       - Command-line workflow: docs/CLI.md
   - Library:
       - Components: components.md

@@ -80,6 +80,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_moisture_sensor \
 	$(BUILD_DIR)/host/test_motor_intent \
 	$(BUILD_DIR)/host/test_multiplexed_digit_policy \
+	$(BUILD_DIR)/host/test_max7219_presentation_policy \
 	$(BUILD_DIR)/host/test_button \
 	$(BUILD_DIR)/host/test_character_display \
 	$(BUILD_DIR)/host/test_climate_sensor \
@@ -926,6 +927,15 @@ $(BUILD_DIR)/host/test_multiplexed_digit_policy: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/multiplexed_digit_policy.cpp \
 		tests/test_multiplexed_digit_policy.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_max7219_presentation_policy: $(HOST_CORE_SOURCES) \
+		src/max7219_presentation_policy.cpp \
+		tests/test_max7219_presentation_policy.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/max7219_presentation_policy.cpp \
+		tests/test_max7219_presentation_policy.cpp \
 		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_shift_register: $(HOST_IO_SOURCES) \

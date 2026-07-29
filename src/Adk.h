@@ -48,6 +48,7 @@
 #include "matrix_keypad.h"
 #include "magnetic_observation.h"
 #include "magnetic_passage_logger.h"
+#include "max7219_presentation_policy.h"
 #include "mega_avr_bus_io.h"
 #include "mega_bus_driver.h"
 #include "mega_pulse_capture_io.h"

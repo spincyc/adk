@@ -85,7 +85,8 @@ Status meanings:
 | Fault-aware operator panel | `FaultAwareOperatorPanel` | Host verified; E0 replay only | [Lesson 056](lessons/056.md) |
 | Inert escape-console project | `InertEscapeConsole` | Host verified; E0 replay only | [Lesson 057](lessons/057.md) |
 | Multiplexed digit policy | `MultiplexedDigitPolicy` | Host verified; E0 intent only | [Lesson 058](lessons/058.md) |
-| Planned matrix/timing arc | MAX7219 presentation and timing desk | Queued | Lessons 059–060 |
+| MAX7219 presentation policy | `Max7219PresentationPolicy` | Host verified; E0 intent only | [Lesson 059](lessons/059.md) |
+| Planned timing-desk composition | `DualDisplayTimingDesk` | Active integration | Lesson 060 |
 | Planned museum arc | Resistive and thermal/radiant observations | Queued | Lessons 061–063 |
 | Planned thermal arc | Single-wire probes and thermal mapping | Queued | Lessons 064–066 |
 | Planned motion arc | Normalized inertial records and source qualification | Queued | Lessons 067–069 |
