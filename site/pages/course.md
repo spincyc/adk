@@ -58,14 +58,14 @@ lesson number divisible by three is project-bearing.
 | 060 | Stopwatch and two display policies | Dual-display timing desk | Host verified; E0 intent only |
 | 061 | Copied resistive-probe acquisition evidence | Resistive-probe observation policy | Host verified; E0 copied evidence only; E1a open |
 | 062 | Copied thermistor, Digital Temperature, and radiant evidence | Thermal/radiant observation policy | Host verified; E0 copied evidence only; E1b open |
+| 063 | Copied environmental, reed, acknowledgement, and receipt evidence | Inert museum-case monitor | Host verified; E0 inert intent only; E1c/E1d/E2 open |
 
-Lesson 062 is published; the retained Lessons 063–081 sequence remains
+Lesson 063 is published; the retained Lessons 064–081 sequence remains
 front-loaded for learner engagement. The rows below are active or planned
 work, not support or bench-verification claims:
 
 | Lessons | Planned focus | Project |
 |---:|---|---|
-| 063 | Compose published resistive, thermal/radiant, and qualified reed evidence | Museum-case monitor |
 | 064–066 | Single-wire probes and qualified thermal sets | Thermal gradient mapper |
 | 067–069 | Normalized inertial records and source qualification | Interchangeable motion recorder |
 | 070–072 | Threshold descriptors and characterization sweeps | Module characterization bench |

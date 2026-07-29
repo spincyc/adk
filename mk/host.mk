@@ -79,6 +79,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_mono_led \
 	$(BUILD_DIR)/host/test_moisture_sensor \
 	$(BUILD_DIR)/host/test_motor_intent \
+	$(BUILD_DIR)/host/test_museum_case_monitor \
 	$(BUILD_DIR)/host/test_multiplexed_digit_policy \
 	$(BUILD_DIR)/host/test_max7219_presentation_policy \
 	$(BUILD_DIR)/host/test_button \
@@ -970,6 +971,17 @@ $(BUILD_DIR)/host/test_thermal_radiant_observation: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) src/thermal_radiant_observation.cpp \
 		tests/test_thermal_radiant_observation.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_museum_case_monitor: $(HOST_CORE_SOURCES) \
+		src/magnetic_observation.cpp src/resistive_probe_observation.cpp \
+		src/thermal_radiant_observation.cpp src/museum_case_monitor.cpp \
+		tests/test_museum_case_monitor.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/magnetic_observation.cpp \
+		src/resistive_probe_observation.cpp src/thermal_radiant_observation.cpp \
+		src/museum_case_monitor.cpp tests/test_museum_case_monitor.cpp \
 		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_shift_register: $(HOST_IO_SOURCES) \

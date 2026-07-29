@@ -89,6 +89,7 @@ Status meanings:
 | Dual-display timing desk | `DualDisplayTimingDesk` | Host verified; E0 intent only | [Lesson 060](lessons/060.md) |
 | Resistive-probe observation policy | `ResistiveProbeObservationPolicy` | Host verified; E0 copied evidence only; E1a open | [Lesson 061](lessons/061.md) |
 | Thermal/radiant observation policy | `ThermalRadiantObservationPolicy` | Host verified; E0 copied evidence only; E1b open | [Lesson 062](lessons/062.md) |
+| Inert museum-case monitor | `MuseumCaseMonitor` | Host verified; E0 inert intent only; E1c/E1d/E2 open | [Lesson 063](lessons/063.md) |
 | Active museum arc | Thermal/radiant observations and inert monitor composition | Active | Lessons 062–063 |
 | Planned thermal arc | Single-wire probes and thermal mapping | Queued | Lessons 064–066 |
 | Planned motion arc | Normalized inertial records and source qualification | Queued | Lessons 067–069 |

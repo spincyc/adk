@@ -1,6 +1,6 @@
 # Lesson 063 museum-case-monitor architecture stress pass
 
-Status: initial pre-implementation review; powered composition, persistence,
+Status: terminal E0 promotion review; powered composition, persistence,
 and relay fixture remain open.
 
 This pass reviews the
@@ -17,8 +17,8 @@ driver, or life-safety alarm.
 | Ownership and lifecycle | Receive complete copied child observations and retain no child reference or pointer. Inert construction, generation-advancing initialize/reset/shutdown, stale-receipt invalidation, exhaustion fault, canonical inactive outputs, and noncopy/nonmove coordinator. |
 | Time and ordering | One supplied timestamp anchors validation, alarm latch, acknowledgement, cooldown, and audit intent. Per-source observation epochs remain visible and are not made simultaneous. |
 | Errors and status | Structural failure rejects before semantics. Sensing fault dominates healthy; active hazard dominates acknowledgement; recording failure is additive and cannot mask alarm. |
-| Resources | E0 claims none. The plan's canonical Lesson 063 aggregate row controls; exact child/aggregate ABI, ownership, caller-buffer, stack-hidden-return, and residual proof is required. |
-| Deterministic proof | Freeze `{health,hazardMask}` as the record key. Prove first complete Healthy/Warning/Alarm/Fault/Cooldown decisions, every health/recovery transition, every individual/combined hazard-bit add/remove, and evidence-driven Qualifying create records; same-key freshness and ineffective acknowledgement do not; shutdown does not; reinitialize records its first complete decision. Also prove exact identities, full `MagneticObservation`, literal digest, one outstanding plus latest qualifying dirty successor, retry/terminal/restart/exhaustion, acceptance/change collision, immediate promotion, rollover, lifecycle, and byte-stable replay. |
+| Resources | E0 claims none. Ordinary replay is 21,348/1,405 bytes flash/static SRAM. Exact no-LTO evidence is 22,980 flash, 1,405 static, 819 stack, and 709 aggregate objects (528 monitor + 69 Lesson 061 + 112 Lesson 062). The 207-byte caller envelope is fixed static storage; the 72-byte result remains caller-owned. Residual SRAM is 5,840 bytes. The independently reviewed stack target miss remains below the 896-byte hard limit; every hard gate passes. |
+| Deterministic proof | Freeze `{health,hazardMask}` as the record key. Prove first complete Healthy/Warning/Alarm/Fault and accepted Qualifying decisions, every reachable health/recovery transition, every individual/combined hazard-bit add/remove, and net-latest successor rules; initial Cooldown is unreachable. Same-key freshness and ineffective acknowledgement do not create records; shutdown does not; reinitialize records its first complete decision. Exact identities, full `MagneticObservation`, literal digest, pre-issue retry rejection, one outstanding plus latest dirty successor, retry/terminal/restart/exhaustion, acceptance/change collision, equal-time derived-field rejection, immediate promotion, rollover, lifecycle, and byte-stable replay pass. |
 | Packaging/public surface | One canonical replay and complementary HTML/PDF with pencil drawings. Shared indexes follow only after implementation gates. No physical schematic at E0. |
 | Downstream effects | Reuses Lessons 061--062 and copied reed semantics without changing Lessons 034--036. RTC/storage models remain unchanged; relay support and alarm claims are not inherited. |
 
@@ -59,18 +59,18 @@ inactive after shutdown.
 - Disposition: `natural fit` after fixing expected identities, complete reed
   evidence, audit witness/recovery, lifecycle generations, and inactive-output
   invariants
-- Open risks: exact aggregate stack/object budget; persistent recorder
-  semantics; exact LCD/RGB/sound,
+- Open risks: persistent recorder semantics; exact LCD/RGB/sound,
   reed, and relay/lamp fixtures; simultaneous current and safe-state evidence
 - Required discussion or decision IDs: none if implementation retains only
   copied observations and keeps audit volatile; persistence or shared-bus changes
   require architectural review
-- Remediation owner and next action: Lesson 063 implementation lane freezes the
-  reviewed copied-observation header, literal digest witness, lifecycle and
-  receipt matrix, then supplies collision and aggregate resource proof
-- Verification commands and results: document review only; implementation
-  commands are pending
-- Maximum-composition scenario and proof: specified above; bounded fixture and
-  exact linked sketch/resource results pending
+- Remediation owner and next action: E0 remediation is complete; E1/E2 owners
+  must qualify exact physical fixtures without widening this policy
+- Verification commands and results: strict host tests, ASan/UBSan, style,
+  headers, canonical Mega replay, exact resource gate, lesson/PDF policy, site,
+  and publication checks pass at promotion
+- Maximum-composition scenario and proof: the bounded canonical replay,
+  collision matrix, and exact linked resource fixture pass with fingerprint
+  `d376c43b63f42f2ed48c768d9afcaa2583d5a2b4e194a45f9a3f125694e41543`
 - Promotion permitted: yes for E0 implementation; no for physical sensing,
   storage, alarm, relay, security, or preservation claims

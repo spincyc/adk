@@ -16,7 +16,7 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--062 use the first-class per-object
+ADK is early-stage software. Lessons 001--063 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
@@ -53,6 +53,10 @@ Temperature, and radiant roles with independent ordering and age, conservative
 uncertainty, disagreement, and pulse/sustained evidence. It owns no powered
 sensor, adapter, transport, stimulus, or physical safe-state claim; E1b remains
 open.
+Lesson 063 composes the copied environmental roles with qualified reed,
+acknowledgement, and receipt evidence into additive hazard, alarm/cooldown,
+presentation, relay-lamp, and audit intent. It owns no powered endpoint,
+storage transport, relay, lamp, display, clock, or physical alarm.
 
 The hierarchy is developed in dependency order:
 
@@ -67,8 +71,8 @@ global-registration preview is frozen under [Legacy](legacy/index.md).
 The latest completed project arc is Lessons 058--060: supplied-time multiplex
 intent and bounded MAX7219 transactions composed into a deterministic
 dual-display timing desk. Exact powered displays and E1 acceptance remain
-open. Lesson 062 is the latest published component, and Lesson 063 is the next
-active implementation boundary. See the
+open. Lesson 063 completes the latest published project arc; Lesson 064 is the
+next active implementation boundary. See the
 [course map](course.md) for that order and the
 [roadmap](docs/ROADMAP.md) for the full sequence.
 

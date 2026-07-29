@@ -133,10 +133,14 @@ and modular time, signed uncertainty arithmetic, and radiant duration
 configuration before a sealed observation card may change.}
 \end{center}
 
-For each source, a byte-identical duplicate at equal sequence and time is
-idempotent. A changed duplicate, regression, backward time, exact half-range
-ambiguity, or identity/revision change rejects the whole update without
-changing the last observation or radiant candidate. Sequence zero is invalid.
+Equal sequence and observation time are allowed only when the complete
+envelope is byte-identical to the accepted envelope. That duplicate is
+idempotent. The same byte-identical envelope at a valid forward policy time is
+also idempotent: it neither ages the published snapshot nor extends a radiant
+candidate. A changed duplicate, regression, backward policy time, exact
+half-range ambiguity, or identity/revision change rejects the whole update
+without changing the last observation or radiant candidate. Sequence zero is
+invalid.
 Once an accepted role reaches \texttt{UINT32\_MAX}, that role may remain
 byte-identical while a companion role advances. Attempting to change the
 exhausted role returns \texttt{CapacityExceeded}; only \texttt{reset()} begins

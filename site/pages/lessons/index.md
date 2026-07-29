@@ -67,12 +67,13 @@ third lesson for a deterministic integration project.
 | [Lesson 060 — Dual-display timing desk](060.md) | One stopwatch snapshot and two display policies | Self-test, generation-bound receipts, agreement, and attributed disagreement |
 | [Lesson 061 — Qualifying copied resistive-probe observations](061.md) | Copied Water Level acquisition evidence | Calibration, excitation-off, freshness, ordering, corrosion duty, and explicit quality precedence |
 | [Lesson 062 — Combining copied thermal and radiant observations](062.md) | Three independent copied environmental roles | Uncertainty, categorical disagreement, independent ages, pulse/sustained timing, and saturation |
+| [Lesson 063 — Monitoring one inert museum case](063.md) | Copied environmental, reed, acknowledgement, and audit evidence | Additive hazards, alarm latch, cooldown, inert output intent, and bounded audit delivery |
 
-Lessons 001--062 are host verified and their canonical examples compile for
+Lessons 001--063 are host verified and their canonical examples compile for
 the Mega 2560. Lessons 055--057 publish E0 replay only: exact inputs,
 presentation, storage, actuators, and bench acceptance remain open. Lessons
 058--060 likewise leave their exact powered display fixtures and bench
-acceptance open. Lessons 061--062 are copied-evidence E0 policy only; their
+acceptance open. Lessons 061--063 are copied-evidence E0 policy only; their
 exact powered probes/modules, adapters, wiring, physical behavior, and E1
 bench acceptance remain open. Every
 circuit remains experimental until its physical acceptance card is recorded.
@@ -86,7 +87,6 @@ published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 063 | Complete the active museum-case monitor arc |
 | 064–066 | Thermal gradient mapper |
 | 067–069 | Interchangeable motion recorder |
 | 070–072 | Module characterization bench |

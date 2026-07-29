@@ -156,7 +156,7 @@ architectural layers.
 | TMP36 / LM35 | `AnalogInput` + linear calibration | Non-kit extension only; not an authorized Elegoo family |
 | LDR module | `AnalogInput`, optional threshold `DigitalInput` | 008 |
 | Water Level | E0 copied resistive-probe observation and corrosion-duty evidence; future exact endpoint | 061 host verified; E1a exact board/bench open |
-| Digital Temperature | E0 copied categorical evidence; adapter pending exact specimen identity and not assumed to be 18B20 | 062 host verified; 063 active; E1b unidentified |
+| Digital Temperature | E0 copied categorical evidence; adapter pending exact specimen identity and not assumed to be 18B20 | 062--063 host verified; E1b unidentified |
 | 18B20 Temp | Exact-specimen single-wire transport + qualified thermal value | 064--066 queued |
 | Metal Touch | `InteractionIntentPolicy` accepts copied E0 tactile/directional evidence; exact powered input adapters remain gated | 046--048 host verified; E1 adapter open |
 | Sound sensor | Relative ADC envelope and optional qualified threshold input | 038 published against an external reference; Elegoo substitution open |

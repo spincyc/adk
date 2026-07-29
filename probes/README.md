@@ -83,19 +83,23 @@ Target misses require an exact, authority-backed entry in
 `display_timing_resource_reviews.json`; changed measurements invalidate the
 review, and hard-ceiling failures remain non-reviewable.
 
-Run the museum-case probe through Lesson 062 with:
+Run the museum-case probe through Lesson 063 with:
 
 ```sh
 make museum-case-resource-check
 ```
 
-The promotion gate compiles the canonical resistive-probe and thermal-radiant
-replays, measures their linked flash and static SRAM, derives conservative
-synchronous-stack bounds from compiler records and the AVR call graph, and
-reads public value and policy object sizes from
-`museum_case_object_sizes.cpp`. Its exact fixtures live under
+The promotion gate compiles the canonical resistive-probe, thermal-radiant,
+and complete museum-monitor replays, measures their linked flash and static
+SRAM, derives conservative synchronous-stack bounds from compiler records and
+the AVR call graph, and reads public value and policy object sizes from
+`museum_case_object_sizes.cpp`. The component-only exact fixtures live under
 `extras/probes/` so Arduino package lint does not mistake them for public
-examples. Evidence is written to
+examples; the Lesson 063 maximum-composition gate deliberately builds its
+canonical narrative example and audits each required linked storage symbol.
+Evidence is written to
 `build/evidence/museum-case-resource-probe.json`. An exact, authority-backed
 entry in `museum_case_resource_reviews.json` is required for any target miss;
-hard ceilings and residual-SRAM floors remain non-reviewable.
+hard ceilings and residual-SRAM floors remain non-reviewable. Fingerprints are
+lesson-scoped so adding a later boundary does not invalidate an unchanged
+earlier review.

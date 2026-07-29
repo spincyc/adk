@@ -56,6 +56,7 @@
 #include "mono_led.h"
 #include "moisture_sensor.h"
 #include "motor_intent.h"
+#include "museum_case_monitor.h"
 #include "multiplexed_digit_policy.h"
 #include "night_light.h"
 #include "observation_tracker.h"
