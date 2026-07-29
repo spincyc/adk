@@ -32,3 +32,12 @@ Promotion requires all eight control masks in every stopwatch phase, exact
 capacity and time boundaries, every self-test stage/failure, both one-sided
 and simultaneous faults, stale/wrong digest/generation receipts, deterministic
 replay, aggregate resource evidence, and a terminal architecture review.
+
+The exact no-LTO call graph measures 771 bytes of synchronous stack. This
+exceeds the 640-byte target but remains 125 bytes below the 896-byte hard limit
+after reducing the initial 1,022-byte hard failure. The remaining depth is
+accepted for the bounded coordinator-to-child preview path: it retains
+semantic frame preflight and atomic two-child admission without heap storage,
+borrowed child lifetimes, or duplicated presentation policy.
+
+Resource-review: lesson=060 metric=synchronous_stack observed=771 target=640 hard=896 disposition=accepted-target-miss

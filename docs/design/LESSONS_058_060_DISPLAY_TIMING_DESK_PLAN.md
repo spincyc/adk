@@ -208,12 +208,28 @@ Accepted means a complete logical digit bank or complete recording-transport
 row sequence was admitted; it never means a scan, readback, or visible pixel.
 
 Each side has its own digest. It is 32-bit FNV-1a (offset `0x811c9dc5`, prime
-`0x01000193`) over domain `ADK.DIGIT.FRAME.V1` or
-`ADK.MATRIX.FRAME.V1` as ASCII without a trailing NUL, then every fixed frame
-byte, source snapshot generation,
-and presentation mode, using little-endian fixed-width integers. The locally
-retained full expected frame is also compared; a digest never substitutes for
-structural equality.
+`0x01000193`). The digit byte stream is, in exact order:
+`ADK.DIGIT.FRAME.V1` as ASCII without a trailing NUL; then, for digit indices
+zero through three, that digit's one-byte numeric glyph followed by its
+one-byte diagnostic glyph; the one-byte decimal mask; one byte for overflow
+(`0x00` or `0x01`); the four-byte source snapshot sequence, least-significant
+byte first; the four-byte frame generation, least-significant byte first; and
+the one-byte presentation mode. The matrix byte stream is
+`ADK.MATRIX.FRAME.V1` without a trailing NUL; rows zero through seven in
+order; the same little-endian source snapshot sequence and frame generation;
+and the one-byte presentation mode. Each byte is folded independently with
+FNV-1a. The locally retained full expected frame is also compared; a digest
+never substitutes for structural equality.
+
+The literal serialization witnesses are:
+
+- digit glyphs `{0, 1, 2, 3}`, diagnostic glyphs `{1, 2, 3, 4}`, decimal
+  mask `0x0a`, overflow `true`, source sequence `0x01020304`, generation
+  `0x11223344`, and mode `0x80` produce `0x80dc784f`;
+- matrix rows `{0, 1, 2, 3, 4, 5, 6, 7}` with the same source sequence,
+  generation, and mode produce `0x2887577e`.
+
+These values freeze both the field order and little-endian integer encoding.
 
 `presentationGrace` defaults to 100 ms and must be in `[1, 1000]` ms, below
 the modular half range. It anchors when the generation is published, remains
@@ -355,3 +371,18 @@ This plan is governed by the [curriculum](../CURRICULUM.md),
 [Lesson 058](LESSON_058_MULTIPLEXED_DIGITS_STRESS_PASS.md),
 [Lesson 059](LESSON_059_MAX7219_PRESENTATION_STRESS_PASS.md), and
 [Lesson 060](LESSON_060_TIMING_DESK_STRESS_PASS.md) stress passes.
+
+The bounded Lesson 060 diagnostic-glyph extension raises Lesson 058 exact
+static SRAM to 781 bytes, above its 768-byte target but below its 1,024-byte
+hard limit. This reviewed target miss is accepted because the narrow named
+vocabulary avoids a general raw segment-mask API.
+
+Resource-review: lesson=058 metric=static_sram observed=781 target=768 hard=1024 disposition=accepted-target-miss
+
+The optimized Lesson 060 exact call graph measures 771 bytes of synchronous
+stack, above its 640-byte target but below its 896-byte hard limit. This
+reviewed target miss is accepted for the bounded coordinator-to-child preflight
+path, which preserves semantic atomicity without heap storage or borrowed
+children.
+
+Resource-review: lesson=060 metric=synchronous_stack observed=771 target=640 hard=896 disposition=accepted-target-miss

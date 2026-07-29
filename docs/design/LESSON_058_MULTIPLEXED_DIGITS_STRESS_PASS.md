@@ -39,3 +39,11 @@ measures 6,234/759 bytes flash/static SRAM. The exact no-LTO gate measures
 Lesson 060 still requires a terminal composition reassessment against the
 implemented policy. Exact powered-display topology, current, waveform,
 optical behavior, resource ownership, and observed blanking remain E1-open.
+
+The bounded diagnostic-glyph extension raises exact static SRAM to 781 bytes.
+That exceeds the 768-byte target by 13 bytes but remains 243 bytes below the
+1,024-byte hard limit. The increase is accepted because it closes the fixed
+Lesson 060 self-test without exposing raw segment masks, allocation, another
+display policy, or a hardware adapter.
+
+Resource-review: lesson=058 metric=static_sram observed=781 target=768 hard=1024 disposition=accepted-target-miss

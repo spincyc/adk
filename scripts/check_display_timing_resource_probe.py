@@ -34,6 +34,21 @@ LESSON_059_PUBLIC_VALUES = (
     "Max7219PresentationPreview",
 )
 
+LESSON_060_PUBLIC_VALUES = (
+    "TimingDeskStopwatchState",
+    "TimingDeskQualification",
+    "TimingDeskPresentationDisposition",
+    "TimingDeskFaultOwner",
+    "TimingDeskControlIdentity",
+    "TimingDeskControlEvidence",
+    "DigitFrameReceipt",
+    "MatrixFrameReceipt",
+    "DualDisplayTimingDeskConfig",
+    "DualDisplayEnvelope",
+    "DualDisplayTimingDeskResult",
+    "DualDisplayTimingDeskSnapshot",
+)
+
 RESOURCE_LAYOUTS = {}
 
 
@@ -119,9 +134,11 @@ def object_sizes(compiler, nm, root, temporary, unused):
             sizes[match.group(2)] = int(match.group(1), 16)
     if (root / "src/max7219_presentation_policy.h").is_file():
         layout_path = temporary / "display_timing_public_layouts.cpp"
-        layout_path.write_text(
-            """
+        layout_source = """
 #include <max7219_presentation_policy.h>
+#if defined (ADK_HAS_LESSON_060)
+#include <dual_display_timing_desk.h>
+#endif
 #define ADK_LAYOUT(type) \\
     unsigned char type##Bytes[sizeof (adk::type)]; \\
     unsigned char type##Alignment[alignof (adk::type)]; \\
@@ -139,7 +156,31 @@ ADK_LAYOUT (Max7219PresentationSnapshot);
 ADK_LAYOUT (Max7219PresentationPreview);
 
 unsigned char max7219LogicalRowsFixedBufferBytes[8];
-""".lstrip(),
+"""
+        if (root / "src/dual_display_timing_desk.h").is_file():
+            layout_source += """
+ADK_LAYOUT (TimingDeskControlIdentity);
+ADK_LAYOUT (TimingDeskStopwatchState);
+ADK_LAYOUT (TimingDeskQualification);
+ADK_LAYOUT (TimingDeskPresentationDisposition);
+ADK_LAYOUT (TimingDeskFaultOwner);
+ADK_LAYOUT (TimingDeskControlEvidence);
+ADK_LAYOUT (DigitFrameReceipt);
+ADK_LAYOUT (MatrixFrameReceipt);
+ADK_LAYOUT (DualDisplayTimingDeskConfig);
+ADK_LAYOUT (DualDisplayEnvelope);
+ADK_LAYOUT (DualDisplayTimingDeskResult);
+ADK_LAYOUT (DualDisplayTimingDeskSnapshot);
+
+unsigned char timingDeskControlEvidenceCallerBufferBytes
+    [3 * sizeof (adk::TimingDeskControlEvidence)];
+unsigned char timingDeskReceiptPointerCallerBufferBytes
+    [sizeof (adk::DigitFrameReceipt*)
+     + sizeof (adk::MatrixFrameReceipt*)
+     + sizeof (adk::Max7219Receipt*)];
+"""
+        layout_path.write_text(
+            layout_source.lstrip(),
             encoding="utf-8",
         )
         layout_object = temporary / "display_timing_public_layouts.o"
@@ -153,10 +194,16 @@ unsigned char max7219LogicalRowsFixedBufferBytes[8];
             "-fno-exceptions",
             "-fno-rtti",
             "-Isrc",
+        ]
+        if (root / "src/dual_display_timing_desk.h").is_file():
+            layout_command.append("-DADK_HAS_LESSON_060=1")
+        layout_command.extend(
+            [
             str(layout_path),
             "-o",
             str(layout_object),
-        ]
+            ]
+        )
         probe.run(layout_command, cwd=root)
         host_compiler = shutil.which("c++")
         if host_compiler is None:
@@ -165,6 +212,9 @@ unsigned char max7219LogicalRowsFixedBufferBytes[8];
         trait_path.write_text(
             """
 #include <max7219_presentation_policy.h>
+#if defined (ADK_HAS_LESSON_060)
+#include <dual_display_timing_desk.h>
+#endif
 #include <type_traits>
 
 static_assert (
@@ -173,6 +223,14 @@ static_assert (
 static_assert (
     !std::is_move_constructible<adk::Max7219PresentationPolicy>::value,
     "Max7219PresentationPolicy must remain non-movable");
+#if defined (ADK_HAS_LESSON_060)
+static_assert (
+    !std::is_copy_constructible<adk::DualDisplayTimingDesk>::value,
+    "DualDisplayTimingDesk must remain non-copyable");
+static_assert (
+    !std::is_move_constructible<adk::DualDisplayTimingDesk>::value,
+    "DualDisplayTimingDesk must remain non-movable");
+#endif
 """.lstrip(),
             encoding="utf-8",
         )
@@ -181,8 +239,10 @@ static_assert (
             "-fsyntax-only",
             "-std=c++11",
             "-Isrc",
-            str(trait_path),
         ]
+        if (root / "src/dual_display_timing_desk.h").is_file():
+            trait_command.append("-DADK_HAS_LESSON_060=1")
+        trait_command.append(str(trait_path))
         probe.run(trait_command, cwd=root)
         layouts = {}
         for line in probe.output(
@@ -199,35 +259,67 @@ static_assert (
             "commands": (layout_command, trait_command),
             "symbols": layouts,
         }
+        if (root / "src/dual_display_timing_desk.h").is_file():
+            RESOURCE_LAYOUTS["060"] = {
+                "commands": (),
+                "symbols": {**layouts, **sizes},
+            }
     return sizes, command
 
 
-def enrich_lesson_059_evidence(evidence_path):
+def enrich_evidence(evidence_path):
     if "059" not in RESOURCE_LAYOUTS or not evidence_path.is_file():
         return 0
     report = json.loads(evidence_path.read_text(encoding="utf-8"))
-    layout = RESOURCE_LAYOUTS["059"]
-    report["commands"].extend(layout["commands"])
+    report["commands"].extend(RESOURCE_LAYOUTS["059"]["commands"])
     report["constants"].update(
         {
             "display_timing_isr_reserve_bytes": ISR_RESERVE,
             "display_timing_residual_sram_target_bytes": RESIDUAL_SRAM_TARGET,
             "display_timing_residual_sram_hard_bytes": RESIDUAL_SRAM_HARD,
+            "display_timing_residual_target_miss_reviewable": False,
             "fixed_buffer_target_bytes": FIXED_BUFFER_TARGET,
             "fixed_buffer_hard_bytes": FIXED_BUFFER_HARD,
         }
     )
-    symbols = layout["symbols"]
     for state in report["boundaries"]:
-        if state["lesson"] != "059" or "measurements" not in state:
+        lesson = state["lesson"]
+        if "measurements" not in state:
             continue
+        residual = (
+            BOARD_SRAM
+            - state["measurements"]["static_sram_bytes"]
+            - state["measurements"]["synchronous_stack_bytes"]
+            - ISR_RESERVE
+        )
+        state["measurements"]["isr_reserve_bytes"] = ISR_RESERVE
+        state["measurements"]["residual_sram_bytes"] = residual
+        state["gates"]["residual_sram"] = (
+            "pass" if residual >= RESIDUAL_SRAM_TARGET else "hard-fail"
+        )
+        state["gates"]["residual_sram_hard_floor"] = (
+            "pass" if residual >= RESIDUAL_SRAM_HARD else "hard-fail"
+        )
+        if lesson not in RESOURCE_LAYOUTS:
+            if state["gates"]["residual_sram"] == "hard-fail":
+                state["status"] = "hard-fail"
+                report["status"] = probe.merge_status(
+                    report["status"], state["status"]
+                )
+            continue
+        symbols = RESOURCE_LAYOUTS[lesson]["symbols"]
+        names = (
+            LESSON_059_PUBLIC_VALUES
+            if lesson == "059"
+            else LESSON_060_PUBLIC_VALUES
+        )
         public_values = {}
-        for name in LESSON_059_PUBLIC_VALUES:
+        for name in names:
             size_symbol = f"{name}Bytes"
             alignment_symbol = f"{name}Alignment"
             if size_symbol not in symbols or alignment_symbol not in symbols:
                 raise probe.ProbeError(
-                    f"Lesson 059 public layout symbol is missing: {name}"
+                    f"Lesson {lesson} public layout symbol is missing: {name}"
                 )
             public_values[name] = {
                 "size_bytes": symbols[size_symbol],
@@ -235,35 +327,72 @@ def enrich_lesson_059_evidence(evidence_path):
                 "standard_layout": True,
                 "trivially_copyable": True,
             }
-        fixed_buffer = symbols.get("max7219LogicalRowsFixedBufferBytes")
-        if fixed_buffer is None:
-            raise probe.ProbeError("Lesson 059 fixed-buffer symbol is missing")
-        residual = (
-            BOARD_SRAM
-            - state["measurements"]["static_sram_bytes"]
-            - state["measurements"]["synchronous_stack_bytes"]
-            - ISR_RESERVE
-        )
         state["measurements"]["public_values"] = public_values
         state["measurements"]["policy_traits"] = {
             "copy_constructible": False,
             "move_constructible": False,
         }
-        state["measurements"]["fixed_buffers"] = {
-            "logical_rows_bytes": fixed_buffer,
-        }
-        state["measurements"]["isr_reserve_bytes"] = ISR_RESERVE
-        state["measurements"]["residual_sram_bytes"] = residual
-        state["gates"]["fixed_buffers"] = probe.gate(
-            fixed_buffer,
-            FIXED_BUFFER_TARGET,
-            FIXED_BUFFER_HARD,
-        )
-        state["gates"]["residual_sram"] = (
-            "pass" if residual >= RESIDUAL_SRAM_TARGET else "hard-fail"
-        )
-        if state["gates"]["fixed_buffers"] == "target-miss":
-            state["gates"]["fixed_buffers"] = "review-required"
+        if lesson == "059":
+            fixed_buffer = symbols.get("max7219LogicalRowsFixedBufferBytes")
+            if fixed_buffer is None:
+                raise probe.ProbeError("Lesson 059 fixed-buffer symbol is missing")
+            state["measurements"]["fixed_buffers"] = {
+                "logical_rows_bytes": fixed_buffer,
+            }
+            state["gates"]["fixed_buffers"] = probe.gate(
+                fixed_buffer,
+                FIXED_BUFFER_TARGET,
+                FIXED_BUFFER_HARD,
+            )
+            if state["gates"]["fixed_buffers"] == "target-miss":
+                state["gates"]["fixed_buffers"] = "review-required"
+        else:
+            digit_policy = symbols.get("multiplexedDigitPolicyObjectBytes")
+            matrix_policy = symbols.get("max7219PresentationPolicyObjectBytes")
+            control_buffer = symbols.get(
+                "timingDeskControlEvidenceCallerBufferBytes"
+            )
+            receipt_buffer = symbols.get(
+                "timingDeskReceiptPointerCallerBufferBytes"
+            )
+            if None in (
+                digit_policy,
+                matrix_policy,
+                control_buffer,
+                receipt_buffer,
+            ):
+                raise probe.ProbeError(
+                    "Lesson 060 child-object or caller-buffer symbol is missing"
+                )
+            child_lower_bound = digit_policy + matrix_policy
+            object_bytes = state["measurements"]["object_bytes"]
+            if object_bytes < child_lower_bound:
+                raise probe.ProbeError(
+                    "Lesson 060 object is smaller than its value-owned children"
+                )
+            state["measurements"]["owned_child_objects"] = {
+                "multiplexed_digit_policy_bytes": digit_policy,
+                "max7219_presentation_policy_bytes": matrix_policy,
+                "mechanical_lower_bound_bytes": child_lower_bound,
+                "parent_state_overhead_bytes": object_bytes - child_lower_bound,
+            }
+            state["measurements"]["caller_buffers"] = {
+                "control_evidence_triplet_bytes": control_buffer,
+                "receipt_pointer_triplet_bytes": receipt_buffer,
+                "aggregate_bytes": control_buffer + receipt_buffer,
+            }
+            for name, value in (
+                ("control_evidence_caller_buffer", control_buffer),
+                ("receipt_pointer_caller_buffer", receipt_buffer),
+                ("aggregate_caller_buffers", control_buffer + receipt_buffer),
+            ):
+                state["gates"][name] = probe.gate(
+                    value,
+                    FIXED_BUFFER_TARGET,
+                    FIXED_BUFFER_HARD,
+                )
+                if state["gates"][name] == "target-miss":
+                    state["gates"][name] = "review-required"
         state["status"] = (
             "hard-fail"
             if "hard-fail" in state["gates"].values()
@@ -374,7 +503,7 @@ def main():
         arguments.review_file,
     ]
     result = probe.main()
-    evidence_result = enrich_lesson_059_evidence(ROOT / arguments.evidence_json)
+    evidence_result = enrich_evidence(ROOT / arguments.evidence_json)
     return result or evidence_result
 
 

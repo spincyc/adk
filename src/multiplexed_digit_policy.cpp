@@ -21,7 +21,47 @@ namespace adk {
         {
             return {{SevenSegmentGlyph::Blank, SevenSegmentGlyph::Blank,
                      SevenSegmentGlyph::Blank, SevenSegmentGlyph::Blank},
+                    {MultiplexedDigitDiagnosticGlyph::None,
+                     MultiplexedDigitDiagnosticGlyph::None,
+                     MultiplexedDigitDiagnosticGlyph::None,
+                     MultiplexedDigitDiagnosticGlyph::None},
                     0, 0, 0, false};
+        }
+
+        bool validDiagnosticGlyph (
+            MultiplexedDigitDiagnosticGlyph glyph) noexcept
+        {
+            return glyph >= MultiplexedDigitDiagnosticGlyph::SegmentA &&
+                   glyph <= MultiplexedDigitDiagnosticGlyph::AllOff;
+        }
+
+        uint8_t encodeDiagnosticGlyph (
+            MultiplexedDigitDiagnosticGlyph glyph,
+            SevenSegmentPolarity polarity) noexcept
+        {
+            uint8_t levels = 0;
+            switch (glyph)
+            {
+            case MultiplexedDigitDiagnosticGlyph::SegmentA: levels = 0x01U; break;
+            case MultiplexedDigitDiagnosticGlyph::SegmentB: levels = 0x02U; break;
+            case MultiplexedDigitDiagnosticGlyph::SegmentC: levels = 0x04U; break;
+            case MultiplexedDigitDiagnosticGlyph::SegmentD: levels = 0x08U; break;
+            case MultiplexedDigitDiagnosticGlyph::SegmentE: levels = 0x10U; break;
+            case MultiplexedDigitDiagnosticGlyph::SegmentF: levels = 0x20U; break;
+            case MultiplexedDigitDiagnosticGlyph::SegmentG: levels = 0x40U; break;
+            case MultiplexedDigitDiagnosticGlyph::DecimalPoint:
+                levels = 0x80U;
+                break;
+            case MultiplexedDigitDiagnosticGlyph::DigitIdentification:
+                levels = 0x7fU;
+                break;
+            case MultiplexedDigitDiagnosticGlyph::AllOn: levels = 0xffU; break;
+            case MultiplexedDigitDiagnosticGlyph::AllOff: break;
+            case MultiplexedDigitDiagnosticGlyph::None: break;
+            }
+            return polarity == SevenSegmentPolarity::CommonAnode
+                       ? static_cast<uint8_t> (~levels)
+                       : levels;
         }
 
         MultiplexedDigitTransaction noTransaction (
@@ -61,6 +101,12 @@ namespace adk {
                                  const MultiplexedDigitFrame& frame,
                                  uint8_t digit) noexcept
         {
+            if (frame.diagnosticGlyphs[digit] !=
+                MultiplexedDigitDiagnosticGlyph::None)
+            {
+                return encodeDiagnosticGlyph (frame.diagnosticGlyphs[digit],
+                                              config.segmentPolarity);
+            }
             const uint8_t decimalBit = static_cast<uint8_t> (1U << (3U - digit));
             return encodeSevenSegmentGlyph (
                 frame.glyphs[digit], config.segmentPolarity,
@@ -245,6 +291,49 @@ namespace adk {
                         break;
                     }
                     frame.glyphs[index] = SevenSegmentGlyph::Blank;
+                }
+            }
+        }
+
+        candidate.owner               = this;
+        candidate.lifecycleGeneration = lifecycleGeneration_;
+        candidate.baseFrameGeneration = activeFrame_.generation;
+        candidate.frame               = frame;
+        return StatusCode::Ok;
+    }
+
+    Status MultiplexedDigitPolicy::previewDiagnostic (
+        MultiplexedDigitDiagnosticGlyph glyph, uint8_t digitMask,
+        uint32_t sourceSnapshotSequence,
+        MultiplexedDigitPreview& candidate) const noexcept
+    {
+        candidate.owner = nullptr;
+        if (!initialized_)
+        {
+            return StatusCode::NotInitialized;
+        }
+        if (fault_ != MultiplexedDigitFault::None ||
+            !validDiagnosticGlyph (glyph) || digitMask == 0 ||
+            (digitMask & 0xf0U) != 0 ||
+            sourceSnapshotSequence == 0)
+        {
+            return StatusCode::InvalidArgument;
+        }
+
+        MultiplexedDigitFrame frame = blankFrame ();
+        frame.sourceSnapshotSequence = sourceSnapshotSequence;
+        frame.generation             = activeFrame_.generation + 1U;
+        if (frame.generation == 0)
+        {
+            return StatusCode::CapacityExceeded;
+        }
+        if (glyph != MultiplexedDigitDiagnosticGlyph::AllOff)
+        {
+            for (uint8_t digit = 0; digit < 4; ++digit)
+            {
+                if ((digitMask & static_cast<uint8_t> (1U << digit)) != 0)
+                {
+                    frame.diagnosticGlyphs[digit] = glyph;
                 }
             }
         }

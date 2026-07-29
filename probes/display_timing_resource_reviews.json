@@ -1,4 +1,25 @@
 {
-  "reviews": [],
+  "reviews": [
+    {
+      "authority": "docs/design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md#deterministic-proof",
+      "disposition": "accepted-target-miss",
+      "hard_bytes": 1024,
+      "lesson": "058",
+      "metric": "static_sram",
+      "observed_bytes": 781,
+      "rationale": "The added four-cell diagnostic-glyph bank preserves explicit self-test intent without overloading the ordinary glyph vocabulary; the measured footprint remains 243 bytes below the hard ceiling.",
+      "target_bytes": 768
+    },
+    {
+      "authority": "docs/design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md#deterministic-proof",
+      "disposition": "accepted-target-miss",
+      "hard_bytes": 896,
+      "lesson": "060",
+      "metric": "synchronous_stack",
+      "observed_bytes": 771,
+      "rationale": "Bounded object-owned scratch state reduced the linked synchronous path by 251 bytes while preserving value-owned child policies and atomic dual-display preflight; the remaining path stays 125 bytes below the hard ceiling.",
+      "target_bytes": 640
+    }
+  ],
   "schema": 1
 }

@@ -29,6 +29,22 @@ namespace adk {
         SelectDigit
     };
 
+    enum struct MultiplexedDigitDiagnosticGlyph : uint8_t
+    {
+        None,
+        SegmentA,
+        SegmentB,
+        SegmentC,
+        SegmentD,
+        SegmentE,
+        SegmentF,
+        SegmentG,
+        DecimalPoint,
+        DigitIdentification,
+        AllOn,
+        AllOff
+    };
+
     struct MultiplexedDigitConfig
     {
         MultiplexedDigitConfig (uint32_t ownerToken, uint16_t configurationRevision,
@@ -47,11 +63,12 @@ namespace adk {
 
     struct MultiplexedDigitFrame
     {
-        SevenSegmentGlyph glyphs[4];
-        uint8_t           decimalMask;
-        uint32_t          sourceSnapshotSequence;
-        uint32_t          generation;
-        bool              overflow;
+        SevenSegmentGlyph                 glyphs[4];
+        MultiplexedDigitDiagnosticGlyph   diagnosticGlyphs[4];
+        uint8_t                           decimalMask;
+        uint32_t                          sourceSnapshotSequence;
+        uint32_t                          generation;
+        bool                              overflow;
     };
 
     struct MultiplexedDigitTransaction
@@ -116,6 +133,10 @@ namespace adk {
         Status preview (uint32_t value, bool showLeadingZeros, uint8_t decimalMask,
                         uint32_t sourceSnapshotSequence,
                         MultiplexedDigitPreview& candidate) const noexcept;
+        Status previewDiagnostic (
+            MultiplexedDigitDiagnosticGlyph glyph, uint8_t digitMask,
+            uint32_t sourceSnapshotSequence,
+            MultiplexedDigitPreview& candidate) const noexcept;
         bool   canCommit (const MultiplexedDigitPreview& candidate) const noexcept;
         Status commit    (const MultiplexedDigitPreview& candidate) noexcept;
 
