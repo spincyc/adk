@@ -377,7 +377,30 @@ def read_symbols(nm, object_path):
 def normalized(value):
     text = json.dumps(value, sort_keys=True, separators=(",", ":"))
     text = text.replace(str(ROOT), "<repo>")
-    return re.sub(r"/tmp/adk-[^/\" ]+", "<temporary>", text)
+    text = re.sub(r"/tmp/adk-[^/\\\" ]+", "<temporary>", text)
+    text = re.sub(
+        r'/(?:[^/\\\" ]+/)*\.cache/arduino/sketches/[^/\\\" ]+',
+        "<arduino-build>",
+        text,
+    )
+    text = re.sub(
+        r'/(?:[^/\\\" ]+/)*\.arduino15',
+        "<arduino-data>",
+        text,
+    )
+    return re.sub(
+        r'(?<=")/(?:[^/\\\" ]+/)+arduino-cli(?=")',
+        "arduino-cli",
+        text,
+    )
+
+
+def fingerprint_tools(tools):
+    return {
+        name: version
+        for name, version in tools.items()
+        if name != "arduino_cli"
+    }
 
 
 def compile_ordinary(arguments, boundaries):
@@ -902,13 +925,13 @@ def enrich_evidence(evidence_path):
             )
         ]
         fingerprint_payload = {
-            "schema": 2,
+            "schema": 3,
             "lesson_through": lesson,
             "fqbn": report["fqbn"],
             "core_package": ORDINARY_EVIDENCE["061"]["core_package"],
             "core_version": ORDINARY_EVIDENCE["061"]["core_version"],
             "f_cpu_hz": ORDINARY_EVIDENCE["061"]["f_cpu_hz"],
-            "tools": report["tools"],
+            "tools": fingerprint_tools(report["tools"]),
             "exact_commands": json.loads(normalized(exact_commands)),
             "ordinary_commands": json.loads(
                 normalized(
@@ -936,6 +959,7 @@ def enrich_evidence(evidence_path):
             },
             "thresholds": report["constants"],
         }
+        fingerprint_payload = json.loads(normalized(fingerprint_payload))
         fingerprint_sha256 = hashlib.sha256(
             json.dumps(
                 fingerprint_payload, sort_keys=True, separators=(",", ":")
