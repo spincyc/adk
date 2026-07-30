@@ -1,4 +1,15 @@
-:root
+/*
+ * Paper-and-ink presentation for the MkDocs Bootstrap theme.
+ *
+ * The theme renders `.navbar.bg-primary` and `.container > .col-md-9[role=main]`;
+ * it emits no `header`, `main`, or `article` element, so those selectors must
+ * not be used here. The palette is expressed as Bootstrap variable overrides so
+ * the theme's light/dark/auto toggle, which flips `data-bs-theme`, keeps working
+ * in both directions.
+ */
+
+:root,
+[data-bs-theme="light"]
 {
     --adk-ink:       #20231f;
     --adk-muted:     #62685f;
@@ -9,31 +20,38 @@
     --adk-highlight: #bd612f;
 }
 
+[data-bs-theme="dark"]
+{
+    --adk-ink:       #e7e4da;
+    --adk-muted:     #a3a89d;
+    --adk-paper:     #1a1c19;
+    --adk-panel:     #23261f;
+    --adk-rule:      #3d4239;
+    --adk-accent:    #7fc0a0;
+    --adk-highlight: #e8a072;
+}
+
+:root,
+[data-bs-theme="light"],
+[data-bs-theme="dark"]
+{
+    --bs-body-bg:      var(--adk-paper);
+    --bs-body-color:   var(--adk-ink);
+    --bs-border-color: var(--adk-rule);
+    --bs-link-color:   var(--adk-accent);
+    --bs-link-hover-color: var(--adk-highlight);
+    --bs-secondary-color:  var(--adk-muted);
+    --bs-emphasis-color:   var(--adk-ink);
+}
+
 body
 {
-    color: var(--adk-ink);
-    background: var(--adk-paper);
     font-size: 1rem;
     line-height: 1.65;
 }
 
-body > header
-{
-    border-bottom: 1px solid var(--adk-rule);
-    background: var(--adk-panel);
-}
-
-body > header a
-{
-    color: var(--adk-ink);
-}
-
-body > main
-{
-    max-width: 74rem;
-}
-
-article
+/* The reading measure the theme's fluid column otherwise leaves unbounded. */
+div[role="main"]
 {
     max-width: 52rem;
 }
@@ -47,9 +65,15 @@ h4
     line-height: 1.2;
 }
 
+h2
+{
+    margin-top: 2.25rem;
+    padding-top: 0.35rem;
+    border-top: 1px solid var(--adk-rule);
+}
+
 a
 {
-    color: var(--adk-accent);
     text-underline-offset: 0.16em;
 }
 
@@ -57,6 +81,7 @@ pre,
 code
 {
     background: var(--adk-panel);
+    color: var(--adk-ink);
 }
 
 pre
@@ -67,7 +92,8 @@ pre
 
 blockquote
 {
-    border-left-color: var(--adk-highlight);
+    border-left: 0.2rem solid var(--adk-highlight);
+    padding-left: 1rem;
     color: var(--adk-muted);
 }
 
@@ -81,6 +107,26 @@ th,
 td
 {
     border-color: var(--adk-rule);
+}
+
+/* Pencil drawings are the course's signature illustration; give them room and
+ * a paper mount rather than letting them sit flush against the text. */
+div[role="main"] img
+{
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 1.5rem auto;
+    padding: 0.75rem;
+    border: 1px solid var(--adk-rule);
+    border-radius: 0.35rem;
+    background: var(--adk-panel);
+}
+
+[data-bs-theme="dark"] div[role="main"] img
+{
+    /* The drawings are black ink on white; invert so they read on dark paper. */
+    filter: invert(0.9) hue-rotate(180deg);
 }
 
 a[href$=".pdf"]::after
@@ -106,11 +152,12 @@ a[href$=".pdf"]::after
     border-radius: 0.25rem;
     padding: 0.55rem 0.85rem;
     font-weight: 700;
+    text-decoration: none;
 }
 
 .landing-actions .landing-primary
 {
-    color: var(--adk-panel);
+    color: var(--adk-paper);
     background: var(--adk-accent);
 }
 
@@ -137,6 +184,8 @@ a[href$=".pdf"]::after
 .landing-paths h3
 {
     margin: 0 0 0.35rem;
+    border-top: 0;
+    padding-top: 0;
 }
 
 .landing-paths p

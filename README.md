@@ -4,71 +4,25 @@ Deterministic C++ components and an evidence-centered electronics course for
 the Arduino Mega 2560.
 
 <nav class="landing-actions" aria-label="Start with ADK">
-  <a class="landing-primary" href="start/">Start with the command line</a>
-  <a href="lessons/">Open the course</a>
-  <a href="components/">Browse components</a>
+  <a class="landing-primary" href="start/">Set up and run Lesson 001</a>
+  <a href="course/">See the course map</a>
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–072 and Lessons 079–080 are published, host verified at E0, and
-> compiled for the Mega 2560. All lessons remain experimental, physical
-> acceptance remains open, and the exact electrical revisions used by Lessons
-> 031–036 are not yet qualified. Lessons 037–039 use documented external
-> reference fixtures; incoming conformance and bench acceptance remain open.
-> Lessons 040–042 publish hardware-neutral optical, presence, and course policy;
-> powered adapters and exact specimens remain gated. Lessons 043–045 publish
-> E0 copied-value inertial, orientation, and balance-table policies. Lessons
-> 046–048 publish copied tactile/directional evidence, bounded logical stepper
-> intent, and transactional kinetic-sculpture policy. Lessons 049–051 publish
-> synthetic local identity, bounded homing, and inert parts-carousel policy.
-> Lessons 052–054 publish copied infrared evidence, a closed locally authored
-> emission catalog, and inert allowlisted translation. Lessons 055–057 publish
-> copied clue constraints, fault-aware panel policy, and an inert escape-console
-> composition. Lessons 058–060 publish multiplexed-digit and MAX7219 intent
-> composed into a dual-display timing desk. Lesson 061 publishes copied
-> resistive-probe observations with explicit calibration, ordering, freshness,
-> discharge, and corrosion-duty evidence. Lesson 062 adds copied thermistor,
-> categorical Digital Temperature, and radiant evidence with independent ages,
-> uncertainty, disagreement, and saturation. Lesson 063 composes those copied
-> observations with qualified reed and acknowledgement evidence into inert
-> alarm, presentation, relay-lamp, and audit intent. Lesson 064 adds bounded
-> copied 1-Wire transaction intent, correlated receipts, explicit rollback,
-> and release confirmation without owning a bus. Lesson 065 turns copied
-> transaction evidence into four fixed, identity-qualified thermal slots with
-> explicit conversion, CRC, freshness, disappearance, and replay state. Lesson
-> 066 projects those copied slots into deterministic interval-gradient, fault,
-> page, and volatile record intent. It validates structure rather than source
-> authenticity, drives no display, and writes no storage. Lesson 067 turns one
-> complete copied inertial sample into an attributable source-frame record and
-> canonical 64-byte image. Lesson 068 qualifies one explicitly configured
-> copied-record stream through a bounded stationary window and proper
-> source-to-qualification-frame rotation. Neither lesson acquires, calibrates,
-> operates, or authenticates a sensor. Lesson 069 composes that evidence into
-> one fixed-source session, a bounded caller-owned volatile trace, and inert
-> presentation/export intent without driving a display or writing storage.
-> Lesson 070 adds a stateless descriptor and copied-frame vocabulary for
-> low-voltage threshold modules, preserving topology, polarity, electrical
-> declarations, timing declarations, and provenance without claiming that a
-> physical specimen satisfies them. Lesson 071 turns bounded ascending,
-> descending, and verification streams of those copied frames into adjacent
-> transition brackets, conservative intervals, and attributable terminal
-> evidence without operating or qualifying a physical fixture. Lesson 072
-> composes one terminal result into a five-step inert review, fault-dominant
-> presentation intent, and one canonical 192-byte caller-owned volatile record.
-> It owns no acquisition, fixture, display, clock, or storage endpoint. Lesson
-> 079 adds a bounded low-side-driver policy over immutable declarations,
-> attributable copied requests, supplied time, checked current arithmetic, and
-> logical all-off or active-high intent. It owns no GPIO endpoint, transistor,
-> diode, supply, load, clock, timer, or powered fixture. Lesson 080 adds
-> closed small-indicator semantics over immutable declarations, copied Lesson
-> 079 intent, copied observations, and supplied time. It owns no endpoint,
-> indicator, waveform, supply, clock, presentation, or powered fixture. These
-> E0 publications do not
-> claim powered inputs, displays,
-> storage, actuators, wiring, physical output, or bench acceptance. Planned
-> rows below are commitments, not support claims.
-> [Lesson 080](lessons/080.md) is the current
-> published lesson.
+New here? Follow the three steps in order: set up the toolchain, walk the
+course map, then open [Lesson 001](lessons/001.md). Every lesson links its
+own HTML reference, print-edition PDF, source, and open bench record.
+[Browse components](components.md) when you want the library rather than the
+course.
+
+> **Current boundary:** Lessons 001–072 and 079–080 are published and host
+> verified at E0 — deterministic C++ policy, compiled for the Mega 2560, with
+> every lesson's physical acceptance record still open. E0 means copied or
+> synthetic evidence only: no lesson here establishes that a powered specimen
+> works. [Lesson 080](lessons/080.md) is the current published lesson.
+> Per-lesson scope, open gates, and specimen qualification are stated once in
+> [the current status](about.md#current-status); planned rows below are
+> commitments, not support claims.
 
 ## What ADK provides
 
