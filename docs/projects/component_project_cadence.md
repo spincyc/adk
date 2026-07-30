@@ -998,6 +998,12 @@ These measurements establish no physical behavior.
 
 ### 080 — Small indicator-module semantics
 
+Published at E0 as `SmallIndicatorSemanticsPolicy`: immutable declarations,
+copied Lesson 079 intent, copied observations, and supplied time produce
+bounded polarity, autonomy, safe-state, timing, and channel-semantic results.
+No endpoint, indicator, waveform, supply, presentation, or powered fixture is
+owned or accepted.
+
 Compose existing digital and light endpoints into explicit active-buzzer,
 traffic-light, dual-color, auto-flash, and voltage-indicator observations.
 Autonomous waveforms remain observations rather than scheduler claims.

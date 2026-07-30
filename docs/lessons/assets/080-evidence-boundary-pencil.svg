@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="430" viewBox="0 0 1200 430">
+<defs><filter id="r"><feTurbulence baseFrequency=".015" numOctaves="2" seed="80" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter><pattern id="p" width="21" height="19" patternUnits="userSpaceOnUse"><path d="M2 16l8-2m4-9l6-2" stroke="#ddd" opacity=".7"/></pattern><style>.b{fill:#fafafa;stroke:#333;stroke-width:5;stroke-linejoin:round;filter:url(#r)}.l{fill:none;stroke:#555;stroke-width:3;filter:url(#r)}.h,.t,.x{font-family:DejaVu Sans,sans-serif}.h{font-size:27px;font-weight:bold}.t{font-size:23px}.x{font-size:21px;font-style:italic}</style></defs>
+<rect width="1200" height="430" fill="white"/><rect width="1200" height="430" fill="url(#p)"/>
+<rect class="b" x="25" y="55" width="270" height="130" rx="10"/>
+<rect class="b" x="25" y="235" width="270" height="130" rx="10"/>
+<path class="b" d="M315 120h100m-25-23 28 23-28 23M315 300h100m-25-23 28 23-28 23"/>
+<rect class="b" x="445" y="65" width="320" height="290" rx="14"/><path class="l" d="M480 145c77 8 173-8 247 2M480 163c80-5 170 9 250 0"/>
+<path class="b" d="M786 210h90m-25-23 28 23-28 23"/><rect class="b" x="905" y="95" width="255" height="230" rx="12"/>
+<path class="l" d="M40 392c180-20 338 15 510-3s326 12 610-3"/>
+</svg>

@@ -100,9 +100,10 @@ Status meanings:
 | Threshold characterization | `ModuleCharacterizationPolicy`, `ModuleCharacterizationEvidence` | Host verified; E0 copied sweep evidence only; exact fixtures E1-open | [Lesson 071](lessons/071.md) |
 | Inert module-characterization bench | `InertModuleCharacterizationBench`, `ModuleCharacterizationRecordCodec` | Host verified; E0 copied evidence and volatile record only; exact fixtures E1-open | [Lesson 072](lessons/072.md) |
 | Bounded low-side-driver policy | `BoundedLowSideDriverPolicy` | Host verified; E0 logical intent only; E1 identity and E2b powered fixture acceptance open | [Lesson 079](lessons/079.md) |
+| Small-indicator semantics policy | `SmallIndicatorSemanticsPolicy` | Host verified; E0 copied intent and observation semantics only; E1 identity and E2a/E2c powered fixture acceptance open | [Lesson 080](lessons/080.md) |
 | Planned RTC integrity arc | Copied RTC Transaction Evidence, Qualified Clock Observation, and Inert Time-Warp Detective Desk | Re-scope selected; implementation-depth plan required | Lessons 073–075 |
 | Planned tabletop-sonar arc | Copied Sweep-Range Frames, Bounded Polar Occupancy Map, and Inert Tabletop Sonar Desk | Re-scope selected; implementation-depth plan required | Lessons 076–078 |
-| Planned qualification continuation | Small-indicator semantics and inert qualification bench | Queued | Lessons 080–081 |
+| Planned qualification continuation | Inert component-qualification bench | Queued | Lesson 081 |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.
 Behavior engines expose output intent rather than hiding hardware callbacks.

@@ -1,0 +1,16 @@
+{
+  "reviews": [
+    {
+      "lesson": "080",
+      "metric": "flash",
+      "observed_bytes": 14910,
+      "target_bytes": 14336,
+      "hard_bytes": 20480,
+      "authority": "docs/design/LESSON_080_SMALL_INDICATOR_SEMANTICS_STRESS_PASS.md#terminal-gate-result",
+      "disposition": "accepted-target-miss",
+      "rationale": "The measured closure retains the closed five-kind validity table, the complete Lesson 079 state/reason mapping, the CRC-32 driver-descriptor digest check, three independent contiguous sequence streams with idempotent replay caching, computed warm-up/settling/freshness chronology, and the full precedence ladder; recovering 574 bytes would remove terminal proofs while 5570 bytes of hard-limit margin remain.",
+      "fingerprint_sha256": "b0e4ee371afa072c9e2b1c0afabffe3c2a4a31f1f613da72225b2958ebfd4e7f"
+    }
+  ],
+  "schema": 1
+}

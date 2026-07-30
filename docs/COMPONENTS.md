@@ -202,6 +202,7 @@ pins behind a component's back.
 | `CalibrationConsole` | Joystick/encoder/button snapshots and time | Preview, committed values, acknowledgement, and fault state | Supplied input/time replay | 033 |
 | `InertIrTranslator` | Copied receive evidence, immutable local catalog, supplied time, and caller-owned pulse storage | Fixed different-symbol allowlist translation with cancellation, self-echo suppression, and attributable round-trip results | Exact synthetic fixtures, field-mutation matrix, timing boundaries, and byte-identical replay | 054 |
 | `BoundedLowSideDriverPolicy` | Immutable low-side declaration, attributable copied requests and controls, supplied time | Canonical all-off or bounded logical active-high intent | Current-boundary arithmetic, duty-window history, sequence/time discontinuities, cancellation, expiry, and byte-identical failure replay | 079 |
+| `SmallIndicatorSemanticsPolicy` | Immutable indicator declaration, copied Lesson 079 intent, attributable copied observation, supplied time | Closed polarity, autonomy, safe-state, timing, and channel-semantic result | Exact descriptor and intent correlation, warm-up/settling/age boundaries, producer faults, stop precedence, semantic disagreement, and byte-identical failure replay | 080 |
 
 ## Mega 2560 profile
 

@@ -181,9 +181,9 @@ stress passes for all three lessons are mandatory before code. E0 is limited
 to copied angle/range evidence and deterministic intent; exact ultrasonic
 acquisition and physical ranging remain E1-gated, while restrained powered
 servo motion remains E2-gated. Physical mapping accuracy, powered
-presentation, and bench acceptance remain open. Lesson 079 publishes the E0
-bounded low-side-driver policy; Lessons 080--081 retain the unfinished
-small-indicator and inert qualification-bench continuation. The historical DS1302, BMP180,
+presentation, and bench acceptance remain open. Lessons 079--080 publish the
+E0 bounded low-side-driver and small-indicator semantics policies; Lesson 081
+retains the unfinished inert qualification-bench continuation. The historical DS1302, BMP180,
 PCF8591, and color-sensor assignments remain excluded rather than silently
 restored.
 Lessons 067--069 remain published E0 copied-record policy; exact motion

@@ -78,8 +78,9 @@ third lesson for a deterministic integration project.
 | [Lesson 071 — Characterizing copied threshold evidence](071.md) | Bounded ascending, descending, and verification streams | Adjacent transition brackets, conservative intervals, disagreement, and terminal faults remain attributable |
 | [Lesson 072 — Reviewing one module characterization](072.md) | One terminal characterization envelope and a fixed review script | Fault-dominant presentation and one canonical 192-byte volatile record remain attributable |
 | [Lesson 079 — Bounding low-side-driver intent](079.md) | Immutable declarations, attributable copied requests, and supplied time | Checked current arithmetic and bounded duty history produce only all-off or logical active-high intent |
+| [Lesson 080 — Interpreting small-indicator evidence](080.md) | Immutable indicator declarations, copied drive intent, copied observations, and supplied time | Polarity, autonomy, safe state, timing, and channel agreement remain semantic E0 evidence |
 
-Lessons 001--072 and Lesson 079 are host verified and their canonical examples compile for
+Lessons 001--072 and Lessons 079--080 are host verified and their canonical examples compile for
 the Mega 2560. Lessons 055--057 publish E0 replay only: exact inputs,
 presentation, storage, actuators, and bench acceptance remain open. Lessons
 058--060 likewise leave their exact powered display fixtures and bench

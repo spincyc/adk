@@ -540,9 +540,20 @@ enum struct SmallIndicatorReason : uint8_t
 {
     None,
     SourceIneligible,
-    DriveNotAdmitted,
+    DriverBudgetExceeded,
+    DriverBaseBudgetInsufficient,
+    DriverFlybackMissing,
+    DriverSequenceDiscontinuity,
+    DriverTimestampDiscontinuity,
+    DriverExpired,
+    DriverCapacityExceeded,
+    DriverCancelled,
+    DriverShutdown,
     ProducerFault,
+    SequenceDiscontinuity,
+    TimestampDiscontinuity,
     Stale,
+    ObservationMissing,
     WarmupUnsatisfied,
     SettlingUnsatisfied,
     PolarityMismatch,
@@ -582,26 +593,39 @@ struct SmallIndicatorDescriptor
     Duration maximumObservationAge;
 };
 
+struct SmallIndicatorSemanticRequest
+{
+    uint32_t lifecycleGeneration;
+    uint32_t sessionId;
+    uint32_t runId;
+    uint16_t stepId;
+    uint32_t requestId;
+    uint8_t sourceId;
+    uint16_t sourceConfigurationRevision;
+    uint32_t policySequence;
+    uint32_t requestSequence;
+    TimePoint requestedAt;
+    uint8_t selectedActiveMask;
+    Status producerStatus;
+};
+
 struct SmallIndicatorObservation
 {
     uint32_t lifecycleGeneration;
     uint32_t sessionId;
     uint32_t runId;
     uint16_t stepId;
+    uint32_t requestId;
     uint32_t observationId;
     uint8_t sourceId;
     uint16_t sourceConfigurationRevision;
-    uint32_t sequence;
+    uint32_t observationSequence;
     TimePoint observedAt;
     SmallIndicatorObservationState state;
-    uint8_t expectedActiveMask;
     uint8_t observedActiveMask;
-    bool driveIntentActive;
     bool copiedLevelHigh;
     bool autonomousTransitionObserved;
     bool safeStateObserved;
-    bool warmupSatisfied;
-    bool settlingSatisfied;
     Status producerStatus;
 };
 
@@ -611,6 +635,7 @@ struct SmallIndicatorSemanticResult
     uint32_t sessionId;
     uint32_t runId;
     uint16_t stepId;
+    uint32_t requestId;
     uint32_t observationId;
     SmallIndicatorDisposition disposition;
     SmallIndicatorReason reason;
@@ -631,7 +656,7 @@ struct SmallIndicatorControl
     uint32_t controlId;
     uint8_t sourceId;
     uint16_t sourceConfigurationRevision;
-    uint32_t sequence;
+    uint32_t policySequence;
     TimePoint observedAt;
     bool offConfirmed;
     Status producerStatus;
@@ -649,6 +674,7 @@ struct SmallIndicatorSemanticsPolicy
     Status beginSession (uint32_t sessionId, uint32_t runId,
                          TimePoint startedAt) noexcept;
     Status apply        (const LowSideDriveIntent& drive,
+                         const SmallIndicatorSemanticRequest& request,
                          const SmallIndicatorObservation& observation,
                          TimePoint now,
                          SmallIndicatorSemanticResult& result) noexcept;
@@ -682,23 +708,50 @@ columns are exact Booleans, not minimum requirements.
 | `AutoFlashLed` | `AutonomousWhileEnabled` | `UnpoweredRequired` | true | `Red\|Green\|Blue` | true | false |
 | `VoltageIndicator` | `ObservationOnly` | `HighImpedanceRequired` | true | `Voltage` | true | false |
 
-`expectedActiveMask`, `observedActiveMask`, and `semanticActiveMask` must be
-subsets of `declaredChannelMask`; inactive evidence uses zero. A follows-drive
-observation must match the expected mask exactly. Autonomous evidence may
-change among nonzero declared subsets but requires
-`autonomousTransitionObserved`; observation-only evidence requires expected
-mask zero and never gains drive authority. This bounded mask representation
-preserves Traffic Light and Dual Color LED color semantics without allocating,
-inventing per-channel endpoints, or generalizing the five kinds.
+`SmallIndicatorSemanticRequest` is the L080-owned copied semantic authority.
+It does not claim a pin or switch a channel. Its nonzero `requestId` is copied
+by the observation and result. `selectedActiveMask` is the expected semantic
+selection and therefore never comes from the observation being judged.
+Follows-drive requests select exactly one declared channel when the drive is
+active and zero when it is off. The single-channel active-buzzer selection is
+therefore `Sound`; Traffic Light and Dual Color LED select exactly one color.
+Autonomous-while-enabled requests use the descriptor's complete declared mask
+while the drive is requested and zero while off; an observation may report
+any nonzero declared subset while enabled. Observation-only requests select
+zero and require an `Off/None` drive; they never gain drive authority.
+This bounded request preserves color meaning without allocating endpoints or
+changing Lesson 079's single logical-drive contract.
 
-`NotObserved` and `Fault` observations use canonical zero expected and
-observed masks. `Inactive` uses observed mask zero. `Active` uses exactly one
-nonzero declared subset; `Alternating` uses a nonzero declared subset and is
-valid only for autonomous kinds with transition evidence. `copiedLevelHigh`
-is authoritative only for the single-channel `ActiveBuzzer` and
-`VoltageIndicator` rows and must equal `(observedActiveMask != 0)` because all
-six rows are active-high. For every multi-channel row it is canonical false;
-the bounded masks are the sole color authority.
+The request and observation are distinct attributable streams. Each repeats
+lifecycle/session/run/step/request correlation but has its own nonzero source
+identity, source-configuration revision, sequence, and supplied time.
+`policySequence` is the single apply/cancel operation stream; `requestSequence`
+and `observationSequence` are independently contiguous producer streams.
+Nothing in the contract pretends that `LowSideDriveIntent` carries a source,
+sequence, or observation time: it binds through its descriptor digest,
+inspectable driver identities, lifecycle/session/run/step, and request ID.
+
+The structurally attributable observation rows are exhaustive, but deliberately
+permit semantic disagreement for the policy to classify:
+
+| State | Observed mask | Copied level | Transition | Safe-state | Producer status |
+|---|---|---|---|---|---|
+| `NotObserved` | zero | false | false | false | OK |
+| `Inactive` | zero | false | false | false or true | OK |
+| `Active` | nonzero declared subset | false or true | false or true | false or true | OK |
+| `Alternating` | nonzero declared subset | false or true | false or true | false or true | OK |
+| `Fault` | zero | false | false | false | non-OK |
+
+Every unlisted combination is malformed and returns `InvalidArgument` without
+mutation. A non-fault state with non-OK producer status, a `Fault` state with
+OK status, a reserved mask bit, or a mask outside the declaration is
+malformed. Within the well-formed rows, copied level contrary to the frozen
+single/multichannel polarity yields `PolarityMismatch`; follows-drive or
+observation-only alternating/transition evidence yields
+`UnexpectedAutonomy`; autonomous active/alternating evidence without a
+transition yields `AutonomousWaveformMissing`; and a follows-drive observed
+mask unequal to the request-selected mask yields `ObservationMismatch`.
+Thus canonical encoding does not erase attributable semantic failures.
 The descriptor does not infer pin count or topology. Traffic-light and
 dual-color semantics require the exact specimen descriptor to say whether
 resistors/drivers are populated, but E0 does not fill in missing values.
@@ -709,7 +762,8 @@ drive authority. `AutoFlashLed` must declare
 the sole validity authority and is exhaustively tested; no implementation-only
 row or permissive default exists.
 
-The policy copies both the Lesson 079 intent and an observation. It never
+The policy copies a Lesson 079 intent, one L080 semantic request, and one
+observation. It never
 calls Lesson 079, toggles a line, schedules a waveform, synthesizes a tone, or
 claims optical/acoustic output. An autonomous transition is copied evidence:
 its cadence, frequency, duty, loudness, color, and intensity remain outside
@@ -738,12 +792,125 @@ Standalone Lesson 080 requires
 descriptor.expectedDriverDescriptorIdentityDigest` before interpreting any
 drive value. The explicit expected specimen/reference/electrical/configuration
 fields remain useful inspectable correlation and must also match, but they
-never substitute for the full digest. It then matches lifecycle, session, run, step, and
-request/observation correlation; Lesson 081 adds pair/envelope correlation.
-`now` must not precede `observedAt`; age equal to
-`maximumObservationAge` is current and one tick greater is stale. Known-zero
-warm-up/settling requires no delay. Safe state is a distinct observation from
-resource/drive admission; one boolean never proves both.
+never substitute for the full digest. It then matches the drive, request, and
+observation lifecycle/session/run/step/request tuple; Lesson 081 adds
+pair/envelope correlation.
+
+Only descriptor schema revision `1` is supported. All identity and
+source-configuration fields except the explicitly zero-valid driver digest
+are nonzero. Durations must be below the modular half range. Zero warm-up and
+settling are satisfied immediately; zero maximum age admits only
+`now == observedAt`. The policy computes warm-up from
+`now - beginSession.startedAt` and settling from
+`observedAt - request.requestedAt`; copied satisfaction Booleans do not exist.
+The exact chronology is
+`startedAt <= requestedAt <= observedAt <= now`, with every comparison in the
+forward modular half range. Equality is allowed. Future, backward, or exact
+half-range timestamps publish `Rejected/TimestampDiscontinuity`; age one tick
+over the inclusive maximum publishes `Rejected/Stale`.
+
+The first accepted apply has `policySequence == requestSequence ==
+observationSequence == 1`; each stream is then contiguous with wrap from
+`UINT32_MAX` to zero forbidden as exhaustion. The first request source and
+configuration and the first observation source and configuration latch
+independently; each later value must match its own latch. The two sources may
+differ. Control belongs to the semantic-request/control producer and must
+match the request latch; it never borrows observation-source authority.
+
+An identical duplicate of the immediately preceding complete apply tuple,
+including `now`, is idempotent and returns the byte-identical prior result.
+The same sequence with any changed field is `InvalidArgument` without
+mutation. A gap, regression, exhaustion, or timestamp discontinuity publishes
+a terminal rejected result and caches that complete rejected tuple solely for
+idempotent replay; it does not advance any last-accepted sequence, source, or
+time anchor. No different operation is admitted until reset starts a new
+generation. Cancel shares `policySequence`; an identical immediately repeated
+control is idempotent and a changed duplicate is invalid. Request and
+observation producer sequences are not advanced by cancel.
+
+`Incomplete` is the only apply result that admits a later contiguous apply;
+it advances all three accepted stream anchors and caches its tuple for
+idempotence. `Accepted`, `Rejected`, `ProducerFault`, `Cancelled`, and
+`Shutdown` are terminal: only exact replay or reset is admitted. A
+structurally valid terminal semantic/freshness result advances the accepted
+anchors before becoming terminal. The discontinuity cases above are the
+exception because accepting their bad sequence or time would legitimize a
+rewind or gap.
+
+The supported Lesson 079 state/reason pairs map exactly:
+
+| Drive state/reason | L080 result before observation semantics |
+|---|---|
+| `Off/None` | evaluate only a zero semantic selection for any kind |
+| `Off/Expired` | `Rejected/DriverExpired` |
+| `Requested/None` | evaluate a nonzero follows/autonomous selection; observation-only is malformed |
+| `Rejected/SourceIneligible` | `Rejected/SourceIneligible` |
+| `Rejected/BudgetExceeded` | `Rejected/DriverBudgetExceeded` |
+| `Rejected/BaseBudgetInsufficient` | `Rejected/DriverBaseBudgetInsufficient` |
+| `Rejected/FlybackMissing` | `Rejected/DriverFlybackMissing` |
+| `Rejected/SequenceDiscontinuity` | `Rejected/DriverSequenceDiscontinuity` |
+| `Rejected/TimestampDiscontinuity` | `Rejected/DriverTimestampDiscontinuity` |
+| `Rejected/CapacityExceeded` | `Rejected/DriverCapacityExceeded` |
+| `Cancelled/Cancelled` | `Cancelled/DriverCancelled` |
+| `Fault/ProducerFault` | `ProducerFault/ProducerFault` |
+| `Fault/Cancelled` | `ProducerFault/DriverCancelled` |
+| `Shutdown/None` | `Shutdown/DriverShutdown` |
+
+Every other state/reason/logical-active/output-level/status combination is
+malformed and returns `InvalidArgument`. A valid drive has OK producer status
+except `Fault/ProducerFault` and `Fault/Cancelled`, which have non-OK status,
+and `Rejected/SequenceDiscontinuity` or
+`Rejected/TimestampDiscontinuity`, which may retain either valid status
+because Lesson 079 checks chronology before producer failure. For either
+chronology pair with non-OK status, drive-producer-fault precedence wins.
+After structure and correlation, precedence is: explicit cancel/shutdown; non-OK request
+producer; drive producer fault; observation producer fault; mapped drive
+rejection/cancellation/expiry; L080 sequence or time discontinuity/staleness;
+warm-up; settling; polarity/autonomy/observation disagreement; safe-state;
+acceptance. The selected producer failure is copied to the result, so one
+stream's plausible evidence cannot erase another stream's failure.
+
+The remaining dispositions are exact. An ineligible L080 descriptor publishes
+`Rejected/SourceIneligible`. A well-formed `NotObserved` row publishes
+`Incomplete/ObservationMissing`; unmet computed warm-up and settling publish
+`Incomplete/WarmupUnsatisfied` and `Incomplete/SettlingUnsatisfied`.
+Polarity, unexpected autonomy, missing autonomous transition, selection/mask
+disagreement, and safe-state disagreement publish `Rejected` with their named
+reason. Complete matching evidence publishes `Accepted/None`. Initialize and
+reset publish `Idle/None`; successful begin-session publishes
+`Eligible/None`.
+
+`safeStateObserved` is independent evidence, not admission. It must be false
+for a nonzero request selection and for NotObserved or Fault. With a zero
+selection, attributable Inactive, Active, or Alternating evidence may carry
+either value; false yields `SafeStateMismatch` if no earlier semantic
+disagreement wins. This permits an observation-only Voltage Indicator to
+report voltage while separately confirming its high-impedance safe state.
+Acceptance of any zero-selection row requires true; acceptance of a nonzero
+response does not use the safe-state Boolean. Cancel does not consume an
+observation. Its only canonical control tuples are `(offConfirmed=true,
+producerStatus=OK)` and `(offConfirmed=false, producerStatus=non-OK)`;
+the other two pairs are malformed. The confirmed tuple publishes
+`Cancelled/Cancelled`, `Inactive`, inactive/zero semantic output, safe-state
+true, and OK status. The failed tuple publishes
+`ProducerFault/Cancelled`, `Fault`, inactive/zero semantic output, safe-state
+false, and the failing status. Thus cancellation remains the cause without
+claiming a failed safe return succeeded.
+
+Construction starts at generation zero. Successful first initialize validates
+the descriptor, advances to generation one, and repeated initialize is
+idempotent. `beginSession` requires nonzero session/run IDs and a supplied
+start time. Any structurally valid second begin in the same generation,
+whether identical, partially reused, or wholly different, returns
+`ResourceBusy` without mutation; malformed IDs return `InvalidArgument`
+first. Reset is permitted
+only while initialized, advances the generation atomically, clears the
+session and all three stream anchors, and returns idle; generation exhaustion
+returns `CapacityExceeded` without mutation. Shutdown is terminal and
+idempotent, clears session authority and anchors, and retains the current
+generation. Reinitialize after shutdown advances the generation before a new
+session, so no pre-shutdown value can correlate even though sequences restart
+at one.
 
 ### Deterministic matrix and files
 
@@ -756,7 +923,9 @@ Tests exhaust:
 
 - every kind/autonomy/safe-state/active-polarity/population/channel-mask
   cross-product, including every reserved mask bit and every color mismatch;
-- invalid encodings and zero/max identities/revisions/durations;
+- invalid enum/status encodings; schema zero, one, two, and maximum; zero/max
+  identities and revisions; duration zero, one, `0x7fffffff`, rejected
+  `0x80000000`, and rejected `UINT32_MAX`;
 - each one-field drive-intent specimen reference/revision,
   electrical-evidence, policy
   configuration identity/revision mismatch against the immutable L080
@@ -765,14 +934,24 @@ Tests exhaust:
   and one-field family/source-packet drift that preserves the partial fields
   but must reject through the full digest;
 - all five kinds with explicit, non-generalized fixtures;
-- copied off/active/rejected/cancelled/fault drive intents;
-- inactive/active/alternating/fault observations, canonical NotObserved/Fault
-  zero masks, single-channel copied-level meaning, and multichannel canonical
-  false copied level;
+- every canonical and one-field-invalid Lesson 079 state/reason/activity/
+  level/status tuple, including `Off`, `Expired`, `Cancelled`, and `Shutdown`,
+  with exact L080 mapping;
+- request-selected single colors, autonomous complete enable masks,
+  observation-only zero selections, request/observation correlation, and
+  proof that the observation cannot self-declare its expected channel;
+- every row and one-field mutation of the canonical observation matrix,
+  including state/status consistency, NotObserved/Fault zero masks,
+  single-channel copied-level meaning, multichannel canonical false copied
+  level, and safe-state applicability;
 - missing/unexpected autonomous transitions;
-- separate admission, warm-up, settling, safe-state, and semantic checks;
-- exact freshness boundary, time wrap, half-range ambiguity, sequences,
-  duplicates, gaps, and source/configuration drift;
+- independently computed warm-up, settling, freshness, safe-state, and
+  semantic checks, including all zero-duration meanings;
+- exact session/request/observation/now chronology, time wrap, half-range
+  ambiguity, three independent sequence streams, identical and changed
+  duplicates, gaps, regressions, exhaustion, and source/configuration drift;
+- both canonical cancel tuples, both malformed cancel tuples, and exact
+  cancelled versus failed-safe-return result bytes;
 - simultaneous stop, producer, stale, and semantic failures at each
   precedence boundary; and
 - restart, shutdown from each state, canaries, and atomic non-mutation.
@@ -857,6 +1036,7 @@ struct ComponentQualificationEnvelope
     SmallIndicatorDescriptor indicatorDescriptor;
     ComponentQualificationControl control;
     LowSideDriveRequest driveRequest;
+    SmallIndicatorSemanticRequest indicatorRequest;
     SmallIndicatorObservation indicatorObservation;
 };
 
@@ -1157,7 +1337,7 @@ struct ComponentQualificationRecord
     bool safeStateSatisfied;
     bool autonomousTransitionObserved;
     uint8_t declaredChannelMask;
-    uint8_t expectedActiveMask;
+    uint8_t selectedActiveMask;
     uint8_t observedActiveMask;
     uint8_t semanticActiveMask;
     uint32_t expectedDriverDescriptorIdentityDigest;

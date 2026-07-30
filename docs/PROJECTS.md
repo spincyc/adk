@@ -119,7 +119,7 @@ may claim hardware verification until its measured record is published.
 | 070--072 | Declared threshold descriptors and copied sweeps | Inert module characterization bench |
 | [073--075](design/LESSONS_073_075_RTC_INTEGRITY_RESCOPE.md) | Planned E0 **Copied RTC Transaction Evidence** and **Qualified Clock Observation** over copied DS1307-family values; no implementation or powered-specimen support is claimed | **Inert Time-Warp Detective Desk**; DS3231 remains a separate, independently gated variant |
 | [076--078](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md) | Planned E0 **Copied Sweep-Range Frames** and **Bounded Polar Occupancy Map** over attributable copied HC-SR04-shaped range evidence and bounded servo-angle intent; no implementation or powered-specimen support is claimed | **Inert Tabletop Sonar Desk**; powered ranging, restrained servo motion, autonomous navigation, physical mapping, and bench acceptance remain separately gated |
-| [079--081](design/LESSONS_079_081_COMPONENT_QUALIFICATION_PLAN.md) | Lesson 079 bounded low-side-driver policy is published at E0; Lesson 080 indicator semantics remains planned | Lesson 081 inert component-qualification bench remains planned; E1 identity and E2b powered fixture acceptance remain open |
+| [079--081](design/LESSONS_079_081_COMPONENT_QUALIFICATION_PLAN.md) | Lessons 079--080 bounded low-side-driver and small-indicator policies are published at E0 | Lesson 081 inert component-qualification bench remains planned; E1 identity and E2 powered fixture acceptance remain open |
 
 A listing-authorized family may scope planning, but exact specimen support
 requires inventory evidence and qualification. Changing a specimen must not
