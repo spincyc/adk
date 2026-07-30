@@ -239,6 +239,43 @@ or animal may depend on them to enter, leave, summon help, or remain safe.
   load-power removal. It must not attach to a door, gate, lock, occupied
   enclosure, alarm, emergency lighting, egress route, or life-safety system.
 
+### Lessons 067--069 inertial-recorder boundaries
+
+Lessons 067--069 are E0 copied-record work until each separately scoped E1
+gate is recorded. Normalization, source qualification, record assembly,
+presentation intent, and persistence intent operate only on caller-supplied
+records and memory. They do not prove that a sensor was powered, sampled,
+mounted, oriented, calibrated, displayed, or written to durable media.
+
+- E0 owns no pin, bus, interrupt, timer, sensor, display, button, real-time
+  clock, storage device, storage medium, or power path. Source identities and
+  measurements are copied provenance, and display, indicator, control, clock,
+  and storage values are semantic evidence or intents only.
+- One explicitly configured copied source is admitted per recorder session.
+  Source matching, freshness checks, frame mapping, qualification, sequence
+  checks, and record integrity demonstrate deterministic policy, not physical
+  device identity, correct mounting, calibration, timing accuracy, or sensor
+  health.
+- A prepared, exported, or acknowledged record demonstrates only the specified
+  in-memory transaction policy. It is not evidence of an SD-card, flash,
+  EEPROM, or other physical-media write, and restart does not imply that a
+  record survived.
+- E1a separately qualifies the exact inertial sensor, carrier revision, supply
+  and logic levels, bus address and ownership, pull-ups and straps, mounting
+  axes, data-ready behavior, configured ranges and rates, conversion rules,
+  calibration, observation points, and source-loss behavior. The display,
+  controls, clock, and storage hardware remain physically absent.
+- E1b separately qualifies the exact display, current-limited indicators, and
+  passive controls, including their supply, bus or endpoint ownership,
+  polarity, bounded current, inactive presentation, and failure behavior. The
+  inertial sensor, clock, and storage hardware are not thereby qualified.
+- E1c separately qualifies the exact real-time clock and storage device and
+  medium, including supply and logic levels, bus or chip-select ownership,
+  timestamp provenance, capacity, removal, write-failure, torn-write,
+  corruption, and restart/recovery behavior. E1c does not retroactively
+  qualify E1a or E1b, and no combined powered fixture ships until all three
+  gates and their integration evidence are accepted.
+
 ## Project hazard gates
 
 Every project first passes all component gates it composes. It then records the
@@ -262,6 +299,7 @@ following project-specific evidence.
 | 054 | Infrared command translator | E0/E1 | E0 is inert and produces no physical output; E1 requires an exact current-limited, burst-bounded, fail-off fixture aimed only at an owned harmless adjacent target and admits only fixed local catalog commands—never consumer/security control or unknown capture replay; cancellation and missed service force emission off, physical power removal remains the stop method, and acquisition, inactive-state, and optical-emission evidence are recorded separately |
 | 057 | Inert escape-room console | E0/E1/E2 | E0 is copied puzzle policy with inert latch and lamp intent; it provides no access-control, security, confinement, egress, or life-safety function; E1 admits exact passive inputs and presentation with actuators absent; E2 admits only a restrained demonstration servo or inert low-voltage relay/lamp load with independent physical load-power removal and no door, lock, occupied enclosure, or safety-system connection |
 | 060 | Dual-display timing desk | E0/E1 | E0 proves supplied-time policy and copied command/receipt evidence only; E1a and E1b independently qualify the exact multiplex and MAX7219 fixtures before E1c combines them with worst-case current, rail-droop, thermal, refresh, optical-agreement, blanking, and physical-power-removal evidence |
+| 069 | Interchangeable motion recorder | E0/E1 | E0 accepts one configured copied inertial source per session and produces only memory-backed records and presentation, clock, control, and storage intents; E1a sensor acquisition, E1b presentation and controls, and E1c clock and storage are independently qualified, and no powered or durable-recording claim is permitted until all applicable gates and the combined integration record are accepted |
 
 Project 018 does not secure property. Project 021 carries no person, animal,
 hot item, sharp tool, or hazardous material. Project 027 does not monitor a

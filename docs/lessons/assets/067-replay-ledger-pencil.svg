@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="680" viewBox="0 0 1500 680" role="img" aria-labelledby="title desc">
+  <title id="title">Deterministic replay ledger</title>
+  <desc id="desc">Two identical copied sample cards travel through two normalization runs and produce matching typed records and matching sixty-four-byte strips.</desc>
+  <rect width="1500" height="680" fill="#f8f7f2"/>
+  <g fill="none" stroke="#393939" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M68 104 L331 91 L338 265 L73 278 Z M68 399 L331 386 L338 560 L73 573 Z"/>
+    <path d="M411 120 Q530 90 647 122 L639 254 Q528 278 415 252 Z M411 415 Q530 385 647 417 L639 549 Q528 573 415 547 Z"/>
+    <path d="M341 184 L407 184 M341 479 L407 479 M648 184 L715 184 M648 479 L715 479"/>
+    <path d="M715 106 L1035 92 L1041 275 L721 286 Z M715 401 L1035 387 L1041 570 L721 581 Z"/>
+    <path d="M1093 115 Q1254 92 1430 117 L1422 268 Q1253 289 1098 266 Z M1093 410 Q1254 387 1430 412 L1422 563 Q1253 584 1098 561 Z"/>
+    <path d="M1043 184 L1089 184 M1043 479 L1089 479"/>
+    <path d="M1172 319 L1349 319 M1260 286 L1260 353"/>
+  </g>
+</svg>

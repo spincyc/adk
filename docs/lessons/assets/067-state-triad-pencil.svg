@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="650" viewBox="0 0 1500 650" role="img" aria-labelledby="title desc">
+  <title id="title">Three derived inertial record states</title>
+  <desc id="desc">Three pencil cards show Recorded for healthy ready evidence, NotReady for healthy evidence without a ready flag, and SourceFault for any producer failure.</desc>
+  <rect width="1500" height="650" fill="#f8f7f2"/>
+  <g fill="none" stroke="#393939" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M65 94 Q265 70 454 97 L447 557 Q259 578 69 551 Z"/>
+    <path d="M526 96 Q730 71 923 98 L913 558 Q727 579 530 552 Z"/>
+    <path d="M989 96 Q1193 72 1430 100 L1417 559 Q1204 579 993 551 Z"/>
+    <path d="M151 290 L231 370 378 207"/>
+    <path d="M613 249 Q729 219 843 252 L835 402 Q729 426 618 397 Z"/>
+    <path d="M651 327 L801 327"/>
+    <path d="M1074 222 L1340 419 M1335 221 L1082 421"/>
+  </g>
+</svg>

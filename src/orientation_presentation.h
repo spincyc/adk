@@ -1,21 +1,12 @@
 #pragma once
 
 #include "inertial_observation.h"
+#include "signed_axis_mapping.h"
 #include "status.h"
 
 #include <stdint.h>
 
 namespace adk {
-
-    enum struct SignedAxis : uint8_t
-    {
-        PositiveX,
-        NegativeX,
-        PositiveY,
-        NegativeY,
-        PositiveZ,
-        NegativeZ
-    };
 
     struct BoardFrame
     {

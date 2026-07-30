@@ -36,60 +36,9 @@ namespace adk {
                    status.error () <= StatusCode::HardwareFailure;
         }
 
-        bool validAxis (SignedAxis axis) noexcept
-        {
-            return axis >= SignedAxis::PositiveX && axis <= SignedAxis::NegativeZ;
-        }
-
-        uint8_t axisIndex (SignedAxis axis) noexcept
-        {
-            return static_cast<uint8_t> (axis) / 2U;
-        }
-
-        int8_t axisSign (SignedAxis axis) noexcept
-        {
-            return (static_cast<uint8_t> (axis) & 1U) == 0U ? 1 : -1;
-        }
-
-        void axisVector (SignedAxis axis, int8_t (&value)[3]) noexcept
-        {
-            value[0]                = 0;
-            value[1]                = 0;
-            value[2]                = 0;
-            value[axisIndex (axis)] = axisSign (axis);
-        }
-
         bool validFrame (const BoardFrame& frame) noexcept
         {
-            const bool recognized = validAxis (frame.right) &&
-                                    validAxis (frame.forward) && validAxis (frame.up);
-            if (!recognized)
-            {
-                return false;
-            }
-
-            const uint8_t rightIndex   = axisIndex (frame.right);
-            const uint8_t forwardIndex = axisIndex (frame.forward);
-            const uint8_t upIndex      = axisIndex (frame.up);
-            if (rightIndex == forwardIndex || rightIndex == upIndex ||
-                forwardIndex == upIndex)
-            {
-                return false;
-            }
-
-            int8_t right[3];
-            int8_t forward[3];
-            int8_t up[3];
-            axisVector (frame.right, right);
-            axisVector (frame.forward, forward);
-            axisVector (frame.up, up);
-
-            const int8_t cross[3] = {
-                static_cast<int8_t> (right[1] * forward[2] - right[2] * forward[1]),
-                static_cast<int8_t> (right[2] * forward[0] - right[0] * forward[2]),
-                static_cast<int8_t> (right[0] * forward[1] - right[1] * forward[0])};
-
-            return cross[0] == up[0] && cross[1] == up[1] && cross[2] == up[2];
+            return validSignedAxisMapping ({frame.right, frame.forward, frame.up});
         }
 
         int64_t absolute64 (int64_t value) noexcept
@@ -127,18 +76,6 @@ namespace adk {
             }
 
             return result;
-        }
-
-        int64_t mappedAxis (const InertialVector& vector, SignedAxis axis) noexcept
-        {
-            int64_t value = 0;
-            switch (axisIndex (axis))
-            {
-                case 0: value = vector.x; break;
-                case 1: value = vector.y; break;
-                default: value = vector.z; break;
-            }
-            return axisSign (axis) > 0 ? value : -value;
         }
 
         int32_t roundMicrodegrees (int64_t value) noexcept
@@ -425,12 +362,12 @@ namespace adk {
                                        PreparedOrientationEstimate& prepared) const
         noexcept
     {
-        prepared.owner_      = this;
-        prepared.generation_ = generation_;
+        prepared.owner_               = this;
+        prepared.generation_          = generation_;
         OrientationEstimate& estimate = prepared.result_;
         if (!initialized_)
         {
-            estimate = emptyEstimate (StatusCode::NotInitialized);
+            estimate        = emptyEstimate (StatusCode::NotInitialized);
             prepared.owner_ = nullptr;
             return estimate.status;
         }
@@ -442,7 +379,7 @@ namespace adk {
             input.sample.saturation < InertialSaturation::None ||
             input.sample.saturation > InertialSaturation::Both)
         {
-            estimate = emptyEstimate (StatusCode::InvalidArgument);
+            estimate        = emptyEstimate (StatusCode::InvalidArgument);
             prepared.owner_ = nullptr;
             return estimate.status;
         }
@@ -450,7 +387,7 @@ namespace adk {
         if (!validStatus (input.status) || !validStatus (input.sample.status) ||
             !validQuality (input.quality))
         {
-            estimate = emptyEstimate (StatusCode::InvalidArgument);
+            estimate        = emptyEstimate (StatusCode::InvalidArgument);
             prepared.owner_ = nullptr;
             return estimate.status;
         }
@@ -479,7 +416,7 @@ namespace adk {
                           input.sample.source.angularRateRangeMilliDegreesPerSecond) ||
             input.age.milliseconds () > maximumAge || !input.latestDataReady)
         {
-            estimate = emptyEstimate (StatusCode::InvalidArgument);
+            estimate        = emptyEstimate (StatusCode::InvalidArgument);
             prepared.owner_ = nullptr;
             return estimate.status;
         }
@@ -497,11 +434,21 @@ namespace adk {
             return StatusCode::Ok;
         }
 
-        const int64_t right =
-            mappedAxis (acceleration, config_.boardFrame.right);
-        const int64_t forward =
-            mappedAxis (acceleration, config_.boardFrame.forward);
-        const int64_t up = mappedAxis (acceleration, config_.boardFrame.up);
+        int32_t rightValue;
+        int32_t forwardValue;
+        int32_t upValue;
+        if (!mapSignedAxes ({config_.boardFrame.right, config_.boardFrame.forward,
+                             config_.boardFrame.up},
+                            acceleration.x, acceleration.y, acceleration.z, rightValue,
+                            forwardValue, upValue))
+        {
+            estimate        = emptyEstimate (StatusCode::InvalidArgument);
+            prepared.owner_ = nullptr;
+            return estimate.status;
+        }
+        const int64_t right   = rightValue;
+        const int64_t forward = forwardValue;
+        const int64_t up      = upValue;
         const uint64_t horizontal =
             integerSquareRoot (square (right) + square (up));
 
@@ -632,12 +579,12 @@ namespace adk {
         const OrientationEstimate& estimate, uint16_t sensitivityPermille,
         bool diagnosticPhase, PreparedBalancePresentation& prepared) const noexcept
     {
-        prepared.owner_      = this;
-        prepared.generation_ = generation_;
+        prepared.owner_                   = this;
+        prepared.generation_              = generation_;
         BalancePresentation& presentation = prepared.result_;
         if (!initialized_)
         {
-            presentation = emptyPresentation (StatusCode::NotInitialized);
+            presentation    = emptyPresentation (StatusCode::NotInitialized);
             prepared.owner_ = nullptr;
             return presentation.status;
         }
@@ -648,7 +595,7 @@ namespace adk {
             !validPresentationAngle (estimate.pitchMilliDegrees) ||
             !validPresentationAngle (estimate.rollMilliDegrees))
         {
-            presentation = emptyPresentation (StatusCode::InvalidArgument);
+            presentation    = emptyPresentation (StatusCode::InvalidArgument);
             prepared.owner_ = nullptr;
             return presentation.status;
         }
@@ -730,7 +677,7 @@ namespace adk {
                                               bool     diagnosticPhase) noexcept
     {
         PreparedBalancePresentation prepared;
-        const Status status =
+        const Status                status =
             preview (estimate, sensitivityPermille, diagnosticPhase, prepared);
         if (canCommit (prepared))
         {
@@ -738,8 +685,8 @@ namespace adk {
         }
         else
         {
-            presentation_       = prepared.result_;
-            previousDirection_  = BalanceDirection::None;
+            presentation_      = prepared.result_;
+            previousDirection_ = BalanceDirection::None;
             ++generation_;
         }
         return status;

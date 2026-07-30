@@ -1,0 +1,372 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.60in]{geometry}
+\usepackage{booktabs,enumitem,fancyhdr,graphicx,listings,tabularx,titlesec,xcolor}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{docs/lessons/assets/}{assets/}}
+\hypersetup{
+ pdftitle={ADK Lesson 067: Normalize a Copied Inertial Record},
+ pdfauthor={Kevin Shanahan},
+ pdfsubject={Stable typed records and canonical fixed images from copied inertial evidence},
+ pdflang={en-US}}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\textsc{ADK Lesson 067}}\rhead{Copied Inertial Records}
+\cfoot{\thepage}\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{3pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.5em}{}
+\newcommand{\lessonbox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{#1}}\end{center}}
+\newcommand{\blankline}{\rule{0.76in}{0.4pt}}
+\newcommand{\longblank}{\rule{1.35in}{0.4pt}}
+\lstset{
+ basicstyle=\ttfamily\footnotesize,
+ columns=fullflexible,
+ breaklines=true,
+ frame=single,
+ rulecolor=\color{black},
+ showstringspaces=false}
+
+\begin{document}
+\small
+\begin{center}
+ {\Huge\bfseries Normalize a Copied Inertial Record}\\[3pt]
+ {\Large Make evidence stable before asking what it means}\\[7pt]
+ \fbox{\textbf{E0 SYNTHETIC REPLAY --- NO SENSOR, BUS, PIN, OR CALIBRATION CLAIM}}
+\end{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 067 --- component & Time & 150--210 minutes\\
+Prerequisite & Lesson 043 copied inertial samples & Board & compile-only Mega replay\\
+Input & one copied sample & Observation & named record and 64-byte image\\
+\end{tabularx}
+
+\lessonbox{\textbf{Responsibility.}
+\texttt{InertialRecordNormalizer} copies one complete Lesson 043 sample into
+an explicit stable record. \texttt{InertialRecordCodec} gives that record one
+canonical 64-byte representation. Neither object reads a sensor, rotates an
+axis, removes bias, qualifies a source, discovers hardware, or writes storage.}
+
+\section{Draw the evidence boundary first}
+A measurement is useful only when its identity and conditions travel with its
+numbers. The copied sample already names its source, declared ranges,
+calibration revision, observation time, sequence, readiness, saturation, and
+producer status. Lesson 067 preserves that whole witness. It does not rescue a
+fault by borrowing vectors from the preceding healthy sample.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=2.10in,keepaspectratio]
+ {067-copied-boundary-pencil.png}
+
+\small\textit{Alternative text: a copied sample card crosses a normalization
+desk into a stable typed record and fixed image; a physical sensor, bus, pins,
+and calibration remain behind a locked E1 gate with no connecting wire.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}X X@{}}
+\toprule
+E0 establishes & E0 does not establish\\
+\midrule
+field-for-field copied provenance & genuine MPU6050 or QMI8658 identity\\
+stable revisions and closed states & physical scale, axes, bias, or accuracy\\
+canonical bytes and corruption checks & I2C behavior, voltage, timing, or pins\\
+deterministic replay & qualification, mounting, or interchangeability\\
+\bottomrule
+\end{tabularx}
+
+\section{Predict before normalizing}
+For a healthy, ready sample, predict the derived record state:
+\longblank. If the sample is healthy but not ready: \longblank. Write the
+fields that must remain visible when producer status reports a fault:
+\hrulefill.
+
+\newpage
+\section{Derive one state without discarding evidence}
+The record has three derived states. \texttt{Recorded} means producer status
+is OK and data is ready. \texttt{NotReady} means producer status is OK and
+data is not ready. Any non-OK producer status becomes \texttt{SourceFault}.
+Saturation remains a separate field; it is never rewritten as producer status.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.94\linewidth,height=2.12in,keepaspectratio]
+ {067-state-triad-pencil.png}
+
+\small\textit{Alternative text: three graphite cards show Recorded for
+healthy ready evidence, NotReady for healthy non-ready evidence, and
+SourceFault for producer failure; saturation remains visible beside every
+state.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}l l l X@{}}
+\toprule
+Producer status & Ready & Derived state & Numeric vectors\\
+\midrule
+OK & yes & \texttt{Recorded} & copied exactly\\
+OK & no & \texttt{NotReady} & copied exactly\\
+non-OK & either & \texttt{SourceFault} & copied exactly, never cached\\
+\bottomrule
+\end{tabularx}
+
+This separation matters. ``Not ready'' is a valid report about an identified
+source; it is not the same as a transport failure. Saturation is valid
+evidence that a declared measurement range was exceeded; it must not be
+averaged away or mistaken for an ordinary maximum.
+
+\section{Keep revisions nonzero and explicit}
+\texttt{schemaRevision} describes the typed record contract.
+\texttt{normalizationRevision} describes this field-preserving transformation.
+Both must be nonzero. Source identity retains kind, model, source ID, source
+configuration revision, and calibration revision. A future lesson may compare
+or qualify records, but Lesson 067 merely ensures that comparison has complete
+inputs.
+
+Circle each change that should produce a different canonical record: source
+ID; calibration revision; acceleration range; readiness; sequence; status.
+Explain why ``the vectors are equal'' is not enough: \hrulefill.
+
+\newpage
+\section{Lay out the canonical image deliberately}
+The codec writes exactly 64 bytes in little-endian order. It is a designed
+wire/storage-neutral image, not the in-memory layout of a C++ object.
+Magic, version, and encoded length establish framing. Reserved bytes are zero.
+A CRC-16 with polynomial \(0x1021\), initial value \(0xffff\), and final XOR
+\(0x0000\) covers bytes 0 through 61.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.98\linewidth,height=2.30in,keepaspectratio]
+ {067-record-layout-pencil.png}
+
+\small\textit{Alternative text: a hand-drawn 64-cell notebook strip groups
+framing, revisions, identity, ranges, two three-axis vectors, observation time,
+sequence, flags, status, and the final two-byte CRC seal.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}r l X@{}}
+\toprule
+Bytes & Group & Required interpretation\\
+\midrule
+0--5 & framing & magic, image version, encoded length\\
+6--9 & contract & schema and normalization revisions\\
+10--19 & identity & state, complete source, calibration, reserved zeroes\\
+20--27 & ranges & declared acceleration and angular-rate ranges\\
+28--51 & vectors & signed x/y/z values in Lesson 043 units\\
+52--59 & ordering & supplied modular time and sequence\\
+60--61 & quality & ready/saturation flags and producer status\\
+62--63 & integrity & little-endian CRC-16 over bytes 0--61\\
+\bottomrule
+\end{tabularx}
+
+Mark the first byte range you would inspect for each symptom: wrong model
+\blankline; changed vector \blankline; bad CRC \blankline; unknown flag bit
+\blankline.
+
+\section{Do not confuse a checksum with trust}
+The CRC detects accidental change according to this format. It does not
+authenticate a producer, establish physical calibration, make volatile bytes
+durable, or prove that a sensor supplied them. Full typed fields remain the
+authoritative evidence; the CRC is an integrity check over their canonical
+encoding.
+
+\newpage
+\section{Stage the entire result before publishing}
+\texttt{normalize()} and codec operations are transactional. They build and
+validate a complete candidate first. An invalid configuration, invalid closed
+enum, short output span, inconsistent state, or corrupt image leaves the
+caller's previously published output byte-for-byte unchanged.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.94\linewidth,height=2.18in,keepaspectratio]
+ {067-atomic-desk-pencil.png}
+
+\small\textit{Alternative text: an old record and image wait beside a staging
+desk; only a fully checked candidate receives the pass mark and replaces both,
+while a failed candidate leaves the old output and its canary untouched.}
+\end{center}
+
+\begin{enumerate}
+ \item Copy every field into a candidate typed record.
+ \item Derive state from producer status and readiness.
+ \item Validate revisions, closed enums, flags, and semantic combinations.
+ \item Encode all fields at locked offsets and calculate the CRC.
+ \item Commit the complete candidate only after every check passes.
+\end{enumerate}
+
+\lessonbox{\textbf{Atomicity experiment.}
+Fill an output record and surrounding canaries with a recognizable pattern.
+Try each malformed sample or image. A correct implementation reports the
+failure and preserves the record and both canaries exactly.}
+
+\section{Compare fields, not padding}
+Semantic record equality compares named fields. \texttt{memcmp} can observe
+padding, object representation, or compiler choices that are not part of the
+contract. Canonical image equality compares all 64 encoded bytes because that
+format deliberately assigns meaning to every byte, including reserved zeroes.
+
+\newpage
+\section{Diagnose rejection precisely}
+Decode first checks length, then framing, integrity, and semantic values before
+publishing. The typed result helps a learner locate the failed boundary without
+turning diagnostic text into library state.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.97\linewidth,height=2.16in,keepaspectratio]
+ {067-corruption-lab-pencil.png}
+
+\small\textit{Alternative text: four scratched record strips fall into
+separate diagnosis trays for BadLength, BadFraming, BadIntegrity, and
+BadSemanticValue; rejected strips cannot alter the prior typed output.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Validity & Example & What remains unchanged\\
+\midrule
+\texttt{BadLength} & 63 or 65 input bytes & typed output\\
+\texttt{BadFraming} & magic, version, length byte, flags, reserved byte & typed output\\
+\texttt{BadIntegrity} & payload changed without matching CRC & typed output\\
+\texttt{BadSemanticValue} & unknown enum or contradictory state & typed output\\
+\bottomrule
+\end{tabularx}
+
+Prediction: flip one vector bit and do not update the CRC. The result should be
+\longblank. Now recompute the CRC while leaving an invalid state/ready
+combination. The result should be \longblank. This shows why integrity and
+meaning are independent checks.
+
+\section{Use status and validity for different questions}
+\texttt{Status} reports operation failures such as invalid configuration or
+insufficient destination capacity. \texttt{InertialRecordValidity} classifies
+an attempted decode. Neither type claims sensor health; producer health remains
+inside the record.
+
+\newpage
+\section{Replay without touching hardware}
+The Mega example follows acquire, configure, start, then observe, decide,
+actuate. It acquires one synthetic copied sample, configures two nonzero
+revisions, normalizes the sample, encodes the record, and exposes named
+volatile record and image cells. Here ``actuate'' means publish inert values;
+no endpoint is invoked.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.95\linewidth,height=2.02in,keepaspectratio]
+ {067-replay-ledger-pencil.png}
+
+\small\textit{Alternative text: two identical copied samples pass through two
+normalization runs and produce field-equal typed records and byte-equal
+64-byte strips.}
+\end{center}
+
+\begin{enumerate}
+ \item \textbf{Predict:} write the expected record state, identity, first
+       vector component, sequence, flags, and image length.
+ \item \textbf{Observe:} compile for Mega 2560 and inspect the named volatile
+       record and image cells with a debugger, simulator, or disassembly.
+       Serial may support this observation but is not required.
+ \item \textbf{Interpret:} compare every named field and all 64 bytes across
+       two runs. Explain any mismatch before changing the fixture.
+\end{enumerate}
+
+The named copied record and image are the E0 non-Serial observation path.
+They establish deterministic software publication separately from resource
+acquisition and electrical safe state. E0 owns no resource or endpoint, so
+those physical checks remain open rather than silently passing.
+
+\section{Test the boundaries, not just the example}
+\begin{itemize}
+ \item Exercise every supported source, state, readiness, saturation, range,
+       and producer-status class.
+ \item Preserve negative, zero, positive, and extreme accepted components.
+ \item Reject zero revisions, unknown enums, unknown flags, nonzero reserved
+       bytes, inconsistent semantics, and every length error.
+ \item Use byte-exact golden images, round trips, individual field corruption,
+       CRC corruption, and output canaries.
+ \item Prove that adding an unrelated later library component does not change
+       Lesson 067 records or its resource evidence.
+\end{itemize}
+
+\newpage
+\section{Draw the line around the next lesson}
+Lesson 068 may qualify exactly one explicitly configured source and map its
+copied vectors through one proper axis rotation. It must consume the complete
+Lesson 067 record. Lesson 067 itself does no axis mapping, stationary-window
+check, source selection, voting, failover, or pitch/roll presentation.
+
+There is no pin-by-pin connection list, wiring diagram, or formal schematic at
+E0 because there is no circuit. A future E1 adapter first needs an exact chip
+and carrier revision, primary data sheet and register map, identity and reset
+behavior, address straps, byte order, ranges and scaling, data-ready behavior,
+mounting axes, regulator and pull-ups, logic levels, current, bus ownership,
+rollback, safe state, and bench acceptance. Evidence for one device family
+cannot close another family's card.
+
+\section{Troubleshooting matrix}
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Symptom & Inspect first & Interpretation\\
+\midrule
+\texttt{NotReady} & producer status and ready flag & valid copied evidence; no new ready sample\\
+\texttt{SourceFault} & complete producer status & source reported failure; vectors are not rescued\\
+saturation set & declared range and saturation field & quality warning remains independent of state\\
+\texttt{BadFraming} & magic/version/length/flags/reserved & image cannot enter the semantic boundary\\
+\texttt{BadIntegrity} & bytes 0--61 and stored CRC & canonical bytes changed\\
+\texttt{BadSemanticValue} & closed enums and state consistency & intact bytes encode an invalid meaning\\
+\bottomrule
+\end{tabularx}
+
+\section{Exercises}
+\begin{enumerate}
+ \item Explain why a fault record must preserve its current vectors rather
+       than repeat the last healthy vectors.
+ \item Hand-encode one negative 32-bit vector component in little-endian order.
+ \item List three edits that change the CRC but not the image length.
+ \item Design a changed-duplicate test in which time and sequence are equal but
+       one identity field differs.
+ \item Explain why an intact CRC is neither authentication nor physical
+       qualification.
+\end{enumerate}
+
+\newpage
+\section{Open acceptance record}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X@{}}
+Host evidence & Pending integration: strict host tests, no-exception tests,
+standalone header, golden images, corruption matrix, atomicity, and canaries.\\
+Mega evidence & Pending integration: compile the canonical synthetic replay
+and record exact flash and static SRAM.\\
+Memory evidence & Planning limits are a 4-byte normalizer and an exact 64-byte
+canonical image; record measured object and synchronous-stack evidence before
+publication.\\
+Document evidence & Build twice; check metadata, embedded fonts, extraction,
+monochrome output, links, classifications, and rendered pencil legibility.\\
+Physical evidence & Open E1: no sensor, bus, pin, mounting, range, calibration,
+data-ready, safe-state, or bench observation has been established.\\
+\end{tabularx}
+
+\vspace{8pt}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Acceptance item & Record\\
+\midrule
+Commit tested & \hrulefill\\[10pt]
+Toolchain and Mega core & \hrulefill\\[10pt]
+Host and sanitizer result & \hrulefill\\[10pt]
+Flash / static SRAM / stack & \hrulefill\\[10pt]
+Record object / normalizer / image sizes & \hrulefill\\[10pt]
+Golden-image and corruption result & \hrulefill\\[10pt]
+PDF visual and extraction review & \hrulefill\\[10pt]
+Open E1 owner and next action & \hrulefill\\
+\bottomrule
+\end{tabularx}
+
+\lessonbox{\textbf{Stop condition.}
+Do not call this hardware verified. The completed E0 exercise proves a
+deterministic record contract over copied values. Exact powered acquisition,
+physical axes, calibration, observation, and safe state remain separate work.}
+
+\vfill
+\begin{center}
+\textbf{Next: Lesson 068 --- Qualify one configured inertial record source.}
+\end{center}
+\end{document}

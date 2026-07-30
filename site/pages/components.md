@@ -93,7 +93,8 @@ Status meanings:
 | Bounded copied 1-Wire transactions | `OneWireTransactionPolicy` | Host verified; E0 semantic line intent only; E1a/E1b open | [Lesson 064](lessons/064.md) |
 | Qualified four-probe 18B20 set | `Qualified18B20ProbeSetPolicy` | Host verified; E0 copied evidence only; E1a–E1c open | [Lesson 065](lessons/065.md) |
 | Thermal-gradient mapper | `ThermalGradientMapper` | Host verified; E0 copied evidence and volatile intent only; E1a–E1d open | [Lesson 066](lessons/066.md) |
-| Planned motion arc | Normalized inertial records and source qualification | Queued | Lessons 067–069 |
+| Normalized inertial record | `InertialRecordNormalizer`, `InertialRecordCodec` | Host verified; E0 copied evidence only; E1a–E1c open | [Lesson 067](lessons/067.md) |
+| Planned motion-qualification arc | Record qualification and one-source session composition | Active | Lessons 068–069 |
 | Planned characterization arc | Threshold descriptors and supplied sweeps | Queued | Lessons 070–072 |
 | Reserved arcs | Authorized-family replacements pending | Re-scope required | Lessons 073–078 |
 | Planned qualification arc | Bounded load driver and indicator semantics | Queued | Lessons 079–081 |

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="700" viewBox="0 0 1500 700" role="img" aria-labelledby="title desc">
+  <title id="title">Corruption diagnosis lab</title>
+  <desc id="desc">Four scratched record strips are routed to BadLength, BadFraming, BadIntegrity, and BadSemanticValue diagnosis trays.</desc>
+  <rect width="1500" height="700" fill="#f8f7f2"/>
+  <g fill="none" stroke="#383838" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M70 121 L363 102 L369 250 L74 267 Z M405 104 L703 120 L697 267 L399 249 Z M750 118 L1048 102 L1056 252 L758 268 Z M1096 103 L1424 121 L1415 267 L1090 249 Z"/>
+    <path d="M95 179 L342 164 M430 178 L674 192 M777 181 L1023 165 M1121 178 L1392 194"/>
+    <path d="M213 270 L213 365 M551 270 L551 365 M904 270 L904 365 M1254 270 L1254 365"/>
+    <path d="M83 371 Q210 350 348 373 L341 571 Q212 588 88 568 Z M416 373 Q548 350 690 375 L681 570 Q548 590 420 568 Z M756 374 Q902 350 1063 375 L1053 571 Q904 590 760 568 Z M1100 373 Q1250 350 1427 376 L1418 571 Q1252 590 1104 568 Z"/>
+    <path d="M154 141 L279 232 M274 139 L157 234"/>
+    <path d="M838 138 L972 231 M967 137 L842 233"/>
+  </g>
+</svg>
