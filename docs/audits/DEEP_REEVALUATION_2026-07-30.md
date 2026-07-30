@@ -203,6 +203,47 @@ Three failures are systemic across nearly every published page:
    are already clean. Each exercise folds into the replay stage that
    produces its evidence; the standalone sections are deleted.
 
+## Correction to Track 2 — the missing-drawing counts are unreliable
+
+Verified 2026-07-30 by re-profiling every flagged lesson. This repository
+places drawings four different ways, and the lesson auditors only recognised
+the first:
+
+1. `\includegraphics` of a rendered PNG;
+2. `\input` of a standalone TikZ plate from `docs/lessons/assets/`;
+3. an **inline** `tikzpicture` written directly in the lesson's `main.tex`; and
+4. `\begin{overpic}` — a base PNG with LaTeX-drawn labels overlaid.
+
+Counting `% ADK visual:` markers, which the visual policy requires before every
+figure, gives the true count:
+
+| Lesson | Pencil visuals | How they are placed |
+|---|---:|---|
+| 010 | 2 | both inline TikZ |
+| 012 | 2 | one inline, one included |
+| 029 | 1 | included with a TikZ overlay |
+| 030 | 2 | included with TikZ overlays |
+| 032 | 1 | included |
+| 033 | 2 | included |
+| 039 | 1 (+1 schematic) | `overpic` with LaTeX labels |
+
+The specific claim that Lesson 010 "ships with no pencil drawing at all" is
+**false**: it carries two labelled inline TikZ drawings, one naming
+`Mega D22`--`D24`, the `74HC595`, the 7-segment display and `DATA / pin 14`,
+the other a Mega-and-breadboard layout. What is true is that its
+`010-shift-register-pencil.png` asset is unused.
+
+Genuinely unreferenced assets are `009-night-light-pencil`,
+`010-shift-register-pencil`, `011-timed-traffic-pencil`,
+`018-access-trainer-pencil`, `020-motor-intent-layout`, `021-rover-pencil`,
+and `025-infrared-evidence-pencil`. Each is either a superseded draft or an
+intended figure someone forgot to place; deciding which, per asset, is the
+actual Track 2 task — not drawing replacements for art that already exists.
+
+Lessons 029 and 032 remain genuinely thin at one visual each. Treat every
+other "missing drawing" finding in Track 2 as unverified until re-checked with
+all four placement mechanisms.
+
 ## Track 3 — landing and navigation (14 findings)
 
 There is no single obvious first click: the landing offers four equal-weight
