@@ -12,7 +12,7 @@ QUALITY_ARCH_PACKAGES = base-devel clang
 	release-metadata-check release-check museum-case-fingerprint-test \
 	component-qualification-fingerprint-test \
 	module-characterization-fingerprint-test motion-recorder-fingerprint-test \
-	thermal-gradient-fingerprint-test
+	small-indicator-fingerprint-test thermal-gradient-fingerprint-test
 
 quality: quality-fast firmware-size-check package-smoke native-package-smoke \
 	lessons-check site-check
@@ -26,7 +26,8 @@ quality-test: host-test host-test-exceptions host-test-sanitize \
 	route-profile-check component-qualification-fingerprint-test \
 	museum-case-fingerprint-test \
 	module-characterization-fingerprint-test \
-	motion-recorder-fingerprint-test thermal-gradient-fingerprint-test
+	motion-recorder-fingerprint-test small-indicator-fingerprint-test \
+	thermal-gradient-fingerprint-test
 
 serial-log-test:
 	python -m unittest tests/test_serial_log.py
@@ -39,6 +40,9 @@ museum-case-fingerprint-test:
 
 component-qualification-fingerprint-test:
 	python -m unittest tests/test_component_qualification_fingerprint.py
+
+small-indicator-fingerprint-test:
+	python -m unittest tests/test_small_indicator_fingerprint.py
 
 thermal-gradient-fingerprint-test:
 	python -m unittest tests/test_thermal_gradient_fingerprint.py
@@ -81,7 +85,7 @@ firmware-size-check: size-check component-qualification-resource-check \
 	escape-console-resource-check \
 	display-timing-resource-check museum-case-resource-check \
 	module-characterization-resource-check motion-recorder-resource-check \
-	thermal-gradient-resource-check
+	small-indicator-resource-check thermal-gradient-resource-check
 	@echo "Firmware satisfies the recorded $(BOARD_FQBN) budgets."
 
 arduino-lint:

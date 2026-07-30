@@ -1,0 +1,358 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.60in]{geometry}
+\usepackage{booktabs,enumitem,fancyhdr,graphicx,tabularx,titlesec}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{docs/lessons/assets/}{assets/}}
+\hypersetup{pdftitle={ADK Lesson 080: Read Small-Indicator Semantics},
+ pdfauthor={Kevin Shanahan},
+ pdfsubject={Copied polarity, autonomy, channel, and safe-state semantics},
+ pdflang={en-US}}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\textsc{ADK Lesson 080}}\rhead{Small-Indicator Semantics}
+\cfoot{\thepage}\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{2pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.5em}{}
+\newcommand{\lessonbox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{#1}}\end{center}}
+\newcommand{\blankline}{\rule{0.86in}{0.4pt}}
+
+\begin{document}
+\small
+\begin{center}
+ {\Huge\bfseries Read Small-Indicator Semantics}\\[3pt]
+ {\Large A glow, blink, or buzz is evidence only when its meaning is bound}\\[7pt]
+ \fbox{\textbf{E0 COPIED-EVIDENCE REPLAY --- NO PIN, LIGHT, SOUND, OR POWER CLAIM}}
+\end{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 080 --- component & Time & 150--210 minutes\\
+Prerequisite & Lesson 079 intent & Board & compile-only Mega replay\\
+Input & copied drive, request, observation & Observation & named semantic cells\\
+\end{tabularx}
+
+\lessonbox{\textbf{Responsibility.}
+\texttt{SmallIndicatorSemanticsPolicy} interprets one closed indicator
+declaration, one copied Lesson 079 intent, one L080-owned semantic request,
+and one independently attributable observation. It owns no pin, endpoint,
+supply, waveform, scheduler, sensor, display, or storage.}
+
+\section{Separate appearance from meaning}
+A small board that lights or sounds can still conceal its polarity, populated
+resistor, driver, autonomous behavior, or required safe state. A retail label
+does not settle those facts. E0 accepts only copied, correlated declarations
+and observations; it never identifies or energizes a specimen.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.97\linewidth,height=2.38in,keepaspectratio]
+ {080-evidence-boundary-pencil.png}
+
+\small\textit{Alternative text: rough graphite cards represent copied drive
+intent and the independent request/observation evidence entering a semantic
+policy; a result card exits while an unpowered module remains outside E0.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}X X@{}}
+\toprule
+E0 establishes & E0 leaves open\\
+\midrule
+closed kind and channel semantics & exact specimen identity and pin trace\\
+copied polarity and autonomy meaning & voltage, current, brightness, or sound\\
+freshness and correlation rules & waveform timing and physical safe state\\
+deterministic semantic result & GPIO ownership and powered acceptance\\
+\bottomrule
+\end{tabularx}
+
+\newpage
+\section{Use a closed validity table}
+Only the six rows below are valid. The Booleans are exact declarations, not
+minimum requirements. Bits 6--7 are reserved zero.
+
+\begin{tabularx}{\linewidth}{@{}l l l c c c c@{}}
+\toprule
+Kind & Autonomy & Safe state & AH & Mask & R & D\\
+\midrule
+Active Buzzer & follows & drive inactive & 1 & Sound & 0 & 1\\
+Active Buzzer & autonomous & unpowered & 1 & Sound & 0 & 1\\
+Traffic Light & follows & drive inactive & 1 & R/A/G & 1 & 0\\
+Dual Color LED & follows & drive inactive & 1 & R/G & 1 & 0\\
+Auto Flash LED & autonomous & unpowered & 1 & R/G/B & 1 & 0\\
+Voltage Indicator & observation only & high impedance & 1 & Voltage & 1 & 0\\
+\bottomrule
+\end{tabularx}
+
+AH means active high; R and D mean declared populated resistor and driver.
+The masks are Red \(=01\), Amber \(=02\), Green \(=04\), Blue \(=08\),
+Sound \(=10\), and Voltage \(=20\), all hexadecimal.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=2.45in,keepaspectratio]
+ {080-closed-kinds-pencil.png}
+
+\small\textit{Alternative text: six hand-drawn index cards show the only
+accepted combinations of indicator kind, channel marks, autonomy, and safe
+state; a crossed-out generic three-pin card is outside the set.}
+\end{center}
+
+Prediction: may a descriptor add Blue to a Traffic Light because the hardware
+happens to have another LED? \blankline. Explain: \hrulefill.
+
+\section{Bind the driver, not just its familiar fields}
+The copied drive must match specimen, revision, electrical evidence, policy
+configuration, lifecycle, session, run, step, and request correlation. It
+must also carry the expected full Lesson 079 descriptor digest. That digest
+binds family, source packet, topology, protection, and every budget field that
+partial comparison would miss. Digest zero is valid; it does not mean absent.
+
+\newpage
+\section{Select meaning before observing it}
+\texttt{SmallIndicatorSemanticRequest} is the L080-owned copied authority for
+the expected semantic selection. Its nonzero request identity is repeated by
+the observation and result. The selection never comes from the observation
+being judged: otherwise a multichannel observation could declare the color
+it was meant to prove.
+
+Selected, observed, and semantic masks must be subsets of the declared mask.
+A follows-drive request selects exactly one declared channel while drive is
+active and zero while off. Autonomous requests select the complete declared
+mask as enable authority; their observations may report a nonzero declared
+subset. Observation-only requests select zero and never gain drive authority.
+Inactive evidence uses zero.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.97\linewidth,height=2.40in,keepaspectratio]
+ {080-mask-semantics-pencil.png}
+
+\small\textit{Alternative text: a pencil-drawn mask worksheet compares
+declared, request-selected, and independently observed channel squares for
+follows-drive, autonomous, and observation-only cases; reserved squares are
+crossed out.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Observation & Canonical observation fields & Semantic check\\
+\midrule
+\texttt{NotObserved} & mask 0; level/transition/safe false; OK & incomplete\\
+\texttt{Inactive} & observed 0 & must agree with the semantic case\\
+\texttt{Active} & nonzero declared subset & may expose semantic disagreement\\
+\texttt{Alternating} & nonzero declared subset & autonomy rules classify it\\
+\texttt{Fault} & mask 0; level/transition/safe false; non-OK & producer fault\\
+\bottomrule
+\end{tabularx}
+
+Every unlisted structural combination is malformed and cannot mutate state.
+Within the listed Active and Alternating rows, level, transition, and
+safe-state values deliberately remain broad enough to expose reachable
+semantic disagreements. \texttt{copiedLevelHigh} should equal the nonzero
+mask for single-channel Buzzer and Voltage rows; a contrary value is a
+\texttt{PolarityMismatch}. It should be false for multichannel kinds; a true
+value is likewise a reachable mismatch, not erased during parsing. No mask
+implies a pin count or wiring topology.
+
+\section{Keep autonomous behavior explicit}
+An Auto Flash LED does not become “active” merely because drive intent was
+admitted. Its copied observation must show a declared nonzero subset and an
+autonomous transition. Conversely, transition evidence on a follows-drive
+Traffic Light is unexpected autonomy. E0 records only that a transition was
+copied; cadence, duty, brightness, color accuracy, and waveform remain open.
+
+\newpage
+\section{Treat three streams and timing checks independently}
+The request and observation have distinct attributable producer streams:
+each has its own latched source/configuration and contiguous sequence. A
+shared policy sequence orders apply and cancel. The first accepted apply uses
+one in all three streams; each then advances independently. Wrap from maximum
+to zero is exhaustion, not a restart. A cancel advances only the policy
+stream and must use request-producer authority.
+
+The caller supplies session start, request time, observation time, and current
+time. The policy reads no clock. It enforces
+\(startedAt \le requestedAt \le observedAt \le now\) with forward modular
+half-range comparisons. Warm-up is computed from current time minus session
+start; settling from observation time minus request time. No copied
+``satisfied'' Boolean substitutes. Age equal to the declared maximum is
+current; one tick older is stale.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.97\linewidth,height=2.36in,keepaspectratio]
+ {080-independent-gates-pencil.png}
+
+\small\textit{Alternative text: a graphite row of separate gate cards checks
+drive admission, warm-up, settling, freshness, polarity, autonomy, semantic
+agreement, and safe state; no card is allowed to stand in for another.}
+\end{center}
+
+\begin{enumerate}
+ \item A safe-state observation does not prove drive admission.
+ \item A fresh observation does not prove warm-up or settling.
+ \item An admitted drive does not prove optical or acoustic behavior.
+ \item Missing observation is incomplete; it never means inactive.
+\end{enumerate}
+
+Known-zero warm-up or settling requires no delay. Otherwise both computed
+checks must pass independently. Safe-state evidence is independent again:
+\texttt{DriveInactive}, \texttt{HighImpedanceRequired}, and
+\texttt{UnpoweredRequired} are semantic declarations whose physical truth
+still requires a later exact fixture and observed bench record.
+
+\newpage
+\section{Map every Lesson 079 terminal exactly}
+Only these Lesson 079 state/reason pairs are supported; activity, output
+level, and producer status must also be canonical. Every unlisted tuple is
+malformed rather than silently generalized.
+
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Drive state/reason & L080 result before observation semantics\\
+\midrule
+\texttt{Off/None} & evaluate only a zero selection\\
+\texttt{Off/Expired} & \texttt{Rejected/DriverExpired}\\
+\texttt{Requested/None} & evaluate nonzero follows/autonomous selection\\
+\texttt{Rejected/SourceIneligible} & \texttt{Rejected/SourceIneligible}\\
+\texttt{Rejected/BudgetExceeded} & \texttt{Rejected/DriverBudgetExceeded}\\
+\texttt{Rejected/BaseBudgetInsufficient} & \texttt{Rejected/DriverBaseBudgetInsufficient}\\
+\texttt{Rejected/FlybackMissing} & \texttt{Rejected/DriverFlybackMissing}\\
+\texttt{Rejected/SequenceDiscontinuity} & \texttt{Rejected/DriverSequenceDiscontinuity}\\
+\texttt{Rejected/TimestampDiscontinuity} & \texttt{Rejected/DriverTimestampDiscontinuity}\\
+\texttt{Rejected/CapacityExceeded} & \texttt{Rejected/DriverCapacityExceeded}\\
+\texttt{Cancelled/Cancelled} & \texttt{Cancelled/DriverCancelled}\\
+\texttt{Fault/ProducerFault} & \texttt{ProducerFault/ProducerFault}\\
+\texttt{Fault/Cancelled} & \texttt{ProducerFault/DriverCancelled}\\
+\texttt{Shutdown/None} & \texttt{Shutdown/DriverShutdown}\\
+\bottomrule
+\end{tabularx}
+
+\section{Apply failure precedence}
+\begin{tabularx}{\linewidth}{@{}r l X@{}}
+\toprule
+Order & Condition & Result\\
+\midrule
+1 & malformed structure or enum & API rejection; no mutation\\
+2 & lifecycle or identity mismatch & API rejection; no mutation\\
+3 & cancel or shutdown & all-off/cancel path\\
+4 & request, drive, observation producer failure & first attributable fault\\
+5 & mapped drive terminal & exact named result above\\
+6 & stream/time discontinuity or stale & named rejection\\
+7 & warm-up, settling, missing observation & incomplete result\\
+8 & polarity/autonomy/mask disagreement & named semantic rejection\\
+9 & safe-state disagreement & \texttt{SafeStateMismatch}\\
+10 & complete matching evidence & accepted result\\
+\bottomrule
+\end{tabularx}
+
+\newpage
+\section{Replay without energizing a module}
+The Mega sketch builds copied descriptors and fixtures for all five concrete
+kinds. It applies correlated drive intents, semantic requests, and
+observations, then copies results into named volatile cells. It performs no GPIO, timing,
+waveform, optical, acoustic, or supply operation.
+
+\begin{enumerate}
+ \item \textbf{Predict} disposition, reason, semantic mask, autonomy flag, and
+       safe-state flag before each call.
+ \item \textbf{Observe} named volatile cells with a debugger, simulator, or
+       disassembly. Serial is optional and never sole evidence.
+ \item \textbf{Interpret} agreement as deterministic E0 semantic evidence,
+       never as proof that a physical indicator lit, blinked, or sounded.
+\end{enumerate}
+
+\lessonbox{\textbf{Atomicity experiment.}
+Place recognizable canaries around the output result. Submit a changed
+duplicate, digest mismatch, reserved mask bit, a gap in each of the three
+streams, future time, and malformed observation. Confirm that each structural
+or correlation API rejection preserves the policy, output, and canaries.
+Contrast a terminal chronology or well-formed semantic disagreement, which
+commits an attributable rejected result for byte-identical replay.}
+
+\section{Diagnose copied evidence}
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Symptom & Inspect first & Interpretation\\
+\midrule
+non-OK API status & encoding, lifecycle, full correlation & no result mutation\\
+\texttt{DriveNotAdmitted} & Lesson 079 state/reason & semantics gain no authority\\
+\texttt{WarmupUnsatisfied} & start and supplied observation time & evidence arrived too soon\\
+\texttt{Stale} & observation age boundary & copied evidence is too old\\
+\texttt{AutonomousWaveformMissing} & transition flag and state & autonomous claim lacks change evidence\\
+\texttt{UnexpectedAutonomy} & descriptor row and transition & follows-drive behavior disagrees\\
+\texttt{SafeStateMismatch} & distinct safe-state observation & another check cannot substitute\\
+\texttt{ObservationMismatch} & selected/observed masks & channel meaning disagrees\\
+\bottomrule
+\end{tabularx}
+
+\newpage
+\section{Test the complete contract}
+\begin{itemize}
+ \item Exhaust all enum encodings and every kind/autonomy/safe-state/polarity/
+       population/mask cross-product.
+ \item Exercise exact request selections for all five fixtures, every
+       structurally attributable observation row, and every reachable
+       level/transition/safe-state disagreement.
+ \item Mutate every driver correlation field and the full descriptor digest;
+       retain literal digest goldens independent of production code.
+ \item Test computed warm-up/settling, freshness equality/one-over, rollover,
+       half-range time, all three streams, independently latched request and
+       observation sources, duplicates, gaps, cancellation, and shutdown.
+ \item Test every canonical and malformed Lesson 079 mapping tuple.
+ \item Cross producer, stop, stale, warm-up, settling, polarity, autonomy,
+       observation, and safe-state failures at every precedence boundary.
+\end{itemize}
+
+\section{Open acceptance cards}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X@{}}
+E0 software & Pending final host/sanitizer, style/header, Mega, exact resource,
+independent review, publication, and terminal architecture gates.\\
+E1 identity & Open: both-face photographs, markings, primary sources, traced
+pin order/topology, passive measurements, energy class, and reviewed exact
+descriptor. E1 includes no powered observation.\\
+E2a/E2b fixture & Open: exact indicator/driver/adapter, authoritative
+schematic, limits, resource map, non-Serial observation, rollback, independent
+power removal, safe-state proof, and recorded bench acceptance.\\
+Physical result & Open. This PDF contains no circuit, powered observation,
+supported-specimen claim, or physical safe-state result.\\
+\end{tabularx}
+
+\section{Resource boundary pending final measurement}
+The controlling exact targets are 14 KiB flash, 1,024 B static SRAM, 448 B
+synchronous stack, a 384 B policy, and a 256 B evidence value; hard limits are
+20 KiB, 1,536 B, 640 B, 512 B, and 384 B respectively. Final ordinary and
+exact values, fingerprint, and any independent target-miss disposition must
+replace this provisional paragraph before Lesson 080 promotion. No estimated
+number is presented as measurement.
+
+\newpage
+\section{Exercises}
+\begin{enumerate}
+ \item Explain why a passing Traffic Light mask says nothing about pin count.
+ \item Construct one autonomous observation that is structurally valid but
+       yields \texttt{AutonomousWaveformMissing}.
+ \item Explain why the full Lesson 079 digest is required in addition to
+       inspectable specimen and policy fields.
+ \item Explain why request and observation sequences cannot be collapsed into
+       the policy operation sequence.
+\end{enumerate}
+
+\lessonbox{\textbf{Acceptance record --- leave open until observed.}\\
+Exact specimen and revision: \hrulefill\\
+Primary-source packet and reviewer: \hrulefill\\
+Fixture, current limit, and independent power removal: \hrulefill\\
+Resource-acquisition observation: \hrulefill\\
+Independent visual/acoustic path and safe-state observation: \hrulefill\\
+Bench date, result, and reviewer: \hrulefill}
+
+\section{Promotion boundary}
+Before publication, replace provisional resources with exact fingerprint-bound
+evidence, complete independent terminal review, re-read the work queue, and
+confirm that Lesson 081 consumes this policy without hidden ownership,
+identity exceptions, duplicated lifecycle rules, or relaxed semantics. Any
+such strain requires a bounded design remediation, not another option flag.
+
+\vfill
+\footnotesize
+HTML companion: \url{https://spincyc.github.io/adk/lessons/080/}. The HTML
+route remains the primary accessible format; this PDF is not tagged and makes
+no PDF/UA claim.
+\end{document}

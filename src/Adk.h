@@ -101,6 +101,7 @@
 #include "seven_segment_glyph.h"
 #include "shift_register.h"
 #include "simon.h"
+#include "small_indicator_semantics_policy.h"
 #include "status.h"
 #include "storage.h"
 #include "telemetry_packet.h"

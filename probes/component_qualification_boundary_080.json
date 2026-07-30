@@ -1,0 +1,17 @@
+{
+  "evidence_hard": 384,
+  "evidence_symbol": "smallIndicatorObservationBytes",
+  "evidence_target": 256,
+  "fingerprint_contract": "component-qualification-resource-v1-l080",
+  "flash_hard": 20480,
+  "flash_target": 14336,
+  "lesson": "080",
+  "object_hard": 512,
+  "object_symbol": "smallIndicatorSemanticsPolicyBytes",
+  "object_target": 384,
+  "sketch": "examples/Lesson080SmallIndicatorSemantics",
+  "sram_hard": 1536,
+  "sram_target": 1024,
+  "stack_hard": 640,
+  "stack_target": 448
+}

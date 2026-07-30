@@ -2,10 +2,15 @@
 	display-timing-resource-check escape-console-resource-check \
 	ir-resource-check museum-case-resource-check \
 	module-characterization-resource-check motion-recorder-resource-check \
-	thermal-gradient-resource-check
+	small-indicator-resource-check thermal-gradient-resource-check
 
 component-qualification-resource-check: arduino-check
 	python3 scripts/check_component_qualification_resource_probe.py \
+		--arduino-cli "$(ARDUINO_CLI)" \
+		--fqbn "$(BOARD_FQBN)"
+
+small-indicator-resource-check: arduino-check
+	python3 scripts/check_small_indicator_resource_probe.py \
 		--arduino-cli "$(ARDUINO_CLI)" \
 		--fqbn "$(BOARD_FQBN)"
 

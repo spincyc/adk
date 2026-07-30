@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="450" viewBox="0 0 1200 450">
+<defs><filter id="r"><feTurbulence baseFrequency=".012" numOctaves="2" seed="81" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter><style>.c{fill:#fbfbfb;stroke:#383838;stroke-width:4;filter:url(#r)}.h,.t,.x{font-family:DejaVu Sans,sans-serif}.h{font-size:23px;font-weight:bold}.t{font-size:19px}.x{font-size:21px;font-style:italic}.s{fill:none;stroke:#555;stroke-width:4;filter:url(#r)}</style></defs><rect width="1200" height="450" fill="white"/>
+<g transform="rotate(-1 200 100)"><rect class="c" x="25" y="25" width="345" height="120"/></g>
+<g transform="rotate(1 600 100)"><rect class="c" x="425" y="25" width="345" height="120"/></g>
+<g transform="rotate(-1 1000 100)"><rect class="c" x="825" y="25" width="345" height="120"/></g>
+<g transform="rotate(1 200 270)"><rect class="c" x="25" y="185" width="345" height="120"/></g>
+<g transform="rotate(-1 600 270)"><rect class="c" x="425" y="185" width="345" height="120"/></g>
+<g><rect class="c" x="825" y="185" width="345" height="120"/><path class="s" d="M840 200l315 92M1155 200L840 292"/></g>
+<g class="s">
+ <circle cx="150" cy="82" r="27"/><path d="M180 69q35 13 0 27m20-43q58 29 0 58"/>
+ <circle cx="520" cy="85" r="18"/><circle cx="595" cy="85" r="18"/><circle cx="670" cy="85" r="18"/>
+ <circle cx="950" cy="85" r="26"/><circle cx="1040" cy="85" r="26"/><path d="M980 85h30"/>
+ <path d="M115 245l18-8 8-18 8 18 18 8-18 8-8 18-8-18zM205 245l18-8 8-18 8 18 18 8-18 8-8 18-8-18z"/>
+ <circle cx="595" cy="245" r="38"/><path d="M595 207v76m-38-38h76"/>
+ <circle cx="900" cy="245" r="8"/><circle cx="990" cy="245" r="8"/><circle cx="1080" cy="245" r="8"/><path d="M900 253v30m90-30v30m90-30v30"/>
+</g>
+<path class="s" d="M55 390c170-22 337 16 510-4s342 13 575-2"/>
+</svg>

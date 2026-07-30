@@ -1085,6 +1085,50 @@ target passes. The exact boundary is fingerprinted as
 `4972bd9733d608d52ac81bfb1320e61088b10c3e59910f3be8c439b5838d33e7`.
 These measurements do not establish physical behavior.
 
+## Small-indicator semantics policy
+
+`SmallIndicatorSemanticsPolicy` is the Lesson 080 E0 component. It interprets
+one copied `LowSideDriveIntent`, one attributable
+`SmallIndicatorSemanticRequest`, and one independently attributable copied
+observation against an immutable descriptor and caller-supplied time. Its
+public product is closed to `ActiveBuzzer`, `TrafficLight`, `DualColorLed`,
+`AutoFlashLed`, and `VoltageIndicator`; it is not a generic module adapter.
+
+The exact validity table binds kind, follows-drive/autonomous/observation-only
+semantics, safe-state meaning, active-high declaration, populated
+resistor/driver declarations, and a bounded six-bit color/sound/voltage mask.
+The semantic request owns the selected mask: follows-drive chooses one exact
+channel, autonomous enable chooses the complete declared mask, and
+observation-only chooses zero. Structurally valid observations deliberately
+retain reachable polarity, autonomy, selection, and safe-state disagreement
+for named classification.
+Full Lesson 079 descriptor-digest correlation prevents partial specimen fields
+from hiding source, family, topology, or budget drift. Request and observation
+have independent source/configuration/sequence/time/status streams; a third
+policy stream orders apply and cancel. Supplied chronology computes warm-up,
+settling, and freshness. Exact Lesson 079 terminal pairs map before semantic
+checks, and plausible observations cannot erase a producer fault or drive
+terminal result.
+
+- Small-indicator semantics policy:
+  [planned source](https://github.com/spincyc/adk/blob/main/src/small_indicator_semantics_policy.h),
+  [planned implementation](https://github.com/spincyc/adk/blob/main/src/small_indicator_semantics_policy.cpp),
+  [planned host tests](https://github.com/spincyc/adk/blob/main/tests/small_indicator_semantics_policy_test.cpp),
+  and [Lesson 080 reference](lessons/080.md)
+
+The policy owns no endpoint, GPIO pin, clock, scheduler, waveform, supply,
+indicator, light, sound, display, storage, or powered fixture. `Accepted`
+means only that copied evidence satisfies the policy. E1 unpowered identity
+work, E2a direct current-limited fixtures, E2b switched/external/inductive
+fixtures, E2c presentation or persistence, and every physical bench result
+remain open.
+
+The 14/20 KiB flash, 1,024/1,536-byte static SRAM, 448/640-byte synchronous
+stack, 384/512-byte policy, and 256/384-byte evidence target/hard pairs are
+provisional budgets, not measurements. Final support requires ordinary Mega
+and exact fingerprint-bound resource evidence plus the remaining lesson,
+review, PDF, site, and packaging gates.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.
