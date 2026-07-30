@@ -75,14 +75,17 @@ work, not support or bench-verification claims:
 
 | Lessons | Planned focus | Project |
 |---:|---|---|
-| 073–075 | Authorized-family replacements pending | Project pending |
+| 073–075 | Copied RTC Transaction Evidence and Qualified Clock Observation | Inert Time-Warp Detective Desk |
 | 076–078 | Authorized-family replacements pending | Project pending |
 | 079–081 | Bounded load driver and indicator semantics | Component qualification bench |
 
 Each later three-lesson arc requires an implementation-depth brief before code
-begins. Lessons 073–078 retain their numbers but require authorized-family
-subjects before activation. The published 070–072 arc is E0 policy, not powered
-characterization or specimen acceptance.
+begins. Lessons 073–075 are selected as a planned E0 RTC-integrity arc, but
+remain unimplemented and unsupported: they claim no powered RTC, clock
+accuracy, display, persistence, or bench acceptance. Lessons 076–078 retain
+their numbers but still require authorized-family subjects before activation.
+The published 070–072 arc is E0 policy, not powered characterization or
+specimen acceptance.
 
 The [canonical curriculum](docs/CURRICULUM.md) owns lesson numbers,
 prerequisites, and acceptance gates. [Project briefs](docs/PROJECTS.md) explain

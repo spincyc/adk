@@ -153,9 +153,17 @@ These entries are deliberately linkless. A planned subject becomes a link only
 after its implementation, deterministic tests, Mega example, size evidence,
 HTML reference, and PDF lesson exist.
 
-- **073–081:** authorized-family replacements for the excluded DS1302, BMP180,
-  PCF8591, and color-sensor subjects, followed by a bounded low-side driver,
-  indicator semantics, and an inert component-qualification bench.
+- **073–075:** **Copied RTC Transaction Evidence**, **Qualified Clock
+  Observation**, and the **Inert Time-Warp Detective Desk**. This selected E0
+  arc uses copied DS1307-family evidence only; DS3231 remains a separate,
+  independently gated variant.
+- **076–078:** authorized-family replacements remain pending for the excluded
+  color-sensor arc.
+- **079–081:** a bounded low-side driver, indicator semantics, and an inert
+  component-qualification bench.
+
+The historical DS1302, BMP180, and PCF8591 subjects remain excluded; selecting
+Lessons 073–075 does not restore them or claim a powered RTC.
 
 Exact specimen identity, ratings, primary sources, and bench evidence remain
 gates. Planned coverage does not mean an unidentified kit module is supported.
