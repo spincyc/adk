@@ -71,3 +71,4 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	1	Lesson070ThresholdDescriptor	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	4564	8192	684	1024
 1	1	Lesson071Characterization	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	10200	12288	1160	1536
 1	1	Lesson072ModuleCharacterizationBench	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	24860	32768	1998	2048
+1	1	Lesson079BoundedLowSideDriver	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	11560	14336	561	1024

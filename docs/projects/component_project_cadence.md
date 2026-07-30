@@ -981,11 +981,20 @@ or support claim.
 
 ### 079 — Bounded low-side load driver
 
-Add a low-side-driver intent and endpoint for an identified PN2222 or S8050
-specimen. Base current, load-current ceiling, active polarity, flyback policy,
-resource ownership, and all-off rollback are configuration. Tests use a fake
-endpoint; first hardware uses only a current-limited LED or identified small
-inductive fixture under the E2 gate.
+Published at E0 as `BoundedLowSideDriverPolicy`: immutable copied declarations,
+attributable requests, supplied time, checked integer current arithmetic,
+bounded duty history, and stop-dominant all-off rollback produce logical
+active-high intent only. The policy owns no endpoint, pin, timer, transistor,
+diode, supply, load, or powered fixture. Exact unpowered identity work remains
+E1-open; any separately qualified transistor-switched fixture remains E2b-open.
+The canonical Mega replay measures 11,560 bytes flash and 561 bytes static
+SRAM. Exact no-LTO evidence measures 12,974 bytes flash, 561 bytes static SRAM,
+320 bytes conservative synchronous stack, a 240-byte policy, and a 96-byte
+descriptor, leaving 7,183 bytes residual SRAM. Flash and policy-size target
+misses are independently reviewed below their hard limits; every other target
+passes. The exact boundary fingerprint is
+`4972bd9733d608d52ac81bfb1320e61088b10c3e59910f3be8c439b5838d33e7`.
+These measurements establish no physical behavior.
 
 ### 080 — Small indicator-module semantics
 

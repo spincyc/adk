@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="480" viewBox="0 0 1200 480">
+  <defs>
+    <filter id="rough" x="-3%" y="-5%" width="106%" height="110%"><feTurbulence baseFrequency=".015" numOctaves="2" seed="179" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.3"/></filter>
+    <pattern id="paper" width="21" height="18" patternUnits="userSpaceOnUse"><path d="M2 14l8-2m4-7l6-2M1 4l4-1" stroke="#ddd" stroke-width=".7" opacity=".7"/></pattern>
+    <style>.b{fill:#fbfbfb;stroke:#333;stroke-width:4;stroke-linejoin:round;filter:url(#rough)}.a{fill:none;stroke:#444;stroke-width:5;stroke-linecap:round;filter:url(#rough)}.t,.h,.n{fill:#292929;font-family:DejaVu Sans,sans-serif}.h{font-size:28px;font-weight:bold}.t{font-size:23px}.n{font-size:20px;font-style:italic}</style>
+  </defs>
+  <rect width="1200" height="480" fill="white"/>
+  <rect width="1200" height="480" fill="url(#paper)" opacity=".45"/>
+  <g>
+    <rect class="b" x="35" y="60" width="225" height="130" rx="10"/><text class="h" x="70" y="105">load request</text><text class="t" x="74" y="150">requested µA</text>
+    <path class="a" d="M275 125h75m-22-22 25 22-25 22"/>
+    <rect class="b" x="370" y="35" width="300" height="180" rx="10"/><text class="h" x="411" y="80">required base</text>
+    <text class="t" x="410" y="124">multiply widened</text><text class="t" x="410" y="160">divide, round up</text><text class="n" x="410" y="195">never use typical gain</text>
+    <path class="a" d="M688 125h75m-22-22 25 22-25 22"/>
+    <rect class="b" x="785" y="35" width="370" height="180" rx="10"/><text class="h" x="830" y="80">admitted load</text>
+    <text class="t" x="825" y="124">minimum of supply, device,</text><text class="t" x="825" y="160">fixture, and base support</text><text class="n" x="825" y="195">supported current rounds down</text>
+    <rect class="b" x="105" y="280" width="305" height="125" rx="10"/><text class="h" x="150" y="325">resistor limit</text><text class="t" x="145" y="368">voltage drop ÷ ohms</text>
+    <path class="a" d="M425 340c124-2 186-55 300-120"/>
+    <rect class="b" x="505" y="292" width="260" height="112" rx="10"/><text class="h" x="550" y="336">GPIO ceiling</text><text class="t" x="550" y="376">declared µA only</text>
+    <path class="a" d="M780 340c98-4 142-56 175-115"/>
+    <path class="a" d="M875 435c38-26 72-25 108-1 42 28 79 28 134-3"/>
+    <text class="n" x="600" y="455" text-anchor="middle" style="font-size:18px">overflow, zero divisor, or any exceeded ceiling means OFF</text>
+  </g>
+</svg>

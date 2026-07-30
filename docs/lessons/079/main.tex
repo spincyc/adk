@@ -1,0 +1,334 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.60in]{geometry}
+\usepackage{amsmath,booktabs,enumitem,fancyhdr,graphicx,tabularx,titlesec,xcolor}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{docs/lessons/assets/}{assets/}}
+\hypersetup{
+ pdftitle={ADK Lesson 079: Bounded Low-Side Drive Intent},
+ pdfauthor={Kevin Shanahan},
+ pdfsubject={Conservative current arithmetic and bounded all-off intent over copied declarations},
+ pdflang={en-US}}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\textsc{ADK Lesson 079}}\rhead{Bounded Low-Side Intent}
+\cfoot{\thepage}\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{2pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.5em}{}
+\newcommand{\lessonbox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{#1}}\end{center}}
+\newcommand{\blankline}{\rule{0.80in}{0.4pt}}
+\newcommand{\longblank}{\rule{1.45in}{0.4pt}}
+
+\begin{document}
+\small
+\begin{center}
+ {\Huge\bfseries Bound Low-Side Drive Intent}\\[3pt]
+ {\Large Make every requested microamp earn admission}\\[7pt]
+ \fbox{\textbf{E0 COPIED-DECLARATION REPLAY --- NO PIN, POWER, OR SWITCHING CLAIM}}
+\end{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 079 --- component & Time & 150--210 minutes\\
+Prerequisite & fixed-point arithmetic and supplied time & Board & compile-only Mega replay\\
+Input & one declaration and copied requests & Observation & named intent cells\\
+\end{tabularx}
+
+\lessonbox{\textbf{Responsibility.}
+\texttt{BoundedLowSideDriverPolicy} validates one immutable declaration,
+performs checked conservative current and duty arithmetic, and publishes
+bounded active-high or all-off logical intent. It owns no GPIO, endpoint,
+transistor, diode, load, supply, timer, clock, or storage.}
+
+\section{Start with authority, not a transistor picture}
+This lesson deliberately contains no circuit or schematic. A familiar part
+number does not fix pin order, gain, package, voltage, current, carrier
+topology, or whether the populated device is genuine. PN2222 and S8050 remain
+separate variants. The E0 policy can check copied declarations; it cannot
+identify or energize a physical specimen.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.97\linewidth,height=2.35in,keepaspectratio]
+ {079-policy-boundary-pencil.png}
+
+\small\textit{Alternative text: a rough graphite declaration card flows
+through a bounded software policy into a logical intent card; a heavy
+underline says the E0 boundary owns no physical hardware or clock.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}X X@{}}
+\toprule
+E0 establishes & E0 leaves open\\
+\midrule
+declaration structure and correlation & exact transistor, diode, load, and pinout\\
+checked current-budget arithmetic & voltage, current, switching, and temperature\\
+bounded active-high logical intent & GPIO ownership and observed output level\\
+deterministic off/fault intent & independent power removal and safe-state proof\\
+\bottomrule
+\end{tabularx}
+
+\newpage
+\section{Declare one topology precisely}
+The sole modeled topology is an active-high bare-NPN low-side drive.
+\texttt{outputLevelHigh} means the logical level a future endpoint would be
+asked to produce; it is never a pin observation. There is no active-low,
+high-side, PNP, MOSFET, Darlington, H-bridge, relay-module, or generic
+three-pin interpretation.
+
+A resistive-indicator declaration requires flyback to be not required and
+every diode field to be canonically absent. An inductive-inert declaration
+requires a present diode plus nonzero identity, revision, orientation,
+return, reverse-voltage, and forward-current fields. E0 checks completeness
+and conservative rating arithmetic only; it does not authenticate placement
+or observe clamping.
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Declaration & Structurally valid? & Physical authority?\\
+\midrule
+resistive, diode fields all absent & yes & none\\
+resistive with a stray diode identity & no & none\\
+inductive with one missing diode field & no & none\\
+complete copied inductive declaration & possibly & still none\\
+\bottomrule
+\end{tabularx}
+
+Prediction: does a complete inductive declaration prove that a diode is
+installed in the correct direction? \blankline. Explain: \hrulefill.
+
+\section{Bind the whole declaration}
+Schema, specimen family and specimen identity, revisions, evidence source,
+configuration, topology, protection, every current/voltage bound, resistor
+tolerance, maximum duration, duty window, and duty limit enter one canonical
+descriptor identity digest. Zero is a valid digest value, not a missing-value
+sentinel.
+
+An accepted request additionally binds lifecycle generation, session, run,
+step, request, source, source-configuration revision, sequence, observation
+time, duration, active state, requested current, and complete producer status.
+Identity drift, changed duplicates, gaps, regressions, or half-range
+ambiguity reject atomically.
+
+\newpage
+\section{Do conservative current arithmetic}
+All current values are integer microamps, voltage values are integer
+millivolts, and resistance is integer ohms. Multiplications widen before use.
+Required base current rounds up; load current supported by admitted base
+current rounds down.
+
+\[
+ I_{\mathrm{base,req}} =
+ \left\lceil\frac{I_{\mathrm{load,req}}G_d}{G_n}\right\rceil
+\qquad
+ I_{\mathrm{base,res}} =
+ \left\lfloor\frac{\max(0,V_{\mathrm{OH,min}}-V_{\mathrm{BE,max}})1000}{R_B}\right\rfloor
+\]
+\[
+ I_{\mathrm{load,adm}} = \min(I_{\mathrm{load,req}},
+ I_{\mathrm{supply,avail}}, I_{\mathrm{device}},
+ I_{\mathrm{fixture}}, \lfloor I_{\mathrm{base,adm}}G_n/G_d\rfloor)
+\]
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.97\linewidth,height=2.36in,keepaspectratio]
+ {079-current-arithmetic-pencil.png}
+
+\small\textit{Alternative text: a hand-drawn load request passes through an
+upward-rounded required-base calculation into a downward-rounded admitted
+load calculation; resistor, GPIO, supply, device, and fixture ceilings all
+feed the decision.}
+\end{center}
+
+\begin{enumerate}
+ \item With requested load \(20{,}001\,\mu\mathrm{A}\), gain numerator 10,
+       and denominator 1, required base current is \blankline.
+ \item Available supply is supply limit minus reserved supply. If reserved
+       exceeds the limit, should arithmetic saturate to zero? \blankline.
+ \item If every ceiling passes except fixture load, the result is
+       \longblank.
+\end{enumerate}
+
+Zero divisors or required ceilings, overflow, underflow, an unrepresentable
+result, and any exceeded binding ceiling never become a plausible partial
+command. They reject without mutation and publish no hardware fact.
+
+\newpage
+\section{Bound duration and rolling duty}
+An active request supplies a nonzero duration no greater than the configured
+maximum. Admission freezes \texttt{expiresAt}; replay never extends it.
+\texttt{update(now)} receives time from the caller and returns to canonical
+off at deadline equality or later. The policy reads no clock.
+
+Eight fixed history entries retain admitted intervals. Early off or
+cancellation shortens the current interval, but the used interval remains in
+the rolling duty history. Old intervals are pruned only when their ends lie
+at or before the window start.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.97\linewidth,height=2.28in,keepaspectratio]
+ {079-duty-window-pencil.png}
+
+\small\textit{Alternative text: a graphite time line shows an early-closed
+interval, retained history, supplied now, and a candidate interval; a brace
+marks that only rolling-window overlaps count toward duty.}
+\end{center}
+
+The widened admission inequality is
+\[
+ \mathrm{reservedTicks}\times1000
+ \leq \mathrm{windowTicks}\times\mathrm{maximumDutyPermille}.
+\]
+Equality passes; one tick or permille over rejects. A ninth still-overlapping
+interval reports \texttt{Rejected/CapacityExceeded}, preserves all eight
+history entries, and publishes off intent for that request. This finite
+boundary is a domain result, not hidden allocation.
+
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Case & Expected interpretation\\
+\midrule
+deadline minus one tick & request may remain active\\
+deadline exactly & \texttt{Expired}, canonical off\\
+duty equality & admitted if every other check passes\\
+one unit over duty & rejected, history remains attributable\\
+\bottomrule
+\end{tabularx}
+
+\newpage
+\section{Make all-off a complete result}
+Logical inactive requests, rejection, cancellation, producer fault, expiry,
+reset, and shutdown all publish active-high topology's canonical off intent:
+\texttt{logicalActive=false}, \texttt{outputLevelHigh=false}, and zero
+admitted currents. The reason and producer status remain attributable.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=2.25in,keepaspectratio]
+ {079-all-off-pencil.png}
+
+\small\textit{Alternative text: sketched rejection, cancellation, and expiry
+cards converge on one canonical off card with false logical activity, low
+output intent, and zero admitted current; the future physical endpoint is
+shown as absent.}
+\end{center}
+
+Cancellation uses a fully correlated control value. If off is confirmed, the
+terminal result is \texttt{Cancelled}. If an attributable producer failure
+prevents confirming off, the result is \texttt{Fault}; cancellation remains
+the cause and cannot hide failed safe return. A well-formed producer fault is
+domain evidence and may return operation status OK while intent remains off.
+
+\lessonbox{\textbf{Atomicity experiment.}
+Place recognizable canaries around the output intent. Submit a changed
+duplicate, a sequence gap, a backward time, and a malformed request. Confirm
+that every API rejection leaves the policy, output, and canaries byte-for-byte
+unchanged. Then contrast a valid budget rejection, which commits an
+attributable off/rejected domain result.}
+
+\section{Replay without touching hardware}
+The Mega sketch constructs one copied descriptor, begins one session, applies
+bounded active and off requests, exercises one rejection and expiry, and
+copies results into named volatile cells.
+
+\begin{enumerate}
+ \item \textbf{Predict} state, reason, output level, required base current,
+       admitted load current, and expiry before each call.
+ \item \textbf{Observe} the named volatile intent cells with a debugger,
+       simulator, or disassembly. Serial is optional and never sole evidence.
+ \item \textbf{Interpret} agreement as deterministic E0 policy evidence.
+       It does not show that a physical pin changed or a load drew current.
+\end{enumerate}
+
+\newpage
+\section{Diagnose by precedence}
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Symptom & Inspect first & Interpretation\\
+\midrule
+non-OK API status & structure, lifecycle, correlation & state and output stay unchanged\\
+\texttt{SourceIneligible} & copied source packet and eligibility & powered work remains prohibited\\
+\texttt{BaseBudgetInsufficient} & resistor, voltage, GPIO, gain ratio & conservative base support is too small\\
+\texttt{FlybackMissing} & energy and all diode declarations & inductive intent has no complete protection declaration\\
+\texttt{BudgetExceeded} & supply, device, fixture ceilings & requested load exceeds a binding bound\\
+\texttt{Expired} & supplied time and frozen deadline & replay did not extend authority\\
+\texttt{CapacityExceeded} & eight overlapping reservations & fixed history is intentionally full\\
+\texttt{Fault} during cancel & off confirmation and status & cancellation cannot mask failed safe return\\
+\bottomrule
+\end{tabularx}
+
+\section{Test the complete contract}
+\begin{itemize}
+ \item Exhaust enum encodings, load/flyback cross-products, canonical absence,
+       all identity/revision mismatches, and one-field digest mutations.
+ \item Exercise zero divisors and ceilings, rounding vectors, widened
+       multiplication boundaries, exact/one-over budgets, and output canaries.
+ \item Test duration, expiry, early close, eight-entry pruning, ninth-entry
+       exhaustion, duty equality/one-over, rollover, and half-range time.
+ \item Test inactive/active intent, source ineligibility, producer fault,
+       cancellation/fault collision, reset, shutdown, and idempotence.
+\end{itemize}
+
+\section{Open acceptance cards}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X@{}}
+E0 software & Closed: strict host tests and sanitizer replay, headers/style,
+Mega compile, exact resource evidence, independent disposition, lesson,
+publication, and terminal architecture review pass.\\
+E1 identity & Open: both-face photographs, markings, primary sources, traced
+pin order/topology, passive measurements, energy classification, and reviewed
+specimen descriptor. No powered observation belongs to E1.\\
+E2b fixture & Open: exact transistor, diode, and load; GPIO/resource and rail
+map; base limiting; current-limited supply; authoritative schematic; test
+points; stored-energy disposition; rollback; independent power removal; and
+recorded bench acceptance.\\
+Physical result & Open. This lesson contains no circuit, schematic, powered
+observation, safe-state measurement, or supported-specimen claim.\\
+\end{tabularx}
+
+\section{Read the measured software boundary}
+The canonical repository Mega replay measures 11,560 B flash and 561 B static
+SRAM ordinarily. The isolated exact no-LTO probe records:
+
+\begin{tabularx}{\linewidth}{@{}l r r r X@{}}
+\toprule
+Metric & Actual & Target & Hard & Disposition\\
+\midrule
+flash & 12,974 B & 10,240 B & 14,336 B & reviewed miss\\
+static SRAM & 561 B & 768 B & 1,024 B & pass\\
+synchronous stack & 320 B & 320 B & 448 B & pass at equality\\
+policy object & 240 B & 192 B & 256 B & reviewed miss\\
+descriptor object & 96 B & 96 B & 128 B & pass at equality\\
+residual SRAM & 7,183 B & 4,096 B & 3,072 B & pass\\
+\bottomrule
+\end{tabularx}
+
+The flash and policy target misses are independently accepted below their hard
+limits; every other target and every hard limit pass. The exact result is
+bound to fingerprint
+\texttt{4972bd9733d608d52ac81bfb1320e61088b10c3e59910f3be8c439b5838d33e7}.
+These measurements prove the software boundary and no physical behavior.
+
+\lessonbox{\textbf{Acceptance record --- leave open until observed.}\\
+Exact specimen and revision: \hrulefill\\
+Primary-source packet and reviewer: \hrulefill\\
+Fixture, current limit, and independent power removal: \hrulefill\\
+Resource-acquisition observation: \hrulefill\\
+All-off electrical observation and named test point: \hrulefill\\
+Bench date, result, and reviewer: \hrulefill}
+
+\section{Exercises}
+\begin{enumerate}
+ \item Explain why “output level low” is intent, not safe-state evidence.
+ \item Construct a current request where upward and downward rounding each
+       change the answer by one microamp.
+ \item Explain why early cancellation shortens the active interval but cannot
+       erase it from duty history.
+ \item List the additional evidence required before drawing an authoritative
+       schematic for one exact E2b fixture.
+\end{enumerate}
+
+\vfill
+\footnotesize
+HTML companion: \url{https://spincyc.github.io/adk/lessons/079/}. The HTML
+route remains the primary accessible format; this PDF is not tagged and makes
+no PDF/UA claim.
+\end{document}

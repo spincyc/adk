@@ -1,0 +1,27 @@
+{
+  "reviews": [
+    {
+      "authority": "docs/design/LESSON_079_BOUNDED_LOW_SIDE_DRIVER_STRESS_PASS.md#terminal-gate-result",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "4972bd9733d608d52ac81bfb1320e61088b10c3e59910f3be8c439b5838d33e7",
+      "hard_bytes": 14336,
+      "lesson": "079",
+      "metric": "flash",
+      "observed_bytes": 12974,
+      "rationale": "Accepted because the exact source closure retains the complete checked-arithmetic, descriptor-digest, chronology, duty-history, reset-generation, and atomic all-off contract while remaining 1362 bytes below the hard limit.",
+      "target_bytes": 10240
+    },
+    {
+      "authority": "docs/design/LESSON_079_BOUNDED_LOW_SIDE_DRIVER_STRESS_PASS.md#terminal-gate-result",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "4972bd9733d608d52ac81bfb1320e61088b10c3e59910f3be8c439b5838d33e7",
+      "hard_bytes": 256,
+      "lesson": "079",
+      "metric": "object",
+      "observed_bytes": 240,
+      "rationale": "Accepted because the value-owned descriptor, eight-entry duty history, chronology floor, reset generation, lifecycle and session authority, and complete published intent are required bounded state, counted once, with 16 bytes of hard-limit margin.",
+      "target_bytes": 192
+    }
+  ],
+  "schema": 1
+}

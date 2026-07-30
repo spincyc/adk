@@ -10,6 +10,7 @@ QUALITY_ARCH_PACKAGES = base-devel clang
 	host-test-sanitize serial-log-test deployed-site-test arduino-lint \
 	arduino-lint-submit arduino-lint-update arduino-lint-release \
 	release-metadata-check release-check museum-case-fingerprint-test \
+	component-qualification-fingerprint-test \
 	module-characterization-fingerprint-test motion-recorder-fingerprint-test \
 	thermal-gradient-fingerprint-test
 
@@ -22,7 +23,8 @@ quality-lint: style-check headers-check
 
 quality-test: host-test host-test-exceptions host-test-sanitize \
 	serial-log-test deployed-site-test usb-matrix-check usb-mesh-check hdmi-mesh-check \
-	route-profile-check museum-case-fingerprint-test \
+	route-profile-check component-qualification-fingerprint-test \
+	museum-case-fingerprint-test \
 	module-characterization-fingerprint-test \
 	motion-recorder-fingerprint-test thermal-gradient-fingerprint-test
 
@@ -34,6 +36,9 @@ deployed-site-test:
 
 museum-case-fingerprint-test:
 	python -m unittest tests/test_museum_case_fingerprint.py
+
+component-qualification-fingerprint-test:
+	python -m unittest tests/test_component_qualification_fingerprint.py
 
 thermal-gradient-fingerprint-test:
 	python -m unittest tests/test_thermal_gradient_fingerprint.py
@@ -72,7 +77,8 @@ host-test-sanitize:
 		HOST_CXXFLAGS="$(HOST_CXXFLAGS) -fsanitize=address,undefined -fno-omit-frame-pointer" \
 		HOST_LDFLAGS="$(HOST_LDFLAGS) -fsanitize=address,undefined"
 
-firmware-size-check: size-check escape-console-resource-check \
+firmware-size-check: size-check component-qualification-resource-check \
+	escape-console-resource-check \
 	display-timing-resource-check museum-case-resource-check \
 	module-characterization-resource-check motion-recorder-resource-check \
 	thermal-gradient-resource-check

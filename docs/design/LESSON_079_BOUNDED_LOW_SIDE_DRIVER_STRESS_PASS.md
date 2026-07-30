@@ -67,11 +67,38 @@ rollover, half-range,
 early-close, pruning, replay-without-extension, and update atomicity are
 mandatory tests.
 
+The eight reservations and last accepted supplied-time floor persist for the
+entire object lifetime. Reset and shutdown publish off and invalidate session
+authority but do not clear, shorten, or prune history; shutdown/reinitialize
+on the same object preserves it. With no supplied time, an active reservation
+remains charged through its original deadline. Only a chronology-valid
+supplied-time apply, update, or cancel may prune expired entries. A new
+session's sequence may restart, but its first time cannot move behind the
+preserved floor.
+
+Construction alone begins empty. Destruction/reconstruction loses volatile
+E0 history, but that fact grants no drive authority and proves no physical
+cooldown. This policy is not a physical interlock. Any E2 fixture must
+independently own duration/duty/thermal bounds, retained or fail-closed restart
+state, time evidence, power removal, and bench acceptance; it cannot interpret
+an empty reconstructed E0 policy as permission to energize hardware.
+
 All arithmetic is widened and checked, with required base current rounded up
 and supported load rounded down. No saturation, typical gain, absolute
 maximum, or Boolean command substitutes for conservative bounds. Every
 mutating call stages a candidate; invalid structure/correlation leaves state
 and output byte-identical.
+
+Tolerance arithmetic is exact. For `t` in 0--999 permille, lower resistance is
+`floor(R*(1000-t)/1000)` and upper resistance is
+`ceil(R*(1000+t)/1000)`, with widened checked products. A zero lower bound
+rejects. Lowest resistance and zero assumed minimum base-emitter drop produce
+`ceil(logicHighMaximumMv*1000/lowerR)`, which must not exceed the declared
+GPIO/base-path ceiling. Highest resistance produces
+`floor(max(0, logicHighMinimumMv-baseEmitterMaximumMv)*1000/upperR)`;
+requested base current must fit that minimum before forced-gain/load
+sufficiency is evaluated. Thus safety uses the low-resistance/high-current
+side while drive sufficiency uses the high-resistance/low-current side.
 
 ## Evidence gates
 
@@ -87,12 +114,18 @@ disposition, rollback, and bench acceptance. No powered observation is E1.
 
 Tests exhaust every encoding and canonical absence; exact identity/revision
 correlation; sole-topology enforcement; every zero/maximum divisor and widened
-overflow; voltage/tolerance/duration/duty boundaries; conservative arithmetic
-goldens; complete/missing/reversed/under-rated flyback declarations; source
+overflow; tolerance 0/1/999, lower-floor/upper-ceil remainder vectors,
+zero-lower-R, maximum-current-ceil/minimum-drive-floor, GPIO/base and required
+drive one-below/equal/one-above, voltage-product and widened-resistance
+boundaries; duration/duty boundaries; conservative arithmetic goldens;
+complete/missing/reversed/under-rated flyback declarations; source
 ineligibility; healthy active/off; expiry; supplied-provenance cancellation;
 producer and all-off faults; all collision precedence; duplicate/gap/
 regression/rollover/half-range/future/stale chronology; lifecycle reset and
-generation exhaustion; shutdown from active; canaries/nonmutation; and zero
+generation exhaustion; reset/shutdown/reinitialize with preserved reservation
+ring and chronology floor; backdated new-session rejection; pruning only on
+valid supplied-time apply/update/cancel; construction-empty and reconstructed-
+no-authority fixtures; shutdown from active; canaries/nonmutation; and zero
 hardware/resource/clock/storage calls.
 
 Exact initial resource gates are:
@@ -117,3 +150,35 @@ blocked on implementation, deterministic/sanitizer proof, ordinary and exact
 Mega evidence, terminal stress review, HTML/PDF/pencil, site, packaging, and
 independent review. Exact E1/E2a/E2b/E2c physical work remains separately
 blocked and no supported-specimen claim is made.
+
+## Terminal gate result
+
+Disposition: natural E0 fit, host verified, with no powered-hardware claim.
+The ordinary canonical Mega replay measures 11,560 bytes flash and 561 bytes
+static SRAM. The isolated no-LTO probe measures 12,974 bytes flash, 561 bytes
+static SRAM, 320 bytes conservative synchronous stack, a 240-byte policy, a
+96-byte descriptor, and 7,183 bytes residual SRAM after the 128-byte ISR
+reserve. Static SRAM, stack, descriptor, residual SRAM, and every hard gate
+pass.
+
+The exact review fingerprint is
+`4972bd9733d608d52ac81bfb1320e61088b10c3e59910f3be8c439b5838d33e7`.
+Flash is an independently accepted target miss: observed 12974 bytes against
+the 10240-byte target and 14336-byte hard limit. The complete checked
+arithmetic, descriptor digest, chronology, fixed duty history, reset-generation
+handling, and atomic all-off behavior remain in the measured source closure,
+which retains 1362 bytes of hard-limit margin. Removing those proofs to recover
+the target would weaken the terminal contract.
+
+Policy size is an independently accepted target miss: observed 240 bytes
+against the 192-byte target and 256-byte hard limit. Its copied descriptor,
+eight bounded duty reservations, chronology floor, reset generation,
+lifecycle/session authority, and complete published intent are required
+value-owned state and are counted exactly once. The result retains 16 bytes of
+hard-limit margin; future object growth requires a new fingerprint-bound
+disposition.
+
+Terminal promotion preserves the E0 boundary: no GPIO, endpoint, resource
+claim, clock, supply, transistor, diode, load, persistent store, or powered
+observation exists. Exact E1/E2a/E2b/E2c work and physical acceptance remain
+open.
