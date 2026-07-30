@@ -409,6 +409,26 @@ already authorized ultrasonic and servo teaching surfaces without claiming a
 new sensor family: exact powered ranging remains E1-gated, and restrained
 powered motion remains E2-gated. Lesson numbers 073--078 remain stable.
 
+## Deep project re-evaluation (2026-07-30)
+
+Four re-evaluation tracks are queued alongside the canonical lesson order.
+Their audits run before Lesson 081 implementation so findings can inform it;
+they do not supersede the Lessons 079--081 plan or any published boundary.
+
+1. Object-design cleanliness across the full `src/` scope: inheritance,
+   composition, and construction flow; call-site repetition in examples and
+   projects; type shapes that read like the components they represent.
+   Findings require the architecture stress-pass discipline before any shared
+   contract changes.
+2. Lesson content pass over every published lesson: natural narrative flow,
+   many hands-on verification steps, no standalone assessment sections
+   (assessment folds into the lesson's own steps), and sufficient
+   assembly-representative pencil drawings per lesson.
+3. Landing-page layout and navigation redo, preserving the scan-first
+   hierarchy and every publication gate.
+4. Site aesthetic design pass within the pencil-drawing and monochrome-PDF
+   policies where they apply.
+
 ## Physical acceptance campaign
 
 Every lesson's PDF contains its open bench record; use the
