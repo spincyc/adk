@@ -195,6 +195,8 @@ small enough to question whether it is worth a shared-contract change at all.
 | Correlation header repeated across sibling structs | 7 structs on `main` carry `sessionId`+`runId`+`stepId` — 3 in `bounded_low_side_driver_policy.h`, 4 in `small_indicator_semantics_policy.h`, with Lesson 081's types still to come | Confirmed |
 | `ButtonObservation` lives with a consumer, not with `Button` | Defined in `reaction_timer.h`; `button.h` never mentions it. `BalanceButtonObservation` repeats its three fields and adds `observedAt` and `sequence`, so it is an extension rather than an exact copy | Confirmed, with that nuance |
 | Durable-commit protocol implemented twice as parallel triads | Field counts are near-identical: `EnrollmentCandidate` 7 against `DurableAuditCandidate` 6, `IdentityImageView` 4 against `AuditRecordView` 4, `IdentityDurableCommitEvidence` 8 against `AuditDurableCommitEvidence` 8 | Confirmed |
+| Wide descriptors are brace-initialized positional aggregates | `SmallIndicatorDescriptor` 25 fields, `LowSideDriverDescriptor` 19, nested `LowSideCurrentBudget` 16, none with a constructor | Confirmed; counts drift slightly from the claimed 27/20/16 |
+| Expected-producer triplet repeated in `MuseumCaseConfig` | 16 `expected*` identity fields and 6 `maximum*Age` fields, against the claimed 4 triplets and 4 ages | Confirmed, understated |
 
 These three are the strongest remaining Track 1 candidates, and unlike the
 duplication findings above they describe genuinely parallel structure rather
