@@ -42,4 +42,4 @@ module-characterization-resource-check: arduino-check
 	python3 scripts/check_module_characterization_resource_probe.py \
 		--arduino-cli "$(ARDUINO_CLI)" \
 		--fqbn "$(BOARD_FQBN)" \
-		--require-through 070
+		--require-through 071

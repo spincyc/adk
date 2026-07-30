@@ -97,7 +97,8 @@ Status meanings:
 | Configured inertial-record qualification | `InertialRecordQualificationPolicy` | Host verified; E0 copied evidence only; E1a–E1c open | [Lesson 068](lessons/068.md) |
 | Qualified motion recorder | `QualifiedMotionRecorder`, `MotionRecordCodec` | Host verified; E0 volatile copied evidence and intent only; exact resource review complete; E1a–E1c open | [Lesson 069](lessons/069.md) |
 | Threshold-module descriptor | `ModuleThresholdDescriptor`, `ModuleThresholdFrame` | Host verified; E0 copied declarations and frames only; exact fixtures E1-open | [Lesson 070](lessons/070.md) |
-| Planned characterization arc | Copied sweeps and characterization-result intent | Active; exact fixtures E1-open | Lessons 071–072 |
+| Threshold characterization | `ModuleCharacterizationPolicy`, `ModuleCharacterizationEvidence` | Host verified; E0 copied sweep evidence only; exact fixtures E1-open | [Lesson 071](lessons/071.md) |
+| Planned characterization bench | Characterization-result and volatile-record intent | Active; exact fixtures E1-open | Lesson 072 |
 | Reserved arcs | Authorized-family replacements pending | Re-scope required | Lessons 073–078 |
 | Planned qualification arc | Bounded load driver and indicator semantics | Queued | Lessons 079–081 |
 

@@ -81,6 +81,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_mega_bus_driver \
 	$(BUILD_DIR)/host/test_mono_led \
 	$(BUILD_DIR)/host/test_moisture_sensor \
+	$(BUILD_DIR)/host/test_module_characterization \
 	$(BUILD_DIR)/host/test_module_threshold_descriptor \
 	$(BUILD_DIR)/host/test_motor_intent \
 	$(BUILD_DIR)/host/test_museum_case_monitor \
@@ -948,6 +949,17 @@ $(BUILD_DIR)/host/test_module_threshold_descriptor: $(HOST_CORE_SOURCES) \
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
 		src/module_threshold_descriptor.cpp \
 		tests/module_threshold_descriptor_test.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_module_characterization: $(HOST_CORE_SOURCES) \
+		src/module_characterization.cpp \
+		src/module_threshold_descriptor.cpp \
+		tests/module_characterization_test.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) -DADK_TESTING $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/module_characterization.cpp \
+		src/module_threshold_descriptor.cpp \
+		tests/module_characterization_test.cpp \
 		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_motor_intent: $(HOST_CORE_SOURCES) \

@@ -383,10 +383,6 @@ struct ModuleCharacterizationEvidence
     uint8_t ascendingCount;
     uint8_t descendingCount;
     uint8_t verificationCount;
-    uint32_t firstSequence;
-    uint32_t lastSequence;
-    TimePoint firstObservedAt;
-    TimePoint lastObservedAt;
     ModuleTransitionBracket ascendingBracket;
     ModuleTransitionBracket descendingBracket;
     ModuleAnalogInterval guaranteedInactiveInterval;
@@ -421,7 +417,9 @@ struct ModuleCharacterizationPolicy
 ```
 
 `requiredPointsPerLeg` is `[2, 16]`; every leg finishes at exactly N accepted
-points and no point array is retained. Control ordinals are contiguous `1..N`
+points and no point array is retained. `maximumAge` and `maximumGap` are each
+nonzero and strictly below the modular half range; zero does not disable
+freshness or continuity checks. Control ordinals are contiguous `1..N`
 per leg. Source sequence is strictly contiguous forward; a field-wise
 identical duplicate is idempotent and consumes neither an ordinal nor a point.
 Any point beyond N, including a seventeenth, returns API `CapacityExceeded`
@@ -430,6 +428,12 @@ be `Increasing`, descending `Decreasing`, verification `Unordered`. Legs occur
 in that order, with distinct forward nonzero leg IDs. Session/run IDs are
 forward nonzero. Initialize/reset increment generation and reject at
 `UINT32_MAX`.
+
+Successful lifecycle calls retain supplied `now`; later session, leg,
+finalization, reset, and shutdown calls require forward-or-equal modular time.
+Backward and exact-half-range ambiguous values reject atomically.
+Initialization after shutdown returns `NotInitialized`; a new constructed policy
+object is required.
 
 Each learning leg permits exactly one clean comparator transition. Its adjacent
 points form the bracket. A second reversal is `Chatter`; a toggle at equal raw
@@ -473,9 +477,11 @@ point inside a guaranteed region contradicts the comparator; points in the
 ambiguity interval remain `Ambiguous`. This makes disagreement computable
 without retained arrays or circular use of the point being learned.
 
-Evidence owns the full descriptor and correlation fields, first/last
-sequence/time, and exactly four full bracket points (two per bracket).
-First/last/offending fields are compact witnesses, not duplicate full points.
+Evidence owns the full descriptor and correlation fields and exactly four full
+bracket points (two per bracket). First/last/offending fields are compact
+witnesses, not duplicate full points. The first and last witnesses are the
+single canonical owners of first/last sequence and observation time; evidence
+does not duplicate those four values at top level.
 Intervals and relation remain explicit. Terminal evidence is immutable.
 
 Lesson 071 configuration accepts only `AnalogAndComparator` and explicit

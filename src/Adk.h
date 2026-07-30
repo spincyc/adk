@@ -57,6 +57,7 @@
 #include "mega_pulse_capture_io.h"
 #include "mono_led.h"
 #include "moisture_sensor.h"
+#include "module_characterization.h"
 #include "module_threshold_descriptor.h"
 #include "motor_intent.h"
 #include "museum_case_monitor.h"

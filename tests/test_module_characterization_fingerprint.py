@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import pathlib
 import tempfile
 import unittest
@@ -155,6 +156,224 @@ class ModuleCharacterizationFingerprintTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             missing = pathlib.Path(directory) / "missing.json"
             self.assertEqual(module_probe.enrich_evidence(missing), 1)
+
+    def test_failed_base_gate_is_still_fully_enriched(self):
+        report = {
+            "boundaries": [
+                {
+                    "gates": {
+                        "flash": "pass",
+                        "object": "pass",
+                        "static_sram": "target-miss",
+                        "synchronous_stack": "pass",
+                    },
+                    "lesson": "071",
+                    "measurements": {
+                        "flash_bytes": 12000,
+                        "object_bytes": 700,
+                        "static_sram_bytes": 1100,
+                        "synchronous_stack_bytes": 500,
+                    },
+                    "status": "review-required",
+                }
+            ],
+            "constants": {},
+            "status": "review-required",
+            "tools": {},
+        }
+        symbols = {
+            "moduleThresholdDescriptorBytes": 56,
+            "moduleThresholdFrameBytes": 56,
+            "moduleCharacterizationEvidenceBytes": 391,
+            "moduleCharacterizationPointBytes": 80,
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            evidence = pathlib.Path(directory) / "evidence.json"
+            evidence.write_text(json.dumps(report), encoding="utf-8")
+            with mock.patch.dict(
+                module_probe.RESOURCE_LAYOUTS, {"071": symbols}, clear=True
+            ):
+                result = module_probe.enrich_evidence(evidence)
+            enriched = json.loads(evidence.read_text(encoding="utf-8"))
+
+        boundary = enriched["boundaries"][0]
+        self.assertEqual(result, 1)
+        self.assertEqual(boundary["measurements"]["evidence_bytes"], 391)
+        self.assertEqual(boundary["gates"]["evidence"], "hard-fail")
+        self.assertEqual(boundary["gates"]["static_sram"], "target-miss")
+        self.assertEqual(boundary["gates"]["residual_sram"], "pass")
+        self.assertIn("fingerprint_sha256", boundary)
+        self.assertIn("fingerprint_source_hashes", boundary)
+        self.assertEqual(boundary["status"], "hard-fail")
+        self.assertEqual(enriched["status"], "hard-fail")
+
+    def test_review_loader_accepts_only_the_two_authoritative_tuples(self):
+        review_path = (
+            ROOT / "probes/module_characterization_resource_reviews.json"
+        )
+        with mock.patch.object(
+            module_probe.probe,
+            "BOUNDARIES",
+            module_probe.selected_boundaries("071"),
+        ):
+            loaded = module_probe.load_reviews(ROOT, review_path)
+        self.assertEqual(loaded, {})
+        self.assertEqual(
+            set(module_probe.ENRICHED_REVIEWS),
+            {("071", "static_sram"), ("071", "evidence")},
+        )
+
+    def test_stale_enriched_review_fails_closed(self):
+        report = {
+            "boundaries": [
+                {
+                    "accepted_reviews": [],
+                    "gates": {
+                        "flash": "pass",
+                        "object": "pass",
+                        "static_sram": "target-miss",
+                        "synchronous_stack": "pass",
+                    },
+                    "lesson": "071",
+                    "measurements": {
+                        "flash_bytes": 11206,
+                        "object_bytes": 483,
+                        "static_sram_bytes": 1145,
+                        "synchronous_stack_bytes": 339,
+                    },
+                    "status": "review-required",
+                }
+            ],
+            "constants": {},
+            "status": "review-required",
+            "tools": {},
+        }
+        symbols = {
+            "moduleThresholdDescriptorBytes": 45,
+            "moduleThresholdFrameBytes": 38,
+            "moduleCharacterizationEvidenceBytes": 375,
+            "moduleCharacterizationPointBytes": 57,
+        }
+        stale_review = {
+            "authority": (
+                "docs/design/"
+                "LESSON_071_THRESHOLD_CHARACTERIZATION_STRESS_PASS.md"
+                "#gate-result"
+            ),
+            "disposition": "accepted-target-miss",
+            "fingerprint_sha256": "0" * 64,
+            "hard_bytes": 1536,
+            "lesson": "071",
+            "metric": "static_sram",
+            "observed_bytes": 1145,
+            "rationale": "stale fixture",
+            "target_bytes": 1024,
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            evidence = pathlib.Path(directory) / "evidence.json"
+            evidence.write_text(json.dumps(report), encoding="utf-8")
+            with (
+                mock.patch.dict(
+                    module_probe.RESOURCE_LAYOUTS,
+                    {"071": symbols},
+                    clear=True,
+                ),
+                mock.patch.dict(
+                    module_probe.ENRICHED_REVIEWS,
+                    {("071", "static_sram"): stale_review},
+                    clear=True,
+                ),
+                self.assertRaises(module_probe.probe.ProbeError),
+            ):
+                module_probe.enrich_evidence(evidence)
+
+    def test_exact_enriched_reviews_resolve_target_misses(self):
+        report = {
+            "boundaries": [
+                {
+                    "accepted_reviews": [],
+                    "gates": {
+                        "flash": "pass",
+                        "object": "pass",
+                        "static_sram": "target-miss",
+                        "synchronous_stack": "pass",
+                    },
+                    "lesson": "071",
+                    "measurements": {
+                        "flash_bytes": 11452,
+                        "object_bytes": 498,
+                        "static_sram_bytes": 1160,
+                        "synchronous_stack_bytes": 339,
+                    },
+                    "status": "review-required",
+                }
+            ],
+            "constants": {},
+            "status": "review-required",
+            "tools": {},
+        }
+        symbols = {
+            "moduleThresholdDescriptorBytes": 45,
+            "moduleThresholdFrameBytes": 38,
+            "moduleCharacterizationEvidenceBytes": 375,
+            "moduleCharacterizationPointBytes": 57,
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            evidence = pathlib.Path(directory) / "evidence.json"
+            evidence.write_text(json.dumps(report), encoding="utf-8")
+            with (
+                mock.patch.dict(
+                    module_probe.RESOURCE_LAYOUTS,
+                    {"071": symbols},
+                    clear=True,
+                ),
+                mock.patch.dict(
+                    module_probe.ENRICHED_REVIEWS, {}, clear=True
+                ),
+            ):
+                self.assertEqual(module_probe.enrich_evidence(evidence), 1)
+            first = json.loads(evidence.read_text(encoding="utf-8"))
+            fingerprint = first["boundaries"][0]["fingerprint_sha256"]
+            reviews = {}
+            for metric, observed, target, hard in (
+                ("static_sram", 1160, 1024, 1536),
+                ("evidence", 375, 320, 384),
+            ):
+                reviews[("071", metric)] = {
+                    "authority": "authority",
+                    "disposition": "accepted-target-miss",
+                    "fingerprint_sha256": fingerprint,
+                    "hard_bytes": hard,
+                    "lesson": "071",
+                    "metric": metric,
+                    "observed_bytes": observed,
+                    "rationale": "exact fixture",
+                    "target_bytes": target,
+                }
+            evidence.write_text(json.dumps(report), encoding="utf-8")
+            with (
+                mock.patch.dict(
+                    module_probe.RESOURCE_LAYOUTS,
+                    {"071": symbols},
+                    clear=True,
+                ),
+                mock.patch.dict(
+                    module_probe.ENRICHED_REVIEWS, reviews, clear=True
+                ),
+            ):
+                self.assertEqual(module_probe.enrich_evidence(evidence), 0)
+            accepted = json.loads(evidence.read_text(encoding="utf-8"))
+
+        boundary = accepted["boundaries"][0]
+        self.assertEqual(boundary["status"], "reviewed-target-miss")
+        self.assertEqual(accepted["status"], "reviewed-target-miss")
+        self.assertEqual(
+            {
+                boundary["gates"]["static_sram"],
+                boundary["gates"]["evidence"],
+            },
+            {"reviewed-target-miss"},
+        )
 
 
 if __name__ == "__main__":

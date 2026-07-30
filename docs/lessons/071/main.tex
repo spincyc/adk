@@ -1,0 +1,401 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.60in]{geometry}
+\usepackage{booktabs,enumitem,fancyhdr,graphicx,listings,tabularx,titlesec,xcolor}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{docs/lessons/assets/}{assets/}}
+\hypersetup{
+ pdftitle={ADK Lesson 071: Characterize a Declared Threshold Fixture},
+ pdfauthor={Kevin Shanahan},
+ pdfsubject={Streaming three-leg characterization of copied threshold-module evidence},
+ pdflang={en-US}}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\textsc{ADK Lesson 071}}\rhead{Three-Leg Characterization}
+\cfoot{\thepage}\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{3pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.5em}{}
+\newcommand{\lessonbox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{#1}}\end{center}}
+\newcommand{\blankline}{\rule{0.88in}{0.4pt}}
+\newcommand{\longblank}{\rule{1.5in}{0.4pt}}
+\lstset{basicstyle=\ttfamily\footnotesize,columns=fullflexible,
+ breaklines=true,frame=single,rulecolor=\color{black},showstringspaces=false}
+
+\begin{document}
+\small
+\begin{center}
+ {\Huge\bfseries Characterize a Declared Fixture}\\[3pt]
+ {\Large Learn brackets, then verify without circular reasoning}\\[7pt]
+ \fbox{\textbf{E0 COPIED REPLAY --- NO MODULE, ADC, OR COMPARATOR IS POWERED}}
+\end{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 071 --- component & Time & 180--240 minutes\\
+Prerequisite & Lesson 070 descriptor/frame & Board & compile-only Mega replay\\
+Input & three copied point streams & Observation & typed evidence cells\\
+\end{tabularx}
+
+\lessonbox{\textbf{Responsibility.}
+\texttt{ModuleCharacterizationPolicy} streams one ascending learning leg, one
+descending learning leg, and one independent verification leg. It publishes
+sampled transition brackets, conservative intervals, witnesses, and relation
+evidence. It owns no endpoint, clock, stimulus, power, storage, or display.}
+
+\section{Ask only what copied evidence can answer}
+A finite sweep cannot reveal an exact threshold or prove that a physical pin
+is stuck. It can show that one copied comparator change occurred between two
+adjacent copied raw codes. Lesson 071 preserves that uncertainty instead of
+averaging it away.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=2.05in,keepaspectratio]
+ {071-three-leg-notebook-pencil.png}
+
+\small\textit{Alternative text: three graphite notebook lanes run in order:
+ascending learns one bracket, descending learns another, and verification
+checks fresh copied points against the already frozen intervals.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}X X@{}}
+\toprule
+Published at E0 & Still open at E1\\
+\midrule
+copied point order and provenance & exact board identity and pinout\\
+adjacent sampled transition brackets & electrical threshold or voltage accuracy\\
+bounded conservative intervals & powered acquisition and stimulus\\
+deterministic disagreement evidence & physical diagnosis and bench acceptance\\
+\bottomrule
+\end{tabularx}
+
+\section{Predict the experiment}
+Why must verification come after both learning legs? \hrulefill.
+If a transition lies between raw codes 410 and 430, what exact threshold has
+been proved? \blankline.
+
+\newpage
+\section{Bind every point to one run}
+\texttt{ModuleCharacterizationPoint} carries nonzero session, run, and leg
+identities; a contiguous control ordinal; leg and direction; source and
+configuration identity; and one complete \texttt{ModuleThresholdFrame}.
+Every point must match the copied descriptor, specimen and evidence revisions,
+source, active leg, and expected ordinal.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.94\linewidth,height=2.05in,keepaspectratio]
+ {071-provenance-stitch-pencil.png}
+
+\small\textit{Alternative text: a graphite thread stitches descriptor,
+specimen, source, session, run, leg, ordinal, sequence, and time labels onto
+each point card before it may enter a sweep.}
+\end{center}
+
+Each leg accepts exactly \texttt{requiredPointsPerLeg}, configured from 2
+through 16. Ordinals are independently contiguous \texttt{1..N}. Source
+sequences remain contiguous forward across all accepted points. A fieldwise
+identical duplicate is idempotent; a changed duplicate, gap, regression,
+identity drift, or wrong ordinal changes nothing and follows the documented
+failure disposition.
+
+\section{Use the frame as readiness authority}
+The complete Lesson 070 frame is the sole copied warm-up and settling
+authority. A point does not add another readiness flag. Both channels must be
+present and current, both producer statuses must be OK, and comparator
+assertion must agree with explicit active-high or active-low polarity.
+
+\lessonbox{\textbf{Vocabulary discipline.}
+``Increasing'' and ``decreasing'' describe raw ADC-code order only. They do
+not mean increasing light, heat, sound, distance, hazard, or concentration.}
+
+\newpage
+\section{Learn one bracket in each direction}
+Ascending accepts \texttt{Increasing}; descending accepts
+\texttt{Decreasing}. On the first canonical comparator change, the immediately
+adjacent points become the complete \texttt{ModuleTransitionBracket}.
+The policy never sorts, interpolates, reverses, retries, or discards points.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.95\linewidth,height=2.22in,keepaspectratio]
+ {071-bracket-sweeps-pencil.png}
+
+\small\textit{Alternative text: an increasing staircase brackets a comparator
+change between adjacent samples, while a decreasing staircase brackets a
+separate change; shaded graphite between samples marks uncertainty rather
+than an exact crossing.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Observation & Result\\
+\midrule
+one adjacent state change & retain the complete bracket\\
+second reversal & \texttt{Chatter}\\
+toggle at equal raw code & \texttt{Chatter}\\
+wrong raw direction & \texttt{DirectionViolation}\\
+no transition & active/inactive no-observation reason\\
+endpoint-only no-transition leg & \texttt{AtLowerRail} or \texttt{AtUpperRail}\\
+\bottomrule
+\end{tabularx}
+
+A healthy raw endpoint is ordinary accepted evidence and may participate in a
+bracket. Rail classification happens only when finalizing an endpoint-only
+no-transition leg. It never diagnoses an open, short, reversed supply, absent
+pull, or damaged module.
+
+\section{Retain intervals, not invented precision}
+Every learning leg must cover the complete declared raw domain. Ascending
+begins exactly at the lower bound and ends exactly at the upper bound;
+descending begins at the upper bound and ends at the lower bound. A missing
+endpoint records \texttt{DirectionViolation}, except when every accepted point
+is the same exact declared endpoint. That endpoint-only no-transition special
+case records \texttt{AtLowerRail} or \texttt{AtUpperRail} before the coverage
+check, terminalizes the run, cannot advance to another leg, and produces no
+intervals. Every successful learning leg therefore covers the full domain,
+preventing outer guaranteed intervals from extrapolating a state beyond
+observed sweep coverage.
+
+Before intervals exist, the two brackets must have complementary orientation:
+ascending-before equals descending-after, ascending-after equals
+descending-before, and those two states differ. Otherwise descending
+finalization records
+\texttt{TransitionOrientation\allowbreak Mismatch}.
+
+Let \texttt{lowState} be the common ascending-before/descending-after state.
+Let \texttt{lowProved} be the lesser raw code of those two points, and
+\texttt{highProved} the greater raw code of ascending-after and
+descending-before. The policy freezes inclusive
+\texttt{guaranteedInactive\allowbreak Interval},
+\texttt{guaranteedActive\allowbreak Interval}, and
+\texttt{ambiguityInterval} values.
+The interval from the declared lower bound through \texttt{lowProved} proves
+\texttt{lowState}; the interval from \texttt{highProved} through the declared
+upper bound proves the opposite. The closed middle
+\texttt{[lowProved + 1, highProved - 1]} is ambiguity only when its lower
+endpoint does not exceed its upper endpoint. Arithmetic widens before adding
+or subtracting. The two outer intervals are assigned active/inactive according
+to \texttt{lowState}. The public contract has no bracket midpoint, exact
+threshold, or signed hysteresis scalar.
+
+\newpage
+\section{Verify without learning from the answer}
+Verification accepts \texttt{Unordered} copied points only after both brackets
+and intervals are frozen. It never moves either learned bracket.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.95\linewidth,height=2.20in,keepaspectratio]
+ {071-conservative-intervals-pencil.png}
+
+\small\textit{Alternative text: a pencil number line separates guaranteed
+inactive and guaranteed active regions with a cross-hatched ambiguity region;
+matching marks sit in guaranteed regions, an uncertain mark stays ambiguous,
+and one contradiction is circled.}
+\end{center}
+
+\begin{itemize}
+ \item A matching state in a guaranteed region contributes
+       \texttt{Consistent}.
+ \item A contradictory state in a guaranteed region produces
+       \texttt{AnalogComparatorDisagreement} and \texttt{Disagrees}.
+ \item A point inside ambiguity contributes \texttt{Ambiguous}, never
+       disagreement merely because it is near a sampled transition.
+ \item If every verification point is ambiguous, the relation is
+       \texttt{Ambiguous}, not \texttt{Consistent}.
+\end{itemize}
+
+Predict the relation for a contradictory point inside ambiguity:
+\longblank. Why is that answer conservative? \hrulefill.
+
+\section{Keep streaming storage bounded}
+The policy retains no point array. It owns counts, run correlation, adjacent
+transition evidence, frozen intervals, relation state, and compact witnesses.
+Exactly four full points remain, inside the two brackets. The
+\texttt{firstWitness} and \texttt{lastWitness} compact values are the sole
+canonical owners of first/last sequence and observation time; evidence has no
+duplicate top-level first/last fields. Offending diagnostics are compact
+witnesses too.
+
+\begin{tabularx}{\linewidth}{@{}l r r r X@{}}
+\toprule
+Measured item & Actual & Target & Hard & Disposition\\
+\midrule
+no-LTO flash & 11,562 B & 12,288 B & 16,384 B & pass\\
+static SRAM & 1,160 B & 1,024 B & 1,536 B & accepted miss\\
+synchronous stack & 339 B & 448 B & 640 B & pass\\
+policy object & 498 B & 512 B & 768 B & pass\\
+evidence object & 375 B & 320 B & 384 B & accepted miss\\
+phase-local point & 57 B & 96 B & 128 B & pass\\
+residual SRAM & 6,565 B & 4,096 B & 3,072 B & pass\\
+\bottomrule
+\end{tabularx}
+
+The two target misses are independently accepted because the complete
+attributable evidence shape must retain both brackets, the full descriptor,
+three intervals, correlation, and compact witnesses, while the canonical
+sketch deliberately exposes one stable evidence object for non-Serial
+inspection. Both remain below their hard limits. The no-LTO measurement is
+bound to resource fingerprint
+\texttt{e1cfc001cc95937e25337eb53a7a4c8b3602d6a046b23b0a8b94fe7a342d562b}.
+
+\newpage
+\section{Follow the lifecycle in dependency order}
+Construction is inert. The canonical flow is:
+
+\begin{enumerate}
+ \item \texttt{initialize(now)}, then
+       \texttt{beginSession(now, sessionId, runId)};
+ \item begin, observe exactly N points, and finalize \texttt{Ascending};
+ \item repeat for \texttt{Descending};
+ \item repeat for \texttt{Verification}; and
+ \item copy immutable terminal evidence with \texttt{evidence(output)}.
+\end{enumerate}
+
+Leg IDs are nonzero, distinct, forward modular, and ordered ascending,
+descending, verification. Initialize and reset advance a nonzero lifecycle
+generation without wrap. Every successful lifecycle call retains its supplied
+\texttt{now}; later session, leg, finalization, reset, and shutdown calls
+require forward-or-equal modular time. Backward and exact-half-range ambiguous
+times reject atomically. Shutdown is permanent for that object:
+\texttt{initialize()} after shutdown returns \texttt{NotInitialized}; only a
+newly constructed policy begins another object lifecycle. An incomplete
+finalize or a point beyond N rejects atomically; capacity is not a fabricated
+domain observation.
+
+\section{Apply failure precedence before interpretation}
+\begin{enumerate}
+ \item malformed configuration or encoding;
+ \item lifecycle, identity, correlation, or ordinal mismatch;
+ \item attributable producer failure;
+ \item attributable time or sequence discontinuity;
+ \item attributable \texttt{WarmupUnsatisfied} or
+       \texttt{SettlingUnsatisfied} copied readiness evidence;
+ \item direction, transition, chatter, interval, or relation outcome; and
+ \item complete verification evidence.
+\end{enumerate}
+
+Analog producer failure dominates comparator interpretation. Comparator
+producer failure dominates chatter and relation analysis. Ordering failure
+dominates an apparent crossing. Every failed API call leaves policy evidence
+and caller output unchanged.
+
+\section{Inspect one deterministic replay}
+The Mega sketch acquires copied fixture arrays, configures one
+\texttt{ModuleCharacterizationPolicy}, starts no hardware, streams all three
+legs, then writes named volatile status, bracket, interval, relation, witness,
+count, and provenance cells.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.95\linewidth,height=1.95in,keepaspectratio]
+ {071-replay-ledger-pencil.png}
+
+\small\textit{Alternative text: three copied fixture-card stacks feed a
+bounded policy notebook; the same bracket, interval, witness, and relation
+cells appear on two replay ledgers while crossed-out wires and power remain
+outside.}
+\end{center}
+
+Predict the two brackets and three intervals before compilation. Observe the
+named cells with a debugger, simulator, or disassembly; Serial is optional.
+Repeat the replay and compare all cells. Agreement proves deterministic copied
+behavior, not electrical truth.
+
+\newpage
+\section{Test the edges, collisions, and non-mutation}
+The current deterministic host matrix exercises a reduced raw domain at its
+lower, middle, and upper boundaries; complete ascending, descending, and
+verification flow; clean complementary brackets; inclusive guaranteed and
+ambiguity boundaries; consistent, ambiguous, and disagreeing verification;
+readiness failures; endpoint-only terminal results; identity, ordering,
+capacity, and lifecycle rejection; and output non-mutation. It does not claim
+every possible bracket ordering or every value in the full 16-bit raw domain.
+Additional exhaustive families remain explicit promotion work when not
+represented by those boundary partitions.
+
+\section{Troubleshoot without diagnosing hardware}
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Symptom & Inspect & Honest interpretation\\
+\midrule
+point rejected & IDs, ordinal, descriptor, source & correlation failure\\
+leg rejected & point count and direction & incomplete or wrong ordered leg\\
+\texttt{Chatter} & adjacent comparator states/raw codes & copied reversal evidence\\
+no transition & observed canonical state & finite sweep saw no crossing\\
+\texttt{AtLowerRail} & all accepted endpoint values & endpoint-only copied leg\\
+\texttt{TransitionOrientationMismatch} & both learned brackets & states are not complementary\\
+\texttt{Ambiguous} & frozen interval and point & learned evidence cannot decide\\
+\texttt{Disagrees} & guaranteed region and witness & copied relation contradiction\\
+\bottomrule
+\end{tabularx}
+
+\section{Exercises}
+\begin{enumerate}
+ \item Draw brackets for a rising change from 390 to 420 and a falling change
+       from 370 to 400. Mark only intervals justified by both.
+ \item Explain why a healthy value equal to the raw-domain maximum is not
+       automatically \texttt{AtUpperRail}.
+ \item Create a verification set containing only ambiguity points and predict
+       the final relation.
+ \item Explain why exactly four full bracket points are retained but 48 input
+       points are not.
+ \item Name the E1 evidence required before a copied disagreement can support
+       any electrical diagnosis.
+\end{enumerate}
+
+\section{No circuit and no powered stimulus at E0}
+There is no wiring diagram or formal schematic because Lesson 071 has no
+circuit. Never connect or power an unidentified module. Exact E1 work must
+qualify the specimen and declarations, supply and logic limits, connector,
+pull/output topology, ADC reference, source impedance, inactive default,
+harmless family-specific stimulus, observation points, rollback, power
+removal, and measured acceptance before powered acquisition exists.
+
+No gas exposure, heater, flame, combustion, medical or physiological claim,
+body contact, capacitive-touch assumption, immersion, mains, high voltage,
+laser, ignition, pyrotechnics, alarm authority, or unattended stimulus is
+admitted.
+
+\newpage
+\section{Open acceptance record}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X@{}}
+Host evidence & Record strict tests, sanitizers, standalone header, the
+reduced-domain three-leg boundary matrix, atomicity, and zero
+endpoint/clock/power calls; do not label it exhaustive.\\
+Mega evidence & Record compile-only replay flash/static SRAM and named-cell
+inspection; this is not a powered-module result.\\
+Memory evidence & Fingerprint-bound no-LTO result: 11,562 B flash; 1,160 B
+static SRAM; 339 B stack; 498 B policy; 375 B evidence; 57 B point; 6,565 B
+residual SRAM. Static and evidence target misses are independently accepted
+below hard limits.\\
+Document evidence & Two-pass build, metadata, embedded fonts, text extraction,
+monochrome, visual classification, links, 200\% zoom, and rendered-pencil
+review must pass.\\
+Physical evidence & Open E1: exact identity, safe acquisition and stimulus,
+declaration truth, timing, observations, rollback, and bench acceptance.\\
+\end{tabularx}
+
+\vspace{8pt}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Acceptance item & Record\\
+\midrule
+Commit and toolchain & \hrulefill\\[9pt]
+Host / sanitizer / matrix & \hrulefill\\[9pt]
+Mega flash / static / stack & \hrulefill\\[9pt]
+Policy / evidence / point sizes & \hrulefill\\[9pt]
+Named replay cells & \hrulefill\\[9pt]
+PDF / HTML human review & \hrulefill\\[9pt]
+Exact E1 owner and next action & \hrulefill\\
+\bottomrule
+\end{tabularx}
+
+\lessonbox{\textbf{Stop condition.}
+Call this bounded characterization of copied evidence. Do not call it an exact
+threshold, calibrated sensor, electrical fault diagnosis, qualified module,
+powered experiment, durable record, or physical bench result.}
+
+\vfill
+\begin{center}
+\textbf{Next: Lesson 072 --- Compose one inert module-characterization bench.}
+\end{center}
+\end{document}
