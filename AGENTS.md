@@ -10,6 +10,7 @@ Read these before changing first-class code or lessons:
 6. `docs/PACKAGING.md` — Arduino and release layout
 7. `docs/PDF_POLICY.md` — printable-document requirements
 8. `docs/WORK_QUEUE.md` — authoritative active, queued, deferred, and physical work
+9. `docs/TOOLS.md` — repo-local tool registry conventions (`tmt.json`, `tools/`)
 
 Re-read `docs/WORK_QUEUE.md` before assigning work, after every lesson or
 project integration, and before any release or publication audit. Update it in
@@ -48,3 +49,10 @@ grayscale alone do not establish compliance.
 
 Never claim physical verification without a recorded bench acceptance result.
 Never add pyrotechnic ignition, launcher control, or unknown-protocol replay.
+
+<!-- tmt:agents v1 -->
+Before writing any script, read tmt.json and prefer a listed tool
+(`tools/<id> --help`). After deriving anything repeatable, run
+`tmt note <slug>`; at two notes build it with `tmt new <slug>`.
+Keep the registry honest with `tmt check`.
+<!-- /tmt:agents -->

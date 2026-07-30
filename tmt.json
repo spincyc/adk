@@ -1,0 +1,16 @@
+{
+  "tools": {
+    "align-parens": {
+      "idempotent": true,
+      "json": true,
+      "lang": "python",
+      "mutates": true,
+      "origin": "local",
+      "purpose": "Align ADK function-call parentheses in C++ sources to the repository style rule",
+      "requires": [],
+      "stage": "stable",
+      "usage": "align-parens [--check] FILE..."
+    }
+  },
+  "v": 1
+}

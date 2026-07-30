@@ -12,14 +12,26 @@ QUALITY_ARCH_PACKAGES = base-devel clang
 	release-metadata-check release-check museum-case-fingerprint-test \
 	component-qualification-fingerprint-test \
 	module-characterization-fingerprint-test motion-recorder-fingerprint-test \
-	small-indicator-fingerprint-test thermal-gradient-fingerprint-test
+	small-indicator-fingerprint-test thermal-gradient-fingerprint-test \
+	tool-registry-check
 
 quality: quality-fast firmware-size-check package-smoke native-package-smoke \
 	lessons-check site-check
 
 quality-fast: quality-tools quality-lint quality-test quality-size
 
-quality-lint: style-check headers-check
+quality-lint: style-check headers-check tool-registry-check
+
+# The tmt registry indexes repo-local tools; every entry edit must leave the
+# gate battery green, and each tool's own test runs here. A missing tmt is not
+# a failure: the registry is a committed artifact readable without the tool.
+tool-registry-check:
+	@if command -v tmt >/dev/null 2>&1 || test -x "$(HOME)/.local/bin/tmt"; then \
+		tmt_bin="$$(command -v tmt || echo "$(HOME)/.local/bin/tmt")"; \
+		"$$tmt_bin" check; \
+	else \
+		echo "tool-registry-check: tmt unavailable; skipped (tmt.json still authoritative)"; \
+	fi
 
 quality-test: host-test host-test-exceptions host-test-sanitize \
 	serial-log-test deployed-site-test usb-matrix-check usb-mesh-check hdmi-mesh-check \
