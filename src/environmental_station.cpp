@@ -168,6 +168,17 @@ namespace adk {
     EnvironmentalStation::chooseHealth (const ClimateSample& sample,
                                         Status sensorStatus) const noexcept
     {
+        // A sensor reports every non-valid sample through one InvalidArgument
+        // status, so the sample state is the only evidence that distinguishes
+        // a timing problem from a reading the sensor itself judged out of
+        // range. Classify from the state first; the status is a fallback for
+        // a sensor that reports a timing failure without a sample state.
+        if (sample.state == ClimateSampleState::TemperatureOutOfRange ||
+            sample.state == ClimateSampleState::HumidityOutOfRange)
+        {
+            return EnvironmentalHealth::SensorFault;
+        }
+
         if (sample.state == ClimateSampleState::InvalidTiming ||
             sensorStatus.error () == StatusCode::InvalidArgument)
         {

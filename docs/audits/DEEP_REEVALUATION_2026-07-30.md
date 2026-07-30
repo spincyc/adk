@@ -132,6 +132,26 @@ on a host without fontconfig. Use that pattern for new plates. A
 `svg-stroke-labels` tool candidate was recorded here and has been abandoned as
 duplicative of it.
 
+## Actions taken after verification — 2026-07-30
+
+- **`EnvironmentalStation` health classification fixed.** Out-of-range
+  temperature and humidity now publish `SensorFault` instead of `TimingFault`.
+  The regression test was proved to fail against the unfixed source before the
+  fix was applied, so it genuinely covers the defect.
+- **Lesson 016's labels unhidden.** The `display: none` rule is gone and the
+  plate now shows its header geometry, `D22`--`D29` pin numbers, `leave D29
+  empty`, the `1 2 3 A` … `* 0 # D` key legends, `R0`--`R3`/`C0`--`C2`, and the
+  taped `C3` tab — matching the alt-text that had described labels the image
+  never showed. Two labels overflowed the canvas once visible and were moved
+  inward; content now ends 22 px clear of the edge. Lessons 016 and 018 rebuilt.
+- **Seven superseded assets deleted** with two companion files, after
+  confirming zero references from any lesson, overlay, Make rule, or site page.
+  Git history preserves them.
+- **Deferred deliberately:** the latent `SpiBus` death-propagation gap, since
+  nothing composes `MegaSpiDriver` under a `SpiBus` yet; and drawings for
+  lessons 029 and 032, which need an authoring decision about which concept
+  deserves a visual rather than an invented one.
+
 ## Verification round — 2026-07-30, second pass
 
 Two read-only agents re-checked the claims above against source and git

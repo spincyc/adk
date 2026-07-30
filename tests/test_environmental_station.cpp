@@ -268,6 +268,27 @@ namespace {
                       "healthy recovery");
         require (station.snapshot ().record.health == EnvironmentalHealth::Healthy,
                  "recovery visible");
+
+        // A sensor reports an out-of-range reading with the same
+        // InvalidArgument status it uses for a timing failure, so only the
+        // sample state separates them. The station must not call a rejected
+        // reading a timing fault.
+        sensor.current.state = ClimateSampleState::TemperatureOutOfRange;
+        sensor.updateStatus  = StatusCode::InvalidArgument;
+        requireError (station.update (TimePoint (10000)),
+                      StatusCode::InvalidArgument,
+                      "out-of-range temperature returned");
+        require (station.snapshot ().record.health ==
+                     EnvironmentalHealth::SensorFault,
+                 "out-of-range temperature is a sensor fault, not a timing fault");
+
+        sensor.current.state = ClimateSampleState::HumidityOutOfRange;
+        requireError (station.update (TimePoint (12000)),
+                      StatusCode::InvalidArgument,
+                      "out-of-range humidity returned");
+        require (station.snapshot ().record.health ==
+                     EnvironmentalHealth::SensorFault,
+                 "out-of-range humidity is a sensor fault, not a timing fault");
     }
 
     void testTimingResetAndRollover ()
