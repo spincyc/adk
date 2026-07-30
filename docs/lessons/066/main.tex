@@ -1,0 +1,336 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.60in]{geometry}
+\usepackage{amsmath,booktabs,enumitem,fancyhdr,graphicx,tabularx,titlesec,xcolor}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{docs/lessons/assets/}{assets/}}
+\hypersetup{
+ pdftitle={ADK Lesson 066: Map a Thermal Gradient from Copied Evidence},
+ pdfauthor={Kevin Shanahan},
+ pdfsubject={Projecting qualified copied DS18B20 observations into spatial gradients, inert pages, and volatile record intent},
+ pdflang={en-US}}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\textsc{ADK Lesson 066}}\rhead{Thermal Gradient Mapper}
+\cfoot{\thepage}\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{3pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.5em}{}
+\newcommand{\lessonbox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{#1}}\end{center}}
+\newcommand{\blankline}{\rule{0.76in}{0.4pt}}
+\newcommand{\longblank}{\rule{1.35in}{0.4pt}}
+
+\begin{document}
+\small
+\begin{center}
+ {\Huge\bfseries Map a Thermal Gradient}\\[3pt]
+ {\Large Put identities in places before comparing values}\\[7pt]
+ \fbox{\textbf{E0 SYNTHETIC REPLAY --- NO PROBE, DISPLAY, OR STORAGE CLAIM}}
+\end{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 066 --- project & Time & 180--240 minutes\\
+Prerequisite & Lesson 065 qualified snapshot & Board & compile-only Mega replay\\
+Input & copied snapshot and controls & Observation & named result cells\\
+\end{tabularx}
+
+\lessonbox{\textbf{Responsibility.}
+\texttt{ThermalGradientMapper} projects two to four configured identities into
+fixed spatial order, derives conservative adjacent intervals, and emits inert
+page and caller-owned record intent. It does not poll a bus, drive a display,
+read a clock, write storage, or establish a physical temperature gradient.}
+
+\section{Give each identity one place}
+Lesson 065 publishes four stable identified slots. Lesson 066 chooses an
+ordered subset of two through four of those identities. This list means
+left-to-right or near-to-far because configuration says so. Search order,
+arrival order, ROM number, current temperature, and page order never become
+spatial evidence.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.72in,keepaspectratio]
+ {066-spatial-identity-lineup-pencil.png}
+
+\small\textit{Alternative text: four discovered graphite source tokens are
+projected by arrows into three numbered mapped positions in configured order;
+the triangle source remains explicitly unmapped.}
+\end{center}
+
+Every mapped ROM must occur exactly once among the four source ROMs. One
+mapped ROM, a repeated ROM, an all-zero ROM, or an unknown ROM rejects
+configuration. A configured but unmapped source remains permitted; it does
+not silently become an extra page or gradient.
+
+\begin{tabularx}{\linewidth}{@{}X X@{}}
+\toprule
+E0 establishes & E0 does not establish\\
+\midrule
+identity-based spatial projection & package location or physical mounting\\
+deterministic interval arithmetic & calibrated accuracy or simultaneity\\
+inert LCD/LED content intent & a powered display or observation circuit\\
+volatile caller-owned record intent & RTC time, media, or durability\\
+\bottomrule
+\end{tabularx}
+
+Predict the ordered pair when source enumeration is reversed but configuration
+is unchanged: \longblank. Which order has authority? \longblank.
+
+\newpage
+\section{Compare complete intervals}
+Each current Lesson 065 probe carries a closed signed raw-sixteenth interval.
+For adjacent configured slots \(L\) and \(R\), widened arithmetic computes:
+\[
+ [G_{\mathrm{low}},G_{\mathrm{high}}]
+ =
+ [R_{\mathrm{low}}-L_{\mathrm{high}},
+  R_{\mathrm{high}}-L_{\mathrm{low}}].
+\]
+The subtraction uses 32-bit fields even though each endpoint is 16-bit. This
+prevents an extreme pair from overflowing before classification.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.82in,keepaspectratio]
+ {066-adjacent-interval-subtraction-pencil.png}
+
+\small\textit{Alternative text: four graphite gradient intervals sit around
+negative and positive threshold marks on one number line, showing complete
+interval examples classified as flat, rising, falling, and indeterminate.}
+\end{center}
+
+For a positive threshold \(T\), \texttt{Rising} requires
+\(G_{\mathrm{low}}\geq T\), while \texttt{Falling} requires
+\(G_{\mathrm{high}}\leq -T\). \texttt{Flat} requires the complete interval to
+remain strictly between the two boundaries. An interval that crosses a
+boundary is \texttt{Indeterminate}; the mapper never rounds it into a
+direction.
+
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+Gradient interval & Threshold \(T=16\) & Quality\\
+\midrule
+\([16,20]\) & lower equals \(T\) & \texttt{Rising}\\
+\([-20,-16]\) & upper equals \(-T\) & \texttt{Falling}\\
+\([-15,15]\) & wholly inside & \texttt{Flat}\\
+\([15,17]\) & crosses \(T\) & \texttt{Indeterminate}\\
+\bottomrule
+\end{tabularx}
+
+\section{Aggregate without hiding disagreement}
+Any mapped probe or pair fault makes overall health \texttt{Fault}.
+Otherwise, an indeterminate pair or a mixture of rising and falling pairs
+makes \texttt{Disagreement}. At least one directional pair makes
+\texttt{Gradient}; all-flat pairs make \texttt{Stable}.
+
+Equal extrema use the lowest mapped slot for primary attribution while tie
+masks preserve all equal slots. Calculate the interval for
+\(L=[400,407]\), \(R=[416,419]\): \blankline\ through \blankline.
+
+\newpage
+\section{Let faults dominate every affected page}
+A probe contributes a number only while its copied quality is
+\texttt{Current} and its inclusive \texttt{freshThrough} bound admits the
+mapper's supplied \texttt{now}. Equality remains fresh; the next
+representable millisecond is stale. Missing, pending, CRC-failed,
+resolution-mismatched, stale, implausible-step, and transport-fault evidence
+must never appear as zero, ``cold,'' flat, or cached current data.
+The mapper coherence-checks the copied input age, then recomputes every
+emitted page age and record age from that probe's \texttt{observedAt} to the
+mapper envelope's \texttt{now}. A control edge cannot refresh either time.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.75in,keepaspectratio]
+ {066-fault-incidence-chain-pencil.png}
+
+\small\textit{Alternative text: four graphite slot cards are joined by three
+connector bars; slot two and both incident bars are cracked beneath one global
+overall-fault banner, while the nonincident bar between slots three and four
+remains intact.}
+\end{center}
+
+A bad interior slot faults both incident gradients. A healthy nonincident
+pair may retain its own numeric evidence, but every page carries the complete
+overall fault mask. Page selection and record controls cannot alter that
+classification.
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Page & Healthy content & Fault content\\
+\midrule
+Overall & health, extrema, complete mask & health and complete mask\\
+Probe & ROM, interval, age, quality & ROM, age, quality, fault token\\
+Adjacent & both ROMs, interval, direction & both ROMs and fault token\\
+\bottomrule
+\end{tabularx}
+
+\section{Keep pages inert}
+Page order is fixed: overall, mapped probes in spatial order, then adjacent
+pairs. A fresh \texttt{nextEdge} advances once and wraps from the final page.
+The intent includes mutually exclusive selectors: \texttt{selectedSlot} is
+meaningful only on a probe page, while \texttt{selectedGradient} is meaningful
+only on an adjacent-gradient page; both are canonical zero on the overall
+page, and the inapplicable selector is zero on either detail page. LCD content
+choices, an active-slot LED mask, and grayscale-safe health/fault meaning are
+values, not hardware operations.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.88\linewidth,height=1.45in,keepaspectratio]
+ {066-page-carousel-pencil.png}
+
+\small\textit{Alternative text: graphite cards follow a fixed loop from the
+overall page through configured probe pages and adjacent-pair pages, with one
+copied edge moving a pointer exactly once and wrapping to the beginning.}
+\end{center}
+
+A control has its own owner, source, configuration revision, sequence, time,
+and status. Changed duplicates, regressions, future controls, half-range
+ambiguity, stale controls, and exhaustion reject atomically.
+
+\newpage
+\section{Create record intent, not a stored record}
+A fresh \texttt{recordEdge} may fill exactly one bounded caller-owned
+\texttt{ThermalMapperRecordImage}. The edge can capture a changed or unchanged
+accepted probe frame. Record creation belongs to the control edge, not to a
+temperature change.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=1.72in,keepaspectratio]
+ {066-record-intent-notebook-pencil.png}
+
+\small\textit{Alternative text: accepted update and fresh record-edge cards
+cross a validation barrier into a caller-owned notebook with a witness digest;
+a separate crossed-out storage claim remains outside the owned result.}
+\end{center}
+
+The record preserves owner and lifecycle, configuration revision, nonzero
+record sequence, complete edge attribution, source set identity and cycle,
+mapping time, every mapped ROM and interval-or-fault, every adjacent gradient,
+overall health and mask, all four configured source ROMs including permitted
+unmapped identities, and a deterministic digest covering that complete
+witness. Full fields remain authoritative; the digest is not a substitute for
+them.
+
+\lessonbox{\textbf{Volatile boundary.}
+\texttt{hasRecord} means ``the caller received one record intent in this
+synchronous update.'' It does not mean a file was opened, bytes were stored,
+a clock was accurate, media acknowledged a write, or data survived reset or
+power loss.}
+
+\section{Make the whole update atomic}
+The mapper validates the complete copied envelope before committing policy or
+touching the caller's result. A rejected update preserves every policy byte
+and every result canary. A byte-identical duplicate is idempotent: it cannot
+advance a page, emit a second record, refresh evidence, or extend freshness.
+An exact envelope replay may republish the identical current intent image to
+the caller, but it creates no new record and consumes no record sequence.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.90\linewidth,height=1.40in,keepaspectratio]
+ {066-maximum-collision-trace-pencil.png}
+
+\small\textit{Alternative text: seven large graphite stages run from lifecycle
+through envelope, frame, control, freshness, page, and record; first fault
+wins, a rejected checkerboard remains identical to the before image, and a
+later valid update proceeds between two canary birds.}
+\end{center}
+
+Record-edge and record-sequence exhaustion fault before zero. Reset starts a
+new lifecycle and clears page and record history. Shutdown makes outputs
+inactive and is idempotent; reinitialization must accept a new complete frame.
+
+\newpage
+\section{Replay the project without touching hardware}
+The canonical Mega sketch constructs copied Lesson 065 evidence, maps its
+identities, supplies copied page and record edges, and places selected results
+in named volatile cells. The sketch follows acquire, configure, start, then
+observe, decide, actuate---where actuate means publish inert intent.
+
+\begin{enumerate}
+ \item \textbf{Predict:} write mapped order, three adjacent qualities, overall
+       health, page index, and whether one record intent should appear.
+ \item \textbf{Observe:} compile for Mega 2560 and inspect the named volatile
+       result cells in a debugger, simulator, or disassembly. Serial may
+       support the observation but is not required.
+ \item \textbf{Interpret:} compare identities, intervals, fault mask, page,
+       record edge, and sequence with the copied fixture. Explain any
+       disagreement before changing evidence.
+\end{enumerate}
+
+This is the E0 non-Serial observation path. It establishes deterministic
+software acquisition and publication separately from an electrical
+safe-state experiment. E0 owns no endpoint, so powered resource acquisition,
+released-line state, display behavior, and probe behavior remain future E1
+checks.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.82\linewidth,height=1.12in,keepaspectratio]
+ {066-fresh-through-hourglass-pencil.png}
+
+\small\textit{Alternative text: an accepted snapshot is fresh through time
+\(T\) beside an hourglass and modular time strip; record controls at \(T\) and
+\(T+1\) do not refill the hourglass, so \(T\) is fresh; at \(T+1\) the probe
+is classified stale and contributes no number.}
+\end{center}
+
+\section{Publisher verification and resource boundary}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X@{}}
+Host evidence & Strict tests, sanitizer tests, standalone header, style, and
+complete atomic/canary replay are publisher gates.\\
+Mega evidence & Ordinary and isolated no-LTO flash/static SRAM measurements
+are inserted from the canonical replay before promotion.\\
+Memory evidence & Mapper object, result, record image, hidden-return behavior,
+conservative synchronous stack, recurring Lessons 064--066 placement, and
+residual SRAM are independently reproduced before promotion.\\
+Document evidence & PDF policy, metadata, extraction, monochrome, page-count,
+and rendered-pencil review are publisher-owned gates.\\
+Physical evidence & Deferred; no powered probe, display, RTC, media, thermal
+accuracy, immersion, heater, or preservation claim is authorized.\\
+\end{tabularx}
+
+Until exact measurements replace this pre-publication statement, the lesson
+is not promoted. Planning hard limits are 24 KiB flash, 3,072 B static SRAM,
+1,024 B synchronous stack, 768 B mapper object, 384 B per fixed caller-owned
+ABI value, and at least 4 KiB residual SRAM.
+
+\newpage
+\section{Draw the boundary around the result}
+There is no wiring diagram or formal schematic at E0. A future powered
+boundary must first qualify exact probe specimens and supply mode, bus loading
+and pull-up, exact LCD/LED endpoints, pin and resource ownership, electrical
+safe state, independent observation, and measured acceptance. Any RTC or
+media work separately needs exact devices, ownership, bounded transactions,
+receipts, corruption and power-loss recovery, capacity, wear, and durability
+evidence.
+
+No version of this lesson authorizes immersion, an unknown ``waterproof''
+assembly, a hot surface, heater, flame, ignition, food or medical judgment,
+preservation control, or unattended thermal stimulus.
+
+\section{Exercises and acceptance reasoning}
+\begin{enumerate}
+ \item Scramble all discovery/input permutations for three identities. Show
+       why the complete mapper image remains in configured spatial order.
+ \item Test interval boundaries immediately below, at, and above both
+       thresholds. Explain every indeterminate result without rounding.
+ \item Make the middle probe stale. Mark both incident fault gradients and
+       the healthy nonincident evidence that remains attributable.
+ \item Advance from the last page to overall. Replay the identical control,
+       then change one copied control field at the same sequence.
+ \item Emit a fresh record edge over an unchanged qualified snapshot. List
+       what the record proves and five durability claims it cannot prove.
+ \item Replay ordinary rollover, future time, exact half-range ambiguity,
+       record exhaustion, reset, shutdown, and reinitialize. Confirm every
+       rejected caller image remains byte-for-byte unchanged.
+\end{enumerate}
+
+\lessonbox{\textbf{Project result.}
+You have composed copied transport and qualification evidence into a stable,
+fault-dominant spatial view without smuggling discovery order, hardware
+control, calibrated accuracy, or durable storage into the policy.}
+
+\textit{Stop at E0: exact powered specimens, wiring, presentation, recording,
+thermal accuracy, and every physical acceptance result remain open work.}
+\end{document}

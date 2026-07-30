@@ -8,7 +8,7 @@ use the first-class RAII interfaces.
 
 ## Current status
 
-Lessons 001--065 have first-class implementation work, deterministic host
+Lessons 001--066 have first-class implementation work, deterministic host
 tests, canonical Mega 2560 examples, lesson sources, and size evidence. Their
 bench cards remain open. Lessons 037--039 use documented C&K and SparkFun
 reference fixtures; incoming conformance and physical acceptance remain open.
@@ -86,24 +86,32 @@ exact no-LTO aggregate measures 22,980 bytes flash, 1,405 bytes static SRAM,
 819 bytes stack, and 709 bytes of child/monitor objects, leaving 5,840 bytes
 residual SRAM. Powered presentation, combined sensing, persistence, and relay
 fixtures remain E1c/E1d/E2-open.
-Lessons 064--065 are host verified and published at E0 under the
+Lessons 064--066 are host verified and published at E0 under the
 [thermal-mapper plan](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) and
 [single-wire transaction stress pass](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md).
 They publish `OneWireTransactionPolicy` over copied requests, semantic line
 intents, copied receipts, and caller-supplied microsecond time, followed by
 `Qualified18B20ProbeSetPolicy` over fixed identities and correlated search,
 conversion, scratchpad, CRC, freshness, disappearance, and replay evidence.
-Its canonical Mega replay measures 13,662 bytes flash and 1,438 bytes static
-SRAM; the exact no-LTO replay measures 16,196/1,438 bytes with 533 bytes of
-conservative synchronous stack, a 764-byte policy, a 477-byte caller-owned
-builder, and a 180-byte snapshot.
-Lesson 066 remains planned under the
+Lesson 065's canonical Mega replay measures 13,662 bytes flash and 1,438 bytes
+static SRAM; the exact no-LTO replay measures 16,196/1,438 bytes with 533
+bytes of conservative synchronous stack, a 764-byte policy, a 477-byte
+caller-owned builder, and a 180-byte snapshot.
+Lesson 066 publishes `ThermalGradientMapper` under the
 [qualified probe-set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md)
 and
 [thermal-gradient mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md)
-boundaries. Exact powered specimens, electrical single-wire behavior, thermal
-accuracy, presentation, persistence, and every E1a--E1d bench acceptance
-level remain open.
+boundaries. It maps copied, structurally validated slots into ordered
+interval-gradient and fault cells, bounded page intent, and volatile record
+intent. Its canonical Mega replay measures 16,662 bytes flash and 2,210 bytes
+static SRAM; exact no-LTO evidence measures 18,822/2,210 bytes with 855 bytes
+of conservative synchronous stack, a 448-byte mapper, 202-byte envelope,
+377-byte result, and 229-byte record. The reviewed recurring composition is
+1,943 bytes, phase-local storage is 579 bytes, lifetime storage is 2,522 bytes,
+and residual SRAM is 4,999 bytes. Six target misses were independently
+reviewed below their hard limits. Exact powered specimens, electrical
+single-wire behavior, thermal accuracy, presentation, persistence, and every
+E1a--E1d bench acceptance level remain open.
 The later blocks are ordered for early learner engagement while retaining
 prerequisite, authorization, safety, and evidence gates: interactive motion
 and display projects precede the more methodical environmental and
@@ -204,6 +212,7 @@ For every lesson, the queued implementation order is:
 | 063 | Host verified; E1c/E1d/E2 fixtures open | `MuseumCaseMonitor` | Additive hazards, alarm latch, fresh acknowledgement/cooldown, inert output intent, and bounded copied audit delivery |
 | 064 | Host verified; exact powered endpoint/E1a bench open | `OneWireTransactionPolicy` | Closed typed requests, semantic line intents, exact copied receipts, bounded search, timeout, rollback, cleanup, and byte-stable replay without owning a bus |
 | 065 | Host verified; exact probes/powered endpoint/E1a--E1c bench open | `Qualified18B20ProbeSetPolicy` | Four fixed ROM identities, correlated conversion chains, CRC, resolution, range, step, freshness, disappearance, and byte-stable replay without owning probes or a bus |
+| 066 | Host verified; exact probes/presentation/persistence/E1a--E1d bench open | `ThermalGradientMapper` | Structurally validated copied slots become ordered interval-gradient, fault, page, and volatile record-intent cells without authenticating a source, driving a display, or writing storage |
 
 The coordinator promotes a row from queued to active only after its public
 dependencies have landed. The queue fixes teaching order, not implementation
@@ -284,7 +293,7 @@ supplies the shortest planned path through the library.
 | 063 | Project-bearing | Museum-case monitor | Qualified environmental and reed evidence, inert alarm intent, and records reproduce each decision |
 | 064 | Component | Single-wire transactions | Reset, presence, slots, pull-up policy, timeout, rollback, and DS18B20 identity are explicit |
 | 065 | Component | Qualified 18B20 thermal probe sets | Fixed-capacity identities retain conversion, CRC, stale, and disappearance state |
-| 066 | Project-bearing | Thermal gradient mapper | Safe tabletop 18B20 observations produce stable displays and records |
+| 066 | Project-bearing | Thermal gradient mapper | Qualified copied 18B20 result images produce deterministic gradient, fault, page, and volatile record intent; powered presentation, persistence, and authentication are not claimed |
 | 067 | Component | Inertial record normalization | Device identity, range, calibration version, data-ready, and faults survive normalization |
 | 068 | Component | Inertial source qualification | Explicit configuration qualifies one source without hidden voting or failover |
 | 069 | Project-bearing | Interchangeable motion recorder | Revision-specific traces normalize and present through earlier endpoints |

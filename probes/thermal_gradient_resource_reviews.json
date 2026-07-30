@@ -3,7 +3,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "daac49006cddf0f38d7cec2f4a82a46126cb9b9686fed7c458ea17f09aa31e3d",
+      "fingerprint_sha256": "7542ee4b0ac9a4bdae21a7e57e65b4771334c69d20455851db7bd4cb87851ec7",
       "hard_bytes": 14336,
       "lesson": "064",
       "metric": "ordinary_flash",
@@ -15,7 +15,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "daac49006cddf0f38d7cec2f4a82a46126cb9b9686fed7c458ea17f09aa31e3d",
+      "fingerprint_sha256": "7542ee4b0ac9a4bdae21a7e57e65b4771334c69d20455851db7bd4cb87851ec7",
       "hard_bytes": 14336,
       "lesson": "064",
       "metric": "flash",
@@ -27,7 +27,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "daac49006cddf0f38d7cec2f4a82a46126cb9b9686fed7c458ea17f09aa31e3d",
+      "fingerprint_sha256": "7542ee4b0ac9a4bdae21a7e57e65b4771334c69d20455851db7bd4cb87851ec7",
       "hard_bytes": 256,
       "lesson": "064",
       "metric": "object",
@@ -39,7 +39,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "6e4f9d75a48398919dc764d386cb3c2c0faf9fb11e9c874c9b0377c768ef0bc3",
+      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
       "hard_bytes": 16384,
       "lesson": "065",
       "metric": "ordinary_flash",
@@ -51,7 +51,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "6e4f9d75a48398919dc764d386cb3c2c0faf9fb11e9c874c9b0377c768ef0bc3",
+      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
       "hard_bytes": 16384,
       "lesson": "065",
       "metric": "flash",
@@ -63,7 +63,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "6e4f9d75a48398919dc764d386cb3c2c0faf9fb11e9c874c9b0377c768ef0bc3",
+      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
       "hard_bytes": 1536,
       "lesson": "065",
       "metric": "ordinary_static_sram",
@@ -75,7 +75,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "6e4f9d75a48398919dc764d386cb3c2c0faf9fb11e9c874c9b0377c768ef0bc3",
+      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
       "hard_bytes": 1536,
       "lesson": "065",
       "metric": "static_sram",
@@ -87,7 +87,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "6e4f9d75a48398919dc764d386cb3c2c0faf9fb11e9c874c9b0377c768ef0bc3",
+      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
       "hard_bytes": 640,
       "lesson": "065",
       "metric": "synchronous_stack",
@@ -99,7 +99,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "6e4f9d75a48398919dc764d386cb3c2c0faf9fb11e9c874c9b0377c768ef0bc3",
+      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
       "hard_bytes": 768,
       "lesson": "065",
       "metric": "object",
@@ -111,7 +111,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "6e4f9d75a48398919dc764d386cb3c2c0faf9fb11e9c874c9b0377c768ef0bc3",
+      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
       "hard_bytes": 512,
       "lesson": "065",
       "metric": "builder_caller_buffer",
@@ -123,7 +123,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "6e4f9d75a48398919dc764d386cb3c2c0faf9fb11e9c874c9b0377c768ef0bc3",
+      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
       "hard_bytes": 1280,
       "lesson": "065",
       "metric": "recurring_owned_storage",
@@ -135,7 +135,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "6e4f9d75a48398919dc764d386cb3c2c0faf9fb11e9c874c9b0377c768ef0bc3",
+      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
       "hard_bytes": 1792,
       "lesson": "065",
       "metric": "lifetime_peak_storage",
@@ -143,6 +143,78 @@
       "rationale": "The peak combines the required 1,241-byte recurring placement with one lifetime-reused 180-byte phase value; map evidence excludes duplicate phase globals and leaves 371 bytes of hard-limit margin.",
       "reviewer": "independent-resource-review/l065-correctness-repair-final",
       "target_bytes": 1216
+    },
+    {
+      "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "1db0f69334dc876fe5e137ed4b73d9890abeace1f0bee1b33be8e0419b9950ef",
+      "hard_bytes": 24576,
+      "lesson": "066",
+      "metric": "ordinary_flash",
+      "observed_bytes": 16662,
+      "rationale": "The deployed mapper replay retains four recurring owners, complete copied-evidence validation, conservative interval classification, fault-dominant presentation, and caller-owned record intent while remaining 7,914 bytes below the hard limit.",
+      "reviewer": "independent-resource-review/l066-frozen-composition-final",
+      "target_bytes": 16384
+    },
+    {
+      "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "1db0f69334dc876fe5e137ed4b73d9890abeace1f0bee1b33be8e0419b9950ef",
+      "hard_bytes": 24576,
+      "lesson": "066",
+      "metric": "flash",
+      "observed_bytes": 18822,
+      "rationale": "The exact attribution build disables LTO and jump tables so linked ownership, call edges, stack, chronology, and record provenance remain inspectable; it retains 5,754 bytes of hard-limit margin.",
+      "reviewer": "independent-resource-review/l066-frozen-composition-final",
+      "target_bytes": 16384
+    },
+    {
+      "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "1db0f69334dc876fe5e137ed4b73d9890abeace1f0bee1b33be8e0419b9950ef",
+      "hard_bytes": 3072,
+      "lesson": "066",
+      "metric": "ordinary_static_sram",
+      "observed_bytes": 2210,
+      "rationale": "The deployed maximum composition keeps exactly one Lesson 064 policy, Lesson 065 policy, active builder, and mapper live together, with phase values absent from global storage and 862 bytes of hard-limit margin.",
+      "reviewer": "independent-resource-review/l066-frozen-composition-final",
+      "target_bytes": 2048
+    },
+    {
+      "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "1db0f69334dc876fe5e137ed4b73d9890abeace1f0bee1b33be8e0419b9950ef",
+      "hard_bytes": 3072,
+      "lesson": "066",
+      "metric": "static_sram",
+      "observed_bytes": 2210,
+      "rationale": "The exact linked image corroborates ordinary static placement, proves the four required recurring objects total 1,943 bytes, excludes phase-local globals, and retains 862 bytes of hard-limit margin.",
+      "reviewer": "independent-resource-review/l066-frozen-composition-final",
+      "target_bytes": 2048
+    },
+    {
+      "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "1db0f69334dc876fe5e137ed4b73d9890abeace1f0bee1b33be8e0419b9950ef",
+      "hard_bytes": 1024,
+      "lesson": "066",
+      "metric": "synchronous_stack",
+      "observed_bytes": 855,
+      "rationale": "The conservative no-LTO graph includes the 603-byte update phase frame and direct-result atomic update path, remains 169 bytes below the hard limit, and leaves 4,999 bytes after static storage, stack, and ISR reserve.",
+      "reviewer": "independent-resource-review/l066-frozen-composition-final",
+      "target_bytes": 768
+    },
+    {
+      "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "1db0f69334dc876fe5e137ed4b73d9890abeace1f0bee1b33be8e0419b9950ef",
+      "hard_bytes": 384,
+      "lesson": "066",
+      "metric": "result_caller_buffer",
+      "observed_bytes": 377,
+      "rationale": "The fixed caller result retains four probe intents, three adjacent gradients, complete record provenance, fault masks, and status without hidden allocation. Its seven-byte hard margin imposes zero growth and requires fresh review after any ABI change.",
+      "reviewer": "independent-resource-review/l066-frozen-composition-final",
+      "target_bytes": 256
     }
   ],
   "schema": 1

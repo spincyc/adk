@@ -70,8 +70,9 @@ third lesson for a deterministic integration project.
 | [Lesson 063 — Monitoring one inert museum case](063.md) | Copied environmental, reed, acknowledgement, and audit evidence | Additive hazards, alarm latch, cooldown, inert output intent, and bounded audit delivery |
 | [Lesson 064 — Bounded copied 1-Wire transactions](064.md) | Typed copied single-wire intent and receipt evidence | Microsecond windows, correlated phases, bounded ROM search, explicit rollback, and release confirmation |
 | [Lesson 065 — Qualifying a four-probe 18B20 set](065.md) | Fixed identities and copied transaction chains | Conversion, CRC, resolution, freshness, disappearance, and replay state remain attributable |
+| [Lesson 066 — Mapping copied thermal gradients](066.md) | Structurally validated copied probe-set images | Ordered intervals, fault incidence, pages, and volatile record intent remain deterministic |
 
-Lessons 001--065 are host verified and their canonical examples compile for
+Lessons 001--066 are host verified and their canonical examples compile for
 the Mega 2560. Lessons 055--057 publish E0 replay only: exact inputs,
 presentation, storage, actuators, and bench acceptance remain open. Lessons
 058--060 likewise leave their exact powered display fixtures and bench
@@ -79,8 +80,10 @@ acceptance open. Lessons 061--063 are copied-evidence E0 policy only; their
 exact powered probes/modules, adapters, wiring, physical behavior, and E1
 bench acceptance remain open. Lesson 064 publishes only copied 1-Wire
 transaction intent and receipts. Lesson 065 qualifies only copied transaction
-evidence; exact endpoints, pull-ups, probes, timing, thermal accuracy, power
-behavior, and bench acceptance remain open. Every
+evidence. Lesson 066 maps copied result images only: it does not authenticate
+their source, drive a display, or persist a record. Exact endpoints, pull-ups,
+probes, timing, thermal accuracy, presentation, storage, power behavior, and
+bench acceptance remain open. Every
 circuit remains experimental until its physical acceptance card is recorded.
 Historical preview lessons are preserved under
 [Legacy](../legacy/index.md).
@@ -92,7 +95,6 @@ published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 066 | Complete the thermal gradient mapper arc |
 | 067–069 | Interchangeable motion recorder |
 | 070–072 | Module characterization bench |
 | 073–078 | Authorized-family subjects pending |

@@ -19,7 +19,7 @@ nav:
   - Course:
       - Course map: course.md
       - Lesson index: lessons/index.md
-      - Current lesson — qualified four-probe 18B20 set: lessons/065.md
+      - Current lesson — thermal-gradient mapper: lessons/066.md
       - Command-line workflow: docs/CLI.md
   - Library:
       - Components: components.md

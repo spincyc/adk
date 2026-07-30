@@ -27,6 +27,13 @@ class ThermalGradientFingerprintPortabilityTest(unittest.TestCase):
             ],
             ["064", "065"],
         )
+        self.assertEqual(
+            [
+                boundary["lesson"]
+                for boundary in thermal_probe.selected_boundaries("066")
+            ],
+            ["064", "065", "066"],
+        )
 
     def test_each_boundary_self_hashes_probe_implementation(self):
         script = "scripts/check_thermal_gradient_resource_probe.py"
@@ -39,6 +46,100 @@ class ThermalGradientFingerprintPortabilityTest(unittest.TestCase):
         self.assertIn(
             "probes/thermal_gradient_object_sizes_065.cpp",
             thermal_probe.fingerprint_source_paths("065"),
+        )
+        self.assertNotIn(
+            "probes/thermal_gradient_object_sizes_066.cpp",
+            thermal_probe.fingerprint_source_paths("065"),
+        )
+        self.assertIn(
+            "probes/thermal_gradient_object_sizes_066.cpp",
+            thermal_probe.fingerprint_source_paths("066"),
+        )
+        self.assertNotIn(
+            "src/thermal_gradient_mapper.h",
+            thermal_probe.fingerprint_source_paths("064"),
+        )
+        self.assertNotIn(
+            "src/thermal_gradient_mapper.h",
+            thermal_probe.fingerprint_source_paths("065"),
+        )
+        self.assertIn(
+            "src/thermal_gradient_mapper.h",
+            thermal_probe.fingerprint_source_paths("066"),
+        )
+
+    def test_l066_fingerprint_chains_from_l065(self):
+        self.assertEqual(
+            thermal_probe.FINGERPRINT_CONTRACT["064"],
+            "thermal-gradient-resource-v4-l064",
+        )
+        self.assertEqual(
+            thermal_probe.FINGERPRINT_CONTRACT["065"],
+            "thermal-gradient-resource-v4-l065",
+        )
+        self.assertEqual(
+            thermal_probe.FINGERPRINT_CONTRACT["066"],
+            "thermal-gradient-resource-v4-l066",
+        )
+
+    def test_each_boundary_hashes_the_live_probe_implementation(self):
+        script = "scripts/check_thermal_gradient_resource_probe.py"
+        live = thermal_probe.probe.sha256(ROOT / script)
+        for lesson in ("064", "065", "066"):
+            self.assertEqual(
+                thermal_probe.fingerprint_source_hashes(lesson)[script],
+                live,
+            )
+
+    def test_predecessor_compile_inputs_exclude_l066_only(self):
+        units = [
+            {"file": "<repo>/src/thermal_gradient_mapper.cpp", "arguments": []},
+            {"file": "<repo>/src/one_wire_transaction_policy.cpp", "arguments": []},
+        ]
+        self.assertEqual(
+            [
+                unit["file"]
+                for unit in thermal_probe.boundary_compile_units(units, "065")
+            ],
+            ["<repo>/src/one_wire_transaction_policy.cpp"],
+        )
+        self.assertEqual(
+            len(thermal_probe.boundary_compile_units(units, "066")), 2
+        )
+        dependencies = {
+            "manifests": [
+                {
+                    "path": "libraries/adk/thermal_gradient_mapper.cpp.d",
+                    "dependencies": [
+                        "<repo>/src/thermal_gradient_mapper.cpp",
+                        "<repo>/src/thermal_gradient_mapper.h",
+                    ],
+                },
+                {
+                    "path": "sketch/example.ino.cpp.d",
+                    "dependencies": [
+                        "<repo>/src/Adk.h",
+                        "<repo>/src/thermal_gradient_mapper.h",
+                    ],
+                },
+            ],
+            "dependency_hashes": {
+                "<repo>/src/Adk.h": "changed",
+                "<repo>/src/thermal_gradient_mapper.cpp": "cpp",
+                "<repo>/src/thermal_gradient_mapper.h": "header",
+            },
+        }
+        predecessor = thermal_probe.boundary_compile_dependencies(
+            dependencies, "065"
+        )
+        self.assertEqual(len(predecessor["manifests"]), 1)
+        self.assertEqual(
+            predecessor["manifests"][0]["dependencies"],
+            ["<repo>/src/Adk.h"],
+        )
+        self.assertEqual(
+            predecessor["dependency_hashes"],
+            {"<repo>/src/Adk.h": "changed"},
         )
 
     def test_link_recipe_canonicalizes_only_path_tokens(self):
@@ -216,6 +317,24 @@ class ThermalGradientFingerprintPortabilityTest(unittest.TestCase):
                 "compiler": "avr-g++ (GCC) 7.3.0",
                 "nm": "GNU nm (GNU Binutils) 2.26.20160125",
             },
+        )
+
+    def test_review_tuple_direction_matches_limit_kind(self):
+        self.assertTrue(
+            thermal_probe.valid_review_tuple("flash", 13, 12, 16)
+        )
+        self.assertFalse(
+            thermal_probe.valid_review_tuple("flash", 11, 12, 16)
+        )
+        self.assertTrue(
+            thermal_probe.valid_review_tuple(
+                "residual_sram", 3500, 4096, 2048
+            )
+        )
+        self.assertFalse(
+            thermal_probe.valid_review_tuple(
+                "residual_sram", 2000, 4096, 2048
+            )
         )
 
     def test_actual_compile_units_sort_after_path_canonicalization(self):

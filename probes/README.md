@@ -104,17 +104,18 @@ hard ceilings and residual-SRAM floors remain non-reviewable. Fingerprints are
 lesson-scoped so adding a later boundary does not invalidate an unchanged
 earlier review.
 
-Run the thermal-gradient probe through Lesson 064 with:
+Run the thermal-gradient probe through Lesson 066 with:
 
 ```sh
 make thermal-gradient-resource-check
 ```
 
-This gate compiles the canonical owned single-wire replay both with the
-ordinary Arduino settings and as an exact no-LTO fixture. It measures linked
-flash, static SRAM, synchronous stack, the policy object, every public value,
-and the request, search, intent, receipt, and snapshot caller buffers. The
-linked fixture must contain exactly one of each required storage object.
+This gate compiles the canonical Lessons 064--066 thermal-gradient composition
+both with the ordinary Arduino settings and as an exact no-LTO fixture. It
+measures linked flash, static SRAM, synchronous stack, the single-wire policy,
+the mapper, every public value, and the request, search, intent, receipt,
+snapshot, envelope, result, and record caller buffers. The linked fixture must
+contain exactly one of each required storage object.
 Evidence and its compiler/core/flag/source fingerprint are written to
 `build/evidence/thermal-gradient-resource-probe.json`.
 

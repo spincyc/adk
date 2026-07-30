@@ -31,6 +31,7 @@ CALLER_BUFFER_HARD = 256
 FINGERPRINT_CONTRACT = {
     "064": "thermal-gradient-resource-v4-l064",
     "065": "thermal-gradient-resource-v4-l065",
+    "066": "thermal-gradient-resource-v4-l066",
 }
 
 BOUNDARY_064 = {
@@ -62,7 +63,22 @@ BOUNDARY_065 = {
     "phase_frame_symbol": "replayCopiedCycle()",
 }
 
-BOUNDARIES = (BOUNDARY_064, BOUNDARY_065)
+BOUNDARY_066 = {
+    "lesson": "066",
+    "sketch": "examples/Lesson066ThermalGradientMapper",
+    "object_symbol": "thermalGradientMapperObjectBytes",
+    "flash_target": 16 * 1024,
+    "flash_hard": 24 * 1024,
+    "sram_target": 2048,
+    "sram_hard": 3072,
+    "stack_target": 768,
+    "stack_hard": 1024,
+    "object_target": 512,
+    "object_hard": 768,
+    "phase_frame_symbol": "loop",
+}
+
+BOUNDARIES = (BOUNDARY_064, BOUNDARY_065, BOUNDARY_066)
 BOUNDARY_BY_LESSON = {
     boundary["lesson"]: boundary for boundary in BOUNDARIES
 }
@@ -100,6 +116,24 @@ PUBLIC_ENUMS_065 = (
     "Ds18b20Resolution",
     "Ds18b20ProbeQuality",
     "Ds18b20SetQuality",
+)
+
+PUBLIC_VALUES_066 = (
+    "ThermalMapperControl",
+    "ThermalGradientPair",
+    "ThermalMapperProbeIntent",
+    "ThermalGradientIntent",
+    "ThermalMapperConfig",
+    "ThermalMapperEnvelope",
+    "ThermalMapperRecordProbe",
+    "ThermalMapperRecordImage",
+    "ThermalMapperResult",
+)
+
+PUBLIC_ENUMS_066 = (
+    "ThermalGradientHealth",
+    "ThermalGradientQuality",
+    "ThermalMapperPageKind",
 )
 
 LAYOUT_SYMBOLS = {}
@@ -152,6 +186,12 @@ def review_tool_identities(tools):
     }
 
 
+def valid_review_tuple(metric, observed, target, hard):
+    if metric == "residual_sram":
+        return hard <= observed < target
+    return target < observed <= hard
+
+
 def canonical_review_string(value):
     result = canonical_review_value(value)
     result = result.replace(str(ROOT), "<repo>")
@@ -193,7 +233,7 @@ def fingerprint_source_paths(lesson):
         "examples/Lesson064OwnedSingleWireTransactions/"
         "Lesson064OwnedSingleWireTransactions.ino",
     ]
-    if lesson == "065":
+    if lesson >= "065":
         paths.extend(
             (
                 "probes/thermal_gradient_object_sizes_065.cpp",
@@ -203,7 +243,24 @@ def fingerprint_source_paths(lesson):
                 "Lesson065Qualified18B20ProbeSet.ino",
             )
         )
+    if lesson >= "066":
+        paths.extend(
+            (
+                "probes/thermal_gradient_object_sizes_066.cpp",
+                "src/thermal_gradient_mapper.h",
+                "src/thermal_gradient_mapper.cpp",
+                "examples/Lesson066ThermalGradientMapper/"
+                "Lesson066ThermalGradientMapper.ino",
+            )
+        )
     return tuple(paths)
+
+
+def fingerprint_source_hashes(lesson):
+    return {
+        path: probe.sha256(ROOT / path)
+        for path in fingerprint_source_paths(lesson)
+    }
 
 
 def canonical_compile_units(compile_units):
@@ -216,6 +273,55 @@ def canonical_compile_units(compile_units):
         )
     )
     return units
+
+
+def boundary_compile_units(compile_units, lesson):
+    units = json.loads(json.dumps(compile_units))
+    if lesson == "066":
+        units = canonical_compile_units(units)
+    if lesson in ("064", "065"):
+        units = [
+            unit
+            for unit in units
+            if not unit.get("file", "").endswith(
+                "/src/thermal_gradient_mapper.cpp"
+            )
+        ]
+    return units
+
+
+def boundary_compile_dependencies(dependencies, lesson):
+    result = json.loads(json.dumps(dependencies))
+    if lesson == "066":
+        result = json.loads(normalized(result))
+    if "manifests" not in result:
+        return {
+            key: boundary_compile_dependencies(value, lesson)
+            for key, value in result.items()
+        }
+    if lesson not in ("064", "065"):
+        return result
+    excluded = (
+        "/src/thermal_gradient_mapper.cpp",
+        "/src/thermal_gradient_mapper.h",
+    )
+    result["manifests"] = [
+        manifest
+        for manifest in result["manifests"]
+        if "thermal_gradient_mapper.cpp" not in manifest["path"]
+    ]
+    for manifest in result["manifests"]:
+        manifest["dependencies"] = [
+            path
+            for path in manifest["dependencies"]
+            if not any(marker in path for marker in excluded)
+        ]
+    result["dependency_hashes"] = {
+        path: digest
+        for path, digest in result["dependency_hashes"].items()
+        if not any(marker in path for marker in excluded)
+    }
+    return result
 
 
 def dependency_sha256(path):
@@ -345,6 +451,9 @@ def object_sizes(compiler, nm, root, temporary, unused):
     include_065 = any(
         boundary["lesson"] == "065" for boundary in probe.BOUNDARIES
     )
+    include_066 = any(
+        boundary["lesson"] == "066" for boundary in probe.BOUNDARIES
+    )
     object_path = temporary / "thermal_gradient_object_sizes.o"
     object_command = [
         str(compiler),
@@ -374,6 +483,17 @@ def object_sizes(compiler, nm, root, temporary, unused):
         probe.run(object_command_065, cwd=root)
         object_symbols.update(read_symbols(nm, object_path_065))
         OBJECT_COMMANDS["065"] = object_command_065
+    if include_066:
+        object_path_066 = temporary / "thermal_gradient_object_sizes_066.o"
+        object_command_066 = [
+            *object_command[:-3],
+            str(root / "probes/thermal_gradient_object_sizes_066.cpp"),
+            "-o",
+            str(object_path_066),
+        ]
+        probe.run(object_command_066, cwd=root)
+        object_symbols.update(read_symbols(nm, object_path_066))
+        OBJECT_COMMANDS["066"] = object_command_066
 
     layout_path = temporary / "thermal_gradient_public_layouts.cpp"
     layout_source_064 = """
@@ -433,9 +553,34 @@ unsigned char ds18b20BuilderCallerBufferBytes
 unsigned char ds18b20SnapshotCallerBufferBytes
     [sizeof (adk::QualifiedDs18b20Snapshot)];
 """
+    layout_source_066 = """
+
+#include <thermal_gradient_mapper.h>
+ADK_LAYOUT (ThermalMapperControl);
+ADK_LAYOUT (ThermalGradientPair);
+ADK_LAYOUT (ThermalMapperProbeIntent);
+ADK_LAYOUT (ThermalGradientIntent);
+ADK_LAYOUT (ThermalMapperConfig);
+ADK_LAYOUT (ThermalMapperEnvelope);
+ADK_LAYOUT (ThermalMapperRecordProbe);
+ADK_LAYOUT (ThermalMapperRecordImage);
+ADK_LAYOUT (ThermalMapperResult);
+unsigned char ThermalGradientHealthBytes
+    [sizeof (adk::ThermalGradientHealth)];
+unsigned char ThermalGradientQualityBytes
+    [sizeof (adk::ThermalGradientQuality)];
+unsigned char ThermalMapperPageKindBytes
+    [sizeof (adk::ThermalMapperPageKind)];
+unsigned char thermalMapperEnvelopeCallerBufferBytes
+    [sizeof (adk::ThermalMapperEnvelope)];
+unsigned char thermalMapperResultCallerBufferBytes
+    [sizeof (adk::ThermalMapperResult)];
+"""
     layout_source = layout_source_064
     if include_065:
         layout_source += layout_source_065
+    if include_066:
+        layout_source += layout_source_066
     layout_path.write_text(layout_source, encoding="utf-8")
     layout_object = temporary / "thermal_gradient_public_layouts.o"
     layout_command = [
@@ -491,9 +636,26 @@ static_assert (
     !std::is_move_assignable<adk::Qualified18B20ProbeSetPolicy>::value,
     "Qualified18B20ProbeSetPolicy must remain non-move-assignable");
 """
+    trait_source_066 = """
+#include <thermal_gradient_mapper.h>
+static_assert (
+    !std::is_copy_constructible<adk::ThermalGradientMapper>::value,
+    "ThermalGradientMapper must remain non-copyable");
+static_assert (
+    !std::is_move_constructible<adk::ThermalGradientMapper>::value,
+    "ThermalGradientMapper must remain non-movable");
+static_assert (
+    !std::is_copy_assignable<adk::ThermalGradientMapper>::value,
+    "ThermalGradientMapper must remain non-copy-assignable");
+static_assert (
+    !std::is_move_assignable<adk::ThermalGradientMapper>::value,
+    "ThermalGradientMapper must remain non-move-assignable");
+"""
     trait_source = trait_source_064
     if include_065:
         trait_source += trait_source_065
+    if include_066:
+        trait_source += trait_source_066
     trait_path.write_text(trait_source, encoding="utf-8")
     trait_command = [
         host_compiler,
@@ -521,6 +683,15 @@ static_assert (
             ).hexdigest(),
             "traits_sha256": hashlib.sha256(
                 trait_source_065.encode("utf-8")
+            ).hexdigest(),
+        }
+    if include_066:
+        LAYOUT_SOURCE_HASHES["066"] = {
+            "layouts_sha256": hashlib.sha256(
+                layout_source_066.encode("utf-8")
+            ).hexdigest(),
+            "traits_sha256": hashlib.sha256(
+                trait_source_066.encode("utf-8")
             ).hexdigest(),
         }
     OBJECT_COMMAND = object_command
@@ -764,6 +935,11 @@ def load_reviews(root, review_path):
         "builder_caller_buffer",
         "recurring_owned_storage",
         "lifetime_peak_storage",
+        "envelope_caller_buffer",
+        "result_caller_buffer",
+        "recurring_composition_storage",
+        "composition_lifetime_peak_storage",
+        "residual_sram",
     }
     authority_section = authority_text[start:end]
     outside_fence = []
@@ -788,7 +964,7 @@ def load_reviews(root, review_path):
             outside_fence.append("")
     authority_section = "\n".join(outside_fence)
     marker_pattern = re.compile(
-        r"^Resource-review: lesson=(064|065) metric=([a-z_]+) "
+        r"^Resource-review: lesson=(064|065|066) metric=([a-z_]+) "
         r"observed=([0-9]+) target=([0-9]+) hard=([0-9]+) "
         r"disposition=accepted-target-miss$"
     )
@@ -840,10 +1016,11 @@ def load_reviews(root, review_path):
                 raise probe.ProbeError(
                     f"target-miss review has invalid {field}: {review}"
                 )
-        if not (
-            review["target_bytes"]
-            < review["observed_bytes"]
-            <= review["hard_bytes"]
+        if not valid_review_tuple(
+            review["metric"],
+            review["observed_bytes"],
+            review["target_bytes"],
+            review["hard_bytes"],
         ):
             raise probe.ProbeError(
                 f"target-miss review tuple is not a reviewable miss: {review}"
@@ -917,7 +1094,7 @@ def apply_enriched_reviews(state, boundary):
                 CALLER_BUFFER_TARGET,
                 CALLER_BUFFER_HARD,
             )
-    else:
+    elif boundary["lesson"] == "065":
         limits["builder_caller_buffer"] = (
             measurements["caller_buffers"]["builder_bytes"],
             448,
@@ -942,6 +1119,31 @@ def apply_enriched_reviews(state, boundary):
             recurring + phase_peak,
             1216,
             1792,
+        )
+    else:
+        for metric, key in (
+            ("envelope_caller_buffer", "envelope_bytes"),
+            ("result_caller_buffer", "result_bytes"),
+        ):
+            limits[metric] = (
+                measurements["caller_buffers"][key],
+                256,
+                384,
+            )
+        limits["recurring_composition_storage"] = (
+            measurements["lifetime_placement"]["recurring_total_bytes"],
+            2048,
+            3072,
+        )
+        limits["composition_lifetime_peak_storage"] = (
+            measurements["lifetime_placement"]["lifetime_peak_bytes"],
+            2560,
+            3840,
+        )
+        limits["residual_sram"] = (
+            measurements["residual_sram_bytes"],
+            RESIDUAL_SRAM_TARGET,
+            RESIDUAL_SRAM_HARD,
         )
     supported = {
         "flash",
@@ -1138,7 +1340,6 @@ def enrich_evidence(evidence_path):
         "pass" if residual >= RESIDUAL_SRAM_HARD else "hard-fail"
     )
 
-    source_paths = fingerprint_source_paths("064")
     fingerprint_payload = {
         "schema": 4,
         "probe_contract": FINGERPRINT_CONTRACT["064"],
@@ -1159,14 +1360,16 @@ def enrich_evidence(evidence_path):
                 ]
             )
         ),
-        "ordinary_compile_units": ordinary_064["compile_units"],
-        "compile_dependencies": COMPILE_DEPENDENCIES["064"],
+        "ordinary_compile_units": boundary_compile_units(
+            ordinary_064["compile_units"], "064"
+        ),
+        "compile_dependencies": boundary_compile_dependencies(
+            COMPILE_DEPENDENCIES["064"], "064"
+        ),
         "linker_executable": ordinary_064["linker_executable"],
         "linker_version": ordinary_064["linker_version"],
         "resolved_link_recipe": ordinary_064["resolved_link_recipe"],
-        "source_hashes": {
-            path: probe.sha256(ROOT / path) for path in source_paths
-        },
+        "source_hashes": fingerprint_source_hashes("064"),
         "generated_layout_hashes": LAYOUT_SOURCE_HASHES["064"],
         "authority_markers": [
             marker
@@ -1376,7 +1579,6 @@ def enrich_evidence(evidence_path):
             if state_065["gates"][metric] == "target-miss":
                 state_065["gates"][metric] = "review-required"
         apply_enriched_reviews(state_065, BOUNDARY_065)
-        source_paths_065 = fingerprint_source_paths("065")
         payload_065 = {
             "schema": 4,
             "probe_contract": FINGERPRINT_CONTRACT["065"],
@@ -1399,14 +1601,16 @@ def enrich_evidence(evidence_path):
                     ]
                 )
             ),
-            "ordinary_compile_units": ordinary_065["compile_units"],
-            "compile_dependencies": COMPILE_DEPENDENCIES["065"],
+            "ordinary_compile_units": boundary_compile_units(
+                ordinary_065["compile_units"], "065"
+            ),
+            "compile_dependencies": boundary_compile_dependencies(
+                COMPILE_DEPENDENCIES["065"], "065"
+            ),
             "linker_executable": ordinary_065["linker_executable"],
             "linker_version": ordinary_065["linker_version"],
             "resolved_link_recipe": ordinary_065["resolved_link_recipe"],
-            "source_hashes": {
-                path: probe.sha256(ROOT / path) for path in source_paths_065
-            },
+            "source_hashes": fingerprint_source_hashes("065"),
             "generated_layout_hashes": {
                 "064": LAYOUT_SOURCE_HASHES["064"],
                 "065": LAYOUT_SOURCE_HASHES["065"],
@@ -1443,6 +1647,298 @@ def enrich_evidence(evidence_path):
             "sha256": fingerprint_065,
         }
         report["fingerprint"] = report["boundary_fingerprints"]["065"]
+
+    if "066" in state_by_lesson and "measurements" in state_by_lesson["066"]:
+        state_066 = state_by_lesson["066"]
+        measurements_066 = state_066["measurements"]
+        ordinary_066 = ORDINARY_EVIDENCE["066"]
+        measurements_066["ordinary_flash_bytes"] = ordinary_066["flash_bytes"]
+        measurements_066["ordinary_static_sram_bytes"] = ordinary_066[
+            "static_sram_bytes"
+        ]
+        for metric, value, target, hard in (
+            (
+                "ordinary_flash",
+                measurements_066["ordinary_flash_bytes"],
+                BOUNDARY_066["flash_target"],
+                BOUNDARY_066["flash_hard"],
+            ),
+            (
+                "ordinary_static_sram",
+                measurements_066["ordinary_static_sram_bytes"],
+                BOUNDARY_066["sram_target"],
+                BOUNDARY_066["sram_hard"],
+            ),
+        ):
+            state_066["gates"][metric] = probe.gate(value, target, hard)
+            if state_066["gates"][metric] == "target-miss":
+                state_066["gates"][metric] = "review-required"
+        measurements_066["public_enums"] = {
+            name: {"size_bytes": LAYOUT_SYMBOLS[f"{name}Bytes"]}
+            for name in PUBLIC_ENUMS_066
+        }
+        measurements_066["public_values"] = {
+            name: {
+                "size_bytes": LAYOUT_SYMBOLS[f"{name}Bytes"],
+                "alignment_bytes": LAYOUT_SYMBOLS[f"{name}Alignment"],
+                "standard_layout": True,
+                "trivially_copyable": True,
+                "trivially_destructible": True,
+            }
+            for name in PUBLIC_VALUES_066
+        }
+        measurements_066["policy_traits"] = {
+            "copy_constructible": False,
+            "move_constructible": False,
+            "copy_assignable": False,
+            "move_assignable": False,
+        }
+        caller_buffers_066 = {
+            "envelope_bytes": LAYOUT_SYMBOLS[
+                "thermalMapperEnvelopeCallerBufferBytes"
+            ],
+            "result_bytes": LAYOUT_SYMBOLS[
+                "thermalMapperResultCallerBufferBytes"
+            ],
+        }
+        measurements_066["caller_buffers"] = caller_buffers_066
+        for metric, key in (
+            ("envelope_caller_buffer", "envelope_bytes"),
+            ("result_caller_buffer", "result_bytes"),
+        ):
+            state_066["gates"][metric] = probe.gate(
+                caller_buffers_066[key], 256, 384
+            )
+            if state_066["gates"][metric] == "target-miss":
+                state_066["gates"][metric] = "review-required"
+
+        linked_066 = LINKED_STORAGE["066"]
+        linked_roles_066 = {
+            "one_wire_policy": (
+                "fixtureOneWirePolicyE",
+                next(
+                    state["measurements"]["object_bytes"]
+                    for state in report["boundaries"]
+                    if state["lesson"] == "064"
+                ),
+            ),
+            "probe_set_policy": (
+                "fixtureProbeSetPolicyE",
+                next(
+                    state["measurements"]["object_bytes"]
+                    for state in report["boundaries"]
+                    if state["lesson"] == "065"
+                ),
+            ),
+            "active_builder": (
+                "fixtureBuilderE",
+                LAYOUT_SYMBOLS["ds18b20BuilderCallerBufferBytes"],
+            ),
+            "mapper": (
+                "fixtureMapperE",
+                measurements_066["object_bytes"],
+            ),
+        }
+        linked_evidence_066 = {}
+        for name, (suffix, expected_size) in linked_roles_066.items():
+            matches = [
+                (symbol, size)
+                for symbol, size in linked_066.items()
+                if symbol.endswith(suffix)
+            ]
+            if len(matches) != 1 or matches[0][1] != expected_size:
+                raise probe.ProbeError(
+                    f"Lesson 066 linked {name} evidence mismatch: expected "
+                    f"one {expected_size} B {suffix}, found {matches}"
+                )
+            linked_evidence_066[name] = {
+                "symbol": matches[0][0],
+                "size_bytes": matches[0][1],
+                "symbol_count": 1,
+                "lifetime": "recurring",
+            }
+        forbidden_phase_globals_066 = {
+            "qualified_snapshot": "fixtureProbeSnapshotE",
+            "mapper_envelope": "fixtureEnvelopeE",
+            "mapper_result": "fixtureResultE",
+            "record_image": "fixtureRecordE",
+            "transaction": "fixtureTransactionE",
+        }
+        unexpected_phase_globals_066 = {
+            name: [
+                {"symbol": symbol, "size_bytes": size}
+                for symbol, size in linked_066.items()
+                if symbol.endswith(suffix)
+            ]
+            for name, suffix in forbidden_phase_globals_066.items()
+        }
+        if any(unexpected_phase_globals_066.values()):
+            raise probe.ProbeError(
+                "Lesson 066 phase-local storage leaked into global storage: "
+                f"{unexpected_phase_globals_066}"
+            )
+        recurring_bytes_066 = sum(
+            evidence["size_bytes"]
+            for evidence in linked_evidence_066.values()
+        )
+        phase_peak_bytes_066 = max(
+            caller_buffers_066["envelope_bytes"]
+            + caller_buffers_066["result_bytes"],
+            LAYOUT_SYMBOLS["OneWireTransactionSnapshotBytes"],
+        )
+        lifetime_peak_bytes_066 = (
+            recurring_bytes_066 + phase_peak_bytes_066
+        )
+        phase_nodes_066 = [
+            node
+            for node in state_066["linked_call_graph"]["nodes"]
+            if BOUNDARY_066["phase_frame_symbol"] in node["demangled"]
+        ]
+        if len(phase_nodes_066) != 1:
+            raise probe.ProbeError(
+                "Lesson 066 requires one linked update-storage frame, "
+                f"found {phase_nodes_066}"
+            )
+        phase_frame_bytes_066 = phase_nodes_066[0]["local_bytes"]
+        if phase_frame_bytes_066 < phase_peak_bytes_066:
+            raise probe.ProbeError(
+                "Lesson 066 linked update frame cannot hold the required "
+                f"{phase_peak_bytes_066} B phase-local peak: "
+                f"{phase_frame_bytes_066} B"
+            )
+        measurements_066["linked_maximum_fixture"] = {
+            "canonical_example": (
+                "examples/Lesson066ThermalGradientMapper/"
+                "Lesson066ThermalGradientMapper.ino"
+            ),
+            "global_storage": linked_evidence_066,
+            "phase_storage_global_absence": unexpected_phase_globals_066,
+            "caller_storage_instantiated_once": True,
+        }
+        measurements_066["lifetime_placement"] = {
+            "recurring_one_wire_policy_bytes":
+                linked_evidence_066["one_wire_policy"]["size_bytes"],
+            "recurring_probe_set_policy_bytes":
+                linked_evidence_066["probe_set_policy"]["size_bytes"],
+            "recurring_builder_bytes":
+                linked_evidence_066["active_builder"]["size_bytes"],
+            "recurring_mapper_bytes":
+                linked_evidence_066["mapper"]["size_bytes"],
+            "recurring_total_bytes": recurring_bytes_066,
+            "phase_envelope_bytes": caller_buffers_066["envelope_bytes"],
+            "phase_result_bytes": caller_buffers_066["result_bytes"],
+            "nested_record_image_bytes":
+                LAYOUT_SYMBOLS["ThermalMapperRecordImageBytes"],
+            "phase_transaction_bytes":
+                LAYOUT_SYMBOLS["OneWireTransactionSnapshotBytes"],
+            "phase_peak_bytes": phase_peak_bytes_066,
+            "lifetime_peak_bytes": lifetime_peak_bytes_066,
+            "update_frame_bytes": phase_frame_bytes_066,
+            "phase_globals_absent": unexpected_phase_globals_066,
+        }
+        state_066["gates"]["recurring_composition_storage"] = probe.gate(
+            recurring_bytes_066, 2048, 3072
+        )
+        state_066["gates"]["composition_lifetime_peak_storage"] = probe.gate(
+            lifetime_peak_bytes_066, 2560, 3840
+        )
+        for metric in (
+            "recurring_composition_storage",
+            "composition_lifetime_peak_storage",
+        ):
+            if state_066["gates"][metric] == "target-miss":
+                state_066["gates"][metric] = "review-required"
+        residual_066 = (
+            BOARD_SRAM
+            - measurements_066["static_sram_bytes"]
+            - measurements_066["synchronous_stack_bytes"]
+            - ISR_RESERVE
+        )
+        measurements_066["isr_reserve_bytes"] = ISR_RESERVE
+        measurements_066["residual_sram_bytes"] = residual_066
+        state_066["gates"]["residual_sram"] = (
+            "pass" if residual_066 >= RESIDUAL_SRAM_TARGET else "target-miss"
+        )
+        if state_066["gates"]["residual_sram"] == "target-miss":
+            state_066["gates"]["residual_sram"] = "review-required"
+        state_066["gates"]["residual_sram_hard_floor"] = (
+            "pass" if residual_066 >= RESIDUAL_SRAM_HARD else "hard-fail"
+        )
+        for metric, disposition in tuple(state_066["gates"].items()):
+            if disposition == "target-miss":
+                state_066["gates"][metric] = "review-required"
+        apply_enriched_reviews(state_066, BOUNDARY_066)
+
+        payload_066 = {
+            "schema": 4,
+            "probe_contract": FINGERPRINT_CONTRACT["066"],
+            "lesson_through": "066",
+            "predecessor_fingerprint_sha256":
+                report["boundary_fingerprints"]["065"]["sha256"],
+            "fqbn": report["fqbn"],
+            "core_package": ordinary_066["core_package"],
+            "core_version": ordinary_066["core_version"],
+            "f_cpu_hz": ordinary_066["f_cpu_hz"],
+            "tools": review_tool_identities(report["tools"]),
+            "commands": json.loads(
+                normalized(
+                    [
+                        ordinary_066["command"],
+                        ordinary_066["properties_command"],
+                        EXACT_COMMANDS["066"],
+                        OBJECT_COMMANDS["064"],
+                        OBJECT_COMMANDS["065"],
+                        OBJECT_COMMANDS["066"],
+                        *LAYOUT_COMMANDS,
+                    ]
+                )
+            ),
+            "ordinary_compile_units": boundary_compile_units(
+                ordinary_066["compile_units"], "066"
+            ),
+            "compile_dependencies": boundary_compile_dependencies(
+                COMPILE_DEPENDENCIES["066"], "066"
+            ),
+            "linker_executable": ordinary_066["linker_executable"],
+            "linker_version": ordinary_066["linker_version"],
+            "resolved_link_recipe": ordinary_066["resolved_link_recipe"],
+            "source_hashes": fingerprint_source_hashes("066"),
+            "generated_layout_hashes": {
+                lesson: LAYOUT_SOURCE_HASHES[lesson]
+                for lesson in ("064", "065", "066")
+            },
+            "authority_markers": [
+                marker
+                for marker in AUTHORITY_MARKERS
+                if marker.startswith("Resource-review: lesson=066 ")
+            ],
+            "measurement_payload": json.loads(normalized(measurements_066)),
+            "gate_payload": {
+                metric: (
+                    "target-miss"
+                    if disposition
+                    in (
+                        "target-miss",
+                        "review-required",
+                        "reviewed-target-miss",
+                    )
+                    else disposition
+                )
+                for metric, disposition in sorted(state_066["gates"].items())
+            },
+            "thresholds": report["constants"],
+        }
+        fingerprint_066 = hashlib.sha256(
+            json.dumps(
+                payload_066, sort_keys=True, separators=(",", ":")
+            ).encode("utf-8")
+        ).hexdigest()
+        state_066["fingerprint_sha256"] = fingerprint_066
+        report["boundary_fingerprints"]["066"] = {
+            **payload_066,
+            "sha256": fingerprint_066,
+        }
+        report["fingerprint"] = report["boundary_fingerprints"]["066"]
 
     for review in LOADED_REVIEWS.values():
         current = report["boundary_fingerprints"].get(review["lesson"], {}).get(
@@ -1488,6 +1984,24 @@ def enrich_evidence(evidence_path):
                 )
             )
         )
+    if "066" in state_by_lesson and "gates" in state_by_lesson["066"]:
+        state_066 = state_by_lesson["066"]
+        state_066["status"] = (
+            "hard-fail"
+            if "hard-fail" in state_066["gates"].values()
+            else (
+                "review-required"
+                if any(
+                    disposition in ("target-miss", "review-required")
+                    for disposition in state_066["gates"].values()
+                )
+                else (
+                    "reviewed-target-miss"
+                    if "reviewed-target-miss" in state_066["gates"].values()
+                    else "pass"
+                )
+            )
+        )
     statuses = [
         item.get("status", "error") for item in report["boundaries"]
     ]
@@ -1510,7 +2024,7 @@ def main():
     parser.add_argument("--arduino-cli", default="arduino-cli")
     parser.add_argument("--fqbn", default="arduino:avr:mega")
     parser.add_argument(
-        "--require-through", choices=("064", "065"), default="065"
+        "--require-through", choices=("064", "065", "066"), default="066"
     )
     parser.add_argument(
         "--evidence-json",

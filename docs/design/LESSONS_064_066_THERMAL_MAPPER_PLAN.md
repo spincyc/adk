@@ -773,12 +773,13 @@ enum struct ThermalMapperPageKind : uint8_t
 
 struct ThermalMapperControl
 {
+    uint32_t  ownerToken;
     uint8_t   sourceId;
     uint16_t  configurationRevision;
     uint32_t  sequence;
     TimePoint observedAt;
-    bool      nextPressed;
-    bool      recordPressed;
+    bool      nextEdge;
+    bool      recordEdge;
     Status    status;
 };
 
@@ -792,25 +793,35 @@ struct ThermalGradientPair
     uint8_t                faultMask;
 };
 
+struct ThermalMapperProbeIntent
+{
+    OneWireRomCode      rom;
+    int16_t             lowerRawSixteenths;
+    int16_t             upperRawSixteenths;
+    Ds18b20Resolution   resolution;
+    Ds18b20ProbeQuality quality;
+    Duration            age;
+    Status              status;
+};
+
 struct ThermalGradientIntent
 {
+    ThermalMapperProbeIntent probes[4];
+    ThermalGradientPair      gradients[3];
+    OneWireRomCode           minimumRom;
+    OneWireRomCode           maximumRom;
+    int16_t                  minimumLowerRawSixteenths;
+    int16_t                  maximumUpperRawSixteenths;
+    uint8_t                  minimumTieMask;
+    uint8_t                  maximumTieMask;
     ThermalGradientHealth health;
     ThermalMapperPageKind  pageKind;
     uint8_t                pageIndex;
     uint8_t                selectedSlot;
-    OneWireRomCode         selectedRom;
-    int16_t                selectedLowerRawSixteenths;
-    int16_t                selectedUpperRawSixteenths;
-    Duration               selectedAge;
-    ThermalGradientPair    adjacent;
-    uint8_t                configuredCount;
+    uint8_t                selectedGradient;
+    uint8_t                probeCount;
+    uint8_t                gradientCount;
     uint8_t                overallFaultMask;
-    OneWireRomCode         minimumRom;
-    OneWireRomCode         maximumRom;
-    int16_t                minimumLowerRawSixteenths;
-    int16_t                maximumUpperRawSixteenths;
-    uint8_t                minimumTieMask;
-    uint8_t                maximumTieMask;
     uint8_t                ledSelectionMask;
     bool                   lcdShowsIdentity;
     bool                   lcdShowsAgeOrFault;
@@ -823,10 +834,12 @@ struct ThermalMapperConfig
     uint16_t       configurationRevision;
     uint8_t        expectedSetSourceId;
     uint16_t       expectedSetConfigurationRevision;
-    uint8_t        expectedControlSourceId;
-    uint16_t       expectedControlConfigurationRevision;
+    OneWireRomCode sourceRoms[4];
     OneWireRomCode spatialOrder[4];
     uint8_t        spatialCount;
+    uint32_t       expectedControlOwnerToken;
+    uint8_t        expectedControlSourceId;
+    uint16_t       expectedControlConfigurationRevision;
     Duration       maximumControlAge;
     uint16_t       meaningfulGradientRawSixteenths;
 };
@@ -853,34 +866,37 @@ struct ThermalMapperRecordProbe
 
 struct ThermalMapperRecordImage
 {
-    uint8_t                formatVersion;
-    uint32_t               ownerToken;
-    uint32_t               lifecycleGeneration;
-    uint16_t               configurationRevision;
-    uint32_t               recordSequence;
-    uint8_t                recordEdgeSourceId;
-    uint16_t               recordEdgeConfigurationRevision;
-    uint32_t               recordEdgeSequence;
-    TimePoint              recordEdgeObservedAt;
-    uint8_t                setSourceId;
-    uint16_t               setConfigurationRevision;
-    uint32_t               setCycleSequence;
-    TimePoint              observedAt;
     ThermalMapperRecordProbe probes[4];
-    ThermalGradientPair    gradients[3];
-    uint8_t                probeCount;
-    uint8_t                gradientCount;
-    ThermalGradientHealth  health;
-    uint8_t                faultMask;
-    uint32_t               witnessDigest;
+    ThermalGradientPair      gradients[3];
+    uint32_t                 ownerToken;
+    uint32_t                 lifecycleGeneration;
+    uint16_t                 configurationRevision;
+    uint32_t                 recordSequence;
+    uint32_t                 recordEdgeOwnerToken;
+    uint8_t                  recordEdgeSourceId;
+    uint16_t                 recordEdgeConfigurationRevision;
+    uint32_t                 recordEdgeSequence;
+    TimePoint                recordEdgeObservedAt;
+    uint8_t                  setSourceId;
+    uint16_t                 setConfigurationRevision;
+    uint32_t                 setCycleSequence;
+    TimePoint                setObservedAt;
+    TimePoint                mappedAt;
+    OneWireRomCode           sourceRoms[4];
+    uint32_t                 witnessDigest;
+    uint8_t                  formatVersion;
+    uint8_t                  probeCount;
+    uint8_t                  gradientCount;
+    ThermalGradientHealth    health;
+    uint8_t                  faultMask;
 };
 
 struct ThermalMapperResult
 {
-    ThermalGradientIntent intent;
-    bool                  hasRecord;
+    ThermalGradientIntent    intent;
     ThermalMapperRecordImage record;
-    Status                status;
+    bool                     hasRecord;
+    Status                   status;
 };
 
 struct ThermalGradientMapper
@@ -908,6 +924,17 @@ once. Spatial order, never
 search, arrival, ROM numeric, temperature, or page order, defines slots and
 adjacent pairs.
 
+`QualifiedDs18b20Snapshot` is caller-constructible. Lesson 066 treats it as
+structurally validated trusted input for one policy decision, not as
+authenticated proof that a Lesson 065 object produced it. Configuration
+therefore freezes the exact four source ROMs in addition to the mapped subset.
+Update validates all four slots and the exact ROM set; exhaustive
+`validCount`, `presentMask`, and `faultMask` relationships; every enum and
+`Status` domain; source/configuration/cycle identity; modular
+observation/freshness/age chronology; and value/interval/quality coherence.
+Malformed input rejects atomically, while structurally coherent unhealthy
+input remains typed fault evidence.
+
 Each slot retains its raw-sixteenth interval. For adjacent left/right slots,
 widened arithmetic computes
 `lower = right.lower - left.upper` and
@@ -933,6 +960,12 @@ Extrema retain the supporting ROM identities, widened endpoint values, and
 complete tie masks; equal extrema choose the lowest spatial slot only for the
 primary page token.
 
+Probe and record ages are recomputed from each slot's observation time at the
+mapper-supplied `now`. Copied age is validated for internal coherence but is
+not forwarded. The inclusive `freshThrough` seam remains authoritative:
+equality is fresh, the next representable millisecond is stale, and future,
+backward, or exact-half-range chronology rejects.
+
 Every update synchronously fills one caller-owned result; a fresh record edge
 may mark at most one versioned `ThermalMapperRecordImage` present. It contains the complete
 ordered ROM/interval/quality/age slots, all adjacent gradient intervals,
@@ -942,24 +975,35 @@ emits no new record. There is no receipt, acknowledgement, outstanding slot,
 retry, coalescing, storage call, or durability claim. Record-sequence
 exhaustion faults before zero.
 
+Accepted output starts as a whole-zero value before defined fields are filled;
+unused probe, gradient, and record cells stay canonical zero. Rejected updates
+leave the complete caller result byte-identical. The intent exposes an
+explicit `selectedGradient` rather than overloading the selected probe slot.
+
 The record is a fixed field inside caller-owned `ThermalMapperResult`; there is
 no nullable pointer, runtime size, or buffer-too-small path. Compile-time ABI
 checks, canaries, and exact caller-buffer measurement guard its bounds.
-The record-edge source, configuration, sequence, and observation time are
-copied from the fresh control edge that requested this image. FNV-1a32 uses
+The record-edge owner, source, configuration, sequence, and observation time
+are copied from the fresh control edge that requested this image. The record
+also retains all four source ROMs and mapper `mappedAt`. FNV-1a32 uses
 offset `0x811c9dc5`, prime `0x01000193`, and domain
 `ADK.THERMAL.MAPPER.RECORD.V1` without NUL. Hash order is format version,
 owner, lifecycle, configuration, record sequence, record-edge
-source/configuration/sequence/time, set source/configuration/cycle/time,
-spatial count, then every mapped probe's ROM,
+owner/source/configuration/sequence/time, set
+source/configuration/cycle/observation time, mapper `mappedAt`, all four source
+ROMs, spatial count, then every mapped probe's ROM,
 signed lower/upper raw sixteenths, resolution, quality, age, conversion/read
 generations and status, followed by every adjacent pair's slot indices,
 signed lower/upper, quality and fault mask, then overall health/fault mask.
 Integers are fixed-width little-endian, enums/status are one byte, and padding
 is never hashed.
 
-`nextPressed` and `recordPressed` are independently edge-triggered by a fresh
-forward control sequence. Held or duplicate controls do nothing. A simultaneous
+`nextEdge` and `recordEdge` are independently asserted by a fresh forward
+control sequence. Same-sequence byte-identical control is a no-edge replay;
+changed same-sequence evidence rejects. A fresh forward no-edge control still
+advances the anti-replay anchor. Control chronology and maximum age use
+modular future/backward/half-range validation, and exhaustion faults before
+zero. A simultaneous
 fresh next+record edge first advances the page, then records the current
 accepted snapshot with that selected-page intent. A record edge may record the
 current accepted snapshot even when no new set cycle arrived; repeated/held
@@ -973,8 +1017,10 @@ millisecond later the affected slot is stale. Controls never extend the bound.
 
 Initialize/reset advance a nonzero lifecycle generation without wrap and
 restart record sequence at one for that lifecycle. Generation or record
-sequence exhaustion faults before zero. Shutdown emits no record and makes
-presentation inert.
+sequence exhaustion faults before zero. Reset clears accepted
+frame/control/page/record state. Shutdown emits no record, makes presentation
+inert, and is idempotent; exhaustion never wraps into a valid generation or
+record sequence.
 
 Tests cover configured counts below two, two, three, four, and above four;
 every input permutation; duplicate/foreign/missing identity; all child
@@ -983,6 +1029,11 @@ below/equal/above and crossing interval; one bad interior slot faulting both
 incident pairs; fixed page zero/last/wrap; edge controls; fieldwise duplicate,
 regression, rollover and exhaustion; record canaries/golden image/replay
 suppression; reset, shutdown, restart, and byte-stable replay.
+
+The current pre-freeze AVR header ABI is mapper 448 bytes, envelope 202 bytes,
+intent 146 bytes, record image 229 bytes, result 377 bytes, and configuration
+87 bytes. These exact header sizes do not claim implementation,
+linked-resource, or publication completion.
 
 The canonical collision trace is sequential and replayable: accept a
 reverse-ordered healthy four-slot source frame; apply a simultaneous
@@ -1094,6 +1145,30 @@ Resource-review: lesson=065 metric=builder_caller_buffer observed=477 target=448
 Resource-review: lesson=065 metric=recurring_owned_storage observed=1241 target=960 hard=1280 disposition=accepted-target-miss
 
 Resource-review: lesson=065 metric=lifetime_peak_storage observed=1421 target=1216 hard=1792 disposition=accepted-target-miss
+
+The frozen Lesson 066 tuple is ordinary flash 16,662 bytes, exact no-LTO
+flash 18,822 bytes, ordinary and exact static SRAM 2,210 bytes,
+conservative synchronous stack 855 bytes, mapper 448 bytes, caller envelope
+202 bytes, and caller result 377 bytes. The exact recurring composition is
+1,943 bytes: one 254-byte Lesson 064 policy, one 764-byte Lesson 065 policy,
+one 477-byte active builder, and one 448-byte mapper. Its phase-local peak is
+579 bytes, its lifetime peak is 2,522 bytes, and 4,999 bytes remain after
+static storage, synchronous stack, and the 128-byte ISR reserve. The result
+has only seven bytes of hard-limit margin and is therefore a zero-growth ABI:
+any layout, implementation, example, or toolchain change requires a fresh
+tuple-bound review.
+
+Resource-review: lesson=066 metric=ordinary_flash observed=16662 target=16384 hard=24576 disposition=accepted-target-miss
+
+Resource-review: lesson=066 metric=flash observed=18822 target=16384 hard=24576 disposition=accepted-target-miss
+
+Resource-review: lesson=066 metric=ordinary_static_sram observed=2210 target=2048 hard=3072 disposition=accepted-target-miss
+
+Resource-review: lesson=066 metric=static_sram observed=2210 target=2048 hard=3072 disposition=accepted-target-miss
+
+Resource-review: lesson=066 metric=synchronous_stack observed=855 target=768 hard=1024 disposition=accepted-target-miss
+
+Resource-review: lesson=066 metric=result_caller_buffer observed=377 target=256 hard=384 disposition=accepted-target-miss
 
 The exact Lesson 064 policy object is 254 bytes. Its 62-byte target miss is
 accepted because the object must own the complete 96-byte configuration,

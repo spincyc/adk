@@ -16,7 +16,7 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--065 use the first-class per-object
+ADK is early-stage software. Lessons 001--066 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
@@ -66,6 +66,10 @@ Lesson 065 publishes a fixed four-probe qualification policy over copied
 Lesson 064 evidence. It preserves configured identity, conversion generation,
 CRC, resolution, range, step, freshness, disappearance, and replay evidence
 without owning probes, a bus, a clock, or a powered fixture.
+Lesson 066 composes those copied result images into deterministic ordered
+interval-gradient, fault, page, and volatile record intent. It validates
+caller-supplied structure rather than authenticating a source, owns no
+display, and writes no storage.
 
 The hierarchy is developed in dependency order:
 
@@ -77,11 +81,12 @@ The per-object lifecycle uses transactional `initialize()`, idempotent
 `shutdown() noexcept`, and destructor-driven cleanup. The original
 global-registration preview is frozen under [Legacy](legacy/index.md).
 
-The latest completed project arc is Lessons 061--063: copied environmental
-observations composed into an inert museum-case monitor. Powered sensors,
-adapters, presentation, loads, and physical acceptance remain open.
-[Lesson 065](lessons/065.md) is the latest published component boundary.
-Lesson 066 is the next implementation boundary. See the
+The latest completed project arc is Lessons 064--066: copied single-wire
+transactions and qualified probe-set evidence composed into deterministic
+thermal-gradient, page, and volatile record intent. Powered probes, adapters,
+presentation, storage, authentication, and physical acceptance remain open.
+[Lesson 066](lessons/066.md) is the latest published project boundary.
+Lesson 067 begins the next implementation arc. See the
 [course map](course.md) for that order and the
 [roadmap](docs/ROADMAP.md) for the full sequence.
 

@@ -102,6 +102,14 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_qualified_18b20_probe_set_conversion \
 	$(BUILD_DIR)/host/test_qualified_18b20_probe_set_decode \
 	$(BUILD_DIR)/host/test_qualified_18b20_probe_set_state \
+	$(BUILD_DIR)/host/test_thermal_gradient_mapper_configuration \
+	$(BUILD_DIR)/host/test_thermal_gradient_mapper_snapshot_identity \
+	$(BUILD_DIR)/host/test_thermal_gradient_mapper_snapshot_probe \
+	$(BUILD_DIR)/host/test_thermal_gradient_mapper_snapshot_lifecycle \
+	$(BUILD_DIR)/host/test_thermal_gradient_mapper_control \
+	$(BUILD_DIR)/host/test_thermal_gradient_mapper_gradient \
+	$(BUILD_DIR)/host/test_thermal_gradient_mapper_precedence \
+	$(BUILD_DIR)/host/test_thermal_gradient_mapper_record \
 	$(BUILD_DIR)/host/test_optical_observation \
 	$(BUILD_DIR)/host/test_packet_receiver \
 	$(BUILD_DIR)/host/test_passage_ledger \
@@ -595,6 +603,85 @@ $(BUILD_DIR)/host/test_qualified_18b20_probe_set_state: $(HOST_CORE_SOURCES) \
 		src/one_wire_transaction_policy.cpp src/pulse_input.cpp \
 		src/qualified_18b20_probe_set_policy.cpp \
 		tests/test_qualified_18b20_probe_set_state.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_thermal_gradient_mapper_configuration: $(HOST_CORE_SOURCES) \
+		src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_config.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		-DADK_TESTING -DADK_THERMAL_MAPPER_CONFIG_CONFIGURATION \
+		src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_config.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_thermal_gradient_mapper_snapshot_identity: \
+		$(HOST_CORE_SOURCES) \
+		src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_config.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		-DADK_TESTING -DADK_THERMAL_MAPPER_CONFIG_SNAPSHOT_IDENTITY \
+		src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_config.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_thermal_gradient_mapper_snapshot_probe: \
+		$(HOST_CORE_SOURCES) \
+		src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_config.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		-DADK_TESTING -DADK_THERMAL_MAPPER_CONFIG_SNAPSHOT_PROBE \
+		src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_config.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_thermal_gradient_mapper_snapshot_lifecycle: \
+		$(HOST_CORE_SOURCES) \
+		src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_config.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		-DADK_TESTING -DADK_THERMAL_MAPPER_CONFIG_SNAPSHOT_LIFECYCLE \
+		src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_config.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_thermal_gradient_mapper_control: $(HOST_CORE_SOURCES) \
+		src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_control.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_control.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_thermal_gradient_mapper_gradient: $(HOST_CORE_SOURCES) \
+		src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_gradient.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_gradient.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_thermal_gradient_mapper_precedence: $(HOST_CORE_SOURCES) \
+		src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_precedence.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		-DADK_TESTING src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_precedence.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_thermal_gradient_mapper_record: $(HOST_CORE_SOURCES) \
+		src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_record.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		-DADK_TESTING src/thermal_gradient_mapper.cpp \
+		tests/test_thermal_gradient_mapper_record.cpp \
 		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_optical_observation: $(HOST_CORE_SOURCES) \
