@@ -133,6 +133,29 @@ this failure mode cannot recur on another under-provisioned machine, and the
 same glyph set repairs the eight broken assets. It is recorded as the
 `svg-stroke-labels` tool candidate.
 
+## Correction — seven assets were repaired, not eight
+
+Re-checked 2026-07-30 after the retraction below. `016-matrix-keypad-pencil`
+was a **false positive**: its SVG carries `<style>text { display: none; }</style>`,
+so all 41 of its labels — including the `A`/`B`/`C`/`D` key legends — are
+suppressed by the drawing itself, not by a missing font. Re-rendering it
+changed nothing a reader can see. Seven assets were genuinely repaired;
+`069-fault-dominance-pencil` and the three lesson 009 plates were verified
+legible afterwards.
+
+The detection method's flaw is worth stating, because it was used to justify
+the whole repair: comparing a fontless render against the committed PNG finds
+assets that *match*, and a match means the text is invisible in both — which
+happens when the text was rendered without a font **or** when the text is
+hidden, absent, or drawn in the background colour. The test cannot distinguish
+those causes. Confirming a tofu render requires looking at the committed image,
+which was done for lessons 009 and 069 but not for 016.
+
+Lesson 016's hidden labels are now an open question: a keypad drawing whose key
+legends are suppressed is either a deliberate caption-only choice or a mistake,
+and lesson 018 reuses the same asset. Resolving it needs the author's intent,
+not another re-render.
+
 ## Retraction — the Lesson 056 operator-panel plate was withdrawn
 
 A plate drawn for Lesson 056 on 2026-07-30 was published and then reverted the
