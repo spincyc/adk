@@ -9,8 +9,9 @@ Audit task: `3a7d0556-e29c-4a9f-9f71-0cce6c8caf23`
 This audit reconstructs work that could otherwise be lost between agent
 contexts. It does not promote an interface, report physical acceptance, or
 authorize a release, publication, push, branch change, or external mutation.
-`docs/WORK_QUEUE.md` remains the authoritative product ledger; `.journal/`
-provides durable task execution and history.
+`docs/WORK_QUEUE.md` remains the authoritative product ledger. Current task
+execution is tracked separately by AIQ in repository-local, Git-internal
+state; this audit is not a queue and does not seed that state automatically.
 
 The audit covered the canonical contracts, tracked first-class source and
 tests, examples, lesson sources and generated PDFs, site sources and
@@ -27,8 +28,8 @@ it remains frozen.
    commits whose subjects duplicate work later incorporated into the main
    history. They are not evidence of a newer lost lesson or research boundary.
 3. The durable product ledger retained the major work categories, but it did
-   not decompose them into executable tasks. The journal was absent before this
-   audit and now contains one active recovery task.
+   not decompose them into executable tasks. That historical finding does not
+   describe current AIQ task state.
 4. Lessons 001--028 have a complete tracked package shape: one canonical
    example, HTML page, TeX source, and generated PDF per lesson. Their physical
    acceptance remains genuinely open.
@@ -125,7 +126,7 @@ not an inferred relaxation.
 
 ## Verification evidence
 
-Passed at the audited boundary:
+Passed at the original audited boundary:
 
 ```text
 python3 .journal/bin/journal.py validate
@@ -134,6 +135,10 @@ make headers-check
 make lessons-check
 make site-check
 ```
+
+The repository later replaced that journal with AIQ. At the migration
+boundary, `aiq journal check` separately verified the private AIQ database;
+that later result does not rewrite the evidence recorded by this audit.
 
 `make check` initially raced with a separately invoked `make site-check` over
 `build/site-source`; the isolated rerun passed. This demonstrates that shared
@@ -151,12 +156,13 @@ Not run as audit evidence:
 Those belong to the relevant implementation or release task and must not be
 reported as passing from this audit.
 
-## Ordered journal-priming prompts
+## Ordered recovery outcomes
 
-Feed each prompt as a separate user message. Let `journal.py new-task` mint the
-UUID; do not copy example UUIDs. After ingestion, refine acceptance criteria,
-record dependencies by the minted task UUIDs, validate, and commit the journal
-checkpoint before implementation.
+These are historical recovery briefs, not pending work merely because they
+appear in this document. Reconcile each outcome against
+`docs/WORK_QUEUE.md` and current repository evidence before enqueueing it
+through AIQ. The coordinating agent owns inbox interpretation, task creation,
+dependencies, leases, and settlement; delegates do not write AIQ state.
 
 ### Prompt 1 — reconcile the recovered ledger
 
@@ -269,9 +275,9 @@ checkpoint before implementation.
 > clean tree, run the complete host, exception, sanitizer, research-model,
 > header, style, Mega, size, lesson, monochrome/PDF, site, archive-consumer, and
 > lint gates. Record exact tool versions, measurements, failures, owners, and
-> next actions in the journal and work queue. Acceptance: all runnable gates
-> pass or have durable blockers; no hardware, release, tag, push, or live
-> publication claim is made.
+> next actions in AIQ task state and the work queue. Acceptance: all runnable
+> gates pass or have durable blockers; no hardware, release, tag, push, or
+> live publication claim is made.
 
 ### Prompt 11 — plan the physical acceptance campaign
 
