@@ -63,6 +63,25 @@ maintainer. Two durable consequences meanwhile:
    belongs in a Make rule so assets cannot be committed from an
    under-provisioned machine.
 
+### This blocks the assembly plates, and caption-only text does not substitute
+
+Concept drawings survive the caption-only rule because their meaning is
+carried by arrangement. Assembly plates do not: their entire purpose is
+saying *which* part belongs at *which* position, so `D22` versus `D30` and
+`330R` versus `100R` must appear on the plate itself. A first attempt at a
+Lesson 006 placement plate was discarded for exactly this reason — the
+geometry rendered correctly, but with no labels a learner could not tell the
+four button positions from the four cue-LED positions, and shipping a
+decorative plate into a published PDF is worse than the acknowledged gap.
+
+Phase 4 therefore depends on labels being renderable. Either install the font,
+or make labels font-independent by drawing them as stroked SVG paths from a
+small reusable glyph set (digits, `D`, `A`, `k`, `R`, and ohm). The stroke-glyph
+route is the stronger option: it removes the font dependency permanently, so
+this failure mode cannot recur on another under-provisioned machine, and the
+same glyph set repairs the eight broken assets. It is recorded as the
+`svg-stroke-labels` tool candidate.
+
 ## Track 1 — object design (`src/`, 121 findings)
 
 The library is disciplined about inert construction, idempotent initialize,
@@ -164,7 +183,7 @@ let the lesson-page image embedding (track 2) carry the visual identity.
 | 1 | Correctness and small lifecycle fixes: record sink (done), cue-scheduler reinitialize, SPI death propagation, station health classification | TASK-7 |
 | 2 | Site foundation: CSS retarget + dark mode, landing funnel and canonical boundary statement, stale-row fix | TASK-9, TASK-10 |
 | 3 | Lesson pages: embed existing pencil assets across all published pages; convert predict/observe tables to runnable numbered steps arc by arc; dissolve PDF assessment sections | TASK-8 |
-| 4 | Assembly plates: per-lesson pencil drawings of physical arrangement, earliest arcs first (006–039), then future-bench plates for E0 arcs | TASK-8 |
+| 4 | Assembly plates: per-lesson pencil drawings of physical arrangement, earliest arcs first (006–039), then future-bench plates for E0 arcs. **Blocked** until plate labels render — install the font or build `svg-stroke-labels` (see the follow-up finding above) | TASK-8 |
 | 5 | Object-design seams and convergence: correlation header, time guard, component chain, then migrate-when-touched convention alignment under stress-pass discipline | TASK-7 |
 
 Lesson 081 continues under its frozen plan; the 079–081 evidence-header
