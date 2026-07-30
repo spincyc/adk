@@ -92,7 +92,7 @@ card identify the physical specimen.
 
 | Kit part | Official quantity | ADK coverage | Adapter or instructional gap |
 |---|---:|---|---|
-| HC-SR04 ultrasonic module | 1 lesson unit | Host verified; bench open: `PulseInput`, `UltrasonicRanger`, lesson 019 | Exact module timing and Mega bench evidence remain open |
+| HC-SR04 ultrasonic module | 1 lesson unit | Host verified; bench open: `PulseInput`, `UltrasonicRanger`, lesson 019; deliberately reused through copied evidence in Lessons 076--078 | Exact module timing, supply, Echo level, range environment, and Mega bench evidence remain open; E0 sonar-desk work does not claim powered acquisition |
 | DHT11 temperature/humidity module | 1 lesson unit | Host verified; bench open: `Dht11Sensor`, `ClimateSensor`, lesson 013 | Exact device identity, electrical timing, and bench record remain open |
 | GY-521/MPU-6050 motion module | Revision-dependent | Missing | Add owned `I2cBus`, register transport, calibration, and sample model |
 | QMI-8658 motion module | Revision-dependent alternative | Missing | Separate device adapter behind the same inertial-sample value type |
@@ -121,7 +121,7 @@ failure states. None may be powered directly from a Mega I/O pin.
 
 | Kit part | Official quantity | ADK coverage | Adapter or instructional gap |
 |---|---:|---|---|
-| SG90 servo | 1 lesson unit | Host verified; bench open: `ServoOutput`, `BoundedServo`, lesson 017 | Exact servo and external-power bench acceptance remain open |
+| SG90 servo | 1 lesson unit | Host verified; bench open: `ServoOutput`, `BoundedServo`, lesson 017; deliberately reused as copied bounded-angle evidence in Lessons 076--078 | Exact servo identity and external-power bench acceptance remain open; physical motion is E2 and requires separate current-limited load power, physical power removal, restraint, bounded travel, and measured acceptance |
 | 3–6 V DC motor and fan blade | 1 set | Host-verified intent and rover models: lessons 020–021 | No exact motor is supported until driver, supply, current, motion, and bench evidence pass |
 | L293D H-bridge IC | 1 lesson unit | Host verified; bench open: `HBridgeOutput`, lesson 020 | Exact IC wiring, clamp behavior, load current, and thermal evidence remain open |
 | 5 V relay | 1 lesson unit | Host-verified inert simulation only: lessons 023–024 | No physical relay adapter or contact load is claimed; never mains |
@@ -151,8 +151,11 @@ Interfaces should follow shared electrical mechanisms:
 8. publish descriptor and copied-sweep E0 policy in 070–072, then use the
    authorized DS1307 family for copied transaction evidence, clock-observation
    qualification, and the Inert Time-Warp Detective Desk in 073--075; keep
-   DS3231 electrically and semantically separate and retain 076--078 for later
-   authorized-family re-scoping; and
+   DS3231 electrically and semantically separate; follow with **Copied
+   Sweep-Range Frames**, **Bounded Polar Occupancy Map**, and the **Inert
+   Tabletop Sonar Desk** in 076--078, deliberately deepening the authorized
+   HC-SR04 and bounded-servo scope through copied E0 evidence rather than
+   claiming an unused family; and
 9. leave the low-energy qualification bench at 079–081.
 
 This order makes kit breadth an integration test of the hierarchy instead of
@@ -171,9 +174,12 @@ at listing level until exact topology and safe stimulus are established. The
 selected 073--075 placement also gives the listed DS1307 RTC family an explicit
 instructional role, so no authorized, admissible sensor family in the
 exhaustive reconciliation remains unused; a prohibited family instead retains
-its explicit non-coverage disposition. That does not erase any specimen gate or
-make the separately identified DS3231 shipping variant interchangeable with
-DS1307.
+its explicit non-coverage disposition. Lessons 076--078 are therefore a
+deliberate depth-and-reuse choice, not a repair for an unused-family gap.
+Their copied range and bounded-angle evidence does not erase the HC-SR04
+physical-acquisition gates or the servo's E2 power, restraint, travel, and
+acceptance gates. That also does not make the separately identified DS3231
+shipping variant interchangeable with DS1307.
 
 ## Explicit non-coverage and aliases
 

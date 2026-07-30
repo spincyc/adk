@@ -157,8 +157,9 @@ HTML reference, and PDF lesson exist.
   Observation**, and the **Inert Time-Warp Detective Desk**. This selected E0
   arc uses copied DS1307-family evidence only; DS3231 remains a separate,
   independently gated variant.
-- **076–078:** authorized-family replacements remain pending for the excluded
-  color-sensor arc.
+- **076–078:** **Copied Sweep-Range Frames**, **Bounded Polar Occupancy Map**,
+  and the **Inert Tabletop Sonar Desk**. This planned E0 arc replays copied
+  angle–range evidence without moving a servo or powering a ranger.
 - **079–081:** a bounded low-side driver, indicator semantics, and an inert
   component-qualification bench.
 

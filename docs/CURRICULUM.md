@@ -303,9 +303,9 @@ supplies the shortest planned path through the library.
 | [073](design/LESSONS_073_075_RTC_INTEGRITY_RESCOPE.md) | Component | Copied RTC Transaction Evidence | Planned E0 policy retains copied DS1307-family request/receipt correlation, register framing, BCD/calendar semantics, ordering, and faults without claiming a powered bus or supported specimen; DS3231 remains a separate, independently gated variant |
 | [074](design/LESSONS_073_075_RTC_INTEGRITY_RESCOPE.md) | Component | Qualified Clock Observation | Planned E0 policy qualifies copied DS1307-derived observations for provenance, validity, freshness, monotonic continuity, and explicit discontinuity without claiming acquisition, clock accuracy, or physical acceptance |
 | [075](design/LESSONS_073_075_RTC_INTEGRITY_RESCOPE.md) | Project-bearing | Inert Time-Warp Detective Desk | Planned E0 composition applies qualified copied clock observations to deterministic rollover, jump, rollback, stale, and replay scenarios; powered RTC, display, persistence, and bench acceptance remain open |
-| 076 | Component | Authorized-family replacement pending | Retain this number; a color sensor is not in the cited Elegoo union and must be replaced before activation |
-| 077 | Component | Authorized-family replacement pending | Build on the authorized replacement selected for 076 |
-| 078 | Project-bearing | Authorized-family project pending | Compose the replacements selected for 076–077 without adding an unlisted specimen |
+| [076](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md) | Component | Copied Sweep-Range Frames | Planned E0 policy retains attributable copied HC-SR04-shaped range evidence and bounded servo-angle intent without claiming powered ranging, servo motion, or support for an exact specimen |
+| [077](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md) | Component | Bounded Polar Occupancy Map | Planned E0 policy turns qualified copied angle-range frames into a fixed deterministic polar occupancy map with explicit faults and no physical-mapping claim |
+| [078](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md) | Project-bearing | Inert Tabletop Sonar Desk | Planned E0 replay-only composition produces explainable presentation and volatile record intent; powered ranging, restrained servo motion, autonomous navigation, physical mapping, and bench acceptance remain separately gated |
 | 079 | Component | Bounded low-side load driver | Identified transistor intent, current limits, flyback, and all-off rollback are explicit |
 | 080 | Component | Small indicator-module semantics | Identified low-energy indicators retain polarity, autonomy, and safe state |
 | 081 | Project-bearing | Component qualification bench | One identified inert specimen passes review, bounded stimulus, and stable recording |
@@ -315,6 +315,14 @@ DS1302 was not in the cited Elegoo union, and BMP180 and PCF8591 remain
 excluded from this active block. Selecting copied DS1307 evidence for the
 planned E0 path neither activates those subjects nor promotes a DS1307 or
 DS3231 powered adapter.
+
+The [076--078 re-scope](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md)
+likewise does not authorize the historical color-sensor subject. It selects a
+replay-only tabletop-sonar arc for implementation-depth planning; no lesson,
+interface, supported specimen, powered ranger, moving servo, or physical
+acceptance result exists yet. Exact hardware identity, wiring, supply and
+current limits, restrained motion, non-Serial observation, named test points,
+and bench acceptance remain future physical gates.
 
 Lessons 025--030 do not clone transmitters, replay unknown radio protocols,
 control pyrotechnic launchers, or energize ignition circuits. A real show
@@ -383,7 +391,7 @@ the external-power boundary introduced in `017`.
 | Single-wire 18B20 thermal observations | 064--065 | 066 | Recorded mapping |
 | Declared threshold descriptors and copied characterization | 070--071 | 072 | Inert E0 bench evidence; powered acceptance remains E1-open |
 | Copied RTC transaction and qualified clock integrity | 073--074 | 075 | Planned inert time-warp and timeline-integrity evidence; DS3231 remains a separate variant |
-| Authorized-family replacements | 076--077 | 078 | Pending re-scope |
+| Copied sweep-range frames and bounded polar occupancy | 076--077 | 078 | Planned inert tabletop-sonar replay; powered ranging, servo motion, and physical mapping remain gated |
 | Low-side driver and indicator descriptors | 079--080 | 081 | Inert qualification |
 
 ## Circuit-native debugging thread

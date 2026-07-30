@@ -80,12 +80,15 @@ weights above.
 | 067--069 thermal gradient mapper | 4 | 4 | 4 | 4 | 2 | 4 | 76 |
 | 070--072 dual-display timing desk | 5 | 4 | 3 | 5 | 3 | 4 | 83 |
 | 073--075 RTC integrity and Inert Time-Warp Detective Desk | 3 | 4 | 4 | 4 | 3 | 5 | 75 |
-| 076--078 replacement pending | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 076--078 tabletop sonar desk | 5 | 5 | 4 | 5 | 3 | 5 | 93 |
 | 079--081 component qualification bench | 2 | 3 | 2 | 4 | 2 | 3 | 53 |
 
-The zeroes for Lessons 076--078 mean “no authorized subject exists to score,”
-not that the eventual replacement project has no engagement value. That arc
-cannot participate in the score sort until its authorized scope is chosen.
+Lessons 076--078 score 93/100: immediate interaction `5`, project payoff `5`,
+novelty `4`, visible feedback `5`, first-success accessibility `3`, and
+narrative strength `5`, yielding `25 + 25 + 12 + 15 + 6 + 10 = 93`. The arc
+deliberately deepens already authorized HC-SR04 and bounded-servo concepts; it
+does not fill or claim an unused sensor-family slot.
+
 Lessons 073--075 now use the listed DS1307 RTC family. Their score reflects a
 less immediate first encounter than optical or motion work but a strong,
 legible detective-story payoff: copied clock evidence can visibly expose
@@ -121,13 +124,15 @@ overrides in sequence to reproduce the final map:
    earlier balance lesson instead of repeating the same modality immediately;
 9. place characterization after the application-led arcs because its purpose
    is comparison and completeness, not first exposure;
-10. retain the selected RTC integrity arc at 073--075 and the unscored
-    076--078 reservation in place; the RTC arc fills an authorized-family
-    coverage gap without disturbing the dependency-sorted earlier sequence;
+10. retain the selected RTC integrity arc at 073--075, followed by the
+    93-point tabletop-sonar arc at 076--078; its copied sweep, bounded polar
+    map, and inert desk make a highly legible project while deliberately
+    deepening authorized HC-SR04 and servo concepts without changing the
+    earlier dependency-sorted sequence;
     and
 11. retain 079--081 last because it is the bounded qualification capstone and
-    depends on the preceding breadth even though its raw score exceeds the
-    unscored reservations.
+    depends on the preceding breadth even though its raw score is lower than
+    several earlier, application-led arcs.
 
 ## Reordered arc map
 
@@ -148,7 +153,7 @@ arc. Every move carries the entire old `n--n+2` arc to new `m--m+2`.
 | 064--066 | 067--069 | Interchangeable motion recorder | Defers the more analytical second inertial arc so it extends, rather than immediately repeats, the balance-table experience |
 | 055--057 | 070--072 | Module characterization bench | Places descriptor-driven completeness work after application-led sensor arcs, where comparison and qualification consolidate prior experience |
 | 073--075 | 073--075 | Copied RTC Transaction Evidence, Qualified Clock Observation, and Inert Time-Warp Detective Desk | Gives the authorized DS1307 family a late-course integrity investigation with a recognizable “bad clock” payoff after learners have the record and qualification vocabulary to distinguish valid civil time from continuity |
-| 076--078 | 076--078 | Authorized-family replacement pending | Retains stable numbers and unresolved scope |
+| 076--078 | 076--078 | Copied Sweep-Range Frames, Bounded Polar Occupancy Map, and Inert Tabletop Sonar Desk | Retains stable numbers for a 93-point, visible-interaction arc that deliberately deepens authorized HC-SR04 and bounded-servo scope without claiming an unused family |
 | 079--081 | 079--081 | Component qualification bench | Retains the bounded driver and qualification capstone at the end |
 
 ## Inventory corrections required during migration
@@ -170,8 +175,12 @@ the listing-authorized inventory boundary while rewriting the moved arcs.
   register/request/receipt evidence, civil-time and continuity qualification,
   and a volatile timeline-integrity project. This E0 selection does not restore
   DS1302, BMP180, or PCF8591, and it does not claim a powered RTC.
-- Lessons 076--078 remain pending re-scope. The prior color-sensor subject is
-  not silently restored.
+- Lessons 076--078 are **Copied Sweep-Range Frames**, **Bounded Polar
+  Occupancy Map**, and the **Inert Tabletop Sonar Desk**. They reuse
+  listing-authorized HC-SR04 range semantics and the Mega-kit bounded-servo
+  surface through copied E0 evidence; they do not silently restore the prior
+  unauthorized color-sensor subject or claim that an authorized family was
+  unused.
 - Lessons 079--081 remain qualification work; their position does not turn an
   unidentified transistor, load, or indicator board into a supported
   specimen.
@@ -250,7 +259,7 @@ the listing cannot by itself authorize powered work.
 | 8 | SMD RGB | 079--081 indicator semantics and qualification; RGB semantics may be reused only after identification | Package pinout, common terminal, onboard resistors, and current limits open |
 | 9 | Tilt-Switch | 034--036; optional qualified contact in 037--039 and 046--048 | Exact contact topology, orientation, bounce, and safe stimulus open |
 | 10 | Photo-Resistor | 008--009; reused 040--042 | Divider, tolerance, surface/ambient calibration, and physical acceptance open |
-| 11 | Ultrasonic Sensor (HC-SR04) | 019; reused 040--042 presence/passage | Exact timing, supply, echo level, range environment, and Mega bench evidence open |
+| 11 | Ultrasonic Sensor (HC-SR04) | 019; reused 040--042 presence/passage and deliberately deepened through copied sweep evidence in 076--078 | Exact timing, supply, echo level, range environment, and Mega bench evidence open; E0 tabletop-sonar work does not claim powered acquisition |
 | 12 | Button | 002--003 and many later projects | Exact switch and pull policy remain bench-gated |
 | 13 | Active Buzzer | 079--081 indicator semantics and qualification | Exact active polarity, voltage, current, and sounder behavior open |
 | 14 | Shock | Optional substitution coverage in 037--039 | Exact specimen conformance remains open; external contact references are canonical there |

@@ -172,10 +172,19 @@ acceptance remain open, including module topology, register-map revision,
 pull-up rails, backup-supply and cell-chemistry safety, oscillator behavior,
 wiring, primary sources, and measured evidence.
 
-Lessons 076--078 remain an authorized-family replacement boundary pending a
-separate curriculum decision, and Lessons 079--081 retain the low-energy
-component-qualification bench. The historical DS1302, BMP180, PCF8591, and
-color-sensor assignments remain excluded rather than silently restored.
+The
+[Lessons 076--078 re-scope decision](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md)
+selects **Copied Sweep-Range Frames**, **Bounded Polar Occupancy Map**, and the
+**Inert Tabletop Sonar Desk**. This is planning-selected, not
+implementation-ready: an implementation-depth plan and initial architecture
+stress passes for all three lessons are mandatory before code. E0 is limited
+to copied angle/range evidence and deterministic intent; exact ultrasonic
+acquisition and physical ranging remain E1-gated, while restrained powered
+servo motion remains E2-gated. Physical mapping accuracy, powered
+presentation, and bench acceptance remain open. Lessons 079--081 retain the
+low-energy component-qualification bench. The historical DS1302, BMP180,
+PCF8591, and color-sensor assignments remain excluded rather than silently
+restored.
 Lessons 067--069 remain published E0 copied-record policy; exact motion
 acquisition, presentation, and persistence remain open E1a--E1c work.
 Authorization, prerequisite, exact-specimen, safety, and evidence gates still

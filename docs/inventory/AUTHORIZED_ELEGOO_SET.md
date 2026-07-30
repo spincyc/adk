@@ -163,7 +163,11 @@ follows:
 - lessons 067–069: normalized records from the identified inertial revision;
 - lessons 070–072: E0 characterization policy for listing-authorized
   low-voltage analog/comparator families, with each exact powered specimen
-  separately gated; and
+  separately gated;
+- lessons 076–078: **Copied Sweep-Range Frames**, **Bounded Polar Occupancy
+  Map**, and the **Inert Tabletop Sonar Desk**, deliberately deepening the
+  already authorized HC-SR04 and bounded-servo teaching surfaces rather than
+  claiming an unused sensor family; and
 - lessons 079–081: inert low-energy component qualification.
 
 Metal Touch is listing-authorized, but its exact topology, pinout, thresholds,
@@ -189,10 +193,18 @@ Lessons 073–075 are selected for **Copied RTC Transaction Evidence**,
 **Qualified Clock Observation**, and the **Inert Time-Warp Detective Desk**.
 This E0 selection uses copied DS1307-family evidence only and does not claim a
 powered RTC; DS3231 remains a separate, independently gated variant. Lessons
-076–078 remain reserved for authorized-family re-scoping, with no replacement
-subjects selected. Historical references to DS1302, BMP180, PCF8591, and the
-color sensor document earlier planning only. They are not evidence that such
-specimens exist and confer no curriculum or electrical scope.
+076–078 are now deliberately scoped to **Copied Sweep-Range Frames**,
+**Bounded Polar Occupancy Map**, and the **Inert Tabletop Sonar Desk**. This is
+deeper reuse of the listing-authorized HC-SR04 and the Mega-kit SG90/bounded
+servo scope, not evidence that an authorized family was previously unused.
+E0 accepts copied range and angle evidence only. Powered HC-SR04 acquisition
+still requires exact-module timing, level, supply, environment, and Mega bench
+acceptance; powered servo motion remains E2 and still requires exact identity,
+separate current-limited load power, physical power removal, restraint,
+bounded travel, and measured acceptance. Historical references to DS1302,
+BMP180, PCF8591, and the color sensor document earlier planning only. They are
+not evidence that such specimens exist and confer no curriculum or electrical
+scope.
 
 [mega-product]: https://www.elegoo.com/en-gb/collections/arduino-kits/products/elegoo-mega-2560-the-most-complete-starter-kit
 [mega-tutorial]: https://www.elegoo.com/en-gb/blogs/arduino-projects/elegoo-mega-2560-the-most-complete-starter-kit-tutorial

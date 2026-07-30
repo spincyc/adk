@@ -100,7 +100,7 @@ Status meanings:
 | Threshold characterization | `ModuleCharacterizationPolicy`, `ModuleCharacterizationEvidence` | Host verified; E0 copied sweep evidence only; exact fixtures E1-open | [Lesson 071](lessons/071.md) |
 | Inert module-characterization bench | `InertModuleCharacterizationBench`, `ModuleCharacterizationRecordCodec` | Host verified; E0 copied evidence and volatile record only; exact fixtures E1-open | [Lesson 072](lessons/072.md) |
 | Planned RTC integrity arc | Copied RTC Transaction Evidence, Qualified Clock Observation, and Inert Time-Warp Detective Desk | Re-scope selected; implementation-depth plan required | Lessons 073–075 |
-| Reserved arc | Authorized-family replacements pending | Re-scope required | Lessons 076–078 |
+| Planned tabletop-sonar arc | Copied Sweep-Range Frames, Bounded Polar Occupancy Map, and Inert Tabletop Sonar Desk | Re-scope selected; implementation-depth plan required | Lessons 076–078 |
 | Planned qualification arc | Bounded load driver and indicator semantics | Queued | Lessons 079–081 |
 
 Composition is preferred: a Button has an input; it is not a specialized pin.

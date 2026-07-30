@@ -118,7 +118,7 @@ may claim hardware verification until its measured record is published.
 | 067--069 | Inertial records and source qualification | Interchangeable motion recorder |
 | 070--072 | Declared threshold descriptors and copied sweeps | Inert module characterization bench |
 | [073--075](design/LESSONS_073_075_RTC_INTEGRITY_RESCOPE.md) | Planned E0 **Copied RTC Transaction Evidence** and **Qualified Clock Observation** over copied DS1307-family values; no implementation or powered-specimen support is claimed | **Inert Time-Warp Detective Desk**; DS3231 remains a separate, independently gated variant |
-| 076--078 | Authorized-family replacements pending | Project pending re-scope |
+| [076--078](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md) | Planned E0 **Copied Sweep-Range Frames** and **Bounded Polar Occupancy Map** over attributable copied HC-SR04-shaped range evidence and bounded servo-angle intent; no implementation or powered-specimen support is claimed | **Inert Tabletop Sonar Desk**; powered ranging, restrained servo motion, autonomous navigation, physical mapping, and bench acceptance remain separately gated |
 | 079--081 | Low-side driver and indicator semantics | Component qualification bench |
 
 A listing-authorized family may scope planning, but exact specimen support
@@ -155,7 +155,7 @@ explicit open item.
 | [069](design/LESSONS_067_069_MOTION_RECORDER_PLAN.md) | Published; host verified; powered acceptance open | Normalization, provenance, qualification, one-source recording, and byte-stable replay traces | E0 result and presentation-intent cells only; exact acquisition, display, persistence, and bench acceptance remain E1-open |
 | [072](design/LESSONS_070_072_MODULE_CHARACTERIZATION_PLAN.md) | Published; host verified; powered acceptance open | Descriptor validation and correlation, bounded copied ascending/descending/verification legs, bracket and interval evidence, disagreement, corruption, and byte-stable result traces | E0 result, presentation, and volatile record cells only; exact raw/comparator endpoints, optional separately rated power control, indicators/display, schematic, and acceptance remain E1-open |
 | [075](design/LESSONS_073_075_RTC_INTEGRITY_RESCOPE.md) | Planned; implementation-depth plan required | Copied DS1307 request/receipt correlation and calendar semantics feed qualified observations, then deterministic rollover, jump, rollback, stale, discontinuity, and byte-stable replay traces | E0 result cells only; powered RTC acquisition, bus activity, clock accuracy, display, persistence, and bench acceptance remain E1-open, and DS3231 remains a separate variant |
-| 078 | Re-scope required | Deterministic artifacts depend on the authorized families selected for 076--077 | Observation paths depend on the authorized replacement specimens |
+| [078](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md) | Re-scope selected; implementation-depth plan required | Attributable copied range evidence and bounded angle intent feed deterministic polar occupancy, fault, presentation-intent, volatile-record-intent, and byte-stable replay artifacts | E0 result cells only; exact ranger/servo identity, wiring, supply and current limits, restrained motion, non-Serial observation, named test points, physical mapping, and bench acceptance remain open |
 | 081 | Queued; detailed plan required | Descriptor, current budget, endpoint fault, and record traces | Separate power, raw, accepted, intent, and fault evidence |
 
 Each project package still includes the public component interfaces, host

@@ -89,6 +89,7 @@ qualified.
 | [067--069](design/LESSONS_067_069_MOTION_RECORDER_PLAN.md) | Published; host verified; powered acceptance open | Preserve Lesson 067's copied source-frame record and fixed 64-byte image, Lesson 068's one-source qualifier, and Lesson 069's one-source-per-session volatile recorder and presentation intent; Lesson 068's ordinary flash miss and Lesson 069's exact no-LTO flash miss are independently reviewed below their hard limits; exact MPU6050/QMI8658 acquisition, powered presentation, RTC/media persistence, and bench acceptance remain separately gated E1a--E1c work |
 | [070--072](design/LESSONS_070_072_MODULE_CHARACTERIZATION_PLAN.md) | Host verified and published; powered acceptance open | Preserve the published E0 [Lesson 070 descriptor](design/LESSON_070_THRESHOLD_MODULE_DESCRIPTOR_STRESS_PASS.md), [071 characterization](design/LESSON_071_THRESHOLD_CHARACTERIZATION_STRESS_PASS.md), and [072 inert bench](design/LESSON_072_INERT_MODULE_CHARACTERIZATION_BENCH_STRESS_PASS.md); exact specimens, powered acquisition, presentation, and bench acceptance remain E1-open, while persistence remains outside this arc |
 | [073--075](design/LESSONS_073_075_RTC_INTEGRITY_RESCOPE.md) | Re-scope decision complete; implementation not started | Produce the mandatory implementation-depth plan and initial architecture stress passes for **Copied RTC Transaction Evidence**, **Qualified Clock Observation**, and the **Inert Time-Warp Detective Desk**, and make the affected `Rtc` seam decision before any code; retain copied E0 DS1307-family scope, keep DS3231 separately gated, and leave powered acquisition, clock accuracy, display, persistence, and bench acceptance open |
+| [076--078](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md) | Re-scope decision complete; implementation not started | Produce the mandatory implementation-depth plan and initial architecture stress passes for **Copied Sweep-Range Frames**, **Bounded Polar Occupancy Map**, and the **Inert Tabletop Sonar Desk** before any code; preserve copied E0 angle/range evidence, keep exact ultrasonic acquisition and restrained servo motion separately gated at E1 and E2, and leave physical ranging, mapping accuracy, powered presentation, and bench acceptance open |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -138,7 +139,7 @@ work; retail kit names are not electrical identities.
 | [067--069](design/LESSONS_067_069_MOTION_RECORDER_PLAN.md) | Published; host verified; powered acceptance open | Copied source-frame normalization, one-source qualification, and one-source-per-session volatile motion-recorder intent are host verified; Lesson 068 measures 16,702 B ordinary flash against a 16 KiB target and 24 KiB hard limit; Lesson 069's exact no-LTO flash target miss is independently reviewed below its hard limit; exact MPU/QMI acquisition, powered presentation, RTC/media persistence, and bench acceptance remain E1a--E1c open |
 | [070--072](design/LESSONS_070_072_MODULE_CHARACTERIZATION_PLAN.md) | Host verified and published; powered acceptance open | `ModuleThresholdDescriptor` and `ModuleThresholdFrame` publish copied declaration and provenance validation; `ModuleCharacterizationPolicy` publishes bounded three-leg evidence; `InertModuleCharacterizationBench` publishes one-envelope review and a canonical 192-byte volatile record at E0; exact specimens, powered acquisition, presentation, and bench acceptance remain E1-open |
 | [073--075](design/LESSONS_073_075_RTC_INTEGRITY_RESCOPE.md) | Re-scope decision complete; detailed planning queued | **Copied RTC Transaction Evidence**, **Qualified Clock Observation**, and the **Inert Time-Warp Detective Desk** over copied DS1307-family values; decide the existing `Rtc` seam in the implementation-depth plan and architecture stress passes before code, while DS3231 and every powered or physical claim remain separately gated |
-| [076--078](projects/component_project_cadence.md) | Re-scope required | Color sensor is not in the authorized Elegoo union; retain numbers but replace subjects before activation |
+| [076--078](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md) | Re-scope decision complete; detailed planning queued | **Copied Sweep-Range Frames**, **Bounded Polar Occupancy Map**, and the **Inert Tabletop Sonar Desk** over copied angle/range evidence; require the implementation-depth plan and architecture stress passes before code, while exact ultrasonic acquisition remains E1-gated and restrained servo motion remains E2-gated |
 | [079--081](projects/component_project_cadence.md) | Queued | Bounded low-side driver, indicator semantics, inert qualification bench |
 
 The input-first 031--033 decision supersedes older use of 032--033 for the
@@ -370,9 +371,14 @@ implementation-ready lesson plan. Its mandatory next boundary is an
 implementation-depth plan, initial architecture stress passes, and a durable
 decision about whether the existing `Rtc` seam can represent malformed
 calendar evidence without buckling prior contracts. No Lesson 073 code begins
-before that boundary is clean. Cadence entries for Lessons 076--081 likewise
-are not implementation-ready lesson plans. Before code begins for each
-remaining three-lesson arc,
+before that boundary is clean. The Lessons 076--078
+[re-scope decision](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md) likewise
+selects its subjects without making them implementation-ready. Its mandatory
+next boundary is an implementation-depth plan and initial architecture stress
+passes for all three lessons; no Lesson 076 code begins before that boundary
+is clean. Lesson 079--081 cadence entries are also not an
+implementation-ready lesson plan. Before code begins for each remaining
+three-lesson arc,
 expand it to the same depth as 031--033: public values and interfaces, resource
 and pin budgets, deterministic fixture and failure matrices, narrative example
 flow, staged circuit-native experiments, HTML/PDF division, specimen gates,
@@ -394,8 +400,13 @@ The source audit found that the historical DS1302, BMP180, PCF8591, and color
 sensor subjects came from other vendor taxonomies. They are not authorized
 specimens and must not be implemented under the Elegoo-set task. The
 Lessons 073--075 decision replaces the first three historical subjects without
-quietly authorizing them; Lessons 076--078 still require their own re-scope.
-Lesson numbers 073--078 remain stable.
+quietly authorizing them. The
+[Lessons 076--078 decision](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md)
+replaces the color-sensor assignment with copied sweep-range evidence, a
+bounded polar occupancy map, and an inert tabletop sonar desk. It deepens
+already authorized ultrasonic and servo teaching surfaces without claiming a
+new sensor family: exact powered ranging remains E1-gated, and restrained
+powered motion remains E2-gated. Lesson numbers 073--078 remain stable.
 
 ## Physical acceptance campaign
 
