@@ -37,3 +37,6 @@ __pycache__/
 *.exe
 *.out
 *.app
+
+# Claude Code local settings and agent worktrees
+.claude/
