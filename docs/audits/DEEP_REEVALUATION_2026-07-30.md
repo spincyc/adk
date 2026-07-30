@@ -132,6 +132,45 @@ on a host without fontconfig. Use that pattern for new plates. A
 `svg-stroke-labels` tool candidate was recorded here and has been abandoned as
 duplicative of it.
 
+## Verification round — 2026-07-30, second pass
+
+Two read-only agents re-checked the claims above against source and git
+history. Results materially revise this document; the pattern is that
+findings produced by pattern-matching were unreliable, and findings checked
+against the artefact held.
+
+**Track 1 high-severity claims: two of four were wrong.**
+
+| Claim | Verdict | Basis |
+|---|---|---|
+| `EnvironmentalStation` misreports out-of-range as `TimingFault` | **Confirmed** | `environmental_station.cpp:171-175` short-circuits on `sensorStatus == InvalidArgument`, and `dht11_sensor.cpp:202-204` returns that same code for every non-`Valid` state including `TemperatureOutOfRange`. No test covers it; reachable through the public snapshot and live in the Lesson 015 example |
+| SPI driver death not propagated | **Partly confirmed** | The `SpiBus` half is real but latent — `MegaSpiDriver` is never composed under a `SpiBus` in-repo. The `SpiDevice` half is **refuted**: `tests/test_bus.cpp:336` asserts device ownership deliberately survives bus shutdown |
+| `ClueConstraintModel::preflightUpdate` const-mutation | **Refuted** | A guarded staging cache, not a hazard: every consumer validates the caller's token first (`clue_constraint_model.cpp:786-789`), and stale-preview supersession is tested at `test_clue_constraint_model.cpp:937-950`. The claim also miscited the function |
+| `InertCueScheduler` cannot reinitialize | **Refuted** | The documented, tested protocol: the audit buffer is caller-owned so the shutdown record stays readable; `test_inert_cue_scheduler.cpp:77-91` asserts `audit.shutdown()` then `initialize()` |
+
+**Six assets were repaired, not seven.** `021-rover-pencil.svg` carries
+`.label, .small, .tiny { display: none; }`, hiding all 25 of its text
+elements — the same failure shape as `016` and a second false positive from
+the same flawed metric. Both were counted as font-broken; neither was.
+
+**Lesson 016's hidden labels are accidental**, with high confidence. The rule
+was present in the file's only commit (`1a1cf7c`), but the 16 key legends each
+carry an explicit `fill="#222"` override so they would render dark-on-white —
+nobody hand-overrides the fill of glyphs they intend to hide. The lesson's own
+alt-text describes "seven labeled wires" that the shipped image does not show,
+and the plate replaced a fully labeled predecessor. Lesson 018 reuses the asset
+and tells the reader to "compare every one of the seven active conductors with
+Plate 1", which a blank plate cannot support.
+
+**All seven unreferenced assets are superseded, none forgotten.** Six were
+displaced by one architectural shift in `7f324d1` "Standardize lesson PDF
+pencil visuals", which moved from single raster orientation plates to a
+text-free base image plus a TikZ overlay drawing labels in LaTeX fonts — the
+same pattern this audit credits with immunity to the fontless-host failure.
+`010-shift-register-pencil.png` remained a stale prerequisite in `mk/docs.mk`
+after its `\includegraphics` became an inline `tikzpicture`; that dependency
+is now removed.
+
 ## Correction — seven assets were repaired, not eight
 
 Re-checked 2026-07-30 after the retraction below. `016-matrix-keypad-pencil`
