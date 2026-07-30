@@ -17,3 +17,15 @@ unsigned char moduleCharacterizationEvidenceBytes
 unsigned char moduleCharacterizationPointBytes
     [sizeof (adk::ModuleCharacterizationPoint)];
 #endif
+
+#if defined (ADK_HAS_LESSON_072)
+#include <inert_module_characterization_bench.h>
+#include <module_characterization_record.h>
+
+unsigned char inertModuleCharacterizationBenchBytes
+    [sizeof (adk::InertModuleCharacterizationBench)];
+unsigned char moduleCharacterizationRecordImageBytes
+    [sizeof (adk::ModuleCharacterizationRecordImage)];
+unsigned char moduleCharacterizationSimultaneousImagesBytes
+    [2 * sizeof (adk::ModuleCharacterizationRecordImage)];
+#endif

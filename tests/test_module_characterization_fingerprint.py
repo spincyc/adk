@@ -14,6 +14,34 @@ SPEC.loader.exec_module(module_probe)
 
 
 class ModuleCharacterizationFingerprintTest(unittest.TestCase):
+    def write_review_fixture(self, root, authority_text, authority):
+        authority_path = root / authority.split("#", 1)[0]
+        authority_path.parent.mkdir(parents=True)
+        authority_path.write_text(authority_text, encoding="utf-8")
+        review_path = root / "reviews.json"
+        review_path.write_text(
+            json.dumps(
+                {
+                    "reviews": [
+                        {
+                            "authority": authority,
+                            "disposition": "accepted-target-miss",
+                            "fingerprint_sha256": "0" * 64,
+                            "hard_bytes": 32768,
+                            "lesson": "072",
+                            "metric": "flash",
+                            "observed_bytes": 26040,
+                            "rationale": "Exact reviewed fixture.",
+                            "target_bytes": 24576,
+                        }
+                    ],
+                    "schema": 1,
+                }
+            ),
+            encoding="utf-8",
+        )
+        return review_path
+
     def test_boundaries_are_enabled_in_dependency_order(self):
         self.assertEqual(
             [item["lesson"] for item in module_probe.selected_boundaries("070")],
@@ -22,6 +50,10 @@ class ModuleCharacterizationFingerprintTest(unittest.TestCase):
         self.assertEqual(
             [item["lesson"] for item in module_probe.selected_boundaries("071")],
             ["070", "071"],
+        )
+        self.assertEqual(
+            [item["lesson"] for item in module_probe.selected_boundaries("072")],
+            ["070", "071", "072"],
         )
 
     def test_l070_config_is_owned_independently(self):
@@ -45,7 +77,21 @@ class ModuleCharacterizationFingerprintTest(unittest.TestCase):
             module_probe.shared_probe_source_hash("shared algorithm v2"),
         )
 
-    def test_l071_chains_from_l070_without_enabling_l072(self):
+    def test_l072_extension_preserves_published_shared_hashes(self):
+        self.assertEqual(
+            module_probe.shared_probe_source_hash(lesson="070"),
+            module_probe.PUBLISHED_SHARED_PROBE_HASH["070"],
+        )
+        self.assertEqual(
+            module_probe.shared_probe_source_hash(lesson="071"),
+            module_probe.PUBLISHED_SHARED_PROBE_HASH["071"],
+        )
+        self.assertNotEqual(
+            module_probe.shared_probe_source_hash(lesson="072"),
+            module_probe.PUBLISHED_SHARED_PROBE_HASH["071"],
+        )
+
+    def test_boundaries_chain_without_enabling_later_lessons(self):
         paths = module_probe.fingerprint_source_paths("070")
         self.assertFalse(any("071" in path or "072" in path for path in paths))
         paths = module_probe.fingerprint_source_paths("071")
@@ -58,8 +104,19 @@ class ModuleCharacterizationFingerprintTest(unittest.TestCase):
             "probes/module_characterization_boundary_071.json", paths
         )
         self.assertFalse(any("072" in path for path in paths))
+        paths = module_probe.fingerprint_source_paths("072")
+        self.assertIn(
+            "probes/module_characterization_boundary_072.json", paths
+        )
+        self.assertIn("src/module_characterization_record.cpp", paths)
+        self.assertIn("src/inert_module_characterization_bench.cpp", paths)
+        self.assertIn(
+            "examples/Lesson072ModuleCharacterizationBench/"
+            "Lesson072ModuleCharacterizationBench.ino",
+            paths,
+        )
         with self.assertRaises(ValueError):
-            module_probe.fingerprint_source_paths("072")
+            module_probe.fingerprint_source_paths("073")
 
     def test_l071_fingerprint_changes_with_l070_configuration(self):
         changed_070 = (
@@ -134,11 +191,45 @@ class ModuleCharacterizationFingerprintTest(unittest.TestCase):
             },
         )
 
+        boundary = module_probe.ALL_BOUNDARIES[2]
+        self.assertEqual(
+            {
+                key: boundary[key]
+                for key in (
+                    "flash_target",
+                    "flash_hard",
+                    "sram_target",
+                    "sram_hard",
+                    "stack_target",
+                    "stack_hard",
+                    "object_target",
+                    "object_hard",
+                )
+            },
+            {
+                "flash_target": 24576,
+                "flash_hard": 32768,
+                "sram_target": 2048,
+                "sram_hard": 3072,
+                "stack_target": 768,
+                "stack_hard": 1024,
+                "object_target": 512,
+                "object_hard": 768,
+            },
+        )
+
     def test_l071_layout_gates_match_the_plan(self):
         self.assertEqual(module_probe.EVIDENCE_TARGET, 320)
         self.assertEqual(module_probe.EVIDENCE_HARD, 384)
         self.assertEqual(module_probe.POINT_TARGET, 96)
         self.assertEqual(module_probe.POINT_HARD, 128)
+
+    def test_l072_record_layout_gates_are_exact(self):
+        self.assertEqual(module_probe.RECORD_IMAGE_EXACT, 192)
+        self.assertEqual(module_probe.SIMULTANEOUS_IMAGES_EXACT, 384)
+        self.assertEqual(module_probe.exact_gate(192, 192), "pass")
+        self.assertEqual(module_probe.exact_gate(191, 192), "hard-fail")
+        self.assertEqual(module_probe.exact_gate(193, 192), "hard-fail")
 
     def test_residual_sram_uses_minimum_gate_semantics(self):
         self.assertEqual(module_probe.minimum_gate(4096, 4096, 3072), "pass")
@@ -207,21 +298,75 @@ class ModuleCharacterizationFingerprintTest(unittest.TestCase):
         self.assertEqual(boundary["status"], "hard-fail")
         self.assertEqual(enriched["status"], "hard-fail")
 
-    def test_review_loader_accepts_only_the_two_authoritative_tuples(self):
+    def test_review_loader_accepts_only_the_authoritative_tuples(self):
         review_path = (
             ROOT / "probes/module_characterization_resource_reviews.json"
         )
         with mock.patch.object(
             module_probe.probe,
             "BOUNDARIES",
-            module_probe.selected_boundaries("071"),
+            module_probe.selected_boundaries("072"),
         ):
             loaded = module_probe.load_reviews(ROOT, review_path)
         self.assertEqual(loaded, {})
         self.assertEqual(
             set(module_probe.ENRICHED_REVIEWS),
-            {("071", "static_sram"), ("071", "evidence")},
+            {
+                ("071", "static_sram"),
+                ("071", "evidence"),
+                ("072", "flash"),
+            },
         )
+
+    def test_review_loader_rejects_missing_authority_anchor(self):
+        authority = (
+            "docs/design/"
+            "LESSON_072_INERT_MODULE_CHARACTERIZATION_BENCH_STRESS_PASS.md"
+            "#terminal-gate-result"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            review_path = self.write_review_fixture(
+                root,
+                "# Stress pass\n\n26040 bytes.\n",
+                authority,
+            )
+            with (
+                mock.patch.object(
+                    module_probe.probe,
+                    "BOUNDARIES",
+                    module_probe.selected_boundaries("072"),
+                ),
+                self.assertRaises(module_probe.probe.ProbeError),
+            ):
+                module_probe.load_reviews(root, review_path.relative_to(root))
+
+    def test_review_loader_scopes_tuple_to_authority_anchor(self):
+        authority = (
+            "docs/design/"
+            "LESSON_072_INERT_MODULE_CHARACTERIZATION_BENCH_STRESS_PASS.md"
+            "#terminal-gate-result"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            review_path = self.write_review_fixture(
+                root,
+                (
+                    "# Stress pass\n\n26040 bytes.\n\n"
+                    "## Terminal gate result\n\n"
+                    "The reviewed measurement is intentionally absent here.\n"
+                ),
+                authority,
+            )
+            with (
+                mock.patch.object(
+                    module_probe.probe,
+                    "BOUNDARIES",
+                    module_probe.selected_boundaries("072"),
+                ),
+                self.assertRaises(module_probe.probe.ProbeError),
+            ):
+                module_probe.load_reviews(root, review_path.relative_to(root))
 
     def test_stale_enriched_review_fails_closed(self):
         report = {

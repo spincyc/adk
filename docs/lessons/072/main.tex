@@ -1,0 +1,310 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.60in]{geometry}
+\usepackage{booktabs,enumitem,fancyhdr,graphicx,tabularx,titlesec,xcolor}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{docs/lessons/assets/}{assets/}}
+\hypersetup{
+ pdftitle={ADK Lesson 072: Build an Inert Module Characterization Bench},
+ pdfauthor={Kevin Shanahan},
+ pdfsubject={An E0 review coordinator and exact volatile record for copied module characterization evidence},
+ pdflang={en-US}}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\textsc{ADK Lesson 072}}\rhead{Inert Characterization Bench}
+\cfoot{\thepage}\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{3pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.5em}{}
+\newcommand{\lessonbox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{#1}}\end{center}}
+\newcommand{\blankline}{\rule{0.80in}{0.4pt}}
+\newcommand{\longblank}{\rule{1.45in}{0.4pt}}
+
+\begin{document}
+\small
+\begin{center}
+ {\Huge\bfseries Build an Inert Module Characterization Bench}\\[3pt]
+ {\Large Review one declared fixture and preserve one exact result}\\[7pt]
+ \fbox{\textbf{E0 COPIED-EVIDENCE REPLAY --- NO POWERED MODULE OR ACCEPTANCE CLAIM}}
+\end{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 072 --- project & Time & 180--240 minutes\\
+Prerequisites & Lessons 070--071 & Board & compile-only Mega replay\\
+Input & one immutable characterization envelope & Observation & named result cells\\
+\end{tabularx}
+
+\lessonbox{\textbf{Responsibility.}
+\texttt{InertModuleCharacterizationBench} validates one atomic copied
+envelope, advances a bounded review script, and prepares one canonical
+192-byte caller-owned volatile image. It does not identify, power, sample,
+calibrate, display, persist, accept, or declare safe a physical module.}
+
+\section{Compose evidence without widening authority}
+Lesson 070 publishes a declared fixture contract. Lesson 071 characterizes
+copied samples for that exact descriptor and run. Lesson 072 consumes both
+together in one immutable \texttt{ModuleCharacterizationEnvelope}. It never
+reads two mutable child objects and hopes they describe the same instant.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=2.28in,keepaspectratio]
+ {072-envelope-flow-pencil.png}
+
+\small\textit{Alternative text: a rough graphite envelope containing a
+descriptor and terminal evidence flows through an inert review bench into one
+record card labelled exactly 192 volatile bytes; a caption says copied
+evidence flows forward while physical authority does not.}
+\end{center}
+
+The descriptor, evidence, and compact witnesses retain their complete
+authoritative fields. Domain-separated CRC-32 digests detect accidental
+collisions and support correlation, but a matching digest never replaces
+field comparison, identifies a marketplace board, or closes E1.
+Every 32-bit digest value is opaque: zero is valid and is never a sentinel,
+including in \texttt{expectedDescriptorDigest}.
+
+\begin{tabularx}{\linewidth}{@{}X X@{}}
+\toprule
+E0 establishes & E0 leaves open\\
+\midrule
+atomic descriptor/evidence correlation & exact board, carrier, and revision\\
+bounded deterministic review & power, ADC, comparator, and potentiometer\\
+canonical volatile record bytes & media receipt, durability, or certification\\
+typed fault-dominant presentation intent & powered display or indicator behavior\\
+\bottomrule
+\end{tabularx}
+
+\newpage
+\section{Bind one exact declared fixture}
+\texttt{ModuleBenchConfig} fixes bench, envelope, record, descriptor,
+specimen, electrical-evidence, digest, and control-source revisions. The
+authoritative descriptor appears once inside the evidence. A changed
+descriptor, stale run, source mismatch, malformed enum, or digest mismatch
+rejects before session state or caller bytes change.
+
+\texttt{beginSession()} applies lifecycle/configuration checks first, then
+structural envelope and descriptor/evidence validation, exact correlation,
+digest equality, and terminal admissibility. A structural, correlation, or
+digest failure rejects atomically even when another field resembles a
+producer fault. Only a fully correlated, digest-correct attributable
+rejection is admitted as fault-dominant evidence.
+
+An \texttt{Unspecified} declaration may remain readable at E0, but it cannot
+be promoted into electrical admission. Light, sound, Hall, thermal,
+flame/radiant, Metal Touch, vibration, and obstacle-family labels are merely
+allowlisted copied-evidence shapes. They do not prove identity or connection.
+A flame/radiant label authorizes no flame, heater, ignition source, or hot
+target.
+
+Suppose plausible evidence names a different electrical-evidence revision.
+Should the session begin? \blankline. Which information remains authoritative:
+the digest alone or the complete fields? \longblank.
+
+\section{Review exactly five steps}
+The bench starts \texttt{Ready}. One valid terminal envelope begins a
+\texttt{ScriptActive} session at \texttt{InspectDeclaration}. Each accepted
+\texttt{Advance} visits one next named step. There is no hidden acquisition
+loop and no duplicated begin/finish-leg protocol.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.97\linewidth,height=2.20in,keepaspectratio]
+ {072-review-script-pencil.png}
+
+\small\textit{Alternative text: five rough graphite cards form one arrowed
+path: inspect declaration, review ascending, review descending, review
+verification, and prepare record. A note distinguishes advancing to the final
+step from the direct operation that writes caller bytes.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+State & \texttt{Advance} & direct \texttt{prepareRecord()}\\
+\midrule
+\texttt{Ready} & invalid & invalid\\
+\texttt{ScriptActive}, before final & next named step & invalid\\
+\texttt{ScriptActive}, final step & remains final & stage and commit image\\
+\texttt{RecordPrepared} & invalid & idempotent, byte-identical\\
+\texttt{Fault} or \texttt{Shutdown} & invalid & invalid\\
+\bottomrule
+\end{tabularx}
+
+\newpage
+\section{Keep chronology and control separate}
+A \texttt{ModuleBenchControl} binds source/configuration identity, session,
+sequence, observation time, command, and producer status. Evidence time,
+control time, sample sequence, run identity, lifecycle generation, and script
+step remain different quantities.
+
+An unchanged duplicate is idempotent. A changed duplicate, regression, future
+control, stale control, required sequence gap, exact half-range ambiguity, or
+sequence exhaustion rejects without mutation. Producer failure dominates a
+plausible command. Direct \texttt{reset()} alone discards the saved compact
+snapshot, advances the nonzero generation, and returns to \texttt{Ready}.
+\texttt{Shutdown} is terminal and inert.
+
+\section{Preserve characterization meaning}
+Raw analog values remain integer codes in the declared ADC domain. Lesson 072
+does not convert them into temperature, light, sound, gas concentration,
+distance, or touch capacitance. Comparator physical level remains separate
+from descriptor-interpreted assertion, so active-low is not inverted twice.
+
+Ascending and descending brackets, guaranteed-active and
+guaranteed-inactive intervals, ambiguity, verification relation, chatter,
+no-transition, stale, disagreement, and endpoint-only rail results stay
+attributable to Lesson 071. Healthy rail points are ordinary evidence.
+\texttt{AtLowerRail} and \texttt{AtUpperRail} can arise only from
+endpoint-only finalization; neither means \texttt{OpenLike} or
+\texttt{ShortLike}.
+
+\lessonbox{\textbf{Fault dominance.}
+A plausible threshold cannot erase an identity, producer, age, rail,
+disagreement, or correlation fault. Diagnostic values may remain inspectable
+only when their invalid or diagnostic status remains explicit.}
+
+\newpage
+\section{Prepare one normative volatile image}
+\texttt{ModuleCharacterizationRecordCodec} is the only encoder and decoder.
+The bench derives a compact semantic record, stages all 192 bytes, validates
+the result, and only then copies it into caller-owned output. No coordinator
+side path hand-encodes a second format.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=2.22in,keepaspectratio]
+ {072-record-card-pencil.png}
+
+\small\textit{Alternative text: a rough graphite record card is divided into
+ADMC framing, compact declarations, run evidence, and CRC-16 columns. Notes
+state that it is exactly 192 little-endian bytes with reserved bytes zero and
+is not a certificate or media receipt.}
+\end{center}
+
+The image begins with ASCII \texttt{ADMC}, version, length 192, record and
+bench revisions, lifecycle/session identity, then compact descriptor
+declarations. It retains run identity and revision, three leg counts,
+ascending and descending brackets, three conservative intervals, comparator
+relation, witness and envelope digests, first/last sequences, terminal
+state/reason/status, script step, descriptor/envelope revisions, and control
+source/configuration. Reserved bytes are zero. CRC-16/CCITT-FALSE covers bytes
+0--189 and occupies bytes 190--191.
+
+The image intentionally omits terminal leg, current leg ID, observation
+times, control ordinals, directions, complete points, and full producer
+statuses. Those authoritative values remain in Lesson 071 evidence and are
+bound by its digest. The compact image cannot reconstruct the full envelope
+or a Lesson 071 result.
+
+Decode checks exact span size, then framing, CRC, semantic/canonical fields,
+and only then assigns the staged output. Thus only a non-192-byte span is
+\texttt{BadLength}; wrong magic, version, or encoded length is
+\texttt{BadFraming}; a CRC mismatch is \texttt{BadIntegrity}; and a CRC-valid
+semantic defect is \texttt{BadSemanticValue}. Encode validates semantics
+before capacity, stages the image, zeroes reserved bytes, computes CRC last,
+and copies only on success. Compact-record digests are opaque and are not
+recomputed by the codec.
+
+\begin{enumerate}
+ \item Change one reserved byte. Predict decoder outcome: \longblank.
+ \item Prepare twice after \texttt{RecordPrepared}. Byte difference:
+       \blankline.
+ \item Reset after preparation. Is the former image durable evidence?
+       \blankline.
+\end{enumerate}
+
+\lessonbox{\textbf{Volatile boundary.}
+The image records copied E0 review state during this process lifetime. It is
+not a hardware acceptance record, calibration certificate, conformance
+report, safety approval, filesystem commit, or power-loss durability claim.}
+
+\newpage
+\section{Replay without touching hardware}
+The canonical Mega sketch constructs one descriptor and terminal evidence,
+forms their copied envelope, begins one session, advances the review script,
+prepares the record, and copies state, step, relation, fault, and
+\texttt{recordPrepared} into named volatile result cells.
+
+\begin{enumerate}
+ \item \textbf{Predict:} write the expected bench state, script step,
+       comparator relation, fault state, prepared flag, and first four image
+       bytes.
+ \item \textbf{Observe:} compile for Mega 2560 and inspect the named volatile
+       cells and caller-owned image in a debugger, simulator, or disassembly.
+       Serial may support observation but is not required.
+ \item \textbf{Interpret:} compare the complete envelope, script progression,
+       record framing, and fault precedence. Explain any disagreement before
+       changing the fixture.
+\end{enumerate}
+
+This is the E0 non-Serial observation path. It proves deterministic software
+publication separately from resource acquisition and released-line evidence.
+E0 owns zero pins, ADC channels, timers, interrupts, buses, supplies, displays,
+LEDs, power switches, or storage endpoints, so physical safe-state evidence
+remains open.
+
+\section{Publisher verification and open acceptance}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X@{}}
+Host evidence & Strict lifecycle, correlation, chronology, fault collision,
+codec golden-vector, corruption, canary, reset, and shutdown tests pass.\\
+Mega evidence & Synthetic replay compiles; exact linked no-LTO flash/static
+SRAM, stack, coordinator, 192-byte image, simultaneous composition, and
+residual SRAM evidence are measured.\\
+Document evidence & PDF metadata, extraction, page count, monochrome, visual
+classification, and rendered-pencil review pass.\\
+Physical evidence & Open: exact specimen, supply, ADC/comparator endpoints,
+pulls, adjustment control, observation endpoint, and measured bench result.\\
+\end{tabularx}
+
+The canonical repository Mega build measures 24,860 B flash and 1,998 B
+static SRAM ordinarily. The isolated no-LTO build measures 27,354 B flash
+plus 2,002 B static SRAM. Measured stack is 740 B, the bench object is 436 B,
+each image is exactly 192 B, staged plus destination images are exactly
+384 B, and residual SRAM is 5,322 B. The no-LTO flash result exceeds the
+24 KiB target but remains below the independently reviewed 32 KiB hard limit.
+All other reported measures pass their targets and hard limits. This reviewed
+software target miss is not hidden, and passing the hard gates cannot be
+presented as physical acceptance.
+
+\newpage
+\section{Draw the powered acceptance boundary}
+There is no wiring diagram or formal schematic at E0. Before any powered
+claim, one exact specimen needs traceable markings and revision, primary
+electrical evidence, supply and signal limits, output-stage and pull
+requirements, ADC reference/domain, warm-up and settling declarations,
+potentiometer direction, and an electrically authoritative formal schematic.
+
+The E1 bench card must separately record prediction; where and when to observe
+a non-Serial result; interpretation; resource-acquisition evidence; safe-state
+evidence; ascending, descending, and verification runs; comparator/analog
+agreement; rail and chatter outcomes; and acceptance disposition. A compiled
+sketch, host fixture, family name, or plausible curve is not that record.
+
+No heater, flame, laser, ignition source, pyrotechnic control, launcher,
+unknown-protocol replay, energized moving load, or unattended hazard is
+authorized. An unidentified board stays unpowered.
+
+\section{Exercises and acceptance reasoning}
+\begin{enumerate}
+ \item Pair one descriptor with terminal evidence from another run. Prove
+       every state value and caller byte remains unchanged.
+ \item Exercise both comparator polarities and both ramp directions. Show
+       where physical level and interpreted assertion remain distinct.
+ \item Drive each named script step, then prove \texttt{Advance} alone never
+       writes the record image.
+ \item Corrupt framing, enum, reserved, payload, and CRC fields. Confirm the
+       decoder never partly publishes a record.
+ \item Replay chatter, no transition, a healthy rail point, endpoint-only
+       rail finalization, stale evidence, and disagreement. Explain why none
+       becomes a physical root-cause diagnosis.
+ \item List the exact E1 evidence needed before connecting one declared
+       module, and distinguish resource acquisition from safe-state proof.
+\end{enumerate}
+
+\lessonbox{\textbf{Project result.}
+You have composed one declared descriptor and one terminal characterization
+into a bounded, fault-dominant inert review and exact volatile image without
+smuggling hardware identity, calibration, acceptance, or persistence into
+E0.}
+
+\textit{Stop at E0: every powered specimen, wiring, formal schematic,
+presentation endpoint, persistence mechanism, and physical acceptance result
+remains open work.}
+\end{document}
