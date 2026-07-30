@@ -94,7 +94,27 @@ maintainer. Two durable consequences meanwhile:
    belongs in a Make rule so assets cannot be committed from an
    under-provisioned machine.
 
-### This blocks the assembly plates, and caption-only text does not substitute
+### Correction — the Lesson 006 assembly-visual finding was overstated
+
+The auditor recorded Lesson 006 as having "three pencil assets that are all
+concept diagrams" and needing breadboard plates. With labels rendering again,
+`006-simon-pencil` turns out to be a strong full-panel drawing that already
+names D22--D25, D30--D33 with their 330\,ohm resistors, the RGB common cathode,
+and the 100\,ohm piezo, plus a sequence sidebar. A second TikZ placement plate
+was drafted and discarded because it duplicated that content with weaker
+artwork.
+
+What Lesson 006 actually lacks is what Lesson 009 Plate B has: **hole-level
+breadboard coordinates**. That gap cannot be closed by drawing alone, because
+the lesson never specifies a layout — inventing coordinates would fabricate
+build guidance the text does not support. Closing it needs a content decision
+first (choose and state the layout), then the plate.
+
+Treat the same caution as general: before drawing a plate for any lesson,
+check whether the lesson specifies a layout to draw. Where it does not, the
+finding is a content gap, not an illustration gap.
+
+### Caption-only text does not substitute for plate labels
 
 Concept drawings survive the caption-only rule because their meaning is
 carried by arrangement. Assembly plates do not: their entire purpose is
