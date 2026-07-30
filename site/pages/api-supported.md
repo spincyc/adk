@@ -837,6 +837,43 @@ The canonical Mega replay and the isolated no-LTO/resource probes are software
 evidence only. Exact externally powered and parasite-powered endpoints remain
 separate E1a and E1b qualification campaigns.
 
+## Qualified 18B20 probe sets and thermal-gradient mapping
+
+`Qualified18B20ProbeSetPolicy` is the Lesson 065 E0 policy for four configured
+family-`0x28` identities. It consumes complete copied Lesson 064 transaction
+evidence and preserves correlated discovery, conversion, scratchpad CRC,
+resolution, range, step, freshness, disappearance, and replay state. It owns
+no probe, bus, endpoint, clock, or powered fixture.
+
+`ThermalGradientMapper` is the Lesson 066 E0 composition. It structurally
+validates a complete caller-supplied probe-set image, projects two to four
+selected identities into configured spatial order, widens adjacent
+temperature intervals before classifying direction, and publishes explicit
+probe, interval, and overall fault cells. Supplied controls advance bounded
+page intent and may emit one volatile record-intent image. Structural
+validation is not source authentication; the mapper neither drives a display
+nor opens, writes, acknowledges, or recovers storage.
+
+- Probe-set policy:
+  [source](https://github.com/spincyc/adk/blob/main/src/qualified_18b20_probe_set_policy.h),
+  [Mega replay](downloads/sketches/Lesson065Qualified18B20ProbeSet.ino), and
+  [Lesson 065](lessons/065.md)
+- Thermal mapper:
+  [source](https://github.com/spincyc/adk/blob/main/src/thermal_gradient_mapper.h),
+  [configuration tests](https://github.com/spincyc/adk/blob/main/tests/test_thermal_gradient_mapper_config.cpp),
+  [gradient tests](https://github.com/spincyc/adk/blob/main/tests/test_thermal_gradient_mapper_gradient.cpp),
+  [control tests](https://github.com/spincyc/adk/blob/main/tests/test_thermal_gradient_mapper_control.cpp),
+  [record tests](https://github.com/spincyc/adk/blob/main/tests/test_thermal_gradient_mapper_record.cpp),
+  [Mega replay](downloads/sketches/Lesson066ThermalGradientMapper.ino), and
+  [Lesson 066](lessons/066.md)
+
+The Lesson 066 canonical replay measures 16,662 bytes flash and 2,210 bytes
+static SRAM. Exact no-LTO evidence measures 18,822/2,210 bytes, 855 bytes of
+conservative synchronous stack, and a 448-byte mapper. These are software
+resource measurements. Exact probes, electrical timing, thermal accuracy,
+presentation, persistence, authentication, and E1a--E1d acceptance remain
+open.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.

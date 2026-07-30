@@ -73,7 +73,17 @@ publication ledger.
 39. copied tactile/directional evidence, bounded logical stepper intent, and
     transactional kinetic-sculpture composition in lessons 046--048; and
 40. copied local-identity evidence, bounded logical homing, and acknowledged
-    inert parts-carousel composition in lessons 049--051.
+    inert parts-carousel composition in lessons 049--051;
+41. copied infrared evidence, closed local emission intent, and inert
+    translation in lessons 052--054;
+42. copied clue evidence, fault-aware operator policy, and inert console
+    composition in lessons 055--057;
+43. supplied-time digit and matrix presentation intent composed into a
+    dual-display timing desk in lessons 058--060;
+44. copied environmental evidence composed into an inert museum-case monitor
+    in lessons 061--063; and
+45. copied single-wire receipts, fixed-probe qualification, and deterministic
+    thermal-gradient, page, and volatile record intent in lessons 064--066.
 
 The component APIs and behavior engines pass deterministic host tests and
 compile for the Mega 2560. Physical acceptance cards remain open, so this work
@@ -135,12 +145,25 @@ maximum composition measures 21,864/3,531 bytes; the Lesson 054 object is
 estimate leaves 3,773 B after static storage and stack. These host results do
 not claim powered or optical verification.
 
-Development then follows lessons 055--081, one implementation-depth
-three-lesson brief at a time. That later arc remains engagement-first:
-escape-console and display projects before the more methodical environmental,
-18B20, motion-recording, and characterization blocks. Authorization,
-prerequisite, exact-specimen, safety, and evidence gates still control
-activation; the ordering is not a support claim.
+Lessons 055--057 publish copied clue evidence, fault-aware operator policy,
+and an inert escape-console composition. Lessons 058--060 publish supplied-time
+digit and matrix presentation intent composed into a dual-display timing desk.
+Lessons 061--063 publish copied environmental evidence composed into an inert
+museum-case monitor. Lessons 064--066 publish bounded copied single-wire
+transactions, fixed-probe qualification, and `ThermalGradientMapper`, which
+produces deterministic interval-gradient, fault, page, and volatile record
+intent. It validates structure rather than source authenticity, drives no
+display, and writes no storage. The Lesson 066 canonical replay measures
+16,662/2,210 bytes flash/static SRAM; exact no-LTO evidence measures
+18,822/2,210 bytes with 855 bytes conservative stack and 4,999 bytes residual
+SRAM. Six target misses were independently reviewed below their hard limits.
+
+Development next follows lessons 067--081, one implementation-depth
+three-lesson brief at a time. The remaining arc stays engagement-first:
+motion-recording and characterization before the authorized-family replacement
+and qualification blocks. Authorization, prerequisite, exact-specimen, safety,
+and evidence gates still control activation; the ordering is not a support
+claim.
 
 Every component requires lifecycle tests, deterministic fakes, a canonical Mega
 example, size evidence, terse HTML, a rich complementary PDF, and recorded

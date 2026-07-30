@@ -33,9 +33,9 @@ driver, preservation instrument, or safety monitor.
 
 | Pressure | Evidence and disposition |
 |---|---|
-| API and layering | Natural if the mapper consumes a complete copied Lesson 065 observation without reaching through it to a bus, scratchpad, or discovery mechanism. Configuration owns one ordered list of expected identities representing physical tabletop position. Presentation and record values are semantic intent only. |
+| API and layering | Natural if the mapper consumes a complete copied Lesson 065 observation without reaching through it to a bus, scratchpad, or discovery mechanism. The caller-constructible snapshot is structurally validated trusted input for this policy decision, not authenticated producer evidence. Configuration owns the exact four source identities plus one ordered mapped subset representing physical tabletop position. Presentation and record values are semantic intent only. |
 | Ownership and lifecycle | Inert construction, noncopyable/nonmovable coordinator, fixed configuration, explicit `initialize`/`reset`/`shutdown`, and no heap, callback, retained caller pointer, child reference, or hidden clock. `update` fills caller-owned result and record-intent buffers synchronously and retains no reference to either. |
-| Time and ordering | `TimePoint now` is supplied. Probe adjacency is always configuration order, never discovery order, ROM numeric order, arrival order, current temperature, or display-page order. Equal accepted frame identity is idempotent only for a byte-identical copied observation. Changed duplicate, regression, future time, exact half-range ambiguity, and sequence exhaustion reject atomically. Wrap-valid stale evidence commits a fault result. |
+| Time and ordering | `TimePoint now` is supplied. Probe adjacency is always configuration order, never discovery order, ROM numeric order, arrival order, current temperature, or display-page order. Equal accepted frame identity is idempotent only for a byte-identical copied observation. Output age is recomputed at mapper `now`. Same-sequence identical control is a no-edge replay; a changed duplicate rejects; a fresh no-edge control advances anti-replay state. Regression, future time, exact half-range ambiguity, invalid modular age, and sequence exhaustion reject atomically. Wrap-valid stale evidence commits a fault result. |
 | Errors and status | Lifecycle and structural invalidity use `Status`. Valid but unhealthy child evidence remains domain state. Missing, disappeared, CRC-failed, conversion-in-progress, stale, implausible-step, mixed-resolution, or otherwise unqualified required slots dominate all numeric presentation: they can never be rendered as a cold value or a valid gradient. |
 | Resources | E0 claims zero pins, timers, interrupts, buses, endpoints, supplies, displays, LEDs, clocks, or media. Measure the linked Lessons 064--066 maximum composition with the exact-four Lesson 065 configuration and every permitted mapped-subset size. Revised planning targets are 16/24 KiB flash, 2,048/3,072 B static SRAM, 768/1,024 B conservative synchronous stack, and 512/768 B mapper object, with each fixed caller-owned ABI value at or below 256/384 B and at least 4 KiB target residual SRAM. Exact implementation and independent review still gate promotion. |
 | Deterministic proof | Host fixtures can scramble discovery order while preserving configured position; inject every child quality, raw-sixteenth extreme, interval boundary, mapping error, stale/future/rollover condition, page transition, fresh record edge, replay, reset, and shutdown. Tests compare complete fixed result and caller-owned record images byte for byte and protect them with canaries. |
@@ -108,6 +108,9 @@ half-range rules: equality remains fresh and the next representable
 millisecond is stale. This seam lets a fresh page or record control edge act
 on an unchanged accepted frame without refreshing, estimating, or extending
 child evidence.
+Published probe and record age is recomputed from the slot observation time
+at mapper `now`; copied input age is checked for coherence but is not forwarded
+as though time had stopped.
 
 A required-slot fault makes the overall mapper health `Fault`. It also faults
 every incident gradient page. Healthy nonincident pages may retain their own
@@ -119,7 +122,8 @@ diagnostic failure, and record handling cannot change classification.
 
 Presentation is inert intent: selected configured slot/pair, stable identity
 token, raw-sixteenth value-or-fault content, age visibility, active-slot LED
-index, and grayscale-safe health/fault blink code. E0 owns no LCD, LED, pin,
+index, explicit `selectedGradient`, and grayscale-safe health/fault blink
+code. E0 owns no LCD, LED, pin,
 timer, or refresh schedule.
 
 ### Caller-owned record intent
@@ -133,8 +137,9 @@ complete copied evidence is byte-identical; a changed duplicate or regressing
 edge rejects atomically.
 
 The witness retains owner and lifecycle, configuration revision, mapper record
-sequence, record-edge source identity/revision/sequence/time, current accepted
-set identity and sequence, supplied observation time, every mapped probe
+sequence, record-edge owner/source identity/revision/sequence/time, current
+accepted set identity and sequence, all four configured source ROMs, source
+observation time, mapper `mappedAt`, every mapped probe
 identity and raw-sixteenth interval or fault, every adjacent mapped gradient
 interval/quality, overall health/fault mask, and a deterministic digest. Full
 fields remain authoritative; a digest never substitutes for the witness.
@@ -149,6 +154,23 @@ coalescing, torn-write recovery, or durable generations, that is an
 architectural extension requiring a separate decision rather than an
 opportunistic Lesson 066 implementation detail.
 
+Every accepted result begins as a whole-zero value before defined fields are
+filled; unused probe, gradient, and record cells remain canonical zero. Every
+rejected update leaves the caller's complete result byte-identical. These are
+local ABI determinism rules, not a persisted object representation.
+
+Control sequence ordering is modular and nonzero. Same-sequence
+byte-identical control is a no-edge replay; changed same-sequence evidence
+rejects. A fresh forward control with both edges false still advances the
+anti-replay anchor. Control observation time and configured maximum age obey
+future/backward/half-range checks, and sequence exhaustion faults before zero.
+
+Initialize and reset advance a nonzero lifecycle generation, clear accepted
+frame/control/page/record state, and reject on generation exhaustion rather
+than wrapping. Shutdown makes output inert and is idempotent; exhausted
+lifecycle generation remains faulted, while record-sequence exhaustion may be
+cleared only by a valid reset that advances the lifecycle.
+
 ## Composition pressure
 
 The maximum E0 fixture uses the frozen maximum probe count, reverse discovery
@@ -158,6 +180,15 @@ rollover, a fresh record edge over an unchanged current snapshot, reset,
 shutdown, and deterministic replay. The fixture proves that stable order,
 faults, and sequential record capture survive without a hardware or durability
 claim.
+
+Because `QualifiedDs18b20Snapshot` is caller-constructible, Lesson 066 cannot
+authenticate that a Lesson 065 object produced it. Before accepting a frame it
+structurally validates the exact configured four-ROM set, all four configured
+slots, exhaustive `validCount`/`presentMask`/`faultMask` relationships, every
+enum and `Status` domain, source/configuration/cycle identity, modular
+observation/freshness/age chronology, and value/interval/quality coherence.
+Malformed evidence rejects atomically; well-formed unhealthy evidence remains
+typed fault input.
 
 | Composition pressure | Applicability and required evidence |
 |---|---|
@@ -189,6 +220,8 @@ Tests must cover:
   incident pairs without rewriting healthy nonincident evidence;
 - page zero/last/wrap, age boundary, ordinary unsigned rollover, future time,
   exact half-range ambiguity, changed duplicate, regression, and exhaustion;
+- same-sequence identical control replay with no edge, changed same-sequence
+  rejection, and fresh forward no-edge control advancing anti-replay state;
 - fixed caller-owned result/record ABI size, canary, hidden-return,
   atomic-rejection, and byte-stable golden images;
 - no record without an edge; a fresh edge over changed and unchanged current
@@ -197,6 +230,11 @@ Tests must cover:
   without a false durability claim;
 - reset, shutdown, repeated shutdown, reinitialize, and recovery while the
   copied source remains faulted.
+
+The current pre-freeze AVR header ABI is mapper 448 bytes, envelope 202 bytes,
+intent 146 bytes, record image 229 bytes, result 377 bytes, and configuration
+87 bytes. These exact type sizes pass the current header limits but do not
+claim implementation, linked-resource, or publication completion.
 
 The canonical Mega replay is compile-only and writes named memory result
 cells. The future physical acceptance record separately requires prediction,

@@ -11,13 +11,13 @@ briefs come from [the project catalog](PROJECTS.md) and the
 
 Last reconciled: 2026-07-29 on `main`.
 
-The repository-wide recovery audit and ordered journal-ingestion prompts are
+The repository-wide recovery audit and ordered recovery outcomes are
 recorded in
 [the work-queue recovery audit](audits/REPOSITORY_WORK_QUEUE_RECOVERY_AUDIT.md).
 Its findings must be reconciled through bounded tasks; the audit itself does
-not promote work or replace this ledger.
+not promote work, replace this product ledger, or serve as an AIQ queue.
 
-- Lessons 001--065 are promoted and host verified; physical cards remain open.
+- Lessons 001--066 are promoted and host verified; physical cards remain open.
 - Lesson 030 has an independently reviewed composition core, canonical Mega
   example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
@@ -85,7 +85,7 @@ qualified.
 | [055--057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Host verified; exact passive fixtures/restrained demonstration bench open | Preserve the fixed clue graph, copied audit-image recovery, stop precedence, atomic solve transaction, and inert presentation/release intent; retain passive input/presentation qualification at E1 and any restrained no-load demonstration fixture at E2 |
 | [058--060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Host verified; exact powered display fixtures open | Preserve supplied-time digit transactions, bounded MAX7219 command/receipt evidence, and the timing-desk composition, including explicit refresh loss, partial-prefix attribution, cleanup, generation binding, self-test, disagreement attribution, and the zero-hardware E0 boundary |
 | [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Host verified; E1a--E1d/E2 open | Preserve the published copied-evidence policies and inert museum monitor; exact powered specimens, persistence, presentation, and relay work remain separately gated |
-| [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Host verified through 065; Lesson 066 planned | Preserve the published E0 [Lesson 064 transaction](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md) and [Lesson 065 probe set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md); implement the [Lesson 066 mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md); retain exact specimens, powered single-wire behavior, thermal accuracy, presentation, persistence, and E1a--E1d acceptance as open gates |
+| [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Host verified; E1a--E1d open | Preserve the published E0 [Lesson 064 transaction](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md), [Lesson 065 probe set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md), and [Lesson 066 mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md); retain exact specimens, powered single-wire behavior, thermal accuracy, presentation, persistence, authentication, and E1a--E1d acceptance as open gates |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -131,7 +131,7 @@ work; retail kit names are not electrical identities.
 | [055--057](design/LESSONS_055_057_ESCAPE_CONSOLE_PLAN.md) | Host verified; exact passive fixtures/restrained demonstration bench open | Fixed clue-constraint model, copied-value fault-aware panel, and inert escape-room console |
 | [058--060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Host verified; exact powered display fixtures open | Multiplexed digits, MAX7219 presentation, and the dual-display timing desk are published at E0; exact powered endpoints and physical acceptance remain separate E1 gates |
 | [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Host verified; E1a--E1d/E2 open | Copied resistive, thermal/radiant, reed, acknowledgement, and receipt evidence compose into an inert monitor; powered specimens, persistence, presentation, and relay work remain separately gated |
-| [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Host verified through 065; Lesson 066 planned | `OneWireTransactionPolicy` and `Qualified18B20ProbeSetPolicy` are published at E0 with copied requests, receipts, fixed identities, conversion correlation, CRC, freshness, disappearance, and replay state; [066 mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md) implementation remains planned; no powered adapter, wiring, thermal-accuracy, persistence, or E1 support claim |
+| [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Host verified; E1a--E1d open | `OneWireTransactionPolicy`, `Qualified18B20ProbeSetPolicy`, and `ThermalGradientMapper` are published at E0 with copied requests, receipts, fixed identities, conversion correlation, CRC, freshness, disappearance, spatial intervals, fault incidence, bounded pages, and volatile record intent; no powered adapter, wiring, thermal-accuracy, presentation, persistence, authentication, or E1 support claim |
 | [067--069](projects/component_project_cadence.md) | Queued | Normalized inertial records, source qualification, motion recorder |
 | [070--072](projects/component_project_cadence.md) | Queued | Threshold descriptors, characterization, module test bench |
 | [073--075](projects/component_project_cadence.md) | Re-scope required | DS1302, BMP180, and PCF8591 are not in the authorized Elegoo union; retain numbers but replace subjects before activation |
@@ -292,7 +292,7 @@ aggregate objects, leaving 5,840 bytes residual SRAM. The stack target miss is
 independently reviewed below its hard limit. E1c/E1d powered
 presentation/combined sensing and E2 relay-lamp acceptance remain open.
 
-Lessons 058--065 are host verified. Lesson 064 publishes the E0
+Lessons 058--066 are host verified. Lesson 064 publishes the E0
 `OneWireTransactionPolicy` under the
 [implementation-depth plan](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md)
 and
@@ -303,9 +303,17 @@ Lesson 065 publishes the E0
 Its canonical replay measures 13,662 bytes flash and 1,438 bytes static SRAM;
 the exact no-LTO replay measures 16,196 bytes flash and 1,438 bytes static
 SRAM, with 533 bytes conservative synchronous stack, a 764-byte policy, a
-477-byte caller-owned builder, and a 180-byte snapshot. Lesson 066 remains
-planned under the
+477-byte caller-owned builder, and a 180-byte snapshot. Lesson 066 publishes
+`ThermalGradientMapper` under the
 [thermal-mapper stress pass](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md).
+Its canonical replay measures 16,662 bytes flash and 2,210 bytes static SRAM;
+exact no-LTO evidence measures 18,822/2,210 bytes with 855 bytes conservative
+synchronous stack, a 448-byte mapper, 202-byte envelope, 377-byte result,
+229-byte record, 1,943-byte recurring composition, 579-byte phase storage,
+2,522-byte lifetime storage, and 4,999 bytes residual SRAM. Six target misses
+were independently reviewed below their hard limits. The mapper validates
+copied structure rather than authenticating a source and emits volatile intent
+without driving a display or writing storage.
 Exact powered specimens, electrical single-wire behavior,
 thermal accuracy, presentation, persistence, and E1a--E1d acceptance remain
 open.
@@ -373,7 +381,7 @@ out of scope. Controller high availability remains explicitly deferred.
 The landing page now uses one canonical source, a compact top navigation,
 linked published arcs, and linkless planned rows through Lesson 081 plus the
 retained research tracks. Preserve that scan-first hierarchy as work advances.
-The newest published lesson is Lesson 063. The post-deploy verifier follows
+The newest published lesson is Lesson 066. The post-deploy verifier follows
 the configured publication boundary and has a regression check that
 must advance with the newest published lesson.
 
