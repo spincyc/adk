@@ -10,7 +10,7 @@ the Arduino Mega 2560.
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–070 are published, host verified at E0, and
+> **Current boundary:** Lessons 001–071 are published, host verified at E0, and
 > compiled for the Mega 2560. All lessons remain experimental, physical
 > acceptance remains open, and the exact electrical revisions used by Lessons
 > 031–036 are not yet qualified. Lessons 037–039 use documented external
@@ -49,12 +49,15 @@ the Arduino Mega 2560.
 > Lesson 070 adds a stateless descriptor and copied-frame vocabulary for
 > low-voltage threshold modules, preserving topology, polarity, electrical
 > declarations, timing declarations, and provenance without claiming that a
-> physical specimen satisfies them. These
+> physical specimen satisfies them. Lesson 071 turns bounded ascending,
+> descending, and verification streams of those copied frames into adjacent
+> transition brackets, conservative intervals, and attributable terminal
+> evidence without operating or qualifying a physical fixture. These
 > E0 publications do not
 > claim powered inputs, displays,
 > storage, actuators, wiring, physical output, or bench acceptance. Planned
 > rows below are commitments, not support claims.
-> [Lesson 070](https://spincyc.github.io/adk/lessons/070/) is the current
+> [Lesson 071](https://spincyc.github.io/adk/lessons/071/) is the current
 > published lesson.
 
 ## What ADK provides
@@ -107,11 +110,12 @@ a printable PDF companion. Each row links to the first lesson in its arc.
 | 068 · [open lesson](https://spincyc.github.io/adk/lessons/068/) | Configured inertial-record qualification | One configured copied-record stream, one proper rotation, and terminal stationary-window evidence without a powered-sensor claim |
 | 069 · [open lesson](https://spincyc.github.io/adk/lessons/069/) | Qualified motion recorder | One-source-per-session scripted motion evidence, bounded volatile record images, and inert presentation/export intent |
 | 070 · [open lesson](https://spincyc.github.io/adk/lessons/070/) | Descriptor-driven threshold modules | Explicit copied topology, polarity, timing, electrical declarations, and frame provenance without powered-specimen authority |
+| 071 · [open lesson](https://spincyc.github.io/adk/lessons/071/) | Copied threshold characterization | Bounded three-leg replay, adjacent transition brackets, conservative intervals, and attributable disagreement |
 
-[Lesson 070 PDF](https://spincyc.github.io/adk/downloads/lessons/070.pdf) ·
-[Mega example](https://github.com/spincyc/adk/tree/main/examples/Lesson070ThresholdDescriptor) ·
-[public API](https://github.com/spincyc/adk/blob/main/src/module_threshold_descriptor.h) ·
-[host tests](https://github.com/spincyc/adk/blob/main/tests/module_threshold_descriptor_test.cpp)
+[Lesson 071 PDF](https://spincyc.github.io/adk/downloads/lessons/071.pdf) ·
+[Mega example](https://github.com/spincyc/adk/tree/main/examples/Lesson071Characterization) ·
+[public API](https://github.com/spincyc/adk/blob/main/src/module_characterization.h) ·
+[host tests](https://github.com/spincyc/adk/blob/main/tests/module_characterization_test.cpp)
 
 [View the complete lesson index](https://spincyc.github.io/adk/lessons/) or the
 [supported API](https://spincyc.github.io/adk/api-supported/).

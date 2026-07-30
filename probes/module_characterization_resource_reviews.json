@@ -1,4 +1,27 @@
 {
-  "reviews": [],
+  "reviews": [
+    {
+      "authority": "docs/design/LESSON_071_THRESHOLD_CHARACTERIZATION_STRESS_PASS.md#gate-result",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "e1cfc001cc95937e25337eb53a7a4c8b3602d6a046b23b0a8b94fe7a342d562b",
+      "hard_bytes": 1536,
+      "lesson": "071",
+      "metric": "static_sram",
+      "observed_bytes": 1160,
+      "rationale": "The exact aggregate fixture retains complete cross-leg continuity state and canonical terminal evidence while preserving 376 bytes of hard-limit margin.",
+      "target_bytes": 1024
+    },
+    {
+      "authority": "docs/design/LESSON_071_THRESHOLD_CHARACTERIZATION_STRESS_PASS.md#gate-result",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "e1cfc001cc95937e25337eb53a7a4c8b3602d6a046b23b0a8b94fe7a342d562b",
+      "hard_bytes": 384,
+      "lesson": "071",
+      "metric": "evidence",
+      "observed_bytes": 375,
+      "rationale": "The canonical immutable evidence retains required brackets, intervals, witnesses, provenance, and cross-leg correlation while preserving nine bytes of hard-limit margin.",
+      "target_bytes": 320
+    }
+  ],
   "schema": 1
 }

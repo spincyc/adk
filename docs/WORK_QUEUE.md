@@ -17,7 +17,7 @@ recorded in
 Its findings must be reconciled through bounded tasks; the audit itself does
 not promote work, replace this product ledger, or serve as an AIQ queue.
 
-- Lessons 001--070 are promoted and host verified; physical cards remain open.
+- Lessons 001--071 are promoted and host verified; physical cards remain open.
 - Lesson 030 has an independently reviewed composition core, canonical Mega
   example, measured size baseline, HTML reference, monochrome PDF lesson,
   downloads, and navigation. Its E1 physical acceptance card remains open.
@@ -87,7 +87,7 @@ qualified.
 | [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Host verified; E1a--E1d/E2 open | Preserve the published copied-evidence policies and inert museum monitor; exact powered specimens, persistence, presentation, and relay work remain separately gated |
 | [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Host verified; E1a--E1d open | Preserve the published E0 [Lesson 064 transaction](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md), [Lesson 065 probe set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md), and [Lesson 066 mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md); retain exact specimens, powered single-wire behavior, thermal accuracy, presentation, persistence, authentication, and E1a--E1d acceptance as open gates |
 | [067--069](design/LESSONS_067_069_MOTION_RECORDER_PLAN.md) | Published; host verified; powered acceptance open | Preserve Lesson 067's copied source-frame record and fixed 64-byte image, Lesson 068's one-source qualifier, and Lesson 069's one-source-per-session volatile recorder and presentation intent; Lesson 068's ordinary flash miss and Lesson 069's exact no-LTO flash miss are independently reviewed below their hard limits; exact MPU6050/QMI8658 acquisition, powered presentation, RTC/media persistence, and bench acceptance remain separately gated E1a--E1c work |
-| [070--072](design/LESSONS_070_072_MODULE_CHARACTERIZATION_PLAN.md) | Active integration; Lesson 070 host verified and published | Preserve the published E0 [Lesson 070 descriptor](design/LESSON_070_THRESHOLD_MODULE_DESCRIPTOR_STRESS_PASS.md), then implement the [071 characterization](design/LESSON_071_THRESHOLD_CHARACTERIZATION_STRESS_PASS.md) and [072 inert bench](design/LESSON_072_INERT_MODULE_CHARACTERIZATION_BENCH_STRESS_PASS.md) boundaries in order; exact specimens, powered acquisition, presentation, and bench acceptance remain E1-open, while persistence remains outside this arc |
+| [070--072](design/LESSONS_070_072_MODULE_CHARACTERIZATION_PLAN.md) | Active integration; Lessons 070--071 host verified and published | Preserve the published E0 [Lesson 070 descriptor](design/LESSON_070_THRESHOLD_MODULE_DESCRIPTOR_STRESS_PASS.md) and [071 characterization](design/LESSON_071_THRESHOLD_CHARACTERIZATION_STRESS_PASS.md), then implement the [072 inert bench](design/LESSON_072_INERT_MODULE_CHARACTERIZATION_BENCH_STRESS_PASS.md); exact specimens, powered acquisition, presentation, and bench acceptance remain E1-open, while persistence remains outside this arc |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -135,7 +135,7 @@ work; retail kit names are not electrical identities.
 | [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Host verified; E1a--E1d/E2 open | Copied resistive, thermal/radiant, reed, acknowledgement, and receipt evidence compose into an inert monitor; powered specimens, persistence, presentation, and relay work remain separately gated |
 | [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Host verified; E1a--E1d open | `OneWireTransactionPolicy`, `Qualified18B20ProbeSetPolicy`, and `ThermalGradientMapper` are published at E0 with copied requests, receipts, fixed identities, conversion correlation, CRC, freshness, disappearance, spatial intervals, fault incidence, bounded pages, and volatile record intent; no powered adapter, wiring, thermal-accuracy, presentation, persistence, authentication, or E1 support claim |
 | [067--069](design/LESSONS_067_069_MOTION_RECORDER_PLAN.md) | Published; host verified; powered acceptance open | Copied source-frame normalization, one-source qualification, and one-source-per-session volatile motion-recorder intent are host verified; Lesson 068 measures 16,702 B ordinary flash against a 16 KiB target and 24 KiB hard limit; Lesson 069's exact no-LTO flash target miss is independently reviewed below its hard limit; exact MPU/QMI acquisition, powered presentation, RTC/media persistence, and bench acceptance remain E1a--E1c open |
-| [070--072](design/LESSONS_070_072_MODULE_CHARACTERIZATION_PLAN.md) | Active integration; Lesson 070 host verified and published | `ModuleThresholdDescriptor` and `ModuleThresholdFrame` publish copied declaration and provenance validation at E0; bounded ascending/descending/verification streams and the inert one-envelope characterization record remain active Lessons 071--072 work; exact specimens, powered acquisition, presentation, and bench acceptance remain E1-open |
+| [070--072](design/LESSONS_070_072_MODULE_CHARACTERIZATION_PLAN.md) | Active integration; Lessons 070--071 host verified and published | `ModuleThresholdDescriptor` and `ModuleThresholdFrame` publish copied declaration and provenance validation at E0; `ModuleCharacterizationPolicy` publishes bounded ascending/descending/verification streams with sampled brackets, conservative intervals, and attributable terminal evidence; the inert one-envelope Lesson 072 record remains active; exact specimens, powered acquisition, presentation, and bench acceptance remain E1-open |
 | [073--075](projects/component_project_cadence.md) | Re-scope required | DS1302, BMP180, and PCF8591 are not in the authorized Elegoo union; retain numbers but replace subjects before activation |
 | [076--078](projects/component_project_cadence.md) | Re-scope required | Color sensor is not in the authorized Elegoo union; retain numbers but replace subjects before activation |
 | [079--081](projects/component_project_cadence.md) | Queued | Bounded low-side driver, indicator semantics, inert qualification bench |
@@ -344,8 +344,16 @@ validation, and explicit comparator-assertion meaning over copied E0 values.
 Its canonical Mega replay measures 4,564 bytes flash and 684 bytes static
 SRAM. It owns no module, endpoint, rail, clock, transport, display, or storage;
 descriptor validity and declaration completeness are not physical-specimen
-authority. Lessons 071--072 remain active and must proceed in strict order
-with a fresh design pass after Lesson 071. Cadence entries for Lessons
+authority. Lesson 071 publishes bounded ascending, descending, and verification
+streams over copied frames. Its ordinary Mega replay measures 10,200 bytes
+flash and 1,160 bytes static SRAM. Exact no-LTO evidence measures 11,562 bytes
+flash, 1,160 bytes static SRAM, 339 bytes stack, a 498-byte policy, a 375-byte
+evidence value, a 57-byte caller-local point, and 6,565 bytes residual SRAM.
+Static SRAM and evidence size miss their targets but pass independently
+reviewed hard limits for fingerprint
+`e1cfc001cc95937e25337eb53a7a4c8b3602d6a046b23b0a8b94fe7a342d562b`;
+further evidence ABI growth requires a fresh disposition. Lesson 072 remains
+active and must proceed after the completed post-071 design pass. Cadence entries for Lessons
 073--081 are not implementation-ready
 lesson plans. Before code begins for each of those remaining three-lesson arcs,
 expand it to the same depth as 031--033: public values and interfaces, resource
@@ -414,7 +422,7 @@ out of scope. Controller high availability remains explicitly deferred.
 The landing page now uses one canonical source, a compact top navigation,
 linked published arcs, and linkless planned rows through Lesson 081 plus the
 retained research tracks. Preserve that scan-first hierarchy as work advances.
-The newest published lesson is Lesson 070. The post-deploy verifier follows
+The newest published lesson is Lesson 071. The post-deploy verifier follows
 the configured publication boundary and has a regression check that
 must advance with the newest published lesson.
 

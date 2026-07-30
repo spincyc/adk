@@ -81,7 +81,7 @@ All public names are module-prefixed:
 - `ModuleCharacterizationEvidence`, which copies lifecycle/session/run/leg
   correlation, characterization revision, complete descriptor,
   source/configuration identity, state/reason/terminal leg, all three counts,
-  first/last sequence and time, both full brackets, guaranteed inactive,
+  both full brackets, guaranteed inactive,
   guaranteed active, and ambiguity intervals, comparator relation, full
   bracket points, four compact first/last/offending witnesses, and `Status`.
 
@@ -94,7 +94,9 @@ The policy uses streaming aggregates. It retains no point array. It keeps only
 counts, correlation anchors, adjacent transition points, first/last witnesses,
 the compact first offending witness pair, frozen learned brackets, intervals,
 and relation state. The only full points retained are the four points owned by
-the two transition brackets. Caller-owned fixture arrays may be replayed one
+the two transition brackets. The first and last compact witnesses are the
+single canonical owners of first/last sequence and observation time; those
+values are not duplicated at evidence top level. Caller-owned fixture arrays may be replayed one
 point at a time without becoming component storage.
 
 ## Lifecycle and correlation
@@ -125,7 +127,10 @@ Configuration accepts only a complete Lesson 070 descriptor with
 `ModuleChannelTopology::AnalogAndComparator` and explicit
 `ModuleComparatorPolarity::ActiveHigh` or
 `ModuleComparatorPolarity::ActiveLow`. Analog-only, comparator-only, and
-unspecified-polarity descriptors fail configuration validation. Every
+unspecified-polarity descriptors fail configuration validation. `maximumAge`
+and `maximumGap` must each be nonzero and strictly below the modular half
+range. Lesson 070's known-zero readiness declaration does not extend to these
+Lesson 071 freshness and continuity bounds. Every
 accepted point requires both channels present, both channel statuses
 `ModuleChannelStatus::Current`, both producer statuses OK, and canonical
 `comparatorAsserted`.
@@ -142,6 +147,13 @@ IDs are nonzero and forward modular. The three leg IDs are nonzero, distinct,
 forward modular, and occur only in ascending, descending, verification order.
 Ascending accepts only `Increasing`; descending only `Decreasing`;
 verification only `Unordered`.
+
+Every successful lifecycle operation retains its supplied `now`. A subsequent
+`beginSession`, `beginLeg`, `finalizeLeg`, `reset`, or `shutdown` requires
+forward-or-equal modular time relative to that retained value; backward and
+exact-half-range ambiguous values return `InvalidArgument` atomically.
+`initialize()` after `shutdown()` returns `NotInitialized`; only construction of
+a new policy object begins a new object lifecycle.
 
 Every point must match lifecycle, session, run, active leg, direction,
 descriptor schema/identity/revision, declared specimen reference/revision,
@@ -280,17 +292,17 @@ fields but avoids repeated full points. Its exact retained shape includes:
   `ModuleCharacterizationPoint` values in total;
 - one `ModuleCompactWitness` each for first, last, offending-before, and
   offending-after evidence;
-- first/last sequence and observation time plus all three leg counts;
+- first/last sequence and observation time within their respective compact
+  witnesses, plus all three leg counts;
 - all three `ModuleAnalogInterval` values and one
   `ModuleComparatorRelation`; and
 - terminal state, reason, leg, and `Status`.
 
 Compact witnesses are diagnostic correlation evidence, not substitutes for
 the authoritative full bracket points. No hidden full first, last, or
-offending point and no retained leg array may enlarge the ABI. Provisional AVR
-shapes are 72 B for the caller-local point, 376 B for evidence, and 736 B for
-the policy; measured target-ABI `sizeof` gates replace these estimates before
-promotion.
+offending point and no retained leg array may enlarge the ABI. Measured AVR
+shapes are 57 B for the caller-local point, 375 B for evidence, and 498 B for
+the policy.
 
 ## Shared precedence and atomicity
 
@@ -430,14 +442,23 @@ evidence.
 ## Gate result
 
 - Disposition: `natural fit after satisfied bounded local remediation`
-- Open risks: implementation correctness, exact object layout, measured
-  policy/evidence/point/stack/flash/static/residual resources, Lesson 072
-  envelope/codec integration, and all exact E1 specimen/stimulus evidence
+- Exact no-LTO evidence: 11,562 B flash, 1,160 B static SRAM, 339 B
+  synchronous stack, 498 B policy, 375 B evidence, 57 B caller point, and
+  6,565 B residual SRAM at fingerprint
+  `e1cfc001cc95937e25337eb53a7a4c8b3602d6a046b23b0a8b94fe7a342d562b`.
+- Reviewed target misses: static SRAM is 136 B above its 1,024 B target and
+  376 B below its 1,536 B hard limit; evidence is 55 B above its 320 B target
+  and 9 B below its 384 B hard limit. Both are independently accepted only
+  for that exact fingerprint. Any ABI growth or fingerprint change requires
+  fresh measurement and review.
+- Open risks: Lesson 072 envelope/codec integration and all exact E1
+  specimen/stimulus evidence
 - Required discussion or decision IDs: none remaining for the E0 boundary;
   the controlling Lessons 070--072 plan records the consequential decisions
-- Remediation owner and next action: Lesson 071 implementation lane supplies
-  the streaming policy, exhaustive three-leg/correlation/precedence tests,
-  object-layout proof, exact resource evidence, and publication artifacts
+- Completed remediation: redundant top-level first/last sequence and time
+  fields were removed; canonical values remain in the first/last witnesses.
+  Full evidence candidates moved off synchronous stack, reducing the measured
+  path from 1,459 B to 339 B without weakening atomicity or provenance.
 - Verification required at promotion: strict C++11 host tests, ASan/UBSan,
   style and archive inventories, Mega compile, exact fingerprint-bound
   resource gates, aggregate Lesson 072 composition, lesson build, monochrome

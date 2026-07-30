@@ -66,14 +66,15 @@ lesson number divisible by three is project-bearing.
 | [068](lessons/068.md) | One configured record domain, one proper rotation, bounded stationary-window checks, and terminal evidence | Inertial record qualification policy | Host verified; E0 copied evidence only; E1a–E1c open |
 | [069](lessons/069.md) | One-source scripted sessions, bounded volatile record images, fault-dominant presentation, and export intent | Qualified motion recorder | Host verified; E0 volatile evidence only; exact resource review complete; E1a–E1c open |
 | [070](lessons/070.md) | Declared topology, comparator meaning, electrical and timing facts, plus attributable copied frames | Threshold-module descriptor | Host verified; E0 copied declarations only; exact powered fixtures remain E1-open |
+| [071](lessons/071.md) | Bounded ascending, descending, and verification streams over copied frames | Threshold characterization policy | Host verified; E0 copied evidence only; exact powered fixtures remain E1-open |
 
-Lesson 070 is published; the retained Lessons 071–081 sequence remains
+Lesson 071 is published; the retained Lessons 072–081 sequence remains
 front-loaded for learner engagement. The rows below are active or planned
 work, not support or bench-verification claims:
 
 | Lessons | Planned focus | Project |
 |---:|---|---|
-| 071–072 | Copied bounded sweeps and characterization-result intent | Inert module characterization bench |
+| 072 | Characterization-result and volatile-record intent | Inert module characterization bench |
 | 073–075 | Authorized-family replacements pending | Project pending |
 | 076–078 | Authorized-family replacements pending | Project pending |
 | 079–081 | Bounded load driver and indicator semantics | Component qualification bench |

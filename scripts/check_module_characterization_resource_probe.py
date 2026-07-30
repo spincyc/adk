@@ -41,6 +41,7 @@ FINGERPRINT_CONTRACT = {
     for boundary in ALL_BOUNDARIES
 }
 RESOURCE_LAYOUTS = {}
+ENRICHED_REVIEWS = {}
 
 
 def selected_boundaries(require_through):
@@ -179,6 +180,7 @@ def enrich_evidence(evidence_path):
     if not evidence_path.is_file():
         return 1
     report = json.loads(evidence_path.read_text(encoding="utf-8"))
+    report["status"] = "pass"
     report["constants"].update(
         {
             "module_characterization_isr_reserve_bytes": ISR_RESERVE,
@@ -263,10 +265,64 @@ def enrich_evidence(evidence_path):
                 "utf-8"
             )
         ).hexdigest()
+        accepted = list(state.get("accepted_reviews", ()))
+        for review in accepted:
+            if review["fingerprint_sha256"] != state["fingerprint_sha256"]:
+                raise probe.ProbeError(
+                    f"stale Lesson {lesson} {review['metric']} resource review"
+                )
+        measurement_keys = {
+            "static_sram": "static_sram_bytes",
+            "evidence": "evidence_bytes",
+        }
+        gate_limits = {
+            "static_sram": (
+                next(
+                    item for item in ALL_BOUNDARIES
+                    if item["lesson"] == lesson
+                )["sram_target"],
+                next(
+                    item for item in ALL_BOUNDARIES
+                    if item["lesson"] == lesson
+                )["sram_hard"],
+            ),
+            "evidence": (EVIDENCE_TARGET, EVIDENCE_HARD),
+        }
+        for (review_lesson, metric), review in ENRICHED_REVIEWS.items():
+            if review_lesson != lesson:
+                continue
+            if state["gates"].get(metric) != "target-miss":
+                raise probe.ProbeError(
+                    f"stale Lesson {lesson} {metric} resource review"
+                )
+            measurement_key = measurement_keys.get(metric)
+            limits = gate_limits.get(metric)
+            if (
+                measurement_key is None
+                or limits is None
+                or state["measurements"].get(measurement_key)
+                != review["observed_bytes"]
+                or limits != (
+                    review["target_bytes"],
+                    review["hard_bytes"],
+                )
+                or review["fingerprint_sha256"]
+                != state["fingerprint_sha256"]
+            ):
+                raise probe.ProbeError(
+                    f"stale Lesson {lesson} {metric} resource review"
+                )
+            state["gates"][metric] = "reviewed-target-miss"
+            accepted.append(review)
+        state["accepted_reviews"] = accepted
         if "hard-fail" in state["gates"].values():
             state["status"] = "hard-fail"
         elif "target-miss" in state["gates"].values():
             state["status"] = "review-required"
+        elif "reviewed-target-miss" in state["gates"].values():
+            state["status"] = "reviewed-target-miss"
+        else:
+            state["status"] = "pass"
         report["status"] = probe.merge_status(report["status"], state["status"])
     evidence_path.write_text(
         json.dumps(report, indent=2, sort_keys=True) + "\n",
@@ -284,15 +340,66 @@ def minimum_gate(measured, target, hard):
 
 
 def load_reviews(root, review_path):
+    global ENRICHED_REVIEWS
+    ENRICHED_REVIEWS = {}
     path = root / review_path
     if not path.is_file():
         return {}
     document = json.loads(path.read_text(encoding="utf-8"))
-    if document != {"reviews": [], "schema": 1}:
-        raise probe.ProbeError(
-            "Lesson 070--071 target-miss reviews are not enabled before "
-            "measurement"
-        )
+    if document.get("schema") != 1 or not isinstance(
+        document.get("reviews"), list
+    ):
+        raise probe.ProbeError(f"invalid target-miss review document: {path}")
+    required = {
+        "lesson",
+        "metric",
+        "observed_bytes",
+        "target_bytes",
+        "hard_bytes",
+        "authority",
+        "disposition",
+        "rationale",
+        "fingerprint_sha256",
+    }
+    known_lessons = {boundary["lesson"] for boundary in probe.BOUNDARIES}
+    authority = (
+        "docs/design/LESSON_071_THRESHOLD_CHARACTERIZATION_STRESS_PASS.md"
+        "#gate-result"
+    )
+    authority_text = (
+        root / authority.split("#", 1)[0]
+    ).read_text(encoding="utf-8").replace(",", "")
+    for review in document["reviews"]:
+        if set(review) != required:
+            raise probe.ProbeError(f"invalid target-miss review fields: {review}")
+        if review["lesson"] not in known_lessons:
+            raise probe.ProbeError(
+                f"target-miss review names unknown lesson: {review}"
+            )
+        if review["lesson"] != "071" or review["metric"] not in (
+            "static_sram",
+            "evidence",
+        ):
+            raise probe.ProbeError(f"unsupported target-miss review: {review}")
+        if review["disposition"] != "accepted-target-miss":
+            raise probe.ProbeError(f"invalid target-miss disposition: {review}")
+        if review["authority"] != authority:
+            raise probe.ProbeError(
+                f"target-miss review lacks controlling authority: {review}"
+            )
+        if (
+            not isinstance(review["rationale"], str)
+            or not review["rationale"].strip()
+            or str(review["observed_bytes"]) not in authority_text
+        ):
+            raise probe.ProbeError(
+                f"target-miss tuple is absent from {review['authority']}: "
+                f"{review}"
+            )
+        key = (review["lesson"], review["metric"])
+        if key in ENRICHED_REVIEWS:
+            raise probe.ProbeError(f"duplicate target-miss review: {key}")
+        ENRICHED_REVIEWS[key] = review
     return {}
 
 
@@ -327,8 +434,9 @@ def main():
         "--review-file",
         arguments.review_file,
     ]
-    result = probe.main()
-    return result or enrich_evidence(ROOT / arguments.evidence_json)
+    probe.main()
+    enrichment_result = enrich_evidence(ROOT / arguments.evidence_json)
+    return enrichment_result
 
 
 if __name__ == "__main__":

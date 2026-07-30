@@ -987,6 +987,36 @@ bytes of static SRAM. This is E0 software evidence only: descriptor validity
 and declaration completeness do not prove that a physical specimen matches
 the declarations, authorize power, or qualify acquisition.
 
+## Threshold characterization
+
+`ModuleCharacterizationPolicy` is the Lesson 071 streaming E0 policy. It
+accepts 2--16 copied points in each of three explicit legs: ascending,
+descending, and verification. The two learning legs freeze adjacent transition
+brackets; the verification leg reports only a conservative
+`Consistent`, `Ambiguous`, or `Disagrees` relation against the guaranteed and
+ambiguity intervals.
+
+`ModuleCharacterizationEvidence` retains the complete descriptor, run and leg
+identity, counts, both transition brackets, three intervals, terminal reason,
+and compact first, last, and offending witnesses. Supplied time, sequence,
+direction, warm-up, settling, producer status, correlation, and lifecycle
+errors remain deterministic and attributable. A rail result is permitted only
+for the endpoint-only no-transition exception and cannot manufacture an
+interval or advance to the next leg.
+
+- Threshold characterization:
+  [source](https://github.com/spincyc/adk/blob/main/src/module_characterization.h),
+  [implementation](https://github.com/spincyc/adk/blob/main/src/module_characterization.cpp),
+  [host tests](https://github.com/spincyc/adk/blob/main/tests/module_characterization_test.cpp),
+  [Mega replay](downloads/sketches/Lesson071Characterization.ino),
+  and [Lesson 071](lessons/071.md)
+
+The canonical Mega replay measures 10,200 bytes flash and 1,160 bytes static
+SRAM. The independently reviewed exact no-LTO boundary measures 11,562 bytes
+flash, 339 bytes synchronous stack, a 498-byte policy, a 375-byte evidence
+value, and a 57-byte caller-local point. This remains copied E0 evidence: it
+does not identify, energize, sweep, or qualify a physical module.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.
