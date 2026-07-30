@@ -158,10 +158,25 @@ display, and writes no storage. The Lesson 066 canonical replay measures
 18,822/2,210 bytes with 855 bytes conservative stack and 4,999 bytes residual
 SRAM. Six target misses were independently reviewed below their hard limits.
 
-Development next follows Lessons 070--081, one implementation-depth
-three-lesson brief at a time. The next arc is copied threshold-module
-characterization, followed by authorized-family replacement and qualification
-blocks. Lessons 067--069 are published E0 copied-record policy; exact motion
+Lessons 070--072 publish copied threshold-module characterization and an inert
+module-characterization bench. The
+[RTC integrity re-scope decision](design/LESSONS_073_075_RTC_INTEGRITY_RESCOPE.md)
+selects Lessons 073--075 for the next planning boundary: **Copied RTC
+Transaction Evidence**, **Qualified Clock Observation**, and the **Inert
+Time-Warp Detective Desk**.
+This is planning-selected, not implementation-ready. An implementation-depth
+plan, per-component architecture stress passes, deterministic acceptance
+matrices, resource budgets, and publication design are required before code.
+Exact DS1307 or documented DS3231-family specimen identification and E1 bench
+acceptance remain open, including module topology, register-map revision,
+pull-up rails, backup-supply and cell-chemistry safety, oscillator behavior,
+wiring, primary sources, and measured evidence.
+
+Lessons 076--078 remain an authorized-family replacement boundary pending a
+separate curriculum decision, and Lessons 079--081 retain the low-energy
+component-qualification bench. The historical DS1302, BMP180, PCF8591, and
+color-sensor assignments remain excluded rather than silently restored.
+Lessons 067--069 remain published E0 copied-record policy; exact motion
 acquisition, presentation, and persistence remain open E1a--E1c work.
 Authorization, prerequisite, exact-specimen, safety, and evidence gates still
 control activation; the ordering is not a support claim.

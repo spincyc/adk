@@ -185,10 +185,14 @@ other 37-sensor taxonomies. They are not authorized by this source union:
 - any programmable IR transmitter beyond the listed IR-emission family until
   its exact revision and safe use are established.
 
-Lessons 073–078 remain reserved for authorized-family re-scoping; no
-replacement subjects have been selected. Historical references to the
-unauthorized candidates document earlier planning only. They are not evidence
-that such specimens exist and confer no curriculum or electrical scope.
+Lessons 073–075 are selected for **Copied RTC Transaction Evidence**,
+**Qualified Clock Observation**, and the **Inert Time-Warp Detective Desk**.
+This E0 selection uses copied DS1307-family evidence only and does not claim a
+powered RTC; DS3231 remains a separate, independently gated variant. Lessons
+076–078 remain reserved for authorized-family re-scoping, with no replacement
+subjects selected. Historical references to DS1302, BMP180, PCF8591, and the
+color sensor document earlier planning only. They are not evidence that such
+specimens exist and confer no curriculum or electrical scope.
 
 [mega-product]: https://www.elegoo.com/en-gb/collections/arduino-kits/products/elegoo-mega-2560-the-most-complete-starter-kit
 [mega-tutorial]: https://www.elegoo.com/en-gb/blogs/arduino-projects/elegoo-mega-2560-the-most-complete-starter-kit-tutorial

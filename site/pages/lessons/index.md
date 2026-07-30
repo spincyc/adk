@@ -113,7 +113,10 @@ published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 073–078 | Authorized-family subjects pending |
+| 073 | Copied RTC Transaction Evidence |
+| 074 | Qualified Clock Observation |
+| 075 | Inert Time-Warp Detective Desk |
+| 076–078 | Authorized-family subjects pending |
 | 079–081 | Component qualification bench |
 
 Pencil drawings provide orientation. Only a lesson that explicitly qualifies

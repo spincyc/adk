@@ -863,17 +863,55 @@ analog-temperature and capacitive-touch boards, PCF8574 backpacks, gas
 exposure, flames, heaters, lasers, unknown emitters, and physiological claims
 are not admitted by this boundary.
 
-## Lessons 073--078: authorized-family replacements pending
+## Lessons 073--075: RTC integrity
 
-The prior cadence assigned DS1302, BMP180, PCF8591, and a color sensor to these
-numbers. The official Elegoo Mega Most Complete plus Upgraded 37-in-1 union
-does not list those families. They came from comparison taxonomies and are not
-authorized specimens.
+The
+[RTC integrity re-scope decision](../design/LESSONS_073_075_RTC_INTEGRITY_RESCOPE.md)
+selects this arc for implementation-depth planning:
 
-Retain lesson numbers 073--078, but do not implement the former subjects.
-Before activation, select replacement families from the
+### 073 — Copied RTC Transaction Evidence
+
+Model copied, attributed RTC register-transaction evidence without owning an
+I2C endpoint or claiming that a physical clock produced it. Preserve register
+bytes, transaction status, source identity, observation time, and sequence so
+malformed calendar encoding and producer failures remain distinguishable.
+
+### 074 — Qualified Clock Observation
+
+Qualify copied clock evidence for calendar encoding, oscillator and power-loss
+state, freshness, sequence, bounded jumps, rollover, and monotonic use. A valid
+civil-time value is not by itself proof of clock accuracy, continuity, or
+physical acceptance.
+
+### 075 — Project: Inert Time-Warp Detective Desk
+
+Compose copied transaction evidence and qualified clock observations into a
+replayable fault-investigation desk. The learner classifies stopped,
+power-loss, stale, malformed, jumping, and rollover cases and produces inert
+display, indicator, and record intent without owning a clock, display, or
+storage endpoint.
+
+This is a planning-selected curriculum direction, not an implementation-ready
+contract. Implementation remains blocked on an implementation-depth plan,
+per-component architecture stress passes, resource budgets, deterministic
+acceptance matrices, and publication design. Exact-specimen E1 work also
+remains open: it must identify the precise DS1307 or documented DS3231-family
+module, register-map revision, board topology, pull-up rails, backup supply and
+cell chemistry, oscillator behavior, wiring, primary sources, and measured
+bench acceptance. In particular, no backup cell may be installed until any
+charging path is identified and shown compatible with that cell.
+
+The former assignments of DS1302, BMP180, PCF8591, and a color sensor remain
+historical exclusions. The official Elegoo Mega Most Complete plus Upgraded
+37-in-1 union does not authorize those families, and this selection does not
+restore them.
+
+## Lessons 076--078: authorized-family replacement pending
+
+Retain lesson numbers 076--078, but do not implement their former subjects.
+Before activation, select a replacement family from the
 [authorized Elegoo set](../inventory/AUTHORIZED_ELEGOO_SET.md), then expand
-each three-lesson arc to the same interface, deterministic-evidence, circuit,
+the three-lesson arc to the same interface, deterministic-evidence, circuit,
 safety, and publication depth as lessons 031--033. Record that selection as a
 curriculum decision rather than silently restoring a different vendor's kit.
 
@@ -955,7 +993,7 @@ individually identified retail boards.
 | Identified analog/comparator module descriptors; exact variants deferred | 072 E0 copied policy; E1 fixtures open | inventory acceptance only after exact qualification |
 | DS18B20 and single-wire variants | 066 | thermal records |
 | Four-digit display, MAX7219 matrix | 060 | timing presentation |
-| Authorized replacements for former 073--075 subjects | pending re-scope | no unlisted specimen |
+| DS1307 RTC transaction and clock-integrity policy | 073--075 planning selected; implementation not started | copied E0 evidence only; exact DS1307 and separately identified DS3231 specimens remain gated |
 | Authorized replacements for former 076--078 subjects | pending re-scope | no unlisted specimen |
 | PN2222/S8050, diode, indicator variants | 081 inert loads only | inventory acceptance |
 | Laser emitter | none until classified | optional disabled optical fixture |

@@ -98,7 +98,8 @@ card identify the physical specimen.
 | QMI-8658 motion module | Revision-dependent alternative | Missing | Separate device adapter behind the same inertial-sample value type |
 | HC-SR501 PIR module | 1 lesson unit | Composite: `DigitalInput` | Add warm-up, retrigger, and stale-observation semantics |
 | Water-level sensor board | 1 lesson unit | Composite: `AnalogInput` | Add corrosion/duty-cycle warning; no unattended leak-safety claim |
-| DS1307 or DS3231 RTC module | Revision-dependent | Host-verified bus and RTC state models only: `I2cBus`, `Rtc`, lesson 022 | No DS1307/DS3231 register adapter is claimed; identify chip, pull-ups, charging circuit, and cell first |
+| DS1307 RTC module | Listed family; exact shipped revision varies | Host-verified bus and RTC state models in lesson 022; planned E0 Copied RTC Transaction Evidence, Qualified Clock Observation, and the Inert Time-Warp Detective Desk in lessons 073--075 | E0 owns copied evidence only and claims no powered bus, supported specimen, clock accuracy, or persistence; identify the exact chip, pull-ups, charging circuit, and cell before E1 work |
+| DS3231 RTC module | Separately identified shipping variant | No interchangeable adapter claim; separately gated variant of the lessons 073--075 RTC integrity work | Do not treat DS3231 as a DS1307 substitute: its identity, register and feature semantics, pull-ups, charging circuit, cell, electrical behavior, and physical acceptance require their own evidence |
 
 ## Displays, storage, and identification
 
@@ -147,9 +148,11 @@ Interfaces should follow shared electrical mechanisms:
    Temperature, passive radiant/flame, and reed work in 061–063;
 7. keep listed 18B20 single-wire work distinct in 064–066, then reuse the
    identified inertial adapter for normalized records in 067–069;
-8. publish descriptor and copied-sweep E0 policy in 070–072, qualify any exact
-   powered analog/comparator variant only in a separate E1 boundary, and retain
-   073–078 for later authorized-family re-scoping; and
+8. publish descriptor and copied-sweep E0 policy in 070–072, then use the
+   authorized DS1307 family for copied transaction evidence, clock-observation
+   qualification, and the Inert Time-Warp Detective Desk in 073--075; keep
+   DS3231 electrically and semantically separate and retain 076--078 for later
+   authorized-family re-scoping; and
 9. leave the low-energy qualification bench at 079–081.
 
 This order makes kit breadth an integration test of the hierarchy instead of
@@ -164,7 +167,13 @@ so the engagement-first curriculum removes them from planned coverage.
 `Digital Temperature` and `18B20 Temp` are separate first-party inventory
 labels: the former remains unidentified pending specimen proof, while the
 latter belongs to the single-wire thermal arc. Metal Touch is authorized only
-at listing level until exact topology and safe stimulus are established.
+at listing level until exact topology and safe stimulus are established. The
+selected 073--075 placement also gives the listed DS1307 RTC family an explicit
+instructional role, so no authorized, admissible sensor family in the
+exhaustive reconciliation remains unused; a prohibited family instead retains
+its explicit non-coverage disposition. That does not erase any specimen gate or
+make the separately identified DS3231 shipping variant interchangeable with
+DS1307.
 
 ## Explicit non-coverage and aliases
 

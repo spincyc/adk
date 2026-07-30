@@ -1,6 +1,7 @@
 # Sensor engagement reorder audit
 
 Date: 2026-07-28
+Updated: 2026-07-30 for the selected Lessons 073--075 RTC integrity arc
 Scope: planned Lessons 040--081
 
 ## Decision
@@ -78,13 +79,18 @@ weights above.
 | 064--066 motion recorder | 3 | 3 | 4 | 4 | 1 | 3 | 62 |
 | 067--069 thermal gradient mapper | 4 | 4 | 4 | 4 | 2 | 4 | 76 |
 | 070--072 dual-display timing desk | 5 | 4 | 3 | 5 | 3 | 4 | 83 |
-| 073--075 replacement pending | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 073--075 RTC integrity and Inert Time-Warp Detective Desk | 3 | 4 | 4 | 4 | 3 | 5 | 75 |
 | 076--078 replacement pending | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | 079--081 component qualification bench | 2 | 3 | 2 | 4 | 2 | 3 | 53 |
 
-The zeroes for Lessons 073--078 mean “no authorized subject exists to score,”
-not that the eventual replacement projects have no engagement value. They
-cannot participate in the score sort until their authorized scope is chosen.
+The zeroes for Lessons 076--078 mean “no authorized subject exists to score,”
+not that the eventual replacement project has no engagement value. That arc
+cannot participate in the score sort until its authorized scope is chosen.
+Lessons 073--075 now use the listed DS1307 RTC family. Their score reflects a
+less immediate first encounter than optical or motion work but a strong,
+legible detective-story payoff: copied clock evidence can visibly expose
+rollover, jumps, rollback, stopped time, power-loss state, and stale
+observations without pretending that E0 has read or qualified hardware.
 
 ### Constraint and tie-break overrides
 
@@ -115,8 +121,10 @@ overrides in sequence to reproduce the final map:
    earlier balance lesson instead of repeating the same modality immediately;
 9. place characterization after the application-led arcs because its purpose
    is comparison and completeness, not first exposure;
-10. retain the unscored 073--078 reservations in place rather than moving or
-    filling them without an authorized-family decision; and
+10. retain the selected RTC integrity arc at 073--075 and the unscored
+    076--078 reservation in place; the RTC arc fills an authorized-family
+    coverage gap without disturbing the dependency-sorted earlier sequence;
+    and
 11. retain 079--081 last because it is the bounded qualification capstone and
     depends on the preceding breadth even though its raw score exceeds the
     unscored reservations.
@@ -139,7 +147,7 @@ arc. Every move carries the entire old `n--n+2` arc to new `m--m+2`.
 | 067--069 | 064--066 | Thermal gradient mapper | Keeps identity-rich digital temperature work near the corrected environmental arc |
 | 064--066 | 067--069 | Interchangeable motion recorder | Defers the more analytical second inertial arc so it extends, rather than immediately repeats, the balance-table experience |
 | 055--057 | 070--072 | Module characterization bench | Places descriptor-driven completeness work after application-led sensor arcs, where comparison and qualification consolidate prior experience |
-| 073--075 | 073--075 | Authorized-family replacement pending | Retains stable numbers and unresolved scope |
+| 073--075 | 073--075 | Copied RTC Transaction Evidence, Qualified Clock Observation, and Inert Time-Warp Detective Desk | Gives the authorized DS1307 family a late-course integrity investigation with a recognizable “bad clock” payoff after learners have the record and qualification vocabulary to distinguish valid civil time from continuity |
 | 076--078 | 076--078 | Authorized-family replacement pending | Retains stable numbers and unresolved scope |
 | 079--081 | 079--081 | Component qualification bench | Retains the bounded driver and qualification capstone at the end |
 
@@ -158,8 +166,12 @@ the listing-authorized inventory boundary while rewriting the moved arcs.
   radiant or Flame-family observation, and reed contact. It must remove rain,
   soil-moisture, and generic analog-temperature claims. Similar retail labels
   do not make those families interchangeable.
-- Lessons 073--078 remain pending re-scope. DS1302, BMP180, PCF8591, and the
-  prior color-sensor subject are not silently restored.
+- Lessons 073--075 now use the authorized DS1307 family for copied
+  register/request/receipt evidence, civil-time and continuity qualification,
+  and a volatile timeline-integrity project. This E0 selection does not restore
+  DS1302, BMP180, or PCF8591, and it does not claim a powered RTC.
+- Lessons 076--078 remain pending re-scope. The prior color-sensor subject is
+  not silently restored.
 - Lessons 079--081 remain qualification work; their position does not turn an
   unidentified transistor, load, or indicator board into a supported
   specimen.
@@ -173,6 +185,17 @@ inventory-qualified inertial adapter—not on the later motion-recorder arc.
 The motion recorder remains later because normalization, source
 qualification, stable records, RTC, and storage make it a deeper analytical
 follow-up.
+
+The RTC integrity arc remains late because Lessons 067--072 first establish
+copied records, provenance, source qualification, discontinuity-aware policy,
+and byte-stable evidence. Lesson 073 can then preserve DS1307-family register
+framing and correlated copied request/receipt evidence; Lesson 074 can
+distinguish civil-time validity, freshness, jumps, stopped-clock state, and
+power-loss evidence; and Lesson 075 can turn those distinctions into the
+volatile Inert Time-Warp Detective Desk. DS3231 is a separately identified
+shipping variant, never an interchangeable DS1307 implementation: its
+identity, register and feature semantics, electrical behavior, and physical
+acceptance retain independent gates.
 
 The kinetic and carousel arcs remain ordered so bounded stepper ownership,
 intent mirroring, travel budgets, de-energized shutdown, independent stop
@@ -234,7 +257,7 @@ the listing cannot by itself authorize powered work.
 | 15 | Water Level Sensor | 061--063 corrected museum monitor | Exact topology and corrosion-aware switched-power acceptance open; no unattended leak-safety claim |
 | 16 | IR Receiver | 025; reused 052--054 | Exact receiver identity and known-remote bench trace open; unknown replay excluded |
 | 17 | Passive Buzzer | 005--006; reused in later projects | Exact transducer and acoustic bench acceptance open |
-| 18 | DS1307 RTC Module | Deterministic RTC state in 022; possible record timestamp reuse | Physical DS1307/variant adapter deferred pending chip, pull-up, charging, cell, and register qualification |
+| 18 | DS1307 RTC Module | Deterministic RTC state in 022; Copied RTC Transaction Evidence in 073, Qualified Clock Observation in 074, and the Inert Time-Warp Detective Desk in 075 | Lessons 073--075 are E0 copied-evidence policy only; physical DS1307 acquisition remains deferred pending exact chip, pull-up, charging, cell, electrical, register, accuracy, and bench qualification. DS3231 is a separate shipping variant and is never accepted as an interchangeable DS1307 |
 | 19 | LCD 1602 Module | 014--015; reused in later projects | Exact controller and pinout bench record open; no implied PCF8574 support |
 | 20 | 18B20 Temp | 064--066 single-wire thermal mapper | Exact marking, package, pull-up, power mode, timing, and CRC acceptance open |
 | 21 | Rotary Encoder | 032--033; reused in 055--057 operator panel | Exact phase order, pull policy, and pushbutton conformance open |
@@ -259,6 +282,11 @@ This table is exhaustive for the numbered V2 37-family image. Mega-kit-only
 families—such as RC522, stepper/ULN2003, displays, discrete thermistor, motors,
 servo, and shift register—remain covered by the union inventory and the arc
 map, but they are not extra entries in this 37-row reconciliation.
+With the DS1307 RTC integrity placement selected for 073--075, no authorized,
+admissible sensor family in this table is left unused; each has a published or
+planned instructional role, while a prohibited family retains its explicit
+non-coverage disposition. “Planned” remains a scheduling statement rather
+than a powered-support or specimen-interchangeability claim.
 
 ## Migration checklist
 
