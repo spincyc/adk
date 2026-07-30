@@ -531,8 +531,8 @@ Descriptor, evidence, and compact-witness digests use CRC-32/ISO-HDLC over
 canonical little-endian, field-by-field encoding with domain tags
 `ADK-MOD-DESC-1`, `ADK-MOD-EVID-1`, and `ADK-MOD-WIT-1`. Parameters are
 polynomial `0x04c11db7` (reflected `0xedb88320`), initial `0xffffffff`, reflected
-input/output, final XOR `0xffffffff`. Digest zero is invalid. Raw struct bytes,
-padding, and addresses are never hashed.
+input/output, final XOR `0xffffffff`. Digest zero is valid and never a sentinel.
+Raw struct bytes, padding, and addresses are never hashed.
 
 Canonical digest encoding uses one byte for enums, Boolean values, and
 `StatusCode`; two little-endian bytes for `uint16_t`; and four little-endian
@@ -837,6 +837,36 @@ reconstruct the full envelope or its full points; its domain-tagged digests
 bind the authoritative envelope while compact brackets and summaries support
 record review. No raw struct, padding, address, or pointer enters the image.
 Decode returns typed validity and does not mutate output on failure.
+
+Digest value zero is valid and never a sentinel, including for
+`expectedDescriptorDigest`.
+
+Decode order is exact span size, framing, CRC, semantic/canonical fields, then
+staged assignment. `BadLength` is only a non-192-byte span; `BadFraming` is
+wrong magic/version/encoded length; `BadIntegrity` is CRC mismatch; and
+`BadSemanticValue` is a CRC-valid semantic defect. Encode validates semantics
+before capacity, stages all bytes, zeros reserved bytes, calculates CRC last,
+and copies only on success.
+
+Semantic checks cover declared enum/status encodings and required nonzero
+revisions/identities; reconstructed descriptor validity; counts in 0--16;
+canonical absent brackets/intervals; bracket domain, assertion, and sequence
+rules; ordered in-domain intervals with nonoverlapping guaranteed regions;
+first/last sequence summaries; terminal `Complete`/`Rejected`
+state-reason-status relationships; exact `PrepareRecord` step; and zero
+reserved bytes. Digests are opaque and are not recomputed by the compact
+codec.
+
+`beginSession()` precedence is lifecycle/configuration, structural envelope
+and descriptor/evidence validation, exact correlation, digest equality, then
+terminal admissibility. Structural/correlation/digest failures atomically
+reject even when fields resemble a producer fault; a fully correlated,
+digest-correct attributable rejection is admitted as fault-dominant evidence.
+
+The image omits `terminalLeg`, current `legId`, observation times, control
+ordinals, directions, complete points, and full producer statuses. Those
+remain authoritative in Lesson 071 evidence and are bound by
+`evidenceDigest`; compact summaries cannot reconstruct a Lesson 071 result.
 
 ### State/command table
 

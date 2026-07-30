@@ -1,0 +1,14 @@
+{
+  "fingerprint_contract": "module-characterization-resource-v1-l072",
+  "flash_hard": 32768,
+  "flash_target": 24576,
+  "lesson": "072",
+  "object_hard": 768,
+  "object_symbol": "inertModuleCharacterizationBenchBytes",
+  "object_target": 512,
+  "sketch": "examples/Lesson072ModuleCharacterizationBench",
+  "sram_hard": 3072,
+  "sram_target": 2048,
+  "stack_hard": 1024,
+  "stack_target": 768
+}

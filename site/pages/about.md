@@ -16,7 +16,7 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--071 use the first-class per-object
+ADK is early-stage software. Lessons 001--072 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
@@ -91,6 +91,11 @@ Lesson 071 consumes bounded ascending, descending, and verification streams of
 those copied frames. It publishes sampled transition brackets, conservative
 intervals, comparator relation, and attributable terminal evidence without
 owning acquisition, stimulus, power, presentation, or storage.
+Lesson 072 admits one atomic terminal characterization envelope, advances a
+fixed five-step inert review, exposes fault-dominant semantic presentation,
+and prepares one canonical 192-byte caller-owned volatile record. It owns no
+module, acquisition, stimulus, clock, display, storage transport, or durable
+state, and it does not qualify a physical fixture.
 
 The hierarchy is developed in dependency order:
 
@@ -102,12 +107,11 @@ The per-object lifecycle uses transactional `initialize()`, idempotent
 `shutdown() noexcept`, and destructor-driven cleanup. The original
 global-registration preview is frozen under [Legacy](legacy/index.md).
 
-The latest completed project arc is Lessons 067--069: normalized copied
-inertial records and configured record qualification composed into one
-fixed-source volatile motion recorder. Powered sensors, controls,
-presentation, storage, authentication, and physical acceptance remain open.
-[Lesson 069](lessons/069.md) remains the latest published project boundary.
-[Lesson 071](lessons/071.md) is the latest published component. See the
+The latest completed project arc is Lessons 070--072: declared copied
+threshold-module facts and bounded characterization evidence composed into one
+inert review and volatile record. Powered fixtures, controls, presentation,
+storage, and physical acceptance remain open.
+[Lesson 072](lessons/072.md) is the latest published project boundary. See the
 [course map](course.md) for that order and the
 [roadmap](docs/ROADMAP.md) for the full sequence.
 

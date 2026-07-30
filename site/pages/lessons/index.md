@@ -76,8 +76,9 @@ third lesson for a deterministic integration project.
 | [Lesson 069 — Recording one qualified motion session](069.md) | Qualified copied records, controls, and supplied time | Scripted motion produces bounded volatile images and inert presentation/export intent |
 | [Lesson 070 — Describing threshold modules](070.md) | Declared fixture facts and attributable copied channel frames | Topology, polarity, timing, electrical declarations, and unknowns remain explicit |
 | [Lesson 071 — Characterizing copied threshold evidence](071.md) | Bounded ascending, descending, and verification streams | Adjacent transition brackets, conservative intervals, disagreement, and terminal faults remain attributable |
+| [Lesson 072 — Reviewing one module characterization](072.md) | One terminal characterization envelope and a fixed review script | Fault-dominant presentation and one canonical 192-byte volatile record remain attributable |
 
-Lessons 001--071 are host verified and their canonical examples compile for
+Lessons 001--072 are host verified and their canonical examples compile for
 the Mega 2560. Lessons 055--057 publish E0 replay only: exact inputs,
 presentation, storage, actuators, and bench acceptance remain open. Lessons
 058--060 likewise leave their exact powered display fixtures and bench
@@ -96,7 +97,9 @@ presentation or durable storage. Lesson 070 validates copied declarations and
 frames without establishing that a physical specimen matches them or
 authorizing powered acquisition. Lesson 071 consumes only those copied frames
 through bounded three-leg replay; its brackets and intervals are sampled E0
-evidence, not physical thresholds or electrical qualification. Exact endpoints, pull-ups,
+evidence, not physical thresholds or electrical qualification. Lesson 072
+reviews one terminal envelope and prepares caller-owned volatile bytes; it
+does not operate a display or make those bytes durable. Exact endpoints, pull-ups,
 probes, timing, thermal accuracy, presentation, storage, power behavior, and
 bench acceptance remain open. Every
 circuit remains experimental until its physical acceptance card is recorded.
@@ -110,7 +113,6 @@ published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 072 | Inert module characterization bench |
 | 073–078 | Authorized-family subjects pending |
 | 079–081 | Component qualification bench |
 

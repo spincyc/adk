@@ -10,7 +10,7 @@ the Arduino Mega 2560.
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–071 are published, host verified at E0, and
+> **Current boundary:** Lessons 001–072 are published, host verified at E0, and
 > compiled for the Mega 2560. All lessons remain experimental, physical
 > acceptance remains open, and the exact electrical revisions used by Lessons
 > 031–036 are not yet qualified. Lessons 037–039 use documented external
@@ -52,12 +52,15 @@ the Arduino Mega 2560.
 > physical specimen satisfies them. Lesson 071 turns bounded ascending,
 > descending, and verification streams of those copied frames into adjacent
 > transition brackets, conservative intervals, and attributable terminal
-> evidence without operating or qualifying a physical fixture. These
+> evidence without operating or qualifying a physical fixture. Lesson 072
+> composes one terminal result into a five-step inert review, fault-dominant
+> presentation intent, and one canonical 192-byte caller-owned volatile record.
+> It owns no acquisition, fixture, display, clock, or storage endpoint. These
 > E0 publications do not
 > claim powered inputs, displays,
 > storage, actuators, wiring, physical output, or bench acceptance. Planned
 > rows below are commitments, not support claims.
-> [Lesson 071](https://spincyc.github.io/adk/lessons/071/) is the current
+> [Lesson 072](lessons/072.md) is the current
 > published lesson.
 
 ## What ADK provides
@@ -111,11 +114,12 @@ a printable PDF companion. Each row links to the first lesson in its arc.
 | 069 · [open lesson](https://spincyc.github.io/adk/lessons/069/) | Qualified motion recorder | One-source-per-session scripted motion evidence, bounded volatile record images, and inert presentation/export intent |
 | 070 · [open lesson](https://spincyc.github.io/adk/lessons/070/) | Descriptor-driven threshold modules | Explicit copied topology, polarity, timing, electrical declarations, and frame provenance without powered-specimen authority |
 | 071 · [open lesson](https://spincyc.github.io/adk/lessons/071/) | Copied threshold characterization | Bounded three-leg replay, adjacent transition brackets, conservative intervals, and attributable disagreement |
+| 072 · [open lesson](https://spincyc.github.io/adk/lessons/072/) | Inert module-characterization bench | Atomic terminal-envelope review, fault-dominant presentation, and one canonical 192-byte volatile record |
 
-[Lesson 071 PDF](https://spincyc.github.io/adk/downloads/lessons/071.pdf) ·
-[Mega example](https://github.com/spincyc/adk/tree/main/examples/Lesson071Characterization) ·
-[public API](https://github.com/spincyc/adk/blob/main/src/module_characterization.h) ·
-[host tests](https://github.com/spincyc/adk/blob/main/tests/module_characterization_test.cpp)
+[Lesson 072 PDF](https://spincyc.github.io/adk/downloads/lessons/072.pdf) ·
+[Mega example](https://github.com/spincyc/adk/tree/main/examples/Lesson072ModuleCharacterizationBench) ·
+[public API](https://github.com/spincyc/adk/blob/main/src/inert_module_characterization_bench.h) ·
+[host tests](https://github.com/spincyc/adk/blob/main/tests/inert_module_characterization_bench_test.cpp)
 
 [View the complete lesson index](https://spincyc.github.io/adk/lessons/) or the
 [supported API](https://spincyc.github.io/adk/api-supported/).
@@ -149,8 +153,6 @@ These entries are deliberately linkless. A planned subject becomes a link only
 after its implementation, deterministic tests, Mega example, size evidence,
 HTML reference, and PDF lesson exist.
 
-- **071–072:** copied threshold characterization and an inert module bench;
-  exact powered fixtures remain gated.
 - **073–081:** authorized-family replacements for the excluded DS1302, BMP180,
   PCF8591, and color-sensor subjects, followed by a bounded low-side driver,
   indicator semantics, and an inert component-qualification bench.

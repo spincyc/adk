@@ -120,7 +120,8 @@ Descriptor, evidence, and compact-witness digests use CRC-32/ISO-HDLC over
 canonical little-endian, field-by-field encoding with domain tags
 `ADK-MOD-DESC-1`, `ADK-MOD-EVID-1`, and `ADK-MOD-WIT-1`. Parameters are
 polynomial `0x04c11db7` (reflected `0xedb88320`), initial `0xffffffff`,
-reflected input/output, and final XOR `0xffffffff`. Zero is invalid.
+reflected input/output, and final XOR `0xffffffff`. Every 32-bit result,
+including zero, is valid; digests have no sentinel value.
 
 Canonical encoding uses one byte for enums, Boolean values, and `StatusCode`;
 two little-endian bytes for `uint16_t`; and four little-endian bytes for
@@ -314,6 +315,51 @@ Failed or early preparation leaves bench state and the caller image
 byte-identical. Repeated preparation in `RecordPrepared` returns the same
 192-byte image without advancing state.
 
+Decode order is exact: span size, framing, CRC, semantic/canonical fields,
+then staged assignment. Only a span size other than 192 is `BadLength`.
+Wrong `ADMC` magic, image version, or encoded length is `BadFraming`; a CRC
+mismatch is `BadIntegrity`; and a CRC-valid semantic defect is
+`BadSemanticValue`. Encode validates semantics before capacity, stages and
+zeros all 192 bytes, calculates CRC last, and copies only on success. Invalid
+input returns `InvalidArgument`; short output returns `CapacityExceeded`; bytes
+after 191 in a larger output span remain untouched.
+
+All reachable encode failures therefore occur before staged construction.
+After semantic and capacity validation succeeds, staging consists only of
+fixed-memory field writes, CRC calculation, and the final copy; it performs no
+fallible operation, allocation, callback, or injected dependency. A
+mid-construction failure is consequently non-applicable rather than an
+injectable test case. Tests still prove failure-before-staging atomicity,
+canaries around the complete destination and result objects, construction in
+the private staging image, and copy-only-on-success. Decode retains its
+independent staged-assignment and unchanged-output-on-failure obligations.
+
+Codec semantics require valid enum/status encodings; required nonzero
+revisions and identities; a structurally valid reconstructed descriptor;
+counts in 0--16; canonical absent brackets and intervals; in-domain bracket
+raw values with differing assertion flags and unambiguously forward nonzero
+sequences; ordered in-domain intervals; and nonoverlapping guaranteed
+intervals. When all counts are zero, first/last sequence are zero; otherwise
+they are nonzero and equal or unambiguously forward. Terminal state is exactly
+`Complete` with `None`/`Ok`, or `Rejected` with a non-`None` reason and its
+retained status. Script step is exactly `PrepareRecord`; reserved bytes are
+zero. Digests, including zero, are opaque exact values and are not recomputed
+from compact fields.
+
+`beginSession()` precedence is lifecycle/configuration, structural envelope
+and descriptor/evidence validation, exact identity/revision/session/run/source
+correlation, descriptor/evidence/configured digest equality, then terminal
+admissibility. Structural, correlation, or digest failure is an atomic API
+rejection even when fields resemble a producer fault. A fully correlated,
+digest-correct attributable terminal rejection is admitted as fault-dominant
+domain evidence.
+
+The image retains only listed compact review fields. `terminalLeg`, current
+`legId`, observation times, control ordinals, directions, complete points, and
+full producer statuses are intentionally omitted. They remain authoritative
+in Lesson 071 evidence and are indirectly bound by `evidenceDigest`; decode
+cannot reconstruct a Lesson 071 result.
+
 `recordPrepared` means only that these bytes exist in caller memory. The arc
 defines no endpoint workflow beyond that volatile image.
 
@@ -391,9 +437,13 @@ Tests must cover:
   little-endian fields, integer extrema,
   reserved-zero enforcement, corruption in every byte class, and integrity
   mismatch;
-- failure before and during staged in-memory construction, unchanged
-  record/result on rejection, repeated byte-identical preparation, changed
-  duplicate rejection, and typed decode validity;
+- every reachable failure before staged construction, unchanged complete
+  record/result objects and their surrounding canaries on rejection, private
+  staging followed by copy-only-on-success, repeated byte-identical
+  preparation, changed duplicate rejection, typed decode validity, and
+  unchanged decode output on failure; no mid-construction failure injection is
+  required because the validated fixed-memory write/CRC/copy sequence has no
+  fallible operation, allocation, callback, or injected dependency;
 - CRC-32/ISO-HDLC tag-only seed vectors, complete descriptor/evidence golden
   encodings, present/absent compact-witness encodings, canonical absent-zero
   rejection, and CRC-16/CCITT-FALSE image vectors;
@@ -412,9 +462,12 @@ validity.
 
 Residual SRAM uses the conservative formula
 `8192 - measured static SRAM - conservative synchronous stack - 128`, where
-128 bytes is reserved interrupt margin. The provisional AVR estimates are a
-720-byte coordinator and 384 bytes for simultaneous staged and destination
-images; only AVR-target measured evidence may replace them.
+128 bytes is reserved interrupt margin. During planning, the provisional AVR
+estimate reserved 720 bytes for the coordinator and 384 bytes for simultaneous
+staged and destination images. That estimate preserved the initial capacity
+rationale but is superseded by terminal AVR-target evidence: the implemented
+bench measures 436 bytes, while the two simultaneous images remain exactly
+384 bytes.
 
 Future physical acceptance is separate. It must record the exact specimen,
 authoritative or verified circuit evidence, pinout, supply, pull rail, ADC
@@ -446,29 +499,39 @@ record cannot pre-fill or satisfy that bench record.
   image cells at E0. Exact display/indicator/control endpoints and measured
   acquisition/safe state remain separate E1a/E1b gates.
 
-## Gate result
+## Terminal gate result
 
-- Disposition: `natural fit with required remediation` for an E0 composition
+- Disposition: `natural fit after bounded remediation` for an E0 composition
   that consumes one atomic Lesson 070/071 envelope, fixes one declared fixture
   per session, advances the exact five-step review script, preserves
   conservative categorical faults, and prepares exactly one canonical
   volatile 192-byte
   characterization record through the shared codec
-- Open risks: measured fingerprint-bound Lessons 070--072 resource tuple,
-  exact admitted specimens, ADC reference/source impedance, pull and output
+- Exact resource evidence: fingerprint
+  `b56bd8ef7a12328b80ad613b2a8b41f2cbde8e6fbd5ff0aa408208f50e3b6679`;
+  27,354 B flash, 2,002 B static SRAM, 740 B synchronous stack, 436 B bench,
+  exact 192 B record and 384 B simultaneous images, and 5,322 B residual SRAM.
+  Flash is an independently accepted target miss with 5,414 B hard-limit
+  margin; every other target and hard gate passes.
+- Open risks: exact admitted specimens, ADC reference/source impedance, pull and output
   levels, switched-power current/backfeed/safe state, and powered presentation
 - Required discussion or decision IDs: none for the bounded E0 shape;
   automatic detection, runtime module switching, generic arbitrary-module
   admission, calibrated physical units, actual endpoint ownership, any
   workflow beyond the caller image, or acceptance certification requires a
   new architecture decision
-- Remediation owner and next action: freeze Lessons 070/071 seams and the
-  maximum composition, implement the inert project, then rerun this stress
-  pass against exact ABI, resource, test, document, and publication evidence
-- Verification commands and results: not yet run; all implementation and
-  publication gates remain pending
-- Maximum-composition scenario and proof: specified above; exact replay and
-  evidence fingerprint remain pending
-- Promotion permitted: no; this initial pass permits bounded E0
-  implementation only, not release, physical support, storage, calibration,
-  qualification, or acceptance claims
+- Completed remediation: coordinator retains a compact snapshot rather than a
+  full envelope; duplicate evidence storage was removed; point/decode phases
+  are lifetime-isolated; decode/publish is an out-of-line stage. The stabilized
+  semantics keep static SRAM and stack below target while retaining exhaustive
+  corruption and repaired-CRC semantic rejection evidence.
+- Verification results: strict host runtime and style pass; production digest
+  goldens, zero digest, every-byte corruption, CRC-repaired semantic
+  boundaries, digest-correct forgery, correlated terminal fault, lifecycle,
+  chronology, atomicity, canary, and exhaustion tests pass; independent
+  semantic review passes.
+- Maximum-composition scenario and proof: canonical Mega replay executes real
+  Lessons 070 and 071, admits one atomic envelope, advances all five steps,
+  and retains two simultaneous 192-byte images for encode/decode comparison.
+- Promotion permitted: yes for copied E0 software/documentation only; no
+  physical support, storage, calibration, qualification, or acceptance claim

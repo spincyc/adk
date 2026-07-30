@@ -74,7 +74,8 @@ host-test-sanitize:
 
 firmware-size-check: size-check escape-console-resource-check \
 	display-timing-resource-check museum-case-resource-check \
-	motion-recorder-resource-check thermal-gradient-resource-check
+	module-characterization-resource-check motion-recorder-resource-check \
+	thermal-gradient-resource-check
 	@echo "Firmware satisfies the recorded $(BOARD_FQBN) budgets."
 
 arduino-lint:

@@ -21,6 +21,17 @@
       "observed_bytes": 375,
       "rationale": "The canonical immutable evidence retains required brackets, intervals, witnesses, provenance, and cross-leg correlation while preserving nine bytes of hard-limit margin.",
       "target_bytes": 320
+    },
+    {
+      "authority": "docs/design/LESSON_072_INERT_MODULE_CHARACTERIZATION_BENCH_STRESS_PASS.md#terminal-gate-result",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "b56bd8ef7a12328b80ad613b2a8b41f2cbde8e6fbd5ff0aa408208f50e3b6679",
+      "hard_bytes": 32768,
+      "lesson": "072",
+      "metric": "flash",
+      "observed_bytes": 27354,
+      "rationale": "The exact no-LTO maximum-composition fixture retains the complete E0 review script, canonical digest and record codecs, every-byte and repaired-CRC semantic rejection evidence, and two simultaneous record images while preserving 5414 bytes of hard-limit margin.",
+      "target_bytes": 24576
     }
   ],
   "schema": 1

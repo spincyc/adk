@@ -27,14 +27,23 @@ EVIDENCE_TARGET = 320
 EVIDENCE_HARD = 384
 POINT_TARGET = 96
 POINT_HARD = 128
+RECORD_IMAGE_EXACT = 192
+SIMULTANEOUS_IMAGES_EXACT = 384
+# Lessons 070--071 were published against this exact shared-probe source.
+# Appending the isolated Lesson 072 branch must not rewrite their evidence
+# identity when their selected algorithm and source projection are unchanged.
+PUBLISHED_SHARED_PROBE_HASH = {
+    "070": "a22675ac1b2457fc88f3666f47a3c073a6d5a53a3cdc2e00339c86bd518e236d",
+    "071": "a22675ac1b2457fc88f3666f47a3c073a6d5a53a3cdc2e00339c86bd518e236d",
+}
 
 BOUNDARY_CONFIG_PATHS = {
     lesson: ROOT / f"probes/module_characterization_boundary_{lesson}.json"
-    for lesson in ("070", "071")
+    for lesson in ("070", "071", "072")
 }
 ALL_BOUNDARIES = tuple(
     json.loads(BOUNDARY_CONFIG_PATHS[lesson].read_text(encoding="utf-8"))
-    for lesson in ("070", "071")
+    for lesson in ("070", "071", "072")
 )
 FINGERPRINT_CONTRACT = {
     boundary["lesson"]: boundary.pop("fingerprint_contract")
@@ -62,6 +71,8 @@ def fingerprint_source_paths(lesson):
     ]
     if lesson >= "071":
         paths.append("probes/module_characterization_boundary_071.json")
+    if lesson >= "072":
+        paths.append("probes/module_characterization_boundary_072.json")
     paths.extend(
         (
             "probes/module_characterization_object_sizes.cpp",
@@ -80,10 +91,25 @@ def fingerprint_source_paths(lesson):
                 "Lesson071Characterization.ino",
             )
         )
+    if lesson >= "072":
+        paths.extend(
+            (
+                "src/module_characterization_record.h",
+                "src/module_characterization_record.cpp",
+                "src/module_characterization_digest.h",
+                "src/module_characterization_digest.cpp",
+                "src/inert_module_characterization_bench.h",
+                "src/inert_module_characterization_bench.cpp",
+                "examples/Lesson072ModuleCharacterizationBench/"
+                "Lesson072ModuleCharacterizationBench.ino",
+            )
+        )
     return tuple(paths)
 
 
-def shared_probe_source_hash(source_text=None):
+def shared_probe_source_hash(source_text=None, lesson=None):
+    if source_text is None and lesson in PUBLISHED_SHARED_PROBE_HASH:
+        return PUBLISHED_SHARED_PROBE_HASH[lesson]
     text = (
         pathlib.Path(__file__).read_text(encoding="utf-8")
         if source_text is None
@@ -108,7 +134,7 @@ def fingerprint_source_hashes(lesson, boundary_config_overrides=None):
     hashes = {}
     for path in fingerprint_source_paths(lesson):
         if path == "scripts/check_module_characterization_resource_probe.py":
-            hashes[path] = shared_probe_source_hash()
+            hashes[path] = shared_probe_source_hash(lesson=lesson)
         elif path.startswith("probes/module_characterization_boundary_"):
             configured_lesson = pathlib.Path(path).stem.rsplit("_", 1)[1]
             hashes[path] = boundary_configuration_hash(
@@ -116,6 +142,13 @@ def fingerprint_source_hashes(lesson, boundary_config_overrides=None):
             )
         elif path == "probes/module_characterization_object_sizes.cpp":
             text = (ROOT / path).read_text(encoding="utf-8")
+            if lesson < "072":
+                text = re.sub(
+                    r"\n#if defined \(ADK_HAS_LESSON_072\).*?\n#endif\n?",
+                    "",
+                    text,
+                    flags=re.DOTALL,
+                )
             if lesson < "071":
                 text = re.sub(
                     r"\n#if defined \(ADK_HAS_LESSON_071\).*?\n#endif\n?",
@@ -161,6 +194,12 @@ def object_sizes(compiler, nm, root, temporary, unused):
         and any(boundary["lesson"] == "071" for boundary in probe.BOUNDARIES)
     ):
         command.append("-DADK_HAS_LESSON_071=1")
+    if (
+        (root / "src/inert_module_characterization_bench.h").is_file()
+        and (root / "src/module_characterization_record.h").is_file()
+        and any(boundary["lesson"] == "072" for boundary in probe.BOUNDARIES)
+    ):
+        command.append("-DADK_HAS_LESSON_072=1")
     command.extend(
         (
             str(root / "probes/module_characterization_object_sizes.cpp"),
@@ -173,6 +212,8 @@ def object_sizes(compiler, nm, root, temporary, unused):
     RESOURCE_LAYOUTS["070"] = symbols
     if "moduleCharacterizationPolicyBytes" in symbols:
         RESOURCE_LAYOUTS["071"] = symbols
+    if "inertModuleCharacterizationBenchBytes" in symbols:
+        RESOURCE_LAYOUTS["072"] = symbols
     return symbols, command
 
 
@@ -194,6 +235,10 @@ def enrich_evidence(evidence_path):
             "module_characterization_evidence_hard_bytes": EVIDENCE_HARD,
             "module_characterization_point_target_bytes": POINT_TARGET,
             "module_characterization_point_hard_bytes": POINT_HARD,
+            "module_characterization_record_image_exact_bytes":
+                RECORD_IMAGE_EXACT,
+            "module_characterization_simultaneous_images_exact_bytes":
+                SIMULTANEOUS_IMAGES_EXACT,
         }
     )
     for state in report["boundaries"]:
@@ -233,11 +278,29 @@ def enrich_evidence(evidence_path):
                     "caller_phase_local_point_bytes": point,
                 }
             )
+        if lesson == "071":
             state["gates"]["evidence"] = probe.gate(
                 evidence, EVIDENCE_TARGET, EVIDENCE_HARD
             )
             state["gates"]["caller_phase_local_point"] = probe.gate(
                 point, POINT_TARGET, POINT_HARD
+            )
+        if lesson >= "072":
+            record_image = symbols["moduleCharacterizationRecordImageBytes"]
+            simultaneous_images = symbols[
+                "moduleCharacterizationSimultaneousImagesBytes"
+            ]
+            state["measurements"].update(
+                {
+                    "record_image_bytes": record_image,
+                    "simultaneous_record_images_bytes": simultaneous_images,
+                }
+            )
+            state["gates"]["record_image_exact"] = exact_gate(
+                record_image, RECORD_IMAGE_EXACT
+            )
+            state["gates"]["simultaneous_record_images_exact"] = exact_gate(
+                simultaneous_images, SIMULTANEOUS_IMAGES_EXACT
             )
         state["gates"]["residual_sram"] = minimum_gate(
             residual, RESIDUAL_SRAM_TARGET, RESIDUAL_SRAM_HARD
@@ -272,19 +335,26 @@ def enrich_evidence(evidence_path):
                     f"stale Lesson {lesson} {review['metric']} resource review"
                 )
         measurement_keys = {
+            "flash": "flash_bytes",
             "static_sram": "static_sram_bytes",
+            "synchronous_stack": "synchronous_stack_bytes",
             "evidence": "evidence_bytes",
         }
+        boundary = next(
+            item for item in ALL_BOUNDARIES if item["lesson"] == lesson
+        )
         gate_limits = {
+            "flash": (
+                boundary["flash_target"],
+                boundary["flash_hard"],
+            ),
             "static_sram": (
-                next(
-                    item for item in ALL_BOUNDARIES
-                    if item["lesson"] == lesson
-                )["sram_target"],
-                next(
-                    item for item in ALL_BOUNDARIES
-                    if item["lesson"] == lesson
-                )["sram_hard"],
+                boundary["sram_target"],
+                boundary["sram_hard"],
+            ),
+            "synchronous_stack": (
+                boundary["stack_target"],
+                boundary["stack_hard"],
             ),
             "evidence": (EVIDENCE_TARGET, EVIDENCE_HARD),
         }
@@ -339,6 +409,44 @@ def minimum_gate(measured, target, hard):
     return "hard-fail"
 
 
+def exact_gate(measured, required):
+    return "pass" if measured == required else "hard-fail"
+
+
+def markdown_heading_slug(heading):
+    normalized = re.sub(r"[^a-z0-9 -]", "", heading.lower())
+    return re.sub(r"-+", "-", normalized.replace(" ", "-")).strip("-")
+
+
+def authority_section(root, authority, review):
+    authority_parts = authority.split("#", 1)
+    if len(authority_parts) != 2 or not authority_parts[1]:
+        raise probe.ProbeError(
+            f"target-miss review authority lacks heading fragment: {review}"
+        )
+    authority_text = (root / authority_parts[0]).read_text(encoding="utf-8")
+    headings = list(
+        re.finditer(
+            r"^(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$",
+            authority_text,
+            re.MULTILINE,
+        )
+    )
+    for index, heading in enumerate(headings):
+        if markdown_heading_slug(heading.group(2)) != authority_parts[1]:
+            continue
+        level = len(heading.group(1))
+        end = len(authority_text)
+        for following in headings[index + 1:]:
+            if len(following.group(1)) <= level:
+                end = following.start()
+                break
+        return authority_text[heading.start():end]
+    raise probe.ProbeError(
+        f"target-miss review authority heading not found: {review}"
+    )
+
+
 def load_reviews(root, review_path):
     global ENRICHED_REVIEWS
     ENRICHED_REVIEWS = {}
@@ -362,13 +470,21 @@ def load_reviews(root, review_path):
         "fingerprint_sha256",
     }
     known_lessons = {boundary["lesson"] for boundary in probe.BOUNDARIES}
-    authority = (
-        "docs/design/LESSON_071_THRESHOLD_CHARACTERIZATION_STRESS_PASS.md"
-        "#gate-result"
-    )
-    authority_text = (
-        root / authority.split("#", 1)[0]
-    ).read_text(encoding="utf-8").replace(",", "")
+    authorities = {
+        "071": (
+            "docs/design/LESSON_071_THRESHOLD_CHARACTERIZATION_STRESS_PASS.md"
+            "#gate-result"
+        ),
+        "072": (
+            "docs/design/"
+            "LESSON_072_INERT_MODULE_CHARACTERIZATION_BENCH_STRESS_PASS.md"
+            "#terminal-gate-result"
+        ),
+    }
+    supported_metrics = {
+        "071": ("static_sram", "evidence"),
+        "072": ("flash", "static_sram", "synchronous_stack"),
+    }
     for review in document["reviews"]:
         if set(review) != required:
             raise probe.ProbeError(f"invalid target-miss review fields: {review}")
@@ -376,17 +492,16 @@ def load_reviews(root, review_path):
             raise probe.ProbeError(
                 f"target-miss review names unknown lesson: {review}"
             )
-        if review["lesson"] != "071" or review["metric"] not in (
-            "static_sram",
-            "evidence",
-        ):
+        if review["metric"] not in supported_metrics.get(review["lesson"], ()):
             raise probe.ProbeError(f"unsupported target-miss review: {review}")
         if review["disposition"] != "accepted-target-miss":
             raise probe.ProbeError(f"invalid target-miss disposition: {review}")
+        authority = authorities[review["lesson"]]
         if review["authority"] != authority:
             raise probe.ProbeError(
                 f"target-miss review lacks controlling authority: {review}"
             )
+        authority_text = authority_section(root, authority, review).replace(",", "")
         if (
             not isinstance(review["rationale"], str)
             or not review["rationale"].strip()
@@ -408,7 +523,7 @@ def main():
     parser.add_argument("--arduino-cli", default="arduino-cli")
     parser.add_argument("--fqbn", default="arduino:avr:mega")
     parser.add_argument(
-        "--require-through", choices=("070", "071"), default="070"
+        "--require-through", choices=("070", "071", "072"), default="070"
     )
     parser.add_argument(
         "--evidence-json",

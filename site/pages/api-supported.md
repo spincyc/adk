@@ -1017,6 +1017,38 @@ flash, 339 bytes synchronous stack, a 498-byte policy, a 375-byte evidence
 value, and a 57-byte caller-local point. This remains copied E0 evidence: it
 does not identify, energize, sweep, or qualify a physical module.
 
+## Inert module-characterization bench
+
+`InertModuleCharacterizationBench` is the Lesson 072 E0 project. It admits one
+atomic terminal `ModuleCharacterizationEnvelope`, advances the fixed
+`InspectDeclaration`, `ReviewAscending`, `ReviewDescending`,
+`ReviewVerification`, and `PrepareRecord` script, and exposes
+fault-dominant `ModuleBenchPresentationIntent`.
+
+`prepareRecord()` is a separate final-step action. It uses
+`ModuleCharacterizationRecordCodec` to stage and atomically copy one canonical
+192-byte `ADMC` image into caller memory. Decode distinguishes length,
+framing, integrity, and semantic failures and leaves output unchanged on
+failure. The record retains compact declarations and review evidence plus
+domain-separated descriptor, evidence, and witness digests; those digests
+detect correlation failures but do not prove source identity.
+
+- Inert module-characterization bench:
+  [source](https://github.com/spincyc/adk/blob/main/src/inert_module_characterization_bench.h),
+  [implementation](https://github.com/spincyc/adk/blob/main/src/inert_module_characterization_bench.cpp),
+  [host tests](https://github.com/spincyc/adk/blob/main/tests/inert_module_characterization_bench_test.cpp),
+  [Mega replay](downloads/sketches/Lesson072ModuleCharacterizationBench.ino),
+  and [Lesson 072](lessons/072.md)
+
+The canonical Mega composition measures 24,860 bytes flash and 1,998 bytes
+static SRAM. Exact no-LTO evidence measures 27,354 bytes flash, 2,002 bytes
+static SRAM, 740 bytes synchronous stack, a 436-byte bench, exactly 192 bytes
+per record image, 384 bytes for both simultaneously live images, and 5,322
+bytes residual SRAM. Flash exceeds its 24 KiB target but passes the
+independently reviewed 32 KiB hard limit; all other targets pass. This remains
+volatile copied evidence: no module, acquisition endpoint, clock, display,
+storage transport, or powered fixture is owned or qualified.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.
