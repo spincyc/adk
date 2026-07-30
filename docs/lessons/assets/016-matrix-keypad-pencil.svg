@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1536" height="1024" viewBox="0 0 1536 1024">
-  <style>text { display: none; }</style>
+  
   <rect width="1536" height="1024" fill="#faf9f4"/>
   <g fill="none" stroke="#262626" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
     <path d="M90 125 Q85 100 120 92 L650 92 Q680 98 674 130 L674 900 Q668 930 638 925 L112 925 Q84 920 90 890 Z"/>
@@ -11,7 +11,7 @@
   </g>
   <g font-family="sans-serif" fill="#222">
     <text x="105" y="70" font-size="42" font-weight="bold">MEGA 2560 — paired side header</text>
-    <text x="1010" y="65" font-size="42" font-weight="bold">AUTHORIZED 4×4 KEYPAD</text>
+    <text x="900" y="65" font-size="42" font-weight="bold">AUTHORIZED 4×4 KEYPAD</text>
     <text x="145" y="200" font-size="30">USB</text>
     <text x="165" y="385" font-size="32">No breadboard:</text>
     <text x="165" y="425" font-size="32">seven direct signal wires</text>
@@ -61,6 +61,6 @@
     <text x="1010" y="662">R0</text><text x="1040" y="692">R1</text><text x="1070" y="722">R2</text><text x="1100" y="752">R3</text>
     <text x="1130" y="782">C0</text><text x="1160" y="812">C1</text><text x="1190" y="842">C2</text>
     <text x="1280" y="910">C3 taped alone</text>
-    <text x="980" y="970" font-size="28">Identify every tail conductor unpowered; tail order varies.</text>
+    <text x="560" y="970" font-size="28">Identify every tail conductor unpowered; tail order varies.</text>
   </g>
 </svg>
