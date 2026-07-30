@@ -116,7 +116,9 @@ published or bench-verified:
 | 073 | Copied RTC Transaction Evidence |
 | 074 | Qualified Clock Observation |
 | 075 | Inert Time-Warp Detective Desk |
-| 076–078 | Authorized-family subjects pending |
+| 076 | Copied Sweep-Range Frames |
+| 077 | Bounded Polar Occupancy Map |
+| 078 | Inert Tabletop Sonar Desk |
 | 079–081 | Component qualification bench |
 
 Pencil drawings provide orientation. Only a lesson that explicitly qualifies

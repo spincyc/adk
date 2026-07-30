@@ -906,14 +906,76 @@ historical exclusions. The official Elegoo Mega Most Complete plus Upgraded
 37-in-1 union does not authorize those families, and this selection does not
 restore them.
 
-## Lessons 076--078: authorized-family replacement pending
+## Lessons 076--078: tabletop sonar desk
 
-Retain lesson numbers 076--078, but do not implement their former subjects.
-Before activation, select a replacement family from the
-[authorized Elegoo set](../inventory/AUTHORIZED_ELEGOO_SET.md), then expand
-the three-lesson arc to the same interface, deterministic-evidence, circuit,
-safety, and publication depth as lessons 031--033. Record that selection as a
-curriculum decision rather than silently restoring a different vendor's kit.
+The replacement selection is canonical at planning depth. Its provenance,
+rejected alternatives, scope boundaries, and activation gates are recorded in
+the [tabletop sonar re-scope decision](../design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md).
+The arc deliberately deepens the authorized HC-SR04 and servo families instead
+of inventing an unused sensor family or restoring the excluded color sensor.
+
+### 076 — Copied Sweep-Range Frames
+
+Pair attributable, copied HC-SR04-shaped range observations with copied,
+bounded-servo angle intent in one deterministic sweep frame. Preserve source,
+sequence, freshness, range validity, angle validity, and the distinction
+between requested angle and observed range. This component acquires no echo
+and commands no motion.
+
+### 077 — Bounded Polar Occupancy Map
+
+Reduce qualified copied sweep frames into a fixed-capacity polar-bin map.
+Mapping policy freezes bin boundaries, update order, replacement, confidence,
+age, disagreement, saturation, and reset behavior. It preserves enough
+provenance to explain each occupied, clear, unknown, or rejected bin rather
+than presenting a synthetic picture as a physical scan.
+
+### 078 — Inert Tabletop Sonar Desk
+
+Compose copied sweep frames and the bounded polar map into explainable
+presentation intent and a volatile record intent. Learners replay a tabletop
+scene, inspect why bins changed, and distinguish missing, stale, invalid, and
+contradictory evidence without owning a ranger, servo, display, or persistent
+store.
+
+```text
+copied range observation --+
+copied bounded angle intent +--> sweep frame --> polar map --> display intent
+explicit time/provenance ---+          |               +--> volatile record
+```
+
+Deterministic evidence covers:
+
+- exact angle/range boundary pairs, bin edges, scan reversal, and sequence
+  rollover;
+- no-echo, out-of-range, stale, duplicated, missing, and contradictory copied
+  observations;
+- fixed-capacity exhaustion, replacement ties, confidence and age transitions,
+  and reset;
+- permutation tests proving arrival order or pin identity does not redefine
+  spatial meaning; and
+- byte-identical replay of map, explanation, presentation, and volatile-record
+  intent.
+
+The dependency boundary is strict. Lesson 076 reuses Lesson 017 bounded-servo
+semantics and Lesson 019 ultrasonic semantics, but does not repeat their
+endpoint acquisition. Lesson 078 is an inert evidence desk, not the autonomous
+rover behavior of Lesson 021 or the presence and course policy of Lessons
+040--042.
+
+At E0, all frames are copied or synthetic and no physical scan, distance,
+motion, display, or persistence claim is allowed. A future E1 ranger adapter
+requires its own exact-specimen electrical and bench gate. Any future E2 servo
+composition separately requires external-power, common-ground, restraint,
+travel-limit, current, safe-state, and motion acceptance. Circuit-native
+observation and named trigger, echo, servo-intent, and rail test points belong
+to those later physical gates, not to this E0 selection.
+
+Implementation remains blocked on one implementation-depth plan, individual
+architecture stress passes for Lessons 076, 077, and 078, and frozen
+provenance, mapping, resource, fixture, failure, publication, and promotion
+semantics. This selection creates no code, lesson package, powered specimen,
+or support claim.
 
 ## Lessons 079--081: low-energy component qualification bench
 
@@ -994,7 +1056,7 @@ individually identified retail boards.
 | DS18B20 and single-wire variants | 066 | thermal records |
 | Four-digit display, MAX7219 matrix | 060 | timing presentation |
 | DS1307 RTC transaction and clock-integrity policy | 073--075 planning selected; implementation not started | copied E0 evidence only; exact DS1307 and separately identified DS3231 specimens remain gated |
-| Authorized replacements for former 076--078 subjects | pending re-scope | no unlisted specimen |
+| HC-SR04/servo copied sweep and polar-map evidence | 076--078 planning selected; implementation not started | E0 replay only; ranger E1 and servo E2 gates remain separate |
 | PN2222/S8050, diode, indicator variants | 081 inert loads only | inventory acceptance |
 | Laser emitter | none until classified | optional disabled optical fixture |
 
