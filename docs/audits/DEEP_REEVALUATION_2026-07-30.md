@@ -173,9 +173,20 @@ against the artefact held.
 | Claim | Stated | Measured | Verdict |
 |---|---|---|---|
 | `halfRange` copied per file | ~35 | 42 `.cpp` files | Confirmed, understated |
-| dwell state machine duplicated | 5 times | exactly 5 (`button`, `contact_dynamics`, `keypad`, `optical_observation`, `magnetic_observation`) | Confirmed exactly |
+| dwell state machine duplicated | 5 times | 5 files, but **not the same machine** — see below | Overstated |
 | `shutdown` shapes | 3 | 3 — `void shutdown()` in 68 headers, `Status shutdown(TimePoint)` in 4, `Status shutdown()` in 2 | Confirmed; migration is 6 files, not a sweep |
 | `snapshot` spellings | 4 | 3 — value-returning in 55 headers, `Status snapshot(out&)` in 2, `Status evidence(out&)` in 2 | Overstated as disorder; it is 55 against 4 outliers |
+
+The dwell claim deserves its own correction, because it is the one that would
+have driven the most code churn. Five files do carry dwell state, but only two
+carry the *machine* the finding describes: `magnetic_observation` has the full
+`candidate_`/`candidateSince_`/`stableSince_`/`hasCandidate_` set and
+`optical_observation` has three of the four, while `button`,
+`contact_dynamics`, and `keypad` hold a single `candidateSince_` timestamp —
+an ordinary debounce, not a dwell qualifier. Extracting one shared type across
+all five would force three simple debouncers to adopt machinery they do not
+need. The honest remediation is at most a shared type for the two, and that is
+small enough to question whether it is worth a shared-contract change at all.
 
 A pattern separates the reliable findings from the unreliable ones. Claims
 about **literal textual patterns** — a named constant, a member name, a method
