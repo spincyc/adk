@@ -1582,19 +1582,18 @@ architectural strain and requires user discussion before remediation.
 
 ## Promotion checklist
 
-Lesson 079 implementation and publication artifacts are assembled; its final
-promotion repair and gate reconciliation remain in progress. Lessons 080--081
-remain queued and unimplemented. A checked planning item records completed
+Lessons 079 and 080 are published at their accepted E0 boundaries. Lesson 081
+remains queued and unimplemented. A checked planning item records completed
 design work, not implementation or physical acceptance:
 
 - [x] initial Lesson 079 architecture stress pass;
-- [ ] Lesson 079 code, exhaustive arithmetic/lifecycle tests, Mega replay,
+- [x] Lesson 079 code, exhaustive arithmetic/lifecycle tests, Mega replay,
       HTML/PDF, exact resources, and terminal stress pass;
-- [ ] boundary design pass and `docs/WORK_QUEUE.md` re-read;
+- [x] boundary design pass and `docs/WORK_QUEUE.md` re-read;
 - [x] initial Lesson 080 architecture stress pass;
-- [ ] Lesson 080 code, exhaustive semantics tests, Mega replay, HTML/PDF,
+- [x] Lesson 080 code, exhaustive semantics tests, Mega replay, HTML/PDF,
       exact resources, and terminal stress pass;
-- [ ] boundary design pass and `docs/WORK_QUEUE.md` re-read;
+- [x] boundary design pass and `docs/WORK_QUEUE.md` re-read;
 - [x] initial Lesson 081 architecture stress pass;
 - [ ] Lesson 081 composition, exact 256-byte codec/vector/corruption tests,
       Mega replay, HTML/PDF, exact resources, and terminal stress pass;
