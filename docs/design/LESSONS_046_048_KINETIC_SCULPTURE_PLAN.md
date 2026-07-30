@@ -1040,7 +1040,8 @@ identify a gesture. Lesson 047 does not establish home or absolute position.
 Lesson 048 does not persist position across reset.
 
 Lessons 055--057 retain the generic constraint and fault-aware operator-panel
-composition. Lessons 070--072 retain specimen characterization. Lessons
-079--081 retain low-side-driver qualification and indicator semantics. This
-block may consume existing presentation intent, but it does not preempt those
-later boundaries or claim an unidentified pulse/gesture module.
+composition. Lessons 070--072 retain descriptor and copied-sweep policy, with
+exact-specimen characterization separately gated. Lessons 079--081 retain
+low-side-driver qualification and indicator semantics. This block may consume
+existing presentation intent, but it does not preempt those later boundaries
+or claim an unidentified pulse/gesture module.

@@ -297,9 +297,9 @@ supplies the shortest planned path through the library.
 | 067 | Component | Copied source-frame inertial records | A revision-specific copied sample becomes a fixed normalized record while source identity, ranges, calibration, readiness, saturation, time, sequence, and producer status remain attributable; no powered adapter is claimed |
 | 068 | Component | Configured inertial-record qualification | One explicitly configured copied-record source is qualified from stationary evidence and an explicit axis mapping without source selection, voting, automatic failover, or powered acquisition |
 | 069 | Project-bearing | One-source E0 motion recorder | Qualified copied records from one configured source per session drive a fixed motion-script replay, volatile record intent, and presentation intent without owning a sensor, bus, display, clock, or storage endpoint |
-| 070 | Component | Threshold-module descriptors | Identified low-voltage comparator modules share one explicit electrical descriptor |
-| 071 | Component | Characterization runs | Supplied sweeps expose threshold, hysteresis, chatter, and disagreement |
-| 072 | Project-bearing | Module characterization bench | One identified analog/comparator specimen produces a stable acceptance record |
+| 070 | Component | Declared threshold-module descriptors | A supplied descriptor declares a specimen reference and bounded electrical assumptions without probing, configuring, identifying, or energizing a module; exact powered acceptance remains E1-open |
+| 071 | Component | Copied characterization runs | Supplied sweep records expose threshold, hysteresis, chatter, disagreement, provenance, and faults without owning acquisition hardware |
+| 072 | Project-bearing | Inert module characterization bench | Declared descriptors and copied runs produce deterministic E0 characterization, presentation, and record intent; physical acceptance, power, display, and storage endpoints remain E1-open |
 | 073 | Component | Authorized-family replacement pending | Retain this number; DS1302 is not in the cited Elegoo union and must be replaced before activation |
 | 074 | Component | Authorized-family replacement pending | Retain this number; BMP180 and PCF8591 are not in the cited Elegoo union and must be replaced before activation |
 | 075 | Project-bearing | Authorized-family project pending | Compose the replacements selected for 073–074 without adding an unlisted specimen |
@@ -375,7 +375,7 @@ the external-power boundary introduced in `017`.
 | Multiplexed and MAX7219 displays | 058--059 | 060 | Timing presentation |
 | Authorized environmental observations | 061--062 | 063 | Recorded monitoring |
 | Single-wire 18B20 thermal observations | 064--065 | 066 | Recorded mapping |
-| Threshold descriptors and characterization | 070--071 | 072 | 081 |
+| Declared threshold descriptors and copied characterization | 070--071 | 072 | Inert E0 bench evidence; powered acceptance remains E1-open |
 | Authorized-family replacements | 073--074 | 075 | Pending re-scope |
 | Authorized-family replacements | 076--077 | 078 | Pending re-scope |
 | Low-side driver and indicator descriptors | 079--080 | 081 | Inert qualification |

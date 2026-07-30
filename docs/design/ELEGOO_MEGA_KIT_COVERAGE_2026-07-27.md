@@ -147,8 +147,9 @@ Interfaces should follow shared electrical mechanisms:
    Temperature, passive radiant/flame, and reed work in 061–063;
 7. keep listed 18B20 single-wire work distinct in 064–066, then reuse the
    identified inertial adapter for normalized records in 067–069;
-8. characterize remaining identified low-voltage analog/comparator variants
-   in 070–072 and retain 073–078 for later authorized-family re-scoping; and
+8. publish descriptor and copied-sweep E0 policy in 070–072, qualify any exact
+   powered analog/comparator variant only in a separate E1 boundary, and retain
+   073–078 for later authorized-family re-scoping; and
 9. leave the low-energy qualification bench at 079–081.
 
 This order makes kit breadth an integration test of the hierarchy instead of

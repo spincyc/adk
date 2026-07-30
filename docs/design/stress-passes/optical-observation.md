@@ -36,7 +36,7 @@ electrical adapter, canonical lesson, or sensor specimen has passed promotion.
 | Deterministic proof | **Natural and passed for the implemented E0 boundary.** Focused fixtures cover lifecycle and configuration, both reference orderings and active polarities, range/threshold/normalization boundaries, dwell and hysteresis, candidate clearing, beam bounce and edges, malformed evidence, provenance mismatches, exact upstream-status latching, complete same-time identity, timing-fault retention, half-range, backward time, rollover, reset, and field-stable replay. Strict host compilation and the ASan/UBSan inventory pass. Ambient traces still cannot prove ambient compensation, electrical crosstalk, pin rollback, ADC settling, or specimen failure modes. |
 | Packaging and public surface | **Natural at the core checkpoint.** The standalone public header and out-of-line implementation compile through the normal host target, `Adk.h`, and the standalone-header inventory without a component-specific exception. The optical target is included in the normal host-test inventory. Arduino archive discovery, canonical example compilation, linked sketch size, and release packaging remain later promotion gates. |
 | Example and documentation fit | **Natural only after specimen qualification.** The planned narrative is acquire an exact adapter and indicators, observe one source, qualify copied evidence, and present it through non-Serial indicators. The PDF plan correctly classifies orientation, placement, traces, timing, and state flow as pencil drawings; only an explicitly marked, electrically authoritative conventional circuit may be a formal schematic. Pin tables, powered wiring, current claims, and physical acceptance remain prohibited until an exact specimen closes its electrical gates. |
-| Downstream effects | Lesson 041 can copy the qualified optical output while retaining source kind, source ID, calibration revision, timestamp, quality, and status. Lesson 042 can bind semantic checkpoints without taking pin ownership. The established `AnalogInput`, `DigitalInput`, `Level`, `Status`, and time APIs need no migration. Lessons 070--072 retain module characterization ownership. The durable button-start decision for Lesson 042 does not change these policies: PIR supplies eligibility and an explicit button supplies authorization. |
+| Downstream effects | Lesson 041 can copy the qualified optical output while retaining source kind, source ID, calibration revision, timestamp, quality, and status. Lesson 042 can bind semantic checkpoints without taking pin ownership. The established `AnalogInput`, `DigitalInput`, `Level`, `Status`, and time APIs need no migration. Lessons 070--072 retain declared-descriptor, copied-sweep, and result-record ownership; future exact-specimen E1 work retains electrical characterization. The durable button-start decision for Lesson 042 does not change these policies: PIR supplies eligibility and an explicit button supplies authorization. |
 
 ## Composition pressure scenario
 
@@ -82,9 +82,10 @@ before the presence and marshal policies consume it.
 - Explicit button authorization with PIR eligibility, decision
   `3251b219-1a4a-41b7-8497-d8c6b5a72a98`: **preserved** and outside the
   Lesson 040 API.
-- Lessons 070--072 electrical characterization ownership: **preserved**.
-  Lesson 040 consumes qualified configuration and does not absorb topology,
-  comparator, pull-up, or module descriptor work.
+- Lessons 070--072 declared-descriptor and copied-sweep ownership:
+  **preserved**. Future exact-specimen E1 work retains electrical
+  characterization. Lesson 040 consumes qualified configuration and does not
+  absorb topology, comparator, pull-up, or module descriptor work.
 - Exact-specimen qualification, Mega resource evidence, non-Serial
   observation, pencil-visual classification, and separate physical acceptance:
   **preserved and still controlling**.

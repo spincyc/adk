@@ -276,6 +276,96 @@ mounted, oriented, calibrated, displayed, or written to durable media.
   qualify E1a or E1b, and no combined powered fixture ships until all three
   gates and their integration evidence are accepted.
 
+### Lessons 070--072 threshold-module characterization boundaries
+
+Lessons 070--072 are E0 copied-descriptor and copied-sweep work until an exact
+low-voltage analog/comparator specimen passes its separate E1 gate. At E0 the
+descriptor retains a declared specimen reference copied from the caller; it
+does not identify a retail board, establish ratings, authorize power, or prove
+that its analog and comparator outputs are safe or truthful.
+
+- E0 owns no pin, ADC channel, interrupt, timer, bus, sensor, comparator,
+  threshold potentiometer, display, indicator, supply, or power path. Raw
+  values, comparator states, controlled-sample labels, timing, threshold
+  crossings, hysteresis, chatter, stuck-output findings, disagreements, and
+  volatile characterization evidence records are caller-supplied evidence or
+  semantic intents only. E0 reports raw lower-rail and upper-rail evidence and
+  never diagnoses an open or short; only separately instrumented E1 acceptance
+  may do so.
+- Unknown, ambiguously marked, conflicting, damaged, or incompletely sourced
+  modules remain unpowered and are rejected. A kit name, PCB color, connector
+  shape, copied descriptor, or resemblance to a qualified board does not
+  establish electrical identity or extend acceptance to another revision.
+- At E0, Lesson 072 accepts one declared specimen reference per copied
+  characterization run; at E1, it accepts one exactly identified physical
+  specimen per run. It does not provide blanket support for a product family
+  or every board sold in a "sensor kit," and evidence for one specimen cannot
+  qualify another specimen or revision.
+- E1a separately qualifies the exact module and PCB revision using primary
+  device documentation plus the authoritative module schematic, or primary
+  device documentation plus a reviewed trace of the populated module when no
+  authoritative module schematic exists. Record supply and logic ranges;
+  analog/comparator output topology and limits; the digital-output pull-up rail
+  and whether the pull is onboard, external, or forbidden; threshold-pot
+  direction and end stops; startup, warm-up, settling, source impedance,
+  pinout, polarity, current, and named analog/digital test points. Record the
+  selected ADC reference, its measured voltage, AREF handling, and the
+  source-impedance and settling proof for that ADC configuration. Analyze every
+  powered/unpowered combination so neither AO, DO, a pull-up, nor a
+  supply-control signal back-powers the Mega or module.
+- Switched module power is optional, not an E1 requirement, and a module is
+  never sourced from a Mega GPIO. If a characterization genuinely requires
+  switching, qualify an exact rated high-side or load switch and record its
+  current limit, peak and inrush behavior, inactive default, reverse-current
+  and back-power behavior, output discharge, timing, thermal margin, and
+  observed power-removed state. Otherwise use a documented current-limited
+  board supply and remove physical power to stop. In either case, perform an
+  all-power-off wiring inspection and place meter clips before the first
+  powered check. Stop on heat, odor, unstable current, rail violation,
+  unexpected output drive, or disagreement with the authoritative schematic
+  or reviewed populated trace.
+- E1 characterization uses only a documented harmless stimulus within the
+  exact specimen's ratings and family boundary: room light or an already
+  qualified, enclosed low-energy visible/IR source for light, tracking,
+  avoidance, photo-interrupter, and passive-radiant boards; an ordinary
+  conversational sound or bounded recorded sounder below the lesson's audible
+  exposure limit for microphone boards; a small retained permanent magnet
+  moved by hand for Hall boards; a dry, electrically inert, comfortably
+  touchable object within the documented temperature range for thermistors;
+  an insulated conductive test piece rather than a person for Metal Touch; and
+  gentle hand displacement or a soft target for contact, vibration, and
+  obstacle boards. Keep optical sources out of the eye line and magnets away
+  from magnetic media and medical devices. Do not use direct sun, lasers,
+  flame, hot objects, liquids, gas, smoke, combustion products, hazardous
+  chemicals, body contact, physiological measurement, ionizing sources,
+  energetic motion, unknown optical emission, or environmental claims that
+  require a separately scoped boundary. Register devices and active emitters
+  are outside this arc.
+- E1b separately qualifies the exact low-voltage display, resistor-limited
+  indicator, and passive control fixture, including endpoint ownership,
+  current budget, inactive/fault presentation, and a non-Serial observation
+  path. Presentation failure cannot convert an invalid or ambiguous
+  characterization into acceptance.
+- Raw lower-rail evidence, raw upper-rail evidence, stale, chatter, comparator
+  disagreement, and threshold-pot extremes remain explicit E0 outcomes. E0
+  never diagnoses an open or short. Physical open and short become E1 findings
+  only when the acceptance record names the independent instrument, test
+  points, method, and observed values. Software classification, filtering,
+  hysteresis, cleanup, or reset is neither electrical protection nor evidence
+  that a wiring or specimen fault disappeared; physical power removal is the
+  stop method.
+- A generated volatile characterization evidence record demonstrates only the
+  conditions and declared specimen reference represented by its copied input.
+  A physical E1 acceptance additionally records the exact specimen, primary
+  device documents, and authoritative module schematic or reviewed populated
+  trace; descriptor and firmware revisions; supply and current limit; ADC
+  reference and source impedance; stimulus and bounds; instruments and test
+  points; AO/DO and pull-rail observations; warm-up and settling measurements;
+  current/inrush and power-removal observations; deviations; human reviewer;
+  and date. It is not calibration certification, metrology traceability,
+  product approval, environmental safety monitoring, or evidence that the
+  module is suitable for control or protective service.
+
 ## Project hazard gates
 
 Every project first passes all component gates it composes. It then records the
@@ -300,6 +390,7 @@ following project-specific evidence.
 | 057 | Inert escape-room console | E0/E1/E2 | E0 is copied puzzle policy with inert latch and lamp intent; it provides no access-control, security, confinement, egress, or life-safety function; E1 admits exact passive inputs and presentation with actuators absent; E2 admits only a restrained demonstration servo or inert low-voltage relay/lamp load with independent physical load-power removal and no door, lock, occupied enclosure, or safety-system connection |
 | 060 | Dual-display timing desk | E0/E1 | E0 proves supplied-time policy and copied command/receipt evidence only; E1a and E1b independently qualify the exact multiplex and MAX7219 fixtures before E1c combines them with worst-case current, rail-droop, thermal, refresh, optical-agreement, blanking, and physical-power-removal evidence |
 | 069 | Interchangeable motion recorder | E0/E1 | E0 accepts one configured copied inertial source per session and produces only memory-backed records and presentation, clock, control, and storage intents; E1a sensor acquisition, E1b presentation and controls, and E1c clock and storage are independently qualified, and no powered or durable-recording claim is permitted until all applicable gates and the combined integration record are accepted |
+| 072 | Module characterization bench | E0/E1 | E0 replays one declared specimen reference and caller-supplied analog/comparator sweeps into a volatile characterization evidence record with no hardware side effect, reports raw lower/upper-rail evidence, and never diagnoses open or short; E1a independently qualifies the exact low-voltage specimen, authoritative schematic or reviewed populated trace, acquisition, supply and optional rated load switch, and bounded harmless family-specific stimulus, E1b independently qualifies presentation and passive controls, and open/short findings require instrumented human acceptance while unknown modules, gas/smoke/chemical exposure, physiological use, register devices, active emitters, and blanket kit-family claims remain outside the project |
 
 Project 018 does not secure property. Project 021 carries no person, animal,
 hot item, sharp tool, or hazardous material. Project 027 does not monitor a
@@ -323,6 +414,12 @@ completion and operator acknowledgement can request only inert semantic intent
 at E0. Any later demonstration actuator remains incapable of controlling a
 real door or occupied enclosure and requires independent physical load-power
 removal.
+Project 072 is a teaching and specimen-characterization bench, not a universal
+component tester, calibration laboratory, environmental monitor, exposure
+system, or safety controller. A passing run applies only to the exact
+identified specimen, descriptor revision, wiring, supply, stimulus, and
+conditions recorded; it cannot authorize another module or powered
+application.
 
 ## Lesson release record
 

@@ -96,7 +96,7 @@ Status meanings:
 | Normalized inertial record | `InertialRecordNormalizer`, `InertialRecordCodec` | Host verified; E0 copied evidence only; E1a–E1c open | [Lesson 067](lessons/067.md) |
 | Configured inertial-record qualification | `InertialRecordQualificationPolicy` | Host verified; E0 copied evidence only; E1a–E1c open | [Lesson 068](lessons/068.md) |
 | Qualified motion recorder | `QualifiedMotionRecorder`, `MotionRecordCodec` | Host verified; E0 volatile copied evidence and intent only; exact resource review complete; E1a–E1c open | [Lesson 069](lessons/069.md) |
-| Planned characterization arc | Threshold descriptors and supplied sweeps | Queued | Lessons 070–072 |
+| Planned characterization arc | Declared descriptors, copied sweeps, and characterization-result intent | Queued; exact fixtures E1-open | Lessons 070–072 |
 | Reserved arcs | Authorized-family replacements pending | Re-scope required | Lessons 073–078 |
 | Planned qualification arc | Bounded load driver and indicator semantics | Queued | Lessons 079–081 |
 

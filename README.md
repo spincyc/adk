@@ -140,7 +140,8 @@ These entries are deliberately linkless. A planned subject becomes a link only
 after its implementation, deterministic tests, Mega example, size evidence,
 HTML reference, and PDF lesson exist.
 
-- **070–072:** threshold characterization for a module bench.
+- **070–072:** declared threshold descriptors and copied characterization for
+  an inert module bench; exact powered fixtures remain gated.
 - **073–081:** authorized-family replacements for the excluded DS1302, BMP180,
   PCF8591, and color-sensor subjects, followed by a bounded low-side driver,
   indicator semantics, and an inert component-qualification bench.

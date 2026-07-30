@@ -19,7 +19,7 @@ measured de-energization.
 | Resources | E0 claims no hardware resource. The canonical replay measures 5,662 B flash and 624 B static SRAM. The exact no-LTO probe measures 3,566 B flash, 169 B static SRAM, 123 B synchronous stack, and a 69 B policy object; its 27 B input plus 37 B output buffers are counted once, leaving 7,772 B after the 128 B ISR reserve. |
 | Deterministic proof | Host tests pass both calibration slopes, the declared ADC maximum, exact two-low-values disconnected predicate, full-scale saturation, threshold neighbors, a contamination-drift ramp, named stuck/backfeed traces, per-cycle duty, stale, producer fault, ordering, reset, sequence exhaustion, and a literal 37-byte canonical replay witness. |
 | Packaging/public surface | One standalone header/implementation/test/example/HTML/PDF/probe inventory; no powered sketch, wiring, or schematic at E0. |
-| Downstream effects | Lesson 063 consumes the copied observation. Lesson 070 may later characterize the authorized probe, but must not reinterpret this E0 quality as electrical qualification. |
+| Downstream effects | Lesson 063 consumes the copied observation. Lesson 070 may later declare a descriptor for a listing-authorized analog/comparator family, while future E1 work may characterize an exact qualified specimen; neither may reinterpret this E0 quality as electrical qualification. |
 
 ## Composition pressure
 
@@ -50,8 +50,9 @@ remain one bounded update with source-specific attribution.
   current, spills, drying, and corrosion remain E1a.
 - Existing `AnalogInput` is **preserved**; no switched-power behavior is added
   to it before a concrete qualified adapter exists.
-- Lesson 063 composition and Lesson 070 characterization are **extended** only
-  by consuming the explicit observation, not by inheriting physical claims.
+- Lesson 063 composition and Lesson 070 descriptor/copy-sweep policy are
+  **extended** only by consuming the explicit observation, not by inheriting
+  physical claims. Exact specimen characterization remains E1-open.
 
 ## Gate result
 

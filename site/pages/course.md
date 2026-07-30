@@ -72,14 +72,15 @@ work, not support or bench-verification claims:
 
 | Lessons | Planned focus | Project |
 |---:|---|---|
-| 070–072 | Threshold descriptors and characterization sweeps | Module characterization bench |
+| 070–072 | Declared threshold descriptors and copied bounded sweeps | Inert module characterization bench |
 | 073–075 | Authorized-family replacements pending | Project pending |
 | 076–078 | Authorized-family replacements pending | Project pending |
 | 079–081 | Bounded load driver and indicator semantics | Component qualification bench |
 
 Each later three-lesson arc requires an implementation-depth brief before code
 begins. Lessons 073–078 retain their numbers but require authorized-family
-subjects before activation.
+subjects before activation. The 070–072 planned row is E0 policy, not powered
+characterization or specimen acceptance.
 
 The [canonical curriculum](docs/CURRICULUM.md) owns lesson numbers,
 prerequisites, and acceptance gates. [Project briefs](docs/PROJECTS.md) explain

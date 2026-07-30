@@ -782,46 +782,86 @@ SD. Qualifying one motion family does not qualify the other.
 
 ## Lessons 070--072: modular sensor test bench
 
+The
+[implementation-depth plan](../design/LESSONS_070_072_MODULE_CHARACTERIZATION_PLAN.md)
+authorizes E0 stateless descriptor and frame validation, copied attributed
+points, streaming bounded legs, immutable envelope consumption, inert
+presentation and script intent, and one caller-owned volatile image. It does
+not authorize module discovery, a powered specimen, ADC or digital
+acquisition, switched power, a display endpoint, or persistence.
+
 ### 070 — Descriptor-driven threshold modules
 
-Add a compact descriptor for the many modules that expose analog and
-comparator outputs. It records polarity, range, pull requirement, warm-up,
-settling, and threshold-pot direction without inventing a new class per PCB.
+`ModuleThresholdDescriptor` declares one low-voltage analog/comparator fixture
+without inventing a class per PCB, and `ModuleThresholdFrame` retains
+attributable copied channels. Stateless validation covers schema, declared
+specimen reference and revisions, topology, supply and signal ranges, raw
+domain, comparator stage and polarity, pull requirement and rail, threshold
+control, warm-up, and settling. A declaration, pin label, or observed value
+does not identify a physical module or authorize power.
 
 ### 071 — Characterization runs
 
-Add a deterministic sweep recorder and classifier comparison. A learner
-supplies controlled samples; the behavior reports threshold crossing,
-hysteresis, chatter, stuck output, and analog/digital disagreement.
+`ModuleCharacterizationPolicy` streams explicitly correlated
+`ModuleCharacterizationPoint` values through ascending, descending, and then
+verification legs without retaining a point array. The first two legs freeze
+transition brackets and conservative guaranteed-active, guaranteed-inactive,
+and ambiguity intervals; the third checks copied points only against those
+frozen intervals. The policy retains witnesses, identity, run and leg
+correlation, time, sequence, readiness, and producer status. Raw endpoint
+codes are rail evidence, not `OpenLike` or `ShortLike` diagnoses, and the
+policy publishes no exact threshold or negative hysteresis scalar.
 
 ### 072 — Project: module characterization bench
 
-The bench accepts one low-voltage sensor module at a time, guides a safe test,
-shows raw and threshold state, and emits a stable characterization record.
-This is where identified low-voltage analog/comparator variants are handled
-honestly rather than forced into unrelated applications. Register devices,
-emitters, gas exposure, and physiological claims require their own boundaries.
+`InertModuleCharacterizationBench` atomically consumes one immutable
+`ModuleCharacterizationEnvelope` containing matching descriptor and terminal
+three-leg evidence with domain-separated digests. It owns no Lesson 071 child
+and retains no frames. One configured descriptor is used per session while
+the bench emits inert review-script and fault-dominant presentation intent.
+Only explicit final preparation writes one canonical, exactly 192-byte
+`ModuleCharacterizationRecordImage` atomically into caller memory.
+`recordPrepared` proves neither persistence nor physical acceptance.
 
-Deterministic evidence:
+Deterministic E0 evidence includes:
 
 - ascending and descending ramps for active-high and active-low descriptors;
-- chatter, rail, open, short, stale, and comparator disagreement;
+- a verification leg with consistent, ambiguous, and disagreeing points;
+- chatter, rail, stale, direction, time, and sequence outcomes;
 - descriptor validation and unknown-module rejection;
-- stable record serialization and interrupted storage; and
+- exact bracket and interval boundaries and terminal immutability;
+- envelope correlation, digest mismatch, and atomic rejection;
+- exact 192-byte framing, reserved bytes, semantic values, and CRC; and
 - replay from recorded raw samples without the physical module.
 
-Circuit-native observation:
+Future E1a may separately qualify one exact low-voltage analog/comparator
+specimen, its family-specific harmless stimulus, and its acquisition fixture.
+Acceptance then requires:
 
-- seven-segment or LCD raw reading beside comparator LED;
-- RGB validity state;
+- exact markings, photographs, and primary device documentation, plus an
+  authoritative module schematic or, when none exists, a reviewed trace of
+  the populated module circuit;
+- pinout, voltage, current, topology, pull, threshold control, ADC reference,
+  and impedance evidence;
 - named analog, digital, power, and ground test points;
-- switched sensor power with an inactive default; and
+- measured supply, signal, current, warm-up, and settling limits; and
 - no module is connected before its voltage and pinout are identified.
 
-Planned specimen coverage is limited to previously authorized or separately
-qualified low-voltage light, sound, Hall, thermal, flame/radiant, Metal Touch,
-vibration, and obstacle families. Generic analog-temperature and capacitive-
-touch boards are not admitted by this characterization boundary.
+Switched power is optional and, when used, requires an exactly rated high-side
+switch; a GPIO never powers a module. Otherwise use a qualified board supply
+and physical power removal. Future E1b display, RGB, and button endpoints
+require their own ownership, current, self-test, fault-dominance, and rollback
+qualification. They present raw value and comparator state but do not close
+acquisition or characterization accuracy. Durable storage and persistence are
+outside this arc.
+
+Candidate specimen coverage is limited to exact, independently qualified
+low-voltage analog/comparator revisions from authorized light, sound, Hall,
+thermistor, passive radiant, Metal Touch, vibration, and obstacle families.
+This is not family-wide qualification. Register devices, generic
+analog-temperature and capacitive-touch boards, PCF8574 backpacks, gas
+exposure, flames, heaters, lasers, unknown emitters, and physiological claims
+are not admitted by this boundary.
 
 ## Lessons 073--078: authorized-family replacements pending
 
@@ -893,7 +933,7 @@ individually identified retail boards.
 | Potentiometer, photoresistor | 009 | 039, 042, 045 |
 | Shift register and one-digit 7-segment | 012 | 036, 039, 045, 048 |
 | DHT | 015 | no required reuse |
-| LCD | 015 | 045, 051, 054, 057, 063, 066, 069, 072 |
+| LCD | 015 | 045, 051, 054, 057, 063, 066; 069 and 072 future E1 only |
 | Keypad, servo | 018 | 051, 054, 057 |
 | Ultrasonic, PIR, DC motor/driver | 021 | 042 |
 | RTC and deterministic durable records; physical RTC/media deferred | 024 | 036, 057, 063 |
@@ -902,17 +942,17 @@ individually identified retail boards.
 | Continuity and cue panel | 030 inert only | 057 fault model |
 | Joystick, rotary encoder | 033 | 036, 045, 048, 057 |
 | Copied inertial evidence; exact MPU6050 and QMI8658 adapters deferred | 045 E0 policy; E1 fixtures open | 069 E0 records; E1 adapters open |
-| Hall variants, reed | 036 | 051, 057, 063 |
-| Tilt, knock, vibration, shock, sound | 039 | 048, 057 |
-| Tracking, Avoidance, Photo-Interrupter | 042 | 057, 072 |
-| Water Level copied-observation policy; exact sensor deferred | 063 E0 policy; E1a fixture open | 072 |
-| Thermistor and distinct Digital Temperature copied evidence; exact modules deferred | 063 E0 policy; E1b fixtures open | 072 |
-| Passive radiant copied evidence; exact detector deferred | 063 E0 policy; controlled low-energy IR only at E1b | 072 |
-| Listed Metal Touch, contact/tilt switches, and joystick | 048 | 057, 072 |
+| Hall variants, reed | 036 | 051, 057, 063; 072 copied descriptor at E0, exact comparator fixture E1-open |
+| Tilt, knock, vibration, shock, sound | 039 | 048, 057; 072 copied descriptor at E0, exact comparator fixture E1-open |
+| Tracking, Avoidance, Photo-Interrupter | 042 | 057; 072 copied descriptor at E0, exact comparator fixture E1-open |
+| Water Level copied-observation policy; exact sensor deferred | 063 E0 policy; E1a fixture open | no 072 support claim without an exact comparator specimen |
+| Thermistor and distinct Digital Temperature copied evidence; exact modules deferred | 063 E0 policy; E1b fixtures open | 072 copied thermistor/comparator descriptor only; exact fixture E1-open |
+| Passive radiant copied evidence; exact detector deferred | 063 E0 policy; controlled low-energy IR only at E1b | 072 copied comparator descriptor only; exact passive fixture E1-open |
+| Listed Metal Touch, contact/tilt switches, and joystick | 048 | 057; 072 copied comparator descriptor only, exact fixture E1-open |
 | Stepper and ULN2003 | 048 | 051, 057 |
 | RFID | 051 | 057 |
 | IR emitter | 054, known local codes only | none required |
-| Analog/comparator module variants | 072 | inventory acceptance |
+| Identified analog/comparator module descriptors; exact variants deferred | 072 E0 copied policy; E1 fixtures open | inventory acceptance only after exact qualification |
 | DS18B20 and single-wire variants | 066 | thermal records |
 | Four-digit display, MAX7219 matrix | 060 | timing presentation |
 | Authorized replacements for former 073--075 subjects | pending re-scope | no unlisted specimen |

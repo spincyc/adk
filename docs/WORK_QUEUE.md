@@ -87,6 +87,7 @@ qualified.
 | [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Host verified; E1a--E1d/E2 open | Preserve the published copied-evidence policies and inert museum monitor; exact powered specimens, persistence, presentation, and relay work remain separately gated |
 | [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Host verified; E1a--E1d open | Preserve the published E0 [Lesson 064 transaction](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md), [Lesson 065 probe set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md), and [Lesson 066 mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md); retain exact specimens, powered single-wire behavior, thermal accuracy, presentation, persistence, authentication, and E1a--E1d acceptance as open gates |
 | [067--069](design/LESSONS_067_069_MOTION_RECORDER_PLAN.md) | Published; host verified; powered acceptance open | Preserve Lesson 067's copied source-frame record and fixed 64-byte image, Lesson 068's one-source qualifier, and Lesson 069's one-source-per-session volatile recorder and presentation intent; Lesson 068's ordinary flash miss and Lesson 069's exact no-LTO flash miss are independently reviewed below their hard limits; exact MPU6050/QMI8658 acquisition, powered presentation, RTC/media persistence, and bench acceptance remain separately gated E1a--E1c work |
+| [070--072](design/LESSONS_070_072_MODULE_CHARACTERIZATION_PLAN.md) | Active integration; implementation-depth plan complete | Implement the reviewed E0 descriptor, three-leg streaming characterization, and inert one-envelope project in dependency order; preserve the [070 descriptor](design/LESSON_070_THRESHOLD_MODULE_DESCRIPTOR_STRESS_PASS.md), [071 characterization](design/LESSON_071_THRESHOLD_CHARACTERIZATION_STRESS_PASS.md), and [072 inert bench](design/LESSON_072_INERT_MODULE_CHARACTERIZATION_BENCH_STRESS_PASS.md) boundaries; exact specimens, powered acquisition, presentation, and bench acceptance remain E1-open, while persistence remains outside this arc |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -134,7 +135,7 @@ work; retail kit names are not electrical identities.
 | [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Host verified; E1a--E1d/E2 open | Copied resistive, thermal/radiant, reed, acknowledgement, and receipt evidence compose into an inert monitor; powered specimens, persistence, presentation, and relay work remain separately gated |
 | [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Host verified; E1a--E1d open | `OneWireTransactionPolicy`, `Qualified18B20ProbeSetPolicy`, and `ThermalGradientMapper` are published at E0 with copied requests, receipts, fixed identities, conversion correlation, CRC, freshness, disappearance, spatial intervals, fault incidence, bounded pages, and volatile record intent; no powered adapter, wiring, thermal-accuracy, presentation, persistence, authentication, or E1 support claim |
 | [067--069](design/LESSONS_067_069_MOTION_RECORDER_PLAN.md) | Published; host verified; powered acceptance open | Copied source-frame normalization, one-source qualification, and one-source-per-session volatile motion-recorder intent are host verified; Lesson 068 measures 16,702 B ordinary flash against a 16 KiB target and 24 KiB hard limit; Lesson 069's exact no-LTO flash target miss is independently reviewed below its hard limit; exact MPU/QMI acquisition, powered presentation, RTC/media persistence, and bench acceptance remain E1a--E1c open |
-| [070--072](projects/component_project_cadence.md) | Queued | Threshold descriptors, characterization, module test bench |
+| [070--072](design/LESSONS_070_072_MODULE_CHARACTERIZATION_PLAN.md) | Active integration; plan/stress complete | Declared threshold fixture descriptors, bounded ascending/descending/verification streams, and an inert one-envelope characterization record; exact specimens, powered acquisition, presentation, and bench acceptance remain E1-open |
 | [073--075](projects/component_project_cadence.md) | Re-scope required | DS1302, BMP180, and PCF8591 are not in the authorized Elegoo union; retain numbers but replace subjects before activation |
 | [076--078](projects/component_project_cadence.md) | Re-scope required | Color sensor is not in the authorized Elegoo union; retain numbers but replace subjects before activation |
 | [079--081](projects/component_project_cadence.md) | Queued | Bounded low-side driver, indicator semantics, inert qualification bench |
@@ -335,19 +336,28 @@ deterministic copied-record policy only. Exact
 MPU6050/QMI8658 acquisition, powered presentation, RTC/media persistence, and
 bench acceptance remain open E1a--E1c work.
 
-Cadence entries for Lessons 070--081 are not implementation-ready lesson
-plans. Before code begins for each remaining three-lesson arc, expand it to
-the same depth as 031--033: public values and interfaces, resource and pin budgets,
-deterministic fixture and failure matrices, narrative example flow, staged
-circuit-native experiments, HTML/PDF division, specimen gates, and explicit
-bench acceptance. “Planned specimen coverage” never means that an exact kit
-module is supported.
+Lessons 070--072 now have an independently reviewed
+[implementation-depth plan](design/LESSONS_070_072_MODULE_CHARACTERIZATION_PLAN.md)
+and pre-implementation stress passes. Their E0 implementation remains active
+and must proceed in strict lesson order with a fresh design pass after each
+component. Cadence entries for Lessons 073--081 are not implementation-ready
+lesson plans. Before code begins for each of those remaining three-lesson arcs,
+expand it to the same depth as 031--033: public values and interfaces, resource
+and pin budgets, deterministic fixture and failure matrices, narrative example
+flow, staged circuit-native experiments, HTML/PDF division, specimen gates,
+and explicit bench acceptance. “Planned specimen coverage” never means that
+an exact kit module is supported.
 
-The PCF8574 LCD backpack, gas-response experiments, unidentified emitters,
+Lessons 070--072 are scoped to publish copied E0 policy only: descriptor
+declarations do not identify hardware, characterization brackets do not invent
+exact thresholds, and the fixed 192-byte volatile image is neither physical
+acceptance nor durable storage. The PCF8574 LCD backpack, gas-response
+experiments, unidentified emitters,
 physiological claims, and prototype/power construction variants still require
-separately scoped, inventory-gated planning. Lesson 072 covers only identified
-low-voltage analog/comparator characterization; it is not a catch-all claim
-for every product sold as a 37-sensor kit.
+separately scoped, inventory-gated planning. Lesson 072 covers copied
+declared-fixture low-voltage analog/comparator characterization at E0; exact
+identified physical specimens remain E1-only. It is not a catch-all claim for
+every product sold as a 37-sensor kit.
 
 The source audit found that the retained DS1302, BMP180, PCF8591, and color
 sensor subjects came from other vendor taxonomies. They are not authorized
