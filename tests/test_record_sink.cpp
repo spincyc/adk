@@ -54,6 +54,14 @@ namespace {
         require (sink.initialize ().ok (), "restart");
         require (medium.durableSize () == record.length,
                  "restart preserves durable prefix");
+
+        StableRecord oversized = recordWith ("oversized\n");
+        oversized.length       = StableRecord::capacity + 1;
+        require (sink.append (oversized).error () ==
+                     StatusCode::InvalidArgument,
+                 "oversized length rejected before storage");
+        require (medium.durableSize () == record.length,
+                 "oversized append leaves durable bytes unchanged");
     }
 
     void testPartialAppendRollbackAndRetry ()

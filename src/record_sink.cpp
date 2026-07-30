@@ -55,6 +55,11 @@ namespace adk {
             return StatusCode::NotInitialized;
         }
 
+        if (record.length > StableRecord::capacity)
+        {
+            return StatusCode::InvalidArgument;
+        }
+
         Status status = storage_->append (
             reinterpret_cast<const uint8_t*> (record.text), record.length);
 
