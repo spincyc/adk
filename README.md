@@ -10,7 +10,7 @@ the Arduino Mega 2560.
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–067 are published, host verified at E0, and
+> **Current boundary:** Lessons 001–068 are published, host verified at E0, and
 > compiled for the Mega 2560. All lessons remain experimental, physical
 > acceptance remains open, and the exact electrical revisions used by Lessons
 > 031–036 are not yet qualified. Lessons 037–039 use documented external
@@ -40,13 +40,15 @@ the Arduino Mega 2560.
 > page, and volatile record intent. It validates structure rather than source
 > authenticity, drives no display, and writes no storage. Lesson 067 turns one
 > complete copied inertial sample into an attributable source-frame record and
-> canonical 64-byte image without acquiring, calibrating, rotating, qualifying,
-> or storing sensor data. These
+> canonical 64-byte image. Lesson 068 qualifies one explicitly configured
+> copied-record stream through a bounded stationary window and proper
+> source-to-qualification-frame rotation. Neither lesson acquires, calibrates,
+> operates, or authenticates a sensor. These
 > E0 publications do not
 > claim powered inputs, displays,
 > storage, actuators, wiring, physical output, or bench acceptance. Planned
 > rows below are commitments, not support claims.
-> [Lesson 067](lessons/067.md) is the current published lesson.
+> [Lesson 068](lessons/068.md) is the current published lesson.
 
 ## What ADK provides
 
@@ -95,11 +97,12 @@ a printable PDF companion. Each row links to the first lesson in its arc.
 | 065 · [open lesson](https://spincyc.github.io/adk/lessons/065/) | Qualified four-probe 18B20 set | Fixed identities, correlated conversion evidence, CRC, freshness, disappearance, and byte-stable replay without a powered-probe claim |
 | 066 · [open lesson](https://spincyc.github.io/adk/lessons/066/) | Thermal-gradient mapper | Ordered interval, fault, page, and volatile record intent from copied qualified slots without display, storage, or authentication claims |
 | 067 · [open lesson](https://spincyc.github.io/adk/lessons/067/) | Normalized inertial records | Attributable copied source-frame values and a canonical 64-byte image without powered acquisition, qualification, or persistence claims |
+| 068 · [open lesson](https://spincyc.github.io/adk/lessons/068/) | Configured inertial-record qualification | One configured copied-record stream, one proper rotation, and terminal stationary-window evidence without a powered-sensor claim |
 
-[Lesson 067 PDF](https://spincyc.github.io/adk/downloads/lessons/067.pdf) ·
-[Mega example](https://github.com/spincyc/adk/tree/main/examples/Lesson067InertialRecordNormalization) ·
-[public API](https://github.com/spincyc/adk/blob/main/src/inertial_record.h) ·
-[host tests](https://github.com/spincyc/adk/blob/main/tests/test_inertial_record.cpp)
+[Lesson 068 PDF](https://spincyc.github.io/adk/downloads/lessons/068.pdf) ·
+[Mega example](https://github.com/spincyc/adk/tree/main/examples/Lesson068InertialRecordQualification) ·
+[public API](https://github.com/spincyc/adk/blob/main/src/inertial_record_qualification.h) ·
+[host tests](https://github.com/spincyc/adk/blob/main/tests/test_inertial_record_qualification.cpp)
 
 [View the complete lesson index](https://spincyc.github.io/adk/lessons/) or the
 [supported API](https://spincyc.github.io/adk/api-supported/).
@@ -133,7 +136,7 @@ These entries are deliberately linkless. A planned subject becomes a link only
 after its implementation, deterministic tests, Mega example, size evidence,
 HTML reference, and PDF lesson exist.
 
-- **067–072:** inertial normalization and source qualification for an
+- **068–072:** inertial source qualification and session composition for an
   interchangeable motion recorder; threshold characterization for a module
   bench.
 - **073–081:** authorized-family replacements for the excluded DS1302, BMP180,

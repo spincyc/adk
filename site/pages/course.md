@@ -63,14 +63,15 @@ lesson number divisible by three is project-bearing.
 | [065](lessons/065.md) | Fixed four-ROM discovery, conversion correlation, CRC, freshness, and disappearance evidence | Qualified 18B20 probe-set policy | Host verified; E0 copied evidence only; E1a–E1c open |
 | [066](lessons/066.md) | Structurally validated copied slots, ordered intervals, fault incidence, pages, and volatile record intent | Thermal-gradient mapper | Host verified; E0 copied evidence only; E1a–E1d open |
 | [067](lessons/067.md) | Complete copied source-frame inertial values, attribution, revisions, faults, and a canonical record image | Inertial record normalizer and codec | Host verified; E0 copied evidence only; E1a–E1c open |
+| [068](lessons/068.md) | One configured record domain, one proper rotation, bounded stationary-window checks, and terminal evidence | Inertial record qualification policy | Host verified; E0 copied evidence only; E1a–E1c open |
 
-Lesson 067 is published; the retained Lessons 068–081 sequence remains
+Lesson 068 is published; the retained Lessons 069–081 sequence remains
 front-loaded for learner engagement. The rows below are active or planned
 work, not support or bench-verification claims:
 
 | Lessons | Planned focus | Project |
 |---:|---|---|
-| 068–069 | Source qualification and one-source session composition | Interchangeable motion recorder |
+| 069 | One-source session composition | Interchangeable motion recorder |
 | 070–072 | Threshold descriptors and characterization sweeps | Module characterization bench |
 | 073–075 | Authorized-family replacements pending | Project pending |
 | 076–078 | Authorized-family replacements pending | Project pending |

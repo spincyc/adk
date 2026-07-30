@@ -72,8 +72,9 @@ third lesson for a deterministic integration project.
 | [Lesson 065 — Qualifying a four-probe 18B20 set](065.md) | Fixed identities and copied transaction chains | Conversion, CRC, resolution, freshness, disappearance, and replay state remain attributable |
 | [Lesson 066 — Mapping copied thermal gradients](066.md) | Structurally validated copied probe-set images | Ordered intervals, fault incidence, pages, and volatile record intent remain deterministic |
 | [Lesson 067 — Normalizing copied inertial records](067.md) | Complete copied source-frame inertial samples | Attribution, revisions, faults, signed values, and canonical record images remain explicit |
+| [Lesson 068 — Qualifying one copied inertial-record stream](068.md) | One configured record domain and proper axis rotation | A bounded stationary window produces attributable terminal evidence |
 
-Lessons 001--067 are host verified and their canonical examples compile for
+Lessons 001--068 are host verified and their canonical examples compile for
 the Mega 2560. Lessons 055--057 publish E0 replay only: exact inputs,
 presentation, storage, actuators, and bench acceptance remain open. Lessons
 058--060 likewise leave their exact powered display fixtures and bench
@@ -84,7 +85,9 @@ transaction intent and receipts. Lesson 065 qualifies only copied transaction
 evidence. Lesson 066 maps copied result images only: it does not authenticate
 their source, drive a display, or persist a record. Lesson 067 represents one
 complete copied inertial sample without acquiring, calibrating, rotating,
-qualifying, or storing sensor data. Exact endpoints, pull-ups,
+qualifying, or storing sensor data. Lesson 068 qualifies only one configured
+copied-record stream; it does not authenticate, acquire, mount, or physically
+calibrate a sensor. Exact endpoints, pull-ups,
 probes, timing, thermal accuracy, presentation, storage, power behavior, and
 bench acceptance remain open. Every
 circuit remains experimental until its physical acceptance card is recorded.
@@ -98,7 +101,7 @@ published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 067–069 | Interchangeable motion recorder |
+| 069 | Interchangeable motion recorder |
 | 070–072 | Module characterization bench |
 | 073–078 | Authorized-family subjects pending |
 | 079–081 | Component qualification bench |

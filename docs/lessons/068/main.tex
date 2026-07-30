@@ -1,0 +1,306 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.60in]{geometry}
+\usepackage{booktabs,enumitem,fancyhdr,graphicx,tabularx,titlesec,xcolor}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{docs/lessons/assets/}{assets/}}
+\hypersetup{
+ pdftitle={ADK Lesson 068: Qualify One Configured Inertial Record Source},
+ pdfauthor={Kevin Shanahan},
+ pdfsubject={Deterministic stationary qualification of one configured copied inertial-record stream},
+ pdflang={en-US}}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\textsc{ADK Lesson 068}}\rhead{Configured Record Qualification}
+\cfoot{\thepage}\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{3pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.5em}{}
+\newcommand{\lessonbox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{#1}}\end{center}}
+\newcommand{\blankline}{\rule{0.80in}{0.4pt}}
+\newcommand{\longblank}{\rule{1.45in}{0.4pt}}
+
+\begin{document}
+\small
+\begin{center}
+ {\Huge\bfseries Qualify One Configured Record Source}\\[3pt]
+ {\Large Make stationary evidence attributable and terminal}\\[7pt]
+ \fbox{\textbf{E0 COPIED REPLAY --- NO SENSOR, BUS, PIN, OR CALIBRATION CLAIM}}
+\end{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 068 --- component & Time & 150--210 minutes\\
+Prerequisite & Lesson 067 records & Board & compile-only Mega replay\\
+Input & one configured copied stream & Observation & named evidence cells\\
+\end{tabularx}
+
+\lessonbox{\textbf{Responsibility.}
+\texttt{InertialRecordQualificationPolicy} maps and evaluates a bounded
+stationary window from exactly one configured copied record source. It
+publishes one attributable terminal evidence envelope. It does not discover,
+probe, select, vote, fail over, configure, or physically calibrate a sensor.}
+
+\section{Draw the one-source boundary}
+The configured domain includes source kind, model and ID; source configuration
+and calibration revisions; ranges; record schema and normalization revisions;
+qualification revision; mapping; sample count; age and gap limits; and
+stationary bounds. Every record must match the whole domain.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.97\linewidth,height=2.35in,keepaspectratio]
+ {068-one-source-pencil.png}
+
+\small\textit{Alternative text: one complete copied source card enters one
+configured qualification desk and yields one copied terminal evidence card;
+the desk is explicitly separated from all physical hardware.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}X X@{}}
+\toprule
+E0 establishes & E0 does not establish\\
+\midrule
+exact-domain record comparison & physical device identity or support\\
+proper-rotation mapping & actual mounting or native sensor axes\\
+bounded stationary-trace checks & accuracy, bias, drift, or calibration\\
+deterministic terminal evidence & I2C, voltage, pins, or data-ready timing\\
+\bottomrule
+\end{tabularx}
+
+Prediction: if only the calibration revision changes, should the record enter
+the window? \longblank. Explain: \hrulefill.
+
+\newpage
+\section{Map both vectors through one proper rotation}
+\texttt{SourceAxisMapping} chooses one signed source axis for each destination
+axis. Each source axis appears exactly once and the transform must be
+right-handed. Exactly 24 of all 216 signed-axis triples pass. The same mapping
+applies to acceleration and angular rate.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=2.30in,keepaspectratio]
+ {068-rotation-pencil.png}
+
+\small\textit{Alternative text: a hand-drawn source coordinate frame passes
+through a mapping card into a qualification coordinate frame; the card lists
+distinct axes, right handedness, shared vector mapping, and checked signed
+negation.}
+\end{center}
+
+Duplicate axes and left-handed reflections are invalid configuration.
+Negating \texttt{INT32\_MIN} is not representable and rejects the candidate
+without partial output or signed-overflow behavior. Lesson 044 continues to
+own pitch/roll presentation; Lesson 068 owns no angle.
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Mapping & Result & Reason\\
+\midrule
+\(+X,+Y,+Z\) & valid & identity proper rotation\\
+\(+Y,-X,+Z\) & valid & right-handed quarter turn\\
+\(+X,+X,+Z\) & invalid & source X used twice\\
+\(+X,+Y,-Z\) & invalid & left-handed reflection\\
+\bottomrule
+\end{tabularx}
+
+Map \((10,-20,30)\) through \((+Y,-X,+Z)\):
+\((\blankline,\blankline,\blankline)\).
+
+\section{Keep time supplied and ordering explicit}
+The policy reads no clock. Each call supplies \texttt{now}; every record
+retains its observation time and nonzero sequence. Age and gap at their exact
+configured maxima pass. One tick beyond fails. Future, backward, and exact
+half-range time are explicit failures.
+
+Sequence rollover from \texttt{UINT32\_MAX} to 1 is valid because zero is
+reserved. A fieldwise-identical duplicate is idempotent and does not increase
+the count. A changed duplicate, gap, regression, zero, or half-range ambiguity
+ends the attempt with attributable evidence.
+
+\newpage
+\section{Let every record prove stationary behavior}
+Mapping happens before bounds checks. Each mapped acceleration component must
+remain inside its inclusive deviation around the configured expected
+stationary acceleration. Each mapped angular-rate component must remain
+between its inclusive positive and negative limit.
+
+Every individual record must pass. A plausible average cannot conceal a
+single moving, saturated, stale, or faulted record. Exact limits pass; one
+unit beyond fails. Differences, absolute values, sums, and means use checked
+widened arithmetic.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.97\linewidth,height=2.25in,keepaspectratio]
+ {068-terminal-window-pencil.png}
+
+\small\textit{Alternative text: record cards advance through a bounded
+collecting window to a terminal card; the first qualification or precise
+rejection freezes the attempt until reset.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Point & Expected state & Count effect\\
+\midrule
+begin & \texttt{Collecting} & zero\\
+\(N-1\) accepted & \texttt{Collecting} & advances once per new record\\
+\(N\)th accepted & \texttt{Qualified} & terminal at \(N\)\\
+first bad record & \texttt{Rejected} & no convenient replacement\\
+later record & unchanged terminal result & none\\
+\bottomrule
+\end{tabularx}
+
+\section{Separate operation failure from unhealthy evidence}
+Malformed configuration, invalid record structure, or lifecycle misuse returns
+a non-OK \texttt{Status} and changes nothing. A well-formed but unhealthy
+record is meaningful domain evidence: it may return operation status OK while
+publishing \texttt{Rejected} and a precise qualification reason.
+
+\newpage
+\section{Apply one deterministic precedence}
+The implementation stages the complete candidate before changing accepted
+count, extrema, sums, or evidence. When failures collide, the same ordered
+rule always chooses the scalar reason while the terminal record retains the
+complete collision.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.97\linewidth,height=2.55in,keepaspectratio]
+ {068-precedence-pencil.png}
+
+\small\textit{Alternative text: a graphite checklist orders lifecycle,
+source domain, chronology, producer quality, mapping, numeric bounds, and
+accumulation from validate-first to commit-once.}
+\end{center}
+
+A producer fault dominates not-ready and saturation because its numeric
+payload is not trusted. With producer status OK, not-ready dominates
+saturation; saturation dominates stationary arithmetic. Acceleration
+out-of-window supplies the reason before angular rate when both fail.
+
+\lessonbox{\textbf{Atomicity experiment.}
+Place recognizable canaries around the evidence object. Submit a changed
+duplicate, an unrepresentable mapping, and a post-terminal record. Verify that
+each rejected operation leaves the previous evidence and both canaries
+byte-for-byte unchanged.}
+
+\section{Read the complete evidence, not a Boolean}
+The copied envelope retains attempt and lifecycle generation, qualification
+revision, mapping, state and reason, accepted count, first/last sequences and
+times, maximum age and gap, mapped means, extrema and widened sums, the
+terminal source-frame record, mapped terminal record, and status.
+
+Lesson 069 consumes this complete immutable envelope. It must not combine a
+record from one attempt with qualification from another or remap a mutable
+child snapshot.
+
+\newpage
+\section{Replay two traces without touching hardware}
+The Mega sketch follows acquire, configure, start, then observe, decide,
+actuate. It normalizes copied synthetic samples, qualifies one three-record
+stationary trace, resets explicitly, and rejects one independently faulted
+trace. ``Actuate'' means publish inert memory values.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=2.30in,keepaspectratio]
+ {068-replay-pencil.png}
+
+\small\textit{Alternative text: three sketched cards prompt the learner to
+predict state and count, observe named volatile evidence cells, and interpret
+one qualifying trace plus one rejected fault trace without a hardware claim.}
+\end{center}
+
+\begin{enumerate}
+ \item \textbf{Predict} the state, reason, count, source ID, and first/last
+       sequence before each call.
+ \item \textbf{Observe} the two named volatile result cells and completion
+       cell with a debugger, simulator, or disassembly. Serial is optional.
+ \item \textbf{Interpret} the stationary result as E0 contract evidence and
+       the producer-fault result as proof that unhealthy input was retained.
+\end{enumerate}
+
+The memory cells are the non-Serial observation path. Resource-acquisition
+evidence is separately zero pins, timers, interrupts, buses, endpoints,
+sensors, and supplies. Safe-state evidence is the absence of hardware intent.
+Neither proves that a physical unit is attached, stationary, or safe to power.
+
+\section{Test the finite matrix}
+\begin{itemize}
+ \item Classify all 216 mappings with an independent determinant oracle:
+       exactly 24 pass.
+ \item Exercise every identity/revision mismatch, producer state, readiness,
+       saturation, signed extreme, and mapping failure.
+ \item Test window sizes 2 and 32; exact and one-over age, gap, acceleration,
+       and rate limits; duplicates, rollover, regression, and collisions.
+ \item Test reset and shutdown at every count, terminal immutability, output
+       canaries, and replay equivalence after Lesson 067 decode.
+\end{itemize}
+
+\newpage
+\section{Troubleshooting matrix}
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Symptom & Inspect first & Interpretation\\
+\midrule
+\texttt{ConfigurationMismatch} & complete source and revision domain & a familiar model is not enough\\
+\texttt{ProducerFault} & terminal record status & numeric payload was not trusted\\
+\texttt{NotReady} & status, ready flag & valid report, not an accepted sample\\
+\texttt{Saturated} & declared range and saturation & excursion cannot enter averages\\
+\texttt{Stale} & supplied now and observed time & maximum age is inclusive\\
+sequence discontinuity & previous/current sequence & duplicate, gap, regression, or ambiguity\\
+timestamp discontinuity & previous/current observed time & maximum gap is inclusive\\
+numeric rejection & mapped vectors and per-axis limits & every axis of every record must pass\\
+\bottomrule
+\end{tabularx}
+
+\section{Exercises}
+\begin{enumerate}
+ \item Explain why source selection means configuration, not runtime probing.
+ \item Design a collision where producer fault, not-ready, and saturation are
+       all present. Which reason wins, and what evidence remains visible?
+ \item Explain why a passing mean cannot excuse one acceleration excursion.
+ \item Describe an identical duplicate and a changed duplicate. Why does only
+       the first leave the attempt collecting?
+ \item List the exact E1 evidence needed before claiming support for one
+       physical MPU6050 or QMI8658 carrier.
+\end{enumerate}
+
+\section{Open acceptance record}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X@{}}
+Host evidence & Record strict tests, sanitizers, all 216 mappings, lifecycle,
+precedence, boundaries, canaries, and decoded replay equivalence.\\
+Mega evidence & Compile the canonical synthetic replay; record exact flash,
+static SRAM, and synchronous stack evidence.\\
+Resource evidence & Target policy plus result at most 384 bytes and stack at
+most 384 bytes; 512 bytes is the independently reviewed ceiling for either.\\
+Document evidence & Build twice; inspect metadata, embedded fonts, extraction,
+monochrome output, links, visual classifications, and pencil legibility.\\
+Physical evidence & Open E1: exact specimen, electrical topology, register
+behavior, mounting, accuracy, stationary fixture, and bench acceptance.\\
+\end{tabularx}
+
+\vspace{6pt}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Acceptance item & Record\\
+\midrule
+Commit and toolchain & \hrulefill\\[9pt]
+Host / sanitizer / mapping result & \hrulefill\\[9pt]
+Flash / SRAM / stack / object sizes & \hrulefill\\[9pt]
+Replay and non-mutation result & \hrulefill\\[9pt]
+PDF visual and extraction review & \hrulefill\\[9pt]
+Open E1 owner and next action & \hrulefill\\
+\bottomrule
+\end{tabularx}
+
+\lessonbox{\textbf{Stop condition.}
+Do not call this sensor qualification. A completed E0 exercise proves only
+that one configured stream of copied records met a deterministic stationary
+contract. Physical identity, acquisition, mounting, calibration, observation,
+and safe state remain separate acceptance work.}
+
+\vfill
+\begin{center}
+\textbf{Next: Lesson 069 --- Record one qualified source session.}
+\end{center}
+\end{document}

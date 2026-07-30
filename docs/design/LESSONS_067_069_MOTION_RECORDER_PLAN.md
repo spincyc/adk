@@ -236,10 +236,17 @@ tests.
 `InertialRecordQualificationPolicy` qualifies exactly one explicitly
 configured source from a bounded stationary record window. It verifies exact
 identity and revisions, maps the source frame into one declared qualification
-frame, rejects stale, disordered, faulted, saturated, or moving evidence, and
+frame, rejects stale, sequence- or timestamp-discontinuous, faulted,
+saturated, or moving evidence, and
 publishes a terminal evidence envelope. It performs no discovery, probing,
 driver configuration, source comparison, voting, failover, or orientation
 presentation.
+
+The only positive E0 source configuration is
+`SyntheticFixture`/`Synthetic`. A structurally valid configuration naming an
+MPU6050 or QMI8658 source returns `StatusCode::Unsupported` from
+`initialize()` and does not initialize or publish evidence. Those tags remain
+negative seams until their separate E1 adapter and specimen gates close.
 
 `SourceAxisMapping` is a foundational proper rotation shared by both
 acceleration and angular-rate vectors. It consists of three distinct
@@ -273,11 +280,13 @@ enum struct InertialQualificationReason : uint8_t
     NotReady,
     Saturated,
     Stale,
-    Disordered,
-    SequenceGap,
+    SequenceDiscontinuity,
+    TimestampDiscontinuity,
     AccelerationOutsideWindow,
     AngularRateOutsideWindow,
-    ArithmeticOverflow
+    ArithmeticOverflow,
+    Disordered  = SequenceDiscontinuity,
+    SequenceGap = SequenceDiscontinuity
 };
 
 struct InertialRecordQualificationConfig
@@ -295,10 +304,19 @@ struct InertialRecordQualificationConfig
     InertialVector          maximumAngularRateMilliDegreesPerSecond;
 };
 
+struct InertialWideVector
+{
+    int64_t x;
+    int64_t y;
+    int64_t z;
+};
+
 struct InertialQualificationEvidence
 {
     uint32_t                    attemptId;
+    uint32_t                    lifecycleGeneration;
     uint16_t                    qualificationRevision;
+    SourceAxisMapping           sourceToQualificationFrame;
     InertialQualificationState  state;
     InertialQualificationReason reason;
     uint8_t                     acceptedSampleCount;
@@ -314,6 +332,8 @@ struct InertialQualificationEvidence
     InertialVector              maximumAccelerationMicroG;
     InertialVector              minimumAngularRateMilliDegreesPerSecond;
     InertialVector              maximumAngularRateMilliDegreesPerSecond;
+    InertialWideVector          accelerationSumsMicroG;
+    InertialWideVector          angularRateSumsMilliDegreesPerSecond;
     InertialRecord              terminalRecord;
     InertialRecord              mappedRecord;
     Status                      status;
@@ -363,6 +383,23 @@ instead of remapping a source record or combining values from different
 attempts, so normalized comparisons remain reproducible across separately
 configured source sessions.
 
+The lifecycle generation starts at zero and increments on each successful
+`initialize()` and `reset()`. Both operations reject atomically with
+`StatusCode::CapacityExceeded` rather than wrapping `UINT32_MAX`;
+`initialize()` also preserves the uninitialized state on unsupported physical
+sources. Evidence carries the generation and the exact
+`sourceToQualificationFrame`, so a consumer can reject an envelope from an
+older lifecycle or a different mapping. It also carries the checked
+`InertialWideVector` acceleration and angular-rate sums used to derive the
+published means; the sums are evidence, not hidden recomputation.
+
+Sequence discontinuity is distinct from timestamp discontinuity. Duplicate
+sequence with changed content, gaps, regression, and half-range ambiguity
+produce `SequenceDiscontinuity`. Future/backward observation time,
+zero/nonforward inter-record time, excessive gap, and timestamp half-range
+ambiguity produce `TimestampDiscontinuity`. A byte-identical duplicate is
+idempotent.
+
 ### Deterministic matrix
 
 - all 216 signed-axis triples, exactly 24 accepted proper rotations, vector
@@ -376,8 +413,14 @@ configured source sessions.
   over, asymmetric per-axis configurations, cancellation by averages, and
   widened-sum overflow probes;
 - rejection-precedence collision pairs;
-- terminal immutability, reset behavior, attempt-ID correlation, shutdown,
-  snapshot non-mutation, and replay equivalence after encode/decode.
+- physical-family configurations returning `Unsupported` without mutation and
+  synthetic fixture/model as the sole positive E0 pairing;
+- distinct sequence/timestamp discontinuity reasons and their collision
+  precedence;
+- exact lifecycle-generation increments, initialize/reset exhaustion at
+  `UINT32_MAX`, mapping and wide-sum evidence, terminal immutability,
+  attempt-ID correlation, shutdown, snapshot non-mutation, and replay
+  equivalence after encode/decode.
 
 The Mega replay supplies a stationary synthetic trace and one independently
 faulted trace. Its non-Serial observation path is the copied qualification

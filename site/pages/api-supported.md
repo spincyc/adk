@@ -898,8 +898,38 @@ does not authenticate a source or establish durable storage.
 
 This is copied E0 software evidence only. Exact MPU6050 and QMI8658 identities,
 powered adapters, electrical behavior, mounting, calibration, source
-qualification, presentation, persistence, and bench acceptance remain open
+presentation, persistence, and bench acceptance remain open
 E1a--E1c work.
+
+## Configured inertial-record qualification
+
+`InertialRecordQualificationPolicy` is the Lesson 068 E0 component for one
+explicitly configured stream of Lesson 067 records. It validates the complete
+source and revision domain, applies one `SourceAxisMapping`, and accepts a
+bounded stationary window only when every copied record passes readiness,
+status, saturation, supplied-time, sequence, acceleration, and angular-rate
+checks.
+
+An attempt moves from `Idle` to `Collecting`, then terminal `Qualified` or
+`Rejected`. The copied `InertialQualificationEvidence` binds the attempt and
+lifecycle generations, mapping, record range, extrema, widened sums, means,
+maximum age and gap, terminal source-frame record, mapped terminal record,
+reason, and status. A byte-identical duplicate is idempotent; a changed
+duplicate, gap, regression, source mismatch, or unhealthy record terminalizes
+the attempt. Reset is required before another attempt.
+
+- Inertial record qualification:
+  [source](https://github.com/spincyc/adk/blob/main/src/inertial_record_qualification.h),
+  [implementation](https://github.com/spincyc/adk/blob/main/src/inertial_record_qualification.cpp),
+  [host tests](https://github.com/spincyc/adk/blob/main/tests/test_inertial_record_qualification.cpp),
+  [Mega replay](downloads/sketches/Lesson068InertialRecordQualification.ino),
+  and [Lesson 068](lessons/068.md)
+
+This policy qualifies copied synthetic record evidence only. Configuration
+with physical-family source tags is unsupported at E0. No result authenticates
+an MPU6050 or QMI8658, proves a mounting or calibration, operates a bus, or
+establishes bench acceptance. The canonical Mega replay measures 14,908 bytes
+of flash and 766 bytes of static SRAM.
 
 ## Error and electrical safety
 
