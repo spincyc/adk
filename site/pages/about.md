@@ -16,7 +16,7 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--072 use the first-class per-object
+ADK is early-stage software. Lessons 001--072 and Lesson 079 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
@@ -96,6 +96,10 @@ fixed five-step inert review, exposes fault-dominant semantic presentation,
 and prepares one canonical 192-byte caller-owned volatile record. It owns no
 module, acquisition, stimulus, clock, display, storage transport, or durable
 state, and it does not qualify a physical fixture.
+Lesson 079 publishes checked low-side-driver policy over immutable declarations,
+attributable copied requests, supplied time, and logical drive intent. It owns
+no endpoint, pin, transistor, diode, supply, load, clock, timer, or powered
+fixture; exact identity work and powered acceptance remain separate gates.
 
 The hierarchy is developed in dependency order:
 
@@ -111,7 +115,8 @@ The latest completed project arc is Lessons 070--072: declared copied
 threshold-module facts and bounded characterization evidence composed into one
 inert review and volatile record. Powered fixtures, controls, presentation,
 storage, and physical acceptance remain open.
-[Lesson 072](lessons/072.md) is the latest published project boundary. See the
+[Lesson 079](lessons/079.md) is the latest published lesson; Lesson 072 remains
+the latest published project boundary. See the
 [course map](course.md) for that order and the
 [roadmap](docs/ROADMAP.md) for the full sequence.
 

@@ -68,8 +68,9 @@ lesson number divisible by three is project-bearing.
 | [070](lessons/070.md) | Declared topology, comparator meaning, electrical and timing facts, plus attributable copied frames | Threshold-module descriptor | Host verified; E0 copied declarations only; exact powered fixtures remain E1-open |
 | [071](lessons/071.md) | Bounded ascending, descending, and verification streams over copied frames | Threshold characterization policy | Host verified; E0 copied evidence only; exact powered fixtures remain E1-open |
 | [072](lessons/072.md) | One terminal characterization envelope, a five-step review script, and one canonical volatile record | Inert module-characterization bench | Host verified; E0 copied evidence and volatile bytes only; exact powered fixtures remain E1-open |
+| [079](lessons/079.md) | Immutable low-side declarations, attributable copied requests, supplied time, and checked current arithmetic | Bounded low-side-driver policy | Host verified; E0 logical intent only; E1 identity and E2b powered fixture acceptance remain open |
 
-Lesson 072 is published; the retained Lessons 073–081 sequence remains
+Lesson 079 is the newest published lesson; the retained Lessons 073–078 sequence remains
 front-loaded for learner engagement. The rows below are active or planned
 work, not support or bench-verification claims:
 
@@ -77,17 +78,17 @@ work, not support or bench-verification claims:
 |---:|---|---|
 | 073–075 | Copied RTC Transaction Evidence and Qualified Clock Observation | Inert Time-Warp Detective Desk |
 | 076–078 | Copied Sweep-Range Frames and Bounded Polar Occupancy Map | Inert Tabletop Sonar Desk |
-| 079–081 | Bounded load driver and indicator semantics | Component qualification bench |
+| 080–081 | Small-indicator semantics | Component qualification bench |
 
-Each later three-lesson arc requires an implementation-depth brief before code
-begins. Lessons 073–075 are selected as a planned E0 RTC-integrity arc, but
+Lessons 073–078 still require implementation-depth briefs before code begins.
+Lessons 073–075 are selected as a planned E0 RTC-integrity arc, but
 remain unimplemented and unsupported: they claim no powered RTC, clock
 accuracy, display, persistence, or bench acceptance. Lessons 076–078 are
 selected as a planned, motionless E0 tabletop-sonar arc, but remain
 unimplemented and unsupported: copied angle–range evidence does not claim a
 powered ultrasonic ranger, moving servo, spatial accuracy, or bench
-acceptance. The published 070–072 arc is E0 policy, not powered
-characterization or specimen acceptance.
+acceptance. Lesson 079 is published E0 policy, but Lessons 080–081 and every
+unpowered identity or powered fixture acceptance gate remain open.
 
 The [canonical curriculum](docs/CURRICULUM.md) owns lesson numbers,
 prerequisites, and acceptance gates. [Project briefs](docs/PROJECTS.md) explain

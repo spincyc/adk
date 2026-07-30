@@ -77,8 +77,9 @@ third lesson for a deterministic integration project.
 | [Lesson 070 — Describing threshold modules](070.md) | Declared fixture facts and attributable copied channel frames | Topology, polarity, timing, electrical declarations, and unknowns remain explicit |
 | [Lesson 071 — Characterizing copied threshold evidence](071.md) | Bounded ascending, descending, and verification streams | Adjacent transition brackets, conservative intervals, disagreement, and terminal faults remain attributable |
 | [Lesson 072 — Reviewing one module characterization](072.md) | One terminal characterization envelope and a fixed review script | Fault-dominant presentation and one canonical 192-byte volatile record remain attributable |
+| [Lesson 079 — Bounding low-side-driver intent](079.md) | Immutable declarations, attributable copied requests, and supplied time | Checked current arithmetic and bounded duty history produce only all-off or logical active-high intent |
 
-Lessons 001--072 are host verified and their canonical examples compile for
+Lessons 001--072 and Lesson 079 are host verified and their canonical examples compile for
 the Mega 2560. Lessons 055--057 publish E0 replay only: exact inputs,
 presentation, storage, actuators, and bench acceptance remain open. Lessons
 058--060 likewise leave their exact powered display fixtures and bench
@@ -99,7 +100,10 @@ authorizing powered acquisition. Lesson 071 consumes only those copied frames
 through bounded three-leg replay; its brackets and intervals are sampled E0
 evidence, not physical thresholds or electrical qualification. Lesson 072
 reviews one terminal envelope and prepares caller-owned volatile bytes; it
-does not operate a display or make those bytes durable. Exact endpoints, pull-ups,
+does not operate a display or make those bytes durable. Lesson 079 validates
+copied low-side-driver declarations and requests and emits logical intent; it
+does not identify, wire, power, command, or observe a transistor-switched
+fixture. Exact endpoints, pull-ups,
 probes, timing, thermal accuracy, presentation, storage, power behavior, and
 bench acceptance remain open. Every
 circuit remains experimental until its physical acceptance card is recorded.
@@ -108,7 +112,7 @@ Historical preview lessons are preserved under
 
 ## Planned engagement-first sequence
 
-The next arcs retain the engagement-first order. They remain planned—not
+The unfinished arcs retain the engagement-first order. They remain planned—not
 published or bench-verified:
 
 | Lessons | Planned project |
@@ -119,7 +123,8 @@ published or bench-verified:
 | 076 | Copied Sweep-Range Frames |
 | 077 | Bounded Polar Occupancy Map |
 | 078 | Inert Tabletop Sonar Desk |
-| 079–081 | Component qualification bench |
+| 080 | Small indicator-module semantics |
+| 081 | Component qualification bench |
 
 Pencil drawings provide orientation. Only a lesson that explicitly qualifies
 an exact powered circuit may provide an authoritative formal schematic and

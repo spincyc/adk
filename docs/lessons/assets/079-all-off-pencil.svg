@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="455" viewBox="0 0 1200 455">
+  <defs>
+    <filter id="rough" x="-3%" y="-5%" width="106%" height="110%"><feTurbulence baseFrequency=".014" numOctaves="2" seed="379" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.4"/></filter>
+    <pattern id="paper" width="21" height="18" patternUnits="userSpaceOnUse"><path d="M2 14l8-2m4-7l6-2M1 4l4-1" stroke="#ddd" stroke-width=".7" opacity=".7"/></pattern>
+    <style>.c{fill:#fbfbfb;stroke:#333;stroke-width:4;stroke-linejoin:round;filter:url(#rough)}.a{fill:none;stroke:#444;stroke-width:5;stroke-linecap:round;filter:url(#rough)}.t,.h,.n{fill:#292929;font-family:DejaVu Sans,sans-serif}.h{font-size:28px;font-weight:bold}.t{font-size:22px}.n{font-size:20px;font-style:italic}</style>
+  </defs>
+  <rect width="1200" height="455" fill="white"/>
+  <rect width="1200" height="455" fill="url(#paper)" opacity=".45"/>
+  <g>
+    <rect class="c" x="30" y="40" width="240" height="105" rx="10"/><text class="h" x="78" y="85">rejection</text><text class="t" x="63" y="121">budget or flyback</text>
+    <rect class="c" x="30" y="175" width="240" height="105" rx="10"/><text class="h" x="75" y="220">cancellation</text><text class="t" x="74" y="256">correlated control</text>
+    <rect class="c" x="30" y="310" width="240" height="105" rx="10"/><text class="h" x="88" y="355">expiry</text><text class="t" x="72" y="391">supplied deadline</text>
+    <path class="a" d="M285 92c175 4 222 100 365 124M285 227h365M285 362c175-4 222-100 365-124"/>
+    <rect class="c" x="675" y="125" width="275" height="205" rx="14"/>
+    <text class="h" x="727" y="178">canonical OFF</text><text class="t" x="723" y="222">logical active: false</text>
+    <text class="t" x="723" y="260">output level: low</text><text class="t" x="723" y="298">admitted current: 0</text>
+    <path class="a" d="M965 225h130m-27-25 30 25-30 25"/>
+    <text class="n" x="979" y="180">future endpoint</text><text class="n" x="980" y="282">still absent</text>
+    <text class="n" x="485" y="430">intent says what should happen; an open E2 card must prove what did happen</text>
+  </g>
+</svg>

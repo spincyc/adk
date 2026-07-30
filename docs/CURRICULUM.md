@@ -306,7 +306,7 @@ supplies the shortest planned path through the library.
 | [076](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md) | Component | Copied Sweep-Range Frames | Planned E0 policy retains attributable copied HC-SR04-shaped range evidence and bounded servo-angle intent without claiming powered ranging, servo motion, or support for an exact specimen |
 | [077](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md) | Component | Bounded Polar Occupancy Map | Planned E0 policy turns qualified copied angle-range frames into a fixed deterministic polar occupancy map with explicit faults and no physical-mapping claim |
 | [078](design/LESSONS_076_078_TABLETOP_SONAR_RESCOPE.md) | Project-bearing | Inert Tabletop Sonar Desk | Planned E0 replay-only composition produces explainable presentation and volatile record intent; powered ranging, restrained servo motion, autonomous navigation, physical mapping, and bench acceptance remain separately gated |
-| 079 | Component | Bounded low-side load driver | Identified transistor intent, current limits, flyback, and all-off rollback are explicit |
+| [079](../lessons/079.md) | Component | Bounded low-side load driver | Published E0 policy checks immutable declarations, attributable copied requests, current limits, flyback declarations, bounded duty history, and all-off rollback without owning a powered fixture |
 | 080 | Component | Small indicator-module semantics | Identified low-energy indicators retain polarity, autonomy, and safe state |
 | 081 | Project-bearing | Component qualification bench | One identified inert specimen passes review, bounded stimulus, and stable recording |
 

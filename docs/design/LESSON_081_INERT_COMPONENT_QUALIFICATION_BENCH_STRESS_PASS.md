@@ -123,6 +123,10 @@ kind/semantic outcome; exact 256-byte vector and round trip; every-byte
 corruption; repaired-CRC invalid framing/enums/flags/reserved/cross-fields;
 valid zero digests; domain separation; decoder opacity; replay-verifier
 mismatch; buffer and output canaries; and zero hardware/storage calls.
+Bench reset and shutdown/reinitialize preserve the contained Lesson 079
+reservation ring and chronology floor. Tests prove a new qualification session
+cannot erase or backdate that history, retained duty may reject its bounded
+request, and only a valid supplied-time child operation prunes it.
 
 ## Maximum composition and exact resources
 

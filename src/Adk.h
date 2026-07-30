@@ -7,6 +7,7 @@
 #include "balance_table_instrument.h"
 #include "board.h"
 #include "bounded_homing_policy.h"
+#include "bounded_low_side_driver_policy.h"
 #include "bounded_stepper_sequence.h"
 #include "bounded_span.h"
 #include "button.h"

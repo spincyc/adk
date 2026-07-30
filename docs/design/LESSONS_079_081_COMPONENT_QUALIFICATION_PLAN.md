@@ -115,21 +115,44 @@ availableSupplyUa = supplyLimitUa - reservedSupplyUa
 availableDeviceUa = min(deviceContinuousUa, fixtureLoadCeilingUa)
 requestedBaseUa = ceilDiv(requestedLoadUa * forcedGainDenominator,
                           forcedGainNumerator)
-baseResistorDropMv = max(0, logicHighMinimumMv - baseEmitterMaximumMv)
-baseResistorLimitedUa = floor(baseResistorDropMv * 1000 /
-                              baseResistanceOhms)
-admittedBaseUa = min(baseResistorLimitedUa, gpioSourceCeilingUa)
+lowerResistanceOhms =
+    floor(baseResistanceOhms * (1000 - tolerancePermille) / 1000)
+upperResistanceOhms =
+    ceilDiv(baseResistanceOhms * (1000 + tolerancePermille), 1000)
+maximumPossibleBaseUa =
+    ceilDiv(logicHighMaximumMv * 1000, lowerResistanceOhms)
+minimumBaseDropMv =
+    max(0, logicHighMinimumMv - baseEmitterMaximumMv)
+minimumAvailableBaseUa =
+    floor(minimumBaseDropMv * 1000 / upperResistanceOhms)
+basePathSafe = maximumPossibleBaseUa <= gpioSourceCeilingUa
+admittedBaseUa = min(minimumAvailableBaseUa, gpioSourceCeilingUa)
 admittedLoadUa = min(requestedLoadUa, availableSupplyUa,
                      availableDeviceUa,
                      floor(admittedBaseUa * forcedGainNumerator /
                            forcedGainDenominator))
 ```
 
-Every multiplication is promoted to `uint64_t`, checked before use, and the
+`tolerancePermille` is `baseResistanceTolerancePermille` and must be
+0--999. The lower bound deliberately rounds down; the upper bound deliberately
+rounds up. Because the descriptor has no authenticated minimum base-emitter
+drop, maximum possible base current conservatively uses zero millivolts for
+that drop. The lower-resistance result must be nonzero and its maximum current
+must not exceed the declared GPIO/base-path ceiling. The upper-resistance
+result determines minimum guaranteed drive; `requestedBaseUa` must not exceed
+`minimumAvailableBaseUa`, and only that minimum may support the forced-gain
+load calculation.
+
+Every multiplication, including `baseResistanceOhms * (1000 +/- tolerance)`
+and each millivolt-to-microamp product, is promoted to `uint64_t`, checked
+before use, and the
 final value must fit `uint32_t`; subtraction checks its minuend first.
 Divisors, forced-gain numerator/denominator, resistance, and required ceilings
-must be nonzero. Rounding is deliberately conservative: required base current
-rounds up and supported load current rounds down. Saturation is not a
+must be nonzero. `logicHighMaximumMv` must be at least
+`logicHighMinimumMv`; a zero minimum drop cannot admit an active request.
+Rounding is deliberately conservative: required/maximum base current and upper
+resistance round up; lower resistance, minimum available base current, and
+supported load current round down. Saturation is not a
 substitute for an overflow result. Overflow, underflow, divide by zero, an
 unrepresentable result, or a requested load above any binding ceiling rejects
 the request without mutation.
@@ -390,11 +413,35 @@ that request. This is domain-result mutation, not API-rejection nonmutation.
 `dutyWindow`, every duration, and every compared delta are nonzero
 and strictly below modular half range; `maximumDutyPermille` is 1--1000.
 
+The reservation ring and its last accepted supplied-time chronology belong to
+the lifetime of the policy object, not to a session. Construction starts with
+an empty ring and no chronology floor. `reset()` and `shutdown()` publish off
+and invalidate session/request authority, but they neither clear nor shorten
+reservations, reset the chronology floor, nor prune an entry.
+`shutdown()` followed by `initialize()` on the same object preserves both
+ring and floor. A new session may restart its session-local sequence at the
+documented first value, but its first supplied time must still be forward or
+equal under the preserved modular chronology. Because reset/shutdown have no
+supplied time, an outstanding interval remains conservatively reserved through
+its original `expiresAt`.
+
+Pruning occurs only while processing a valid supplied-time `apply`, `update`,
+or `cancel`, after chronology validation proves that time is forward and an
+entry has expired relative to the duty window. API-invalid input, reset,
+shutdown, initialization, and session start never prune. Destroying and
+reconstructing the C++ object necessarily loses volatile E0 history; that is
+not a reset mechanism, an authorization to drive, or evidence that a physical
+cooldown elapsed. E0 history is deterministic policy accounting, not a
+physical interlock. Any E2 endpoint must independently own and prove its
+duration/duty/thermal limits, retained or fail-closed restart state, supplied
+time authority, power-removal path, and exact-fixture evidence; it may never
+treat a new E0 object or empty ring as hardware authorization.
+
 ### Deterministic matrix and files
 
 Files: `src/bounded_low_side_driver_policy.h/.cpp`,
 `tests/bounded_low_side_driver_policy_test.cpp`, Mega
-`examples/Lesson079BoundedLowSideDriverPolicy/`, HTML API and lesson 079, and
+`examples/Lesson079BoundedLowSideDriver/`, HTML API and lesson 079, and
 PDF 079.
 
 Tests exhaust:
@@ -407,11 +454,21 @@ Tests exhaust:
   `41 44 4B 37 39 44 53 43` and tests omitted/extra-NUL/wrong-tag variants;
 - each zero divisor/ceiling, equal/one-below/one-above budgets, and every
   intermediate `uint32_t`/`uint64_t` overflow edge;
+- tolerance 0/1/999 permille; nominal resistance 1 and `UINT32_MAX`; exact
+  lower-bound floor and upper-bound ceil vectors; lower bound zero rejection;
+  `R*(1000-t)` and `R*(1000+t)` widened boundaries; maximum-current ceil and
+  minimum-drive floor division remainders; GPIO/base ceiling one-below/equal/
+  one-above; minimum drive versus requested base one-below/equal/one-above;
+  voltage product overflow guards and zero minimum-drop active rejection;
 - exact conservative rounding vectors and independently computed goldens;
 - requested duration zero/equality/one-over, deadline equality/one-before,
   supplied-time `update`, replay-without-extension, early off/cancel interval
   shortening, eight-entry duty history pruning, ninth-entry exhaustion, and
   widened duty equality/one-over at ordinary rollover;
+- reset with a partially elapsed reservation, shutdown from active,
+  reinitialize/new-session with preserved ring and time floor, backdated first
+  evidence rejection, pruning only through supplied-time apply/update/cancel,
+  and explicit construction-empty versus reconstructed-no-authority fixtures;
 - active-high bare-NPN off-low and active-high intent, plus rejection of every
   alternate-polarity/topology encoding;
 - resistive and declared-inductive configurations without implying hardware;
@@ -1178,6 +1235,9 @@ Tests include:
 - the exact five-step happy path and byte-identical replay;
 - every state transition, premature/duplicate/skipped control, every terminal
   state, cancel at every active step, restart, reset, and shutdown;
+- child duty-history persistence across bench reset and
+  shutdown/reinitialize, including rejection when the new session would exceed
+  retained duty and pruning only after a valid supplied-time envelope/control;
 - descriptor cross-identity, revision, source-digest, configuration, session,
   run, step, request, sequence, and timestamp mismatches;
 - collisions among cancel, producer fault, budget, flyback, freshness,
@@ -1234,6 +1294,14 @@ hard limit requires an independent review record tied to the exact
 fingerprint; a hard or residual-hard miss blocks promotion. Ordinary Arduino
 size and exact no-LTO evidence are both recorded and labeled; neither
 substitutes for the other.
+
+The promoted Lesson 079 exact no-LTO boundary measures 12,974 bytes flash,
+561 bytes static SRAM, 320 bytes conservative synchronous stack, a 240-byte
+policy, and a 96-byte descriptor, leaving 7,183 bytes residual SRAM. Its
+fingerprint is
+`4972bd9733d608d52ac81bfb1320e61088b10c3e59910f3be8c439b5838d33e7`.
+The flash and policy-size target misses have independent, fingerprint-bound
+reviews below their hard limits; all other Lesson 079 targets pass.
 
 ## Teaching narrative and observation honesty
 
@@ -1334,17 +1402,20 @@ architectural strain and requires user discussion before remediation.
 
 ## Promotion checklist
 
-Lessons 079--081 remain unimplemented until all applicable items close:
+Lesson 079 implementation and publication artifacts are assembled; its final
+promotion repair and gate reconciliation remain in progress. Lessons 080--081
+remain queued and unimplemented. A checked planning item records completed
+design work, not implementation or physical acceptance:
 
-- [ ] initial Lesson 079 architecture stress pass;
+- [x] initial Lesson 079 architecture stress pass;
 - [ ] Lesson 079 code, exhaustive arithmetic/lifecycle tests, Mega replay,
       HTML/PDF, exact resources, and terminal stress pass;
 - [ ] boundary design pass and `docs/WORK_QUEUE.md` re-read;
-- [ ] initial Lesson 080 architecture stress pass;
+- [x] initial Lesson 080 architecture stress pass;
 - [ ] Lesson 080 code, exhaustive semantics tests, Mega replay, HTML/PDF,
       exact resources, and terminal stress pass;
 - [ ] boundary design pass and `docs/WORK_QUEUE.md` re-read;
-- [ ] initial Lesson 081 architecture stress pass;
+- [x] initial Lesson 081 architecture stress pass;
 - [ ] Lesson 081 composition, exact 256-byte codec/vector/corruption tests,
       Mega replay, HTML/PDF, exact resources, and terminal stress pass;
 - [ ] maximum-composition and fingerprint review;

@@ -33,6 +33,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_balance_table_instrument_evidence \
 	$(BUILD_DIR)/host/test_balance_table_instrument_boundaries \
 	$(BUILD_DIR)/host/test_bounded_homing_policy \
+	$(BUILD_DIR)/host/test_bounded_low_side_driver \
 	$(BUILD_DIR)/host/test_bounded_stepper_sequence \
 	$(BUILD_DIR)/host/test_bus \
 	$(BUILD_DIR)/host/test_calibration_console \
@@ -207,6 +208,14 @@ $(BUILD_DIR)/host/test_core: $(HOST_CORE_SOURCES) tests/test_core.cpp \
 		$(HOST_HEADERS) | $(BUILD_DIR)/host
 	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) \
 		$(HOST_CORE_SOURCES) tests/test_core.cpp $(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_bounded_low_side_driver: $(HOST_CORE_SOURCES) \
+		src/bounded_low_side_driver_policy.cpp \
+		tests/bounded_low_side_driver_test.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) -DADK_TESTING $(HOST_CXXFLAGS) \
+		$(HOST_CORE_SOURCES) src/bounded_low_side_driver_policy.cpp \
+		tests/bounded_low_side_driver_test.cpp $(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_clue_constraint_model_evaluation: $(HOST_CORE_SOURCES) \
 		src/clue_constraint_model.cpp src/pulse_input.cpp \

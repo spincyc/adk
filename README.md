@@ -10,7 +10,7 @@ the Arduino Mega 2560.
   <a href="safety/">Read the safety rules</a>
 </nav>
 
-> **Current boundary:** Lessons 001–072 are published, host verified at E0, and
+> **Current boundary:** Lessons 001–072 and Lesson 079 are published, host verified at E0, and
 > compiled for the Mega 2560. All lessons remain experimental, physical
 > acceptance remains open, and the exact electrical revisions used by Lessons
 > 031–036 are not yet qualified. Lessons 037–039 use documented external
@@ -55,12 +55,16 @@ the Arduino Mega 2560.
 > evidence without operating or qualifying a physical fixture. Lesson 072
 > composes one terminal result into a five-step inert review, fault-dominant
 > presentation intent, and one canonical 192-byte caller-owned volatile record.
-> It owns no acquisition, fixture, display, clock, or storage endpoint. These
+> It owns no acquisition, fixture, display, clock, or storage endpoint. Lesson
+> 079 adds a bounded low-side-driver policy over immutable declarations,
+> attributable copied requests, supplied time, checked current arithmetic, and
+> logical all-off or active-high intent. It owns no GPIO endpoint, transistor,
+> diode, supply, load, clock, timer, or powered fixture. These
 > E0 publications do not
 > claim powered inputs, displays,
 > storage, actuators, wiring, physical output, or bench acceptance. Planned
 > rows below are commitments, not support claims.
-> [Lesson 072](lessons/072.md) is the current
+> [Lesson 079](lessons/079.md) is the current
 > published lesson.
 
 ## What ADK provides
@@ -115,11 +119,12 @@ a printable PDF companion. Each row links to the first lesson in its arc.
 | 070 · [open lesson](https://spincyc.github.io/adk/lessons/070/) | Descriptor-driven threshold modules | Explicit copied topology, polarity, timing, electrical declarations, and frame provenance without powered-specimen authority |
 | 071 · [open lesson](https://spincyc.github.io/adk/lessons/071/) | Copied threshold characterization | Bounded three-leg replay, adjacent transition brackets, conservative intervals, and attributable disagreement |
 | 072 · [open lesson](https://spincyc.github.io/adk/lessons/072/) | Inert module-characterization bench | Atomic terminal-envelope review, fault-dominant presentation, and one canonical 192-byte volatile record |
+| 079 · [open lesson](https://spincyc.github.io/adk/lessons/079/) | Bounded low-side-driver policy | Checked current budgets, bounded duty history, stop-dominant all-off intent, and no powered-driver claim |
 
-[Lesson 072 PDF](https://spincyc.github.io/adk/downloads/lessons/072.pdf) ·
-[Mega example](https://github.com/spincyc/adk/tree/main/examples/Lesson072ModuleCharacterizationBench) ·
-[public API](https://github.com/spincyc/adk/blob/main/src/inert_module_characterization_bench.h) ·
-[host tests](https://github.com/spincyc/adk/blob/main/tests/inert_module_characterization_bench_test.cpp)
+[Lesson 079 PDF](https://spincyc.github.io/adk/downloads/lessons/079.pdf) ·
+[Mega example](https://github.com/spincyc/adk/tree/main/examples/Lesson079BoundedLowSideDriver) ·
+[public API](https://github.com/spincyc/adk/blob/main/src/bounded_low_side_driver_policy.h) ·
+[host tests](https://github.com/spincyc/adk/blob/main/tests/bounded_low_side_driver_test.cpp)
 
 [View the complete lesson index](https://spincyc.github.io/adk/lessons/) or the
 [supported API](https://spincyc.github.io/adk/api-supported/).
@@ -160,8 +165,8 @@ HTML reference, and PDF lesson exist.
 - **076–078:** **Copied Sweep-Range Frames**, **Bounded Polar Occupancy Map**,
   and the **Inert Tabletop Sonar Desk**. This planned E0 arc replays copied
   angle–range evidence without moving a servo or powering a ranger.
-- **079–081:** a bounded low-side driver, indicator semantics, and an inert
-  component-qualification bench.
+- **080–081:** small-indicator semantics and an inert component-qualification
+  bench, building on the published bounded low-side-driver policy.
 
 The historical DS1302, BMP180, and PCF8591 subjects remain excluded; selecting
 Lessons 073–075 does not restore them or claim a powered RTC.

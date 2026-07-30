@@ -1049,6 +1049,42 @@ independently reviewed 32 KiB hard limit; all other targets pass. This remains
 volatile copied evidence: no module, acquisition endpoint, clock, display,
 storage transport, or powered fixture is owned or qualified.
 
+## Bounded low-side-driver policy
+
+`BoundedLowSideDriverPolicy` is the Lesson 079 E0 component. It validates one
+immutable active-high bare-NPN low-side declaration, checks attributable copied
+requests with caller-supplied time, and publishes canonical all-off or bounded
+logical drive intent. Conservative integer arithmetic makes supply, device,
+fixture, GPIO-source, forced-gain, and base-resistor ceilings explicit.
+
+The policy retains an eight-entry bounded duty history, expires active intent
+at equality, rejects replacement of an outstanding active request, and gives
+complete cancellation or shutdown controls all-off precedence. Rejected,
+cancelled, fault, reset, and shutdown results are always logically off. The
+descriptor identity digest detects correlation failures but neither
+authenticates a specimen nor replaces fieldwise checks.
+
+- Bounded low-side-driver policy:
+  [source](https://github.com/spincyc/adk/blob/main/src/bounded_low_side_driver_policy.h),
+  [implementation](https://github.com/spincyc/adk/blob/main/src/bounded_low_side_driver_policy.cpp),
+  [host tests](https://github.com/spincyc/adk/blob/main/tests/bounded_low_side_driver_test.cpp),
+  [Mega replay](downloads/sketches/Lesson079BoundedLowSideDriver.ino),
+  and [Lesson 079](lessons/079.md)
+
+The E0 boundary owns no endpoint, GPIO pin, timer, transistor, diode, supply,
+load, clock, storage, or powered fixture. Exact unpowered identity work remains
+E1-open, and any separately qualified transistor-switched fixture remains
+E2b-open.
+
+The canonical Mega replay measures 11,560 bytes flash and 561 bytes static
+SRAM. Exact no-LTO evidence measures 12,974 bytes flash, 561 bytes static SRAM,
+320 bytes conservative synchronous stack, a 240-byte policy, and a 96-byte
+descriptor, leaving 7,183 bytes residual SRAM. Flash and policy size exceed
+their targets but pass their independently reviewed hard limits; every other
+target passes. The exact boundary is fingerprinted as
+`4972bd9733d608d52ac81bfb1320e61088b10c3e59910f3be8c439b5838d33e7`.
+These measurements do not establish physical behavior.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.
