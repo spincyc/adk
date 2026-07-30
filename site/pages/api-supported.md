@@ -961,6 +961,32 @@ targets but pass independently reviewed fingerprint-bound hard gates. This E0
 result owns no sensor, control endpoint, display, RTC, media, filesystem, or
 durable storage.
 
+## Descriptor-driven threshold modules
+
+Lesson 070 introduces stateless copied-value contracts for low-voltage
+threshold modules. `ModuleThresholdDescriptor` declares one fixture's
+identity, channel topology, comparator output and polarity, pull requirement,
+electrical ranges, raw domain, threshold-control direction, and independently
+known or unknown warm-up and settling durations.
+
+`ModuleThresholdFrame` binds copied analog and comparator evidence to the full
+descriptor identity, specimen and electrical-evidence revisions, source
+configuration, sequence, and supplied observation time. Validation preserves
+absent, current, stale, and producer-fault channel states without repairing
+unknown declarations or inventing physical conclusions.
+
+- Threshold-module descriptor:
+  [source](https://github.com/spincyc/adk/blob/main/src/module_threshold_descriptor.h),
+  [implementation](https://github.com/spincyc/adk/blob/main/src/module_threshold_descriptor.cpp),
+  [host tests](https://github.com/spincyc/adk/blob/main/tests/module_threshold_descriptor_test.cpp),
+  [Mega replay](downloads/sketches/Lesson070ThresholdDescriptor.ino),
+  and [Lesson 070](lessons/070.md)
+
+The canonical compile-only Mega replay measures 4,564 bytes of flash and 684
+bytes of static SRAM. This is E0 software evidence only: descriptor validity
+and declaration completeness do not prove that a physical specimen matches
+the declarations, authorize power, or qualify acquisition.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.

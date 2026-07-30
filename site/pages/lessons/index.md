@@ -74,8 +74,9 @@ third lesson for a deterministic integration project.
 | [Lesson 067 — Normalizing copied inertial records](067.md) | Complete copied source-frame inertial samples | Attribution, revisions, faults, signed values, and canonical record images remain explicit |
 | [Lesson 068 — Qualifying one copied inertial-record stream](068.md) | One configured record domain and proper axis rotation | A bounded stationary window produces attributable terminal evidence |
 | [Lesson 069 — Recording one qualified motion session](069.md) | Qualified copied records, controls, and supplied time | Scripted motion produces bounded volatile images and inert presentation/export intent |
+| [Lesson 070 — Describing threshold modules](070.md) | Declared fixture facts and attributable copied channel frames | Topology, polarity, timing, electrical declarations, and unknowns remain explicit |
 
-Lessons 001--069 are host verified and their canonical examples compile for
+Lessons 001--070 are host verified and their canonical examples compile for
 the Mega 2560. Lessons 055--057 publish E0 replay only: exact inputs,
 presentation, storage, actuators, and bench acceptance remain open. Lessons
 058--060 likewise leave their exact powered display fixtures and bench
@@ -90,7 +91,9 @@ qualifying, or storing sensor data. Lesson 068 qualifies only one configured
 copied-record stream; it does not authenticate, acquire, mount, or physically
 calibrate a sensor. Lesson 069 retains one configured source per session and
 writes only caller-owned volatile record images; it owns no powered
-presentation or durable storage. Exact endpoints, pull-ups,
+presentation or durable storage. Lesson 070 validates copied declarations and
+frames without establishing that a physical specimen matches them or
+authorizing powered acquisition. Exact endpoints, pull-ups,
 probes, timing, thermal accuracy, presentation, storage, power behavior, and
 bench acceptance remain open. Every
 circuit remains experimental until its physical acceptance card is recorded.
@@ -104,7 +107,7 @@ published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 070–072 | Inert module characterization bench |
+| 071–072 | Copied characterization and inert module bench |
 | 073–078 | Authorized-family subjects pending |
 | 079–081 | Component qualification bench |
 

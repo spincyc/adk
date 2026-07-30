@@ -1,0 +1,423 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.60in]{geometry}
+\usepackage{booktabs,enumitem,fancyhdr,graphicx,listings,tabularx,titlesec,xcolor}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{docs/lessons/assets/}{assets/}}
+\hypersetup{
+ pdftitle={ADK Lesson 070: Describe a Declared Threshold Fixture},
+ pdfauthor={Kevin Shanahan},
+ pdfsubject={Structural descriptors and attributable copied frames for declared low-voltage threshold fixtures},
+ pdflang={en-US}}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\textsc{ADK Lesson 070}}\rhead{Declared Threshold Fixtures}
+\cfoot{\thepage}\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{3pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.5em}{}
+\newcommand{\lessonbox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{#1}}\end{center}}
+\newcommand{\blankline}{\rule{0.76in}{0.4pt}}
+\newcommand{\longblank}{\rule{1.35in}{0.4pt}}
+\lstset{
+ basicstyle=\ttfamily\footnotesize,
+ columns=fullflexible,
+ breaklines=true,
+ frame=single,
+ rulecolor=\color{black},
+ showstringspaces=false}
+
+\begin{document}
+\small
+\begin{center}
+ {\Huge\bfseries Describe a Declared Threshold Fixture}\\[3pt]
+ {\Large Name every promise before interpreting a reading}\\[7pt]
+ \fbox{\textbf{E0 COPIED REPLAY --- NO UNIDENTIFIED MODULE MAY BE POWERED}}
+\end{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 070 --- component & Time & 150--210 minutes\\
+Prerequisite & copied values and explicit status & Board & compile-only Mega replay\\
+Input & declared descriptor and frame & Observation & named validation cells\\
+\end{tabularx}
+
+\lessonbox{\textbf{Responsibility.}
+\texttt{ModuleThresholdDescriptor} states the copied electrical declaration
+for one declared fixture reference. Stateless functions validate its internal
+structure, validate one correlated copied \texttt{ModuleThresholdFrame}, and
+interpret comparator level only under declared polarity. They do not identify,
+probe, energize, sample, calibrate, or qualify a physical board.}
+
+\section{Require identity before traits}
+Many boards expose an analog output, a comparator output, or both. Similar
+connectors and seller names do not make their voltage, pinout, polarity,
+output stage, pull, adjustment, or timing interchangeable. Lesson 070 begins
+with nonzero descriptor, declared-specimen, declared-electrical-evidence, and
+revision fields rather than a universal ``sensor module'' guess.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=2.05in,keepaspectratio]
+ {070-identity-gate-pencil.png}
+
+\small\textit{Alternative text: an anonymous board silhouette stops before a
+locked identity gate while a declared fixture card carrying complete revision
+references proceeds to structural validation.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}X X@{}}
+\toprule
+E0 can establish & E0 cannot establish\\
+\midrule
+supported schema and closed values & that a connected board matches the declaration\\
+internally coherent copied fields & voltage safety, pin order, or physical pull\\
+descriptor/frame correlation & measured warm-up, settling, or pot direction\\
+deterministic comparator interpretation & sensor meaning, accuracy, or suitability\\
+\bottomrule
+\end{tabularx}
+
+\section{Predict before validation}
+Would PCB color or a \texttt{KY-} alias establish an electrical identity?
+\blankline. Name the three revisions that keep a declaration attributable:
+\hrulefill.
+
+\newpage
+\section{Keep the two channel contracts separate}
+\texttt{ModuleChannelTopology} is \texttt{AnalogOnly},
+\texttt{ComparatorOnly}, or \texttt{AnalogAndComparator}. The analog lane
+declares supply and signal millivolt ranges plus a raw domain. The comparator
+lane declares output stage, pull requirement and rail, polarity, threshold
+control kind, and direction. One lane never supplies a missing fact for the
+other.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.95\linewidth,height=2.12in,keepaspectratio]
+ {070-two-signal-lanes-pencil.png}
+
+\small\textit{Alternative text: separate graphite lanes carry a continuous
+analog trace and discrete comparator levels into one descriptor card; neither
+lane is inferred from the other.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Declared type & Closed vocabulary\\
+\midrule
+\texttt{ModuleComparatorOutputStage} &
+\texttt{Unspecified}, \texttt{PushPull}, \texttt{OpenDrain},
+\texttt{OpenCollector}\\
+\texttt{ModulePullRequirement} &
+\texttt{Unspecified}, \texttt{None}, \texttt{PullUp}, \texttt{PullDown}\\
+\texttt{ModuleDeclaredRail} &
+\texttt{Unspecified}, \texttt{Ground}, \texttt{LogicSupply},
+\texttt{ModuleSupply}\\
+\texttt{ModuleThresholdControlKind} &
+\texttt{Unspecified}, \texttt{Fixed}, \texttt{Potentiometer}\\
+\texttt{ModuleThresholdDirection} &
+\texttt{Unspecified}, \texttt{IncreasingClockwise},
+\texttt{IncreasingCounterclockwise}\\
+\bottomrule
+\end{tabularx}
+
+\texttt{Unspecified} is a valid E0 declaration, not permission to choose a
+plausible default. Invalid underlying enum encodings reject. A pull rail is
+unspecified when no pull is declared and must be specified when a pull is
+declared. Unused fields take their canonical values.
+
+\section{Treat ranges as declarations}
+Ordered \texttt{ModuleMillivoltRange} and \texttt{ModuleRawDomain} fields
+describe copied claims. Structural acceptance does not prove a rating or
+authorize an ADC reference. Raw endpoints are codes; Lesson 070 does not call
+them open, shorted, or saturated.
+
+\newpage
+\section{Interpret comparator level only under polarity}
+\texttt{moduleComparatorAsserted(descriptor, comparatorLevelHigh)} returns a
+\texttt{Result<bool>}. With \texttt{ActiveHigh}, a high copied level is
+asserted. With \texttt{ActiveLow}, it is not. \texttt{Unspecified} polarity
+returns failure rather than guessing.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.94\linewidth,height=2.10in,keepaspectratio]
+ {070-polarity-flip-pencil.png}
+
+\small\textit{Alternative text: the same copied low-to-high transition appears
+twice; an active-high declaration maps the high level to asserted, while an
+active-low declaration maps it to not asserted, shown with check and cross
+marks rather than color.}
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}l c c@{}}
+\toprule
+Polarity & copied level high & copied level low\\
+\midrule
+\texttt{ActiveHigh} & asserted & not asserted\\
+\texttt{ActiveLow} & not asserted & asserted\\
+\texttt{Unspecified} & failure & failure\\
+\bottomrule
+\end{tabularx}
+
+\section{Bind the whole copied frame}
+\texttt{ModuleThresholdFrame} repeats descriptor correlation and declared
+specimen/electrical provenance, then carries source identity, source
+configuration revision, sequence, supplied observation time, analog value and
+status, comparator level/presence/assertion and status, producer statuses, and
+copied declared-duration satisfaction.
+
+\texttt{ModuleChannelStatus} distinguishes \texttt{NotPresent},
+\texttt{Current}, \texttt{Stale}, and \texttt{ProducerFault}. Analog-only
+frames use the canonical comparator-absent representation; comparator-only
+frames use the canonical analog-absent representation. Presence, status,
+producer status, and derived assertion must agree with topology.
+
+If analog producer status fails while the copied raw value happens to lie in
+range, the channel status must be \longblank. Why may the raw value not repair
+the failure? \hrulefill.
+
+\newpage
+\section{Declare time; never hide a clock}
+\texttt{ModuleDeclaredDuration} pairs \texttt{Known} or \texttt{Unknown} with
+a \texttt{Duration}. Known zero means the declaration explicitly requires no
+delay. Unknown is canonically paired with numeric zero and blocks declaration
+completeness. The frame's copied warm-up or settling satisfaction must be
+false when the corresponding duration is unknown.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=2.08in,keepaspectratio]
+ {070-warmup-settle-pencil.png}
+
+\small\textit{Alternative text: a declared fixture card passes a warm-up
+hourglass, an adjustment gesture, a settling hourglass, and finally reaches
+an admitted copied frame; all timing satisfaction remains supplied evidence.}
+\end{center}
+
+Lesson 070 reads no clock, waits for nothing, and does not turn a
+potentiometer. The frame's warm-up-satisfied and settling-satisfied fields are
+copied declarations bound to its exact provenance. Lesson 071 will apply
+supplied time to a characterization run.
+
+\begin{tabularx}{\linewidth}{@{}l l l@{}}
+\toprule
+Declaration & Numeric value & Copied satisfied flag\\
+\midrule
+known, zero & zero & may be true or false as correlated evidence\\
+known, nonzero & declared duration & may be true or false as correlated evidence\\
+unknown & canonical zero & must be false\\
+\bottomrule
+\end{tabularx}
+
+\section{Do not promote completeness into authority}
+\texttt{moduleDescriptorDeclarationsComplete()} reports only whether every
+structural declaration required by the descriptor contract is present. Even a
+true result is not E1 admission, authorization to power, specimen conformance,
+or bench acceptance. Exact identity, primary sources, traced topology,
+ratings, measurements, and safe-state evidence remain open.
+
+\lessonbox{\textbf{Vocabulary discipline.}
+Say ``declaration complete enough for E1 review,'' never ``this module is
+safe,'' ``qualified,'' or ``supported.''}
+
+\newpage
+\section{Pass every structural gate}
+\texttt{validateModuleThresholdDescriptor()} checks encoding, identity and
+revisions, ordered ranges, topology-specific output and pull fields, declared
+durations, and threshold-control semantics. It is stateless and repairs
+nothing.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.91\linewidth,height=2.18in,keepaspectratio]
+ {070-validation-funnel-pencil.png}
+
+\small\textit{Alternative text: five hand-drawn sieves check identity and
+revisions, ranges, topology and pulls, timing, and adjustment semantics; only
+one coherent descriptor exits while malformed cards remain outside.}
+\end{center}
+
+\begin{enumerate}
+ \item Reject invalid enum encodings or zero required identities/revisions.
+ \item Reject inverted millivolt ranges or raw domains.
+ \item Enforce topology-specific comparator, pull, and canonical-unused fields.
+ \item Enforce known/unknown duration canonicality.
+ \item Enforce fixed/potentiometer direction cross-fields.
+\end{enumerate}
+
+\texttt{validateModuleThresholdFrame()} next checks exact descriptor,
+declared-specimen/electrical provenance, source, topology, presence, statuses,
+producer statuses, assertion, and duration-satisfaction correlation. Invalid
+structure returns status; an attributable \texttt{ProducerFault} remains a
+valid copied frame rather than being rewritten as malformed input.
+
+\section{Exercise collisions}
+Predict the first disposition for each pair: invalid polarity encoding plus
+producer fault \longblank; descriptor revision mismatch plus stale analog
+channel \longblank; coherent producer fault plus an otherwise in-range value
+\longblank.
+
+\newpage
+\section{Compare declarations without claiming interchangeability}
+Two separately identified fixture revisions may share the same consumer-shaped
+contract while retaining different supply ranges, signal ranges, output
+stages, pulls, polarity, threshold controls, directions, and timings.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.94\linewidth,height=2.08in,keepaspectratio]
+ {070-descriptor-comparison-pencil.png}
+
+\small\textit{Alternative text: two separately identified descriptor cards
+have the same outer consumer shape but retain visibly different revision,
+polarity, pull, timing, and range marks.}
+\end{center}
+
+Semantic equality is field-wise. A raw-object \texttt{memcmp} can inspect
+padding and compiler representation that the public contract never assigned
+meaning. Lesson 070 has no codec or persistence claim. Lesson 072 later owns a
+fixed characterization-record image that must bind the relevant complete
+declaration and evidence.
+
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Tempting shortcut & Required correction\\
+\midrule
+same seller alias & preserve distinct declared specimen references\\
+same connector count & retain exact pinout/topology as future E1 evidence\\
+same threshold behavior & retain polarity, pull, range, timing, and revisions\\
+complete declaration & still require physical identity and bench review\\
+\bottomrule
+\end{tabularx}
+
+\section{Keep earlier lesson meaning intact}
+Lesson 070 does not retrofit module identity into \texttt{AnalogInput},
+\texttt{DigitalInput}, or \texttt{ThresholdInput}. It does not reinterpret
+the E0 quality classifications in Lessons 034--042 or 061--063 as electrical
+qualification. Lesson 071 owns empirical supplied-sweep characterization.
+
+\newpage
+\section{Replay the stateless contract}
+The canonical Mega sketch acquires copied descriptor and frame fixtures,
+configures their declared identity, starts no hardware, validates them, and
+publishes named volatile topology, polarity, raw, comparator assertion,
+channel-status, duration-satisfaction, provenance, declaration-completeness,
+and returned-status cells.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=2.00in,keepaspectratio]
+ {070-replay-ledger-pencil.png}
+
+\small\textit{Alternative text: identical descriptor and frame card pairs pass
+through two stateless validation runs and produce matching named output cells;
+crossed-out power and wiring marks remain outside the replay.}
+\end{center}
+
+\begin{enumerate}
+ \item \textbf{Predict:} write the expected topology, polarity, comparator
+       assertion, channel statuses, duration flags, declaration-completeness
+       result, and returned statuses.
+ \item \textbf{Observe:} compile for Mega 2560 and inspect named volatile cells
+       with a debugger, simulator, or disassembly. Serial is optional support.
+ \item \textbf{Interpret:} compare two runs field by field. Structural
+       agreement proves deterministic copied behavior, not fixture truth.
+\end{enumerate}
+
+The named result cells are the E0 non-Serial observation path. E0 claims zero
+pins, ADC channels/references, timers, interrupts, buses, rails, endpoints,
+power resources, or registry entries. Therefore resource acquisition and
+electrical safe-state evidence remain distinct open E1 checks.
+
+\section{Deterministic test matrix}
+Cover every valid and invalid enum encoding; topology/output/pull/rail/polarity/
+control/direction cross-product; zero, one, and maximum identities/revisions;
+equal, ordered, and inverted ranges; known-zero, known-nonzero, and unknown
+durations; all three channel topologies; active-high/low assertion; producer
+fault collisions; provenance drift; canonical absent fields; and proof that
+no accepted or rejected fixture invokes an endpoint, clock, registry,
+transport, or power operation.
+
+\newpage
+\section{Troubleshoot without inventing hardware facts}
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Symptom & Inspect & Interpretation\\
+\midrule
+descriptor invalid & enum, identity, revision, ranges & malformed declaration\\
+frame invalid & descriptor and declared-fixture provenance & copied evidence does not correlate\\
+assertion fails & comparator polarity & unspecified never chooses a default\\
+channel producer fault & producer status and channel status & attributable valid fault evidence\\
+unknown duration marked satisfied & declaration and copied flag & noncanonical frame\\
+completeness false & every required declaration field & not ready even for E1 review planning\\
+\bottomrule
+\end{tabularx}
+
+\section{Exercises}
+\begin{enumerate}
+ \item Construct an analog-only descriptor and list every comparator field's
+       canonical unused value.
+ \item For one high copied comparator level, predict assertion under all three
+       polarity values.
+ \item Explain why \texttt{OpenDrain} plus \texttt{PullUp} still cannot choose
+       a resistor value or rail implementation.
+ \item Create two descriptors with identical behavior but different declared
+       specimen references. Explain why they are unequal.
+ \item Explain why true declaration completeness is not physical admissibility.
+\end{enumerate}
+
+\section{No circuit at E0}
+There is no pin-by-pin connection list, wiring diagram, or formal schematic
+because Lesson 070 has no circuit. Never connect an unidentified module.
+Future E1 work must record exact chip and PCB markings, front/back photographs,
+primary sources or a traced circuit, connector pin order, supply and logic
+limits, regulator, comparator stage, pull rail and resistance, onboard LED
+loading, adjustment direction, warm-up and settling measurements, ADC
+reference/source impedance, current, named analog/digital/power/ground test
+points, inactive default, rollback, power removal, and bench observations.
+
+This lesson admits no register device, unidentified emitter, gas exposure or
+heater, concentration or alarm claim, physiological claim, mains, ignition,
+laser, pyrotechnics, generic analog-temperature board, generic capacitive-touch
+board, or family absent from the authorized inventory.
+
+\newpage
+\section{Open acceptance record}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X@{}}
+Host evidence & Record strict tests, no-exception tests, standalone header,
+closed-enum matrix, correlation failures, and zero hardware-call proof.\\
+Mega evidence & Record canonical compile-only replay flash/static SRAM and
+named-cell inspection; this is not a powered-module result.\\
+Memory evidence & Exact no-LTO probe: 4,546 B flash, 690 B static SRAM, 75 B
+synchronous stack, 45 B descriptor, 38 B frame, and 83 B
+descriptor-plus-frame composition; all target and hard gates pass.\\
+Document evidence & Two-pass build, metadata, font embedding, text extraction,
+monochrome, visual classification, links, 200\% zoom, and rendered-pencil
+review must pass.\\
+Physical evidence & Open E1: exact identity, declaration truth, voltage,
+topology, pins, timing, adjustment, acquisition, safe state, and bench
+acceptance remain unproved.\\
+\end{tabularx}
+
+\vspace{8pt}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Acceptance item & Record\\
+\midrule
+Commit and toolchain & \hrulefill\\[10pt]
+Host / sanitizer / enum matrix & \hrulefill\\[10pt]
+Mega flash / static SRAM / stack & \hrulefill\\[10pt]
+Descriptor / frame sizes & \hrulefill\\[10pt]
+Named replay cells & \hrulefill\\[10pt]
+PDF and HTML accessibility review & \hrulefill\\[10pt]
+Exact E1 specimen owner / next action & \hrulefill\\
+\bottomrule
+\end{tabularx}
+
+\lessonbox{\textbf{Stop condition.}
+Call the result a structurally accepted copied declaration and frame. Do not
+call it a safe, qualified, admissible, supported, or hardware-verified module.
+Declaration completeness merely opens a later evidence review.}
+
+\vfill
+\begin{center}
+\textbf{Next: Lesson 071 --- Characterize one declared fixture with supplied sweeps.}
+\end{center}
+\end{document}

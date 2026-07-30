@@ -198,6 +198,9 @@ struct ModuleThresholdFrame
     uint16_t schemaRevision;
     uint32_t descriptorId;
     uint16_t descriptorRevision;
+    uint32_t declaredSpecimenReference;
+    uint16_t declaredSpecimenRevision;
+    uint16_t declaredElectricalEvidenceRevision;
     ModuleFrameProvenance provenance;
     uint16_t analogRaw;
     ModuleChannelStatus analogStatus;
@@ -219,7 +222,7 @@ Status validateModuleThresholdFrame (
 Result<bool> moduleComparatorAsserted (
     const ModuleThresholdDescriptor& descriptor,
     bool comparatorLevelHigh) noexcept;
-Result<bool> moduleDescriptorE1Admissible (
+Result<bool> moduleDescriptorDeclarationsComplete (
     const ModuleThresholdDescriptor& descriptor) noexcept;
 ```
 
@@ -236,9 +239,12 @@ statuses must agree.
 
 Known zero warm-up/settling means none required. Unknown uses
 `ModuleDurationDeclaration::Unknown`; its numeric field is canonically zero and
-blocks E1. `declaredWarmupSatisfied` and `declaredSettlingSatisfied` are copied
+requires the corresponding frame satisfaction flag to be false.
+`declaredWarmupSatisfied` and `declaredSettlingSatisfied` are copied
 declarations bound to frame provenance/configuration. The policy does not wait
-internally.
+internally. `moduleDescriptorDeclarationsComplete()` reports only whether every
+required declaration is specified; it cannot identify a module, close an E1
+gate, or authorize power.
 
 Rails are raw endpoint codes, not `OpenLike` or `ShortLike` diagnoses. Lesson
 070 has no generic quality enum and no stateful `Policy` class.
@@ -251,8 +257,8 @@ Files: `src/module_threshold_descriptor.h/.cpp`,
 
 - every valid and invalid enum encoding;
 - every topology/output/pull/rail/polarity/control/direction cross-product;
-- `Unspecified` accepted at E0 and rejected by an explicit E1-admissibility
-  helper;
+- `Unspecified` accepted at E0 and reported incomplete by the structural
+  declaration-completeness helper;
 - zero/one/max revisions, ranges equal/inverted/exact, raw lower/upper rail;
 - known-zero, known-nonzero, and unknown canonical durations;
 - analog-only, comparator-only, dual-channel presence/status canonicality;
@@ -291,6 +297,8 @@ enum struct ModuleCharacterizationState : uint8_t
 enum struct ModuleCharacterizationReason : uint8_t
 {
     None,
+    WarmupUnsatisfied,
+    SettlingUnsatisfied,
     ProducerFault,
     Stale,
     SequenceDiscontinuity,
@@ -301,6 +309,7 @@ enum struct ModuleCharacterizationReason : uint8_t
     NoObservedTransitionInactive,
     AtLowerRail,
     AtUpperRail,
+    TransitionOrientationMismatch,
     AnalogComparatorDisagreement
 };
 
@@ -429,9 +438,35 @@ code is also `Chatter`. No transition yields
 the observed canonical comparator state. An endpoint-only run reports
 `AtLowerRail` or `AtUpperRail`; it does not invent a threshold.
 
-The two learned brackets produce conservative guaranteed-active,
-guaranteed-inactive, and ambiguity intervals. No exact threshold scalar and no
-negative scalar hysteresis exist. The third verification leg streams up to 16
+The ascending leg must begin with an accepted point at the descriptor raw
+lower bound and end at its raw upper bound. The descending leg must begin at
+the raw upper bound and end at its raw lower bound. Missing either exact
+endpoint is `DirectionViolation`, except when every accepted point is the same
+exact declared endpoint. That endpoint-only special case terminalizes as
+`AtLowerRail` or `AtUpperRail` before the coverage check and cannot advance to
+another leg or produce intervals. Thus each successful learning leg observes
+the full declared raw domain; the policy never extrapolates a state beyond the
+sampled sweep endpoints.
+
+The two learned brackets must have complementary orientation: the ascending
+bracket's before state equals the descending bracket's after state, the other
+two states equal each other, and the two state groups differ. Otherwise
+descending finalization records `TransitionOrientationMismatch`.
+
+Let `lowState` be the common ascending-before/descending-after assertion state.
+Let `lowProved` be the lesser raw code of those two points, and let
+`highProved` be the greater raw code of the ascending-after and
+descending-before points. The raw domain is partitioned inclusively:
+
+- `[raw.lower, lowProved]` is guaranteed to have `lowState`;
+- `[highProved, raw.upper]` is guaranteed to have the opposite state; and
+- when `lowProved + 1 <= highProved - 1`, that closed middle interval is the
+  ambiguity interval; otherwise ambiguity is absent.
+
+`guaranteedInactiveInterval` and `guaranteedActiveInterval` receive the first
+two intervals according to `lowState`. Arithmetic is widened before the
+`+1`/`-1` tests. These formulas publish neither an exact threshold nor a
+signed hysteresis scalar. The third verification leg streams up to 16
 points after both brackets are frozen. Each verification point is classified
 against only guaranteed regions. Evidence becomes `Disagrees` only when a
 point inside a guaranteed region contradicts the comparator; points in the

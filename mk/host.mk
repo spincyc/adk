@@ -81,6 +81,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_mega_bus_driver \
 	$(BUILD_DIR)/host/test_mono_led \
 	$(BUILD_DIR)/host/test_moisture_sensor \
+	$(BUILD_DIR)/host/test_module_threshold_descriptor \
 	$(BUILD_DIR)/host/test_motor_intent \
 	$(BUILD_DIR)/host/test_museum_case_monitor \
 	$(BUILD_DIR)/host/test_multiplexed_digit_policy \
@@ -938,6 +939,15 @@ $(BUILD_DIR)/host/test_moisture_sensor: $(HOST_CORE_SOURCES) \
 		$(HOST_CORE_SOURCES) src/analog_input.cpp src/board.cpp \
 		src/digital_output.cpp src/moisture_sensor.cpp \
 		tests/fake_arduino/Arduino.cpp tests/test_moisture_sensor.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_module_threshold_descriptor: $(HOST_CORE_SOURCES) \
+		src/module_threshold_descriptor.cpp \
+		tests/module_threshold_descriptor_test.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/module_threshold_descriptor.cpp \
+		tests/module_threshold_descriptor_test.cpp \
 		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_motor_intent: $(HOST_CORE_SOURCES) \

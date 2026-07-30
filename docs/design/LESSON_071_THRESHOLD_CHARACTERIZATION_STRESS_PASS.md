@@ -58,11 +58,12 @@ All public names are module-prefixed:
 - `ModuleSweepDirection`: `Increasing`, `Decreasing`, `Unordered`;
 - `ModuleCharacterizationState`: `Idle`, `Collecting`, `Complete`,
   `Rejected`, `Shutdown`;
-- `ModuleCharacterizationReason`: `None`, `ProducerFault`, `Stale`,
+- `ModuleCharacterizationReason`: `None`, `WarmupUnsatisfied`,
+  `SettlingUnsatisfied`, `ProducerFault`, `Stale`,
   `SequenceDiscontinuity`, `TimestampDiscontinuity`,
   `DirectionViolation`, `Chatter`, `NoObservedTransitionActive`,
   `NoObservedTransitionInactive`, `AtLowerRail`, `AtUpperRail`,
-  `AnalogComparatorDisagreement`;
+  `TransitionOrientationMismatch`, `AnalogComparatorDisagreement`;
 - `ModuleCompactWitness`, which retains only presence, control ordinal, raw
   code, canonical comparator assertion, sequence, and observation time;
 - `ModuleComparatorRelation`: `Unverified`, `Consistent`, `Ambiguous`,
@@ -193,6 +194,16 @@ transition bracket. Only `finalizeLeg()` derives `AtLowerRail` or
 `AtUpperRail`, and only for an endpoint-only leg that observed no transition.
 That result does not invent a threshold.
 
+Every learning leg covers the complete declared raw domain. Ascending begins
+at the exact raw lower bound and ends at the exact raw upper bound; descending
+begins at the upper bound and ends at the lower bound. Finalization records
+`DirectionViolation` when either endpoint is missing, except when every
+accepted point is the same exact declared endpoint. That endpoint-only special
+case records `AtLowerRail` or `AtUpperRail` before the coverage check,
+terminalizes the run, and cannot produce intervals or advance to another leg.
+Consequently the outer guaranteed intervals below are bounded by observed
+sweep coverage rather than extrapolated beyond it.
+
 The two learned brackets freeze three conservative
 `ModuleAnalogInterval` values:
 
@@ -205,6 +216,23 @@ may be disjoint, touching, overlapping, or identical. An overlap is not
 automatically a fault; it may mean only that sampling is too coarse to resolve
 hysteresis. No exact threshold scalar, bracket midpoint, or signed hysteresis
 scalar exists in the public contract.
+
+The bracket orientations must be complementary: ascending-before equals
+descending-after, ascending-after equals descending-before, and those two
+states differ. Otherwise descending finalization records
+`TransitionOrientationMismatch`.
+
+Let `lowState` be the shared ascending-before/descending-after assertion state,
+`lowProved` the lesser raw code of those two points, and `highProved` the
+greater raw code of ascending-after and descending-before. The closed interval
+from the declared raw lower bound through `lowProved` is guaranteed
+`lowState`; the closed interval from `highProved` through the declared upper
+bound is guaranteed the opposite state. The closed middle interval
+`[lowProved + 1, highProved - 1]` is ambiguity when its lower endpoint does
+not exceed its upper endpoint, and is absent otherwise. Widen before endpoint
+arithmetic. Assign the two outer intervals to
+`guaranteedInactiveInterval` and `guaranteedActiveInterval` according to
+`lowState`.
 
 ## Verification-leg semantics
 

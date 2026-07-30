@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="690" viewBox="0 0 1500 690" role="img" aria-labelledby="title desc">
+  <title id="title">Declared warm-up and settling sequence</title>
+  <desc id="desc">A declared fixture card, a first hourglass, a hand turning an adjustment, a second hourglass, and an admitted copied frame form a left-to-right pencil sequence.</desc>
+  <rect width="1500" height="690" fill="#faf9f4"/>
+  <g fill="none" stroke="#393939" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M55 207 L276 188 L282 492 L61 509 Z"/>
+    <path d="M95 263 L243 250 M95 319 L243 306 M95 375 L243 362"/>
+    <path d="M336 186 L502 186 M336 510 L502 510 M357 190 Q355 274 419 347 Q483 276 481 190 M357 506 Q355 422 419 349 Q483 422 481 506"/>
+    <circle cx="690" cy="348" r="103"/><circle cx="690" cy="348" r="31"/>
+    <path d="M623 270 Q651 214 698 234 M757 284 Q812 319 790 378 M650 442 Q595 405 612 352"/>
+    <path d="M863 186 L1029 186 M863 510 L1029 510 M884 190 Q882 274 946 347 Q1010 276 1008 190 M884 506 Q882 422 946 349 Q1010 422 1008 506"/>
+    <path d="M1095 204 Q1264 179 1433 205 L1425 497 Q1261 520 1101 493 Z"/>
+    <path d="M1143 269 Q1263 251 1382 271 M1143 333 Q1263 315 1380 335 M1143 397 Q1263 379 1377 399"/>
+    <path d="M282 348 L330 348 M505 348 L578 348 M801 348 L857 348 M1032 348 L1087 348"/>
+  </g>
+</svg>

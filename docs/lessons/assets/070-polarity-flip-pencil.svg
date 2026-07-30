@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="690" viewBox="0 0 1500 690" role="img" aria-labelledby="title desc">
+  <title id="title">Comparator polarity changes assertion meaning</title>
+  <desc id="desc">The same low-to-high copied level transition is shown twice; one declared polarity maps high to asserted while the other maps high to not asserted, distinguished with check and cross marks.</desc>
+  <rect width="1500" height="690" fill="#faf9f4"/>
+  <g fill="none" stroke="#383838" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M70 103 Q376 73 682 106 L674 584 Q374 612 76 578 Z"/>
+    <path d="M816 104 Q1121 74 1427 107 L1418 584 Q1118 613 822 578 Z"/>
+    <path d="M133 336 L276 336 L276 239 L526 239 L526 336 L621 336"/>
+    <path d="M879 336 L1022 336 L1022 239 L1272 239 L1272 336 L1367 336"/>
+    <circle cx="280" cy="464" r="65"/><path d="M243 464 L273 496 326 423"/>
+    <circle cx="1027" cy="464" r="65"/><path d="M989 426 L1064 502 M1064 426 L989 502"/>
+    <path d="M415 442 L591 442 L591 527 L415 527 Z M1161 442 L1337 442 L1337 527 L1161 527 Z"/>
+  </g>
+  <g stroke="#666" stroke-width="3" opacity=".3"><path d="M63 592 Q376 625 688 590 M810 592 Q1121 625 1432 590"/></g>
+</svg>

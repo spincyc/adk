@@ -1,6 +1,7 @@
 .PHONY: display-timing-resource-check escape-console-resource-check \
 	ir-resource-check museum-case-resource-check \
-	motion-recorder-resource-check thermal-gradient-resource-check
+	module-characterization-resource-check motion-recorder-resource-check \
+	thermal-gradient-resource-check
 
 ir-resource-check: arduino-check
 	python3 scripts/check_ir_resource_probe.py \
@@ -36,3 +37,9 @@ motion-recorder-resource-check: arduino-check
 		--arduino-cli "$(ARDUINO_CLI)" \
 		--fqbn "$(BOARD_FQBN)" \
 		--require-through 069
+
+module-characterization-resource-check: arduino-check
+	python3 scripts/check_module_characterization_resource_probe.py \
+		--arduino-cli "$(ARDUINO_CLI)" \
+		--fqbn "$(BOARD_FQBN)" \
+		--require-through 070

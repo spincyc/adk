@@ -16,7 +16,7 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--069 use the first-class per-object
+ADK is early-stage software. Lessons 001--070 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
@@ -83,6 +83,10 @@ Lesson 069 composes one qualified copied-record source into one scripted
 session with bounded caller-owned volatile record images and semantic
 presentation/export intent. It owns no live controls, sensor, display, RTC,
 media, filesystem, or durable storage.
+Lesson 070 publishes stateless validation for declared threshold-module facts
+and attributable copied analog/comparator frames. It owns no module, endpoint,
+power, clock, transport, display, or storage, and structural validity is not
+physical-specimen authority.
 
 The hierarchy is developed in dependency order:
 
@@ -98,7 +102,8 @@ The latest completed project arc is Lessons 067--069: normalized copied
 inertial records and configured record qualification composed into one
 fixed-source volatile motion recorder. Powered sensors, controls,
 presentation, storage, authentication, and physical acceptance remain open.
-[Lesson 069](lessons/069.md) is the latest published project boundary. See the
+[Lesson 069](lessons/069.md) remains the latest published project boundary.
+[Lesson 070](lessons/070.md) is the latest published component. See the
 [course map](course.md) for that order and the
 [roadmap](docs/ROADMAP.md) for the full sequence.
 
