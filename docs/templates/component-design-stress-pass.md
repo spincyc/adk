@@ -76,8 +76,9 @@ publication decision. For each, record one of:
   duplicated mechanism, compatibility break, or change with broad consumers.
 
 Absence of an explicit decision record is not evidence that no prior decision
-exists. Search canonical documents, design records, Git history, tests, and
-the durable journal.
+exists. Search canonical documents, design records, Git history, and tests.
+Consult AIQ task state for current execution context, but promote decisions
+needed by future work into the owning repository artifact.
 
 ## Stress disposition
 

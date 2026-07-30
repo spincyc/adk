@@ -1,5 +1,4 @@
 /.github       export-ignore
-/.journal      export-ignore
 /.gitignore    export-ignore
 /.clang-format export-ignore
 /.gitattributes export-ignore

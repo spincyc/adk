@@ -1686,7 +1686,7 @@ Required final gates:
 6. site, link, package-consumer, lint, and archive checks;
 7. pre/post stress-pass review with exact aggregate measurements;
 8. independent code, example, publication, safety, and adversarial reviews;
-9. journal validation and coherent dependency-ordered commits; and
+9. AIQ task-state reconciliation and coherent dependency-ordered commits; and
 10. clean release/publication audit while preserving every open E1 card.
 
 ## Design risks and bounded responses

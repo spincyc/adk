@@ -82,7 +82,8 @@ rule distinguishing a blocked physical gate from exhausted bounded research
 remains reported rather than magically solved. The system got better by
 becoming less impressed with its own promises.
 
-Technically, the journal now treats chat and process state as caches. A user
+Technically, that repository journal eventually treated chat and process state
+as caches. A user
 message becomes an immutable event—`ingestion` when it creates a task,
 otherwise an amendment, decision, control, information, or question. Task
 state carries priority, dependencies, and status; a versioned ledger adapter
@@ -91,7 +92,10 @@ protects atomic publication; a committed lease records durable ownership.
 Required user input has its own UUID-backed history so one blocked task does
 not freeze independent work. Before yielding, the agent rereads live state and
 runs `yield-check`: a clean result permits a stop, runnable work forbids it,
-and inconsistent or changing state forces another read.
+and inconsistent or changing state forces another read. The repository has
+since replaced that committed implementation with AIQ, which keeps the same
+durability goal in Git-internal state without publishing the queue alongside
+the product.
 
 ## Behind the curtain
 

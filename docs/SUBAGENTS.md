@@ -3,8 +3,9 @@
 Snapshot recorded: 2026-07-27
 
 This table preserves an earlier delegation snapshot; its in-progress and
-queued labels are historical, not live scheduling authority. Current work is
-owned by [the work queue](WORK_QUEUE.md) and the durable journal task state.
+queued labels are historical, not live scheduling authority. Product status is
+owned by [the work queue](WORK_QUEUE.md); live task execution is tracked in
+AIQ's repository-local, Git-internal state.
 
 | Workstream | Status | Result |
 |---|---|---|
@@ -138,12 +139,12 @@ High-speed endpoint hardware is not supported.
 
 ## Durable integration boundaries
 
-The durable journal assigns each active task a lease and records its file
-ownership and checkpoints. Task owners may commit attributable implementation
-and journal boundaries locally. Shared indexes, build fragments, navigation,
-generated artifacts, release metadata, and status ledgers retain one named
-integrator. No agent pushes, changes branches, merges, rebases, or rewrites
-history without authority.
+AIQ leases provide time-bounded ownership of queued tasks. The coordinating
+agent owns AIQ state, integration, commits, and any authorized push; delegated
+lanes receive explicit, non-overlapping file ownership. Shared indexes, build
+fragments, navigation, generated artifacts, release metadata, and status
+ledgers retain one named integrator. No agent pushes, changes branches, merges,
+rebases, or rewrites history without authority.
 
 The historical integration sequence was:
 

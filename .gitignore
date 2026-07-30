@@ -37,7 +37,3 @@ __pycache__/
 *.exe
 *.out
 *.app
-
-# Durable journal runtime coordination is host-local.
-.journal/.lock/
-.journal/runtime/
