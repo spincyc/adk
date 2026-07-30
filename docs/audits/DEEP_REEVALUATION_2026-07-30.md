@@ -125,13 +125,12 @@ geometry rendered correctly, but with no labels a learner could not tell the
 four button positions from the four cue-LED positions, and shipping a
 decorative plate into a published PDF is worse than the acknowledged gap.
 
-Phase 4 therefore depends on labels being renderable. Either install the font,
-or make labels font-independent by drawing them as stroked SVG paths from a
-small reusable glyph set (digits, `D`, `A`, `k`, `R`, and ohm). The stroke-glyph
-route is the stronger option: it removes the font dependency permanently, so
-this failure mode cannot recur on another under-provisioned machine, and the
-same glyph set repairs the eight broken assets. It is recorded as the
-`svg-stroke-labels` tool candidate.
+Phase 4 therefore depends on labels being renderable. **Resolved:** fonts now
+resolve through TeX Live, and the repository's own standalone-TikZ overlay
+pattern labels a text-free base image with LaTeX's fonts, which cannot regress
+on a host without fontconfig. Use that pattern for new plates. A
+`svg-stroke-labels` tool candidate was recorded here and has been abandoned as
+duplicative of it.
 
 ## Correction — seven assets were repaired, not eight
 
