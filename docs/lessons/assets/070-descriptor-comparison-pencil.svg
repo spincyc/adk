@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="700" viewBox="0 0 1500 700" role="img" aria-labelledby="title desc">
+  <title id="title">Separate declared fixture fingerprints</title>
+  <desc id="desc">Two independently identified descriptor cards share the same consumer-shaped outline but retain different revision, polarity, pull, timing, and range marks.</desc>
+  <rect width="1500" height="700" fill="#faf9f4"/>
+  <g fill="none" stroke="#383838" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M90 97 Q355 66 621 101 L612 585 Q355 615 96 579 Z"/>
+    <path d="M878 98 Q1143 67 1409 102 L1400 585 Q1143 616 884 579 Z"/>
+    <path d="M151 169 Q352 147 557 171 M151 238 Q352 216 554 240 M151 307 Q352 285 551 309 M151 376 Q352 354 548 378 M151 445 Q352 423 545 447"/>
+    <path d="M939 170 Q1140 148 1345 172 M939 239 Q1140 217 1342 241 M939 308 Q1140 286 1339 310 M939 377 Q1140 355 1336 379 M939 446 Q1140 424 1333 448"/>
+    <path d="M625 339 L870 339 M824 294 L872 339 824 384"/>
+    <path d="M703 217 L792 217 L792 461 L703 461 Z"/>
+    <path d="M718 254 L777 254 M718 309 L777 309 M718 364 L777 364 M718 419 L777 419"/>
+  </g>
+</svg>

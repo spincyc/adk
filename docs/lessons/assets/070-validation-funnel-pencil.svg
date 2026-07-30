@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="730" viewBox="0 0 1500 730" role="img" aria-labelledby="title desc">
+  <title id="title">Descriptor structural validation funnel</title>
+  <desc id="desc">Five stacked pencil sieves check identity and revisions, ranges, topology and pulls, timing, and control semantics; only one coherent descriptor card exits while malformed cards remain outside.</desc>
+  <rect width="1500" height="730" fill="#faf9f4"/>
+  <g fill="none" stroke="#383838" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M361 84 Q748 51 1132 85 L1060 185 L435 185 Z"/>
+    <path d="M435 185 L1059 185 L994 283 L501 283 Z"/>
+    <path d="M501 283 L994 283 L930 381 L566 381 Z"/>
+    <path d="M566 381 L930 381 L866 479 L630 479 Z"/>
+    <path d="M630 479 L866 479 L811 561 L686 561 Z"/>
+    <path d="M693 566 L805 566 L805 681 L693 681 Z"/>
+    <path d="M70 173 L280 151 L286 302 L76 320 Z M1187 254 L1418 278 L1408 429 L1179 405 Z M104 464 L321 442 L328 599 L111 617 Z"/>
+    <path d="M93 207 L264 192 M1210 302 L1390 321 M130 505 L304 487"/>
+    <path d="M137 156 L230 310 M233 156 L137 310 M1225 261 L1381 419 M1380 265 L1222 415 M142 452 L293 607 M294 450 L142 609"/>
+  </g>
+</svg>

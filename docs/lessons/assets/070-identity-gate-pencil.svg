@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="680" viewBox="0 0 1500 680" role="img" aria-labelledby="title desc">
+  <title id="title">Declared fixture identity gate</title>
+  <desc id="desc">An anonymous circuit-board silhouette stops before a locked gate while a declared fixture card carrying complete revision evidence passes to structural validation.</desc>
+  <rect width="1500" height="680" fill="#faf9f4"/>
+  <g fill="none" stroke="#373737" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M65 182 Q240 153 409 180 L402 511 Q237 537 72 507 Z"/>
+    <circle cx="135" cy="249" r="27"/><circle cx="337" cy="427" r="27"/>
+    <path d="M162 249 L281 249 L281 335 L337 335 M133 393 L252 393 L252 451"/>
+    <path d="M512 95 L722 95 L722 577 L512 577 Z M566 297 L566 243 Q566 186 619 186 Q672 186 672 243 L672 297"/>
+    <rect x="542" y="297" width="154" height="130" rx="15"/><path d="M619 338 L619 385"/>
+    <path d="M800 165 Q1050 132 1288 168 L1276 521 Q1049 549 806 515 Z"/>
+    <path d="M854 228 Q1040 207 1233 230 M854 291 Q1035 270 1229 294 M854 354 Q1039 333 1225 357 M854 417 Q1032 396 1220 420"/>
+    <path d="M1290 337 L1421 337 M1381 295 L1423 337 1381 379"/>
+  </g>
+  <path d="M53 536 Q235 565 418 532 M793 539 Q1040 571 1292 536" fill="none" stroke="#686868" stroke-width="3" opacity=".35"/>
+</svg>

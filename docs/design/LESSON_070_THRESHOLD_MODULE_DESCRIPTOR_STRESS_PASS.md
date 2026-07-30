@@ -41,8 +41,9 @@ The exact public operations are
 `validateModuleThresholdDescriptor(descriptor)`,
 `validateModuleThresholdFrame(descriptor, frame)`, and
 `moduleComparatorAsserted(descriptor, comparatorLevelHigh)`, plus the explicit
-`moduleDescriptorE1Admissible(descriptor)` query. There is no stateful Lesson
-070 policy or codec.
+`moduleDescriptorDeclarationsComplete(descriptor)` query. The query reports
+structural declaration completeness only and grants no E1 or power authority.
+There is no stateful Lesson 070 policy or codec.
 
 ## Fit review
 
@@ -98,10 +99,12 @@ unknown duration uses `ModuleDurationDeclaration::Unknown` with a canonically
 zero numeric value and blocks E1 admission. Lesson 070 reads no clock and
 never waits internally.
 
-`ModuleThresholdFrame` binds `schemaRevision`, `descriptorId`, and
-`descriptorRevision` to a `ModuleFrameProvenance` containing nonzero source
-identity, source-configuration revision, sequence, and supplied
-`observedAt`. It then carries:
+`ModuleThresholdFrame` binds `schemaRevision`, `descriptorId`,
+`descriptorRevision`, `declaredSpecimenReference`,
+`declaredSpecimenRevision`, and `declaredElectricalEvidenceRevision` to a
+`ModuleFrameProvenance` containing nonzero source identity,
+source-configuration revision, sequence, and supplied `observedAt`. It then
+carries:
 
 - `analogRaw`, `analogStatus`, and `analogProducerStatus`;
 - copied comparator level, status, presence, asserted value, and producer
@@ -116,6 +119,8 @@ representation. Presence, statuses, values, producer statuses, derived
 assertion, and descriptor topology must agree. Warm-up and settling flags are
 copied declarations bound to the frame provenance/configuration; they are not
 measured evidence and are not derived from an internal timer.
+When the descriptor declares an unknown warm-up or settling duration, the
+corresponding copied satisfaction flag must be false.
 
 Rails and raw extrema remain copied endpoint codes. Lesson 070 does not call
 them open circuits, shorts, saturation, or faults and defines no generic
@@ -173,8 +178,8 @@ Host tests must cover:
   `ModuleThresholdControlKind`, `ModuleThresholdDirection`,
   `ModuleDurationDeclaration`, and `ModuleChannelStatus`;
 - every topology/output/pull/rail/polarity/control/direction cross-product;
-- `Unspecified` accepted structurally at E0 and reported inadmissible by
-  `moduleDescriptorE1Admissible()`;
+- `Unspecified` accepted structurally at E0 and reported incomplete by
+  `moduleDescriptorDeclarationsComplete()`;
 - zero, one, and maximum identity/revision values; ordered, equal, and
   inverted declared ranges; exact raw lower/upper rail;
 - known-zero, known-nonzero, and unknown-with-canonical-zero durations;
@@ -195,7 +200,7 @@ Host tests must cover:
 The compile-only Mega replay uses copied descriptor and frame fixtures only.
 Named volatile cells expose topology, polarity, raw value, comparator
 assertion, channel status, declared warm-up/settling satisfaction, identity,
-E1-admissibility result, and returned status. Compilation and those cells
+declaration-completeness result, and returned status. Compilation and those cells
 prove deterministic software behavior, not physical-module conformance.
 
 ## Composition pressure: Lesson 072 E0 characterization bench
@@ -292,22 +297,27 @@ direction, AO/DO correlation, rail/open/short evidence, named AO/DO/VCC/GND
 test points, current-limited first energization, and shutdown plus physical
 power-removal observations.
 
-## Initial gate result
+## Terminal gate result
 
 - Disposition: `natural fit` for a pure declared copied E0 descriptor and
   structural validator
-- Promotion status: architecture only; implementation and publication remain
-  open
+- Promotion status: implemented, independently reviewed, and published at E0
 - Closed scope: explicit descriptor vocabulary, structural/canonical
-  validation, fixed copied values, and deterministic nonmutation
+  validation, fixed copied values, deterministic nonmutation, exhaustive host
+  matrices, compile-only Mega replay, and exact resource evidence
 - Explicitly open: empirical characterization, session recording,
   presentation, persistence, endpoint ownership, exact specimens, power, and
   physical acceptance
-- Open risks: exact implementation evidence remains unmeasured; any material
-  departure from the controlling plan's public fields, canonical cross-field
-  rules, stateless ownership, or zero-resource boundary reopens this pass
+- Measured evidence: 4,564 B ordinary flash, 684 B ordinary static SRAM;
+  4,546 B exact no-LTO probe flash, 690 B static SRAM, 75 B synchronous stack,
+  45 B descriptor, 38 B frame, and 83 B descriptor-plus-frame composition.
+  The link/source dependency scan contains no endpoint, registry, clock,
+  transport, power, or hardware-acquisition dependency.
+- Reopen rule: any material departure from the public fields, canonical
+  cross-field rules, stateless ownership, resource fingerprint, or
+  zero-resource boundary reopens this pass
 - Maximum-composition scenario: one-descriptor Lessons 071--072 E0
   characterization bench with maximum fixed run and record buffers
-- Promotion permitted: no, until implementation, deterministic host/Mega
-  proof, exact aggregate resources, independent review, and terminal
-  post-implementation stress review pass
+- Promotion permitted: yes for copied E0 software/documentation only; all
+  exact-specimen, electrical, powered, and physical-acceptance gates remain
+  open

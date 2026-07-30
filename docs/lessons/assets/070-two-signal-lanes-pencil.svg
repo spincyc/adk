@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="700" viewBox="0 0 1500 700" role="img" aria-labelledby="title desc">
+  <title id="title">Separate analog and comparator lanes</title>
+  <desc id="desc">Two parallel pencil lanes carry a continuous analog trace and discrete comparator states; both meet one descriptor card without either lane being inferred from the other.</desc>
+  <rect width="1500" height="700" fill="#faf9f4"/>
+  <g fill="none" stroke="#393939" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M76 145 Q359 111 653 146 L647 306 Q358 334 81 302 Z"/>
+    <path d="M113 255 Q181 246 247 214 T378 188 T507 223 T613 172"/>
+    <path d="M76 399 Q359 366 653 401 L647 560 Q358 589 81 557 Z"/>
+    <path d="M116 508 L250 508 L250 447 L390 447 L390 508 L610 508"/>
+    <path d="M650 225 L784 225 M650 480 L784 480"/>
+    <path d="M780 112 Q1053 82 1325 114 L1314 593 Q1048 621 786 588 Z"/>
+    <path d="M837 189 Q1048 166 1269 191 M837 259 Q1048 236 1265 261 M837 329 Q1048 306 1261 331 M837 399 Q1045 376 1257 401 M837 469 Q1045 446 1252 471"/>
+    <path d="M1326 352 L1434 352 M1394 314 L1435 352 1394 390"/>
+  </g>
+</svg>

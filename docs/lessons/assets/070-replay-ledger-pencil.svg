@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="700" viewBox="0 0 1500 700" role="img" aria-labelledby="title desc">
+  <title id="title">Deterministic declared-fixture replay</title>
+  <desc id="desc">Two identical descriptor and frame card pairs pass through separate stateless validation runs and produce matching named output cells; power and wiring symbols remain crossed out below.</desc>
+  <rect width="1500" height="700" fill="#faf9f4"/>
+  <g fill="none" stroke="#393939" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M57 92 L273 80 L278 254 L62 267 Z M293 91 L509 80 L514 254 L298 267 Z"/>
+    <path d="M57 380 L273 368 L278 542 L62 555 Z M293 379 L509 368 L514 542 L298 555 Z"/>
+    <path d="M576 106 Q717 80 858 108 L851 247 Q715 271 580 244 Z M576 394 Q717 368 858 396 L851 535 Q715 559 580 532 Z"/>
+    <path d="M515 174 L570 174 M515 462 L570 462 M859 174 L919 174 M859 462 L919 462"/>
+    <path d="M922 93 Q1172 70 1429 97 L1420 261 Q1171 281 928 257 Z M922 381 Q1172 358 1429 385 L1420 549 Q1171 569 928 545 Z"/>
+    <path d="M976 145 L1368 145 M976 204 L1364 204 M976 433 L1368 433 M976 492 L1364 492"/>
+    <path d="M683 593 L763 669 M762 593 L683 669 M852 596 L932 666 M930 596 L853 666"/>
+    <path d="M690 610 L690 647 L753 647 L753 610 Z M873 616 Q891 590 911 616 L911 647 L873 647 Z"/>
+  </g>
+</svg>
