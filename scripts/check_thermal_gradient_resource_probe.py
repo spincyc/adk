@@ -29,9 +29,9 @@ RESIDUAL_SRAM_HARD = 2048
 CALLER_BUFFER_TARGET = 128
 CALLER_BUFFER_HARD = 256
 FINGERPRINT_CONTRACT = {
-    "064": "thermal-gradient-resource-v4-l064",
-    "065": "thermal-gradient-resource-v4-l065",
-    "066": "thermal-gradient-resource-v4-l066",
+    "064": "thermal-gradient-resource-v5-l064",
+    "065": "thermal-gradient-resource-v5-l065",
+    "066": "thermal-gradient-resource-v5-l066",
 }
 
 BOUNDARY_064 = {
@@ -275,53 +275,74 @@ def canonical_compile_units(compile_units):
     return units
 
 
+def boundary_library_stems(lesson):
+    stems = ["one_wire_transaction_policy"]
+    if lesson >= "065":
+        stems.append("qualified_18b20_probe_set_policy")
+    if lesson >= "066":
+        stems.append("thermal_gradient_mapper")
+    return frozenset(stems)
+
+
+def library_compile_unit_stem(path):
+    match = re.search(r"(?:^|/)src/([^/]+)\.cpp$", path)
+    return match.group(1) if match else None
+
+
 def boundary_compile_units(compile_units, lesson):
-    units = json.loads(json.dumps(compile_units))
-    if lesson == "066":
-        units = canonical_compile_units(units)
-    if lesson in ("064", "065"):
-        units = [
-            unit
-            for unit in units
-            if not unit.get("file", "").endswith(
-                "/src/thermal_gradient_mapper.cpp"
-            )
-        ]
-    return units
+    allowed = boundary_library_stems(lesson)
+    units = [
+        unit
+        for unit in json.loads(json.dumps(compile_units))
+        if (
+            library_compile_unit_stem(unit.get("file", "")) is None
+            or library_compile_unit_stem(unit.get("file", "")) in allowed
+        )
+    ]
+    return canonical_compile_units(units)
 
 
 def boundary_compile_dependencies(dependencies, lesson):
     result = json.loads(json.dumps(dependencies))
-    if lesson == "066":
-        result = json.loads(normalized(result))
     if "manifests" not in result:
         return {
             key: boundary_compile_dependencies(value, lesson)
             for key, value in result.items()
         }
-    if lesson not in ("064", "065"):
-        return result
-    excluded = (
-        "/src/thermal_gradient_mapper.cpp",
-        "/src/thermal_gradient_mapper.h",
-    )
+    allowed = boundary_library_stems(lesson)
     result["manifests"] = [
         manifest
         for manifest in result["manifests"]
-        if "thermal_gradient_mapper.cpp" not in manifest["path"]
+        if (
+            not manifest["path"].startswith("libraries/adk/")
+            or pathlib.Path(manifest["path"]).name.removesuffix(".cpp.d")
+            in allowed
+        )
     ]
+    retained_library_dependencies = {
+        path
+        for manifest in result["manifests"]
+        if manifest["path"].startswith("libraries/adk/")
+        for path in manifest["dependencies"]
+    }
+    retained_dependencies = set()
     for manifest in result["manifests"]:
-        manifest["dependencies"] = [
-            path
-            for path in manifest["dependencies"]
-            if not any(marker in path for marker in excluded)
-        ]
+        if not manifest["path"].startswith("libraries/adk/"):
+            manifest["dependencies"] = [
+                path
+                for path in manifest["dependencies"]
+                if (
+                    "/src/" not in path
+                    or path in retained_library_dependencies
+                )
+            ]
+        retained_dependencies.update(manifest["dependencies"])
     result["dependency_hashes"] = {
         path: digest
         for path, digest in result["dependency_hashes"].items()
-        if not any(marker in path for marker in excluded)
+        if path in retained_dependencies
     }
-    return result
+    return json.loads(normalized(result))
 
 
 def dependency_sha256(path):
@@ -1341,7 +1362,7 @@ def enrich_evidence(evidence_path):
     )
 
     fingerprint_payload = {
-        "schema": 4,
+        "schema": 5,
         "probe_contract": FINGERPRINT_CONTRACT["064"],
         "lesson_through": "064",
         "fqbn": report["fqbn"],
@@ -1580,7 +1601,7 @@ def enrich_evidence(evidence_path):
                 state_065["gates"][metric] = "review-required"
         apply_enriched_reviews(state_065, BOUNDARY_065)
         payload_065 = {
-            "schema": 4,
+            "schema": 5,
             "probe_contract": FINGERPRINT_CONTRACT["065"],
             "lesson_through": "065",
             "predecessor_fingerprint_sha256": fingerprint,
@@ -1870,7 +1891,7 @@ def enrich_evidence(evidence_path):
         apply_enriched_reviews(state_066, BOUNDARY_066)
 
         payload_066 = {
-            "schema": 4,
+            "schema": 5,
             "probe_contract": FINGERPRINT_CONTRACT["066"],
             "lesson_through": "066",
             "predecessor_fingerprint_sha256":

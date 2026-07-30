@@ -1,10 +1,10 @@
 # Lesson 066 thermal-gradient-mapper architecture stress pass
 
-Status: implementation-depth E0 review; Lesson 065 promotion, exact aggregate
-resource evidence, powered specimens, presentation, and recording media
-remain open.
+Status: terminal promoted E0 review. Exact aggregate resource evidence and
+all non-hardware publication gates pass; powered specimens, presentation,
+recording media, and E1a--E1d acceptance remain open.
 
-This pass reviews the queued Lesson 066 project boundary from the
+This pass records the promoted Lesson 066 project boundary from the
 [extended component/project cadence](../projects/component_project_cadence.md).
 
 `ThermalGradientMapper` is a natural E0 composition only when it consumes one
@@ -16,9 +16,9 @@ driver, preservation instrument, or safety monitor.
 ## Boundary
 
 - Name and lesson/project: `ThermalGradientMapper`, Lesson 066
-- Review state: implementation-depth review against the settled Lesson 065
+- Review state: terminal promotion review against the published Lesson 065
   seam
-- Proposed public responsibility: validate one copied fixed-capacity qualified
+- Public responsibility: validate one copied fixed-capacity qualified
   probe-set observation, project it into configured spatial slots, derive
   conservative adjacent raw-sixteenth intervals, and fill bounded inert
   presentation and record-intent values
@@ -37,7 +37,7 @@ driver, preservation instrument, or safety monitor.
 | Ownership and lifecycle | Inert construction, noncopyable/nonmovable coordinator, fixed configuration, explicit `initialize`/`reset`/`shutdown`, and no heap, callback, retained caller pointer, child reference, or hidden clock. `update` fills caller-owned result and record-intent buffers synchronously and retains no reference to either. |
 | Time and ordering | `TimePoint now` is supplied. Probe adjacency is always configuration order, never discovery order, ROM numeric order, arrival order, current temperature, or display-page order. Equal accepted frame identity is idempotent only for a byte-identical copied observation. Output age is recomputed at mapper `now`. Same-sequence identical control is a no-edge replay; a changed duplicate rejects; a fresh no-edge control advances anti-replay state. Regression, future time, exact half-range ambiguity, invalid modular age, and sequence exhaustion reject atomically. Wrap-valid stale evidence commits a fault result. |
 | Errors and status | Lifecycle and structural invalidity use `Status`. Valid but unhealthy child evidence remains domain state. Missing, disappeared, CRC-failed, conversion-in-progress, stale, implausible-step, mixed-resolution, or otherwise unqualified required slots dominate all numeric presentation: they can never be rendered as a cold value or a valid gradient. |
-| Resources | E0 claims zero pins, timers, interrupts, buses, endpoints, supplies, displays, LEDs, clocks, or media. Measure the linked Lessons 064--066 maximum composition with the exact-four Lesson 065 configuration and every permitted mapped-subset size. Revised planning targets are 16/24 KiB flash, 2,048/3,072 B static SRAM, 768/1,024 B conservative synchronous stack, and 512/768 B mapper object, with each fixed caller-owned ABI value at or below 256/384 B and at least 4 KiB target residual SRAM. Exact implementation and independent review still gate promotion. |
+| Resources | E0 claims zero pins, timers, interrupts, buses, endpoints, supplies, displays, LEDs, clocks, or media. The linked Lessons 064--066 maximum composition is measured with the exact-four Lesson 065 configuration and every permitted mapped-subset size. The terminal tuple is 16,662 bytes ordinary flash, 18,822 bytes exact no-LTO flash, 2,210 bytes static SRAM, 855 bytes conservative synchronous stack, a 448-byte mapper, 1,943 bytes recurring storage, 579 bytes phase-local storage, 2,522 bytes lifetime storage, and 4,999 bytes residual SRAM. Six target misses were independently accepted below their hard limits. |
 | Deterministic proof | Host fixtures can scramble discovery order while preserving configured position; inject every child quality, raw-sixteenth extreme, interval boundary, mapping error, stale/future/rollover condition, page transition, fresh record edge, replay, reset, and shutdown. Tests compare complete fixed result and caller-owned record images byte for byte and protect them with canaries. |
 | Packaging/public surface | One project header/source, strict host test, compile-only Mega replay, exact linked resource probe, HTML reference, and complementary pencil-drawing PDF. No adapter, single-wire command, LCD/LED driver, RTC/SD include, physical wiring, or formal schematic enters the E0 package. |
 | Example and documentation fit | The canonical replay presents acquire/configure/start and observe/decide/actuate phases over copied fixtures. Named result cells expose configured slot identity, raw-sixteenth interval, fault token, page intent, gradients, and record intent without making Serial the only evidence. |
@@ -231,10 +231,13 @@ Tests must cover:
 - reset, shutdown, repeated shutdown, reinitialize, and recovery while the
   copied source remains faulted.
 
-The current pre-freeze AVR header ABI is mapper 448 bytes, envelope 202 bytes,
-intent 146 bytes, record image 229 bytes, result 377 bytes, and configuration
-87 bytes. These exact type sizes pass the current header limits but do not
-claim implementation, linked-resource, or publication completion.
+The frozen AVR header ABI is mapper 448 bytes, envelope 202 bytes, intent
+146 bytes, record image 229 bytes, result 377 bytes, and configuration
+87 bytes. These exact type sizes pass their hard limits. The result has seven
+bytes of hard-limit margin and is a zero-growth ABI: any layout,
+implementation, example, or toolchain change requires a fresh tuple-bound
+review. The terminal evidence fingerprint is
+`0e5c142fd8c0970ff529f46b1994b6446fdd2f8c0d00c879d05931f1a79742f7`.
 
 The canonical Mega replay is compile-only and writes named memory result
 cells. The future physical acceptance record separately requires prediction,
@@ -271,23 +274,19 @@ safe-state evidence.
   complete Lesson 065 copied observation, freezes configured spatial order,
   keeps raw-sixteenth interval arithmetic conservative, makes pages
   fault-dominant, and emits only caller-owned volatile record intent
-- Open risks: Lesson 065 promotion and final public ABI; exact
-  interval provenance; aggregate flash/SRAM/stack/object and caller-buffer
-  sizes; exact DS18B20 specimens and supply mode; powered LCD/LED observation;
-  any RTC/SD recorder
+- Open risks: exact DS18B20 specimens and supply mode; powered LCD/LED
+  observation; any RTC/SD recorder; and E1a--E1d acceptance
 - Required discussion or decision IDs: none for the bounded E0 shape; adding
   storage receipts/retries/durability, automatic source ordering, or a generic
   thermal abstraction requires a separate architectural decision
-- Remediation owner and next action: the Lessons 064--066 implementation-plan
-  owner promotes the exact Lesson 065 copied observation and final resource
-  tuple, then measures the natural recurring composition against the revised
-  2,048/3,072-byte static gates before Lesson 066 header freeze
-- Verification commands and results: document review only; strict host,
-  sanitizer, style, standalone-header, Mega, exact resource, PDF, site, and
-  publication gates remain pending
-- Maximum-composition scenario and proof: specified above; deterministic
-  fixture and exact linked resource evidence remain pending
-- Promotion permitted: yes for implementation planning after Lessons 064--065
-  interfaces and exact budgets are frozen; no for publication, powered
+- Remediation owner and next action: none for the promoted E0 shape; any
+  powered adapter or durable recorder begins at its separately gated boundary
+- Verification commands and results: strict host, sanitizer, style,
+  standalone-header, Mega, exact resource, PDF, site, and publication gates
+  pass
+- Maximum-composition scenario and proof: the exact-four Lesson 065
+  configuration and every permitted mapped-subset boundary pass deterministic
+  fixtures and terminal linked-resource review
+- Promotion permitted: yes for the bounded E0 publication; no for powered
   sensing/presentation, physical gradients, RTC/SD storage, preservation,
   medical, or safety claims

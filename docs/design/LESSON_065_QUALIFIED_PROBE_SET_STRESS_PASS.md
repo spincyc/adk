@@ -1,8 +1,8 @@
 # Lesson 065 qualified-probe-set architecture stress pass
 
-Status: implementation-depth architecture review; Lesson 065 implementation,
-exact final resource evidence, powered specimens, electrical adapters, and
-bench acceptance remain open.
+Status: published and host verified at E0; exact resource evidence and
+independent review are complete. Powered specimens, electrical adapters, and
+bench acceptance remain E1-open.
 
 This pass reviews the Lesson 065 subject fixed by the
 [extended component/project cadence](../projects/component_project_cadence.md):
@@ -460,23 +460,30 @@ family remains distinct and cannot satisfy this gate.
 ## Gate result
 
 - Disposition: `natural fit` as an E0 fixed-capacity copied-evidence policy
-- Open risks: exact Lesson 064 evidence types; final CRC/status vocabulary;
-  AVR ABI/object/stack pressure; Lesson 066 aggregate budget; exact specimen,
-  supply mode, bus topology, cable construction, conversion behavior, and
-  bench acceptance
+- Published E0 resource tuple: ordinary flash 13,662 bytes, exact no-LTO flash
+  16,196 bytes, ordinary and exact static SRAM 1,438 bytes, conservative
+  synchronous stack 533 bytes, policy 764 bytes, builder 477 bytes, recurring
+  owned storage 1,241 bytes, lifetime peak storage 1,421 bytes, snapshot 180
+  bytes, and residual SRAM 6,093 bytes
+- Terminal evidence fingerprint:
+  `350ddd1f6cefef2f5da249f295632339119c0f42d669a0a3a4732c36fed177cb`;
+  independent rereview reproduced the tuple and returned clean
+- Open risks: exact specimen, supply mode, bus topology, cable construction,
+  conversion behavior, thermal accuracy, presentation, persistence,
+  authentication, and bench acceptance remain E1a--E1d work
 - Required discussion or decision IDs: none if implementation retains exactly
   four configured identities and no transport ownership; changing capacity,
   admitting runtime identity replacement, or adding a powered adapter requires
   a new review
-- Remediation owner and next action: Lessons 064--066 planning freezes the
-  copied transaction seam and aggregate budgets before implementation; Lesson
-  065 implementation supplies the exhaustive matrix and exact resource probe
-- Verification commands and results: document structure and diff checks only;
-  implementation, host, Mega, resource, PDF, and publication gates are pending
+- Remediation owner and next action: physical acceptance owners qualify exact
+  specimens and the complete powered shared fixture before any E1 claim
+- Verification commands and results: implementation, strict host and
+  sanitizer tests, Mega compile, exact resource probe, PDF, publication, and
+  independent resource review pass at E0
 - Maximum-composition scenario and proof: four mixed-resolution configured
   probes inside the Lesson 066 mapper with simultaneous search, conversion,
   CRC, missing, step, diagnostic, rollover, reset, and restart pressure;
-  deterministic fixture and measured aggregate evidence pending
-- Promotion permitted: yes for E0 implementation after the Lesson 064 copied
-  evidence contract and Lesson 066 aggregate budget are frozen; no for powered
-  adapters, wiring, schematics, or physical claims
+  deterministic fixtures and the published Lesson 066 aggregate resource
+  evidence pass
+- Promotion permitted: E0 is published; no powered adapters, wiring,
+  schematics, or physical claims are permitted until their E1 gates pass

@@ -1,8 +1,8 @@
 # Lesson 064 1-Wire transaction architecture stress pass
 
-Status: implementation reconciliation; the E0 copied intent/receipt policy
-matches the boundaries below and awaits final review against a frozen core,
-while every powered endpoint and physical timing claim remains open.
+Status: published and host verified at E0. The copied intent/receipt policy
+matches the boundaries below; every powered endpoint and physical timing
+claim remains open at E1.
 
 Lesson 064 introduces a bounded transaction policy for the listed DS18B20
 family. It does not introduce a GPIO driver, delay-based bit banging, a
@@ -252,13 +252,22 @@ handling, and independent removal.
 
 - Disposition: `natural fit` for an E0 copied intent/receipt policy with a
   dedicated microsecond clock and typed allowlisted operations
-- Promotion permitted: yes for E0 design and implementation after the
-  Lessons 064--066 plan freezes the public types; no for a powered adapter,
-  parasite power, temperature decoding, or physical identity claims
-- Open risks: exact E1 specimen identity, counterfeit/compatible parts,
+- Promotion status: published and host verified at E0; no powered adapter,
+  parasite-power, temperature-decoding, or physical-identity claim is
+  promoted
+- Resource evidence: ordinary Mega replay 10,390 B flash and 735 B static
+  SRAM; isolated no-LTO replay 12,116 B flash and 735 B static SRAM; 199 B
+  conservative synchronous stack; 254 B policy object; 7,130 B residual Mega
+  SRAM. The independently reviewed flash and object target misses remain below
+  their hard limits.
+- Evidence fingerprint:
+  `77c3da45f8ea0f6943a01f57fdd2062a78a1fb61fc79837c1c15c45fbd876b97`
+- Open E1 risks: exact specimen identity, counterfeit/compatible parts,
   microsecond scheduling latency, pull-up and topology, ROM search capacity,
-  line cleanup evidence, and aggregate Lesson 066 resources
-- Remediation owner and next action: Lesson 064 implementation lane freezes
-  the header and exhaustive copied trace before any endpoint work
-- Verification status: document review only; implementation, exact resource,
-  publication, and physical checks remain pending
+  and physical line-cleanup evidence
+- Next action: preserve the published E0 policy and complete the separately
+  gated E1a/E1b exact-specimen, powered-adapter, timing, electrical, and
+  physical cleanup acceptance before making any endpoint claim
+- Verification status: implementation, deterministic host replay, Mega
+  packaging, exact resource evidence, HTML reference, and pencil-drawing PDF
+  publication pass; physical checks remain open

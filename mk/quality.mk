@@ -9,7 +9,8 @@ QUALITY_ARCH_PACKAGES = base-devel clang
 	quality-tools quality-packages host-size-check firmware-size-check \
 	host-test-sanitize serial-log-test deployed-site-test arduino-lint \
 	arduino-lint-submit arduino-lint-update arduino-lint-release \
-	release-metadata-check release-check
+	release-metadata-check release-check museum-case-fingerprint-test \
+	thermal-gradient-fingerprint-test
 
 quality: quality-fast firmware-size-check package-smoke native-package-smoke \
 	lessons-check site-check
@@ -20,13 +21,20 @@ quality-lint: style-check headers-check
 
 quality-test: host-test host-test-exceptions host-test-sanitize \
 	serial-log-test deployed-site-test usb-matrix-check usb-mesh-check hdmi-mesh-check \
-	route-profile-check
+	route-profile-check museum-case-fingerprint-test \
+	thermal-gradient-fingerprint-test
 
 serial-log-test:
 	python -m unittest tests/test_serial_log.py
 
 deployed-site-test:
 	python -m unittest tests/test_deployed_site.py
+
+museum-case-fingerprint-test:
+	python -m unittest tests/test_museum_case_fingerprint.py
+
+thermal-gradient-fingerprint-test:
+	python -m unittest tests/test_thermal_gradient_fingerprint.py
 
 quality-size: host-size-check
 

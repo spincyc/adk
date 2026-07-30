@@ -403,6 +403,28 @@ def fingerprint_tools(tools):
     }
 
 
+def fingerprint_compile_units(units, source_paths):
+    relevant_library_units = {
+        path
+        for path in source_paths
+        if path.startswith("src/") and path.endswith(".cpp")
+    }
+    selected = []
+    for unit in units:
+        unit_path = unit["file"]
+        repository_path = (
+            unit_path.removeprefix("<repo>/")
+            if unit_path.startswith("<repo>/")
+            else unit_path
+        )
+        if (
+            not repository_path.startswith("src/")
+            or repository_path in relevant_library_units
+        ):
+            selected.append(unit)
+    return selected
+
+
 def compile_ordinary(arguments, boundaries):
     temporary = pathlib.Path(tempfile.mkdtemp(prefix="adk-museum-ordinary."))
     try:
@@ -453,7 +475,7 @@ def compile_ordinary(arguments, boundaries):
                     )
                 normalized_units.append(
                     {
-                        "file": normalized(unit.get("file", "")),
+                        "file": json.loads(normalized(unit.get("file", ""))),
                         "arguments": json.loads(normalized(arguments_list)),
                     }
                 )
@@ -878,6 +900,9 @@ def enrich_evidence(evidence_path):
             )
         )
         report["status"] = probe.merge_status(report["status"], state["status"])
+    # Keep review fingerprints scoped to the probe and boundary implementations.
+    # Umbrella headers such as Adk.h remain visible in raw compile provenance, but
+    # hashing their contents here would stale earlier reviews for unrelated additions.
     common_source_paths = [
         "probes/museum_case_object_sizes.cpp",
         "scripts/check_museum_case_resource_probe.py",
@@ -925,7 +950,7 @@ def enrich_evidence(evidence_path):
             )
         ]
         fingerprint_payload = {
-            "schema": 3,
+            "schema": 4,
             "lesson_through": lesson,
             "fqbn": report["fqbn"],
             "core_package": ORDINARY_EVIDENCE["061"]["core_package"],
@@ -946,7 +971,10 @@ def enrich_evidence(evidence_path):
                 )
             ),
             "ordinary_compile_units": {
-                candidate: ORDINARY_EVIDENCE[candidate]["compile_units"]
+                candidate: fingerprint_compile_units(
+                    ORDINARY_EVIDENCE[candidate]["compile_units"],
+                    source_paths,
+                )
                 for candidate in through_lessons
             },
             "linker_executable": ORDINARY_EVIDENCE["061"]["linker_executable"],
