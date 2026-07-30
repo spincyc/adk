@@ -1,0 +1,66 @@
+#!/bin/sh
+# Test for tools/align-parens: exit 0 = pass (the stable gate).
+set -eu
+
+# Resolved sibling path: keeps working after a cd into a sandbox.
+tool="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)/align-parens"
+checker="$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/scripts/check_style.py"
+
+# --help always works.
+"$tool" --help >/dev/null
+
+# Work in a throwaway sandbox; the trap cleans up on any exit.
+sandbox="$(mktemp -d)"
+trap 'rm -rf "$sandbox"' EXIT INT TERM
+cd "$sandbox"
+
+# Two same-indent call lines whose parentheses sit in different columns are
+# exactly what the repository style rule rejects.
+cat > misaligned.cpp <<'FIXTURE'
+void demo ()
+{
+    shortCall (1);
+    muchLongerCall (2);
+}
+FIXTURE
+cp misaligned.cpp expected_input.cpp
+
+# The authority agrees the fixture starts out misaligned.
+python3 "$checker" misaligned.cpp 2>/dev/null && exit 1 || test $? = 1
+
+# --check reports the finding through exit 1 and does not write the file.
+"$tool" --check --json misaligned.cpp > check.json && exit 1 || test $? = 1
+grep -q '"v":1' check.json
+grep -q '"status":"aligned"' check.json
+cmp misaligned.cpp expected_input.cpp
+
+# Writing mode aligns the file and exits 0.
+"$tool" --json misaligned.cpp > fix.json
+grep -q '"changed":\["misaligned.cpp"\]' fix.json
+
+# The authority now accepts the result: that is the whole point of the tool.
+python3 "$checker" misaligned.cpp >/dev/null
+
+# Re-running changes nothing: the declared idempotence is real.
+cp misaligned.cpp once.cpp
+"$tool" --json misaligned.cpp > again.json
+grep -q '"status":"clean"' again.json
+grep -q '"changed":\[\]' again.json
+cmp misaligned.cpp once.cpp
+
+# An already-clean file is reported clean and left byte-identical.
+cat > clean.cpp <<'FIXTURE'
+void demo ()
+{
+    onlyOneCall (1);
+}
+FIXTURE
+cp clean.cpp clean_expected.cpp
+"$tool" --json clean.cpp > clean.json
+grep -q '"status":"clean"' clean.json
+cmp clean.cpp clean_expected.cpp
+
+# A missing file is an error: one JSON object on stderr, nothing on stdout.
+"$tool" --json absent.cpp > out.txt 2> err.json && exit 1 || test $? = 70
+test ! -s out.txt
+grep -q '"status":"error"' err.json

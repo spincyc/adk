@@ -1,0 +1,172 @@
+#!/usr/bin/env python3
+"""Align ADK function-call parentheses in C++ sources to the repository style rule.
+
+Usage: align-parens [--check] FILE...
+
+`make style-check` requires that consecutive same-indent lines containing
+function-call parentheses put that parenthesis in the same column. This tool
+inserts the padding that satisfies the rule, so new sources do not have to be
+aligned by hand.
+
+The definition of a function parenthesis is not restated here: it is imported
+from scripts/check_style.py, which remains the single authority for the rule.
+That import is why this tool is repo-local rather than portable.
+"""
+from __future__ import annotations
+
+import argparse
+import importlib.util
+import json
+import sys
+from pathlib import Path
+
+PROTOCOL_VERSION = 1
+CHECKER = Path (__file__).resolve ().parent.parent / "scripts" / "check_style.py"
+
+
+def load_checker ():
+    """Import the repository style checker as the authority for the rule."""
+    specification = importlib.util.spec_from_file_location (
+        "adk_check_style", CHECKER
+    )
+    if specification is None or specification.loader is None:
+        raise RuntimeError (f"cannot load the style authority: {CHECKER}")
+    module = importlib.util.module_from_spec (specification)
+    specification.loader.exec_module (module)
+    return module
+
+
+def groups (lines: list[str], checker) -> list[list[tuple[int, int]]]:
+    """Group consecutive same-indent lines by their first call parenthesis."""
+    collected: list[list[tuple[int, int]]] = []
+    group: list[tuple[int, int]] = []
+    indent: int | None = None
+    in_block_comment = False
+
+    for index, line in enumerate (lines):
+        clean, in_block_comment = checker.scrub (line, in_block_comment)
+        found = checker.candidates (clean)
+        if not found:
+            if len (group) > 1:
+                collected.append (group)
+            group, indent = [], None
+            continue
+
+        current = len (clean) - len (clean.lstrip ())
+        if group and current != indent:
+            if len (group) > 1:
+                collected.append (group)
+            group = []
+        indent = current
+        group.append ((index, found[0].end () - 1))
+
+    if len (group) > 1:
+        collected.append (group)
+    return collected
+
+
+def align (text: str, checker) -> str:
+    """Return the text with every misaligned group padded into one column."""
+    lines = text.split ("\n")
+    changed = True
+    while changed:
+        changed = False
+        for group in groups (lines, checker):
+            target = max (column for _, column in group)
+            for index, column in group:
+                if column < target:
+                    lines[index] = (
+                        lines[index][:column]
+                        + " " * (target - column)
+                        + lines[index][column:]
+                    )
+                    changed = True
+    return "\n".join (lines)
+
+
+def run (paths: list[str], check_only: bool) -> dict[str, object]:
+    """Align, or only report, every requested file in sorted order."""
+    checker = load_checker ()
+    changed: list[str] = []
+    for name in sorted (paths):
+        path = Path (name)
+        original = path.read_text (encoding="utf-8")
+        aligned = align (original, checker)
+        if aligned == original:
+            continue
+        changed.append (name)
+        if not check_only:
+            path.write_text (aligned, encoding="utf-8")
+    return {
+        "changed": changed,
+        "checked": sorted (paths),
+        "status": "aligned" if changed else "clean",
+    }
+
+
+def main (argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser (
+        prog="align-parens",
+        description=(
+            "Align ADK function-call parentheses in C++ sources to the "
+            "repository style rule."
+        ),
+    )
+    parser.add_argument ("paths", metavar="FILE", nargs="+")
+    parser.add_argument (
+        "--check",
+        action="store_true",
+        help="report files that need alignment without writing them",
+    )
+    parser.add_argument (
+        "--json",
+        action="store_true",
+        help="emit one compact key-sorted JSON object (cli-v1)",
+    )
+    arguments = parser.parse_args (argv)
+    try:
+        payload = run (arguments.paths, arguments.check)
+    except Exception as error:
+        message = str (error) or error.__class__.__name__
+        if arguments.json:
+            print (
+                json.dumps (
+                    {
+                        "code": "internal",
+                        "error": message,
+                        "status": "error",
+                        "v": PROTOCOL_VERSION,
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ),
+                file=sys.stderr,
+            )
+        else:
+            print (f"align-parens: {message}", file=sys.stderr)
+        return 70
+
+    if arguments.json:
+        print (
+            json.dumps (
+                {**payload, "v": PROTOCOL_VERSION},
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+        )
+    else:
+        for name in payload["changed"]:
+            print (f"aligned\t{name}")
+        if not payload["changed"]:
+            print ("clean")
+
+    # --check reports findings through the exit code; writing mode succeeds.
+    if arguments.check and payload["changed"]:
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit (main ())

@@ -44,6 +44,7 @@ nav:
       - Build locally: build.md
       - Development: docs/DEVELOPMENT.md
       - Testing: docs/TESTING.md
+      - Tool registry: docs/TOOLS.md
       - Packaging: docs/PACKAGING.md
       - PDF policy: docs/PDF_POLICY.md
   - About:

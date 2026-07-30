@@ -255,6 +255,7 @@ def stage() -> None:
         "SIZE_BUDGETS.md",
         "STYLE.md",
         "TESTING.md",
+        "TOOLS.md",
         "WORK_QUEUE.md",
     )
     for name in canonical_docs:

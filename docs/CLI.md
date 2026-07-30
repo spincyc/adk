@@ -150,7 +150,12 @@ make native-package-smoke
 make lessons-check
 make site-check
 make legacy-check
+make tool-registry-check
 ```
+
+Repo-local tools are indexed in `tmt.json` and live in `tools/`. Run
+`tools/<id> --help` before writing a script that repeats their work, and see
+[the repository tool registry](TOOLS.md) for the conventions.
 
 Run `make quality` before committing a supported boundary.
 The default `make check` includes both HDMI control-model and shared
@@ -195,6 +200,7 @@ route-profile tests.
 ## site                      Build the documentation site.
 ## site-serve                Serve the site locally.
 ## quality                   Run local software, package, and documentation gates.
+## tool-registry-check       Run the tmt gate battery over tmt.json and tools/.
 ## arduino-lint              Run strict Arduino library structure checks.
 ## arduino-lint-submit       Run strict initial-inclusion checks.
 ## arduino-lint-update       Run strict post-inclusion update checks.
