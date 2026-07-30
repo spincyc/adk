@@ -397,7 +397,7 @@ let the lesson-page image embedding (track 2) carry the visual identity.
 | 2 | Site foundation: CSS retarget + dark mode, landing funnel and canonical boundary statement, stale-row fix | TASK-9, TASK-10 |
 | 3 | Lesson pages: embed existing pencil assets across all published pages; convert predict/observe tables to runnable numbered steps arc by arc; dissolve PDF assessment sections | TASK-8 |
 | 4 | Assembly plates: per-lesson pencil drawings of physical arrangement, earliest arcs first (006–039), then future-bench plates for E0 arcs. Unblocked — labels render again; prefer the TikZ overlay pattern so plates cannot regress on a host without fontconfig fonts | TASK-8 |
-| 5 | Object-design seams and convergence: correlation header, time guard, component chain, then migrate-when-touched convention alignment under stress-pass discipline | TASK-7 |
+| 5 | Object-design seams and convergence: correlation header, time guard, component chain, then migrate-when-touched convention alignment under stress-pass discipline. The time-guard extraction is **blocked** by its own [stress pass](../design/SHARED_MODULAR_CHRONOLOGY_STRESS_PASS.md), which requires classifying all 163 comparison sites into named predicates first | TASK-7 |
 
 Lesson 081 continues under its frozen plan; the 079–081 evidence-header
 finding feeds its terminal stress pass rather than reopening published
