@@ -161,8 +161,9 @@ follows:
   Digital Temperature, Flame, and Magnetic Spring families;
 - lessons 064–066: single-wire transport and the listed 18B20 Temp family;
 - lessons 067–069: normalized records from the identified inertial revision;
-- lessons 070–072: characterization of identified low-voltage
-  analog/comparator families; and
+- lessons 070–072: E0 characterization policy for listing-authorized
+  low-voltage analog/comparator families, with each exact powered specimen
+  separately gated; and
 - lessons 079–081: inert low-energy component qualification.
 
 Metal Touch is listing-authorized, but its exact topology, pinout, thresholds,

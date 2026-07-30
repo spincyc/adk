@@ -158,12 +158,13 @@ display, and writes no storage. The Lesson 066 canonical replay measures
 18,822/2,210 bytes with 855 bytes conservative stack and 4,999 bytes residual
 SRAM. Six target misses were independently reviewed below their hard limits.
 
-Development next follows lessons 067--081, one implementation-depth
-three-lesson brief at a time. The remaining arc stays engagement-first:
-motion-recording and characterization before the authorized-family replacement
-and qualification blocks. Authorization, prerequisite, exact-specimen, safety,
-and evidence gates still control activation; the ordering is not a support
-claim.
+Development next follows Lessons 070--081, one implementation-depth
+three-lesson brief at a time. The next arc is copied threshold-module
+characterization, followed by authorized-family replacement and qualification
+blocks. Lessons 067--069 are published E0 copied-record policy; exact motion
+acquisition, presentation, and persistence remain open E1a--E1c work.
+Authorization, prerequisite, exact-specimen, safety, and evidence gates still
+control activation; the ordering is not a support claim.
 
 Every component requires lifecycle tests, deterministic fakes, a canonical Mega
 example, size evidence, terse HTML, a rich complementary PDF, and recorded

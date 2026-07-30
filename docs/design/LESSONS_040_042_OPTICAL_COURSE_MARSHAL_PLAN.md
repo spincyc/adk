@@ -249,10 +249,11 @@ qualified emitter-on/off or paired-channel schedule. Until then, correlated
 changes are a worksheet observation, not a component diagnosis.
 
 Lesson 040 owns calibration-bound optical state and event semantics over a
-qualified copied source. Lessons 070--072 own specimen-neutral module
-descriptors, electrical characterization sweeps, and characterization records.
-Neither boundary widens or silently absorbs the other; Lesson 040 does not own
-potentiometer, pull-up, comparator, or module-topology characterization.
+qualified copied source. Lessons 070--072 own declared descriptors, copied
+characterization sweeps, and result records; future exact-specimen E1 work
+owns electrical characterization. Neither boundary widens or silently absorbs
+the other; Lesson 040 does not own potentiometer, pull-up, comparator, or
+module-topology characterization.
 
 Time validation precedes enum and source processing. Identical same-time
 samples are idempotent; changed same-time evidence, backward apparent time, or

@@ -104,9 +104,10 @@ published or bench-verified:
 
 | Lessons | Planned project |
 |---:|---|
-| 070–072 | Module characterization bench |
+| 070–072 | Inert module characterization bench |
 | 073–078 | Authorized-family subjects pending |
 | 079–081 | Component qualification bench |
 
-Pencil drawings provide orientation only. Build from each PDF’s exact schematic
-and connection table.
+Pencil drawings provide orientation. Only a lesson that explicitly qualifies
+an exact powered circuit may provide an authoritative formal schematic and
+connection table; pure E0 lessons provide neither.

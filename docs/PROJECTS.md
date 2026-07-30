@@ -116,13 +116,14 @@ may claim hardware verification until its measured record is published.
 | [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | E0 copied resistive-probe, thermal, radiant, and qualified reed evidence | Inert museum-case monitor |
 | [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | E0 copied single-wire transaction receipts and qualified synthetic 18B20 observations | Inert thermal-gradient presentation and record intent |
 | 067--069 | Inertial records and source qualification | Interchangeable motion recorder |
-| 070--072 | Identified threshold descriptors and sweeps | Module characterization bench |
+| 070--072 | Declared threshold descriptors and copied sweeps | Inert module characterization bench |
 | 073--075 | Authorized-family replacements pending | Project pending re-scope |
 | 076--078 | Authorized-family replacements pending | Project pending re-scope |
 | 079--081 | Low-side driver and indicator semantics | Component qualification bench |
 
-The exact sensor model may follow the kit inventory, but changing a part must
-not change the deterministic behavior interface or its tests.
+A listing-authorized family may scope planning, but exact specimen support
+requires inventory evidence and qualification. Changing a specimen must not
+silently change the deterministic policy contract or its tests.
 
 ## Project delivery queue
 
@@ -151,8 +152,8 @@ explicit open item.
 | [060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Host verified; exact powered fixtures open | Digit refresh, register failure, attributed disagreement, and shutdown traces | Lessons 058--060 provide host-verified E0 result cells; independent physical display self-tests and transport points remain E1 |
 | [063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Host verified; E0 copied-evidence project published | Copied Water Level, thermistor, distinct Digital Temperature, radiant, and qualified reed traces; latch, acknowledgement, cooldown, bounded audit-intent receipt, recovery, and replay evidence | E0 health/fault, sound, LCD, and inert relay-lamp intent cells; powered presentation is E1c/E1d, durable RTC/media remains deferred, and the exact extra-low-voltage relay/lamp fixture is E2 |
 | [066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Host verified; E0 copied-evidence project published | Copied line-receipt transactions, configured family-`0x28` ROM identities, synthetic scratchpad CRC/conversion/freshness/disappearance, ordered interval-gradient, fault-dominance, bounded page, and volatile record-intent traces | E0 result cells only; source structure is validated, not authenticated; exact DS18B20 specimens, bus timing and pull-up circuits, multi-probe qualification, powered presentation, persistence, and bench evidence remain separate E1 gates |
-| 069 | Queued; detailed plan required | Normalization, provenance, qualification, and replay traces | Display self-test, orientation, and dominant fault |
-| 072 | Queued; detailed plan required | Descriptor, sweep, disagreement, and record traces | Raw, comparator, validity, and switched-power evidence |
+| [069](design/LESSONS_067_069_MOTION_RECORDER_PLAN.md) | Published; host verified; powered acceptance open | Normalization, provenance, qualification, one-source recording, and byte-stable replay traces | E0 result and presentation-intent cells only; exact acquisition, display, persistence, and bench acceptance remain E1-open |
+| [072](design/LESSONS_070_072_MODULE_CHARACTERIZATION_PLAN.md) | Active integration; implementation-depth plan complete | Descriptor validation and correlation, bounded copied ascending/descending/verification legs, bracket and interval evidence, disagreement, corruption, and byte-stable result traces | E0 result, presentation, and volatile record cells only; exact raw/comparator endpoints, optional separately rated power control, indicators/display, schematic, and acceptance remain E1-open |
 | 075 | Re-scope required | Deterministic artifacts depend on the authorized families selected for 073--074 | Observation paths depend on the authorized replacement specimens |
 | 078 | Re-scope required | Deterministic artifacts depend on the authorized families selected for 076--077 | Observation paths depend on the authorized replacement specimens |
 | 081 | Queued; detailed plan required | Descriptor, current budget, endpoint fault, and record traces | Separate power, raw, accepted, intent, and fault evidence |
