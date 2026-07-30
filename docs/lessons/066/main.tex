@@ -278,22 +278,27 @@ is classified stale and contributes no number.}
 \section{Publisher verification and resource boundary}
 \begin{tabularx}{\linewidth}{@{}>{\bfseries}l X@{}}
 Host evidence & Strict tests, sanitizer tests, standalone header, style, and
-complete atomic/canary replay are publisher gates.\\
+complete atomic/canary replay pass.\\
 Mega evidence & Ordinary and isolated no-LTO flash/static SRAM measurements
-are inserted from the canonical replay before promotion.\\
+are reproduced from the canonical replay.\\
 Memory evidence & Mapper object, result, record image, hidden-return behavior,
 conservative synchronous stack, recurring Lessons 064--066 placement, and
-residual SRAM are independently reproduced before promotion.\\
+residual SRAM are independently reproduced.\\
 Document evidence & PDF policy, metadata, extraction, monochrome, page-count,
-and rendered-pencil review are publisher-owned gates.\\
+and rendered-pencil review pass.\\
 Physical evidence & Deferred; no powered probe, display, RTC, media, thermal
 accuracy, immersion, heater, or preservation claim is authorized.\\
 \end{tabularx}
 
-Until exact measurements replace this pre-publication statement, the lesson
-is not promoted. Planning hard limits are 24 KiB flash, 3,072 B static SRAM,
-1,024 B synchronous stack, 768 B mapper object, 384 B per fixed caller-owned
-ABI value, and at least 4 KiB residual SRAM.
+The promoted canonical replay measures 16,662 bytes flash and 2,210 bytes
+static SRAM. Exact no-LTO evidence measures 18,822 bytes flash, 2,210 bytes
+static SRAM, 855 bytes conservative synchronous stack, a 448-byte mapper, a
+202-byte envelope, a 377-byte result, and a 229-byte record. Recurring
+Lessons 064--066 storage is 1,943 bytes, phase-local storage is 579 bytes,
+lifetime storage is 2,522 bytes, and residual SRAM is 4,999 bytes. Six target
+misses were independently accepted below their hard limits. The terminal
+evidence fingerprint is
+\texttt{0e5c142fd8c0970ff529f46b1994b6446fdd2f8c0d00c879d05931f1a79742f7}.
 
 \newpage
 \section{Draw the boundary around the result}

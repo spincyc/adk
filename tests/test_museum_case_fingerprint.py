@@ -1,5 +1,6 @@
 import hashlib
 import importlib.util
+import json
 import pathlib
 import unittest
 
@@ -74,6 +75,94 @@ class MuseumCaseFingerprintTest(unittest.TestCase):
         self.assertNotEqual(
             self.fingerprint(MODULE.fingerprint_tools(old)),
             self.fingerprint(MODULE.fingerprint_tools(changed)),
+        )
+
+    def test_boundary_excludes_later_library_compile_units(self):
+        normalized_path = lambda path: json.loads(MODULE.normalized(str(path)))
+        units = [
+            {
+                "file": normalized_path(
+                    ROOT / "src/resistive_probe_observation.cpp"
+                ),
+                "arguments": [],
+            },
+            {"file": "src/thermal_radiant_observation.cpp", "arguments": []},
+            {
+                "file": normalized_path(ROOT / "src/museum_case_monitor.cpp"),
+                "arguments": [],
+            },
+        ]
+        selected = MODULE.fingerprint_compile_units(
+            units,
+            (
+                "src/resistive_probe_observation.h",
+                "src/resistive_probe_observation.cpp",
+            ),
+        )
+        self.assertEqual(selected, units[:1])
+
+    def test_boundary_retains_sketch_core_and_toolchain_units(self):
+        units = [
+            {
+                "file": "<temporary>/sketch/Lesson061.ino.cpp",
+                "arguments": ["<arduino-data>/packages/avr-g++", "-Os"],
+            },
+            {
+                "file": "<arduino-data>/packages/arduino/cores/arduino/main.cpp",
+                "arguments": ["<arduino-data>/packages/avr-g++", "-DF_CPU=16000000L"],
+            },
+            {
+                "file": "<repo>/src/resistive_probe_observation.cpp",
+                "arguments": ["<arduino-data>/packages/avr-g++", "-Os"],
+            },
+        ]
+        selected = MODULE.fingerprint_compile_units(
+            units, ("src/resistive_probe_observation.cpp",)
+        )
+        self.assertEqual(selected, units)
+
+    def test_relevant_component_command_changes_remain_bound(self):
+        units = [
+            {
+                "file": "<repo>/src/resistive_probe_observation.cpp",
+                "arguments": ["avr-g++", "-Os"],
+            }
+        ]
+        changed = [
+            {
+                "file": "<repo>/src/resistive_probe_observation.cpp",
+                "arguments": ["avr-g++", "-O0"],
+            }
+        ]
+        sources = ("src/resistive_probe_observation.cpp",)
+        self.assertNotEqual(
+            self.fingerprint(MODULE.fingerprint_compile_units(units, sources)),
+            self.fingerprint(MODULE.fingerprint_compile_units(changed, sources)),
+        )
+
+    def test_unrelated_umbrella_addition_does_not_stale_prior_boundary(self):
+        prior_units = [
+            {
+                "file": "<repo>/src/resistive_probe_observation.cpp",
+                "arguments": ["avr-g++", "-Os", "-I<repo>/src"],
+            }
+        ]
+        with_later_component = prior_units + [
+            {
+                "file": "<repo>/src/later_component.cpp",
+                "arguments": ["avr-g++", "-Os", "-I<repo>/src"],
+            }
+        ]
+        scoped_sources = ("src/resistive_probe_observation.cpp",)
+        self.assertEqual(
+            self.fingerprint(
+                MODULE.fingerprint_compile_units(prior_units, scoped_sources)
+            ),
+            self.fingerprint(
+                MODULE.fingerprint_compile_units(
+                    with_later_component, scoped_sources
+                )
+            ),
         )
 
 

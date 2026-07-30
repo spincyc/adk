@@ -3,7 +3,7 @@
     {
       "authority": "docs/design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md#canonical-e0-resource-gates",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "5b26815c21426416fabb2cda83c3ca0e5768f69850b5ce9e93afc861606b805d",
+      "fingerprint_sha256": "36c166b22f30e7284ba176695f0c2b739426abacedcde61688c284bce7946242",
       "hard_bytes": 1536,
       "lesson": "062",
       "metric": "ordinary_static_sram",
@@ -15,7 +15,7 @@
     {
       "authority": "docs/design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md#canonical-e0-resource-gates",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "d56c3e2c1c8e1f5fbb445d5f69e511f634a5fb655b28c17ff3295253dbe516e2",
+      "fingerprint_sha256": "1c9a3bcbbf4883f9583ab2b5593cf1e507c5cc476200593d010b5c6ef371aaff",
       "hard_bytes": 896,
       "lesson": "063",
       "metric": "synchronous_stack",

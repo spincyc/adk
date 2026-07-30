@@ -71,6 +71,6 @@ inactive after shutdown.
   and publication checks pass at promotion
 - Maximum-composition scenario and proof: the bounded canonical replay,
   collision matrix, and exact linked resource fixture pass with fingerprint
-  `d376c43b63f42f2ed48c768d9afcaa2583d5a2b4e194a45f9a3f125694e41543`
+  `1c9a3bcbbf4883f9583ab2b5593cf1e507c5cc476200593d010b5c6ef371aaff`
 - Promotion permitted: yes for E0 implementation; no for physical sensing,
   storage, alarm, relay, security, or preservation claims

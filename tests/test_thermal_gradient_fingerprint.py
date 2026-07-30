@@ -71,15 +71,15 @@ class ThermalGradientFingerprintPortabilityTest(unittest.TestCase):
     def test_l066_fingerprint_chains_from_l065(self):
         self.assertEqual(
             thermal_probe.FINGERPRINT_CONTRACT["064"],
-            "thermal-gradient-resource-v4-l064",
+            "thermal-gradient-resource-v5-l064",
         )
         self.assertEqual(
             thermal_probe.FINGERPRINT_CONTRACT["065"],
-            "thermal-gradient-resource-v4-l065",
+            "thermal-gradient-resource-v5-l065",
         )
         self.assertEqual(
             thermal_probe.FINGERPRINT_CONTRACT["066"],
-            "thermal-gradient-resource-v4-l066",
+            "thermal-gradient-resource-v5-l066",
         )
 
     def test_each_boundary_hashes_the_live_probe_implementation(self):
@@ -91,20 +91,34 @@ class ThermalGradientFingerprintPortabilityTest(unittest.TestCase):
                 live,
             )
 
-    def test_predecessor_compile_inputs_exclude_l066_only(self):
+    def test_boundary_compile_inputs_exclude_unrelated_library_units(self):
         units = [
             {"file": "<repo>/src/thermal_gradient_mapper.cpp", "arguments": []},
             {"file": "<repo>/src/one_wire_transaction_policy.cpp", "arguments": []},
+            {"file": "<repo>/src/future_sensor.cpp", "arguments": []},
+            {"file": "<arduino-avr-platform>/cores/arduino/main.cpp",
+             "arguments": []},
         ]
         self.assertEqual(
             [
                 unit["file"]
                 for unit in thermal_probe.boundary_compile_units(units, "065")
             ],
-            ["<repo>/src/one_wire_transaction_policy.cpp"],
+            [
+                "<arduino-avr-platform>/cores/arduino/main.cpp",
+                "<repo>/src/one_wire_transaction_policy.cpp",
+            ],
         )
         self.assertEqual(
-            len(thermal_probe.boundary_compile_units(units, "066")), 2
+            [
+                unit["file"]
+                for unit in thermal_probe.boundary_compile_units(units, "066")
+            ],
+            [
+                "<arduino-avr-platform>/cores/arduino/main.cpp",
+                "<repo>/src/one_wire_transaction_policy.cpp",
+                "<repo>/src/thermal_gradient_mapper.cpp",
+            ],
         )
         dependencies = {
             "manifests": [
@@ -113,6 +127,16 @@ class ThermalGradientFingerprintPortabilityTest(unittest.TestCase):
                     "dependencies": [
                         "<repo>/src/thermal_gradient_mapper.cpp",
                         "<repo>/src/thermal_gradient_mapper.h",
+                        "<repo>/src/pulse_input.h",
+                        "<repo>/src/status.h",
+                        "<repo>/src/time.h",
+                    ],
+                },
+                {
+                    "path": "libraries/adk/future_sensor.cpp.d",
+                    "dependencies": [
+                        "<repo>/src/future_sensor.cpp",
+                        "<repo>/src/future_sensor.h",
                     ],
                 },
                 {
@@ -120,6 +144,10 @@ class ThermalGradientFingerprintPortabilityTest(unittest.TestCase):
                     "dependencies": [
                         "<repo>/src/Adk.h",
                         "<repo>/src/thermal_gradient_mapper.h",
+                        "<repo>/src/pulse_input.h",
+                        "<repo>/src/status.h",
+                        "<repo>/src/time.h",
+                        "<repo>/src/future_sensor.h",
                     ],
                 },
             ],
@@ -127,6 +155,11 @@ class ThermalGradientFingerprintPortabilityTest(unittest.TestCase):
                 "<repo>/src/Adk.h": "changed",
                 "<repo>/src/thermal_gradient_mapper.cpp": "cpp",
                 "<repo>/src/thermal_gradient_mapper.h": "header",
+                "<repo>/src/pulse_input.h": "pulse",
+                "<repo>/src/status.h": "status",
+                "<repo>/src/time.h": "time",
+                "<repo>/src/future_sensor.cpp": "future-cpp",
+                "<repo>/src/future_sensor.h": "future-header",
             },
         }
         predecessor = thermal_probe.boundary_compile_dependencies(
@@ -135,11 +168,56 @@ class ThermalGradientFingerprintPortabilityTest(unittest.TestCase):
         self.assertEqual(len(predecessor["manifests"]), 1)
         self.assertEqual(
             predecessor["manifests"][0]["dependencies"],
-            ["<repo>/src/Adk.h"],
+            [],
         )
         self.assertEqual(
             predecessor["dependency_hashes"],
-            {"<repo>/src/Adk.h": "changed"},
+            {},
+        )
+
+        current = thermal_probe.boundary_compile_dependencies(
+            dependencies, "066"
+        )
+        self.assertEqual(
+            current["manifests"][0]["dependencies"],
+            [
+                "<repo>/src/thermal_gradient_mapper.cpp",
+                "<repo>/src/thermal_gradient_mapper.h",
+                "<repo>/src/pulse_input.h",
+                "<repo>/src/status.h",
+                "<repo>/src/time.h",
+            ],
+        )
+        self.assertEqual(
+            current["manifests"][1]["dependencies"],
+            [
+                "<repo>/src/thermal_gradient_mapper.h",
+                "<repo>/src/pulse_input.h",
+                "<repo>/src/status.h",
+                "<repo>/src/time.h",
+            ],
+        )
+        self.assertNotIn(
+            "<repo>/src/future_sensor.h",
+            current["dependency_hashes"],
+        )
+
+    def test_l066_boundary_is_stable_when_a_later_component_is_added(self):
+        baseline = [
+            {"file": "<repo>/src/one_wire_transaction_policy.cpp",
+             "arguments": ["avr-g++"]},
+            {"file": "<repo>/src/qualified_18b20_probe_set_policy.cpp",
+             "arguments": ["avr-g++"]},
+            {"file": "<repo>/src/thermal_gradient_mapper.cpp",
+             "arguments": ["avr-g++"]},
+        ]
+        later = baseline + [
+            {"file": "<repo>/src/future_sensor.cpp",
+             "arguments": ["avr-g++", "-DFUTURE=1"]},
+        ]
+        self.assertEqual(
+            thermal_probe.boundary_compile_units(baseline, "066"),
+            thermal_probe.boundary_compile_units(later, "066"),
         )
 
     def test_link_recipe_canonicalizes_only_path_tokens(self):

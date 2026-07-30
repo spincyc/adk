@@ -3,43 +3,43 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "7542ee4b0ac9a4bdae21a7e57e65b4771334c69d20455851db7bd4cb87851ec7",
+      "fingerprint_sha256": "77c3da45f8ea0f6943a01f57fdd2062a78a1fb61fc79837c1c15c45fbd876b97",
       "hard_bytes": 14336,
       "lesson": "064",
       "metric": "ordinary_flash",
       "observed_bytes": 10390,
       "rationale": "The deployed fixture is 150 B above target with 3,946 B of hard-limit margin; its typed and provenance-bound transactions, monotonic deadlines, Search ROM framing, and release-confirmed rollback are required deterministic evidence.",
-      "reviewer": "independent-resource-review/l064-ordinary-flash-10390-cutoff-v4",
+      "reviewer": "independent-resource-review/l064-ordinary-flash-10390-cutoff-v5",
       "target_bytes": 10240
     },
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "7542ee4b0ac9a4bdae21a7e57e65b4771334c69d20455851db7bd4cb87851ec7",
+      "fingerprint_sha256": "77c3da45f8ea0f6943a01f57fdd2062a78a1fb61fc79837c1c15c45fbd876b97",
       "hard_bytes": 14336,
       "lesson": "064",
       "metric": "flash",
       "observed_bytes": 12116,
       "rationale": "The attribution build deliberately disables LTO and jump tables for exact stack and map evidence; it retains 2,220 B of hard-limit margin, and removing transaction, correlation, deadline, or rollback paths would weaken the approved deterministic contract.",
-      "reviewer": "independent-resource-review/l064-exact-flash-12116-cutoff-v4",
+      "reviewer": "independent-resource-review/l064-exact-flash-12116-cutoff-v5",
       "target_bytes": 10240
     },
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "7542ee4b0ac9a4bdae21a7e57e65b4771334c69d20455851db7bd4cb87851ec7",
+      "fingerprint_sha256": "77c3da45f8ea0f6943a01f57fdd2062a78a1fb61fc79837c1c15c45fbd876b97",
       "hard_bytes": 256,
       "lesson": "064",
       "metric": "object",
       "observed_bytes": 254,
       "rationale": "The padding-free object owns the complete configuration and snapshot, exact receipt correlation, monotonic and deadline anchors, and lifecycle, phase, and search state; its 2 B hard margin imposes zero growth and requires fresh review after any ABI change.",
-      "reviewer": "independent-resource-review/l064-object-254-cutoff-v4",
+      "reviewer": "independent-resource-review/l064-object-254-cutoff-v5",
       "target_bytes": 192
     },
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
+      "fingerprint_sha256": "350ddd1f6cefef2f5da249f295632339119c0f42d669a0a3a4732c36fed177cb",
       "hard_bytes": 16384,
       "lesson": "065",
       "metric": "ordinary_flash",
@@ -51,7 +51,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
+      "fingerprint_sha256": "350ddd1f6cefef2f5da249f295632339119c0f42d669a0a3a4732c36fed177cb",
       "hard_bytes": 16384,
       "lesson": "065",
       "metric": "flash",
@@ -63,7 +63,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
+      "fingerprint_sha256": "350ddd1f6cefef2f5da249f295632339119c0f42d669a0a3a4732c36fed177cb",
       "hard_bytes": 1536,
       "lesson": "065",
       "metric": "ordinary_static_sram",
@@ -75,7 +75,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
+      "fingerprint_sha256": "350ddd1f6cefef2f5da249f295632339119c0f42d669a0a3a4732c36fed177cb",
       "hard_bytes": 1536,
       "lesson": "065",
       "metric": "static_sram",
@@ -87,7 +87,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
+      "fingerprint_sha256": "350ddd1f6cefef2f5da249f295632339119c0f42d669a0a3a4732c36fed177cb",
       "hard_bytes": 640,
       "lesson": "065",
       "metric": "synchronous_stack",
@@ -99,7 +99,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
+      "fingerprint_sha256": "350ddd1f6cefef2f5da249f295632339119c0f42d669a0a3a4732c36fed177cb",
       "hard_bytes": 768,
       "lesson": "065",
       "metric": "object",
@@ -111,7 +111,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
+      "fingerprint_sha256": "350ddd1f6cefef2f5da249f295632339119c0f42d669a0a3a4732c36fed177cb",
       "hard_bytes": 512,
       "lesson": "065",
       "metric": "builder_caller_buffer",
@@ -123,7 +123,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
+      "fingerprint_sha256": "350ddd1f6cefef2f5da249f295632339119c0f42d669a0a3a4732c36fed177cb",
       "hard_bytes": 1280,
       "lesson": "065",
       "metric": "recurring_owned_storage",
@@ -135,7 +135,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "34c7091d705f0f581412bb03da330d3b50dc720965abd2fd525731fdb5ddbd4f",
+      "fingerprint_sha256": "350ddd1f6cefef2f5da249f295632339119c0f42d669a0a3a4732c36fed177cb",
       "hard_bytes": 1792,
       "lesson": "065",
       "metric": "lifetime_peak_storage",
@@ -147,7 +147,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "1db0f69334dc876fe5e137ed4b73d9890abeace1f0bee1b33be8e0419b9950ef",
+      "fingerprint_sha256": "0e5c142fd8c0970ff529f46b1994b6446fdd2f8c0d00c879d05931f1a79742f7",
       "hard_bytes": 24576,
       "lesson": "066",
       "metric": "ordinary_flash",
@@ -159,7 +159,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "1db0f69334dc876fe5e137ed4b73d9890abeace1f0bee1b33be8e0419b9950ef",
+      "fingerprint_sha256": "0e5c142fd8c0970ff529f46b1994b6446fdd2f8c0d00c879d05931f1a79742f7",
       "hard_bytes": 24576,
       "lesson": "066",
       "metric": "flash",
@@ -171,7 +171,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "1db0f69334dc876fe5e137ed4b73d9890abeace1f0bee1b33be8e0419b9950ef",
+      "fingerprint_sha256": "0e5c142fd8c0970ff529f46b1994b6446fdd2f8c0d00c879d05931f1a79742f7",
       "hard_bytes": 3072,
       "lesson": "066",
       "metric": "ordinary_static_sram",
@@ -183,7 +183,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "1db0f69334dc876fe5e137ed4b73d9890abeace1f0bee1b33be8e0419b9950ef",
+      "fingerprint_sha256": "0e5c142fd8c0970ff529f46b1994b6446fdd2f8c0d00c879d05931f1a79742f7",
       "hard_bytes": 3072,
       "lesson": "066",
       "metric": "static_sram",
@@ -195,7 +195,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "1db0f69334dc876fe5e137ed4b73d9890abeace1f0bee1b33be8e0419b9950ef",
+      "fingerprint_sha256": "0e5c142fd8c0970ff529f46b1994b6446fdd2f8c0d00c879d05931f1a79742f7",
       "hard_bytes": 1024,
       "lesson": "066",
       "metric": "synchronous_stack",
@@ -207,7 +207,7 @@
     {
       "authority": "docs/design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md#resource-budgets",
       "disposition": "accepted-target-miss",
-      "fingerprint_sha256": "1db0f69334dc876fe5e137ed4b73d9890abeace1f0bee1b33be8e0419b9950ef",
+      "fingerprint_sha256": "0e5c142fd8c0970ff529f46b1994b6446fdd2f8c0d00c879d05931f1a79742f7",
       "hard_bytes": 384,
       "lesson": "066",
       "metric": "result_caller_buffer",
