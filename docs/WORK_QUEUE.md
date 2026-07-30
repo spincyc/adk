@@ -411,6 +411,12 @@ powered motion remains E2-gated. Lesson numbers 073--078 remain stable.
 
 ## Deep project re-evaluation (2026-07-30)
 
+The re-evaluation audit is complete and synthesized in
+[the deep re-evaluation audit](audits/DEEP_REEVALUATION_2026-07-30.md) with
+its machine-readable findings appendix. Its phased remediation program is the
+controlling order for the four tracks below. The record-sink length-validation
+fix landed with the audit.
+
 Four re-evaluation tracks are queued alongside the canonical lesson order.
 Their audits run before Lesson 081 implementation so findings can inform it;
 they do not supersede the Lessons 079--081 plan or any published boundary.
