@@ -124,7 +124,6 @@ published or bench-verified:
 | 076 | Copied Sweep-Range Frames |
 | 077 | Bounded Polar Occupancy Map |
 | 078 | Inert Tabletop Sonar Desk |
-| 080 | Small indicator-module semantics |
 | 081 | Component qualification bench |
 
 Pencil drawings provide orientation. Only a lesson that explicitly qualifies
