@@ -15,6 +15,15 @@ and must not be pre-filtered by guessed value.
 `aiq` remains the authority for work state. Tool-candidate events are recorded
 only through `tmt note` and read with `tmt candidates`.
 
+**Leave `tmt`-sourced inbox messages unapplied.** `tmt candidates` counts only
+*unapplied* aiq messages, so settling a `tmt note` event erases the candidate it
+recorded and the note-to-threshold loop can never accumulate. Verified
+2026-07-30: applying two note events dropped `tmt candidates` from two entries
+to none. Candidate events are tmt-owned telemetry, not user work awaiting
+interpretation; disposition them only when their tool is built or the candidate
+is abandoned. A completion hook that counts unapplied messages will report them
+as outstanding — that is expected, and it is not a reason to settle them.
+
 ## What a tool must satisfy
 
 | Requirement | Rule |
