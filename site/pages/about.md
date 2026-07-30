@@ -16,7 +16,7 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--068 use the first-class per-object
+ADK is early-stage software. Lessons 001--069 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
@@ -79,6 +79,10 @@ configured copied-record stream after one proper source-to-qualification-frame
 rotation. It owns no sensor, adapter, bus, clock, display, or storage, and its
 terminal evidence does not establish physical identity, mounting, calibration
 accuracy, or bench acceptance.
+Lesson 069 composes one qualified copied-record source into one scripted
+session with bounded caller-owned volatile record images and semantic
+presentation/export intent. It owns no live controls, sensor, display, RTC,
+media, filesystem, or durable storage.
 
 The hierarchy is developed in dependency order:
 
@@ -90,13 +94,11 @@ The per-object lifecycle uses transactional `initialize()`, idempotent
 `shutdown() noexcept`, and destructor-driven cleanup. The original
 global-registration preview is frozen under [Legacy](legacy/index.md).
 
-The latest completed project arc is Lessons 064--066: copied single-wire
-transactions and qualified probe-set evidence composed into deterministic
-thermal-gradient, page, and volatile record intent. Powered probes, adapters,
+The latest completed project arc is Lessons 067--069: normalized copied
+inertial records and configured record qualification composed into one
+fixed-source volatile motion recorder. Powered sensors, controls,
 presentation, storage, authentication, and physical acceptance remain open.
-[Lesson 066](lessons/066.md) remains the latest published project boundary.
-[Lesson 068](lessons/068.md) is the latest published component in the current
-implementation arc. See the
+[Lesson 069](lessons/069.md) is the latest published project boundary. See the
 [course map](course.md) for that order and the
 [roadmap](docs/ROADMAP.md) for the full sequence.
 

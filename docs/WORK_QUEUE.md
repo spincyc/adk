@@ -86,7 +86,7 @@ qualified.
 | [058--060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Host verified; exact powered display fixtures open | Preserve supplied-time digit transactions, bounded MAX7219 command/receipt evidence, and the timing-desk composition, including explicit refresh loss, partial-prefix attribution, cleanup, generation binding, self-test, disagreement attribution, and the zero-hardware E0 boundary |
 | [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Host verified; E1a--E1d/E2 open | Preserve the published copied-evidence policies and inert museum monitor; exact powered specimens, persistence, presentation, and relay work remain separately gated |
 | [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Host verified; E1a--E1d open | Preserve the published E0 [Lesson 064 transaction](design/LESSON_064_ONE_WIRE_TRANSACTION_STRESS_PASS.md), [Lesson 065 probe set](design/LESSON_065_QUALIFIED_PROBE_SET_STRESS_PASS.md), and [Lesson 066 mapper](design/LESSON_066_THERMAL_GRADIENT_MAPPER_STRESS_PASS.md); retain exact specimens, powered single-wire behavior, thermal accuracy, presentation, persistence, authentication, and E1a--E1d acceptance as open gates |
-| [067--069](design/LESSONS_067_069_MOTION_RECORDER_PLAN.md) | Lessons 067--068 host verified; 069 active integration | Preserve Lesson 067's copied source-frame record and fixed 64-byte image plus Lesson 068's one-source record qualification; implement one-source-per-session volatile recorder and presentation intent; exact MPU6050/QMI8658 acquisition, powered presentation, RTC/media persistence, and bench acceptance remain separately gated E1a--E1c work |
+| [067--069](design/LESSONS_067_069_MOTION_RECORDER_PLAN.md) | Published; host verified; powered acceptance open | Preserve Lesson 067's copied source-frame record and fixed 64-byte image, Lesson 068's one-source qualifier, and Lesson 069's one-source-per-session volatile recorder and presentation intent; Lesson 068's ordinary flash miss and Lesson 069's exact no-LTO flash miss are independently reviewed below their hard limits; exact MPU6050/QMI8658 acquisition, powered presentation, RTC/media persistence, and bench acceptance remain separately gated E1a--E1c work |
 
 Integration order is strict: component or endpoint, deterministic tests,
 example and size evidence, lesson package, shared indexes, then the consuming
@@ -133,7 +133,7 @@ work; retail kit names are not electrical identities.
 | [058--060](design/LESSONS_058_060_DISPLAY_TIMING_DESK_PLAN.md) | Host verified; exact powered display fixtures open | Multiplexed digits, MAX7219 presentation, and the dual-display timing desk are published at E0; exact powered endpoints and physical acceptance remain separate E1 gates |
 | [061--063](design/LESSONS_061_063_MUSEUM_CASE_MONITOR_PLAN.md) | Host verified; E1a--E1d/E2 open | Copied resistive, thermal/radiant, reed, acknowledgement, and receipt evidence compose into an inert monitor; powered specimens, persistence, presentation, and relay work remain separately gated |
 | [064--066](design/LESSONS_064_066_THERMAL_MAPPER_PLAN.md) | Host verified; E1a--E1d open | `OneWireTransactionPolicy`, `Qualified18B20ProbeSetPolicy`, and `ThermalGradientMapper` are published at E0 with copied requests, receipts, fixed identities, conversion correlation, CRC, freshness, disappearance, spatial intervals, fault incidence, bounded pages, and volatile record intent; no powered adapter, wiring, thermal-accuracy, presentation, persistence, authentication, or E1 support claim |
-| [067--069](design/LESSONS_067_069_MOTION_RECORDER_PLAN.md) | Lessons 067--068 host verified; 069 active integration | Copied source-frame normalization and one-source record qualification are published; one-source-per-session volatile motion-recorder intent remains active; exact MPU/QMI acquisition, powered presentation, RTC/media persistence, and bench acceptance remain E1a--E1c open |
+| [067--069](design/LESSONS_067_069_MOTION_RECORDER_PLAN.md) | Published; host verified; powered acceptance open | Copied source-frame normalization, one-source qualification, and one-source-per-session volatile motion-recorder intent are host verified; Lesson 068 measures 16,702 B ordinary flash against a 16 KiB target and 24 KiB hard limit; Lesson 069's exact no-LTO flash target miss is independently reviewed below its hard limit; exact MPU/QMI acquisition, powered presentation, RTC/media persistence, and bench acceptance remain E1a--E1c open |
 | [070--072](projects/component_project_cadence.md) | Queued | Threshold descriptors, characterization, module test bench |
 | [073--075](projects/component_project_cadence.md) | Re-scope required | DS1302, BMP180, and PCF8591 are not in the authorized Elegoo union; retain numbers but replace subjects before activation |
 | [076--078](projects/component_project_cadence.md) | Re-scope required | Color sensor is not in the authorized Elegoo union; retain numbers but replace subjects before activation |
@@ -319,9 +319,25 @@ Exact powered specimens, electrical single-wire behavior,
 thermal accuracy, presentation, persistence, and E1a--E1d acceptance remain
 open.
 
-Cadence entries for Lessons 067--081 are not implementation-ready lesson
-plans. Before code begins for each later three-lesson arc, expand it to the
-same depth as 031--033: public values and interfaces, resource and pin budgets,
+Lessons 067--069 are host verified under their
+[motion-recorder implementation-depth plan](design/LESSONS_067_069_MOTION_RECORDER_PLAN.md).
+Lesson 068's ordinary Mega replay measures 16,702 bytes flash and 766 bytes
+static SRAM. The flash result is a reviewed miss against the 16 KiB target and
+passes the independently reviewed 24 KiB hard limit; static SRAM remains below
+its 1,024-byte limit. Lesson 069's honest ordinary Mega composition measures
+39,428 bytes flash and 2,347 bytes static SRAM. Its exact no-LTO composition
+measures 35,144 bytes flash, 2,347 bytes static SRAM, 861 bytes stack, a
+509-byte object, a 128-byte record image, and 4,856 bytes residual SRAM. Exact
+flash, static SRAM, and stack miss their targets but pass independently
+reviewed fingerprint-bound hard gates of 40 KiB, 3,072 bytes, and 1,024 bytes.
+These E0 results establish
+deterministic copied-record policy only. Exact
+MPU6050/QMI8658 acquisition, powered presentation, RTC/media persistence, and
+bench acceptance remain open E1a--E1c work.
+
+Cadence entries for Lessons 070--081 are not implementation-ready lesson
+plans. Before code begins for each remaining three-lesson arc, expand it to
+the same depth as 031--033: public values and interfaces, resource and pin budgets,
 deterministic fixture and failure matrices, narrative example flow, staged
 circuit-native experiments, HTML/PDF division, specimen gates, and explicit
 bench acceptance. “Planned specimen coverage” never means that an exact kit
@@ -382,7 +398,7 @@ out of scope. Controller high availability remains explicitly deferred.
 The landing page now uses one canonical source, a compact top navigation,
 linked published arcs, and linkless planned rows through Lesson 081 plus the
 retained research tracks. Preserve that scan-first hierarchy as work advances.
-The newest published lesson is Lesson 066. The post-deploy verifier follows
+The newest published lesson is Lesson 069. The post-deploy verifier follows
 the configured publication boundary and has a regression check that
 must advance with the newest published lesson.
 

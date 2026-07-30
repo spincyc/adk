@@ -1,0 +1,14 @@
+{
+  "fingerprint_contract": "motion-recorder-resource-v2-l068",
+  "flash_hard": 16384,
+  "flash_target": 12288,
+  "lesson": "068",
+  "object_hard": 640,
+  "object_symbol": "inertialRecordQualificationPolicyObjectBytes",
+  "object_target": 384,
+  "sketch": "examples/Lesson068InertialRecordQualification",
+  "sram_hard": 1536,
+  "sram_target": 1024,
+  "stack_hard": 512,
+  "stack_target": 384
+}

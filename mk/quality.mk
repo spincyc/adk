@@ -10,7 +10,7 @@ QUALITY_ARCH_PACKAGES = base-devel clang
 	host-test-sanitize serial-log-test deployed-site-test arduino-lint \
 	arduino-lint-submit arduino-lint-update arduino-lint-release \
 	release-metadata-check release-check museum-case-fingerprint-test \
-	thermal-gradient-fingerprint-test
+	motion-recorder-fingerprint-test thermal-gradient-fingerprint-test
 
 quality: quality-fast firmware-size-check package-smoke native-package-smoke \
 	lessons-check site-check
@@ -22,7 +22,7 @@ quality-lint: style-check headers-check
 quality-test: host-test host-test-exceptions host-test-sanitize \
 	serial-log-test deployed-site-test usb-matrix-check usb-mesh-check hdmi-mesh-check \
 	route-profile-check museum-case-fingerprint-test \
-	thermal-gradient-fingerprint-test
+	motion-recorder-fingerprint-test thermal-gradient-fingerprint-test
 
 serial-log-test:
 	python -m unittest tests/test_serial_log.py
@@ -35,6 +35,9 @@ museum-case-fingerprint-test:
 
 thermal-gradient-fingerprint-test:
 	python -m unittest tests/test_thermal_gradient_fingerprint.py
+
+motion-recorder-fingerprint-test:
+	python -m unittest tests/test_motion_recorder_fingerprint.py
 
 quality-size: host-size-check
 
@@ -66,7 +69,7 @@ host-test-sanitize:
 
 firmware-size-check: size-check escape-console-resource-check \
 	display-timing-resource-check museum-case-resource-check \
-	thermal-gradient-resource-check
+	motion-recorder-resource-check thermal-gradient-resource-check
 	@echo "Firmware satisfies the recorded $(BOARD_FQBN) budgets."
 
 arduino-lint:

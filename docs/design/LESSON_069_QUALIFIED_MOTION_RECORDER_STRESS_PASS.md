@@ -1,23 +1,24 @@
 # Lesson 069 qualified-motion-recorder architecture stress pass
 
-Status: initial E0 design review. The bounded copied-evidence composition is a
-natural fit; implementation, exact resource evidence, publication gates, and
-all powered acceptance remain open.
+Status: terminal E0 promotion review. The bounded copied-evidence composition
+is a natural fit, implementation and exact resource gates pass with one
+independently reviewed flash-target miss, and powered acceptance remains open.
 
-This pass records the pre-implementation disposition for Lesson 069 in the
+This pass records the initial and terminal dispositions for Lesson 069 in the
 [extended component/project cadence](../projects/component_project_cadence.md).
 
 The qualified motion recorder is an E0 composition only when it consumes one
-complete copied Lesson 067 normalized record together with the Lesson 068
-qualification decision for that exact record, advances one fixed hand-motion
-script, and emits caller-owned record and presentation intent. It is not an
+saved terminal Lesson 068 qualification decision, accepts only Lesson 067
+records and controls that reproduce its correlation identity, advances one
+fixed hand-motion script, and emits caller-owned record and presentation
+intent. It is not an
 inertial adapter, source selector, axis qualifier, clock, filesystem, display
 driver, or durable logger.
 
 ## Boundary
 
 - Name and lesson/project: `QualifiedMotionRecorder`, Lesson 069
-- Review state: initial stress pass before implementation
+- Review state: terminal implementation and promotion stress pass
 - Public responsibility: validate one atomic qualification envelope, admit
   records from one explicitly configured source for one recorder session,
   append a bounded normalized trace without silent loss, advance an explicit
@@ -37,7 +38,7 @@ driver, or durable logger.
 | Ownership and lifecycle | Inert construction, noncopyable/nonmovable coordinator, fixed configuration, explicit `initialize`/`reset`/`shutdown`, no heap, callback, retained caller pointer, child reference, or hidden clock. A session fixes one source identity and all schema, normalization, mapping, qualification, script, and presentation revisions until reset. |
 | Time and ordering | All time enters as copied evidence or supplied `now`. Record sequence, sample sequence, qualification attempt, and script step remain distinct. Same-sequence byte-identical envelopes are idempotent; changed duplicates, regressions, exact half-range ambiguity, future evidence, invalid age, and exhaustion reject atomically. |
 | Errors and status | Structural and lifecycle invalidity use `Status`. Well-formed unqualified, stale, not-ready, saturated, or producer-fault evidence remains explicit domain state. Source or qualification fault dominates orientation and presentation. Capacity exhaustion is visible and never overwrites an earlier record. |
-| Resources | E0 claims zero pins, timers, interrupts, buses, endpoints, supplies, displays, LEDs, buttons, clocks, or media. The implementation must measure the linked Lessons 043, 044, 067, 068, and 069 maximum composition, including caller-owned trace storage and complete result/intent values. Initial review limits are provisional until the exact ABI and no-LTO probe are recorded. |
+| Resources | E0 claims zero pins, timers, interrupts, buses, endpoints, supplies, displays, LEDs, buttons, clocks, or media. The linked Lessons 043, 044, 067, 068, and 069 maximum composition includes caller-owned trace storage and complete result/intent values. The exact ABI/no-LTO probe passes every hard gate; its sole flash-target miss is independently reviewed below. |
 | Deterministic proof | Host fixtures can replay both named physical-family record shapes without claiming their adapters, every proper axis mapping, every qualification outcome, script boundaries, capacity boundaries, sequence/time rollover, reset, and shutdown. Golden traces compare normative record images, not C++ object bytes. |
 | Packaging/public surface | One project header/source, strict host test, compile-only Mega replay, exact linked resource probe, HTML reference, and complementary pencil-drawing PDF. No I2C, Wire, RTC, SD, LCD, RGB, button, MPU6050, or QMI8658 driver include enters E0. |
 | Example and documentation fit | The canonical replay follows acquire/configure/start and observe/decide/actuate over copied fixtures. Named result cells expose source health, script progress, orientation intent, trace count, capacity state, and record outcome without making Serial the only observation path. |
@@ -66,11 +67,12 @@ QMI8658 was attached. E0 positive replay uses authorized copied fixtures.
 Unidentified revisions remain unpowered and cannot be made acceptable by a
 matching enum value.
 
-### Atomic qualification envelope
+### Saved qualification and atomic stream correlation
 
-The input is one copied envelope containing the complete normalized source
-record and the complete Lesson 068 qualification witness for that exact
-record. It binds at least:
+`qualify()` saves one complete terminal Lesson 068 witness. Each subsequent
+`update()` receives one copied normalized source record plus closed command
+evidence that must reproduce the saved qualification identity and the
+configured caller-owned trace token. Together they bind at least:
 
 - source identity and identity domain;
 - source, schema, normalization, mapping, calibration, and qualification
@@ -81,16 +83,18 @@ record. It binds at least:
 - the normalized acceleration, angular-rate, ready, saturation, producer
   status, and transport-status evidence required by the published seams.
 
-The exact authoritative fields remain present. A digest is a collision
-detector and correlation aid, never a substitute for comparing or preserving
-the full witness.
+The exact authoritative qualification fields remain present in recorder
+state. Qualification and record digests are collision detectors and
+correlation aids, never substitutes for comparing or preserving the
+authoritative fields. The trace token binds commands to the configured
+caller-owned buffer contract without retaining its address.
 
-The recorder validates the entire copied envelope before changing session
-state. The qualification must name the configured source and revisions and
-must bind the same record identity, sequence, time, and digest. A qualified
-decision for a different record, a newer record paired with an older decision,
-or two independently sampled child snapshots rejects without changing the
-recorder, caller-owned result, trace buffer, or presentation intent.
+The recorder validates the saved witness and complete update correlation
+before changing session state. The control must name the saved qualification
+revision, lifecycle generation, attempt, digest, and configured trace token;
+it must also match the record source, sequence, and time. A record attached to
+a different qualification or trace rejects without changing the recorder,
+caller-owned result, trace buffer, or presentation intent.
 
 Well-formed `NotQualified` and `Rejected` envelopes may update explicit health
 and fault presentation, but they cannot append a motion record or advance the
@@ -179,13 +183,28 @@ shutdown, and reset.
 | Composition pressure | Applicability and required evidence |
 |---|---|
 | Scheduler and time | Applicable. One bounded envelope validation, fixed orientation calculation, script decision, presentation fill, and at most one fixed-size append per update. No polling, retry, acquisition wait, display refresh loop, storage retry, or unbounded catch-up. Prove a constant work bound at empty, one-before-full, and full capacity. |
-| Total memory and hardware resources | Applicable. Measure ordinary and isolated no-LTO linked Lessons 043/044/067/068/069 with recorder object, both candidate/staged cells, qualification envelope, orientation result, presentation result, hidden-return allowance, conservative stack, ISR reserve, and caller-owned maximum trace counted exactly once. Initial review targets are recorder object at most 512 bytes, canonical record image at most 128 bytes, conservative synchronous stack at most 768 bytes, and total static SRAM at most 2,048 bytes; hard review limits are 768, 160, 1,024, and 3,072 bytes respectively, with at least 4,096 bytes residual SRAM. Flash target/hard limits are 24/32 KiB. Any target miss requires an independent written disposition; no hard miss promotes. |
+| Total memory and hardware resources | Applicable. Measure ordinary and isolated no-LTO linked Lessons 043/044/067/068/069 with recorder object, both candidate/staged cells, qualification envelope, orientation result, presentation result, hidden-return allowance, conservative stack, ISR reserve, and caller-owned maximum trace counted exactly once. Target/hard gates are recorder object 512/768 bytes, canonical record image 128/160 bytes, synchronous stack 768/1,024 bytes, static SRAM 2,048/3,072 bytes, at least 4,096/3,072 bytes residual SRAM, and flash 32/40 KiB. Any target miss requires an independent written disposition; no hard miss promotes. |
 | Shared bus or transport | Not applicable at E0. A future source adapter, LCD, RTC, or SD endpoint needs explicit ownership, borrower lifetime, address/chip-select identity, arbitration, bounded transaction, rollback, congestion, restart, and combined-resource proof. |
 | Persistence and recovery | Applicable only to canonical volatile trace semantics. Prove fixed encoding, capacity, transactional append, corruption detection for serialized cells, reset/shutdown behavior, and no durability language. RTC timestamp domain, media schema, commit protocol, torn-write recovery, wear, capacity, removal, and power-loss behavior remain E1-open. |
 | Motion, external power, or stored energy | Not applicable at E0. The script describes hand motion of an inert identified board only; it authorizes no motor, launcher, ignition, vehicle control, or unattended moving load. |
 | Observation identity and provenance | Applicable. Preserve exact source, range, calibration, mapping, normalization, qualification, session, script, and sample identity through envelope, orientation, trace cell, and presentation result. Values from distinct source times are never presented as one simultaneous record. |
 | Diagnostic interference | Applicable. Serial, display/RGB intent, self-test, result inspection, and trace serialization cannot alter qualification, orientation, script completion, capacity, or append order. Future powered diagnostics enter the aggregate pin/timer/current/bus/memory budget. |
 | Failure collision and recovery | Applicable. Exercise source fault plus valid-looking orientation, qualification rejection plus script completion candidate, full capacity plus a fresh qualified record, changed duplicate plus reset request, and shutdown plus pending presentation. Lifecycle/reset dominance must be explicit, and every rejected path preserves the prior complete trace and state. |
+
+The canonical Mega replay honestly runs Lessons 067, 068, and 069 and measures
+39,428 B flash and 2,347 B static SRAM. The exact no-LTO maximum composition
+measures 35,144 B flash, 2,347 B static SRAM, 861 B synchronous stack, a 509 B
+recorder object, a 128 B canonical record image, and 4,856 B residual SRAM.
+Exact flash, static SRAM, and stack exceed their targets by 2,376 B (7.25%),
+299 B (14.60%), and 93 B (12.11%) respectively. Object, image, and residual
+targets pass, and every hard gate passes. Independent review accepted the
+three target misses after the earlier fabricated-witness example was replaced
+with the genuine Lesson 068 qualifier and structural duplication was removed.
+The review is bound to boundary-scoped resource fingerprint
+`7be0c300acc4f0e93d9cb5fa2e9b5a0ced5771458f9749e38eb8e507e61b30c6`
+and the measured source, configuration, layouts, no-LTO toolchain and flags,
+probe, fixture, and call graph; any change makes it stale. It authorizes no
+hard-limit miss or powered/persistent E1 composition.
 
 ## Required deterministic proof
 
@@ -260,18 +279,20 @@ resource-acquisition evidence, and safe-state evidence.
   using one atomic qualification envelope, one configured source per session,
   fixed caller-owned capacity, canonical record images, and fault-dominant
   inert presentation
-- Open risks: final Lessons 067/068 ABI; exact linked resource tuple;
-  persistence state machine; exact MPU6050 or QMI8658 specimen; powered I2C,
-  display/RGB/button, RTC, and SD acceptance
+- Open risks: persistence state machine; exact MPU6050 or QMI8658 specimen;
+  powered I2C, display/RGB/button, RTC, and SD acceptance
 - Required discussion or decision IDs: none for the bounded E0 shape; runtime
   source switching, automatic failover, hidden child reads, silent ring
   overwrite, or durability claims require an explicit architecture decision
-- Remediation owner and next action: Lesson 069 implementation must freeze the
-  complete envelope/correlation fields and exact record image after Lessons
-  067--068 promote, then run this stress pass again against measured evidence
-- Verification commands and results: not yet run; implementation and
-  publication gates remain pending
-- Maximum-composition scenario and proof: specified above; exact replay and
-  fingerprint remain pending
-- Promotion permitted: no; this initial pass permits bounded E0
-  implementation, not release or any powered/persistent claim
+- Remediation owner and next action: the E0 implementation is complete; future
+  owners must remeasure and obtain a new independent disposition whenever the
+  resource fingerprint changes
+- Verification commands and results: strict host tests, public-header
+  isolation, canonical Mega compilation, style, lessons, site, and exact
+  resource gates pass; release workflow status is recorded in the work queue
+- Maximum-composition scenario and proof: exact tuple and fingerprint recorded
+  above; the sole flash-target miss is independently accepted and every hard
+  limit passes
+- Promotion permitted: yes for the bounded host-verified E0 project only; no
+  powered source, presentation, clock, media, persistence, or bench claim is
+  permitted

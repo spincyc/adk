@@ -58,6 +58,7 @@ HOST_TESTS := \
 	$(BUILD_DIR)/host/test_inertial_observation \
 	$(BUILD_DIR)/host/test_inertial_record \
 	$(BUILD_DIR)/host/test_inertial_record_qualification \
+	$(BUILD_DIR)/host/test_qualified_motion_recorder \
 	$(BUILD_DIR)/host/test_inert_ir_translator \
 	$(BUILD_DIR)/host/test_inert_ir_translator_integrity \
 	$(BUILD_DIR)/host/test_inert_parts_carousel_operation \
@@ -404,6 +405,19 @@ $(BUILD_DIR)/host/test_inertial_record_qualification: $(HOST_CORE_SOURCES) \
 		src/inertial_observation.cpp src/inertial_record.cpp \
 		src/inertial_record_qualification.cpp \
 		tests/test_inertial_record_qualification.cpp \
+		$(HOST_LDFLAGS) -o "$@"
+
+$(BUILD_DIR)/host/test_qualified_motion_recorder: $(HOST_CORE_SOURCES) \
+		src/inertial_observation.cpp src/inertial_record.cpp \
+		src/inertial_record_qualification.cpp \
+		src/orientation_presentation.cpp src/qualified_motion_recorder.cpp \
+		tests/test_qualified_motion_recorder.cpp \
+		$(HOST_HEADERS) | $(BUILD_DIR)/host
+	$(CXX) $(HOST_CPPFLAGS) $(HOST_CXXFLAGS) $(HOST_CORE_SOURCES) \
+		src/inertial_observation.cpp src/inertial_record.cpp \
+		src/inertial_record_qualification.cpp \
+		src/orientation_presentation.cpp src/qualified_motion_recorder.cpp \
+		tests/test_qualified_motion_recorder.cpp \
 		$(HOST_LDFLAGS) -o "$@"
 
 $(BUILD_DIR)/host/test_orientation_presentation: $(HOST_CORE_SOURCES) \
