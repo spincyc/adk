@@ -1,9 +1,12 @@
 # Lesson 068 inertial-record qualification architecture stress pass
 
-Status: published and host verified at E0. The axis-mapping remediation,
-one-source record qualifier, deterministic replay, measured Mega example,
-HTML, and pencil-drawing PDF pass their non-hardware gates. Powered specimens
-and physical qualification remain E1-open.
+Status: E0 implementation complete; exact-resource target misses independently
+reviewed. After removing large by-value evidence copies, the exact AVR probe
+measures 13,570 B flash, 766 B static SRAM, 508 B synchronous stack, a 395 B
+policy, and 271 B caller-owned evidence. The values miss planning targets for
+flash, stack, policy, evidence, and simultaneous placement but pass the
+consolidated hard limits and preserve 6,790 B of conservative residual SRAM. Powered
+specimens and physical qualification remain E1-open.
 
 This pass reviews the Lesson 068 subject fixed by the
 [extended component/project cadence](../projects/component_project_cadence.md):
@@ -230,7 +233,7 @@ outcome without partial accumulation or source switching.
 | Composition pressure | Applicability and required evidence |
 |---|---|
 | Scheduler and time load | Applicable. One update performs O(1) validation, six mappings, bounded comparisons, and accumulator updates. No scan of retained samples, retry, sleep, polling, or catch-up is allowed. Tests exercise fastest cadence, delayed calls, exact boundaries, rollover, and the maximum collision. |
-| Total memory and hardware resources | Applicable. The implementation retains configuration, six minima/maxima, six widened sums, attempt provenance, and one result, not 32 full records. Initial promotion targets are policy plus result at or below 384 bytes, hard ceiling 512 bytes; conservative synchronous stack at or below 384 bytes, hard ceiling 512 bytes. The complete Lesson 069 composition must separately preserve at least 4,096 bytes residual Mega SRAM. Any target miss requires independent review; a hard miss blocks promotion. |
+| Total memory and hardware resources | Applicable. The implementation retains configuration, six minima/maxima, six widened sums, attempt provenance, and one result, not 32 full records. Durable target/hard gates are 12/16 KiB flash, 1,024/1,536 B linked static SRAM, 384/512 B synchronous stack, 384/640 B policy, 224/320 B caller-owned evidence, and 640/960 B explicit simultaneous policy-plus-evidence placement, with at least 4,096 B residual SRAM. The measured 13,570/766/508/395/271/666 B tuple has reviewed target misses and passes every hard gate; the 6,790 B residual calculation includes a 128 B interrupt reserve and does not double-count canonical globals. |
 | Shared bus or transport | Not applicable at E0. Incoming records are copied values. Future I2C adapters own address, identity, transaction, data-ready, interrupt, timeout, reset, and rollback behavior independently and cannot be qualified merely because this policy accepts their bytes. |
 | Persistence and recovery | Not applicable. Qualification state and attempts are volatile. A persisted prior result cannot qualify a current source after restart. Any later stored envelope requires its own canonical format, corruption, version, provenance, and recovery proof. |
 | Motion, external power, or stored energy | Not applicable. A learner may hand-move an unpowered module only as a narrative illustration; E0 executes copied traces. No output path, motor, launcher, ignition, or energizing operation exists. |

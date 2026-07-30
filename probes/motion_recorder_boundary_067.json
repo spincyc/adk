@@ -1,0 +1,14 @@
+{
+  "fingerprint_contract": "motion-recorder-resource-v2-l067",
+  "flash_hard": 14336,
+  "flash_target": 10240,
+  "lesson": "067",
+  "object_hard": 4,
+  "object_symbol": "inertialRecordNormalizerObjectBytes",
+  "object_target": 4,
+  "sketch": "examples/Lesson067InertialRecordNormalization",
+  "sram_hard": 1024,
+  "sram_target": 768,
+  "stack_hard": 448,
+  "stack_target": 320
+}

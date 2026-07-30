@@ -1,0 +1,312 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.60in]{geometry}
+\usepackage{amsmath,booktabs,enumitem,fancyhdr,graphicx,tabularx,titlesec,xcolor}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{docs/lessons/assets/}{assets/}}
+\hypersetup{
+ pdftitle={ADK Lesson 069: Replay a Qualified Motion Recorder},
+ pdfauthor={Kevin Shanahan},
+ pdfsubject={A bounded one-source recorder over copied normalized and qualified inertial evidence},
+ pdflang={en-US}}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\textsc{ADK Lesson 069}}\rhead{Qualified Motion Recorder}
+\cfoot{\thepage}\setlength{\headheight}{14pt}
+\setlength{\parindent}{0pt}\setlength{\parskip}{3pt}
+\setlist{nosep,leftmargin=1.45em}
+\titleformat{\section}{\Large\bfseries}{\thesection}{0.5em}{}
+\newcommand{\lessonbox}[1]{\begin{center}\fbox{\parbox{0.92\linewidth}{#1}}\end{center}}
+\newcommand{\blankline}{\rule{0.80in}{0.4pt}}
+\newcommand{\longblank}{\rule{1.45in}{0.4pt}}
+
+\begin{document}
+\small
+\begin{center}
+ {\Huge\bfseries Replay a Qualified Motion Recorder}\\[3pt]
+ {\Large Bind one witness, one source, and one bounded session}\\[7pt]
+ \fbox{\textbf{E0 SYNTHETIC REPLAY --- NO SENSOR, DISPLAY, CLOCK, OR STORAGE CLAIM}}
+\end{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X >{\bfseries}l X@{}}
+Lesson & 069 --- project & Time & 180--240 minutes\\
+Prerequisites & Lessons 067--068 & Board & compile-only Mega replay\\
+Input & copied record and qualification witness & Observation & named result cells\\
+\end{tabularx}
+
+\lessonbox{\textbf{Responsibility.}
+\texttt{QualifiedMotionRecorder} accepts one atomic copied qualification
+envelope, advances a versioned hand-motion script, appends a bounded
+caller-owned trace, and publishes inert presentation intent. It does not
+sample a sensor, choose between sources, drive an endpoint, read a clock,
+write a file, or establish durability.}
+
+\section{Make interchangeability a configuration property}
+The same recorder contract can serve separately configured sessions. A
+session fixes exactly one source identity and its schema, normalization,
+mapping, calibration, qualification, script, and presentation revisions.
+Starting with one source and quietly accepting another is not
+interchangeability; it is an unproved source switch.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=2.30in,keepaspectratio]
+ {069-one-source-session-pencil.png}
+
+\small\textit{Alternative text: a rough graphite source card points through
+an exact qualification envelope into a bounded notebook; captions state that
+one source is fixed per session, record and witness agree, and appends never
+overwrite.}
+\end{center}
+
+At E0, the positive replay uses synthetic copied fixtures. MPU6050-shaped and
+QMI8658-shaped records can exercise negative seams, but an enum tag does not
+identify silicon, a carrier, voltage limits, address straps, scaling,
+mounting, or axis direction. An unidentified board remains unpowered.
+
+\begin{tabularx}{\linewidth}{@{}X X@{}}
+\toprule
+E0 establishes & E0 does not establish\\
+\midrule
+one configured source per session & discovery, voting, failover, or hot swap\\
+exact copied evidence correlation & physical source identity or acquisition\\
+bounded volatile trace semantics & RTC time, filesystem, SD write, or durability\\
+inert orientation and display intent & powered LCD, RGB LED, or button behavior\\
+\bottomrule
+\end{tabularx}
+
+\newpage
+\section{Accept one envelope, not two snapshots}
+The input binds the complete Lesson 067 normalized record to the complete
+Lesson 068 qualification witness for that exact record. Source identity,
+revisions, sample sequence, observation time, qualification attempt, state,
+reason, and evidence digest must agree. A digest helps detect a collision; it
+never replaces comparison of the authoritative fields.
+
+Reading one mutable record and then a separately mutable decision could join
+evidence from different instants. The recorder therefore validates one copied
+envelope before it changes any session state.
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Envelope & Recorder action & State change\\
+\midrule
+qualified and exactly bound & derive, stage, append & one atomic commit\\
+collecting or rejected & publish explicit health & no append or script advance\\
+record/witness mismatch & reject as correlation fault & none\\
+changed duplicate & reject as chronology fault & none\\
+byte-identical duplicate & idempotent replay & none\\
+\bottomrule
+\end{tabularx}
+
+Suppose record sequence 42 is paired with a witness for sequence 41. Should a
+plausible acceleration vector be appended? \blankline. Which field first
+proves the mismatch? \longblank.
+
+\section{Append without silent loss}
+The caller owns fixed-capacity trace storage. A qualified update stages a
+complete canonical cell, validates it, writes it to the next free slot, and
+then commits count, recorder sequence, script progress, and result together.
+If validation or capacity fails, the prior policy, output canaries, and every
+trace byte remain unchanged.
+
+The trace never wraps, overwrites its oldest cell, silently coalesces samples,
+or reports a dropped sample as recorded. The last free slot may be filled;
+the next otherwise valid update reports \texttt{TraceFull}. Record-sequence
+exhaustion faults before it can wrap to zero.
+
+\lessonbox{\textbf{Volatile boundary.}
+Here ``recorded'' means copied into caller-owned memory during this process
+lifetime. It does not mean that media acknowledged a write, a filesystem
+committed, a clock was accurate, or evidence survives reset or power loss.}
+
+\newpage
+\section{Give the trace a normative image}
+Record identity is an explicit fixed-width encoding with magic, format and
+length, source and revision identity, session and recorder sequences,
+observation time, qualification attempt, script step, normalized values,
+quality, orientation, health, reserved-zero fields, and an integrity check.
+Field order, widths, signed representation, and byte order are part of that
+contract. C++ padding, an address, or \texttt{memcmp} of public objects is
+never record identity.
+
+\begin{enumerate}
+ \item Corrupt one reserved byte. Predict the decode result: \longblank.
+ \item Replay a byte-identical accepted envelope. New trace count:
+       \blankline.
+ \item Change one vector component while retaining its sequence. Outcome:
+       \longblank.
+\end{enumerate}
+
+\section{Advance a script only on accepted evidence}
+Each accepted record belongs to the current versioned hand-motion step before
+the completion predicate advances the script. Rejected, stale, saturated,
+unqualified, or duplicate evidence cannot advance it. The terminal step stays
+terminal until reset.
+
+Lesson 044 remains the only pitch/roll presentation algorithm. Lesson 069
+feeds it the qualification-frame sample and copies its result into intent; it
+does not invent another orientation convention. Record sequence, source
+sequence, qualification attempt, session generation, and script step remain
+different values even when a fixture makes their numbers happen to match.
+
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+Event & Trace & Script\\
+\midrule
+qualified step incomplete & append current step & hold\\
+qualified step complete & append current step & advance afterward\\
+unqualified plausible motion & unchanged & hold\\
+terminal-step replay & append only if new and accepted & remain terminal\\
+reset & clear declared volatile session state & begin at step zero\\
+\bottomrule
+\end{tabularx}
+
+\newpage
+\section{Let faults dominate presentation}
+Presentation is copied intent: source and recorder health, script prompt and
+progress, orientation value-or-fault, trace count and full indication,
+character-display tokens, and RGB color/blink tokens. It owns no pins and
+causes no electrical action.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.96\linewidth,height=2.25in,keepaspectratio]
+ {069-fault-dominance-pencil.png}
+
+\small\textit{Alternative text: rough graphite cards for source fault, not
+qualified, and trace full converge on one fault-dominant presentation card;
+a crossed-out stale angle and check-marked unchanged trace show that rejected
+updates neither look healthy nor alter stored evidence.}
+\end{center}
+
+Structural/configuration failure precedes lifecycle/correlation failure,
+which precedes producer fault, source-quality fault, age/order fault,
+qualification failure, and healthy operation. Lower-priority evidence remains
+inspectable where the result provides a field, but it cannot repaint a
+higher-priority fault as a healthy angle.
+
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+Collision & Required interpretation\\
+\midrule
+source fault plus plausible orientation & source fault; no current angle\\
+qualification rejection plus apparent step motion & rejected; no advance\\
+full trace plus fresh qualified record & full; no overwrite\\
+shutdown plus pending presentation & canonical inert presentation\\
+\bottomrule
+\end{tabularx}
+
+\section{Treat modular ordering deliberately}
+Supplied time is modular \texttt{TimePoint}, never silently UTC. Equal
+sequence/time is idempotent only for byte-identical evidence. Regression,
+future observation, changed duplicates, exact half-range ambiguity, age beyond
+the configured inclusive boundary, and exhaustion reject atomically.
+
+At the exact maximum-age boundary evidence is \blankline; one representable
+tick later it is \blankline. Explain why a signed cast is not a proof of
+modular order: \longblank.
+
+\newpage
+\section{Replay without touching hardware}
+The canonical Mega sketch constructs copied records and qualification
+witnesses, supplies time, invokes the recorder, and copies health, script,
+orientation validity, trace count, capacity state, RGB intent, and display
+intent into named volatile result cells.
+
+\begin{center}
+% ADK visual: pencil
+\includegraphics[width=0.94\linewidth,height=2.18in,keepaspectratio]
+ {069-replay-notebook-pencil.png}
+
+\small\textit{Alternative text: rough graphite replay cards point into a
+caller-owned lined notebook and then named result cells; a caption identifies
+the notebook as volatile evidence rather than a disk receipt.}
+\end{center}
+
+\begin{enumerate}
+ \item \textbf{Predict:} write the accepted source, health, current script
+       step, orientation validity, trace count, and presentation tokens.
+ \item \textbf{Observe:} compile for Mega 2560 and inspect the named volatile
+       cells in a debugger, simulator, or disassembly. Serial may support the
+       observation but is not required.
+ \item \textbf{Interpret:} compare the complete copied envelope, resulting
+       trace cell, script attribution, count, and fault intent. Explain any
+       disagreement before changing the fixture.
+\end{enumerate}
+
+This is the E0 non-Serial observation path. It proves deterministic software
+publication separately from electrical acquisition and safe state. E0 owns no
+endpoint, so physical resource-acquisition and released-line evidence remain
+open.
+
+\section{Publisher verification and open acceptance}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l X@{}}
+Host evidence & Strict lifecycle, envelope-correlation, capacity, canary,
+ordering, encoding, script, and failure-collision tests pass.\\
+Mega evidence & The synthetic replay compiles and linked flash/static SRAM,
+stack, object, result, image, caller trace, and residual SRAM are measured.\\
+Document evidence & PDF metadata, extraction, page count, monochrome, visual
+classification, and rendered-pencil review pass.\\
+Physical evidence & Open: exact sensor/carrier, mounting, bus, display/RGB,
+button, RTC, SD/media, clock, persistence, and durability acceptance.\\
+\end{tabularx}
+
+No physical verification may be inferred from a host test or a compiled
+sketch. Future powered work must separately record prediction, where and when
+to observe a non-Serial result, interpretation, resource-acquisition evidence,
+and safe-state evidence.
+
+\newpage
+\section{Stress the complete project}
+Exercise capacity one, one-before-full, full, unchanged duplicate, changed
+duplicate, ordinary rollover, exact half-range ambiguity, source fault,
+qualification rejection, stale evidence, reset, repeated shutdown, and
+reinitialize. For each rejection, prove both the recorder state and every
+caller-owned trace byte are unchanged.
+
+The maximum composition includes Lessons 043, 044, 067, 068, and 069,
+the largest qualification window, staged cell, complete envelope, orientation
+result, presentation result, and maximum caller-owned trace counted exactly
+once. It performs bounded work per update: no polling, acquisition wait,
+display refresh loop, media retry, or unbounded catch-up.
+
+\section{Draw the powered boundary}
+There is no wiring diagram or formal schematic at E0. A future implementation
+must split acceptance into independently qualified work:
+
+\begin{itemize}
+ \item exact sensor chip/carrier, I2C identity, voltage, pull-ups, scaling,
+       data-ready behavior, mounting, and calibration;
+ \item exact display, RGB LED, and button ownership, polarity, current,
+       startup, self-test, fault dominance, and safe state;
+ \item exact RTC, SD/media, timestamp domain, transaction receipts, schema,
+       corruption and torn-write recovery, capacity, wear, removal, and
+       power-loss durability.
+\end{itemize}
+
+This lesson authorizes only hand motion of an inert identified board. It
+authorizes no motor, vehicle control, launcher, ignition, stored-energy
+release, or unattended moving load.
+
+\section{Exercises and acceptance reasoning}
+\begin{enumerate}
+ \item Run two separate sessions with different copied source identities.
+       Show why neither session contains a midstream substitution.
+ \item Pair a fresh record with an older qualified witness. List every
+       observable byte and state value that must remain unchanged.
+ \item Fill the last trace cell, then offer one fresh qualified envelope.
+       Distinguish ``full'' from source fault and from durable storage.
+ \item Inject source fault while retaining a plausible cached angle. Explain
+       the required orientation and RGB/display intent.
+ \item Corrupt each canonical image field class: framing, enum, reserved,
+       payload, and integrity. Confirm decoding never partly publishes.
+ \item List the physical evidence needed before replacing copied fixtures
+       with one exact sensor, display, clock, and media assembly.
+\end{enumerate}
+
+\lessonbox{\textbf{Project result.}
+You have composed normalized and qualified copied motion evidence into a
+one-source, bounded, fault-dominant recorder replay without smuggling source
+selection, hardware control, wall-clock meaning, or durable storage into E0.}
+
+\textit{Stop at E0: every powered specimen, wiring, mounting, presentation,
+clock, media, durability, and physical acceptance result remains open work.}
+\end{document}

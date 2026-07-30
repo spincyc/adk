@@ -1,0 +1,93 @@
+{
+  "reviews": [
+    {
+      "authority": "docs/design/LESSON_068_INERTIAL_RECORD_QUALIFICATION_STRESS_PASS.md#maximum-composition-stress",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "30d3d573d9346dd6dcbe9887b64245217e063b5eb18e184dc20ccde06ddcc917",
+      "hard_bytes": 16384,
+      "lesson": "068",
+      "metric": "flash",
+      "observed_bytes": 13570,
+      "rationale": "The exact no-LTO fixture preserves complete source, chronology, mapping, and terminal-attempt evidence while retaining 2,814 bytes of hard-limit margin.",
+      "target_bytes": 12288
+    },
+    {
+      "authority": "docs/design/LESSON_068_INERTIAL_RECORD_QUALIFICATION_STRESS_PASS.md#maximum-composition-stress",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "30d3d573d9346dd6dcbe9887b64245217e063b5eb18e184dc20ccde06ddcc917",
+      "hard_bytes": 640,
+      "lesson": "068",
+      "metric": "object",
+      "observed_bytes": 395,
+      "rationale": "The policy retains bounded aggregates, extrema, chronology, provenance, and one terminal result without storing the sample window.",
+      "target_bytes": 384
+    },
+    {
+      "authority": "docs/design/LESSON_068_INERTIAL_RECORD_QUALIFICATION_STRESS_PASS.md#maximum-composition-stress",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "30d3d573d9346dd6dcbe9887b64245217e063b5eb18e184dc20ccde06ddcc917",
+      "hard_bytes": 320,
+      "lesson": "068",
+      "metric": "qualification_evidence",
+      "observed_bytes": 271,
+      "rationale": "The caller-owned evidence is the complete immutable terminal envelope and remains 49 bytes below its hard limit.",
+      "target_bytes": 224
+    },
+    {
+      "authority": "docs/design/LESSON_068_INERTIAL_RECORD_QUALIFICATION_STRESS_PASS.md#maximum-composition-stress",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "30d3d573d9346dd6dcbe9887b64245217e063b5eb18e184dc20ccde06ddcc917",
+      "hard_bytes": 960,
+      "lesson": "068",
+      "metric": "qualifier_plus_evidence",
+      "observed_bytes": 666,
+      "rationale": "The explicit simultaneous placement counts the policy and one caller evidence value once and remains 294 bytes below hard.",
+      "target_bytes": 640
+    },
+    {
+      "authority": "docs/design/LESSON_068_INERTIAL_RECORD_QUALIFICATION_STRESS_PASS.md#maximum-composition-stress",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "30d3d573d9346dd6dcbe9887b64245217e063b5eb18e184dc20ccde06ddcc917",
+      "hard_bytes": 512,
+      "lesson": "068",
+      "metric": "synchronous_stack",
+      "observed_bytes": 508,
+      "rationale": "The conservative no-LTO call path retains complete terminal-attempt validation and remains four bytes below the controlling hard limit after by-value evidence copies were removed.",
+      "target_bytes": 384
+    },
+    {
+      "authority": "docs/design/LESSON_069_QUALIFIED_MOTION_RECORDER_STRESS_PASS.md#maximum-composition-stress",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "7be0c300acc4f0e93d9cb5fa2e9b5a0ced5771458f9749e38eb8e507e61b30c6",
+      "hard_bytes": 40960,
+      "lesson": "069",
+      "metric": "flash",
+      "observed_bytes": 35144,
+      "rationale": "The exact aggregate no-LTO fixture honestly links Lessons 067 through 069 and retains 5,816 bytes of hard-limit margin after duplicate-state and digest-path remediation.",
+      "target_bytes": 32768
+    },
+    {
+      "authority": "docs/design/LESSON_069_QUALIFIED_MOTION_RECORDER_STRESS_PASS.md#maximum-composition-stress",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "7be0c300acc4f0e93d9cb5fa2e9b5a0ced5771458f9749e38eb8e507e61b30c6",
+      "hard_bytes": 3072,
+      "lesson": "069",
+      "metric": "static_sram",
+      "observed_bytes": 2347,
+      "rationale": "The aggregate fixture counts the six canonical record images and live Lessons 067 through 069 objects once and retains 725 bytes of hard-limit margin.",
+      "target_bytes": 2048
+    },
+    {
+      "authority": "docs/design/LESSON_069_QUALIFIED_MOTION_RECORDER_STRESS_PASS.md#maximum-composition-stress",
+      "disposition": "accepted-target-miss",
+      "fingerprint_sha256": "7be0c300acc4f0e93d9cb5fa2e9b5a0ced5771458f9749e38eb8e507e61b30c6",
+      "hard_bytes": 1024,
+      "lesson": "069",
+      "metric": "synchronous_stack",
+      "observed_bytes": 861,
+      "rationale": "The conservative no-LTO maximum path covers qualification, canonical recording, and presentation while retaining 163 bytes of hard-limit margin.",
+      "target_bytes": 768
+    }
+  ],
+  "schema": 1
+}

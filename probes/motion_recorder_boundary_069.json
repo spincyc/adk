@@ -1,0 +1,14 @@
+{
+  "fingerprint_contract": "motion-recorder-resource-v2-l069",
+  "flash_hard": 40960,
+  "flash_target": 32768,
+  "lesson": "069",
+  "object_hard": 768,
+  "object_symbol": "qualifiedMotionRecorderObjectBytes",
+  "object_target": 512,
+  "sketch": "examples/Lesson069InterchangeableMotionRecorder",
+  "sram_hard": 3072,
+  "sram_target": 2048,
+  "stack_hard": 1024,
+  "stack_target": 768
+}

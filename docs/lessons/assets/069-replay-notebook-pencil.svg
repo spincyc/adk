@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1536" height="820" viewBox="0 0 1536 820">
+  <defs><filter id="rough"><feTurbulence baseFrequency=".017" numOctaves="2" seed="23" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter><marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto"><path d="M1 1L11 6L1 11" fill="none" stroke="#333" stroke-width="2"/></marker></defs>
+  <rect width="1536" height="820" fill="#f7f7f4"/>
+  <g fill="none" stroke="#333" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#rough)">
+    <path d="M78 202h310v360H78zM108 255h250M108 315h250M108 375h250M108 435h250M108 495h180"/>
+    <path d="M430 380h175" marker-end="url(#arrow)"/>
+    <path d="M630 180h320v400H630zM665 248h250M665 310h250M665 372h250M665 434h250M665 496h250"/>
+    <path d="M992 380h170" marker-end="url(#arrow)"/>
+    <path d="M1190 230q110-80 220 0v275q-110 80-220 0z"/>
+    <path d="M1240 300h120M1240 360h120M1240 420h120"/>
+    <path d="M1225 650l40-40 35 35 80-95"/>
+    <path d="M570 690h400"/>
+  </g>
+  <g fill="#333" font-family="serif" text-anchor="middle">
+    <text x="233" y="150" font-size="36">copied replay cards</text>
+    <text x="790" y="130" font-size="36">caller-owned notebook</text>
+    <text x="1300" y="180" font-size="36">named result cells</text>
+    <text x="790" y="640" font-size="30">volatile evidence, not a disk receipt</text>
+    <text x="770" y="750" font-size="32">predict → observe → interpret</text>
+  </g>
+</svg>

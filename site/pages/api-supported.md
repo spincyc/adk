@@ -931,6 +931,36 @@ an MPU6050 or QMI8658, proves a mounting or calibration, operates a bus, or
 establishes bench acceptance. The canonical Mega replay measures 14,908 bytes
 of flash and 766 bytes of static SRAM.
 
+## Qualified motion recorder
+
+`QualifiedMotionRecorder` is the Lesson 069 E0 project for one explicitly
+configured source per session. It admits one terminal Lesson 068
+qualification envelope, correlates subsequent Lesson 067 records and copied
+controls, advances a fixed six-step hand-motion script, and publishes
+fault-dominant `MotionPresentationIntent`.
+
+The caller supplies the complete `MotionRecordImage` array synchronously to
+each update. The recorder validates its exact capacity, stages one canonical
+128-byte image, and appends atomically; it retains no caller pointer and never
+wraps or silently replaces an older cell. `MotionRecordCodec` validates
+framing, integrity, and semantic fields without treating C++ object layout as
+a file format. Export is only a volatile request/acknowledgement handshake.
+
+- Qualified motion recorder:
+  [source](https://github.com/spincyc/adk/blob/main/src/qualified_motion_recorder.h),
+  [implementation](https://github.com/spincyc/adk/blob/main/src/qualified_motion_recorder.cpp),
+  [host tests](https://github.com/spincyc/adk/blob/main/tests/test_qualified_motion_recorder.cpp),
+  [Mega replay](downloads/sketches/Lesson069InterchangeableMotionRecorder.ino),
+  and [Lesson 069](lessons/069.md)
+
+The honest canonical Mega composition measures 39,428 bytes flash and 2,347
+bytes static SRAM. Exact no-LTO evidence measures 35,144 bytes flash, 2,347
+bytes static SRAM, 861 bytes stack, a 509-byte object, a 128-byte record image,
+and 4,856 bytes residual SRAM. Exact flash, static SRAM, and stack miss their
+targets but pass independently reviewed fingerprint-bound hard gates. This E0
+result owns no sensor, control endpoint, display, RTC, media, filesystem, or
+durable storage.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.

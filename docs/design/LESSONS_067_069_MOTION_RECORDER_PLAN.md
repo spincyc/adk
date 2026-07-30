@@ -437,7 +437,9 @@ sessions expose the same consumer contract; it never means runtime detection,
 hot switching, voting, fallback, or splicing records from different sources.
 
 The project records the current script step before advancing to the next step.
-Reset input dominates all other controls. Fault dominates valid orientation
+The single closed `MotionRecorderCommand` value prevents contradictory
+simultaneous button states; `Reset` dominates because it is handled before
+recording-mode and trace validation. Fault dominates valid orientation
 for presentation. E0 emits semantic LCD/RGB intent and a caller-owned record
 image; it does not drive presentation or promise storage.
 
@@ -491,24 +493,39 @@ enum struct MotionDisplayToken : uint8_t
 
 struct MotionRecorderConfig
 {
-    uint16_t            recordSchemaRevision;
-    uint16_t            qualificationRevision;
-    uint16_t            recorderRevision;
-    uint16_t            maximumRecordCount;
-    Duration            maximumRecordAge;
-    Duration            minimumStepDuration;
+    uint16_t          recordSchemaRevision;
+    uint16_t          normalizationRevision;
+    uint16_t          qualificationRevision;
+    uint16_t          recorderRevision;
+    uint16_t          maximumRecordCount;
+    uint32_t          traceToken;
+    Duration          maximumRecordAge;
+    Duration          minimumStepDuration;
+    InertialSource    expectedSource;
+    OrientationConfig orientation;
+};
+
+enum struct MotionRecorderCommand : uint8_t
+{
+    None,
+    Advance,
+    Reset,
+    RequestExport,
+    AcknowledgeExport
 };
 
 struct MotionRecorderControl
 {
-    uint8_t                 sourceId;
-    uint32_t                sequence;
-    TimePoint               observedAt;
-    bool                    startPressed;
-    bool                    advancePressed;
-    bool                    resetPressed;
-    bool                    exportPressed;
-    Status                  status;
+    uint8_t               sourceId;
+    uint32_t              sequence;
+    TimePoint             observedAt;
+    uint16_t              qualificationRevision;
+    uint32_t              qualificationLifecycleGeneration;
+    uint32_t              qualificationAttemptId;
+    uint32_t              qualificationDigest;
+    uint32_t              traceToken;
+    MotionRecorderCommand command;
+    Status                status;
 };
 
 struct MotionPresentationIntent
@@ -525,24 +542,66 @@ struct MotionPresentationIntent
 
 struct MotionRecordImage
 {
-    uint8_t bytes[160];
-    uint16_t length;
+    static constexpr uint16_t capacity = 128;
+
+    uint8_t bytes[capacity];
 };
+
+enum struct MotionRecordValidity : uint8_t
+{
+    Valid,
+    BadLength,
+    BadFraming,
+    BadIntegrity,
+    BadSemanticValue
+};
+
+struct DecodedMotionRecord
+{
+    uint16_t             recorderRevision;
+    uint32_t             lifecycleGeneration;
+    uint32_t             sessionId;
+    uint16_t             ordinal;
+    MotionScriptStep     scriptStep;
+    MotionRecorderHealth health;
+    uint16_t             qualificationRevision;
+    uint32_t             qualificationLifecycleGeneration;
+    uint32_t             qualificationAttemptId;
+    uint32_t             qualificationDigest;
+    uint32_t             recordDigest;
+    uint32_t             traceToken;
+    SourceAxisMapping    sourceToQualificationFrame;
+    InertialRecord       mappedRecord;
+    OrientationEstimate orientation;
+};
+
+struct MotionRecordCodec
+{
+    static constexpr uint8_t version = 1;
+
+    MotionRecordValidity decode (
+        const MotionRecordImage& image,
+        DecodedMotionRecord&     output) const noexcept;
+};
+
+uint32_t motionQualificationDigest (
+    const InertialQualificationEvidence& evidence) noexcept;
+uint32_t motionRecordDigest (const InertialRecord& record) noexcept;
 
 struct MotionRecorderResult
 {
-    uint32_t                 sessionId;
-    MotionRecorderMode       mode;
-    MotionRecorderHealth     health;
-    MotionScriptStep         scriptStep;
-    uint16_t                 recordCount;
-    uint16_t                 recordCapacity;
-    InertialRecord           latestRecord;
-    InertialRecord           latestMappedRecord;
+    uint32_t                      sessionId;
+    uint32_t                      lifecycleGeneration;
+    MotionRecorderMode            mode;
+    MotionRecorderHealth          health;
+    MotionScriptStep              scriptStep;
+    uint16_t                      recordCount;
+    uint16_t                      recordCapacity;
+    InertialRecord                latestRecord;
     InertialQualificationEvidence qualification;
-    MotionPresentationIntent presentation;
-    bool                     exportRequested;
-    Status                   status;
+    MotionPresentationIntent      presentation;
+    bool                          exportRequested;
+    Status                        status;
 };
 
 struct QualifiedMotionRecorder
@@ -550,15 +609,22 @@ struct QualifiedMotionRecorder
     explicit QualifiedMotionRecorder (
         const MotionRecorderConfig& config) noexcept;
 
-    Status initialize (TimePoint          now,
-                       MotionRecordImage* records,
-                       uint16_t           recordCapacity) noexcept;
+    QualifiedMotionRecorder (const QualifiedMotionRecorder&) = delete;
+    QualifiedMotionRecorder&
+    operator= (const QualifiedMotionRecorder&) = delete;
+    QualifiedMotionRecorder (QualifiedMotionRecorder&&) = delete;
+    QualifiedMotionRecorder&
+    operator= (QualifiedMotionRecorder&&) = delete;
+
+    Status initialize (TimePoint now, uint16_t recordCapacity) noexcept;
     Status qualify    (TimePoint                            now,
                        const InertialQualificationEvidence& evidence) noexcept;
     Status begin      (TimePoint now, uint32_t sessionId) noexcept;
     Status update     (TimePoint                    now,
                        const InertialRecord&         record,
-                       const MotionRecorderControl& control) noexcept;
+                       const MotionRecorderControl& control,
+                       MotionRecordImage*           records,
+                       uint16_t                     recordCapacity) noexcept;
     Status acknowledgeExport (TimePoint now) noexcept;
     Status reset      (TimePoint now) noexcept;
     Status shutdown   (TimePoint now) noexcept;
@@ -568,29 +634,49 @@ struct QualifiedMotionRecorder
 };
 ```
 
-The exact public representation may use a caller-owned typed cell instead of
-the illustrative 160-byte cell, but storage must remain fixed-capacity and
-caller-owned. `maximumRecordCount` cannot exceed supplied capacity. Append is
-atomic: a full buffer publishes `CapacityExhausted` without overwriting an old
-record or incrementing the count. There is no hidden ring buffer.
+Storage is fixed-capacity and caller-owned. `initialize()` receives only the
+capacity and retains no trace pointer. Every `update()` receives the trace
+pointer and capacity synchronously, validates that capacity against the saved
+contract, builds one candidate locally, and copies it into the next cell only
+after all record, control, mapping, orientation, and codec checks pass. The
+pointer is never retained. `maximumRecordCount` cannot exceed supplied
+capacity. A null/short span rejects without mutation; a full trace publishes
+`CapacityExhausted` without overwriting an old record or incrementing the
+count. There is no hidden ring buffer.
 
-Each canonical project record binds magic/version/length, recorder revision,
-session ID, record ordinal, script step, the complete
+Each canonical project record is exactly 128 bytes and binds
+magic/version/length, recorder revision,
+session ID, record ordinal, script step, trace token, the complete
 source/schema/normalization/calibration/range identity, qualification attempt
 and revision, the immutable mapped record, mapped orientation snapshot,
-health, the canonical Lesson 067 record digest, reserved zeroes, and CRC.
+health, qualification-evidence digest, the canonical Lesson 067 record digest,
+reserved zeroes, and CRC.
 Explicit endian encoding is mandatory. Raw structs and `memcmp` are not
-persistence formats.
+persistence formats. `MotionRecordCodec::decode()` returns
+`MotionRecordValidity::{Valid, BadLength, BadFraming, BadIntegrity,
+BadSemanticValue}`, stages `DecodedMotionRecord`, and leaves output unchanged
+on failure.
 
 `qualify()` accepts only terminal `Qualified` evidence matching every
-configured revision and source contract. `begin()` requires a nonzero new
-session ID and retained qualified evidence. Each update validates the control
-and record independently, requires exact correlation with the qualification
-envelope, records at most once, and then applies an eligible advance edge.
-Controls are copied evidence, not debounced electrical inputs. Reset dominates
-start, advance, and export. A producer fault, stale record, saturation,
-correlation change, or capacity exhaustion enters a visible fault without
-fabricating orientation.
+configured revision, expected source, mapping, and record contract.
+The recorder saves that immutable qualification envelope. Every update control
+must repeat its qualification revision, lifecycle generation, attempt ID,
+qualification digest, and trace token, and must match the record's source ID,
+sequence, and observation time. This is the stream-domain correlation
+contract: a record cannot be attached to a different accepted qualification
+or caller-owned trace merely because its numeric vectors look plausible.
+
+`initialize()` and `reset()` increment a nonzero lifecycle generation and
+return `CapacityExceeded` rather than wrapping `UINT32_MAX`. Reset discards the
+qualification and returns to `AwaitingQualification`. `begin()` requires
+`Ready`, a nonzero session ID, and a forward modular session ID distinct from
+every earlier session retained by the object; duplicate, backward, or
+half-range-ambiguous IDs reject. Each update validates the control and record,
+records at most once, and only then applies an eligible `Advance`. A
+byte-identical duplicate record is idempotent. Controls are copied command
+evidence, not debounced electrical inputs. Correlation mismatches reject
+without mutation. A producer fault, stale record, saturation, or capacity
+exhaustion enters a visible fault without fabricating orientation.
 
 Export is a volatile request/acknowledgement handshake over the caller-owned
 images. “Requested” does not mean written, flushed, synchronized, durable, or
@@ -599,31 +685,37 @@ write, flush, and verification receipts before any durability claim.
 
 ### Deterministic matrix
 
-- complete script in order; advance before start, repeated controls, held
-  buttons, simultaneous controls, reset dominance, and current-step-before-
+- every closed command, invalid command, reset dominance, advance before
+  begin, repeated controls, minimum-step boundary, and current-step-before-
   advance ordering;
 - qualification missing, rejected, stale, wrong attempt, wrong revisions, and
   source/range/calibration drift;
 - every source health state and RGB/display fault-dominance collision;
-- capacity zero, configured/supplied mismatch, exactly full, and one append
-  beyond full with old images unchanged;
+- capacity zero, configured/supplied mismatch, null update trace, changing
+  synchronous trace pointer, proof that no pointer is retained, exactly full,
+  and one append beyond full with old images unchanged;
 - record/control duplicates, changed duplicates, independent sequence wraps,
   backward/future time, maximum age/gap boundaries, and half-range ambiguity;
 - byte-exact records, corruption of each field class, reserved bytes, CRC,
   record digest binding, and replay identity;
-- reset/shutdown, session-ID reuse rejection, export request,
-  acknowledgement misuse, and proof that no method invokes an endpoint.
+- lifecycle initialize/reset increments and exhaustion, session-ID duplicate/
+  regression/half-range rejection, saved qualification revision/generation/
+  attempt correlation, export request, acknowledgement misuse, typed 128-byte
+  decode outcomes, and proof that no method invokes an endpoint.
 
-The Mega replay uses one synthetic qualified source per run, executes the
-six-step script, and exposes the caller-owned record array and presentation
-intent as the non-Serial observation path. A second replay changes only the
-configured synthetic revision-specific fixture and produces the same record
-contract, not necessarily identical sensor values.
+The Mega replay uses one synthetic qualified source per run and an exact
+six-cell `MotionRecordImage records[6]` caller-owned trace. Six updates record,
+in order, `Rest`, `TiltForward`, `TiltBack`, `TiltLeft`, `TiltRight`, and
+`ReturnToRest`; each uses `Advance`, so the sixth cell is committed before the
+recorder becomes `Complete`. The six cells and presentation intent are the
+non-Serial observation path. Separate source-session fixtures remain a
+deterministic host-test seam rather than a second physical-source claim in the
+canonical Mega replay.
 
 ## Resource and ownership budgets
 
-These are planning ceilings, not measured claims. Each lesson records exact
-canonical and no-LTO evidence before publication.
+These ceilings governed implementation. The canonical and exact no-LTO
+measurements below are the promotion evidence.
 
 | Resource | Target | Hard limit | Disposition |
 |---|---:|---:|---|
@@ -632,11 +724,24 @@ canonical and no-LTO evidence before publication.
 | Lesson 068 qualifier object | 384 B | 640 B | at most 32 samples, but aggregates rather than retaining the window |
 | Qualification evidence | 224 B | 320 B | one immutable terminal envelope |
 | Lesson 069 recorder object | 512 B | 768 B | excludes caller-owned record cells |
-| One project record cell | 128 B | 160 B | fixed canonical image |
+| One project record cell | 128 B | 128 B | fixed canonical image |
 | Conservative synchronous stack | 768 B | 1,024 B | measured no-LTO call-chain estimate |
 | Recurring composition SRAM | 2,048 B | 3,072 B | objects, envelopes, one working record, endpoint-free |
 | Mega 2560 residual SRAM | 4,096 B | 3,072 B | after recurring composition and measured globals |
-| Arc replay flash | 24 KiB | 32 KiB | canonical library build |
+| Arc replay flash | 32 KiB | 40 KiB | honest linked 067--069 canonical build |
+
+The promoted Lesson 069 Mega replay honestly runs Lessons 067, 068, and 069
+and measures 39,428 B flash and 2,347 B static SRAM. Its exact no-LTO
+composition measures 35,144 B flash, 2,347 B static SRAM, 861 B synchronous
+stack, a 509 B recorder object, a 128 B record image, and 4,856 B residual
+SRAM. Exact flash, static SRAM, and stack miss their targets by 2,376 B, 299 B,
+and 93 B respectively; independent review accepted them after confirming the
+full composition retains genuine qualification, provenance, correlation,
+transactional encoding, and caller-owned trace semantics. All hard limits
+pass. The acceptance is bound to boundary-scoped resource fingerprint
+`7be0c300acc4f0e93d9cb5fa2e9b5a0ced5771458f9749e38eb8e507e61b30c6`
+and becomes stale when any measured source, configuration, public layout,
+toolchain, probe, fixture, or call graph changes.
 
 No policy stores the 32-sample qualification window. Widened accumulators,
 extrema, first/last provenance, and terminal record are sufficient. If a
