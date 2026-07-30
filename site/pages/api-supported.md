@@ -874,6 +874,33 @@ resource measurements. Exact probes, electrical timing, thermal accuracy,
 presentation, persistence, authentication, and E1a--E1d acceptance remain
 open.
 
+## Normalized inertial records
+
+`InertialRecordNormalizer` is the Lesson 067 E0 component for one complete
+copied `InertialSample`. It preserves source attribution, configured revisions,
+declared ranges, observation time, sequence, readiness, saturation, producer
+status, and all six source-frame values. It derives an explicit recorded,
+not-ready, or source-fault state without acquiring, calibrating, rotating,
+qualifying, comparing, or retaining a physical sensor.
+
+`InertialRecordCodec` gives the value one canonical 64-byte image with explicit
+field order, little-endian integers, reserved-zero fields, and CRC-16
+integrity. Encoding and decoding stage complete candidates and leave caller
+output unchanged on rejection. The checksum detects accidental corruption; it
+does not authenticate a source or establish durable storage.
+
+- Inertial record:
+  [source](https://github.com/spincyc/adk/blob/main/src/inertial_record.h),
+  [implementation](https://github.com/spincyc/adk/blob/main/src/inertial_record.cpp),
+  [host tests](https://github.com/spincyc/adk/blob/main/tests/test_inertial_record.cpp),
+  [Mega replay](downloads/sketches/Lesson067InertialRecordNormalization.ino),
+  and [Lesson 067](lessons/067.md)
+
+This is copied E0 software evidence only. Exact MPU6050 and QMI8658 identities,
+powered adapters, electrical behavior, mounting, calibration, source
+qualification, presentation, persistence, and bench acceptance remain open
+E1a--E1c work.
+
 ## Error and electrical safety
 
 - Treat `ResourceBusy` as a wiring or ownership error; do not steal a pin.

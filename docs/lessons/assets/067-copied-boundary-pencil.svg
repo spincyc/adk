@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="720" viewBox="0 0 1500 720" role="img" aria-labelledby="title desc">
+  <title id="title">Copied evidence boundary</title>
+  <desc id="desc">A graphite sample card crosses a normalization desk into a stable record card while a physical sensor remains behind a locked E1 gate.</desc>
+  <rect width="1500" height="720" fill="#f8f7f2"/>
+  <g fill="none" stroke="#383838" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M75 118 Q238 91 409 120 L394 562 Q231 588 82 558 Z"/>
+    <path d="M113 174 Q232 161 356 176 M112 228 Q240 216 348 232 M112 282 Q245 270 350 287"/>
+    <path d="M438 330 Q545 302 646 331 M605 286 L650 330 605 373"/>
+    <path d="M685 101 Q875 77 1051 110 L1039 580 Q867 603 690 574 Z"/>
+    <path d="M731 176 Q854 161 1006 180 M732 239 Q860 222 1000 244 M732 303 Q856 287 1000 309"/>
+    <path d="M1138 87 L1400 86 L1400 596 L1138 596 Z"/>
+    <path d="M1238 291 L1238 246 Q1238 194 1291 194 Q1344 194 1344 246 L1344 291"/>
+    <rect x="1214" y="291" width="154" height="131" rx="14"/>
+    <path d="M1291 335 L1291 382"/>
+  </g>
+  <g opacity=".22" stroke="#555" stroke-width="3">
+    <path d="M65 130 L405 112 M76 570 L405 551 M680 114 L1059 94 M684 587 L1052 566"/>
+  </g>
+</svg>

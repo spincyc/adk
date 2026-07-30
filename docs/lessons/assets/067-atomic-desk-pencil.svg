@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="720" viewBox="0 0 1500 720" role="img" aria-labelledby="title desc">
+  <title id="title">Atomic staging desk</title>
+  <desc id="desc">A candidate record and candidate image are checked on a pencil desk; a passing stamp moves both to output while a failure leaves the old output and its canary untouched.</desc>
+  <rect width="1500" height="720" fill="#f8f7f2"/>
+  <g fill="none" stroke="#3b3b3b" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M65 170 Q260 149 448 175 L442 502 Q259 523 72 498 Z"/>
+    <path d="M523 121 Q755 94 978 125 L968 551 Q750 578 526 547 Z"/>
+    <path d="M591 197 L902 197 L902 438 L591 438 Z"/>
+    <path d="M1053 169 Q1237 149 1437 176 L1427 504 Q1235 526 1057 499 Z"/>
+    <path d="M453 332 L519 332 M978 332 L1048 332"/>
+    <path d="M495 301 L524 332 495 362 M1020 301 L1050 332 1020 362"/>
+    <path d="M1121 283 L1194 356 1361 218"/>
+    <path d="M1096 429 Q1238 397 1382 428"/>
+  </g>
+</svg>

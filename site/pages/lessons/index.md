@@ -71,8 +71,9 @@ third lesson for a deterministic integration project.
 | [Lesson 064 — Bounded copied 1-Wire transactions](064.md) | Typed copied single-wire intent and receipt evidence | Microsecond windows, correlated phases, bounded ROM search, explicit rollback, and release confirmation |
 | [Lesson 065 — Qualifying a four-probe 18B20 set](065.md) | Fixed identities and copied transaction chains | Conversion, CRC, resolution, freshness, disappearance, and replay state remain attributable |
 | [Lesson 066 — Mapping copied thermal gradients](066.md) | Structurally validated copied probe-set images | Ordered intervals, fault incidence, pages, and volatile record intent remain deterministic |
+| [Lesson 067 — Normalizing copied inertial records](067.md) | Complete copied source-frame inertial samples | Attribution, revisions, faults, signed values, and canonical record images remain explicit |
 
-Lessons 001--066 are host verified and their canonical examples compile for
+Lessons 001--067 are host verified and their canonical examples compile for
 the Mega 2560. Lessons 055--057 publish E0 replay only: exact inputs,
 presentation, storage, actuators, and bench acceptance remain open. Lessons
 058--060 likewise leave their exact powered display fixtures and bench
@@ -81,7 +82,9 @@ exact powered probes/modules, adapters, wiring, physical behavior, and E1
 bench acceptance remain open. Lesson 064 publishes only copied 1-Wire
 transaction intent and receipts. Lesson 065 qualifies only copied transaction
 evidence. Lesson 066 maps copied result images only: it does not authenticate
-their source, drive a display, or persist a record. Exact endpoints, pull-ups,
+their source, drive a display, or persist a record. Lesson 067 represents one
+complete copied inertial sample without acquiring, calibrating, rotating,
+qualifying, or storing sensor data. Exact endpoints, pull-ups,
 probes, timing, thermal accuracy, presentation, storage, power behavior, and
 bench acceptance remain open. Every
 circuit remains experimental until its physical acceptance card is recorded.

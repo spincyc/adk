@@ -294,9 +294,9 @@ supplies the shortest planned path through the library.
 | 064 | Component | Single-wire transactions | Reset, presence, slots, pull-up policy, timeout, rollback, and DS18B20 identity are explicit |
 | 065 | Component | Qualified 18B20 thermal probe sets | Fixed-capacity identities retain conversion, CRC, stale, and disappearance state |
 | 066 | Project-bearing | Thermal gradient mapper | Qualified copied 18B20 result images produce deterministic gradient, fault, page, and volatile record intent; powered presentation, persistence, and authentication are not claimed |
-| 067 | Component | Inertial record normalization | Device identity, range, calibration version, data-ready, and faults survive normalization |
-| 068 | Component | Inertial source qualification | Explicit configuration qualifies one source without hidden voting or failover |
-| 069 | Project-bearing | Interchangeable motion recorder | Revision-specific traces normalize and present through earlier endpoints |
+| 067 | Component | Copied source-frame inertial records | A revision-specific copied sample becomes a fixed normalized record while source identity, ranges, calibration, readiness, saturation, time, sequence, and producer status remain attributable; no powered adapter is claimed |
+| 068 | Component | Configured inertial-record qualification | One explicitly configured copied-record source is qualified from stationary evidence and an explicit axis mapping without source selection, voting, automatic failover, or powered acquisition |
+| 069 | Project-bearing | One-source E0 motion recorder | Qualified copied records from one configured source per session drive a fixed motion-script replay, volatile record intent, and presentation intent without owning a sensor, bus, display, clock, or storage endpoint |
 | 070 | Component | Threshold-module descriptors | Identified low-voltage comparator modules share one explicit electrical descriptor |
 | 071 | Component | Characterization runs | Supplied sweeps expose threshold, hysteresis, chatter, and disagreement |
 | 072 | Project-bearing | Module characterization bench | One identified analog/comparator specimen produces a stable acceptance record |

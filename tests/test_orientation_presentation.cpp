@@ -150,6 +150,81 @@ namespace {
         }
     }
 
+    void testNeutralSignedAxisMapping ()
+    {
+        const adk::SignedAxis axes[] = {
+            adk::SignedAxis::PositiveX, adk::SignedAxis::NegativeX,
+            adk::SignedAxis::PositiveY, adk::SignedAxis::NegativeY,
+            adk::SignedAxis::PositiveZ, adk::SignedAxis::NegativeZ};
+        const int32_t input[] = {11, 22, 33};
+        unsigned      validMappings = 0;
+
+        for (adk::SignedAxis x : axes)
+        {
+            for (adk::SignedAxis y : axes)
+            {
+                for (adk::SignedAxis z : axes)
+                {
+                    const adk::SignedAxisMapping mapping = {x, y, z};
+                    int32_t outputX = 101;
+                    int32_t outputY = 102;
+                    int32_t outputZ = 103;
+                    const bool valid =
+                        adk::validSignedAxisMapping (mapping);
+                    require (adk::mapSignedAxes (
+                                 mapping, input[0], input[1], input[2],
+                                 outputX, outputY, outputZ) == valid,
+                             "all 216 mappings agree on validity and application");
+                    if (!valid)
+                    {
+                        require (outputX == 101 && outputY == 102 && outputZ == 103,
+                                 "invalid mapping leaves output unchanged");
+                        continue;
+                    }
+
+                    ++validMappings;
+                    const adk::SignedAxis outputAxes[] = {x, y, z};
+                    const int32_t output[]             = {outputX, outputY, outputZ};
+                    for (uint8_t index = 0; index < 3; ++index)
+                    {
+                        const int32_t source =
+                            input[adk::signedAxisIndex (outputAxes[index])];
+                        const int32_t expected =
+                            adk::signedAxisSign (outputAxes[index]) < 0 ? -source :
+                                                                             source;
+                        require (output[index] == expected,
+                                 "valid mapping applies the selected sign and axis");
+                    }
+
+                    int32_t minimumInput[] = {11, 22, 33};
+                    for (uint8_t index = 0; index < 3; ++index)
+                    {
+                        if (adk::signedAxisSign (outputAxes[index]) >= 0)
+                        {
+                            continue;
+                        }
+                        minimumInput[adk::signedAxisIndex (outputAxes[index])] =
+                            INT32_MIN;
+                        outputX = 201;
+                        outputY = 202;
+                        outputZ = 203;
+                        require (!adk::mapSignedAxes (
+                                     mapping, minimumInput[0], minimumInput[1],
+                                     minimumInput[2], outputX, outputY, outputZ) &&
+                                     outputX == 201 && outputY == 202 &&
+                                     outputZ == 203,
+                                 "negative INT32_MIN mapping fails transactionally");
+                        minimumInput[adk::signedAxisIndex (outputAxes[index])] =
+                            input[adk::signedAxisIndex (outputAxes[index])];
+                    }
+                }
+            }
+        }
+
+        require (validMappings == 24,
+                 "neutral mapping recognizes exactly 24 proper rotations");
+    }
+
     void testLifecycleAndConfigurations ()
     {
         static_assert (!std::is_copy_constructible<adk::OrientationPolicy>::value,
@@ -1192,6 +1267,8 @@ namespace {
 
 int main ()
 {
+    testNeutralSignedAxisMapping ();
+
     testLifecycleAndConfigurations ();
 
     testMappingAndCordicOracle ();

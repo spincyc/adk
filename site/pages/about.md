@@ -16,7 +16,7 @@ The teaching method repeats deliberately:
 
 ## Current status
 
-ADK is early-stage software. Lessons 001--066 use the first-class per-object
+ADK is early-stage software. Lessons 001--067 use the first-class per-object
 RAII interfaces. Their APIs pass deterministic host tests and their canonical
 examples compile for the Mega 2560, but physical acceptance remains open.
 Lessons 037--039 use documented external reference fixtures; incoming
@@ -70,6 +70,10 @@ Lesson 066 composes those copied result images into deterministic ordered
 interval-gradient, fault, page, and volatile record intent. It validates
 caller-supplied structure rather than authenticating a source, owns no
 display, and writes no storage.
+Lesson 067 publishes an attributable source-frame record and canonical
+64-byte image for one complete copied inertial sample. It owns no sensor,
+adapter, bus, clock, display, or storage, and it does not calibrate, rotate,
+qualify, compare, or persist samples.
 
 The hierarchy is developed in dependency order:
 
@@ -85,8 +89,9 @@ The latest completed project arc is Lessons 064--066: copied single-wire
 transactions and qualified probe-set evidence composed into deterministic
 thermal-gradient, page, and volatile record intent. Powered probes, adapters,
 presentation, storage, authentication, and physical acceptance remain open.
-[Lesson 066](lessons/066.md) is the latest published project boundary.
-Lesson 067 begins the next implementation arc. See the
+[Lesson 066](lessons/066.md) remains the latest published project boundary.
+[Lesson 067](lessons/067.md) is the latest published component and begins the
+next implementation arc. See the
 [course map](course.md) for that order and the
 [roadmap](docs/ROADMAP.md) for the full sequence.
 

@@ -737,36 +737,48 @@ LEDs.
 
 ### 067 — Inertial record normalization
 
-Normalize recorded output from the lesson 043 adapters while retaining device
-identity, configured range, data-ready state, saturation, calibration version,
-and transport status. No runtime probe writes configuration to an unidentified
-address.
+Normalize copied, revision-specific inertial record fixtures into one
+source-frame contract while retaining source identity, configured range,
+data-ready state, saturation, calibration and conversion revisions, sample
+time, sequence, and producer status. Lesson 043 supplies a revision-neutral
+copied-sample contract, not a powered device adapter. E0 owns no bus or
+endpoint and performs no runtime probe or configuration write.
 
 ### 068 — Inertial source qualification
 
-Qualify one explicitly configured source using stationary bias, axis mapping,
-sample age, and range checks. Source selection is configuration, not voting or
-automatic failover. Recorded samples can drive the qualifier without either
-device driver.
+Qualify one explicitly configured copied-record source using stationary bias,
+an explicit right-handed source-to-qualification-frame mapping, sample age,
+sequence, and range checks. Source selection is configuration, not voting,
+hot switching, or automatic failover. Recorded fixtures can drive the
+qualifier without a device driver.
 
 ### 069 — Project: interchangeable motion recorder
 
-The learner records the same hand-motion script with the kit's identified
-motion module, compares normalized traces on the host, and presents live
-orientation and health on LEDs and the character display.
+At E0 the learner replays the same hand-motion script from independently
+identified copied-record fixtures, compares normalized traces on the host,
+and produces inert presentation and record intents. One configured source is
+used for each recorder session. No I2C endpoint, RTC, SD medium, character
+display, RGB LED, or button is owned or physically verified.
 
-Deterministic evidence includes golden traces for each adapter, register
-identity mismatch, NACK, stale/data-ready disagreement, range saturation,
-axis permutations, and byte-identical normalized records. SDA, SCL, interrupt,
-and sensor-rail test points expose acquisition; a display self-test is
-separate from changing orientation; RGB fault dominates valid orientation.
+Deterministic E0 evidence includes golden copied traces for each represented
+revision, identity and contract-revision mismatch, copied producer faults,
+stale/data-ready disagreement, range saturation, axis permutations, session
+capacity and lifecycle boundaries, and byte-identical normalized records.
+Caller-owned result cells expose qualification, recording, and presentation
+intent without Serial output or a physical observation claim.
 
-Before power is applied, the inventory must name MPU6050 or QMI8658, PCB
+Future E1 work may independently qualify an exact MPU6050 or QMI8658 adapter,
+then separately qualify its display, RGB/button, clock, and durable-media
+endpoints. Before power is applied, the inventory must name the sensor, PCB
 markings, address strap, regulator and level-shifter population, logic voltage,
-and primary register-map revision. An unidentified revision remains unpowered.
+and primary register-map revision. E1 acceptance must expose SDA, SCL,
+interrupt, and sensor-rail acquisition evidence; keep display self-test
+separate from changing orientation; and make RGB fault dominate valid
+orientation. An unidentified revision remains unpowered.
 
-Planned specimen coverage: revision-dependent MPU6050 or QMI8658, I2C,
-character display, RGB LED, button, RTC, and SD.
+Planned E1 specimen coverage: one exactly identified revision-dependent
+MPU6050 or QMI8658 fixture, I2C, character display, RGB LED, button, RTC, and
+SD. Qualifying one motion family does not qualify the other.
 
 ## Lessons 070--072: modular sensor test bench
 
@@ -889,7 +901,7 @@ individually identified retail boards.
 | Receive-capable RF | 027 passive only | no transmit project |
 | Continuity and cue panel | 030 inert only | 057 fault model |
 | Joystick, rotary encoder | 033 | 036, 045, 048, 057 |
-| MPU6050 or QMI8658 revision | 045 | 069 normalized records |
+| Copied inertial evidence; exact MPU6050 and QMI8658 adapters deferred | 045 E0 policy; E1 fixtures open | 069 E0 records; E1 adapters open |
 | Hall variants, reed | 036 | 051, 057, 063 |
 | Tilt, knock, vibration, shock, sound | 039 | 048, 057 |
 | Tracking, Avoidance, Photo-Interrupter | 042 | 057, 072 |
