@@ -1,9 +1,9 @@
 # Lesson 068 inertial-record qualification architecture stress pass
 
-Status: initial pre-implementation E0 review; implementation is permitted only
-after the axis-mapping remediation and the complete Lessons 067--069 plan make
-the contracts below normative. Powered specimens and physical qualification
-remain E1-open.
+Status: published and host verified at E0. The axis-mapping remediation,
+one-source record qualifier, deterministic replay, measured Mega example,
+HTML, and pencil-drawing PDF pass their non-hardware gates. Powered specimens
+and physical qualification remain E1-open.
 
 This pass reviews the Lesson 068 subject fixed by the
 [extended component/project cadence](../projects/component_project_cadence.md):
@@ -32,7 +32,10 @@ address probe, interrupt, clock, calibration store, display, or recorder.
   fixed-capacity windows, reset-safe attempts, and one-source-per-session
   composition for Lesson 069
 
-Lesson 068 qualifies the configured interpretation of one copied source. It
+Lesson 068 qualifies the configured interpretation of one copied source. The
+only positive E0 domain is `SyntheticFixture`/`Synthetic`; `initialize()`
+returns `Unsupported` for an otherwise well-formed physical source
+configuration without changing lifecycle state. It
 does not certify sensor accuracy, prove a device marking, discover which
 module is attached, estimate arbitrary orientation, or calibrate a physical
 unit. E0 supports synthetic record fixtures. `Mpu6050Adapter` and
@@ -49,13 +52,13 @@ angular rate. Depending on `OrientationPresentationPolicy` would invert the
 layering, while privately reimplementing its determinant rule would create two
 authorities for the same safety-relevant transform.
 
-Before Lesson 068 implementation, factor the existing six-value `SignedAxis`
-and proper-rotation validation/application rules into a small foundational
-axis-mapping boundary. Preserve the published Lesson 044 spellings and
-behavior: its header may re-export or include the foundational declaration,
-and its implementation must delegate to the shared validator. Lesson 068 then
-owns a semantically named `SourceAxisMapping` with three destination axes and
-uses the same helper. This remediation must not change angle math,
+The implementation factors the existing six-value `SignedAxis` and
+proper-rotation validation/application rules into
+`signed_axis_mapping.h`. The published Lesson 044 spellings and behavior are
+preserved: its header includes the foundational declaration and its
+implementation delegates to `validSignedAxisMapping()` and
+`mapSignedAxes()`. Lesson 068 supplies the semantic `SourceAxisMapping` alias
+and uses the same helpers. This remediation does not change angle math,
 `BoardFrame` meaning, orientation thresholds, or any Lesson 043--045 public
 result.
 
@@ -75,24 +78,27 @@ The complete Lessons 067--069 plan may refine spelling, but it must retain:
   source/configuration/calibration/range revisions, accepted Lesson 067
   schema and normalization revisions, `SourceAxisMapping`, qualification
   contract revision, window size, maximum sample age, maximum inter-sample
-  gap, expected stationary gravity, per-axis acceleration deviation limits,
+  gap, expected stationary acceleration in micro-g, per-axis acceleration
+  deviation limits,
   and per-axis angular-rate limits;
 - one nonzero qualification-attempt identity and one nonzero lifecycle
-  generation;
-- a fixed window capacity, with configured count in the inclusive range
+  generation, both retained in evidence;
+- a fixed aggregate window, with configured count in the inclusive range
   `2..32`;
-- one terminal disposition vocabulary that distinguishes at least
-  `Unqualified`, `Collecting`, `Qualified`, `SourceMismatch`,
-  `RecordFault`, `NotReady`, `Saturated`, `Stale`, `SequenceFault`,
-  `TimingFault`, `AccelerationOutOfBounds`, and `AngularRateOutOfBounds`;
-- complete result evidence: configured source and mapping, attempt/generation,
-  accepted count, first and last record sequence/time, maximum observed age
-  and gap, mapped per-axis acceleration and angular-rate minima/maxima,
-  widened sums and reported means or biases, the first failing record's
-  provenance and producer status, terminal reason, and operation status; and
+- states `Idle`, `Collecting`, `Qualified`, and `Rejected`, plus exact terminal
+  reasons `None`, `ConfigurationMismatch`, `ProducerFault`, `NotReady`,
+  `Saturated`, `Stale`, `SequenceDiscontinuity`,
+  `TimestampDiscontinuity`, `AccelerationOutsideWindow`,
+  `AngularRateOutsideWindow`, and `ArithmeticOverflow`;
+- complete result evidence: mapping, attempt/generation, qualification
+  revision, accepted count, first and last record sequence/time, maximum
+  observed age and gap, mapped per-axis acceleration and angular-rate
+  minima/maxima, signed 64-bit per-axis sums and reported means, the first
+  failing record's provenance and producer status, terminal reason, and
+  operation status; and
 - an inert construction followed by `initialize()`, explicit
-  `beginQualification()`, one-record-at-a-time `update(now, record)`,
-  `reset()`, `shutdown()`, `snapshot()`, and lifecycle queries.
+  `begin(now, attemptId)`, one-record-at-a-time `observe(now, record)`,
+  `reset()`, `shutdown()`, `evidence()`, and lifecycle queries.
 
 Configuration is copied. The policy is noncopyable and nonmovable, allocates
 no heap memory, invokes no callback, reads no clock, and performs no
@@ -100,8 +106,11 @@ acquisition. A qualification attempt is terminal after either qualification
 or rejection. Further records are rejected without mutation until an explicit
 new attempt. Reset clears the window, terminal evidence, history, and attempt
 authority while retaining validated configuration; shutdown leaves an
-inactive, unqualified safe state. Generation exhaustion disables the
-lifecycle rather than wrapping to zero.
+inactive, unqualified safe state. `initialize()` advances lifecycle generation
+only after configuration and synthetic-source validation succeed. `reset()`
+advances it and atomically clears attempt aggregates. Either operation returns
+`CapacityExceeded` without mutation at `UINT32_MAX`; generation never wraps to
+zero.
 
 There is exactly one configured source per policy and attempt. Source identity,
 model, ranges, configuration revision, calibration revision, record schema,
@@ -114,11 +123,11 @@ on the host, but it must not ask this policy to select, vote, or fail over.
 
 | Pressure | Evidence and disposition |
 |---|---|
-| API and layering | **Natural after mapping remediation.** The policy consumes complete copied Lesson 067 records and publishes qualification evidence. Source adapters and register interpretation remain below Lesson 067; orientation and presentation remain in Lesson 044; recording and session comparison remain in Lesson 069. |
+| API and layering | **Natural after completed mapping remediation.** The policy consumes complete copied Lesson 067 records and publishes qualification evidence. Source adapters and register interpretation remain below Lesson 067; orientation and presentation remain in Lesson 044; recording and session comparison remain in Lesson 069. |
 | Ownership and lifecycle | **Natural with one copied configuration and bounded accumulators.** No borrowed source, record buffer, endpoint, or storage lifetime exists. Attempt and lifecycle generations prevent a pre-reset or foreign record stream from completing a later qualification. |
 | Time and ordering | **Natural with supplied `now`, record observation time, sequence, and bounded gaps.** Future, stale, regressing, ambiguous, duplicate-changed, and excessive-gap evidence are explicit. No hidden polling cadence or catch-up loop exists. |
 | Errors and status | **Natural if structural rejection and valid unhealthy evidence remain separate.** Malformed enums/configuration reject without mutation. A well-formed producer fault, not-ready record, saturation, source mismatch, or stationary-bound failure terminalizes the attempt with its own reason and retained evidence. |
-| Resource budget | **Natural with running extrema and widened sums rather than 32 retained records.** Promotion measures exact object/snapshot sizes, ordinary and no-LTO Mega replay, synchronous stack, aggregate Lesson 069 composition, and residual SRAM. E0 owns zero pins, timers, interrupts, buses, ADC channels, storage, or power resources. |
+| Resource budget | **Natural with running extrema and widened sums rather than 32 retained records.** Promotion measures exact object/evidence sizes, ordinary and no-LTO Mega replay, synchronous stack, aggregate Lesson 069 composition, and residual SRAM. E0 owns zero pins, timers, interrupts, buses, ADC channels, storage, or power resources. |
 | Deterministic proof | **Natural.** All 216 mappings, both vector applications, every exact bound, window size, ordering class, producer-state collision, reset point, rollover, and arithmetic extreme have finite host fixtures. |
 | Packaging and public surface | One standalone header/implementation, shared foundational mapping helper, umbrella export, host/archive inventory, strict tests, compile-only Mega replay, exact resource probe, HTML reference, and pencil-drawing PDF. No adapter library, wire protocol, or lesson-only framework is introduced. |
 | Example and documentation fit | The Mega sketch begins one synthetic attempt, feeds copied normalized records in acquire/configure/start then observe/decide form, and exposes terminal qualification/reason/result cells. These volatile cells are the E0 non-Serial observation path; they do not prove a physical stationary sensor. |
@@ -157,24 +166,30 @@ A non-OK producer status dominates not-ready and saturation because its
 payload is not trusted. For an OK producer, not-ready dominates saturation
 and numeric bounds because it is not a new admissible sample. Saturation
 dominates stationary arithmetic. Acceleration failure precedes angular-rate
-failure only to choose the scalar returned reason; the snapshot retains all
+failure only to choose the scalar returned reason; the evidence retains all
 per-axis comparisons available from that same structurally valid record.
 
-Records must advance within the repository's modular half-range rules.
-`UINT32_MAX` to `0` is the valid one-step sequence rollover. Equal sequence
+Records must advance by exactly one within the repository's modular
+half-range rules. `UINT32_MAX` to `0` is the valid one-step sequence rollover.
+Equal sequence
 accepts only a fieldwise identical full record and is idempotent: it cannot
 increase the window, extend an attempt, or change extrema. Changed content at
-the same sequence, regression, exact-half-range ambiguity,
-backward observation time, or exact-half-range time ambiguity terminalizes
-with attributable ordering evidence. An inter-sample gap at the configured
-maximum is accepted; one tick larger fails. Age at the maximum is accepted;
-one tick older is stale.
+the same sequence, a gap greater than one, regression, or exact-half-range
+ambiguity terminalizes as `SequenceDiscontinuity`. Zero is an ordinary
+sequence value after natural wrap, not a sentinel. A zero observation gap,
+backward observation time, exact-half-range time ambiguity, or gap above the
+configured maximum terminalizes as `TimestampDiscontinuity`. A future or
+half-range-ambiguous first record is also `TimestampDiscontinuity`. An
+inter-sample gap at the configured maximum is accepted; one tick larger
+fails. Age at the maximum is accepted; one tick older is `Stale`.
 
 ## Stationary qualification semantics
 
 Mapping occurs before stationary comparison. For destination axis `i`, each
-mapped acceleration must lie in the inclusive configured interval centered on
-that axis's expected stationary gravity component. Each mapped angular-rate
+mapped acceleration is retained and compared in micro-g, without milli-g
+conversion or a vector-magnitude shortcut, and must lie in the inclusive
+configured interval centered on that axis's expected stationary acceleration
+component. Each mapped angular-rate
 absolute value must be at or below that axis's inclusive limit. Arithmetic
 widens before subtraction, absolute value, sum, or comparison. No calculation
 may negate `INT32_MIN`, overflow a 32-bit accumulator, or narrow before a
@@ -186,12 +201,13 @@ records the result remains `Collecting`; the `N`th accepted record publishes
 one terminal `Qualified` result. There is no sliding window, automatic retry,
 warm-up discard, adaptive threshold, or replacement of a failed sample.
 
-The terminal evidence reports extrema and widened sums from exactly the
-accepted records. If means are exposed, signed rounding is fixed in the
-Lessons 067--069 plan and tested on positive and negative half cases; an
-implementation-dependent division rule is not acceptable. A reported bias is
-descriptive evidence for this attempt, not a calibration write and not
-permission to alter later samples.
+The terminal evidence reports extrema, signed 64-bit
+`accelerationSumsMicroG` and
+`angularRateSumsMilliDegreesPerSecond`, and corresponding means from exactly
+the accepted records. Signed division truncates toward zero under C++11 and
+is tested on positive and negative values. A reported mean is descriptive
+evidence for this attempt, not a calibration write and not permission to
+alter later samples.
 
 Qualification applies only to the exact complete domain in its result.
 Changing source identity, either configured range, calibration or
@@ -226,13 +242,13 @@ outcome without partial accumulation or source switching.
 
 | Family | Required cases |
 |---|---|
-| Lifecycle | construction, initialize success/failure, begin before initialize, duplicate begin, update without attempt, terminal update, reset/shutdown at every count, stale generation/attempt, generation exhaustion |
-| Configuration | zero IDs/revisions/ranges/window/age/gap, window 1/2/31/32/33, invalid enum, half-range durations, impossible or overflowing expected-gravity intervals |
+| Lifecycle | construction, initialize success/failure/unsupported physical domain, begin before initialize, duplicate/zero-ID begin, observe without attempt, terminal observe, reset/shutdown at every count, attempt and evidence generation, initialize/reset generation exhaustion |
+| Configuration | zero IDs/revisions/ranges/window/age/gap, window 1/2/31/32/33, invalid enum, half-range durations, impossible or overflowing expected-stationary-acceleration intervals |
 | Mapping classification | all 216 signed-axis triples with an independent determinant oracle: exactly 24 proper rotations accepted and 192 rejected |
 | Mapping application | each accepted transform on asymmetric positive/negative vectors for both units, permutation/sign correctness, both signed extremes, every `INT32_MIN` negation path, no partial output |
-| Source domain | every source kind/model pair, exact identity, each single-field mismatch, unsupported physical-source seams, changed range/configuration/calibration/schema/normalization revision |
+| Source domain | every source kind/model pair, exact synthetic identity, each single-field mismatch, `Unsupported` physical configurations before lifecycle mutation, changed range/configuration/calibration/schema/normalization revision |
 | Producer quality | every `Status`, ready/not-ready, every saturation enum, producer fault plus not-ready/saturation/numeric collision, malformed values, retained offending provenance |
-| Time and sequence | first record, ordinary forward progress, equal identical idempotence, equal changed, regression, exact-half ambiguity, `UINT32_MAX` to `0`, future time, exact age/gap, one tick each side |
+| Time and sequence | first record, ordinary exactly-one progress, equal identical idempotence, equal changed, gap, regression, exact-half ambiguity, `UINT32_MAX` to `0`, future time, zero/backward/ambiguous observation gap, exact age/gap, one tick each side; exact `SequenceDiscontinuity`, `TimestampDiscontinuity`, and `Stale` reasons |
 | Stationary bounds | every mapped axis at lower/upper acceleration bounds and one beyond; every positive/negative rate at limit and one beyond; simultaneous acceleration/rate collision; widened arithmetic extremes |
 | Window | N=2 and N=32, N-1 collecting, N qualified, no N+1 mutation, failed first/middle/final sample, duplicate does not count, reset and explicit retry |
 | Evidence | exact first/last attribution, count, extrema, sums, signed mean rounding if exposed, terminal reason/status, canonical zero fields while unqualified, byte-stable replay without padding-based equality |
@@ -294,26 +310,24 @@ outcome without partial accumulation or source switching.
 
 ## Gate result
 
-- Disposition: `natural fit after required mapping remediation`
+- Disposition: `natural fit; mapping remediation implemented`
 - Open risks: final Lesson 067 record schema and time-domain contract, exact
   public result spelling, signed-mean rounding if exposed, measured AVR
   object/stack/aggregate sizes, exact physical specimen identity, axis
   mounting, register interpretation, electrical topology, stationary fixture,
   bias/accuracy thresholds, and bench acceptance
 - Required discussion or decision IDs: the Lessons 067--069 implementation
-  plan must record the shared mapping extraction and correct the cadence's
+  plan records the shared mapping extraction and corrects the cadence's
   inaccurate reference to existing Lesson 043 adapters
-- Remediation owner and next action: Lesson 068 implementation lane factors
-  the shared mapping primitive without changing Lesson 044 semantics, then
-  supplies exhaustive mapping, precedence, lifecycle, arithmetic, and
-  resource proof
-- Verification required at promotion: strict C++11 host tests, ASan/UBSan,
-  style and archive inventories, Mega compile, exact resource probe,
-  aggregate Lesson 069 resource gate, lesson build, monochrome and
-  pencil-policy checks, strict site build, and independent architecture review
+- Remediation result: the shared mapping primitive preserves Lesson 044
+  semantics; exhaustive mapping, precedence, lifecycle-generation, arithmetic,
+  strict host, style, Mega compile, measured size, lesson, monochrome,
+  pencil-policy, and site gates pass
+- Remaining composition verification: the Lessons 067--069 exact aggregate
+  resource probe and maximum-recorder fixture remain part of Lesson 069's
+  promotion boundary
 - Maximum-composition proof: the 32-record rollover/boundary/failure collision
   and complete Lesson 069 envelope integration must pass without partial
   accumulation, hidden retry, or source switching
-- Promotion permitted: yes for E0 implementation after the controlling plan
-  freezes the contracts and mapping remediation; no for powered adapters,
+- Promotion result: E0 published and host verified; no powered adapters,
   physical calibration, wiring, formal schematics, or bench claims

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500">
+<rect width="1200" height="500" fill="#fff"/>
+<g fill="none" stroke="#333" stroke-width="4" stroke-linecap="round">
+<path d="M70 52q522-13 1065 4M72 101q520 12 1060-2M74 151q512-10 1055 5M75 202q520 9 1050-4M76 253q510-8 1047 5M77 304q508 7 1043-4M78 355q505-7 1040 5M79 407q503 5 1037-4"/>
+<path d="M99 73l18 17 31-32M99 123l18 17 31-32M99 173l18 17 31-32M99 224l18 17 31-32M99 275l18 17 31-32M99 326l18 17 31-32M99 377l18 17 31-32"/>
+</g>
+<g fill="#222" font-family="DejaVu Sans" font-size="24">
+</g>
+</svg>

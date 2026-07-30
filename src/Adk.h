@@ -41,6 +41,7 @@
 #include "inert_load_panel.h"
 #include "inertial_observation.h"
 #include "inertial_record.h"
+#include "inertial_record_qualification.h"
 #include "inert_parts_carousel.h"
 #include "interaction_intent_policy.h"
 #include "kinetic_sculpture.h"

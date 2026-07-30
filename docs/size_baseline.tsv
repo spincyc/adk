@@ -66,3 +66,4 @@ schema	baseline_version	example	fqbn	core	toolchain	flash_bytes	flash_budget_byt
 1	1	Lesson065Qualified18B20ProbeSet	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	13662	16384	1438	1536
 1	1	Lesson066ThermalGradientMapper	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	16662	18432	2210	2560
 1	1	Lesson067InertialRecordNormalization	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	5852	8192	632	1024
+1	1	Lesson068InertialRecordQualification	arduino:avr:mega	arduino-avr-1.8.8	avr-gcc-7.3.0	14908	16384	766	1024
