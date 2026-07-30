@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="470" viewBox="0 0 1200 470">
+<defs><filter id="r"><feTurbulence baseFrequency=".012" numOctaves="2" seed="56" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3"/></filter><style>.c{fill:#fbfbfb;stroke:#383838;stroke-width:4;filter:url(#r)}.s{fill:none;stroke:#555;stroke-width:4;filter:url(#r)}.b{fill:none;stroke:#383838;stroke-width:7;filter:url(#r)}</style></defs><rect width="1200" height="470" fill="white"/>
+<g transform="rotate(-1 415 215)"><rect class="c" x="40" y="35" width="750" height="360"/></g>
+<g transform="rotate(1 280 120)"><rect class="c" x="85" y="70" width="390" height="100"/><path class="s" d="M110 100h250m-250 30h180m-180 30h215"/></g>
+<g class="s">
+ <circle cx="565" cy="98" r="20"/><circle cx="640" cy="98" r="20"/><circle cx="715" cy="98" r="20"/>
+ <path d="M565 138v22m75-22v22m75-22v22"/>
+</g>
+<g class="s"><circle cx="200" cy="285" r="54"/><path d="M200 285l34-40"/><path d="M200 215v-16m54 70h16m-124 0h-16m54 70v16"/></g>
+<g transform="rotate(1 610 285)">
+ <path class="b" d="M610 232a58 58 0 0 1 58 58H552a58 58 0 0 1 58-58z"/>
+ <path class="b" d="M552 290h116v20H552z"/>
+ <path class="s" d="M596 310v34h28v-34M566 344h88"/>
+</g>
+<g><rect class="c" x="855" y="115" width="300" height="215"/><path class="s" d="M872 132l266 181M1138 132L872 313"/>
+ <g class="s"><circle cx="935" cy="200" r="17"/><path d="M985 200h60m-30-22 30 22-30 22"/><rect x="1060" y="178" width="52" height="44"/></g>
+</g>
+<path class="s" d="M55 435c180-24 356 18 538-4s360 14 562-2"/>
+</svg>

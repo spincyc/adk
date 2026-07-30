@@ -18,6 +18,51 @@ oversized lengths with `InvalidArgument` before touching storage, and the
 record-sink test covers the boundary. No other audited finding is a memory-
 safety defect.
 
+## Follow-up finding — eight drawings shipped with unreadable labels
+
+Investigated 2026-07-30 while producing the first new drawing. The pencil
+assets are hand-authored SVG (an `feTurbulence` + `feDisplacementMap` filter
+over plain shapes) rendered to grayscale PNG by hand; there is no Make pattern
+rule, so each PNG is committed as rendered on whatever machine produced it.
+
+Thirty-five of the 72 SVG assets contain `<text>`. Re-rendering each one on a
+machine with **no fontconfig fonts installed** and comparing against the
+committed PNG identifies eight whose committed bytes match the fontless
+render, meaning they were produced without fonts and every label is a
+missing-glyph box:
+
+| Asset | Fontless-render difference |
+|---|---:|
+| `021-rover-pencil` | 0.00000 |
+| `069-one-source-session-pencil` | 0.00000 |
+| `069-replay-notebook-pencil` | 0.00115 |
+| `069-fault-dominance-pencil` | 0.00195 |
+| `009-night-light-breadboard` | 0.00752 |
+| `009-mega-header-locator` | 0.00769 |
+| `016-matrix-keypad-pencil` | 0.00826 |
+| `009-night-light-overview` | 0.00888 |
+
+Two are byte-identical to a fontless render, which is conclusive. The other 27
+text-bearing assets differ substantially and carry real glyphs.
+
+This reaches readers: these PNGs are embedded in published lesson PDFs, so
+lessons 009, 016, and 069 ship boxes where their labels belong — and the three
+lesson 009 plates are exactly the assembly drawings the audit recommends
+copying. No existing gate catches it, because the monochrome and PDF-policy
+checks inspect colour and classification markers, not glyph coverage.
+
+Remediation needs a font installed (`ttf-dejavu` satisfies the
+`DejaVu Sans` family the assets request) followed by re-rendering those eight
+assets and rebuilding their PDFs; it is a system change, so it is left to the
+maintainer. Two durable consequences meanwhile:
+
+1. New drawings carry their wording in the LaTeX caption and keep text out of
+   the SVG, which is already the majority pattern for recent lessons
+   (`080-*` has no `<text>` at all).
+2. A glyph-coverage gate belongs in `lessons-check`, or the SVG-to-PNG render
+   belongs in a Make rule so assets cannot be committed from an
+   under-provisioned machine.
+
 ## Track 1 — object design (`src/`, 121 findings)
 
 The library is disciplined about inert construction, idempotent initialize,
