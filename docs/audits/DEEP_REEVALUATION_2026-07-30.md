@@ -18,7 +18,38 @@ oversized lengths with `InvalidArgument` before touching storage, and the
 record-sink test covers the boundary. No other audited finding is a memory-
 safety defect.
 
-## Follow-up finding — eight drawings shipped with unreadable labels
+## Follow-up finding — eight drawings shipped with unreadable labels (resolved)
+
+**Resolved 2026-07-30.** No font package was installed on the build host, but
+TeX Live already ships the DejaVu TrueType family the assets request, so
+fontconfig was pointed at
+`/usr/share/texmf-dist/fonts/{truetype,opentype}/public` through a user-level
+`~/.config/fontconfig/fonts.conf` rather than installing a duplicate copy. All
+eight assets were re-rendered and lessons 009, 016, 018, and 069 rebuilt; every
+lesson gate passes. Lesson 018 benefits because it reuses lesson 016's keypad
+plate.
+
+Two facts surfaced during the repair:
+
+- `021-rover-pencil` is an **orphan**: lesson 021 includes
+  `021-rover-layout-pencil`, so the broken asset was never published. Ten
+  asset PNGs are referenced by no lesson, overlay, or Make rule —
+  `009-night-light-pencil`, `011-timed-traffic-pencil`,
+  `018-access-trainer-pencil`, `020-motor-intent-layout`, `021-rover-pencil`,
+  and `025-infrared-evidence-pencil`; the four `*-base` files are *not*
+  orphans, being inputs to companion overlay documents.
+- The repository already has a **font-independent labelling pattern**: a
+  standalone TikZ document (`docs/lessons/assets/<name>.tex`) places a
+  text-free base PNG and overlays labels using LaTeX's own fonts, as
+  `030-process-pencil.tex` does. This is the more robust route for new
+  assembly plates than SVG `<text>`, because it cannot regress on a host
+  without fontconfig fonts. Neither asset pipeline has a Make rule; both
+  produce committed artifacts by hand, which is why the regression went
+  unnoticed.
+
+The original finding follows.
+
+## Original finding — eight drawings shipped with unreadable labels
 
 Investigated 2026-07-30 while producing the first new drawing. The pencil
 assets are hand-authored SVG (an `feTurbulence` + `feDisplacementMap` filter
@@ -183,7 +214,7 @@ let the lesson-page image embedding (track 2) carry the visual identity.
 | 1 | Correctness and small lifecycle fixes: record sink (done), cue-scheduler reinitialize, SPI death propagation, station health classification | TASK-7 |
 | 2 | Site foundation: CSS retarget + dark mode, landing funnel and canonical boundary statement, stale-row fix | TASK-9, TASK-10 |
 | 3 | Lesson pages: embed existing pencil assets across all published pages; convert predict/observe tables to runnable numbered steps arc by arc; dissolve PDF assessment sections | TASK-8 |
-| 4 | Assembly plates: per-lesson pencil drawings of physical arrangement, earliest arcs first (006–039), then future-bench plates for E0 arcs. **Blocked** until plate labels render — install the font or build `svg-stroke-labels` (see the follow-up finding above) | TASK-8 |
+| 4 | Assembly plates: per-lesson pencil drawings of physical arrangement, earliest arcs first (006–039), then future-bench plates for E0 arcs. Unblocked — labels render again; prefer the TikZ overlay pattern so plates cannot regress on a host without fontconfig fonts | TASK-8 |
 | 5 | Object-design seams and convergence: correlation header, time guard, component chain, then migrate-when-touched convention alignment under stress-pass discipline | TASK-7 |
 
 Lesson 081 continues under its frozen plan; the 079–081 evidence-header
