@@ -133,6 +133,30 @@ this failure mode cannot recur on another under-provisioned machine, and the
 same glyph set repairs the eight broken assets. It is recorded as the
 `svg-stroke-labels` tool candidate.
 
+## Retraction — the Lesson 056 operator-panel plate was withdrawn
+
+A plate drawn for Lesson 056 on 2026-07-30 was published and then reverted the
+same day after a self-review checked it against the lesson text rather than
+against the gates. Three defects, none of which any gate can detect:
+
+1. **Wrong control model.** The lesson's "one qualified control" means four
+   mask bits — `Previous`, `Next`, `Select`, `Acknowledge` — of which exactly
+   one may be asserted, so that a chord is rejected. The plate drew a single
+   rotary knob, which cannot express a chord at all and so made the lesson's
+   central rule look trivial instead of load-bearing.
+2. **A fabricated quantity.** The caption asserted "three status cells". The
+   word *three* appears nowhere else in the lesson; the count is the
+   configurable `selectableCellCount`.
+3. **A contradicting metaphor.** The plate used a mushroom emergency-stop
+   actuator for a lesson whose section is titled "Let stop dominate without
+   inventing safety" and which states it owns no safety function.
+
+The durable lesson: passing the visual-policy, monochrome, and PDF-policy
+gates establishes classification and colour, never that a drawing depicts what
+its lesson says. Before any new plate is committed, every drawn element must
+trace to a sentence in the lesson, and the caption must assert no quantity the
+lesson does not state.
+
 ## Track 1 — object design (`src/`, 121 findings)
 
 The library is disciplined about inert construction, idempotent initialize,
