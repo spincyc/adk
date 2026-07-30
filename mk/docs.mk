@@ -29,8 +29,7 @@ doc/lessons/009.pdf: docs/lessons/009/main.tex \
 		docs/lessons/assets/009-night-light-overview.svg \
 		docs/lessons/assets/009-night-light-breadboard.png \
 		docs/lessons/assets/009-night-light-breadboard.svg
-doc/lessons/010.pdf: docs/lessons/010/main.tex \
-		docs/lessons/assets/010-shift-register-pencil.png
+doc/lessons/010.pdf: docs/lessons/010/main.tex
 doc/lessons/011.pdf: docs/lessons/011/main.tex \
 		docs/lessons/assets/011-mega-header-locator.tex \
 		docs/lessons/assets/011-timed-traffic-layout.tex \
