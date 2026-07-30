@@ -148,6 +148,22 @@ against the artefact held.
 | `ClueConstraintModel::preflightUpdate` const-mutation | **Refuted** | A guarded staging cache, not a hazard: every consumer validates the caller's token first (`clue_constraint_model.cpp:786-789`), and stale-preview supersession is tested at `test_clue_constraint_model.cpp:937-950`. The claim also miscited the function |
 | `InertCueScheduler` cannot reinitialize | **Refuted** | The documented, tested protocol: the audit buffer is caller-owned so the shutdown record stays readable; `test_inert_cue_scheduler.cpp:77-91` asserts `audit.shutdown()` then `initialize()` |
 
+**Track 1 quantitative claims: these held, and two understated the problem.**
+
+| Claim | Stated | Measured | Verdict |
+|---|---|---|---|
+| `halfRange` copied per file | ~35 | 42 `.cpp` files | Confirmed, understated |
+| dwell state machine duplicated | 5 times | exactly 5 (`button`, `contact_dynamics`, `keypad`, `optical_observation`, `magnetic_observation`) | Confirmed exactly |
+| `shutdown` shapes | 3 | 3 — `void shutdown()` in 68 headers, `Status shutdown(TimePoint)` in 4, `Status shutdown()` in 2 | Confirmed; migration is 6 files, not a sweep |
+| `snapshot` spellings | 4 | 3 — value-returning in 55 headers, `Status snapshot(out&)` in 2, `Status evidence(out&)` in 2 | Overstated as disorder; it is 55 against 4 outliers |
+
+A pattern separates the reliable findings from the unreliable ones. Claims
+about **literal textual patterns** — a named constant, a member name, a method
+signature — verified accurately or conservatively. Claims requiring
+**judgement** — is this duplication a defect, is this lesson missing a
+drawing — were wrong about half the time, in both directions. Weight the two
+kinds differently when planning from this document.
+
 **Six assets were repaired, not seven.** `021-rover-pencil.svg` carries
 `.label, .small, .tiny { display: none; }`, hiding all 25 of its text
 elements — the same failure shape as `016` and a second false positive from
