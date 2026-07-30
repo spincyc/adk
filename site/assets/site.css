@@ -125,7 +125,12 @@ div[role="main"] img
 
 [data-bs-theme="dark"] div[role="main"] img
 {
-    /* The drawings are black ink on white; invert so they read on dark paper. */
+    /* The drawings are black ink on white; invert so they read on dark paper.
+       The filter applies to the element as rendered, its own background
+       included, so the mount must be light *before* inversion. Leaving the
+       dark panel colour here would invert to #cac7cd and ring every drawing
+       with a light frame; white inverts to #1a1a1a and blends into the page. */
+    background: #fff;
     filter: invert(0.9) hue-rotate(180deg);
 }
 
