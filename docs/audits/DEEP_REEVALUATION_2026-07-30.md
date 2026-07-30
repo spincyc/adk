@@ -188,6 +188,19 @@ all five would force three simple debouncers to adopt machinery they do not
 need. The honest remediation is at most a shared type for the two, and that is
 small enough to question whether it is worth a shared-contract change at all.
 
+**A second verification batch — the structural claims all hold.**
+
+| Claim | Measured | Verdict |
+|---|---|---|
+| Correlation header repeated across sibling structs | 7 structs on `main` carry `sessionId`+`runId`+`stepId` — 3 in `bounded_low_side_driver_policy.h`, 4 in `small_indicator_semantics_policy.h`, with Lesson 081's types still to come | Confirmed |
+| `ButtonObservation` lives with a consumer, not with `Button` | Defined in `reaction_timer.h`; `button.h` never mentions it. `BalanceButtonObservation` repeats its three fields and adds `observedAt` and `sequence`, so it is an extension rather than an exact copy | Confirmed, with that nuance |
+| Durable-commit protocol implemented twice as parallel triads | Field counts are near-identical: `EnrollmentCandidate` 7 against `DurableAuditCandidate` 6, `IdentityImageView` 4 against `AuditRecordView` 4, `IdentityDurableCommitEvidence` 8 against `AuditDurableCommitEvidence` 8 | Confirmed |
+
+These three are the strongest remaining Track 1 candidates, and unlike the
+duplication findings above they describe genuinely parallel structure rather
+than superficially similar code. They remain subject to the same
+shared-contract discipline: each needs its own stress pass before extraction.
+
 A pattern separates the reliable findings from the unreliable ones. Claims
 about **literal textual patterns** — a named constant, a member name, a method
 signature — verified accurately or conservatively. Claims requiring
