@@ -641,6 +641,15 @@
         margin: 0 0 0.8rem 1.2rem;
     }
 
+    /* A tall close-up is scaled down to fit beside the opening text, rather
+       than pushed onto the next page. */
+    .md-typeset .bench-closeup svg.pencil-drawing {
+        max-height: 3.4in;
+        width: auto;
+        max-width: 100%;
+        margin-left: auto;
+    }
+
     .bench-figure svg.pencil-drawing {
         box-shadow: none;
     }
