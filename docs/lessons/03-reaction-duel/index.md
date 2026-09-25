@@ -155,9 +155,8 @@ What's new:
 - `auto time = reaction.elapsed ();` keeps the reaction time in a variable.
   `auto` tells the compiler to give `time` whatever type `elapsed ()` hands
   back, so you don't have to spell it out.
-- `adk::println (Serial, winner.name, " wins in ", time, " ms!");` prints its
-  pieces in a row, then ends the line: one call instead of a
-  `Serial.print ()` for each piece.
+- `adk::println (Serial, winner.name, " wins in ", time, " ms!");` prints a
+  line from its pieces, as in Lesson 2.
 - `adk::Buzzer buzzer {12};` and `buzzer.beep (200);` sound the buzzer for
   200 ms and carry straight on; ADK switches it off by itself.
 - `adk::wait (1000);` in `celebrate ()` gives the loser a second to finish

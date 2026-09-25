@@ -18,6 +18,7 @@ ideas:
   - Pull-up resistors, and why a pressed button reads LOW
   - Bounce, and how ADK waits it out
   - Events and states, wasPressed () and isPressed ()
+  - Deciding with if and else
   - Counting in a variable, and the Serial Monitor
 ---
 
@@ -114,7 +115,7 @@ Open **File → Examples → Adk → Lesson02Buttons**:
 
 <!-- sketch -->
 
-What's new since Lesson 1:
+What's new:
 
 - `adk::Button leftButton {22};` says there is a button between pin 22 and
   GND. ADK switches on the pull-up and does the debouncing.
@@ -126,14 +127,36 @@ What's new since Lesson 1:
   every button, so everything `wasPressed ()` and `isPressed ()` tell you
   comes from here. In Lesson 1, `adk::wait ()` did it for you while it
   waited; a loop that never waits calls `adk::update ()` itself.
-- `if (leftButton.wasPressed ())` asks for the event. Then `red.toggle ()`
-  flips the LED: off if it was on, on if it was off.
-- `yellow.set (rightButton.isPressed ());` copies the right button's state to
-  the yellow LED, on every pass: pressed lights it, not pressed puts it out.
+- `if (leftButton.wasPressed ())` asks for the event. The lines in the braces
+  after it run only when the answer is yes: then `red.toggle ()` flips the
+  LED, off if it was on, on if it was off.
+- `rightButton.isPressed ()` answers *true* or *false*. A value that can
+  only be one of those two is a **`bool`**. `yellow.set ()` takes one:
+  *true* lights the LED, *false* puts it out. So
+  `yellow.set (rightButton.isPressed ());` copies the button to the LED on
+  every pass. It is a short way of writing an `if` with an **`else`**, whose
+  lines run when the answer is no:
+
+    ```cpp
+    if (rightButton.isPressed ())
+    {
+        yellow.on ();
+    }
+    else
+    {
+        yellow.off ();
+    }
+    ```
+
 - `int presses = 0;` makes a **variable**, a named box that holds a whole
-  number, starting at 0. It sits outside the functions, so it keeps its
-  number from one pass of `loop ()` to the next. `countPress ()` adds one and
-  prints the total with `Serial.print ()` and `Serial.println ()`; the `ln`
+  number (an `int`), starting at 0. It sits outside the functions, so it
+  keeps its number from one pass of `loop ()` to the next.
+- `void countPress ()` is a function of your own, like `setup ()` and
+  `loop ()`. Writing `countPress ();` runs the lines in its braces, so the
+  name says what those lines are for. `void` means it hands nothing back.
+- `presses++;` adds one to `presses`.
+- `adk::println (Serial, "Presses: ", presses);` prints its pieces in a row,
+  the words and then the number, and ends the line: *Presses: 3*. The `ln`
   means "and start a new line".
 
 ## Upload it
@@ -150,8 +173,9 @@ Upload the sketch as in Lesson 1. Then:
    so on. Opening the Serial Monitor usually restarts the Mega, so the count
    may start again from 1.
 
-Was your prediction right? Holding the button changes the red LED once, and
-counts once: a press is one event, however long it lasts.
+You predicted what holding the left button for three seconds would do. It
+changes the red LED once, and counts once: a press is one event, however
+long it lasts.
 
 ## If it doesn't work
 
@@ -198,7 +222,8 @@ counts once: a press is one event, however long it lasts.
 1. **Count both.** Give the right button a counter of its own, and print
    both totals each time either one changes.
 2. **Blink while held.** Make the yellow LED blink while you hold the right
-   button: `yellow.blink (200);` when it is pressed, `yellow.off ();` when it
+   button. Swap the `yellow.set` line for an `if` and an `else`:
+   `yellow.blink (200);` when the button is pressed, `yellow.off ();` when it
    is not. Asking for the same blink again on every pass is fine: ADK only
    starts it once.
 3. **Every fifth press.** Light the yellow LED for a moment on every fifth

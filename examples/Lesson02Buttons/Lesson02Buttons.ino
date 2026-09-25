@@ -31,8 +31,6 @@ void loop ()
 
 void countPress ()
 {
-    presses = presses + 1;
-
-    Serial.print ("Presses: ");
-    Serial.println (presses);
+    presses++;
+    adk::println (Serial, "Presses: ", presses);
 }
