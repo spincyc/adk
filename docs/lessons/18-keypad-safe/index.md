@@ -99,14 +99,15 @@ always does the same thing: it locks the safe and rubs out what you typed.
 !!! warning "Unplug first"
     Unplug the USB cable and the power module's adapter before you wire.
     Keep Lesson 17's power module, servo and black GND wire just as they
-    are, and take out the knob. Put the screen and the keypad back where
-    they were in Lesson 16, and add the buzzer past the screen. In this
-    build the power module powers everything on the breadboard, the screen
-    included: with its top jumper on **5V** it feeds the top + rail, where
-    the screen's VDD takes its 5 V, and with its bottom jumper on **5V** it
-    feeds the servo. So **nothing** connects to the Mega's 5V pin: leave out
-    the red wire from 5V to the top + rail that Lesson 16 had. Keep fingers
-    clear of the servo's arm.
+    are, and take out the knob with its three wires. Put the screen and the
+    keypad back where they were in Lesson 16, and add the buzzer past the
+    screen. In this build the power module powers everything on the
+    breadboard, the screen included: with its top jumper on **5V** it feeds
+    the top + rail, where the screen's VDD takes its 5 V, and with its
+    bottom jumper on **5V** it feeds the servo. So **nothing** connects to
+    any of the Mega's 5V pins: the knob's red wire from the power header
+    goes with the knob, and the red wire from 5V to the top + rail that
+    Lesson 16 had stays out. Keep fingers clear of the servo's arm.
 
 <!-- bench -->
 
@@ -235,3 +236,40 @@ locks, and the old code still opens it.
 4. **Six digits.** Allow six-digit codes: give `code` six keys, and `typed`
    room for six. Why does no function need to change? (Change `savedMark`
    too, so an old four-key code isn't read back as six.)
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it to DC volts as in [Lesson 1](../01-blink/index.md#measure-it), black lead
+in **COM** and red in **V**. The screen's wires hold still between key
+presses, as they did in Lesson 16, so the sketch needs no change. Keep
+fingers clear of the servo's arm while you work.
+
+!!! question "Predict"
+    While the safe is locked, each digit you type shows as a star. Could
+    someone with a meter on the screen's wires tell which digit it was?
+    Write down your guess.
+
+<!-- measure -->
+
+The bottom − rail is under the screen, so the black probe goes in a column
+the screen joins to GND: RW's, c13, for the first reading, and the
+backlight's K, c24, for D4, as in Lesson 16. Type any digit while the safe
+is locked and measure D4; then open the safe, press **A**, type **5** and
+measure it again.
+
+What the numbers tell you:
+
+- **The screen's 5 V** comes from the power module now, down the top + rail:
+  the same supply as the servo's. The whole breadboard runs on it, and the
+  Mega sends only signals and GND.
+- **D4 after a star** reads 0 V whatever digit you typed, and the other
+  three wires don't change with the digit either: the answer is no. The
+  star is character 42, `0010 1010`, and its second half, `1010`, leaves D4
+  at 0 V (and D5 and D7 at 5 V). The digit never reaches the screen's
+  wires at all, because `typeDigit ()` sends a `'*'` while the safe is
+  locked.
+- **D4 after a 5** reads 5 V: while you choose a code, the digit itself goes
+  to the screen, `0101`, as in Lesson 16. D4 is the digit's lowest bit, so
+  it reads 5 V after an odd digit and 0 V after an even one. The same key,
+  in a different state, puts a different voltage on the wire.

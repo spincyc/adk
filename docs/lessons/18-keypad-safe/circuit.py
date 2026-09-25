@@ -28,3 +28,15 @@ bench.module ("servo", "servo", at=(9.85, 3.45), facing="up")
 bench.wire ("servo.+", "B+53")
 bench.wire ("servo.−", "B-54")
 bench.wire ("44", "servo.signal")
+
+# Readings to take with a multimeter: the screen's VDD, which now takes the
+# power module's 5 V from the top + rail, and its D4 wire, which shows a
+# star's code while the safe is locked and the digit's own while choosing.
+# The bottom − rail lies under the screen, so the black probe goes in a
+# column the screen joins to GND: RW's, then the backlight's K.
+bench.measure ("The screen's 5 V, from the power module", red="b10", black="c13",
+               expect="about 5 V", when="power module on")
+bench.measure ("D4 after a star", red="33", black="c24", expect="0 V",
+               when="locked, just after typing any digit")
+bench.measure ("D4 after a 5", red="33", black="c24", expect="about 5 V",
+               when="choosing a code, just after typing 5")
