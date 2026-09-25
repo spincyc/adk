@@ -174,3 +174,29 @@ alone.
 4. **How good is it?** Check the clock against a phone every day for a week.
    How many seconds does it gain or lose a day? Use the working above, the
    other way round, to find how many millionths fast or slow your crystal is.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM**, the red one in **V**. The clock module takes its
+power from the top rails, like the screen, so the rails are where to
+measure it. The + and − holes are only 2.5 mm apart: push each probe tip
+into its own hole, so neither slips across to the other rail.
+
+!!! question "Predict"
+    What will the meter read on the top rails with the USB cable unplugged?
+    And when you plug it back in, will the clock still know the time?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Plugged in**, the top rails carry the Mega's 5 V, from the red wire in
+  T+3 all the way along to the clock's VCC wire in T+30, and to the screen.
+- **Unplugged**, they read 0: the clock chip has lost its supply, and the
+  screen is dark. Plug back in, and the time is still right. While its
+  supply was gone, the DS1307 switched over to its coin cell, about 3 V, and
+  kept counting; when 5 V came back, it switched back by itself. The cell
+  only has to keep the counting going, which takes so little current that
+  it lasts for years.

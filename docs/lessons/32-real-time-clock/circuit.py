@@ -11,3 +11,11 @@ bench.wire ("rtc.GND", "T-29")
 bench.wire ("rtc.VCC", "T+30")
 bench.wire ("20", "rtc.SDA", via=[(3.75, -1.6), (8.5, -1.6), (8.5, -0.8)])
 bench.wire ("21", "rtc.SCL", via=[(3.85, -1.5), (8.4, -1.5), (8.4, -0.9)])
+
+# Readings to take with a multimeter: the top rails, which carry the
+# Mega's 5 V to the clock and the screen, plugged in and then unplugged. The
+# probes go at the Mega's end, where the meter lies clear of the LCD.
+bench.measure ("The clock's supply, on the top rails", red="T+4", black="T-4",
+               expect="about 5 V", when="Mega plugged in")
+bench.measure ("The clock's supply, unplugged", red="T+4", black="T-4", expect="0 V",
+               when="USB cable out")
