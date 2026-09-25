@@ -117,9 +117,9 @@ What's new:
   to whichever it isn't: on or off.
 - `char secret [] = "SLS"` is the secret, as text: a row of letters. The
   times beside it are `adk::Millis`, ADK's type for a time in milliseconds.
-- `rhythm` is an `adk::Vector` of letters, as in Lesson 6. It starts empty,
-  `rhythm.push_back ()` adds the letter for each gap, and `rhythm.clear ()`
-  empties it for the next try.
+- `rhythm` is an `adk::Text` of up to 16 letters, like Snake's message in
+  Lesson 27. It starts empty, `rhythm.print ()` adds the letter for each
+  gap, and `rhythm.clear ()` empties it for the next try.
 - `sinceKnock` is a stopwatch, as in Lesson 3, that starts again at every
   knock. Its `elapsed ()` is the gap so far: a new touch sooner than `rattle`
   is only the spring still shaking, and for the first 100 ms it keeps the
@@ -130,16 +130,10 @@ What's new:
   letter; the first knock of a rhythm has no gap before it, and adds none.
   When it runs out, `quiet.expired ()`, the knocking has stopped, and
   `judgeRhythm ()` decides.
-- `judgeRhythm ()` prints what it heard, a letter at a time with a
-  range-`for`, then switches the relay if it was the secret. After switching,
-  it waits half a second, so the relay's own click, which shakes the table,
-  isn't heard as a knock.
-- `isSecret ()` compares the rhythm with the secret. `strlen (secret)`
-  counts the secret's letters, and `same` starts out true only if the rhythm
-  has that many too. Then a counting `for` loop, as in Lesson 6, compares
-  them letter by letter, and goes on only while `same` is still true.
-  `size_t` is the type `rhythm.size ()` counts in, a whole number that is
-  never negative, so `i` is one too.
+- `judgeRhythm ()` prints what it heard, then switches the relay if
+  `rhythm == secret`: the same letters, in the same order, and no more.
+  After switching, it waits half a second, so the relay's own click, which
+  shakes the table, isn't heard as a knock.
 
 ## Upload it
 

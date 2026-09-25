@@ -15,7 +15,7 @@ constexpr adk::Millis longGap   = 400;     // a gap this long or more is L
 constexpr adk::Millis rattle    = 80;      // how long the spring rattles
 constexpr adk::Millis finished  = 1500;    // the quiet that ends a rhythm
 
-adk::Vector<char, 16> rhythm;        // a letter for each gap heard so far
+adk::Text<16>         rhythm;        // a letter for each gap heard so far
 adk::Stopwatch        sinceKnock;    // the time since the last knock
 adk::Timer            quiet;         // runs out once the knocking stops
 
@@ -48,7 +48,7 @@ void hearKnock ()
 {
     if (quiet.isRunning ())
     {
-        rhythm.push_back (sinceKnock.elapsed () < longGap ? 'S' : 'L');
+        rhythm.print (sinceKnock.elapsed () < longGap ? 'S' : 'L');
     }
 
     sinceKnock.restart ();
@@ -57,16 +57,9 @@ void hearKnock ()
 
 void judgeRhythm ()
 {
-    Serial.print ("Heard ");
+    adk::println (Serial, "Heard ", rhythm.c_str ());
 
-    for (char gap : rhythm)
-    {
-        Serial.print (gap);
-    }
-
-    Serial.println ();
-
-    if (isSecret ())
+    if (rhythm == secret)
     {
         relay.toggle ();
         adk::wait (500);    // so the relay's click isn't heard as a knock
@@ -79,17 +72,4 @@ void judgeRhythm ()
     }
 
     rhythm.clear ();
-}
-
-// Right if the rhythm has as many letters as the secret, all the same.
-bool isSecret ()
-{
-    bool same = rhythm.size () == strlen (secret);
-
-    for (size_t i = 0; same && i < rhythm.size (); ++i)
-    {
-        same = rhythm[i] == secret[i];
-    }
-
-    return same;
 }

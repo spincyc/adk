@@ -131,6 +131,10 @@ TEST (textCollectsWhatIsPrinted)
 
     message.clear ();
     CHECK (message.size () == 0 && message.c_str ()[0] == '\0');
+
+    adk::print (message, 'S', 'L', 'S');
+    CHECK (message == "SLS");
+    CHECK (!(message == "SL"));
 }
 
 TEST (fixedPrintsASetCountOfDecimals)

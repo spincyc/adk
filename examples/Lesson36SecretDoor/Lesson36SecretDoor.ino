@@ -27,10 +27,10 @@ constexpr char        secret []   = "SLS";
 constexpr adk::Millis longGap     = 400;
 constexpr adk::Millis rattle      = 80;
 constexpr adk::Millis finished    = 1500;
-constexpr uint8_t     closedAngle = 0;
+constexpr uint8_t     lockedAngle = 0;
 constexpr uint8_t     openAngle   = 90;
 
-adk::Vector<char, 16> rhythm;        // a letter for each gap heard so far
+adk::Text<16>         rhythm;        // a letter for each gap heard so far
 adk::Stopwatch        sinceKnock;    // the time since the last knock
 adk::Timer            quiet;         // runs out once the knocking stops
 
@@ -61,7 +61,7 @@ void loop ()
     {
         hearKnock ();
     }
-    else if (quiet.expired () && isSecret ())
+    else if (quiet.expired () && rhythm == secret)
     {
         openFor ("the knocker");
     }
@@ -93,7 +93,7 @@ void hearKnock ()
 {
     if (quiet.isRunning ())
     {
-        rhythm.push_back (sinceKnock.elapsed () < longGap ? 'S' : 'L');
+        rhythm.print (sinceKnock.elapsed () < longGap ? 'S' : 'L');
     }
     else
     {
@@ -129,7 +129,7 @@ void refuse (const char* reason)
 // latch can't knock on its own door, then forget any knocks so far.
 void lock ()
 {
-    latch.moveTo (closedAngle, 500);
+    latch.moveTo (lockedAngle, 500);
     adk::wait (700);
     rhythm.clear ();
     quiet.stop ();
@@ -141,17 +141,4 @@ void show (const char* top, const char* bottom)
     lcd.clear ();
     adk::print (lcd.at (0, 0), top);
     adk::print (lcd.at (0, 1), bottom);
-}
-
-// Lesson 35's test: as many letters as the secret, all the same.
-bool isSecret ()
-{
-    bool same = rhythm.size () == strlen (secret);
-
-    for (size_t i = 0; same && i < rhythm.size (); ++i)
-    {
-        same = rhythm[i] == secret[i];
-    }
-
-    return same;
 }

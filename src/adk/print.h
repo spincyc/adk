@@ -69,6 +69,11 @@ namespace adk {
         const char* c_str () const { return text_; }
         size_t      size  () const { return size_; }
 
+        bool operator== (const char* other) const
+        {
+            return strcmp (text_, other) == 0;
+        }
+
         void clear ()
         {
             size_     = 0;

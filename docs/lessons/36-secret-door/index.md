@@ -105,7 +105,7 @@ can't knock on its own door.
     of the side opposite the hinge, so that its arm swings across under the
     lid's edge. The sketch holds it at 0° when locked and 90° when open. Try
     it with the lid open first: if the arm swings the wrong way or not far
-    enough, change `closedAngle` and `openAngle`. Mount the reader just
+    enough, change `lockedAngle` and `openAngle`. Mount the reader just
     inside the front of the box, so a card held against the outside is a
     centimetre or two away, and tape the tap sensor inside the lid.
 
@@ -128,13 +128,14 @@ Read it from the top:
   another friend is just another line. The two numbers are stand-ins: put
   your own cards' numbers in, from the Serial Monitor.
 - `secret`, `longGap`, `rattle` and `finished`, with `rhythm`, `sinceKnock`
-  and `quiet`, are Lesson 35's secret knock. `closedAngle` and `openAngle`
+  and `quiet`, are Lesson 35's secret knock. `lockedAngle` and `openAngle`
   are the latch's, named as in the Keypad Safe of Lesson 18.
 - `setup ()` warns on the screen if the reader didn't answer, then locks the
   door.
 - `loop ()` watches for the two keys. It checks for a card first, then a
-  knock. When `quiet` runs out, the knocking has stopped: the secret opens
-  the door, and any other rhythm is refused.
+  knock. When `quiet` runs out, the knocking has stopped: if
+  `rhythm == secret`, as in Lesson 35, the door opens, and any other rhythm
+  is refused.
 - `checkCard ()` prints the card's number, then looks for it in `friends`.
   `const Friend& person` is each friend in turn: the `&` means the real one
   in the list, not a copy, and `const` promises not to change it. A friend's
@@ -147,8 +148,6 @@ Read it from the top:
   first two wait out their time with `adk::wait ()` before they lock.
 - `latch.moveTo (openAngle, 500)` glides the servo open over half a second,
   so the lid isn't flung.
-- `isSecret ()` is Lesson 35's test: as many letters as the secret, all the
-  same.
 
 ## Upload it
 
@@ -180,7 +179,7 @@ then `lock ()` forgets them.
 | Your card always gets `Unknown card` | Copy its number from the Serial Monitor exactly, with `0x` in front. |
 | Knocks never make stars | Check the tap sensor's S goes to A12, + to 5V and − to GND, and knock close to it. |
 | Stars appear, but the knock is always wrong | Knock the gaps more clearly: quick knocks well under half a second apart, and a pause of about a second. |
-| The latch opens the wrong way | Swap `closedAngle` and `openAngle`, or remount the servo. |
+| The latch opens the wrong way | Swap `lockedAngle` and `openAngle`, or remount the servo. |
 | No beeps | Check the buzzer's + leg, the longer one, is in g32, and the black wire goes from j35 to the − rail. |
 
 ??? note "How it works"
