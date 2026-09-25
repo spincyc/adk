@@ -42,6 +42,18 @@ PROBE_OBJECTS := $(filter $(HOST_DIR)/obj/src/% $(HOST_DIR)/obj/tests/arduino/% 
                           $(HOST_DIR)/obj/tests/fake_%,$(HOST_OBJECTS))
 LIBRARY_FILES := $(wildcard src/*.h src/adk/*.h src/adk/*.cpp) library.properties
 
+# ADK Boards, the Arduino IDE package the site publishes, is installed into
+# arduino-cli directories of its own, never the user's ~/.arduino15.
+BOARDS_DIR      := $(BUILD_DIR)/boards
+BOARDS_EXAMPLES := Lesson01Blink Lesson06Simon
+BOARDS_CLI      := ARDUINO_CONFIG_FILE=$(abspath $(BOARDS_DIR))/arduino-cli.yaml \
+                   ARDUINO_DIRECTORIES_DATA=$(abspath $(BOARDS_DIR))/data \
+                   ARDUINO_DIRECTORIES_DOWNLOADS=$(abspath $(BOARDS_DIR))/downloads \
+                   ARDUINO_DIRECTORIES_USER=$(abspath $(BOARDS_DIR))/user \
+                   ARDUINO_BUILD_CACHE_PATH=$(abspath $(BOARDS_DIR))/cache \
+                   ARDUINO_BOARD_MANAGER_ADDITIONAL_URLS=file://$(abspath $(BUILD_DIR))/site/package_adk_index.json \
+                   arduino-cli
+
 VENV := $(BUILD_DIR)/venv
 export PYTHONPYCACHEPREFIX := $(abspath $(BUILD_DIR))/pycache
 
@@ -51,13 +63,13 @@ export NO_MKDOCS_2_WARNING := 1
 
 .DEFAULT_GOAL := test
 .SECONDEXPANSION:
-.PHONY: all check test sanitize toolchain examples pins size site pdf serve style upload monitor \
-        clean help
+.PHONY: all check test sanitize toolchain examples pins size site pdf boards serve style upload \
+        monitor clean help
 
 all: check
 
-## check         everything CI runs: tests, examples, sizes, the site and its PDFs
-check: style test sanitize examples pins size pdf
+## check         everything CI runs: tests, examples, sizes, the site, its PDFs and board package
+check: style test sanitize examples pins size pdf boards
 
 ## test          build and run the host tests (TEST=name runs matching cases)
 test: $(HOST_DIR)/tests
@@ -147,6 +159,36 @@ pdf: site
 	        --print-to-pdf=$$PWD/$(BUILD_DIR)/site/pdf/$$lesson.pdf \
 	        file://$$PWD/$$page 2>/dev/null || exit 1; \
 	done
+
+## boards        install the site's ADK Boards package and compile lessons with it
+#
+# Boards Manager takes an archive already in its downloads folder when its
+# checksum and size match the index, so this installs the platform the site
+# just built while the index keeps its published URLs. Adk.h refuses any
+# compiler before C++23, so a lesson that compiles was built by ADK's
+# avr-gcc; and a rehearsed bootloader burn must match the stock Mega's.
+boards: site
+	@rm -rf $(BOARDS_DIR)/data $(BOARDS_DIR)/sketches
+	@mkdir -p $(BOARDS_DIR)/downloads/packages $(BOARDS_DIR)/sketches
+	@cp $(BUILD_DIR)/site/adk-avr-*.tar.bz2 $(BOARDS_DIR)/downloads/packages/
+	@echo "  CLI  core install arduino:avr@1.8.8 adk:avr"
+	@$(BOARDS_CLI) core update-index
+	@$(BOARDS_CLI) core install arduino:avr@1.8.8 adk:avr
+	@for example in $(BOARDS_EXAMPLES); do \
+	    echo "  AVR  examples/$$example (adk:avr:mega)"; \
+	    log=$(BOARDS_DIR)/sketches/$$example.log; \
+	    $(BOARDS_CLI) compile --fqbn adk:avr:mega --library . --warnings all \
+	        --build-path $(BOARDS_DIR)/sketches/$$example examples/$$example > $$log 2>&1 \
+	        || { cat $$log; exit 1; }; \
+	    if grep -A3 -E '(src/adk|examples)/.*warning' $$log; then exit 1; fi; \
+	done
+	@echo "  CLI  burn-bootloader --dry-run, stock Mega and ADK Mega"
+	@for vendor in arduino adk; do \
+	    $(BOARDS_CLI) burn-bootloader --dry-run --verbose --fqbn $$vendor:avr:mega \
+	        --programmer avrispmkii > $(BOARDS_DIR)/sketches/$$vendor.burn || exit 1; \
+	done
+	@grep -q stk500boot_v2_mega2560.hex $(BOARDS_DIR)/sketches/adk.burn
+	@diff $(BOARDS_DIR)/sketches/arduino.burn $(BOARDS_DIR)/sketches/adk.burn
 
 ## serve         preview the website at http://127.0.0.1:8000
 serve: $(VENV)/.installed

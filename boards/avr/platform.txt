@@ -1,0 +1,26 @@
+# ADK Boards
+# ----------
+#
+# The board in boards.txt names Arduino AVR Boards' core (arduino:arduino),
+# so it inherits that platform's platform.txt, and the properties here
+# override it. The compiler lines are Arduino AVR Boards 1.8.8's own with two
+# changes: the compiler is ADK's avr-gcc 16, and C++ is -std=gnu++23.
+# See: https://arduino.github.io/arduino-cli/latest/platform-specification/#referencing-another-core-variant-or-tool
+
+name=ADK Boards
+version=0.4.0
+
+# The tool has its own name, so no other avr-gcc (such as Arduino's GCC 7,
+# which stops at C++17) can stand in for it.
+compiler.path={runtime.tools.adk-avr-gcc.path}/bin/
+compiler.cpp.flags=-c -g -Os {compiler.warning_flags} -std=gnu++23 -fpermissive -fno-exceptions -ffunction-sections -fdata-sections -fno-threadsafe-statics -Wno-error=narrowing -MMD -flto
+
+# The Mega's bootloader lives in Arduino AVR Boards, so Burn Bootloader
+# looks for it there (Arduino CLI 1.0.4 and later).
+runtime.use_core_platform_path_for_runtime_platform_path=true
+
+# Discovery and monitors belong to each platform, not to the core it uses:
+# these are Arduino AVR Boards' own.
+pluggable_discovery.required.0=builtin:serial-discovery
+pluggable_discovery.required.1=builtin:mdns-discovery
+pluggable_monitor.required.serial=builtin:serial-monitor

@@ -57,6 +57,7 @@ extra_css:
 
 hooks:
   - docs/_theme/hooks.py
+  - docs/_theme/boards.py
 
 markdown_extensions:
   - abbr

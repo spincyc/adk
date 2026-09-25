@@ -1,0 +1,63 @@
+# ADK Boards
+# ----------
+#
+# One board: Arduino AVR Boards 1.8.8's "mega" with its ATmega2560 (Mega 2560)
+# processor chosen, every setting as it is there. Only the compiler differs;
+# platform.txt says how.
+#
+# The core, the variant, avrdude and the programmers are Arduino AVR Boards'
+# own, used by reference (VENDOR_ID:ID), so that platform must be installed.
+# See: https://arduino.github.io/arduino-cli/latest/platform-specification/
+
+##############################################################
+
+mega.name=ADK Mega 2560
+
+mega.vid.0=0x2341
+mega.pid.0=0x0010
+mega.vid.1=0x2341
+mega.pid.1=0x0042
+mega.vid.2=0x2A03
+mega.pid.2=0x0010
+mega.vid.3=0x2A03
+mega.pid.3=0x0042
+mega.vid.4=0x2341
+mega.pid.4=0x0210
+mega.vid.5=0x2341
+mega.pid.5=0x0242
+mega.upload_port.0.vid=0x2341
+mega.upload_port.0.pid=0x0010
+mega.upload_port.1.vid=0x2341
+mega.upload_port.1.pid=0x0042
+mega.upload_port.2.vid=0x2A03
+mega.upload_port.2.pid=0x0010
+mega.upload_port.3.vid=0x2A03
+mega.upload_port.3.pid=0x0042
+mega.upload_port.4.vid=0x2341
+mega.upload_port.4.pid=0x0210
+mega.upload_port.5.vid=0x2341
+mega.upload_port.5.pid=0x0242
+mega.upload_port.6.board=mega
+
+mega.upload.tool=arduino:avrdude
+mega.upload.tool.default=arduino:avrdude
+mega.upload.tool.network=arduino:arduino_ota
+mega.upload.maximum_data_size=8192
+mega.upload.protocol=wiring
+mega.upload.maximum_size=253952
+mega.upload.speed=115200
+
+mega.bootloader.tool=arduino:avrdude
+mega.bootloader.tool.default=arduino:avrdude
+mega.bootloader.low_fuses=0xFF
+mega.bootloader.unlock_bits=0x3F
+mega.bootloader.lock_bits=0x0F
+mega.bootloader.high_fuses=0xD8
+mega.bootloader.extended_fuses=0xFD
+mega.bootloader.file=stk500v2/stk500boot_v2_mega2560.hex
+
+mega.build.f_cpu=16000000L
+mega.build.core=arduino:arduino
+mega.build.variant=arduino:mega
+mega.build.mcu=atmega2560
+mega.build.board=AVR_MEGA2560

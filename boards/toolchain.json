@@ -1,0 +1,27 @@
+{
+    "name": "adk-avr-gcc",
+    "version": "16.1.0-1",
+    "systems": [
+        {
+            "host": "x86_64-linux-gnu",
+            "url": "https://github.com/ZakKemble/avr-gcc-build/releases/download/v16.1.0-1/avr-gcc-16.1.0-x64-linux.tar.bz2",
+            "archiveFileName": "avr-gcc-16.1.0-x64-linux.tar.bz2",
+            "checksum": "SHA-256:8621ecc6514df50202b58b23b0f8f72f0e535ec35ee40426194e9a15c57692f6",
+            "size": "124872491"
+        },
+        {
+            "host": "i686-mingw32",
+            "url": "https://github.com/ZakKemble/avr-gcc-build/releases/download/v16.1.0-1/avr-gcc-16.1.0-x86-windows.zip",
+            "archiveFileName": "avr-gcc-16.1.0-x86-windows.zip",
+            "checksum": "SHA-256:e95f628be177665bcf0011e4931db2dff02154bddf4105602d84cb537e579011",
+            "size": "161021442"
+        },
+        {
+            "host": "x86_64-mingw32",
+            "url": "https://github.com/ZakKemble/avr-gcc-build/releases/download/v16.1.0-1/avr-gcc-16.1.0-x64-windows.zip",
+            "archiveFileName": "avr-gcc-16.1.0-x64-windows.zip",
+            "checksum": "SHA-256:de4aad501ee42b63d5d262e45470924cd2654f6bc437f0299875efa6b8d8d0fe",
+            "size": "165907043"
+        }
+    ]
+}
