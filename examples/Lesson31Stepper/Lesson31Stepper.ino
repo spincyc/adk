@@ -6,7 +6,7 @@
 adk::Stepper motor  {A8, A9, A10, A11};
 adk::Button  button {22};
 
-const long QuarterTurn = adk::Stepper::StepsPerRevolution / 4;
+constexpr long quarterTurn = adk::Stepper::StepsPerRevolution / 4;
 
 void setup ()
 {
@@ -20,6 +20,6 @@ void loop ()
 
     if (button.wasPressed ())
     {
-        motor.step (QuarterTurn);
+        motor.step (quarterTurn);
     }
 }

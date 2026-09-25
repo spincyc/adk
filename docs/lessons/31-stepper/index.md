@@ -2,7 +2,7 @@
 lesson: 31
 title: Stepper
 arc: Time
-promise: Turn a motor to an exact angle, and bring it back to exactly where it started.
+promise: Turn a motor to an exact angle by counting its steps, a quarter turn at a time.
 time: 45 minutes
 level: 2
 sketch: Lesson31Stepper
@@ -27,8 +27,8 @@ ideas:
 <!-- closeup -->
 
 A paper arrow taped to a small motor points straight up. Press the button and
-it swings round exactly a quarter of a turn, then stops dead. Press again:
-right, down, left, and home, pointing straight up again. While it moves, the
+it swings round a quarter of a turn, then stops dead. Press again: right,
+down, left, and up again, back where it began. While it moves, the
 four red lights on the driver board flicker through a pattern, showing you
 which of the motor's coils are switched on.
 
@@ -51,7 +51,8 @@ shaft takes:
 <p class="formula">64 × 64 = 4096 half-steps</p>
 
 A quarter turn is 1024 of them. Because the sketch counts every one, it always
-knows exactly where the shaft is, without any sensor to check.
+knows where the shaft is, without any sensor to check: as exactly as the
+gearbox allows, as you'll find out.
 
 The coils need up to about 200 mA, ten times what a Mega pin can give. So
 the pins don't power the coils: they tell the **ULN2003 driver** which coils
@@ -67,8 +68,9 @@ module, just as the servo in Lesson 17 took its power from there.
 
 !!! warning "Unplug first"
     Unplug the USB cable and switch the power module off before you change
-    any wiring. Never power the driver from the Mega's 5V pin: the motor
-    could pull the Mega's power down and reset it, or damage it.
+    any wiring. Set both of the power module's yellow jumpers to **5V**, never
+    3.3V. Never power the driver from the Mega's 5V pin: the motor could pull
+    the Mega's power down and reset it, or damage it.
 
 <!-- bench -->
 
@@ -105,20 +107,29 @@ What's new:
 - `adk::Stepper motor {A8, A9, A10, A11};` is the driver board on four pins,
   given in the order IN1 to IN4. The analog pins work as ordinary on/off
   pins here.
-- `adk::Stepper::StepsPerRevolution` is 4096, so `QuarterTurn` is 1024.
+- `adk::Stepper::StepsPerRevolution` is 4096, the half-steps in one turn,
+  so the constant `quarterTurn` is 1024. It's a `long`, from Lesson 8,
+  because the motor counts its steps in `long`s: an `int` stops at 32,767,
+  only eight turns.
 - `motor.speed (500);` asks for 500 half-steps a second. The motor copes with
   anything up to 1000; much faster and it just hums.
-- `motor.step (QuarterTurn);` starts a move of 1024 half-steps from wherever
-  the last move ends. It doesn't wait: `adk::update ()` takes each step when
-  its moment comes, so the button is still watched while the motor turns.
-  Press twice quickly and it goes on for half a turn.
+- `motor.step (quarterTurn);` starts a move of 1024 half-steps on from
+  wherever the last move ends. It doesn't wait: `adk::update ()` takes each
+  step when its moment comes, so the button is still watched while the motor
+  turns. Press twice quickly and it goes on for half a turn.
 
 ## Upload it
 
 Switch the power module on, then plug in the Mega and upload the sketch.
-Press the button. The arrow swings a quarter of a turn in about two seconds
-and stops, and while it moves the driver's four LEDs flicker. Four presses
-bring it all the way round.
+Press the button. The arrow swings a quarter of a turn and stops, and while
+it moves the driver's four LEDs flicker. Four presses bring it all the way
+round.
+
+You predicted how long a press takes: 1024 half-steps at 500 a second is
+1024 ÷ 500, just over two seconds. And after four presses the arrow is
+*almost* where it started, but about 2 degrees past it. The gearbox isn't
+exactly 64 to 1, so 4096 half-steps are a little more than one real turn.
+You'll measure that in the third challenge below.
 
 Which way does it turn? ADK means positive steps to turn the shaft clockwise,
 seen from the shaft end, but that hasn't been checked on a real motor yet.
@@ -158,7 +169,7 @@ way positive means for your motor.
 3. **The true turn.** The gearbox isn't exactly 64 to 1: it's about 63.68, so
    a real turn is about 4076 half-steps, and 4096 overshoots by nearly 2
    degrees. Press the button 40 times and see how far the arrow has crept.
-   Then set `QuarterTurn` to 1019 and try again.
+   Then set `quarterTurn` to 1019 and try again.
 4. **A second hand.** Make the arrow tick round once a minute, one step every
    second, like a clock's second hand. Use an `adk::Every tick {1000};` and
    count seconds, then move to `seconds * 4096L / 60` each tick, so the
