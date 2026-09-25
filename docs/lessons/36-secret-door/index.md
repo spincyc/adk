@@ -212,3 +212,33 @@ then `lock ()` forgets them.
 4. **Visitor's book.** Count how many times each friend has come in, and
    show the count after their name: `Welcome, Ada (7)`. Add `int visits`
    to `Friend`, and take `constexpr` off `friends`, so the list can change.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM**, the red one in **V**, never the **10A** socket.
+Push each probe tip into its own hole: the rails' + and − holes are only
+2.5 mm apart. A 600 ms beep is too short for a meter to settle, so for the
+second reading change `buzzer.beep (600)` in `refuse ()` to
+`buzzer.beep (2000)`, upload, and show the reader a card it doesn't know.
+Put it back afterwards. As in Lesson 34, the reader's wires go straight
+from the Mega to the reader, so its 3.3 V is out of reach here.
+
+!!! question "Predict"
+    In Lesson 33, the passive buzzer's pin read about half of 5 V while a
+    note played. The active buzzer makes its own tone. What will its pin
+    read during a beep?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **The latch's supply** is the power module's 5 V on the bottom rails; the
+  top rails, which feed the screen, read the same. Watch the reading while
+  the latch swings: it hardly moves, because the module has plenty to spare
+  for the servo.
+- **The buzzer's pin** reads nearly the full 5 V for the whole beep, and 0
+  the rest of the time. The pin is simply switched on, and the buzzer makes
+  its tone inside. It reads a little under 5 V because the buzzer draws
+  about 30 mA, and a pin's 5 V sags a little as it gives more current.

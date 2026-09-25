@@ -34,3 +34,9 @@ bench.wire ("servo.−", "B-54")
 bench.wire ("12", "j51", via=[(1.7, -1.85), (10.4, -1.85)])
 bench.buzzer ("f51", "e51", kind="active")
 bench.wire ("a51", "B-51")
+
+# Readings to take with a multimeter, the power module switched on.
+bench.measure ("The latch's supply, on the bottom rails", red="B+49", black="B-49",
+               expect="about 5 V", when="Power module on")
+bench.measure ("The buzzer's pin during a beep", red="12", black="GND", expect="about 4.5 V",
+               when="A long beep")
