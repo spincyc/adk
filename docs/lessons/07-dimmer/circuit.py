@@ -15,3 +15,12 @@ bench.potentiometer ("e45", "e46", "e47")
 bench.wire ("a45", "B-45")
 bench.wire ("A0", "a46", via=[(2.20, 2.85), (9.95, 2.85)])
 bench.wire ("d47", "T+49", via=[(10.05, 1.85), (10.25, 1.85), (10.25, 0.75)])
+
+# Readings to take with a multimeter, with the knob turned until the sketch
+# reads about 256: a quarter of the way from the GND end.
+bench.measure ("The knob's wiper", red="d46", black="GND", expect="about 1.25 V",
+               when="Knob reading about 256")
+bench.measure ("From 5 V down to the wiper", red="5V", black="c46", expect="about 3.75 V",
+               when="Knob reading about 256")
+bench.measure ("Pin 3, averaged", red="3", black="GND", expect="about 1.25 V",
+               when="Knob reading about 256")

@@ -17,7 +17,7 @@ ideas:
   - Analog input, read as a number from 0 to 1023
   - The potentiometer as a voltage divider
   - Scaling a reading with read (low, high)
-  - Choosing between two values with ?:
+  - "Choosing between two values with ?:"
   - Dimming with PWM, and the Serial Plotter
 ---
 
@@ -158,7 +158,7 @@ a quarter of the height of the knob line.
 | The LED never lights, wherever the knob is | Turn the LED round: its long leg goes in b38. Check the wire from pin 3 is in j38, the resistor really crosses the gap, from g38 to e38, and the black wire joins a39 to the − rail. |
 | The LED flickers or changes by itself | A0 isn't reaching the wiper: its wire must be in a46, the middle leg's column. |
 | The plotter's knob line sits at 0 or 1023 whatever you do | One outer leg has lost its supply. Check the Mega's red wire into T+3 and black wire into B-3, and the knob's two short wires: black from a45 to the − rail, red from d47 to the top + rail. |
-| Full brightness comes at the "wrong" end | Nothing is wrong. Swap the outer legs' wires, as "About the knob" says, if you'd like it the other way round. |
+| Full brightness comes at the "wrong" end | Nothing is wrong. If you'd like it the other way round, swap the outer legs' wires, as "About the knob" says, or set `reversed` to `true`. |
 | The knob or a wire gets warm | Unplug now. The middle leg is joined to 5 V or GND; it must go only to A0. |
 | The Serial Plotter shows nothing, or nonsense | Pick 9600 baud, and close the Serial Monitor: only one of them can use the port at a time. |
 
@@ -192,3 +192,42 @@ a quarter of the height of the knob line.
    off, and wait again.
 4. **Warning light.** Add Lesson 1's red LED on pin 26 as an `adk::Led`, and
    light it only while the knob is past three quarters (`knob.read () > 768`).
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): the dial on DC
+volts (**V⎓**), the black lead in **COM** and the red one in **V**. Keep it
+on DC volts: on a current setting the meter joins its two probes together,
+and across 5 V and GND that is a short circuit.
+
+The knob stays wherever you leave it, so nothing in the sketch needs to
+change. Open the Serial Monitor at 9600 baud and turn the knob until it
+shows `knob:256` or near it, a quarter of the way round from the end wired
+to GND. Then leave it there.
+
+!!! question "Predict"
+    With the knob reading 256, what will the meter show between the wiper
+    and GND? Pin 3 is only ever at 0 V or 5 V, switching about 490 times a
+    second, far too fast for a meter to follow. What do you think the meter
+    will show there?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **The knob's wiper** is the voltage A0 measures, and the sketch's number
+  is that voltage counted in steps: 1.25 V × 1023 ÷ 5 ≈ 256. Turn the knob
+  slowly and the meter and the Serial Monitor move together: any reading
+  × 5 ÷ 1023 gives the meter's volts.
+- **From 5 V down to the wiper** is the rest of the 5 V. Add it to the
+  first reading and you get 5 V back: the knob's strip shares the 5 V out,
+  a quarter below the wiper and three quarters above it. That is the
+  voltage divider.
+- **Pin 3, averaged**, reads about the same as the wiper. With the
+  brightness at about 64 of 255, the pin is high a quarter of the time,
+  and the meter, too slow to follow the switching, shows the average: a
+  quarter of 5 V. `knob.read (0, 255)` scales the reading so that the
+  pin's average follows the wiper. Turn the knob to either end and pin 3
+  reads 0 V or the full 5 V; set `reversed` to `true` and it follows the
+  second reading instead.
