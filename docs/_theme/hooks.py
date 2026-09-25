@@ -76,6 +76,7 @@ def on_page_markdown (markdown, page, config, files):
     markdown = markdown.replace ("<!-- course -->", course_table ())
     markdown = re.sub (r"<!-- drawing (\S+) (bench|closeup) -->", drawing, markdown)
     markdown = re.sub (r"<!-- api (\S+)(?: (\w+))? -->", reference, markdown)
+    markdown = link_lessons (markdown, page)
     if "lesson" not in meta:
         return markdown
 
@@ -109,6 +110,34 @@ def on_page_markdown (markdown, page, config, files):
     for marker, content in replacements.items ():
         markdown = markdown.replace (f"<!-- {marker} -->", content)
     return markdown
+
+
+# "Lesson 7" in running text becomes a link once Lesson 7 is written. Code,
+# headings, existing links and the page's own number are left alone.
+def link_lessons (markdown, page):
+    here = os.path.dirname (page.file.src_uri)
+    own = page.meta.get ("lesson")
+    out, fenced = [], False
+
+    def replace (match):
+        number = int (match.group (1))
+        if number == own or not 1 <= number <= len (LESSONS) or not written (LESSONS[number - 1]):
+            return match.group (0)
+        target = f"lessons/{LESSONS[number - 1]['slug']}/index.md"
+        return f"[{match.group (0)}]({os.path.relpath (target, here or '.')})"
+
+    for line in markdown.split ("\n"):
+        if line.lstrip ().startswith (("```", "~~~")):
+            fenced = not fenced
+        if fenced or line.lstrip ().startswith (("#", "<", "|---")):
+            out.append (line)
+            continue
+        # Leave inline code and existing links as they are.
+        pieces = re.split (r"(`[^`]*`|\[[^\]]*\]\([^)]*\))", line)
+        for index in range (0, len (pieces), 2):
+            pieces[index] = re.sub (r"\bLesson (\d{1,2})\b(?!\s*\])", replace, pieces[index])
+        out.append ("".join (pieces))
+    return "\n".join (out)
 
 
 # The reference for a part, read from its header.
