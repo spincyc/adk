@@ -11,22 +11,31 @@ adk::Speaker   speaker  {10};
 adk::Every     step     {400};
 adk::Every     blink    {150};
 
-const adk::Note fanfare [] = {{adk::note::c5, 100}, {adk::note::e5, 100}, {adk::note::g5, 200}};
-const adk::Note gulp    [] = {{adk::note::c6, 40}, {adk::note::g6, 60}};
-const adk::Note crash   [] = {{adk::note::g4, 200}, {adk::note::e4, 200}, {adk::note::c4, 500}};
+constexpr adk::Note fanfare [] {{adk::note::c5, 100}, {adk::note::e5, 100},
+                                {adk::note::g5, 200}};
+constexpr adk::Note gulp    [] {{adk::note::c6, 40}, {adk::note::g6, 60}};
+constexpr adk::Note crash   [] {{adk::note::g4, 200}, {adk::note::e4, 200},
+                                {adk::note::c4, 500}};
 
-bool    playing = false;
-uint8_t snake [64];         // the dots the snake covers, head first: x + 8 * y
-uint8_t length;
-uint8_t food;
-int8_t  headingX, headingY; // the way the snake last moved
-int8_t  turnX, turnY;       // the way it moves next
-char    message [24] = "SNAKE! CLICK TO PLAY   ";
+// A dot on the matrix: x from 0 on the left, y from 0 at the top.
+struct Dot
+{
+    int x;
+    int y;
+
+    bool operator== (const Dot&) const = default;
+};
+
+adk::Deque<Dot, 64>      snake;      // its head at the front, tail at the back
+adk::Joystick::Direction turn;       // the way it goes on its next step
+Dot                      food;
+bool                     playing = false;
+char                     message [24] = "SNAKE! CLICK TO PLAY   ";
 
 void setup ()
 {
     adk::setup ();
-    randomSeed (analogRead (A0));
+    randomSeed (analogRead (A7));
 }
 
 void loop ()
@@ -53,25 +62,26 @@ void loop ()
 
         if (blink.ticked ())
         {
-            light (food, !matrix.get (food % 8, food / 8));
+            matrix.set (food.x, food.y, !matrix.get (food.x, food.y));
         }
     }
 }
 
+// Three dots in the middle row, heading right.
 void newGame ()
 {
     matrix.clear ();
-    length = 3;
+    snake.clear ();
 
-    for (uint8_t i = 0; i < length; ++i)
+    for (int x = 1; x <= 3; ++x)
     {
-        snake[i] = 3 - i + 8 * 4;
-        light (snake[i], true);
+        snake.push_front ({x, 4});
+        matrix.set (x, 4);
     }
 
-    headingX = turnX = 1;
-    headingY = turnY = 0;
+    turn = adk::Joystick::Right;
     step.period (400);
+    step.restart ();
     placeFood ();
     speaker.play (fanfare);
     playing = true;
@@ -80,72 +90,69 @@ void newGame ()
 // Any way but straight back into its own neck.
 void steer ()
 {
-    int8_t x = 0;
-    int8_t y = 0;
+    auto way = joystick.direction ();
 
-    switch (joystick.direction ())
+    if (way != adk::Joystick::Center && ahead (way) != snake[1])
     {
-        case adk::Joystick::Up:    y = -1; break;
-        case adk::Joystick::Down:  y = 1;  break;
-        case adk::Joystick::Left:  x = -1; break;
-        case adk::Joystick::Right: x = 1;  break;
-        default:                   return;
-    }
-
-    if (x != -headingX || y != -headingY)
-    {
-        turnX = x;
-        turnY = y;
+        turn = way;
     }
 }
 
+// A new head goes on at the front and the tail comes off the back, unless
+// the snake is eating: then it keeps its tail, and grows.
 void moveSnake ()
 {
-    headingX = turnX;
-    headingY = turnY;
-
-    int  x      = snake[0] % 8 + headingX;
-    int  y      = snake[0] / 8 + headingY;
-    int  head   = x + 8 * y;
-    bool eating = (head == food);
+    auto head   = ahead (turn);
+    auto tail   = snake.back ();
+    bool eating = head == food;
+    bool wall   = head.x < 0 || head.x > 7 || head.y < 0 || head.y > 7;
 
     // The tail moves on as the head moves, so the head may take its place.
-    if (x < 0 || x > 7 || y < 0 || y > 7 || onSnake (head, length - 1))
+    if (wall || (onSnake (head) && head != tail))
     {
         gameOver ();
         return;
     }
 
+    if (!eating)
+    {
+        snake.pop_back ();
+        matrix.set (tail.x, tail.y, false);
+    }
+
+    snake.push_front (head);
+    matrix.set (head.x, head.y);
+
     if (eating)
     {
-        ++length;
         speaker.play (gulp);
         step.period (max (120UL, step.period () - 20));
-    }
-    else
-    {
-        light (snake[length - 1], false);
-    }
-
-    for (uint8_t i = length - 1; i > 0; --i)
-    {
-        snake[i] = snake[i - 1];
-    }
-
-    snake[0] = head;
-    light (head, true);
-
-    if (eating)
-    {
         placeFood ();
     }
 }
 
-bool onSnake (int dot, uint8_t count)
+// The dot next to the snake's head, the given way.
+Dot ahead (adk::Joystick::Direction way)
 {
-    for (uint8_t i = 0; i < count; ++i)
+    auto dot = snake.front ();
+
+    switch (way)
     {
-        if (snake[i] == dot)
+        case adk::Joystick::Up:    --dot.y; break;
+        case adk::Joystick::Down:  ++dot.y; break;
+        case adk::Joystick::Left:  --dot.x; break;
+        case adk::Joystick::Right: ++dot.x; break;
+        default:                            break;
+    }
+
+    return dot;
+}
+
+bool onSnake (Dot dot)
+{
+    for (auto part : snake)
+    {
+        if (part == dot)
         {
             return true;
         }
@@ -154,24 +161,23 @@ bool onSnake (int dot, uint8_t count)
     return false;
 }
 
+// Anywhere the snake isn't, unless it fills the whole matrix.
 void placeFood ()
 {
     do
     {
-        food = random (64);
+        food.x = random (8);
+        food.y = random (8);
     }
-    while (length < 64 && onSnake (food, length));
-}
-
-void light (uint8_t dot, bool lit)
-{
-    matrix.set (dot % 8, dot / 8, lit);
+    while (onSnake (food) && !snake.full ());
 }
 
 void gameOver ()
 {
+    int score = snake.size () - 3;
+
     speaker.play (crash);
     adk::wait (1500);
-    snprintf (message, sizeof message, "SCORE %d   ", length - 3);
+    snprintf (message, sizeof message, "SCORE %d   ", score);
     playing = false;
 }
