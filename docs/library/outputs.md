@@ -6,7 +6,7 @@
 
 <!-- api color.h Color -->
 
-The colours `adk::color::off`, `white`, `red`, `orange`, `yellow`, `green`,
+The colors `adk::color::off`, `white`, `red`, `orange`, `yellow`, `green`,
 `cyan`, `blue`, `purple`, `magenta` and `pink` are ready to use, and
 `adk::blend ()` and `adk::wheel ()` make new ones.
 

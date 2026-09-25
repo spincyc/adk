@@ -1,6 +1,6 @@
 /* ADK: a sketchbook look. Paper, graphite, and one warm LED red. */
 
-/* Colour ----------------------------------------------------------------- */
+/* Color ----------------------------------------------------------------- */
 
 [data-md-color-scheme="paper"] {
     --adk-paper:        #fbf9f3;
@@ -435,7 +435,7 @@ body {
     background: var(--adk-card);
 }
 
-/* Callouts in the sketchbook's own colours: red for danger, amber for care,
+/* Callouts in the sketchbook's own colors: red for danger, amber for care,
    green for tips, graphite for everything else. */
 .md-typeset :is(.admonition, details) {
     --adk-callout: var(--adk-pencil);

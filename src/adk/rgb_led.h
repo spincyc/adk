@@ -5,7 +5,7 @@
 
 namespace adk {
 
-    // An RGB LED on three PWM pins, each colour leg through its own resistor.
+    // An RGB LED on three PWM pins, each color leg through its own resistor.
     // A common-cathode LED (long leg to GND) is active high; a common-anode
     // LED (long leg to 5 V) is active low.
     struct RgbLed : Object

@@ -153,6 +153,6 @@ circuit on a real board.
    then the declaration.
 2. `src/adk/<name>.cpp`: the implementation.
 3. Add the header to `src/Adk.h`.
-4. `tests/<name>_test.cpp`: setup, claims, the normal behaviour, timing edges,
+4. `tests/<name>_test.cpp`: setup, claims, the normal behavior, timing edges,
    and `stop ()`.
 5. Use it in a lesson, and list it on the matching library page in `docs/library/`.

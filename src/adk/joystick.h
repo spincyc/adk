@@ -11,7 +11,7 @@ namespace adk {
     // Held with its pins on the left, x () is positive to the right and y ()
     // positive upwards. Held another way round, or with VRx and VRy swapped,
     // the axes swap or change sign. Where the stick rests at setup () is its
-    // centre, so leave it alone while the sketch starts.
+    // center, so leave it alone while the sketch starts.
     struct Joystick : Object
     {
         enum Direction : uint8_t
@@ -26,7 +26,7 @@ namespace adk {
         Joystick (Pin x, Pin y);
 
         // How far the stick is pushed, from -100 to 100 per cent of its
-        // travel. Within 10 of the centre it reads 0, since a released stick
+        // travel. Within 10 of the center it reads 0, since a released stick
         // never quite returns to the same place.
         int8_t x () const;
         int8_t y () const;

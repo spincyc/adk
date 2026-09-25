@@ -4,7 +4,7 @@
 
 namespace adk {
 
-    // A colour as red, green and blue brightness, each 0-255.
+    // A color as red, green and blue brightness, each 0-255.
     struct Color
     {
         uint8_t red;
@@ -15,10 +15,10 @@ namespace adk {
     bool operator== (Color left, Color right);
     bool operator!= (Color left, Color right);
 
-    // The colour step/steps of the way from one colour to another.
+    // The color step/steps of the way from one color to another.
     Color blend (Color from, Color to, uint16_t step, uint16_t steps);
 
-    // A colour around the colour wheel: 0 is red, 85 green, 170 blue.
+    // A color around the color wheel: 0 is red, 85 green, 170 blue.
     Color wheel (uint8_t position);
 
     namespace color {

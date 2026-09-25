@@ -48,7 +48,7 @@ void loop ()
 - **Small.** No heap, no exceptions, no Arduino libraries: a part you don't
   declare costs nothing. Blink is 2.9 KB of flash and 76 bytes of RAM.
 - **Tested.** Every part has host tests against a fake Arduino core, run
-  under the address and undefined-behaviour sanitizers, and every example
+  under the address and undefined-behavior sanitizers, and every example
   compiles for the Mega with all warnings on.
 
 ## Install

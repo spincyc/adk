@@ -7,8 +7,8 @@ namespace {
 
     const int Middle = 512;
 
-    // The reading that puts an axis centred on 512 at a percentage of its
-    // travel: 511 steps above the centre, 512 below.
+    // The reading that puts an axis centered on 512 at a percentage of its
+    // travel: 511 steps above the center, 512 below.
     int reading (int percent)
     {
         int span = (percent >= 0) ? 1023 - Middle : Middle;

@@ -10,13 +10,13 @@ namespace adk {
         const int8_t Enter    = 50;
         const int8_t Leave    = 30;
 
-        // Each side of the centre is scaled on its own, so both ends of the
-        // travel reach 100 however far the centre is from 512.
+        // Each side of the center is scaled on its own, so both ends of the
+        // travel reach 100 however far the center is from 512.
         int8_t percent (uint16_t reading, uint16_t center)
         {
             long offset = static_cast<long> (reading) - center;
 
-            // Also keeps a centre of 0 or 1023, with no travel beyond it on
+            // Also keeps a center of 0 or 1023, with no travel beyond it on
             // one side, from dividing by zero.
             if (offset == 0)
             {

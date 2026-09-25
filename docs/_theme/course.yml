@@ -9,9 +9,9 @@
     - {slug: 02-buttons, title: Buttons, builds: Buttons that switch lights and count presses}
     - {slug: 03-reaction-duel, title: Reaction Duel, builds: A two-player reflex game with a buzzer, project: true}
 
-- arc: Colour and sound
+- arc: Color and sound
   lessons:
-    - {slug: 04-mood-lamp, title: Mood Lamp, builds: An RGB lamp that fades through colours}
+    - {slug: 04-mood-lamp, title: Mood Lamp, builds: An RGB lamp that fades through colors}
     - {slug: 05-melody-maker, title: Melody Maker, builds: A four-button keyboard that plays tunes}
     - {slug: 06-simon, title: Simon, builds: The memory game, with sound and a high score, project: true}
 

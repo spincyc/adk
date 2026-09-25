@@ -73,7 +73,7 @@ adk: a Speaker stops PWM on pins 9 and 10
 | Part | Class | For |
 |---|---|---|
 | LED | [`Led`](outputs.md#led) | on, off, toggle, blink |
-| RGB LED | [`RgbLed`](outputs.md#rgbled) | any colour, and fades between them |
+| RGB LED | [`RgbLed`](outputs.md#rgbled) | any color, and fades between them |
 | Active buzzer | [`Buzzer`](outputs.md#buzzer) | on, off, beep |
 | Passive buzzer | [`Speaker`](outputs.md#speaker) | notes and whole melodies |
 | Relay | [`Relay`](outputs.md#relay) | switching a separate low-voltage circuit |
@@ -100,7 +100,7 @@ adk: a Speaker stops PWM on pins 9 and 10
 | Real-time clock | [`Rtc`](sensors.md#rtc) | the date and time |
 | Accelerometer | [`Mpu6050`](sensors.md#mpu6050) | tilt, acceleration and rotation |
 | Plain pins | [`DigitalOutput`](core.md#digitaloutput), [`DigitalInput`](core.md#digitalinput), [`PwmOutput`](core.md#pwmoutput) | anything else |
-| Helpers | [`Every`](core.md#every), [`Smoother`](core.md#smoother), [`Debouncer`](core.md#debouncer), [`Color`](outputs.md#color) | beats, smoothing and colours |
+| Helpers | [`Every`](core.md#every), [`Smoother`](core.md#smoother), [`Debouncer`](core.md#debouncer), [`Color`](outputs.md#color) | beats, smoothing and colors |
 
 Each part's header in [`src/adk/`](https://github.com/spincyc/adk/tree/main/src/adk)
 starts with how to wire it. [How ADK works](../ARCHITECTURE.md) explains the

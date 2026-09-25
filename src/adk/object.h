@@ -8,7 +8,7 @@ namespace adk {
 
     using Millis = uint32_t;
 
-    // Every device or behaviour in a sketch is an Object. Declaring one
+    // Every device or behavior in a sketch is an Object. Declaring one
     // registers it, in declaration order. adk::setup () starts them all,
     // adk::update () advances them all with one shared timestamp, and
     // adk::stop () puts them all in a safe state.
@@ -24,7 +24,7 @@ namespace adk {
         // Claim and configure pins. Runs once, from adk::setup ().
         virtual void setup ();
 
-        // Advance time-driven behaviour. Runs on every adk::update ().
+        // Advance time-driven behavior. Runs on every adk::update ().
         virtual void update (Millis now);
 
         // Enter the safe state: outputs off, sound and motion stopped.

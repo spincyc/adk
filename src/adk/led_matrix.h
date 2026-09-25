@@ -5,7 +5,7 @@
 namespace adk {
 
     // An 8x8 LED matrix on a MAX7219 module. Wiring, from the module's input
-    // end (the pins labelled DIN, not DOUT):
+    // end (the pins labeled DIN, not DOUT):
     //
     //   VCC -> 5 V     DIN -> data     CLK -> clock
     //   GND -> GND     CS  -> load

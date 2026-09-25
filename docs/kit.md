@@ -13,7 +13,7 @@ Modules Kit**; those are marked below and in each lesson's parts list.
 | LEDs, 220 Ω and 1 kΩ resistors | Light, and the current that makes it | Lesson 1 |
 | Push buttons | Input you can press | Lesson 2 |
 | Active buzzer | Beeps when switched on | Lesson 3 |
-| RGB LED | Any colour, mixed from red, green and blue | Lesson 4 |
+| RGB LED | Any color, mixed from red, green and blue | Lesson 4 |
 | Passive buzzer | Plays any note you ask for | Lesson 5 |
 | 10 kΩ potentiometer | A knob that sets a voltage | Lesson 7 |
 | Photoresistor | Senses light | Lesson 8 |
@@ -79,9 +79,9 @@ that makes PWM on pins 9 and 10; pin 10 could not dim anything anyway.
 
 ## Reading resistors
 
-The coloured bands give the value: two digits, then how many zeros.
+The colored bands give the value: two digits, then how many zeros.
 
-| Colour | Black | Brown | Red | Orange | Yellow | Green | Blue | Violet | Grey | White |
+| Color | Black | Brown | Red | Orange | Yellow | Green | Blue | Violet | Gray | White |
 |---|---|---|---|---|---|---|---|---|---|---|
 | Digit | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
 
