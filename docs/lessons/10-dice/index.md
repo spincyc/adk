@@ -204,3 +204,36 @@ right, along the bottom and up the left.
    one digit at a time: the tens, `total / 10`, for half a second, then the
    ones, `total % 10`. Leave out the tens when they are 0. You'll need
    patterns for 0 and 7 to 9, or challenge 4's `adk::SevenSegment`.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM** and the red one in **V**. Here the meter turns a
+byte back into what it really is on the chip: eight legs, each at 5 V or at
+0 V.
+
+Nothing needs to change in the sketch: the dash stays on until you press the
+button, and each number the die lands on stays until the next roll. Put the
+probe tips in the breadboard holes shown, not on the chip's legs, where a
+tip could touch two legs at once and join two outputs together.
+
+!!! question "Predict"
+    Before you press the button, the digit shows its dash, the byte
+    `0b01000000`. Which of the chip's outputs should be at 5 V? What will
+    its neighbor Q5 read? And how much of the 5 V will g's resistor get?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Q6** is at about 5 V: bit 6 is the only 1 in the byte, and the chip
+  holds it on its Q6 leg for as long as the dash shows, with no help from
+  the Mega.
+- **Q5** reads 0 V, because bit 5 is a 0. Every 1 in the byte is an output
+  at 5 V, and every 0 an output at 0 V. Roll a 4, `0b01100110`, and Q1,
+  Q2, Q5 and Q6 read 5 V while the others read 0 V. The chip in the
+  drawings is labelled, so you can find each output's column.
+- **Across segment g's resistor** is about 3 V. The red segment keeps about
+  2 V of the 5 V for itself, and the resistor takes the rest. By Ohm's law,
+  3 V across 1 kΩ is 3 mA: the current worked out in the idea above.

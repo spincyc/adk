@@ -63,3 +63,13 @@ bench.wire ("a39", "a49", via=[(X (39), Y (1.80)), (X (49), Y (1.80))])
 bench.wire ("a40", "a47", via=[(X (40), Y (1.75)), (X (47), Y (1.75))])
 bench.wire ("a41", "a46", via=[(X (41), Y (1.70)), (X (46), Y (1.70))])
 bench.wire ("b48", "B-37", via=[(X (48), Y (1.60)), (X (37), Y (1.60))])
+
+# Readings to take with a multimeter while the digit shows its dash, the
+# byte 0b01000000: Q6 (g) high, Q5 (f) low, and g's resistor carrying its
+# segment's current.
+bench.measure ("Q6, segment g's output", red="a23", black="GND", expect="about 5 V",
+               when="The dash showing")
+bench.measure ("Q5, segment f's output", red="a22", black="GND", expect="0 V",
+               when="The dash showing")
+bench.measure ("Across segment g's resistor", red="e30", black="g30", expect="about 3 V",
+               when="The dash showing")
