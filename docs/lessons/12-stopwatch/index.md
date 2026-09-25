@@ -3,7 +3,7 @@ lesson: 12
 title: Stopwatch
 arc: Digits
 promise: Build a stopwatch with laps, and a kitchen timer that beeps at zero.
-time: 90 minutes
+time: 1½ hours
 level: 3
 sketch: Lesson12Stopwatch
 parts:
@@ -12,10 +12,11 @@ parts:
   - Active buzzer (sealed, with a sticker on top)
   - 8 more jumper wires
 ideas:
-  - Keeping time with millis ()
+  - How a stopwatch keeps time, and ADK's Stopwatch and Timer
   - A device with states and modes
   - Start, stop, lap and reset on three buttons
   - Counting down, and a beep at zero
+  - Splitting a time into seconds and tenths
 ---
 
 ## What you'll build
@@ -31,21 +32,27 @@ three, and when it reaches zero it says **donE** and beeps.
 ## The idea
 
 Since the moment it was switched on, the Mega has been counting
-milliseconds: Lesson 3 read that count with `millis ()`. A stopwatch doesn't
-need its own clock. It only has to remember **when it started**, and
-subtract: the time now minus the time it started is how long it has been
-running.
+milliseconds: that count is `millis ()`, which Lesson 3 met. A stopwatch
+doesn't need its own clock. It only has to remember **when it started**,
+and subtract: the time now minus the time it started is how long it has
+been running.
 
 Stopping is a little harder, because a stopped stopwatch must remember its
-time and carry on from there. So the sketch keeps two numbers: `banked`, the
-time counted before the latest start, and `startedAt`, the `millis ()` of
-that start. While it runs, the time is `banked + (millis () − startedAt)`.
-Start at 5000, stop at 12300, and 7300 milliseconds are banked; start again
-at 20000, and at 21500 the stopwatch shows 7300 + 1500 = 8800 milliseconds,
+time and carry on from there. So a stopwatch keeps two numbers: the time
+**banked** before its latest start, and the moment of that start. While it
+runs, its time is the banked time plus the time since the start. Start at
+5000, stop at 12300, and 7300 milliseconds are banked; start again at
+20000, and at 21500 the stopwatch shows 7300 + 1500 = 8800 milliseconds,
 which is 8.8 seconds.
 
-A timer is the same clock read backwards: the time left is the total minus
-the time counted, and when nothing is left, the timer is done.
+That is exactly what `adk::Stopwatch`, from Lesson 3, does for you:
+`start ()`, `stop ()` and `reset ()` are its buttons, and `elapsed ()`
+reads it.
+
+A kitchen timer is the same stopwatch read backwards: the time left is the
+total minus the time counted. To catch the moment it reaches zero, the
+sketch also sets an `adk::Timer`, Lesson 3's countdown, for the time left
+whenever the kitchen timer starts. Its `expired ()` says when.
 
 !!! question "Predict"
     You start the stopwatch, stop it after 3 seconds, wait 10 seconds, and
@@ -111,20 +118,43 @@ Open the Arduino IDE and choose **File → Examples → Adk → Lesson12Stopwatc
 
 What's new:
 
-- `enum State` gives the three states names, so the sketch can say
-  `state == Running` instead of remembering that 1 meant running.
-- Times are `unsigned long`, the type `millis ()` returns: an `int` on the
-  Mega would run out after 32 seconds.
-- `elapsed ()` works out the time counted, as in The idea. `clockTime ()`
-  turns it into what the display shows: the same for the stopwatch, or the
-  time left for a timer.
-- `loop ()` reads the three buttons, checks whether a running timer has
-  reached zero, and redraws the display, every time round.
-- `showTime ()` builds text such as `" 12.3"` with `snprintf ()`.
-  `%3lu` prints an `unsigned long` at least three characters wide, padding
-  with spaces, which the display leaves blank; the `.` lights the dot after
-  the seconds. `% 10000` makes the stopwatch start again from 0.0 after
-  999.9 seconds.
+- `modes` is an `adk::Array` of the four times the mode button steps
+  through, in milliseconds. Their type is `adk::Millis`, ADK's type for
+  times: an `unsigned long`, a `long` from Lesson 8 that can't be negative,
+  so it counts to about 49 days. An `int` would run out after 32 seconds.
+- `enum class State { Stopped, Running, Done };` names the three states,
+  and `startOrStop ()` decides with a `switch`, both as in Lesson 3: the
+  same button starts, pauses or resets, depending on the state.
+- `adk::Stopwatch stopwatch;` counts the time in every mode. The sketch's
+  `start ()` calls `stopwatch.start ()`, its `pause ()` calls
+  `stopwatch.stop ()`, and its `reset ()` calls `stopwatch.reset ()`, which
+  sets it back to zero.
+- `adk::Timer alarm;` is set by `start ()` for `clockTime ()`, which for a
+  kitchen timer is the time left. `pause ()` stops it too, so it can never
+  ring while the clock stands still. `alarm.expired ()` is true for the one
+  update in which it runs out, which is the moment for `finish ()`.
+- `adk::Timer lapShown;` holds a lap on the display: `lapOrReset ()` keeps
+  the time in `lap` and starts `lapShown` for 3000 ms, and `showClock ()`
+  shows `lap` while `lapShown.isRunning ()`.
+- `loop ()` checks the alarm, reads the three buttons, and redraws the
+  display, every time round. Each press clicks the buzzer with
+  `buzzer.beep (20)`. `(current + 1) % modes.size ()` steps to the next
+  mode, and back to the first after the last.
+- `clockTime ()` turns the stopwatch into what the display shows: its time
+  for the stopwatch, or `total - time` for a kitchen timer.
+  `time < total ? total - time : 0` uses Lesson 7's `?:`, so a timer can
+  never show less than zero.
+- `showTime ()` splits the time, as in Lesson 10. `ms / 100` is the time in
+  whole tenths of a second, and `% 10000` makes the stopwatch start again
+  from 0.0 after 999.9 seconds. Then `tenths / 10` is the seconds, and
+  `tenths % 10` the tenths left over: 123 tenths are 12 seconds and 3
+  tenths.
+- `char text [6];` is a row of six characters to write into: five for the
+  time, and one more to mark where the text ends. `snprintf ()` writes the
+  time there as text, such as `" 12.3"`. In the
+  pattern `"%3d.%d"`, `%3d` stands for a whole number at least three
+  characters wide, padded with spaces, which the display leaves blank; `%d`
+  stands for the tenths; and the `.` lights the dot after the seconds.
 - `finish ()` uses `adk::wait ()` between beeps, so the display stays lit
   while the buzzer sounds.
 
@@ -134,6 +164,11 @@ Upload the sketch. The display shows `0.0`. Press start/stop (22): it clicks
 and the tenths start ticking up. Press lap/reset (23): the display freezes
 for three seconds, then jumps to the true time. Press start/stop again to
 stop it, and lap/reset to set it back to `0.0`.
+
+Now try your prediction: start, stop after 3 seconds, wait 10 seconds, and
+start again. Two seconds later it shows `5.0`. Did you predict 15? The 10
+seconds it stood stopped don't count: the stopwatch banked 3.0 seconds,
+and carried on from there.
 
 Now press mode (24): the display shows `10.0`. Press start and it counts
 down; at zero it shows **donE** and the buzzer beeps three times. Press any
@@ -153,9 +188,14 @@ the stopwatch.
 
 ??? note "How it works"
     `millis ()` counts in a variable of 32 bits, so it runs for about 49
-    days before it goes back to 0. The sketch always subtracts, `millis () −
-    startedAt`, and subtraction of `unsigned long` numbers gives the right
-    answer even across that wrap, as ADK's own parts do.
+    days before it goes back to 0. The stopwatch and the timers always
+    subtract, the time now minus the time they started, and subtraction of
+    `unsigned long` numbers gives the right answer even across that wrap.
+
+    `start ()` sets the stopwatch and the alarm going together, and both
+    begin counting on the next `adk::update ()`, from the same moment. So
+    the alarm rings in the very update in which a timer's time left
+    reaches zero.
 
     Each button is an `adk::Button`, which debounces it and makes
     `wasPressed ()` true for exactly one turn of `loop ()`, so one press
@@ -167,7 +207,8 @@ the stopwatch.
 1. **Hundredths.** Show seconds and hundredths, from `0.00` to `99.99`. What
    do you need to change in `showTime ()`?
 2. **Minutes.** Past 60 seconds, switch to minutes and seconds with
-   `display.showTime (minutes, seconds)`.
+   `display.showTime (minutes, seconds)`. `/ 60` and `% 60` split a number
+   of seconds into minutes and seconds, as `/ 10` and `% 10` split tenths.
 3. **Set your own timer.** Let lap/reset add 10 seconds to the countdown
    while a timer is stopped, instead of choosing from fixed modes.
 4. **Final countdown.** Make the buzzer click once a second during a timer's

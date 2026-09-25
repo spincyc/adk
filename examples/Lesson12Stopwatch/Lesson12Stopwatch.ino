@@ -1,6 +1,7 @@
 // Lesson 12: Stopwatch
-// A stopwatch and countdown timer on the four-digit display. The button on pin 22 starts and
-// stops, 23 takes a lap or resets, 24 changes mode; the active buzzer on pin 12 sounds at zero.
+// A stopwatch and kitchen timer on the four-digit display. The button on
+// pin 22 starts and stops, 23 takes a lap or resets, 24 changes mode; the
+// active buzzer on pin 12 clicks at every press and beeps at zero.
 
 #include <Adk.h>
 
@@ -10,24 +11,19 @@ adk::Button           lapReset  {23};
 adk::Button           mode      {24};
 adk::Buzzer           buzzer    {12};
 
-// The modes the mode button steps through, in milliseconds: 0 is the
-// stopwatch, which counts up; the others are timers that count down.
-const unsigned long modes [] {0, 10000, 60000, 180000};
+// What the mode button steps through, in milliseconds: 0 is the stopwatch,
+// which counts up; the others are timers that count down from 10 seconds,
+// 1 minute and 3 minutes.
+constexpr adk::Array<adk::Millis, 4> modes {0, 10000, 60000, 180000};
 
-enum State
-{
-    Stopped,
-    Running,
-    Done
-};
+enum class State { Stopped, Running, Done };
 
-State         state      = Stopped;
-int           current    = 0;       // which of the modes
-unsigned long startedAt  = 0;       // millis () when the clock last started
-unsigned long banked     = 0;       // time counted before that start
-unsigned long lap        = 0;       // the time a lap froze
-unsigned long lapAt      = 0;       // millis () when it did
-bool          showingLap = false;
+State          state   = State::Stopped;
+int            current = 0;         // which of the modes
+adk::Stopwatch stopwatch;           // the time counted, in every mode
+adk::Timer     alarm;               // a timer's zero
+adk::Timer     lapShown;            // how long a lap stays on the display
+adk::Millis    lap     = 0;         // the time the lap froze
 
 void setup ()
 {
@@ -38,26 +34,28 @@ void loop ()
 {
     adk::update ();
 
+    if (alarm.expired ())
+    {
+        finish ();
+    }
+
     if (startStop.wasPressed ())
     {
+        buzzer.beep (20);
         startOrStop ();
     }
 
     if (lapReset.wasPressed ())
     {
+        buzzer.beep (20);
         lapOrReset ();
     }
 
-    if (mode.wasPressed () && state != Running)
+    if (mode.wasPressed () && state != State::Running)
     {
         buzzer.beep (20);
-        current = (current + 1) % 4;
+        current = (current + 1) % modes.size ();
         reset ();
-    }
-
-    if (state == Running && modes[current] > 0 && elapsed () >= modes[current])
-    {
-        finish ();
     }
 
     showClock ();
@@ -65,33 +63,20 @@ void loop ()
 
 void startOrStop ()
 {
-    buzzer.beep (20);
-
-    if (state == Running)
+    switch (state)
     {
-        banked = elapsed ();
-        state  = Stopped;
-    }
-    else if (state == Stopped)
-    {
-        startedAt = millis ();
-        state     = Running;
-    }
-    else
-    {
-        reset ();
+        case State::Stopped: start (); break;
+        case State::Running: pause (); break;
+        case State::Done:    reset (); break;
     }
 }
 
 void lapOrReset ()
 {
-    buzzer.beep (20);
-
-    if (state == Running)
+    if (state == State::Running)
     {
-        lap        = clockTime ();
-        lapAt      = millis ();
-        showingLap = true;
+        lap = clockTime ();
+        lapShown.start (3000);
     }
     else
     {
@@ -99,17 +84,38 @@ void lapOrReset ()
     }
 }
 
+// A timer also sets its alarm for the time it has left.
+void start ()
+{
+    stopwatch.start ();
+
+    if (modes[current] > 0)
+    {
+        alarm.start (clockTime ());
+    }
+
+    state = State::Running;
+}
+
+void pause ()
+{
+    stopwatch.stop ();
+    alarm.stop ();
+    state = State::Stopped;
+}
+
 void reset ()
 {
-    state      = Stopped;
-    banked     = 0;
-    showingLap = false;
+    stopwatch.reset ();
+    lapShown.stop ();
+    state = State::Stopped;
 }
 
 // A timer has reached zero: say so, and sound the buzzer three times.
 void finish ()
 {
-    state = Done;
+    stopwatch.stop ();
+    state = State::Done;
     display.show ("donE");
 
     for (int beep = 0; beep < 3; ++beep)
@@ -119,42 +125,34 @@ void finish ()
     }
 }
 
-// The time counted so far, in milliseconds.
-unsigned long elapsed ()
-{
-    return state == Running ? banked + (millis () - startedAt) : banked;
-}
-
 // What the clock shows: the time counted or, for a timer, the time left.
-unsigned long clockTime ()
+adk::Millis clockTime ()
 {
-    unsigned long total = modes[current];
+    auto total = modes[current];
+    auto time  = stopwatch.elapsed ();
 
     if (total == 0)
     {
-        return elapsed ();
+        return time;
     }
 
-    return elapsed () >= total ? 0 : total - elapsed ();
+    return time < total ? total - time : 0;
 }
 
 void showClock ()
 {
-    if (state == Done)
+    if (state != State::Done)
     {
-        return;
+        showTime (lapShown.isRunning () ? lap : clockTime ());
     }
-
-    showingLap = showingLap && millis () - lapAt < 3000;
-    showTime (showingLap ? lap : clockTime ());
 }
 
 // Seconds and tenths, such as " 12.3", with the dot lit after the seconds.
-void showTime (unsigned long ms)
+void showTime (adk::Millis ms)
 {
-    unsigned long tenths = (ms / 100) % 10000;
-    char          text [8];
+    int  tenths = ms / 100 % 10000;
+    char text [6];
 
-    snprintf (text, sizeof text, "%3lu.%lu", tenths / 10, tenths % 10);
+    snprintf (text, sizeof text, "%3d.%d", tenths / 10, tenths % 10);
     display.show (text);
 }
