@@ -17,8 +17,10 @@ parts:
 ideas:
   - The photoresistor, a resistor that light controls
   - A divider that turns resistance into a voltage
-  - Calibrating to the darkest and brightest
+  - Calibrating to the darkest and brightest, with a while loop
   - Smoothing a jumpy reading
+  - Keeping a number in range with min, max and constrain
+  - Big whole numbers, with long
 ---
 
 ## What you'll build
@@ -107,22 +109,41 @@ Open the Arduino IDE and choose **File → Examples → Adk → Lesson08LightMet
 
 What's new:
 
-- `adk::Led bar [] {{26}, {27}, {28}, {29}, {30}};` declares the five
-  LEDs as an array, one pair of braces per LED, so `bar[0]` is the red one
-  on pin 26 and `bar[4]` the white one on pin 30.
+- `adk::Array<adk::Led, 5> bar {26, 27, 28, 29, 30};` makes the five LEDs
+  as an `adk::Array`, as in Lesson 4: `<adk::Led, 5>` says it holds five
+  LEDs, and each pin number makes one of them. `bar[0]` is the red one on
+  pin 26 and `bar[4]` the white one on pin 30.
 - `adk::Smoother light {3};` is not a part of the circuit but a helper.
   `light.add (reading)` takes a new reading and gives back the smoothed
   value. The 3 means each reading moves it 1/2³, an eighth, of the way.
-- `learnTheRoom ()` runs once, from `setup ()`. For five seconds, measured
-  with `millis ()` as in Lesson 3, it keeps the lowest reading in `darkest`
-  and the highest in `brightest`. It calls `adk::update ()` all the while,
-  so the white LED keeps blinking.
+- `learnTheRoom ()` runs once, from `setup ()`. It starts `learning`, an
+  `adk::Timer` as in Lesson 3, for five seconds.
+- `while (learning.isRunning ())` is a **`while` loop**. It asks its
+  question, and while the answer is true it runs the lines in its braces,
+  then comes back to ask again. So it goes round and round, as fast as it
+  can, until the timer runs out. Each time round it calls `adk::update ()`,
+  which moves the timer on and keeps the white LED blinking; without that,
+  the timer would never run out and the loop would never end.
+- `min (darkest, reading)` gives the smaller of two numbers, and `max ()`
+  the larger. So `darkest` can only go down, and `brightest` only up.
 - `map (level, darkest, brightest, 0, 6)` is Arduino's scaling function: it
   does for any range what `knob.read (0, 255)` did in Lesson 7. The bar can
-  show six things, none to five LEDs lit, so the range is cut into six.
-- The `for` loop visits each LED in turn, and `bar[led].set (led < lit)`
-  lights it if it is below the top of the bar and turns it off otherwise.
-  With `lit` at 2, `bar[0]` and `bar[1]`, red and yellow, are lit.
+  show six things, from none to five LEDs lit, so the range is cut into six
+  slices, 0 to 5. Only a level at the very top, or brighter than anything
+  the meter learned, would come out as 6 or more, and a darker one below 0.
+  `constrain (number, 0, 5)` keeps the answer between 0 and 5: below 0
+  becomes 0, and above 5 becomes 5.
+- `long lit` holds what `map ()` gives back: a `long`, a whole number with
+  far more room than an `int`. An `int` on the Mega stops at 32 767; a
+  `long` goes past two billion. `map ()` needs the room because it
+  multiplies before it divides: scaling a reading of 1023 to 0 to 255 goes
+  through 1023 × 255 = 260 865 on the way.
+- The counting `for` loop, as in Lesson 6, visits each LED in turn, and
+  `bar[led].set (led < lit)` lights it if it is below the top of the bar
+  and turns it off otherwise. With `lit` at 2, `bar[0]` and `bar[1]`, red
+  and yellow, are lit.
+- `adk::println (Serial, "level:", level);` sends the smoothed level to the
+  Serial Plotter, as a line named *level*.
 
 ## Upload it
 
@@ -134,6 +155,13 @@ When the blinking stops, the bar shows the light. Cover the sensor and the
 LEDs go out one by one, red last; uncover it and they come back. Open
 **Tools → Serial Plotter** at 9600 baud to watch the smoothed level as a
 line that dips when your hand passes over.
+
+What did you predict for swapping the two resistors? The bar would run
+backwards. A1 would then see the photoresistor's share of the 5 V instead
+of the 10 kΩ's, and the photoresistor's share shrinks as the light grows:
+more light, lower reading. The meter would learn that just as well, but a
+brighter room would empty the bar instead of filling it. The first
+challenge below lets you check.
 
 ## If it doesn't work
 
@@ -155,10 +183,10 @@ line that dips when your hand passes over.
     an *exponential moving average*: old readings fade away, never quite
     vanishing.
 
-    `adk::Led`'s `blink ()` keeps time in `adk::update ()`, which is why
-    `learnTheRoom ()` calls it on every turn of its loop. The first time
-    `showBar ()` calls `set ()`, the blinking stops and the LED does as it's
-    told.
+    The timer and the blinking LED both keep time in `adk::update ()`,
+    which is why `learnTheRoom ()` calls it on every turn of its `while`
+    loop. The first time `showBar ()` calls `set ()`, the blinking stops and
+    the LED does as it's told.
 
 ## Make it yours
 
@@ -168,8 +196,9 @@ line that dips when your hand passes over.
 2. **Night light.** Make the bar grow as the room gets darker: swap the
    `0` and the `6` in the `map ()`.
 3. **One dot.** Light just the LED at the top of the bar, like a needle:
-   `bar[led].set (led == lit - 1);`.
+   `bar[led].set (led == lit - 1);`. What does the needle do in the
+   darkest slice?
 4. **Automatic lamp.** Add Lesson 7's white LED on pin 3 as an
    `adk::PwmOutput`, and make it brighter the darker the room gets, with
    `map (level, darkest, brightest, 255, 0)`. Keep the result between 0 and
-   255 with `constrain ()`.
+   255 with `constrain ()`, as `showBar ()` does.
