@@ -13,6 +13,7 @@ repository. Everything builds with `make`, and everything it builds goes in
 | `tests/` | Host tests, a fake Arduino core, and the style check |
 | `docs/` | This website: pages in Markdown, lessons in `docs/lessons/` |
 | `docs/_theme/` | The site's theme, build hook, drawing engine and course list |
+| `boards/` | ADK Boards, the Arduino IDE board package: `avr/` is the platform, `toolchain.json` its compiler downloads |
 
 ## Commands
 
@@ -20,12 +21,15 @@ repository. Everything builds with `make`, and everything it builds goes in
 |---|---|
 | `make test` | Build and run the host tests |
 | `make sanitize` | The same tests under AddressSanitizer and UBSan |
+| `make toolchain` | Fetch the C++23 avr-gcc the examples build with |
 | `make examples` | Compile every example for the Mega, failing on any library warning |
+| `make pins` | Check each example claims exactly the pins its lesson's circuit wires |
 | `make size` | Flash and RAM used by each example |
 | `make site` | Build this website into `build/site` |
 | `make pdf` | Print every lesson to `build/site/pdf` |
 | `make serve` | Preview the website at <http://127.0.0.1:8000> |
 | `make style` | Check the mechanical rules of the [style guide](STYLE.md) |
+| `make boards` | Install the site's ADK Boards package into `build/boards` and compile two lessons with it |
 | `make check` | All of the above, as CI runs it |
 | `make upload EXAMPLE=… PORT=…` | Upload one example to a Mega |
 
@@ -54,3 +58,12 @@ that starts with how to wire the part, its source, host tests, and a line in
 5. `make pins site` must pass. `make pins` runs each sketch's `setup ()` on
    the host and fails if the pins it claims and the pins the circuit wires
    differ by a single pin.
+
+## The board package
+
+`make site` also writes `package_adk_index.json` and the ADK Boards archive
+into the site. The package takes the library's version: when
+`library.properties` changes version, change `boards/avr/platform.txt` to
+match, or the site will not build. To add a compiler for another computer,
+run the Toolchain workflow and add the entries it prints to
+`boards/toolchain.json`.

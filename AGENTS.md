@@ -47,5 +47,6 @@ repository. Read these before changing anything:
 | `make examples` | Compile every example for the Mega |
 | `make pins` | Check each sketch claims exactly the pins its circuit wires |
 | `make site` / `make pdf` | The website, and every lesson as a PDF |
+| `make boards` | Install the site's ADK Boards package into `build/` and compile with it |
 | `make style` | The mechanical style rules |
 | `make check` | Everything CI runs |
