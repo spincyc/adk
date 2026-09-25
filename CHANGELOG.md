@@ -25,7 +25,12 @@ A new start, built on the library's original 2021 design.
   sketch that compiles for the Mega.
 - **Website.** A new design where each lesson is both a web page and a PDF,
   with pencil drawings generated from one description of the build and
-  checked against the lesson's code.
+  checked against the lesson's code. Wires route round parts and labels;
+  every part has a home on the breadboard, so each lesson's steps say what
+  to keep from the one before, what to take out and what to add.
+- **Measure it.** Every lesson ends with readings to take with a
+  multimeter, each drawn with the probes on the exact holes and the reading
+  expected, to turn the lesson's idea into something you can see.
 - **ADK Boards.** A package for the Arduino IDE's Boards Manager, published
   with the website: the Mega 2560, built as C++23 with avr-gcc 16, for
   Windows, macOS and Linux (x86-64 and ARM).
