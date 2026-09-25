@@ -16,7 +16,7 @@ parts:
 ideas:
   - How a character LCD shows text
   - Contrast and backlight
-  - print () and setCursor ()
+  - Writing with print (), and moving with at ()
   - Drawing your own characters
 ---
 
@@ -125,23 +125,31 @@ What's new:
 
 - `adk::Lcd lcd {31, 32, 33, 34, 35, 36};` names the screen and its six
   pins, in the order RS, E, D4, D5, D6, D7.
-- `lcd.print ("Hello, LCD! ");` writes text where the cursor is, and moves
-  the cursor along. `print ()` works just like `Serial.print ()` from
-  Lesson 2, numbers included.
-- `lcd.setCursor (column, 1);` moves the cursor. Columns count from 0 to 15
-  and rows from 0 to 1, so `(0, 0)` is the top-left corner.
-- `lcd.createChar (1, heart);` stores a picture in slot 1, and
+- `constexpr uint8_t heart [8] {...};` is a plain list of eight bytes, one
+  for each row of dots: the `[8]` says how many. It is what `createChar ()`
+  asks for. Each `0b` number is written in binary, as in the picture above.
+- `lcd.createChar (1, heart);` stores the picture in slot 1, and
   `lcd.write (1);` shows it. The sketch uses slots 1 to 3.
+- `lcd.print ("Hello, LCD! ");` writes text where the cursor is, and moves
+  the cursor along. It works just like `Serial.println ()`, numbers
+  included, except that it doesn't end the line.
+- `lcd.at (column, 1)` moves the cursor. Columns count from 0 to 15 and rows
+  from 0 to 1, so `(0, 0)` is the top-left corner. It hands back the screen
+  itself, so `lcd.at (column, 1).print (' ');` prints a space right there.
+  (Arduino's own LCD library calls this move `setCursor ()`; ADK has that
+  too.)
 - `takeStep ()` rubs out the figure with a space, moves one column right (the
-  `% 16` wraps 16 back round to 0), and draws it again, standing on even
-  columns and striding on odd ones.
+  `% 16` wraps 16 back round to 0), and draws it again.
+  `column % 2 == 0 ? 2 : 3` picks slot 2, standing, on even columns and
+  slot 3, striding, on odd ones.
 
 ## Upload it
 
-Plug the Mega in before you upload, and test your prediction. The backlight
-glows as soon as there is power. With the knob at one end, the top row is a
-line of solid blocks, because every dot is dark; at the other end, the screen
-is blank. Nothing has talked to the screen yet: the knob alone decides.
+Plug the Mega in before you upload, and check your prediction. The
+backlight glows as soon as there is power. With the knob at one end, the top
+row is a line of solid blocks, because every dot is dark; at the other end,
+the screen is blank. Did you predict both? Nothing has talked to the screen
+yet: the knob alone decides.
 
 Now upload the sketch as in [Lesson 1](../01-blink/index.md#upload-it), and
 turn the knob slowly until the letters are sharp and the empty squares behind
@@ -192,6 +200,7 @@ last column it starts again at the left.
 3. **Your own characters.** Design a smiley, a rocket or a space invader on
    squared paper, five squares across and eight down, and turn each row into
    `0b` and five digits. There are eight slots; the sketch leaves 4 to 7 free.
-4. **A clock of sorts.** Show how many seconds the Mega has been running, in
-   the top-right corner: `lcd.print (millis () / 1000);` Why does the old
-   number sometimes leave a digit behind, and how could you rub it out?
+4. **A clock of sorts.** Show how many seconds the Mega has been running in
+   the three free columns at the top right, once a second:
+   `lcd.at (13, 0).print (millis () / 1000);` What goes wrong after 999
+   seconds, and how could you make room?

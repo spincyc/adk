@@ -1,5 +1,6 @@
 // Lesson 14: Thermometers
-// The DHT11, the thermistor and the 18B20 side by side on the LCD, updated every second.
+// The DHT11, the thermistor and the 18B20 side by side on the LCD, updated
+// every second.
 
 #include <Adk.h>
 
@@ -9,7 +10,7 @@ adk::Thermistor thermistor {A2};
 adk::Ds18b20    probe      {17};
 adk::Every      refresh    {1000};
 
-const uint8_t degree = 223;   // the degree sign in the LCD's own character set
+constexpr char degree = char (223);    // the LCD's own degree sign
 
 void setup ()
 {
@@ -26,26 +27,25 @@ void loop ()
     }
 }
 
+// The spaces at the end of each row rub out what a longer number left.
 void showReadings ()
 {
-    lcd.setCursor (0, 0);
-    lcd.print ("DHT11 ");
-    printReading (dht.ok (), dht.temperature (), 0);
-    lcd.write (degree);
-    lcd.print ("C  ");
-    printReading (dht.ok (), dht.humidity (), 0);
+    lcd.at (0, 0).print ("DHT11 ");
+    showReading (dht.ok (), dht.temperature (), 0);
+    adk::print (lcd, degree, "C  ");
+    showReading (dht.ok (), dht.humidity (), 0);
     lcd.print ("%   ");
 
-    lcd.setCursor (0, 1);
-    lcd.print ("NTC ");
-    printReading (true, thermistor.celsius (), 1);
+    lcd.at (0, 1).print ("NTC ");
+    showReading (true, thermistor.celsius (), 1);
     lcd.print (" DS ");
-    printReading (probe.ok (), probe.celsius (), 1);
+    showReading (probe.ok (), probe.celsius (), 1);
     lcd.print ("   ");
 }
 
-// A reading, or two dashes while that thermometer has nothing good to say.
-void printReading (bool ok, float value, uint8_t decimals)
+// A reading with this many decimals, or two dashes while that thermometer
+// has nothing good to say.
+void showReading (bool ok, float value, int decimals)
 {
     if (ok)
     {

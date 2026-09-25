@@ -1,5 +1,6 @@
 // Lesson 15: Weather Station
-// Temperature and humidity on the LCD, a cold, comfy or hot light, and a heat alarm set by a knob.
+// Temperature and humidity on the LCD, a cold, comfy or hot light, and a
+// heat alarm set with a knob.
 
 #include <Adk.h>
 
@@ -8,26 +9,21 @@ adk::Dht11       dht     {16};
 adk::RgbLed      light   {5, 6, 7};
 adk::AnalogInput knob    {A0};
 adk::Buzzer      buzzer  {12};
-adk::Every       refresh {250};
-adk::Every       beat    {1000};
+adk::Every       refresh {250};     // the knob, the alarm and the screen
+adk::Every       beat    {1000};    // the alarm's beeps
 
-enum Comfort
-{
-    Cold,
-    Comfy,
-    Hot
-};
+enum class Comfort { Cold, Comfy, Hot };
 
-// Comfy is from 18 to 25 degrees. The mood only changes once the temperature
-// is a whole margin past a boundary, so a reading that wobbles on the edge
-// can't make the light flicker.
-const float comfyLow  = 18;
-const float comfyHigh = 25;
-const float margin    = 1;
+// Comfy is from 18 to 25 degrees. The mood only changes once the
+// temperature is a whole margin past a boundary, so a reading that wobbles
+// on the edge can't make the light flicker.
+constexpr float comfyLow  = 18;
+constexpr float comfyHigh = 25;
+constexpr float margin    = 1;
 
-const uint8_t degree = 223;
+constexpr char degree = char (223);    // the LCD's own degree sign
 
-Comfort comfort = Comfy;
+Comfort comfort = Comfort::Comfy;
 long    alarmAt = 30;
 bool    ringing = false;
 
@@ -50,7 +46,7 @@ void loop ()
     if (refresh.ticked ())
     {
         alarmAt = knob.read (10, 40);
-        checkAlarm ();
+        checkAlarm (dht.temperature ());
         showWeather ();
     }
 
@@ -60,25 +56,26 @@ void loop ()
     }
 }
 
+// The rules in the lesson's table: the mood changes only from where it is.
 void judgeComfort (float celsius)
 {
-    Comfort was = comfort;
+    auto was = comfort;
 
-    if (comfort == Comfy && celsius >= comfyHigh + margin)
+    if (comfort == Comfort::Comfy && celsius >= comfyHigh + margin)
     {
-        comfort = Hot;
+        comfort = Comfort::Hot;
     }
-    else if (comfort == Comfy && celsius <= comfyLow - margin)
+    else if (comfort == Comfort::Comfy && celsius <= comfyLow - margin)
     {
-        comfort = Cold;
+        comfort = Comfort::Cold;
     }
-    else if (comfort == Hot && celsius <= comfyHigh - margin)
+    else if (comfort == Comfort::Hot && celsius <= comfyHigh - margin)
     {
-        comfort = Comfy;
+        comfort = Comfort::Comfy;
     }
-    else if (comfort == Cold && celsius >= comfyLow + margin)
+    else if (comfort == Comfort::Cold && celsius >= comfyLow + margin)
     {
-        comfort = Comfy;
+        comfort = Comfort::Comfy;
     }
 
     if (comfort != was)
@@ -88,12 +85,10 @@ void judgeComfort (float celsius)
 }
 
 // The alarm rings once it's as hot as the knob says, and stops once it's a
-// margin cooler again, or the knob is turned up past the temperature. Until
-// the first reading the temperature is 0, too cold to ring.
-void checkAlarm ()
+// margin cooler again, or the knob is turned up past the temperature.
+// Until the first reading the temperature is 0, too cold to ring.
+void checkAlarm (float celsius)
 {
-    float celsius = dht.temperature ();
-
     if (!ringing && celsius >= alarmAt)
     {
         ringing = true;
@@ -106,38 +101,34 @@ void checkAlarm ()
     }
 }
 
+// The names are padded with spaces, so a short one rubs out a longer one.
 void showWeather ()
 {
-    lcd.setCursor (0, 0);
+    lcd.at (0, 0);
 
     if (dht.ok ())
     {
         lcd.print (dht.temperature (), 0);
-        lcd.write (degree);
-        lcd.print ("C ");
+        adk::print (lcd, degree, "C ");
         lcd.print (dht.humidity (), 0);
-        lcd.print ("% ");
-        lcd.print (nameOf (comfort));
+        adk::print (lcd, "% ", nameOf (comfort));
     }
     else
     {
         lcd.print ("Measuring...    ");
     }
 
-    lcd.setCursor (0, 1);
-    lcd.print (ringing ? "TOO HOT! " : "Alarm at ");
-    lcd.print (alarmAt);
-    lcd.write (degree);
-    lcd.print ("C   ");
+    adk::print (lcd.at (0, 1), ringing ? "TOO HOT! " : "Alarm at ",
+                alarmAt, degree, "C   ");
 }
 
 adk::Color colorOf (Comfort mood)
 {
     switch (mood)
     {
-        case Cold: return adk::color::blue;
-        case Hot:  return adk::color::red;
-        default:   return adk::color::green;
+        case Comfort::Cold: return adk::color::blue;
+        case Comfort::Hot:  return adk::color::red;
+        default:            return adk::color::green;
     }
 }
 
@@ -145,8 +136,8 @@ const char* nameOf (Comfort mood)
 {
     switch (mood)
     {
-        case Cold: return "Cold   ";
-        case Hot:  return "Hot    ";
-        default:   return "Comfy  ";
+        case Comfort::Cold: return "Cold   ";
+        case Comfort::Hot:  return "Hot    ";
+        default:            return "Comfy  ";
     }
 }

@@ -20,6 +20,7 @@ ideas:
   - Resistance that changes with heat
   - A whole thermometer on one chip
   - Comparing sensors
+  - Numbers with decimals, float
 ---
 
 ## What you'll build
@@ -116,18 +117,27 @@ What's new:
   readings on their own, inside `adk::update ()`, so the sketch just asks for
   the latest: `dht.temperature ()`, `dht.humidity ()`,
   `thermistor.celsius ()` and `probe.celsius ()`.
+- Each of those hands back a **`float`**, a number with decimals, such as
+  23.4. An `int` holds only whole numbers: it would keep the 23 and lose the
+  .4. `showReading ()` takes its reading as `float value`.
+- `lcd.print (value, 1)` prints a `float` with one digit after the point,
+  rounding the rest, so 23.46 shows as 23.5. With 0 it shows whole numbers.
 - `dht.ok ()` and `probe.ok ()` say whether the latest reading arrived whole.
   Until the first one, or if the sensor is missing, they are false and
-  `printReading ()` shows `--` instead of a number.
-- `lcd.print (value, 1)` prints a number with one digit after the point.
-- `lcd.write (degree);` shows the character with code 223, which on this
-  screen is a little degree sign.
+  `showReading ()` shows `--` instead of a number.
+- `char (223)` is the character with code 223, which on this screen is a
+  little degree sign, and `constexpr char degree` gives it a name. A `char`
+  is one character; `const char*`, from Lesson 3, is a whole piece of text.
+- `adk::print (lcd, degree, "C  ");` prints its pieces in a row, like
+  `adk::println ()` from Lesson 2, but on the screen and without ending the
+  line.
 - The spaces printed at the end of each row rub out anything left over when a
   number gets shorter, say from 10.0 to 9.9.
 
 ## Upload it
 
-Upload the sketch. After a second the screen fills in, something like:
+Upload the sketch. Within a couple of seconds the screen fills in, something
+like this (the DHT11 shows `--` until its first reading):
 
 ```text
 DHT11 23°C  45%
@@ -135,10 +145,11 @@ NTC 23.4 DS 23.1
 ```
 
 The three temperatures should agree within a degree or two. Now test your
-prediction: pinch the thermistor's bead. Its reading climbs within seconds, a
-degree or more every few seconds, while the other two stay put. Let go and it
-drifts back. Breathe on the DHT11 and its humidity leaps up by ten or twenty
-percent, then settles over the next minute.
+prediction: pinch the thermistor's bead. Only its reading changes: it climbs
+within seconds, a degree or more every few seconds, while the other two stay
+put, and when you let go it drifts back, more slowly than it rose. Breathe
+on the DHT11 and it's the humidity that jumps, by ten or twenty percent, then
+settles over the next minute; its temperature moves much less.
 
 ## If it doesn't work
 
@@ -168,12 +179,15 @@ percent, then settles over the next minute.
 ## Make it yours
 
 1. **Fahrenheit.** Show the thermistor in °F with `thermistor.fahrenheit ()`.
-   For the others, °F = °C × 9 / 5 + 32.
-2. **A race on the Serial Plotter.** Print the three temperatures on one line,
-   separated by spaces, every second, and open **Tools → Serial Plotter**.
-   Pinch, breathe and blow, and watch which line reacts first.
+   For the others, °F = °C × 9 / 5 + 32. Keep it all in `float`s: in whole
+   numbers, 9 / 5 is just 1.
+2. **A race on the Serial Plotter.** Every second, print the three
+   temperatures on one line with one `adk::println (Serial, ...)`, separated
+   by spaces, and open **Tools → Serial Plotter**. Pinch, breathe and blow,
+   and watch which line reacts first.
 3. **Highs and lows.** Keep the lowest and highest thermistor temperatures
-   since the Mega started, and show them on the bottom row instead.
+   since the Mega started, in two `float` variables, and show them on the
+   bottom row instead.
 4. **Tune your thermistor.** If it disagrees with the 18B20 by more in your
    warm hand than at room temperature, its beta may not be 3950. Try
    `adk::Thermistor thermistor {A2, 3435};` and other values from 3000 to

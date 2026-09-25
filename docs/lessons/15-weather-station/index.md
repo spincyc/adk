@@ -64,8 +64,9 @@ turns the knob's 0 to 1023 into a temperature from 10 to 40 °C. Halfway round,
 ## How the station works
 
 The station keeps two things in mind: the room's **mood**, and whether the
-**alarm** is ringing. Each changes only by these rules, checked every time a
-new reading arrives.
+**alarm** is ringing. Each changes only by these rules. The mood is judged
+each time a new reading arrives, every two seconds; the alarm is checked four
+times a second, so it answers the knob straight away.
 
 | Mood now | Changes when | To |
 |---|---|---|
@@ -110,24 +111,33 @@ Open **File → Examples → Adk → Lesson15WeatherStation**:
 
 <!-- sketch -->
 
-Reading it from the top:
+What's new:
 
 - The parts: the screen and DHT11 you know, `light` (the RGB LED, from
   Lesson 4), `knob` (Lesson 7), `buzzer` (Lesson 3), and two beats: `refresh`
-  four times a second for the screen, `beat` once a second for the alarm.
-- `enum Comfort` gives the three moods names, so the sketch can say
-  `comfort == Hot` instead of remembering that hot is 2.
-- `loop ()` does three jobs. When a new reading arrives,
-  `judgeComfort ()` decides the mood. Four times a second it reads the knob,
-  checks the alarm and redraws the screen. And while the alarm rings, it beeps
-  once a second.
-- `judgeComfort ()` is the table above, written in C++. The mood changes only
-  from where it is now, and `light.fadeTo ()` takes a second to glide to the
-  new color.
+  four times a second for the knob, the alarm and the screen, and `beat` once
+  a second for the alarm's beeps.
+- `enum class Comfort { Cold, Comfy, Hot };` names the three moods, as
+  `State` named the duel's states in Lesson 3.
+- `comfyLow`, `comfyHigh` and `margin` are `float`s, like the readings they
+  are compared with, so a margin of half a degree would work too.
+- `loop ()` does three jobs. When a new reading arrives, `judgeComfort ()`
+  decides the mood. Four times a second it reads the knob, checks the alarm
+  and redraws the screen. And while the alarm rings, it beeps once a second.
+- `judgeComfort ()` is the first table above, written in C++. The mood
+  changes only from where it is now. `auto was = comfort;` remembers the mood
+  it had, so the light only fades when the mood really changes, and
+  `light.fadeTo ()` takes a second to glide to the new color.
 - `checkAlarm ()` has the same kind of gap: it starts ringing at the setting,
-  and stops a degree below it.
-- `colorOf ()` and `nameOf ()` turn a mood into a color and a word. The words
-  are padded with spaces, so a short word rubs out a longer one.
+  and stops a degree below it. `beat.restart ()` starts the once-a-second
+  beeps from that moment.
+- `showWeather ()` writes each row with `lcd.at ()` and `adk::print ()`.
+  `ringing ? "TOO HOT! " : "Alarm at "` picks how the bottom row starts.
+- `colorOf ()` and `nameOf ()` turn a mood into a color and a word, each with
+  a `switch`. A `case` that `return`s needs no `break`, because `return`
+  leaves the function at once. `default:` catches every value without a
+  `case` of its own, here Comfy. The words are padded with spaces, so a short
+  word rubs out a longer one.
 
 ## Upload it
 
@@ -145,7 +155,9 @@ prediction: set the alarm to 28 °C and warm the DHT11 with your hands and
 breath. At 26 °C the light fades to red and the screen says **Hot**. If it
 reaches 28 °C, the buzzer beeps every second and the bottom row reads
 **TOO HOT!** Turn the knob up past the temperature and it stops. Let the sensor
-cool, and the light stays red at 25 °C, turning green only at 24 °C.
+cool, and the light stays red at 25 °C, turning green only at 24 °C. So the
+light turns red at 26 °C and green again at 24 °C: not the same temperature
+both ways, which is the gap doing its job.
 
 ## If it doesn't work
 
