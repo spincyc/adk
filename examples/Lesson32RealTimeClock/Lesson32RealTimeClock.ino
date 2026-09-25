@@ -25,44 +25,30 @@ void loop ()
 
     if (tick.ticked ())
     {
-        showDateAndTime (rtc.now ());
+        auto now = rtc.now ();
+
+        if (rtc.ok ())
+        {
+            showDateAndTime (now);
+        }
+        else
+        {
+            adk::print (lcd.at (0, 0), "No clock found! ");
+            adk::print (lcd.at (0, 1), "Check pins 20,21");
+        }
     }
 }
 
+// Each two-digit number is its tens, then its ones, as in Lesson 10, so
+// nine minutes past eight shows as 20:09, not 20:9.
 void showDateAndTime (adk::DateTime now)
 {
-    lcd.setCursor (0, 0);
+    adk::print (lcd.at (0, 0), "Date  ", now.year, '-',
+                now.month / 10, now.month % 10, '-',
+                now.day / 10,   now.day % 10);
 
-    if (!rtc.ok ())
-    {
-        lcd.print ("No clock found! ");
-        lcd.setCursor (0, 1);
-        lcd.print ("Check pins 20,21");
-        return;
-    }
-
-    lcd.print ("Date  ");
-    lcd.print (now.year);
-    lcd.print ('-');
-    printTwoDigits (now.month);
-    lcd.print ('-');
-    printTwoDigits (now.day);
-
-    lcd.setCursor (0, 1);
-    lcd.print ("Time    ");
-    printTwoDigits (now.hour);
-    lcd.print (':');
-    printTwoDigits (now.minute);
-    lcd.print (':');
-    printTwoDigits (now.second);
-}
-
-void printTwoDigits (uint8_t value)
-{
-    if (value < 10)
-    {
-        lcd.print ('0');
-    }
-
-    lcd.print (value);
+    adk::print (lcd.at (0, 1), "Time    ",
+                now.hour / 10,   now.hour % 10,   ':',
+                now.minute / 10, now.minute % 10, ':',
+                now.second / 10, now.second % 10);
 }

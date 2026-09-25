@@ -102,32 +102,39 @@ Open the Arduino IDE and choose **File → Examples → Adk → Lesson32RealTime
 
 What's new:
 
-- `adk::Rtc rtc {};` is the clock module. It needs no pin numbers: I2C
+- `adk::Rtc rtc;` is the clock module. It needs no pin numbers: I2C
   always uses pins 20 and 21.
 - `rtc.isRunning ()` is false for a clock that has never been set, or whose
   cell went flat. Only then does the sketch set it, with
   `rtc.set (adk::compiledAt ())`. A clock that is already running is left
   alone, so resetting the Mega never throws away the right time.
-- `rtc.now ()` asks the chip for the date and time, and hands them back as an
-  `adk::DateTime`: `now.year`, `now.month`, `now.day`, `now.hour`,
-  `now.minute` and `now.second`, on the 24-hour clock.
 - `adk::Every tick {200};` from Lesson 11 reads the clock five times a
   second, so the seconds on the screen change within a fifth of a second of
   the real ones.
-- `printTwoDigits ()` adds a leading zero, so nine minutes past eight shows as
-  `20:09`, not `20:9`.
-- `rtc.ok ()` is false if the chip didn't answer. The screen says so, and
-  which pins to check.
+- `auto now = rtc.now ();` asks the chip for the date and time, and keeps
+  them in `now`, an `adk::DateTime`: `now.year`, `now.month`, `now.day`,
+  `now.hour`, `now.minute` and `now.second`, on the 24-hour clock.
+- `rtc.ok ()` says whether the chip answered just then. If it didn't, the
+  screen says so, and which pins to check.
+- `showDateAndTime ()` prints each row with one `adk::print` at
+  `lcd.at (0, 0)` or `lcd.at (0, 1)`, as in Lesson 13. `now.minute / 10` is
+  the tens digit and `now.minute % 10` the ones, the trick from Lesson 10,
+  so nine minutes past eight shows as `20:09`, not `20:9`.
 
 ## Upload it
 
-Upload the sketch and look at the LCD. If you see a row of blocks or nothing,
-turn the knob until the text is sharp. The top row shows the date, the bottom
-row the time, and the seconds tick.
+Upload the sketch and look at the LCD. If you see a row of blocks or
+nothing, turn the contrast knob until the text is sharp. The top row shows
+the date, the bottom row the time, and the seconds tick.
 
 The clock will be a few seconds slow: the time it took to upload after
-compiling. Now test your prediction: unplug the USB cable, wait, and plug it
-back in. The time should still be right.
+compiling. Now test your prediction: unplug the USB cable for a minute, and
+plug it back in.
+
+You predicted what the screen would show. It shows the right time. While
+the Mega was off, the coin cell kept the clock chip counting, and when the
+sketch started again, `rtc.isRunning ()` was true, so it left the time
+alone.
 
 ## If it doesn't work
 
@@ -153,8 +160,9 @@ back in. The time should still be right.
 
 ## Make it yours
 
-1. **Month names.** Show the date as `24 Sep 2026`. Make an array of the
-   twelve names and pick one with `now.month - 1`.
+1. **Month names.** Show the date as `24 Sep 2026`. Make an `adk::Array` of
+   the twelve names, each a `const char*`, and pick one with
+   `now.month - 1`.
 2. **Twelve hours.** Show the time on the 12-hour clock with `am` or `pm`.
    What should midnight and noon show?
 3. **Good morning.** Use the bottom row for a greeting that changes with
