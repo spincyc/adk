@@ -13,9 +13,11 @@ namespace adk {
         uint16_t ms;
     };
 
-    // A passive buzzer or small speaker between the pin and GND. It plays
-    // tones and whole melodies while the sketch carries on. Tones use Timer 2,
-    // so PWM on pins 9 and 10 cannot be used alongside a Speaker.
+    // A passive buzzer or small speaker, wired from the pin through a 220 ohm
+    // resistor to GND. The kit's passive buzzer has a coil of only about
+    // 16 ohm, and the resistor keeps the pin's current safe. It plays tones
+    // and whole melodies while the sketch carries on. Tones use Timer 2, so
+    // PWM on pins 9 and 10 cannot be used alongside a Speaker.
     struct Speaker : Object
     {
         explicit Speaker (Pin pin);

@@ -59,7 +59,7 @@ circuit from an earlier lesson can often stay on the breadboard.
 | Dimmable LED | 3 |
 | Motor: enable, forward, backward | 4, 8, 9 |
 | RGB LED: red, green, blue | 5, 6, 7 |
-| Passive buzzer | 10 |
+| Passive buzzer (through 220 Ω) | 10 |
 | Relay | 11 |
 | Active buzzer | 12 |
 | Ultrasonic sensor: trigger, echo | 14, 15 |
