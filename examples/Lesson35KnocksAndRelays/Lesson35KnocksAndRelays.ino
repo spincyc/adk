@@ -10,59 +10,63 @@ adk::Relay  relay      {11};
 
 // Each gap between knocks is S, short, or L, long. The secret "SLS" is
 // knock-knock, pause, knock-knock.
-const char          Secret [] = "SLS";
-const unsigned long LongGap   = 400;   // ms: a gap this long or more is L
-const unsigned long Rattle    = 80;    // ms a knock shakes the spring
-const unsigned long Finished  = 1500;  // ms of quiet that end the rhythm
+constexpr char        secret [] = "SLS";
+constexpr adk::Millis longGap   = 400;     // a gap this long or more is L
+constexpr adk::Millis rattle    = 80;      // how long the spring rattles
+constexpr adk::Millis finished  = 1500;    // the quiet that ends a rhythm
 
-char          rhythm [16] = "";
-uint8_t       knocks      = 0;
-unsigned long lastKnock   = 0;
+adk::Vector<char, 16> rhythm;        // a letter for each gap heard so far
+adk::Stopwatch        sinceKnock;    // the time since the last knock
+adk::Timer            quiet;         // runs out once the knocking stops
 
 void setup ()
 {
     Serial.begin (9600);
     adk::setup (Serial);
+    sinceKnock.start ();
 }
 
 void loop ()
 {
     adk::update ();
 
-    unsigned long now = millis ();
-
-    if (tap.activated () && now - lastKnock > Rattle)
+    if (tap.activated () && sinceKnock.elapsed () > rattle)
     {
-        hearKnock (now);
+        hearKnock ();
     }
 
-    knockLight.set (now - lastKnock < 100);
+    knockLight.set (sinceKnock.elapsed () < 100);
 
-    if (knocks > 0 && now - lastKnock > Finished)
+    if (quiet.expired ())
     {
         judgeRhythm ();
     }
 }
 
 // Each knock after the first adds a letter for the gap before it.
-void hearKnock (unsigned long now)
+void hearKnock ()
 {
-    if (knocks > 0 && knocks < sizeof rhythm)
+    if (quiet.isRunning ())
     {
-        rhythm[knocks - 1] = (now - lastKnock < LongGap) ? 'S' : 'L';
-        rhythm[knocks]     = '\0';
+        rhythm.push_back (sinceKnock.elapsed () < longGap ? 'S' : 'L');
     }
 
-    knocks++;
-    lastKnock = now;
+    sinceKnock.restart ();
+    quiet.start (finished);
 }
 
 void judgeRhythm ()
 {
     Serial.print ("Heard ");
-    Serial.println (rhythm);
 
-    if (strcmp (rhythm, Secret) == 0)
+    for (char gap : rhythm)
+    {
+        Serial.print (gap);
+    }
+
+    Serial.println ();
+
+    if (isSecret ())
     {
         relay.toggle ();
         adk::wait (500);    // so the relay's click isn't heard as a knock
@@ -74,6 +78,18 @@ void judgeRhythm ()
         knockLight.off ();
     }
 
-    knocks    = 0;
-    rhythm[0] = '\0';
+    rhythm.clear ();
+}
+
+// Right if the rhythm has as many letters as the secret, all the same.
+bool isSecret ()
+{
+    bool same = rhythm.size () == strlen (secret);
+
+    for (size_t i = 0; same && i < rhythm.size (); ++i)
+    {
+        same = rhythm[i] == secret[i];
+    }
+
+    return same;
 }

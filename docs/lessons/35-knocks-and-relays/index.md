@@ -19,7 +19,7 @@ parts:
   - A small screwdriver for the relay's terminals
 ideas:
   - Timing a pattern of knocks
-  - A rhythm written as letters
+  - A rhythm written as letters, and checked letter by letter
   - Relays, and circuits that are separate
   - Never mains
 ---
@@ -45,14 +45,15 @@ this sketch reads the sensor with no debouncing, counts the first touch as the
 knock, and ignores the next 80 ms while the spring rattles.
 
 A secret knock is a **rhythm**: what matters is the gaps between knocks. The
-sketch times each gap with `millis ()` and writes it as a letter: **S** for a
-short gap, under 400 ms, and **L** for a long one. Knocks at 0, 250, 900 and
+sketch times each gap with a stopwatch and writes it as a letter: **S** for
+a short gap, under 400 ms, and **L** for a long one. Knocks at 0, 250, 900 and
 1150 ms leave gaps of 250, 650 and 250 ms:
 
 <p class="formula">250 → S, 650 → L, 250 → S: "SLS"</p>
 
 When 1.5 seconds pass with no knock, the rhythm is over, and the sketch
-compares its letters with the secret, `"SLS"`.
+compares its letters with the secret, `"SLS"`: the same number of letters,
+and the same letter in each place.
 
 The second idea is the **relay**: a switch worked by an electromagnet. When
 pin 11 goes high, a coil inside the blue box pulls a metal contact across with
@@ -114,14 +115,31 @@ What's new:
   which needs no wiring.
 - `adk::Relay relay {11};` is the relay module. `relay.toggle ()` switches it
   to whichever it isn't: on or off.
-- `rhythm` holds the letters heard so far, and `hearKnock ()` adds one for
-  the gap before each knock after the first.
-- `strcmp (rhythm, Secret)` compares two pieces of text, and is `0` when
-  they're the same.
-- `knockLight.set (now - lastKnock < 100);` lights the L LED for the first
-  tenth of a second after each knock.
-- After switching, the sketch waits half a second, so the relay's own click,
-  which shakes the table, isn't heard as a knock.
+- `char secret [] = "SLS"` is the secret, as text: a row of letters. The
+  times beside it are `adk::Millis`, ADK's type for a time in milliseconds.
+- `rhythm` is an `adk::Vector` of letters, as in Lesson 6. It starts empty,
+  `rhythm.push_back ()` adds the letter for each gap, and `rhythm.clear ()`
+  empties it for the next try.
+- `sinceKnock` is a stopwatch, as in Lesson 3, that starts again at every
+  knock. Its `elapsed ()` is the gap so far: a new touch sooner than `rattle`
+  is only the spring still shaking, and for the first 100 ms it keeps the
+  **L** LED lit. `setup ()` starts it, so the very first knock isn't taken
+  for a rattle.
+- `quiet` is a timer that `hearKnock ()` sets going for 1.5 seconds at
+  every knock. While it runs, a rhythm is under way, so each knock adds a
+  letter; the first knock of a rhythm has no gap before it, and adds none.
+  When it runs out, `quiet.expired ()`, the knocking has stopped, and
+  `judgeRhythm ()` decides.
+- `judgeRhythm ()` prints what it heard, a letter at a time with a
+  range-`for`, then switches the relay if it was the secret. After switching,
+  it waits half a second, so the relay's own click, which shakes the table,
+  isn't heard as a knock.
+- `isSecret ()` compares the rhythm with the secret. `strlen (secret)`
+  counts the secret's letters, and `same` starts out true only if the rhythm
+  has that many too. Then a counting `for` loop, as in Lesson 6, compares
+  them letter by letter, and goes on only while `same` is still true.
+  `size_t` is the type `rhythm.size ()` counts in, a whole number that is
+  never negative, so `i` is one too.
 
 ## Upload it
 
@@ -135,13 +153,19 @@ clicks, its own little LED lights, and the red lamp comes on. Knock the
 secret again to switch it off. A wrong rhythm makes the L LED flicker for a
 second, and the Serial Monitor shows what it heard, such as `Heard SSS`.
 
+You predicted what happens if you knock the secret twice as slowly. Knocks at
+0, 500, 1800 and 2300 ms leave gaps of 500, 1300 and 500 ms. All three are
+400 ms or more, so the sketch hears `LLL`, not `SLS`, and the lamp stays as
+it was. The sketch only knows short from long by the clock, not by how the
+gaps compare with each other. The second challenge below fixes that.
+
 ## If it doesn't work
 
 | What you see | Try this |
 |---|---|
 | The L LED never blinks | Check S goes to A12, + to 5V and − to GND. Tap the sensor itself, not just the table. |
 | The L LED blinks on its own, or stays lit | Your tap sensor may be active high: change `adk::ActiveLow` to `adk::ActiveHigh`. |
-| You hear the right rhythm but the sketch doesn't | Watch the Serial Monitor. Extra `S`s mean one knock counted twice: raise `Rattle` to 150. An `L` where you meant `S`: knock faster, or raise `LongGap`. |
+| You hear the right rhythm but the sketch doesn't | Watch the Serial Monitor. Extra `S`s mean one knock counted twice: raise `rattle` to 150. An `L` where you meant `S`: knock faster, or raise `longGap`. |
 | The relay clicks but the lamp stays dark | Check the battery's red lead is tight in COM, the wire from NO goes to j20, and the LED's long leg is in h24. Is the battery flat? |
 | The lamp is on while the relay is off | The wire is in NC. Move it to NO. |
 | The relay never clicks | Check S goes to pin 11, and + and − to the top rails. |
@@ -159,11 +183,13 @@ second, and the Serial Monitor shows what it heard, such as `Heard SSS`.
 
 ## Make it yours
 
-1. **Your own knock.** Change `Secret`. "Shave and a haircut, two bits" is
-   seven knocks: `"SSSSLS"`.
+1. **Your own knock.** Change `secret`. "Shave and a haircut, two bits" is
+   seven knocks, and knocked briskly its gaps are `"SSSSLS"`. Knock it more
+   slowly and some short gaps pass 400 ms and turn into `L`s, so pick your
+   speed and check on the Serial Monitor what the sketch hears.
 2. **Any speed.** Make the rhythm work fast or slow: instead of 400 ms, call a
    gap long when it's more than one and a half times the first gap.
 3. **Three strikes.** After three wrong rhythms, ignore all knocks for 30
    seconds, like the lockout in the Keypad Safe of Lesson 18.
 4. **A timer switch.** Make the lamp switch itself off one minute after the
-   secret knock turned it on.
+   secret knock turned it on, with an `adk::Timer` like `quiet`.
