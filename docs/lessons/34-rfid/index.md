@@ -74,6 +74,11 @@ Mega's 3.3V pin.
     header beside 5V. Never connect it to 5V: 5 V would damage the reader's
     chip.
 
+    Its signal wires still get 5 V from the Mega, which is more than the
+    chip is rated for. This course wires it that way, as most people do, and
+    the reader usually copes. For a build that has to last, protect those
+    wires as the box below and the [safety page](../../safety.md) explain.
+
 <!-- bench -->
 
 <!-- steps -->
@@ -85,7 +90,8 @@ Mega's 3.3V pin.
     has to last years, put a level shifter in those four wires, or a 1 kΩ
     resistor from the Mega's pin and a 2 kΩ resistor from the reader's pin to
     GND. The reader's MISO needs nothing: 3.3 V is already a high for the
-    Mega.
+    Mega. The [safety page](../../safety.md) lists this with the kit's other
+    parts that need care.
 
 When you are done, these are the connections your circuit makes:
 
@@ -101,15 +107,20 @@ What's new:
 
 - `adk::Rfid reader {53, 45};` is the reader, with its select pin on 53 and
   its reset on 45. It uses the SPI pins 50, 51 and 52 without being told.
+- `knownCards` is the list of cards the sketch knows, in an `adk::Array` as
+  in Lesson 4. Here the Array's type is written out: `<uint32_t, 2>` says
+  it holds two `uint32_t`s, whole numbers of 32 bits, big enough for a card's
+  number. Add a card, and the 2 becomes 3.
+- `quietBlue` is the dim blue the LED glows while it waits.
 - `reader.ok ()` says whether the reader answered when the Mega started. If
   it didn't, the LED shows yellow, so you can tell without a computer.
 - `reader.wasRead ()` is an event, like `wasPressed ()` in Lesson 2: true once
   each time a card arrives, not all the while it stays there.
-- `reader.uid ()` is the card's number, a `uint32_t`: a whole number of 32
-  bits. `Serial.println (card, HEX)` prints it in hexadecimal.
-- `KnownCards` is the list of cards the sketch knows, and `isKnown ()` goes
-  through it one card at a time: `for (uint32_t known : KnownCards)` means
-  "for each number in the list, call it `known`".
+- `auto card = reader.uid ();` is the card's number, and
+  `Serial.println (card, HEX)` prints it in hexadecimal.
+- `isKnown ()` goes through `knownCards` one card at a time with a
+  range-`for`, and says `true` as soon as it finds this card, or `false` if
+  none match.
 - `light.show ()` and `light.fadeTo ()` are the RGB LED from Lesson 4: a
   flash of green or red that fades back to blue over two seconds.
 
@@ -119,14 +130,15 @@ What's new:
    dim blue.
 2. Hold the card flat against the reader. The LED flashes red and fades back,
    and the Serial Monitor shows a line such as `Card 0x93A1F20B`.
-3. Copy that number into `KnownCards`, in place of `0x12345678`, and upload
+3. Copy that number into `knownCards`, in place of `0x12345678`, and upload
    again.
 4. Now the card makes the LED flash green. The fob still gets red: put its
    number in place of `0x9ABCDEF0` if it's yours too.
 
-Try your prediction: lift the card slowly away from the reader and hold it
-still, and find the furthest it still makes a flash. Most readers manage a
-few centimetres.
+Now try your prediction: lift the card slowly away from the reader, hold it
+still, and find the furthest it still makes a flash. You predicted 1, 5 or
+50 cm. Most readers manage a few centimetres, far nearer 5 than 50: further
+away, the card's coil can't catch enough of the field to power its chip.
 
 ## If it doesn't work
 
@@ -161,5 +173,6 @@ few centimetres.
 3. **Count them.** Count how many times each known card has been shown, and
    flash the LED that many times.
 4. **Learn a card.** Add a button on pin 22. When it's pressed, the next card
-   read is added to the list of known cards. You'll need a list you can
-   change, and a count of how many cards are in it.
+   read is added to the list of known cards. You'll need a list that can
+   grow: make `knownCards` an `adk::Vector<uint32_t, 10>`, as in Lesson 6,
+   and `push_back ()` each new card.

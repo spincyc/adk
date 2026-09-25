@@ -7,9 +7,9 @@ adk::Rfid   reader {53, 45};
 adk::RgbLed light  {5, 6, 7};
 
 // Your own cards' numbers, copied from the Serial Monitor.
-const uint32_t KnownCards [] = {0x12345678, 0x9ABCDEF0};
+constexpr adk::Array<uint32_t, 2> knownCards {0x12345678, 0x9ABCDEF0};
 
-const adk::Color Waiting = {0, 0, 40};
+constexpr adk::Color quietBlue {0, 0, 40};
 
 void setup ()
 {
@@ -18,7 +18,7 @@ void setup ()
 
     if (reader.ok ())
     {
-        light.show (Waiting);
+        light.show (quietBlue);
     }
     else
     {
@@ -33,21 +33,21 @@ void loop ()
 
     if (reader.wasRead ())
     {
-        uint32_t card = reader.uid ();
+        auto card = reader.uid ();
 
         Serial.print ("Card 0x");
         Serial.println (card, HEX);
 
         light.show (isKnown (card) ? adk::color::green : adk::color::red);
-        light.fadeTo (Waiting, 2000);
+        light.fadeTo (quietBlue, 2000);
     }
 }
 
 bool isKnown (uint32_t card)
 {
-    for (uint32_t known : KnownCards)
+    for (auto known : knownCards)
     {
-        if (card == known)
+        if (known == card)
         {
             return true;
         }
