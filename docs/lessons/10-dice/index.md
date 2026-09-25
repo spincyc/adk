@@ -3,7 +3,7 @@ lesson: 10
 title: Dice
 arc: Digits
 promise: Build an electronic die that spins, slows and lands on a number.
-time: 60 minutes
+time: 1 hour
 level: 2
 sketch: Lesson10Dice
 parts:
@@ -19,6 +19,7 @@ ideas:
   - Bits and bytes, written in binary
   - Seven-segment patterns, one byte per picture
   - Animation by shifting a bit along
+  - Splitting a number with / and %
 ---
 
 ## What you'll build
@@ -125,15 +126,24 @@ What's new:
 - `adk::ShiftRegister digit {37, 38, 39};` is the 74HC595, with its data,
   clock and latch pins in that order. `digit.write (byte)` sends the byte
   and latches it, so all eight outputs change at once.
-- `faces` is a table of six bytes, one per face of the die, written in
-  binary so you can see which segments each one lights.
+- `faces` is an `adk::Array` of six bytes, one per face of the die: a
+  `uint8_t`, from Lesson 4, is exactly one byte. They are written in binary
+  so you can see which segments each one lights.
 - `randomSeed (analogRead (A7));` is Lesson 3's trick: nothing is wired to
   A7, so its reading drifts, and the dice start differently every time.
   `random (6)` gives 0 to 5, which picks `faces[0]` (the 1) to `faces[5]`.
-- In `spin ()`, `step % 6` is the remainder after dividing by 6, so it
-  counts 0 to 5 and starts again, three times round. `1 << (step % 6)` lights
-  a, b, c, d, e, f in turn, and the wait grows from 20 to 156 milliseconds,
-  so the bar slows down.
+- In `spin ()`, `1 << (step % 6)` is a 1 moved `step % 6` places to the
+  left, so it lights a, b, c, d, e, f in turn. The wait grows from 20 to
+  156 milliseconds, so the bar slows down.
+- `step % 6` is the remainder after dividing by 6, as in Lesson 4, so it
+  counts 0 to 5 and starts again, three times round. Its partner is `/`,
+  which divides and throws the remainder away, as the octave knob did in
+  Lesson 9: `step / 6` would count the laps, 0, 1 and 2. Together they
+  **split a number**. Step 14 is 14 / 6 = 2 laps and 14 % 6 = 2 segments
+  more, segment c. With 10 in place of 6 they split a number into its
+  digits: 47 / 10 is 4, the tens, and 47 % 10 is 7, the ones. That is how
+  a display shows a number with more than one digit, and how Lesson 12's
+  stopwatch finds its seconds and tenths.
 
 ## Upload it
 
@@ -141,6 +151,11 @@ Upload the sketch. The digit shows a dash: just segment g, waiting. Press
 the button. A single bar runs round the rim three times, clockwise, slowing
 as it goes, and the digit lands on a number from 1 to 6. Press again for
 another roll.
+
+Your prediction: `1 << 3` is `0b00001000`, bit 3, which lights segment d,
+the bottom bar. As `step` counts up, the lit bit moves left, from a to b to
+c and on round, so the bar travels clockwise: along the top, down the
+right, along the bottom and up the left.
 
 ## If it doesn't work
 
@@ -177,5 +192,10 @@ another roll.
    still fair to call it a die?
 4. **Let the library draw.** Swap `adk::ShiftRegister` for
    `adk::SevenSegment`, which is wired the same way and already knows the
-   patterns: `digit.show (random (1, 7));`. What can't it do that your own
-   bytes could?
+   patterns: `digit.show (int (random (1, 7)));`. (`random ()` gives back
+   a `long`, and `int (...)` makes it the `int` that `show ()` expects.)
+   What can't it do that your own bytes could?
+5. **Two dice.** Roll two dice, add them up, and show the total, 2 to 12,
+   one digit at a time: the tens, `total / 10`, for half a second, then the
+   ones, `total % 10`. Leave out the tens when they are 0. You'll need
+   patterns for 0 and 7 to 9, or challenge 4's `adk::SevenSegment`.

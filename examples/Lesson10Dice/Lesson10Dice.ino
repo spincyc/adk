@@ -1,6 +1,6 @@
 // Lesson 10: Dice
-// Press the button on pin 22: the digit behind the 74HC595 on pins 37, 38 and 39 spins, slows
-// down and lands on a number from 1 to 6.
+// Press the button on pin 22: the digit behind the 74HC595 on pins 37, 38
+// and 39 spins, slows down and lands on a number from 1 to 6.
 
 #include <Adk.h>
 
@@ -9,7 +9,7 @@ adk::ShiftRegister digit  {37, 38, 39};
 
 // Each face as a byte: bit 0 lights segment a, bit 1 segment b, and so on
 // round to bit 6, segment g, across the middle.
-const uint8_t faces [] {
+constexpr adk::Array<uint8_t, 6> faces {
     0b00000110,     // 1: b c
     0b01011011,     // 2: a b d e g
     0b01001111,     // 3: a b c d g
@@ -37,9 +37,9 @@ void loop ()
     }
 }
 
-// One lit segment chases round the rim, a to f, slowing down like a die
-// coming to rest. Shifting a 1 left by one place moves it to the next
-// segment.
+// One lit segment chases round the rim, a to f, three times, slowing down
+// like a die coming to rest. Shifting a 1 left by one place moves it to the
+// next segment.
 void spin ()
 {
     for (int step = 0; step < 18; ++step)
