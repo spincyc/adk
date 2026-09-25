@@ -49,3 +49,14 @@ bench.wire ("a25", "B-25")
 bench.wire ("10", "j34", via=[(1.9, 0.05), (8.65, 0.05)])
 bench.buzzer ("f34", "e34", kind="passive")
 bench.resistor ("220 Ω", "a34", "B-34")
+
+# Readings to take with a multimeter in your turn, while a button is held
+# and its light stays on: each color keeps its own voltage.
+bench.measure ("Across the red LED", red="b6", black="b7", expect="about 2 V",
+               when="Red button held")
+bench.measure ("Across the yellow LED", red="b12", black="b13", expect="about 2 V",
+               when="Yellow button held")
+bench.measure ("Across the green LED", red="b18", black="b19", expect="about 3.2 V",
+               when="Green button held")
+bench.measure ("Across the blue LED", red="b24", black="b25", expect="about 3.2 V",
+               when="Blue button held")

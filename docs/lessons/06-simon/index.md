@@ -102,7 +102,7 @@ the Mega has power.
 ??? info "Why not one resistor for all four LEDs?"
     Only one light is on at a time, so it's tempting to share a single
     resistor. But the colors keep different voltages for themselves: red
-    about 2 V, blue about 3 V. Through a shared resistor each color would
+    about 2 V, blue about 3.2 V. Through a shared resistor each color would
     shine at a different brightness, and when all four light together at
     game over, the red one would take nearly all the current and the blue
     one would barely glow. A resistor each keeps every color steady.
@@ -183,7 +183,7 @@ sequences. More than a million.
 | One light never lights | Turn that LED round: long leg in row b, on the left. Check its resistor runs from row g, across the gap, to row e. |
 | A light and its button don't match | The signal wires are out of order. Buttons: pins 22 to 25 into j2, j8, j14 and j20. Lights: pins 26 to 29 into j6, j12, j18 and j24. |
 | The lights blink, but one button never starts a game | Push that button firmly in, all four legs, and check its black wire from row a to the − rail. |
-| No sound | Follow pin 10: j34, the buzzer's legs in f34 and e34, and the resistor from a34 down into the − rail. |
+| No sound | Follow pin 10: j34, the buzzer's **+** leg in f34 and its other leg in e34, and the resistor from a34 down into the − rail. |
 | Every game starts with the same steps | Leave A7 unconnected: the random seed comes from it floating. |
 | The Mega's **L** LED blinks long and short flashes | A pin in the sketch is wrong. The Serial Monitor says which. |
 
@@ -223,3 +223,39 @@ sequences. More than a million.
 5. **Pass the Simon.** A two-player version: instead of a random step, each
    player repeats the sequence and then adds one step of their own for the
    other to remember.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts, the black
+lead in **COM** and the red in **V**. Never move the red lead to the **A**
+jack for these: set for current, the meter is just a wire, and would short
+out whatever you put it across.
+
+The sketch needs no changes. In your turn a light stays on, with its note,
+for as long as you hold its button, right or wrong; letting go is your
+answer. So start a game, and when it is your turn, hold a button, read its
+LED, and let go. Ask a helper to hold the button while you hold the probes,
+or hold both probes in one hand like chopsticks. The two legs of an LED are
+in neighbouring holes, so keep each tip on its own leg.
+
+!!! question "Predict"
+    In Lesson 4, the RGB LED's red kept about 2 V for itself, and its green
+    and blue about 3.2 V. Which do you think Simon's yellow LED will be
+    nearer?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Red and yellow** keep about 2 V; **green and blue** about 3.2 V. An
+  LED's color sets the voltage it keeps: the bluer the light, the more it
+  needs.
+- Each LED's resistor takes the rest of the 5 V, so the currents differ:
+  (5 V − 2 V) ÷ 220 Ω ≈ 14 mA for red and yellow, and
+  (5 V − 3.2 V) ÷ 220 Ω ≈ 8 mA for green and blue. Each resistor sets its
+  own LED's current, whatever the others do.
+- That is why the LEDs don't share one resistor. With all four on at game
+  over, through one resistor, the red LED would let current through as soon
+  as it had 2 V across it, and hold every LED near 2 V: too little for green
+  and blue, which need about 3.2 V, so they would stay nearly dark.
