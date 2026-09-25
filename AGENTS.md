@@ -1,58 +1,45 @@
-# ADK agent contract
+# Working on ADK
 
-Read these before changing first-class code or lessons:
+ADK is an Arduino Mega 2560 library and a 36-lesson course, in one
+repository. Read these before changing anything:
 
-1. `docs/DEVELOPMENT.md` — hierarchy, boundaries, and acceptance gates
-2. `docs/STYLE.md` — mandatory C++ layout and naming
-3. `docs/CURRICULUM.md` — canonical lesson and project numbers
-4. `docs/TESTING.md` — deterministic and hardware evidence
-5. `docs/SAFETY_MODEL.md` — electrical and project limits
-6. `docs/PACKAGING.md` — Arduino and release layout
-7. `docs/PDF_POLICY.md` — printable-document requirements
-8. `docs/WORK_QUEUE.md` — authoritative active, queued, deferred, and physical work
-9. `docs/TOOLS.md` — repo-local tool registry conventions (`tmt.json`, `tools/`)
+1. `docs/ARCHITECTURE.md`: how the library works, and how to add a part.
+2. `docs/STYLE.md`: the C++ style, which `make style` checks.
+3. `docs/contributing.md`: the layout, the commands, and how to add a lesson.
 
-Re-read `docs/WORK_QUEUE.md` before assigning work, after every lesson or
-project integration, and before any release or publication audit. Update it in
-the same boundary whenever work is added, completed, split, deferred, or
-removed for a documented reason.
+## Rules
 
-Continue through all safe, discoverable queued work without routine approval.
-Commit coherent dependency boundaries, record blockers with their next action,
-and keep unrelated work moving. Ask only one consequential question at a time
-when the canonical documents and prior decisions cannot resolve it.
+- **Everything built goes in `build/`**, which git ignores. No tool, test or
+  script may write anywhere else in the tree.
+- **The library stays small and honest.** C++11, no heap, exceptions, RTTI or
+  Arduino libraries. One `adk::Object` per part; pins are claimed in
+  `setup ()`; time enters only through `update (now)`; events last exactly one
+  update. Every part has host tests, and `make examples` must stay free of
+  warnings.
+- **A lesson's wiring is described once**, in its `circuit.py`. The drawings,
+  build steps and connection list come from it, and the site refuses to build
+  if the sketch and the circuit disagree about a pin. Use each part's home
+  pins from `docs/kit.md`.
+- **Lessons are for beginners.** Plain words, one new idea at a time, a
+  prediction before each experiment, and something that visibly works at the
+  end. Keep sketches short: one screen for a part, about 150 lines for a
+  project.
+- **Safety** follows `docs/safety.md`: nothing touches mains, no motor or
+  servo runs from a pin, every LED has a resistor, the RFID reader gets 3.3 V.
+- **Say what is verified.** Host tests and compiling are not a working
+  circuit. Never claim a lesson or part works on hardware unless someone has
+  built it and recorded that they did.
+- **No personal information.** Commits use the repository's configured
+  identity, ADK Project with the GitHub no-reply address. Never add a
+  person's name, email address or home directory to a file or commit.
 
-`legacy/` is frozen and unsupported. Do not include it from first-class code,
-examples, tests, or release metadata.
+## Commands
 
-Develop in dependency order. Each component needs a clean header, out-of-line
-implementation, deterministic tests, Mega 2560 example, HTML reference, rich
-PDF lesson, size evidence, and explicit deferred hardware checks. Every lesson
-number divisible by three is a multi-component project.
-
-Examples are narrative code. Introduce objects in dependency order; shape
-`setup()` as acquire, configure, start; and shape `loop()` as observe, decide,
-actuate. Use domain-action helper names, place high-level flow before low-level
-mechanics, and keep code and lesson vocabulary identical. Avoid comment-heavy
-code and needless one-line helper decomposition.
-
-Every circuit needs a non-Serial observation path: an LED, sounder, display, or
-named electrical test point. Lessons state what to predict, where and when to
-observe it, and how to interpret it. Resource-acquisition evidence and
-safe-state evidence are separate checks. Serial output is optional supporting
-evidence, never the only proof.
-
-Every lesson PDF visual uses pencil-drawing presentation unless it is an
-explicitly identified, electrically authoritative formal schematic. Apply the
-classification markers and gate in `docs/PDF_POLICY.md`; filenames and
-grayscale alone do not establish compliance.
-
-Never claim physical verification without a recorded bench acceptance result.
-Never add pyrotechnic ignition, launcher control, or unknown-protocol replay.
-
-<!-- tmt:agents v1 -->
-Before writing any script, read tmt.json and prefer a listed tool
-(`tools/<id> --help`). After deriving anything repeatable, run
-`tmt note <slug>`; at two notes build it with `tmt new <slug>`.
-Keep the registry honest with `tmt check`.
-<!-- /tmt:agents -->
+| Command | Does |
+|---|---|
+| `make test` | Host tests |
+| `make sanitize` | Host tests under ASan and UBSan |
+| `make examples` | Compile every example for the Mega |
+| `make site` / `make pdf` | The website, and every lesson as a PDF |
+| `make style` | The mechanical style rules |
+| `make check` | Everything CI runs |

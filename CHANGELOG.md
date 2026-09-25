@@ -1,0 +1,29 @@
+# Changelog
+
+## 0.4.0 (unreleased)
+
+A new start, built on the library's original 2021 design.
+
+- **Library.** Every part is an object you declare; `adk::setup ()` checks
+  and prepares them all, `adk::update ()` keeps them running, `adk::wait ()`
+  waits without stopping them, and `adk::stop ()` makes them all safe. A pin
+  used twice, a pin that doesn't exist, or a timer two parts both need stops
+  setup and blinks the pin number on the built-in LED.
+- **Parts** for the whole Elegoo Mega and 37-in-1 kits: LEDs, RGB LEDs,
+  buzzers, speakers with melodies, relays, buttons and switches, analog
+  inputs, the thermistor, keypad, rotary encoder and joystick, the 74HC595
+  and seven-segment displays, the LCD1602, the MAX7219 LED matrix, servos,
+  the 28BYJ-48 stepper, DC motors, the HC-SR04, DHT11 and DS18B20, the IR
+  remote, the RC522 RFID reader, the DS1307 clock and the MPU-6050, with
+  small register-level I2C and SPI masters in place of Wire and SPI.
+- **Website.** A new design where each lesson is both a web page and a PDF,
+  with pencil drawings generated from one description of the build and
+  checked against the lesson's code.
+- **Build.** One Makefile; everything lands in `build/`.
+- **Removed** the 0.3 library, its 74 lessons, their PDFs and drawings, and
+  the research, audit and agent-process documents. They remain in the git
+  history.
+
+## 0.3.0 and earlier
+
+See the git history.
