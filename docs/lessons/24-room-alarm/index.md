@@ -194,3 +194,40 @@ few seconds after the last movement, so leave its view in good time.
 4. **More tripwires.** Add the obstacle module or the beam-break sensor from
    Lesson 23 across your doorway, as another `adk::Switch`, so that opening
    the door starts the entry delay too.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts, the black
+lead in **COM** and the red one in **V**.
+
+The alarm's state lives in the Mega's memory, in `state`, but the light
+shows it, and each of its colors is three numbers that the meter can read
+on the light's pins. To give each state time, change `delaySeconds` to
+`30` and upload. Before you arm it, turn the PIR to face a wall, away from
+you and the meter, so it doesn't see your hands at work.
+
+!!! question "Predict"
+    Armed, the light shows `dimRed`, which is `{40, 0, 0}`. What will the
+    red pin, 5, read?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Leaving**, the light is yellow, `{255, 160, 0}`. The green pin reads
+  160 ÷ 255 × 5 V ≈ 3.1 V, and the red pin a full 5 V.
+- **Armed**, the red pin reads 40 ÷ 255 × 5 V ≈ 0.8 V, and the other two
+  read 0: dim, because it is on less than a sixth of the time.
+- Each state leaves its own mark on the three pins, so the meter can tell
+  which state the alarm is in without looking at the screen. While the
+  siren sounds, the light swaps between red and blue every 300 ms, too
+  quickly for the meter to settle.
+
+| State | Light | Red pin, 5 | Green pin, 6 | Blue pin, 7 |
+|---|---|---|---|---|
+| Disarmed | green | 0 | about 5 V | 0 |
+| Leaving | yellow | about 5 V | about 3.1 V | 0 |
+| Armed | dim red | about 0.8 V | 0 | 0 |
+| Entering | orange | about 5 V | about 1.3 V | 0 |
+| Sounding | red and blue in turn | jumps about | 0 | jumps about |

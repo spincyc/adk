@@ -30,3 +30,9 @@ bench.module ("pir", name="pir", at=(1.26, 3.8), facing="up")
 bench.wire ("A12", "pir.OUT", via=[(3.49, 3.05), (1.89, 3.05)])
 bench.wire ("5V.power", "pir.VCC", via=[(1.69, 2.9), (1.99, 2.9)])
 bench.wire ("GND.power", "pir.GND")
+
+# Readings to take with a multimeter on the light's pins, in two states.
+bench.measure ("The green pin, leaving", red="6", black="GND", expect="about 3.1 V",
+               when="leaving: yellow")
+bench.measure ("The red pin, armed", red="5", black="GND", expect="about 0.8 V",
+               when="armed: dim red")
