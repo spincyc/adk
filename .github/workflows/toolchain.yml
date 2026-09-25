@@ -1,0 +1,209 @@
+name: Toolchain
+
+# Builds avr-gcc, with binutils and avr-libc, for the hosts that Zak Kemble's
+# releases (github.com/ZakKemble/avr-gcc-build) leave out, and attaches them
+# to a release. The options follow his build script. The last job prints the
+# entries to add to boards/toolchain.json.
+#
+# Run by hand only. A failed run leaves a draft release: delete it before
+# running again with the same tag.
+
+on:
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: Release tag
+                required: true
+                default: avr-gcc-16.1.0-adk1
+
+permissions: {}
+
+concurrency:
+    group: toolchain
+    cancel-in-progress: false
+
+env:
+    GCC: gcc-16.1.0
+    GCC_SHA256: 50efb4d94c3397aff3b0d61a5abd748b4dd31d9d3f2ab7be05b171d36a510f79
+    BINUTILS: binutils-2.46.1
+    BINUTILS_SHA256: e127a709cba24c76de8936cb7083dd768f28cd37eb010492e2f19b71eb1294e4
+    AVR_LIBC: avr-libc-2.3.2
+    AVR_LIBC_SHA256: 92eb253d30cec94f2861a82d40d0b17ad79c0d95fce32b74ffccc26a70afb150
+    AVR_LIBC_URL: https://github.com/avrdudes/avr-libc/releases/download/avr-libc-2_3_2-release
+
+jobs:
+    draft:
+        name: Draft the release
+        runs-on: ubuntu-24.04
+        timeout-minutes: 5
+        permissions:
+            contents: write
+        steps:
+            - name: Create a draft release
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  TAG: ${{ inputs.tag }}
+              run: |
+                  gh release create "${TAG}" --repo "${GITHUB_REPOSITORY}" --draft \
+                      --target "${GITHUB_SHA}" --title "${TAG}" \
+                      --notes "avr-gcc 16.1.0, binutils 2.46.1 and avr-libc 2.3.2 for ADK Boards, built by the Toolchain workflow."
+
+    build:
+        name: avr-gcc for ${{ matrix.name }}
+        needs: draft
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - name: arm64-macos
+                      runner: macos-15
+                      macos: "11.0"
+                    - name: x64-macos
+                      runner: macos-15-intel
+                      macos: "10.15"
+                    # An older glibc, so it also runs on older systems.
+                    - name: arm64-linux
+                      runner: ubuntu-22.04-arm
+        runs-on: ${{ matrix.runner }}
+        timeout-minutes: 300
+        permissions:
+            contents: write
+        env:
+            MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos }}
+            NAME: avr-gcc-16.1.0-${{ matrix.name }}
+        steps:
+            - name: Fetch the sources
+              run: |
+                  if [ "${RUNNER_OS}" = Linux ]; then
+                      sudo apt-get update
+                      sudo apt-get install --yes --no-install-recommends m4
+                  fi
+                  mkdir -p "${RUNNER_TEMP}/src"
+                  cd "${RUNNER_TEMP}/src"
+                  for url in "https://ftpmirror.gnu.org/binutils/${BINUTILS}.tar.xz" \
+                             "https://ftpmirror.gnu.org/gcc/${GCC}/${GCC}.tar.xz" \
+                             "${AVR_LIBC_URL}/${AVR_LIBC}.tar.bz2"; do
+                      curl --fail --location --silent --show-error --remote-name "${url}"
+                  done
+                  printf '%s  %s\n' "${BINUTILS_SHA256}" "${BINUTILS}.tar.xz" \
+                                    "${GCC_SHA256}" "${GCC}.tar.xz" \
+                                    "${AVR_LIBC_SHA256}" "${AVR_LIBC}.tar.bz2" | shasum -a 256 --check
+                  for archive in *.tar.*; do
+                      tar -xf "${archive}"
+                  done
+                  # GMP, MPFR and MPC are built into GCC, so it needs no shared copies.
+                  (cd "${GCC}" && ./contrib/download_prerequisites)
+                  echo "PREFIX=${RUNNER_TEMP}/${NAME}" >> "${GITHUB_ENV}"
+                  echo "${RUNNER_TEMP}/${NAME}/bin" >> "${GITHUB_PATH}"
+                  echo "JOBS=$(getconf _NPROCESSORS_ONLN)" >> "${GITHUB_ENV}"
+
+            # No NLS, zstd or other optional libraries: nothing a clean machine
+            # might lack. The LTO plugin that Arduino's recipes use stays on;
+            # libcc1, which only GDB uses, would need a shared libstdc++.
+            - name: Build binutils
+              working-directory: ${{ runner.temp }}/src
+              run: |
+                  mkdir "${BINUTILS}/obj" && cd "${BINUTILS}/obj"
+                  ../configure --prefix="${PREFIX}" --target=avr --disable-nls --disable-werror \
+                      --enable-plugins --without-zstd --without-msgpack --without-debuginfod
+                  make -j "${JOBS}"
+                  make install-strip
+
+            - name: Build GCC
+              working-directory: ${{ runner.temp }}/src
+              run: |
+                  mkdir "${GCC}/obj" && cd "${GCC}/obj"
+                  ../configure --prefix="${PREFIX}" --target=avr --enable-languages=c,c++ \
+                      --disable-nls --disable-libssp --disable-libada --with-dwarf2 \
+                      --disable-shared --enable-static --with-gnu-as --with-gnu-ld --without-zstd \
+                      --disable-libcc1
+                  make -j "${JOBS}"
+                  make install-strip
+
+            - name: Build avr-libc
+              working-directory: ${{ runner.temp }}/src
+              run: |
+                  mkdir "${AVR_LIBC}/obj" && cd "${AVR_LIBC}/obj"
+                  ../configure --prefix="${PREFIX}" --host=avr --build="$(../config.guess)"
+                  make -j "${JOBS}"
+                  make install
+
+            - name: Check it is self-contained and builds a sketch as Arduino does
+              working-directory: ${{ runner.temp }}
+              run: |
+                  # Only the operating system's own libraries may be linked.
+                  if [ "${RUNNER_OS}" = macOS ]; then
+                      find "${PREFIX}" -type f -perm -u+x -exec otool -L {} + 2>/dev/null \
+                          | grep -E '^[[:space:]]+/(opt/homebrew|usr/local)/' && exit 1
+                  else
+                      find "${PREFIX}" -type f -perm -u+x -exec ldd {} + 2>/dev/null | grep '=>' \
+                          | grep -v -E '/(ld-linux[^ /]*|lib(c|m|dl|pthread|rt)\.so\.[0-9]+) \(' && exit 1
+                  fi
+                  cat > blink.cpp <<'SKETCH'
+                  #include <avr/io.h>
+                  #include <util/delay.h>
+                  static_assert (__cplusplus >= 202302L);
+                  int main ()
+                  {
+                      DDRB |= _BV (PB7);
+                      for (;;)
+                      {
+                          PORTB ^= _BV (PB7);
+                          _delay_ms (500);
+                      }
+                  }
+                  SKETCH
+                  avr-g++ -c -Os -std=gnu++23 -flto -mmcu=atmega2560 -DF_CPU=16000000L blink.cpp -o blink.o
+                  avr-gcc-ar rcs core.a blink.o
+                  avr-gcc -Os -flto -fuse-linker-plugin -Wl,--gc-sections -mmcu=atmega2560 -o blink.elf core.a -lm
+                  avr-objcopy -O ihex -R .eeprom blink.elf blink.hex
+                  avr-size -A blink.elf
+
+            - name: Attach the archive to the draft release
+              working-directory: ${{ runner.temp }}
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  TAG: ${{ inputs.tag }}
+                  # macOS tar would otherwise add ._ files for extended attributes.
+                  COPYFILE_DISABLE: 1
+              run: |
+                  tar --no-xattrs -cjf "${NAME}.tar.bz2" "${NAME}"
+                  gh release upload "${TAG}" "${NAME}.tar.bz2" --repo "${GITHUB_REPOSITORY}"
+
+    release:
+        name: Publish the release
+        needs: build
+        runs-on: ubuntu-24.04
+        timeout-minutes: 15
+        permissions:
+            contents: write
+        env:
+            GH_TOKEN: ${{ github.token }}
+            TAG: ${{ inputs.tag }}
+        steps:
+            - name: Add SHA256SUMS, publish, and print the manifest entries
+              working-directory: ${{ runner.temp }}
+              run: |
+                  gh release download "${TAG}" --repo "${GITHUB_REPOSITORY}" --pattern '*.tar.bz2'
+                  sha256sum *.tar.bz2 > SHA256SUMS
+                  gh release upload "${TAG}" SHA256SUMS --repo "${GITHUB_REPOSITORY}"
+                  gh release edit "${TAG}" --repo "${GITHUB_REPOSITORY}" --draft=false
+                  url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}"
+                  {
+                      echo '## Entries for the systems list in boards/toolchain.json'
+                      echo
+                      echo '```json'
+                      for archive in *.tar.bz2; do
+                          case "${archive}" in
+                              *-arm64-macos.tar.bz2) host=arm64-apple-darwin ;;
+                              *-x64-macos.tar.bz2)   host=x86_64-apple-darwin ;;
+                              *-arm64-linux.tar.bz2) host=aarch64-linux-gnu ;;
+                          esac
+                          jq --null-input --indent 4 \
+                              --arg host "${host}" --arg url "${url}/${archive}" --arg file "${archive}" \
+                              --arg checksum "SHA-256:$(sha256sum "${archive}" | cut -d ' ' -f 1)" \
+                              --arg size "$(stat --format %s "${archive}")" \
+                              '{host: $host, url: $url, archiveFileName: $file, checksum: $checksum, size: $size}'
+                      done
+                      echo '```'
+                  } | tee -a "${GITHUB_STEP_SUMMARY}"
