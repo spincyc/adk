@@ -6,9 +6,9 @@
 adk::RgbLed lamp   {5, 6, 7};
 adk::Button button {22};
 
-const adk::Color moods [] = {adk::color::orange, adk::color::blue,
-                             adk::color::green, adk::color::pink};
-const int        rainbow  = 4;      // the mood after the four colors
+constexpr adk::Array moods {adk::color::orange, adk::color::blue,
+                            adk::color::green,  adk::color::pink};
+constexpr int        rainbow = moods.size ();   // after the colors
 
 int     mood = 0;
 uint8_t hue  = 0;
@@ -36,7 +36,7 @@ void loop ()
 
 void nextMood ()
 {
-    mood = (mood + 1) % 5;
+    mood = (mood + 1) % (rainbow + 1);
 
     if (mood != rainbow)
     {

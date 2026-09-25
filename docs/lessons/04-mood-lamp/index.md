@@ -17,6 +17,7 @@ ideas:
   - Dimming by switching fast, called PWM
   - Mixing colors from red, green and blue light
   - Colors as numbers, and fading between them
+  - A list of colors, and constants that never change
   - The color wheel
 ---
 
@@ -53,11 +54,12 @@ resistor, just like any LED. The red one takes about 14 mA, as in Lesson 1;
 green and blue keep more voltage for themselves, about 3.2 V, so they take
 about 8 mA.
 
-Mix the three and you can make almost any color. In ADK a color is three
-numbers, `{red, green, blue}`, each from 0 to 255: `{0, 0, 255}` is pure
-blue, `{255, 255, 255}` is all three at full, and `{0, 0, 0}` is off. ADK
-has names for common ones, such as `adk::color::orange`, and it can **fade**
-from one color to another over any time you choose.
+Mix the three and you can make almost any color. In ADK a color is an
+`adk::Color`, three numbers, `{red, green, blue}`, each from 0 to 255:
+`{0, 0, 255}` is pure blue, `{255, 255, 255}` is all three at full, and
+`{0, 0, 0}` is off. ADK has names for common ones, such as
+`adk::color::orange`, and it can **fade** from one color to another over any
+time you choose.
 
 !!! question "Predict"
     Mixing red and green *paint* makes a muddy brown. What do you think you
@@ -99,21 +101,30 @@ What's new:
 
 - `adk::RgbLed lamp {5, 6, 7};` is an RGB LED with its red leg on pin 5,
   green on pin 6 and blue on pin 7.
-- `const adk::Color moods [] = {...};` is a list of four colors, numbered
-  from 0: `moods[0]` is orange and `moods[3]` is pink. `const` means the
-  sketch can read it but never change it.
+- `adk::color::orange` is one of ADK's named colors, `{255, 64, 0}`. Just
+  as `adk::` in front of a name says it belongs to ADK, `adk::color::` says
+  it is one of ADK's colors.
+- `constexpr adk::Array moods {...};` is a list of four colors, an
+  **`adk::Array`**. Its places are numbered from 0, so `moods[0]` is orange
+  and `moods[3]` is pink, and it knows its own size: `moods.size ()` is 4.
+- `constexpr` means the value is settled when the sketch is compiled, and
+  never changes while it runs. `constexpr int rainbow = moods.size ();`
+  makes the rainbow mood number 4, the one after the last color. Add a
+  color to `moods` and the rainbow moves along by itself.
 - `lamp.fadeTo (moods[mood], 1000);` starts a smooth fade to a new color,
   lasting 1000 ms, and returns at once. ADK moves the color a little further
   on every `adk::update ()`, so the button keeps working mid-fade.
-- `mood = (mood + 1) % 5;` counts 0, 1, 2, 3, 4 and then back to 0: `% 5`
-  is the remainder after dividing by 5, so 5 becomes 0.
+- `mood = (mood + 1) % (rainbow + 1);` counts 0, 1, 2, 3, 4 and then back to
+  0. `%` gives the **remainder** after dividing: when `mood + 1` reaches 5,
+  5 % 5 is 0.
 - In the rainbow mood, `lamp.isFading ()` says whether a fade is still
   going. Each time one ends, `driftAroundTheWheel ()` starts the next, to a
   color a little further round the wheel.
 - `adk::wheel (hue)` turns a position round the color wheel into a color:
   0 is red, 85 green, 170 blue, and on round towards red again. `hue` is a
-  `uint8_t`, a whole number from 0 to 255 that wraps back to 0 after 255,
-  just as a wheel comes back round.
+  **`uint8_t`**, a whole number from 0 to 255 that wraps back to 0 after
+  255, just as a wheel comes back round. It takes one byte of memory, where
+  an `int` takes two.
 
 ## Upload it
 
@@ -122,11 +133,13 @@ button: in one second it glides to blue. Press again for green, and again
 for pink. The next press starts the rainbow, which drifts round every color
 in about ten seconds, and the next brings back orange.
 
-Now test your prediction. Change the first mood to `{255, 255, 0}`, upload,
-and look. Red and green light together make **yellow**. Mixing light adds
-colors together, while paint takes them away. ADK's own
-`adk::color::yellow` is `{255, 160, 0}`, with a little less green, because
-the green LED looks brighter to your eye than the red one.
+You predicted what red and green light make together. Test it: change the
+first mood to `adk::Color {255, 255, 0}` (in the list, three bare numbers
+need `adk::Color` in front to say they are a color), upload, and look. Red
+and green light together make **yellow**. Mixing light adds colors
+together, while paint takes them away. ADK's own `adk::color::yellow` is
+`{255, 160, 0}`, with a little less green, because the green LED looks
+brighter to your eye than the red one.
 
 ## If it doesn't work
 
@@ -155,8 +168,9 @@ the green LED looks brighter to your eye than the red one.
 ## Make it yours
 
 1. **Your own moods.** Change the four colors to your own mixes, such as
-   `{255, 0, 40}` for a hot pink. To add a fifth color, put it in `moods`,
-   change `rainbow` to 5, and change `% 5` to `% 6`.
+   `adk::Color {255, 0, 40}` for a hot pink. To add a fifth color, put it in
+   `moods`: nothing else needs to change, because `rainbow` and the `%` both
+   come from `moods.size ()`.
 2. **Slow motion.** Make the rainbow take a whole minute to go round. How
    long should each of its 32 steps last?
 3. **Candle.** Add a candle mood that flickers. Each time a fade ends, make
@@ -165,3 +179,7 @@ the green LED looks brighter to your eye than the red one.
    100 ms.
 4. **Night light.** Make a long press, held for two seconds, fade the lamp
    slowly to `adk::color::off` over a minute, so it can send you to sleep.
+   An `adk::Timer`, as in Lesson 3, can time the press: start it for
+   2000 ms when the button goes down and `stop ()` it when
+   `button.wasReleased ()`. If it `expired ()`, the button was held for two
+   seconds.
