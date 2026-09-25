@@ -1,0 +1,179 @@
+---
+lesson: 20
+title: Fan
+arc: Distance and motors
+promise: Spin a fan at any speed, either way round, with a driver chip doing the heavy lifting.
+time: 60 minutes
+level: 2
+sketch: Lesson20Fan
+parts:
+  - Arduino Mega 2560 and its USB cable
+  - Breadboard
+  - Breadboard power module and its 9 V adapter
+  - L293D motor driver chip
+  - DC motor with its fan blade
+  - 10 kΩ potentiometer
+  - Push button
+  - 12 jumper wires
+ideas:
+  - Why a motor never runs from a pin
+  - The H-bridge, which turns a motor either way
+  - PWM on the enable pin sets the speed
+  - A separate supply for the motor, with a shared GND
+---
+
+## What you'll build
+
+<!-- closeup -->
+
+A small fan on your desk that you drive like a model car. Turn the knob and
+it wakes up, slow at first, then faster until it's roaring; press the button
+and it slows, pauses for a moment, and spins the other way, blowing air
+back at itself. The Mega does the thinking, but the power comes from a
+separate supply, through a chip built to handle motors.
+
+## The idea
+
+**Why not just use a pin?** A Mega pin can give about 20 mA. The kit's
+little motor wants around 200 mA when it's spinning, and several times
+that for the instant it starts. Ask a pin for ten or twenty times its limit
+and it will be damaged, or the Mega will reset. A spinning motor also
+works like a dynamo: when it's switched off it sends a kick of voltage back
+down its wires. Motors never connect to a pin directly. They go through a
+**driver** and take their power from their own supply, here the breadboard
+power module.
+
+**The H-bridge.** To run a motor both ways, you need to be able to connect
+either of its leads to +5 V and the other to GND. Four switches do it, drawn
+round the motor like the letter H:
+
+<p class="formula">close the top-left and bottom-right switches: current flows one way → forward<br>
+close the top-right and bottom-left switches: current flows the other way → backward</p>
+
+The **L293D** holds two of these H-bridges, made of transistors, plus the
+diodes that soak up the motor's kick. Its two halves are identical; this
+build uses the half along the chip's top row. Two of its inputs choose the
+direction, and its **enable** input switches that half on or off:
+
+| Forward (pin 8) | Backward (pin 9) | Enable (pin 4) | The motor |
+|---|---|---|---|
+| HIGH | LOW | on | spins forward |
+| LOW | HIGH | on | spins backward |
+| LOW | LOW | either | coasts to a stop |
+| either | either | off | coasts to a stop |
+
+**Speed.** The enable pin gets PWM, as the dimmer's LED did in Lesson 7. A
+speed of 128 out of 255 switches the motor on about half the time, a
+thousand times a second, and the motor's weight smooths that into half
+power. Below about 100 the kit's motor only hums: it hasn't enough push to
+get going.
+
+**Two supplies, one GND.** The chip's VCC2 pin takes the motor's power from
+the power module, so the big currents never go near the Mega. The Mega's
+GND is joined to the module's GND, or the Mega's "HIGH" would mean nothing
+to the chip. The chip keeps a volt or two for itself, so the motor sees
+about 3 V of the module's 5 V: plenty for this 3–6 V motor.
+
+!!! question "Predict"
+    The fan is spinning fast and you press the button. Does it flip round
+    instantly, or will you see something happen in between?
+
+## Build it
+
+!!! warning "Unplug first"
+    Unplug the USB cable, unplug the power module's adapter and switch the
+    module off before you change any wiring. Set both of the module's
+    yellow jumpers to **5V**, never 3.3V. The chip's notch (the little half
+    moon at one end) faces left, towards the Mega. Keep fingers and hair
+    clear of the fan blade whenever the power is on.
+
+<!-- bench -->
+
+<!-- steps -->
+
+??? info "The L293D's pins, all sixteen"
+    Seen from above with its notch on the left, pin 1 is at the bottom left
+    and the numbers run anticlockwise, along the bottom row and back along
+    the top:
+
+    | Pin | Name | Here | Pin | Name | Here |
+    |---|---|---|---|---|---|
+    | 1 | 1,2EN | not used | 16 | VCC1 | 5 V for the chip itself |
+    | 2 | 1A | not used | 15 | 4A | forward, from pin 8 |
+    | 3 | 1Y | not used | 14 | 4Y | the motor's red lead |
+    | 4, 5 | GND | joined inside | 13, 12 | GND | to the − rail |
+    | 6 | 2Y | not used | 11 | 3Y | the motor's black lead |
+    | 7 | 2A | not used | 10 | 3A | backward, from pin 9 |
+    | 8 | VCC2 | 5 V for the motor | 9 | 3,4EN | enable, from pin 4 |
+
+    The four GND pins in the middle are joined inside the chip, and carry
+    its heat away, so one wire grounds them all. The library's reference
+    names the chip's other half (pins 1 to 7); either half works the same.
+
+When you are done, these are the connections your circuit makes:
+
+<!-- connections -->
+
+## Code it
+
+Open **File → Examples → Adk → Lesson20Fan**:
+
+<!-- sketch -->
+
+What's new:
+
+- `adk::Motor fan {4, 8, 9};` is the motor and its half of the driver:
+  the enable pin, then the forward pin, then the backward pin.
+- `fan.speed (s)` takes a number from −255 to 255. Positive is forward,
+  negative backward, and 0 lets it coast. Multiplying the speed by
+  `direction`, which is 1 or −1, is all it takes to reverse.
+- `knob.read (0, 100)` scales the knob from Lesson 7 to 0–100, how far
+  round it is turned, and `map ()` turns 10–100 into speeds from 100 to
+  255, skipping the humming range.
+
+## Upload it
+
+1. Plug in the USB cable and upload the sketch.
+2. Plug the adapter into the power module and press its switch: its small
+   LED lights.
+3. Turn the knob. For the first tenth of its turn the fan stays still, then
+   it starts, slowly, and speeds up as you keep turning.
+4. Press the button. The fan slows, stops for a moment, and spins the other
+   way, blowing the air backwards. Press it again to swap back.
+
+Switch the power module off when you finish, before you unplug the USB.
+
+## If it doesn't work
+
+| What you see | Try this |
+|---|---|
+| Nothing spins at all | Is the power module's LED on, with both jumpers on 5V? Check the red wire from a24 to the + rail (the motor's supply) and the one from j17 (the chip's). |
+| It hums but doesn't turn | The speed is too low: turn the knob further. A flick of the blade helps a sluggish motor start. |
+| It only ever spins one way | The wire from pin 8 or pin 9 is in the wrong hole: they go to j18 and j23. |
+| The Mega resets when the fan starts | Something is feeding the motor from the Mega's 5 V. Only the pot's red wire should come from the Mega's 5V pin. |
+| The chip gets hot | Unplug everything at once and check the motor's leads go to g19 and g22, not straight to a rail. |
+| The button does nothing | The button straddles the middle gap; pin 22's wire goes in j13 and the black wire from a15 to the − rail. |
+| The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |
+
+??? note "How it works"
+    `fan.speed ()` sets the two direction pins and then writes the speed to
+    the enable pin with `analogWrite ()`. Pin 4 makes PWM at about 980
+    pulses a second, fast enough that the motor feels an average.
+
+    Reversing a spinning motor at once would briefly draw about twice its
+    stall current. So when the direction changes, ADK switches the motor
+    off, lets it coast for 100 ms while your sketch carries on, and only
+    then drives it the other way. That is the pause you saw.
+
+## Make it yours
+
+1. **Emergency stop.** Add a second button on pin 23 that calls
+   `fan.brake ()`, which stops the motor faster than coasting by shorting
+   its leads together through the chip.
+2. **Gentle start.** Instead of jumping to the knob's speed, creep towards
+   it by a few steps each time round `loop ()`.
+3. **Breeze.** Make the fan blow forwards for ten seconds and backwards for
+   ten, like an oscillating fan, using an `adk::Every`.
+4. **Automatic fan.** Add the ultrasonic sensor from Lesson 19 and switch
+   the fan on only when someone is within 60 cm. The next lesson takes
+   this much further.

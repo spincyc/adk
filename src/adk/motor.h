@@ -12,10 +12,15 @@ namespace adk {
     //   L293D pin 2 (1A)             -> the forward pin
     //   L293D pin 7 (2A)             -> the backward pin
     //   L293D pins 3 and 6 (1Y, 2Y)  -> the motor's two leads
-    //   L293D pin 16 (VCC1)          -> the Mega's 5 V, for the chip's logic
+    //   L293D pin 16 (VCC1)          -> 5 V for the chip's logic, from the Mega
+    //                                   or the power module
     //   L293D pin 8 (VCC2)           -> the motor supply: 5 V from a breadboard
     //                                   power module
     //   L293D pins 4, 5, 12 and 13   -> GND, joined to the Mega's GND
+    //
+    // The chip's other half works the same way: pin 9 (EN3,4) is the enable,
+    // pins 10 and 15 (3A, 4A) the directions, and pins 11 and 14 (3Y, 4Y) the
+    // motor.
     //
     // Never power a motor from a Mega pin, or put VCC2 on the Mega's 5 V: a
     // starting motor draws far more current than the board can give.

@@ -61,8 +61,10 @@ FACING = {"down": 0, "left": 90, "up": 180, "right": 270}
 # Chips' pins by datasheet name, pin 1 first.
 HC595 = ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "GND",
          "Q7'", "MR", "SH_CP", "ST_CP", "OE", "DS", "Q0", "VCC"]
+# L293D pins 1-16, from its datasheet: the lower half drives one motor, the
+# upper half (pins 9-15) another.
 L293D = ["1,2EN", "1A", "1Y", "GND", "GND", "2Y", "2A", "VCC2",
-         "3A", "3Y", "GND", "GND", "4Y", "4A", "3,4EN", "VCC1"]
+         "3,4EN", "3A", "3Y", "GND", "GND", "4Y", "4A", "VCC1"]
 CHIPS = {"74HC595": HC595, "L293D": L293D}
 
 # The kit's common-cathode displays, pin 1 at the bottom left seen from the
