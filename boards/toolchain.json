@@ -22,6 +22,27 @@
             "archiveFileName": "avr-gcc-16.1.0-x64-windows.zip",
             "checksum": "SHA-256:de4aad501ee42b63d5d262e45470924cd2654f6bc437f0299875efa6b8d8d0fe",
             "size": "165907043"
+        },
+        {
+            "host": "x86_64-apple-darwin",
+            "url": "https://github.com/spincyc/adk/releases/download/avr-gcc-16.1.0-adk1/avr-gcc-16.1.0-x64-macos.tar.bz2",
+            "archiveFileName": "avr-gcc-16.1.0-x64-macos.tar.bz2",
+            "checksum": "SHA-256:524f467d8eb42bd87522e336d8446b62448cd9f288ecc8f85fca4cad310ff5e3",
+            "size": "100671394"
+        },
+        {
+            "host": "arm64-apple-darwin",
+            "url": "https://github.com/spincyc/adk/releases/download/avr-gcc-16.1.0-adk1/avr-gcc-16.1.0-arm64-macos.tar.bz2",
+            "archiveFileName": "avr-gcc-16.1.0-arm64-macos.tar.bz2",
+            "checksum": "SHA-256:717407b8113ca6a89fe119f177e4d40107d2b15ad3377c791eadb5c39fb836a9",
+            "size": "97419450"
+        },
+        {
+            "host": "aarch64-linux-gnu",
+            "url": "https://github.com/spincyc/adk/releases/download/avr-gcc-16.1.0-adk1/avr-gcc-16.1.0-arm64-linux.tar.bz2",
+            "archiveFileName": "avr-gcc-16.1.0-arm64-linux.tar.bz2",
+            "checksum": "SHA-256:470532e8b002b5c483f9e4a191965c44bab1c02ff17ba472d8aa929fc7b0e0ca",
+            "size": "108821579"
         }
     ]
 }

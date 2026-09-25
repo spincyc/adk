@@ -66,8 +66,8 @@ board package: the same Mega 2560, built with avr-gcc 16.
    → Adk**.
 4. Choose **Tools → Board → ADK Boards → ADK Mega 2560**, and the port.
 
-The compiler is ready for Windows and Linux on x86-64; macOS and Linux on
-ARM are still to come. [Getting started](https://spincyc.github.io/adk/start/)
+The compiler comes for Windows, macOS (Apple silicon and Intel) and Linux
+(x86-64 and ARM). [Getting started](https://spincyc.github.io/adk/start/)
 has the details.
 
 ## Build

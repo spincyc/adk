@@ -36,11 +36,6 @@ with a newer compiler.
 3. Check that **Arduino AVR Boards** says **Installed** too. ADK Boards uses
    its files, so install it if it doesn't.
 
-!!! note "On a Mac, or Linux on ARM"
-    The compiler is ready for Windows and for Linux on a PC. For a Mac, or
-    Linux on an ARM board such as a Raspberry Pi, it is still being built,
-    so the Boards Manager can't install ADK Boards there yet.
-
 ## 3. The ADK library
 
 1. Download the library as a ZIP file:

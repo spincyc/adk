@@ -27,7 +27,8 @@ A new start, built on the library's original 2021 design.
   with pencil drawings generated from one description of the build and
   checked against the lesson's code.
 - **ADK Boards.** A package for the Arduino IDE's Boards Manager, published
-  with the website: the Mega 2560, built as C++23 with avr-gcc 16.
+  with the website: the Mega 2560, built as C++23 with avr-gcc 16, for
+  Windows, macOS and Linux (x86-64 and ARM).
 - **Build.** One Makefile; everything lands in `build/`. `make pins` runs
   each sketch's `setup ()` on the host and checks the pins it claims are
   exactly the pins its lesson wires.
