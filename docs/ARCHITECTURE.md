@@ -128,7 +128,8 @@ whose global objects would be linked in anyway.
 I2C and SPI are small register-level masters in `i2c.cpp` and `spi.cpp`,
 compiled only for the AVR (`#ifdef __AVR__`). Host tests link fakes instead
 that play the part of each chip. Devices on a bus claim the bus pins with
-`claimShared ()`; a chip-select pin is claimed exclusively.
+`claimShared ()`; a chip-select pin is claimed exclusively, except pin 53,
+the SPI unit's own select pin, which the bus already holds as an output.
 
 ## Testing
 

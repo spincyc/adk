@@ -28,6 +28,7 @@
 #include "adk/ultrasonic.h"
 #include "adk/dht11.h"
 #include "adk/ir_receiver.h"
+#include "adk/ds18b20.h"
 
 #include "adk/shift_register.h"
 #include "adk/segments.h"
@@ -40,3 +41,6 @@
 #include "adk/i2c.h"
 #include "adk/rtc.h"
 #include "adk/mpu6050.h"
+
+#include "adk/spi.h"
+#include "adk/rfid.h"
