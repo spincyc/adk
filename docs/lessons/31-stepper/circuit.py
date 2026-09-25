@@ -20,3 +20,9 @@ bench.wire ("A11", "stepper.IN4", via=[(3.39, 2.9), (4.15, 2.9)])
 bench.wire ("stepper.+", "B+5", via=[(3.56, 3.65), (5.8, 3.65)])
 bench.wire ("stepper.−", "B-6", via=[(3.66, 3.75), (5.9, 3.75)])
 bench.closeup (1, 28)
+
+# Readings to take with a multimeter, the power module switched on.
+bench.measure ("The driver's supply, on the bottom rails", red="B+10", black="B-10",
+               expect="about 5 V", when="Power module on")
+bench.measure ("The top rails, their jumper off", red="T+10", black="T-10", expect="0 V",
+               when="Power module on")

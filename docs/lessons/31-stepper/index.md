@@ -68,7 +68,7 @@ module, just as the servo in Lesson 17 took its power from there.
 
 !!! warning "Unplug first"
     Unplug the USB cable and switch the power module off before you change
-    any wiring. Set both of the power module's yellow jumpers to **5V**, never
+    any wiring. Set the power module's bottom yellow jumper to **5V**, never
     3.3V. Never power the driver from the Mega's 5V pin: the motor could pull
     the Mega's power down and reset it, or damage it.
 
@@ -178,3 +178,35 @@ way positive means for your motor.
    second, like a clock's second hand. Use an `adk::Every tick {1000};` and
    count seconds, then move to `seconds * 4096L / 60` each tick, so the
    rounding never builds up.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): the dial on DC volts
+(**V⎓**), the black lead in **COM** and the red one in **V**. Never use the
+**10A** socket here: across a supply, it is a short circuit. These readings
+hold still by themselves, so just switch the power module on. The + and −
+holes of a rail pair are only 2.5 mm apart: push each probe tip into its own
+hole, so neither can slip across and touch the other rail.
+
+!!! question "Predict"
+    The top jumper is off. What will the meter read across the top rails:
+    5 V, 3.3 V, or nothing at all?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **The driver's supply** is the power module's 5 V; none of it comes from
+  the Mega. Press the button and watch the reading while the motor turns: it
+  hardly moves, because the module has plenty to spare for the coils'
+  200 mA.
+- **The top rails** read 0: with their jumper off, nothing feeds them. Each
+  pair of rails gets its voltage from its own jumper. The − rails are joined
+  inside the module, whatever the jumpers say.
+- Now switch the power module off, leave the Mega plugged in, and press the
+  button. The driver's supply reads 0, its LEDs stay dark and the arrow
+  stays put, but the sketch counts its 1024 half-steps just the same:
+  nothing tells it the motor didn't move. Switch the module back on: the
+  sketch's count is now a quarter turn ahead of the real arrow, and nothing
+  will put it right. That is the price of counting steps without a sensor.
