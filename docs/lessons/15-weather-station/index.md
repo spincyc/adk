@@ -198,3 +198,39 @@ both ways, which is the gap doing its job.
 4. **Highs and lows.** Remember the highest and lowest temperatures since the
    station started, and show them for three seconds whenever the knob is
    turned all the way down.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it to DC volts as in [Lesson 1](../01-blink/index.md#measure-it), black lead
+in **COM** and red in **V**. The sketch needs no change: the knob stays
+where you leave it, and the mood only changes at its thresholds.
+
+!!! question "Predict"
+    Warm the DHT11 until the light turns red, then let it cool. When the
+    screen shows 25 °C on the way down, will pin 5, the red one, read 0 V or
+    5 V? And on the way up, at the same 25 °C? Write down your guesses.
+
+<!-- measure -->
+
+For the first reading, turn the knob until the screen says `Alarm at 30°C`.
+For the last, warm the sensor with your hands and breath as in *Upload it*
+until the light is red, then hold the probes on while it cools.
+
+What the numbers tell you:
+
+- **The alarm knob's wiper** gives the setting as a voltage. The sketch
+  turns 0 V into 10 °C and 5 V into 40 °C, so 30 °C is two thirds of the
+  way: 5 V × 20 ÷ 30 ≈ 3.33 V. The Mega drops the fraction, so the screen
+  keeps saying 30 °C until the wiper passes about 3.5 V. Turn the knob and
+  watch the two numbers move together.
+- **Pin 6** reads about 5 V while the room is Comfy and 0 V once it's Hot;
+  **pin 5** does the opposite. Each color is either fully on or off, so the
+  pins tell you the mood, not the temperature.
+- At 25 °C pin 5 reads 5 V on the way down and 0 V on the way up: the same
+  temperature, two different voltages. The sketch remembers where the room
+  came from, and the pin shows it: that memory is the gap between 24 °C and
+  26 °C.
+- While the light fades, for a second, the numbers glide between 0 and 5 V.
+  The pins are switching on and off very fast, as in Lesson 4, and the meter
+  shows the average.

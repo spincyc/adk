@@ -32,3 +32,12 @@ bench.wire ("A0", "a58")
 bench.wire ("d59", "T+61")
 
 bench.closeup (21, 62)
+
+# Readings to take with a multimeter: the alarm knob's wiper, and the red
+# and green pins of the comfort light, which remember the mood.
+bench.measure ("The alarm knob's wiper, on A0", red="A0", black="GND", expect="about 3.4 V",
+               when="the screen says Alarm at 30°C")
+bench.measure ("Pin 6, the light's green", red="6", black="GND", expect="about 5 V",
+               when="Comfy, the light green")
+bench.measure ("Pin 5, the light's red", red="5", black="GND", expect="about 5 V",
+               when="Hot, even once it has cooled to 25 °C")
