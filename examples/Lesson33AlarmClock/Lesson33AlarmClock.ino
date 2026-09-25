@@ -1,5 +1,5 @@
 // Lesson 33: Alarm Clock
-// A bedside clock that wakes you with a tune, set with a knob.
+// A bedside clock that wakes you with a tune and a flag, set with a knob.
 
 #include <Adk.h>
 
@@ -9,6 +9,7 @@ adk::RotaryEncoder knob       {18, 19};
 adk::Button        knobButton {22};
 adk::Speaker       speaker    {10};
 adk::Button        snooze     {23};
+adk::Stepper       flag       {A8, A9, A10, A11};
 adk::Every         tick       {100};
 
 constexpr adk::Note wakeUp [] =
@@ -18,8 +19,9 @@ constexpr adk::Note wakeUp [] =
     {adk::note::rest, 700}
 };
 
-constexpr int minutesPerDay = 24 * 60;
-constexpr int snoozeMinutes = 5;
+constexpr int  minutesPerDay = 24 * 60;
+constexpr int  snoozeMinutes = 5;
+constexpr long flagUp        = adk::Stepper::StepsPerRevolution / 4;
 
 enum class State { Showing, SettingHour, SettingMinute, Ringing };
 
@@ -62,6 +64,8 @@ void loop ()
     {
         readTheClock ();
     }
+
+    flag.moveTo (state == State::Ringing ? flagUp : 0);
 }
 
 // What a press of the knob means depends on the state of the clock.
@@ -116,8 +120,7 @@ void readTheClock ()
 
     int time = now.hour * 60 + now.minute;
 
-    // Only as the minute begins, so an alarm stopped in its own minute
-    // stays stopped.
+    // Only as a new minute begins, so a stopped alarm stays stopped.
     if (state == State::Showing && time == ringAt && time != clockTime)
     {
         state = State::Ringing;
@@ -136,8 +139,7 @@ void readTheClock ()
     showAlarm (now.second);
 }
 
-// The bottom row: when the alarm rings next, which part of it the knob
-// sets, or a wake-up call that flashes with the seconds.
+// The bottom row: the next alarm, the part the knob sets, or Wake up!
 void showAlarm (int second)
 {
     const char* label = ringAt == alarm ? "Alarm   " : "Snooze  ";
