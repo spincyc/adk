@@ -3,19 +3,24 @@
 
 #include <Adk.h>
 
-adk::Button redButton   {22};
-adk::Button greenButton {23};
-adk::Led    red         {26};
-adk::Led    yellow      {27};
-adk::Led    green       {28};
-adk::Buzzer buzzer      {12};
+// Each player has a button to press and a light that shows when they win.
+struct Player
+{
+    const char* name;
+    adk::Button button;
+    adk::Led    light;
+};
 
-enum State { Waiting, Ready, Go, Result };
+Player      red    {"Red",   22, 26};
+Player      green  {"Green", 23, 28};
+adk::Led    yellow {27};
+adk::Buzzer buzzer {12};
 
-State         state    = Waiting;
-unsigned long readyAt  = 0;
-unsigned long waitTime = 0;
-unsigned long goAt     = 0;
+enum class State { Waiting, Ready, Go, Over };
+
+State          state = State::Waiting;
+adk::Timer     suspense;    // the random wait before the light
+adk::Stopwatch reaction;    // from the light to the first press
 
 void setup ()
 {
@@ -31,53 +36,42 @@ void loop ()
 {
     adk::update ();
 
-    bool redPressed   = redButton.wasPressed ();
-    bool greenPressed = greenButton.wasPressed ();
+    if (suspense.expired ())
+    {
+        go ();
+    }
 
-    if (state == Waiting || state == Result)
+    if (red.button.wasPressed ())
     {
-        if (redPressed || greenPressed)
-        {
-            getReady ();
-        }
+        pressed (red, green);
     }
-    else if (state == Ready)
+
+    if (green.button.wasPressed ())
     {
-        if (redPressed)
-        {
-            falseStart ("Red", "Green", green);
-        }
-        else if (greenPressed)
-        {
-            falseStart ("Green", "Red", red);
-        }
-        else if (millis () - readyAt >= waitTime)
-        {
-            go ();
-        }
+        pressed (green, red);
     }
-    else if (state == Go)
+}
+
+// What a press means depends on the state of the game.
+void pressed (Player& player, Player& rival)
+{
+    switch (state)
     {
-        if (redPressed)
-        {
-            win ("Red", red);
-        }
-        else if (greenPressed)
-        {
-            win ("Green", green);
-        }
+        case State::Waiting:
+        case State::Over:  getReady ();                break;
+        case State::Ready: falseStart (player, rival); break;
+        case State::Go:    win (player);               break;
     }
 }
 
 void getReady ()
 {
-    red.off ();
     yellow.off ();
-    green.off ();
+    red.light.off ();
+    green.light.off ();
 
-    readyAt  = millis ();
-    waitTime = random (2000, 5000);
-    state    = Ready;
+    suspense.start (random (2000, 5000));
+    state = State::Ready;
     Serial.println ("Get ready...");
 }
 
@@ -85,37 +79,32 @@ void go ()
 {
     yellow.on ();
     buzzer.beep (200);
-
-    goAt  = millis ();
-    state = Go;
+    reaction.restart ();
+    state = State::Go;
 }
 
-void win (const char* name, adk::Led& light)
+void win (Player& winner)
 {
-    unsigned long reaction = millis () - goAt;
+    auto time = reaction.elapsed ();
 
-    Serial.print (name);
-    Serial.print (" wins in ");
-    Serial.print (reaction);
-    Serial.println (" ms!");
-    showWinner (light);
+    adk::println (Serial, winner.name, " wins in ", time, " ms!");
+    celebrate (winner);
 }
 
-void falseStart (const char* cheat, const char* name, adk::Led& light)
+void falseStart (Player& early, Player& winner)
 {
-    Serial.print (cheat);
-    Serial.print (" pressed too soon, so ");
-    Serial.print (name);
-    Serial.println (" wins!");
+    suspense.stop ();
     buzzer.beep (800);
-    showWinner (light);
+    adk::println (Serial, early.name, " pressed too soon, so ",
+                  winner.name, " wins!");
+    celebrate (winner);
 }
 
-void showWinner (adk::Led& light)
+void celebrate (Player& winner)
 {
     yellow.off ();
-    light.blink (200);
-    state = Result;
+    winner.light.blink (200);
+    state = State::Over;
 
     // Let the loser's late press go by before a new round can start.
     adk::wait (1000);

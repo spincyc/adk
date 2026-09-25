@@ -16,9 +16,9 @@ parts:
   - 13 jumper wires
 ideas:
   - Random numbers, and a random seed
-  - Measuring time with millis ()
+  - Measuring time with a timer and a stopwatch
   - A game as a set of states
-  - Catching a false start
+  - Grouping parts that belong together
   - The active buzzer
 ---
 
@@ -52,6 +52,11 @@ the difference is the reaction time:
 
 <p class="formula">reaction = 12 631 ms − 12 400 ms = 231 ms</p>
 
+ADK does that sum for you in two parts. An `adk::Timer` counts down, like a
+kitchen timer: the game sets one for the random wait. An `adk::Stopwatch`
+counts up: the game starts one when the light comes on, and reads it when
+somebody presses.
+
 **The active buzzer.** It has a tiny oscillator circuit inside, so it makes
 its own tone, a shrill note a little over 2000 vibrations a second, whenever
 its pin is HIGH. The Mega only switches it on and off, just like an LED. Its
@@ -76,8 +81,8 @@ pass of `loop ()`, only does what the current state allows.
 |---|---|---|
 | **Waiting** | The yellow light blinks slowly | Either button: *Ready* |
 | **Ready** | All dark, for a random 2 to 5 seconds | Time's up: *Go*. A press: a **false start**, and the other player wins |
-| **Go** | Yellow on, and a beep | The first press wins: *Result* |
-| **Result** | The winner's light flashes | Either button: a new round, *Ready* |
+| **Go** | Yellow on, and a beep | The first press wins: *Over* |
+| **Over** | The winner's light flashes | Either button: a new round, *Ready* |
 
 A false start is only possible because the game knows it is in *Ready*: the
 same press in *Go* would win.
@@ -122,25 +127,40 @@ Open **File → Examples → Adk → Lesson03ReactionDuel**:
 
 What's new:
 
-- `enum State { Waiting, Ready, Go, Result };` makes a new kind of value with
-  four names, one for each state. `State state = Waiting;` is a variable that
-  holds one of them. Names read far better than numbers: `state == Go` says
-  what it means.
-- `unsigned long` is a whole number that can't go below zero and can count
-  past four billion: the right size for `millis ()`.
+- `struct Player` makes a new type that bundles what belongs together: a
+  player's name, button and light. `Player red {"Red", 22, 26};` fills them
+  in, in order: the name, the button's pin, the light's pin. Then
+  `red.button` and `red.light` reach inside, so the red player's button and
+  light can never get mixed up with green's.
+- `const char* name` holds a piece of text, such as `"Red"`.
+- `enum class State { Waiting, Ready, Go, Over };` makes a new kind of value
+  with four names, one for each state, and `State state` is a variable that
+  holds one of them. `state == State::Go` says what it means, which a number
+  never would.
+- `adk::Timer suspense;` counts down. `suspense.start (random (2000, 5000))`
+  sets it going, and `suspense.expired ()` is true for the one update in
+  which it runs out, just as a button's `wasPressed ()` is true once per
+  press. Nothing stops to wait, so a false start is still noticed.
+- `adk::Stopwatch reaction;` counts up. `reaction.restart ()` sets it back to
+  zero and running as the light comes on; `reaction.elapsed ()` reads it.
 - `randomSeed (analogRead (A7));` plants the seed, once, in `setup ()`.
-- In `loop ()`, each button is asked `wasPressed ()` once, into `redPressed`
-  and `greenPressed`, and then an `if` for each state decides what those
-  presses mean.
-- `millis () - readyAt >= waitTime` asks "has the random wait passed yet?"
-  without stopping the loop, so a false start is still noticed while you
-  wait.
+- `loop ()` hands every press to `pressed ()`, saying who pressed and who
+  they are up against: `pressed (red, green)`.
+- `switch (state)` jumps to the `case` for the current state and runs it, up
+  to its `break`. Two labels in a row share their code: a press while
+  *Waiting* or when the round is *Over* both start a new round. Those five
+  lines are the whole game.
+- `Player& player`: the `&` means the function works on that very player,
+  not a copy, so `winner.light.blink (200)` flashes the real light.
+- `auto time = reaction.elapsed ();` keeps the reaction time in a variable.
+  `auto` tells the compiler to give `time` whatever type `elapsed ()` hands
+  back, so you don't have to spell it out.
+- `adk::println (Serial, winner.name, " wins in ", time, " ms!");` prints its
+  pieces in a row, then ends the line: one call instead of a
+  `Serial.print ()` for each piece.
 - `adk::Buzzer buzzer {12};` and `buzzer.beep (200);` sound the buzzer for
   200 ms and carry straight on; ADK switches it off by itself.
-- `win ()`, `falseStart ()` and `showWinner ()` take the winning LED as
-  `adk::Led& light`. The `&` means the function works on that very LED, not
-  a copy of it, so `light.blink (200)` flashes the real one.
-- `adk::wait (1000);` in `showWinner ()` gives the loser a second to finish
+- `adk::wait (1000);` in `celebrate ()` gives the loser a second to finish
   their too-late press. Presses during `adk::wait ()` still update the
   buttons, but no `loop ()` is looking, so they are simply let go by.
 
@@ -187,8 +207,8 @@ are faster to a sound, try the first challenge below.
     players get the same 20 ms, so the duel stays fair.
 
     `millis ()` counts up for about 49.7 days and then starts again from 0.
-    Taking the difference, `millis () - readyAt`, still gives the right
-    answer across that wrap, which is why time is always compared that way.
+    The timer and the stopwatch only ever take the difference of two
+    readings, which still gives the right answer across that wrap.
 
 ## Make it yours
 
@@ -197,10 +217,10 @@ are faster to a sound, try the first challenge below.
    with your eyes shut. Which way are you faster, and by how much?
 2. **Record time.** Keep the fastest time since power-up in a variable, and
    print *New record!* whenever somebody beats it.
-3. **Best of five.** Count each player's wins. The first to three wins the
-   match: make their light blink slowly, and start a new match on the next
-   press.
-4. **A fair tie.** Both players could, just possibly, press in the same pass
-   of `loop ()`. Right now red would win. Check for `redPressed &&
-   greenPressed` first in the *Go* state, and call it a draw with both lights
-   flashing.
+3. **Best of five.** Add `int wins = 0;` to `Player`, and count each
+   player's wins. The first to three wins the match: make their light blink
+   slowly, and start a new match on the next press.
+4. **A fair tie.** Both players could, just possibly, press in the same
+   update. Right now red would win, because `loop ()` asks red's button
+   first. In the *Go* state, check whether both were pressed, and call it a
+   draw with both lights flashing.
