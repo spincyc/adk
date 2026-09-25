@@ -30,3 +30,11 @@ bench.wire ("a10", "B-10")
 bench.wire ("21", "g11", via=[(3.85, 0.55), (5.75, 0.55), (5.75, 1.35)])
 bench.wire ("20", "h12", via=[(3.75, 0.5), (5.85, 0.5), (5.85, 1.25)])
 bench.closeup (1, 16)
+
+# Readings to take with a multimeter, the black probe in the GY-521's GND
+# column: its supply, the data line resting high between readings, and the
+# address pin that the module's own resistor holds low.
+bench.measure ("The module's supply", red="f9", black="c10", expect="about 5 V", when="any time")
+bench.measure ("SDA, the data line", red="f12", black="c10", expect="3.5 to 4 V",
+               when="sketch running")
+bench.measure ("AD0, the address pin", red="f15", black="c10", expect="about 0 V", when="any time")

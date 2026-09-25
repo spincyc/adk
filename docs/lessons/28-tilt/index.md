@@ -176,3 +176,39 @@ the numbers themselves, try the second challenge below.
    surface you like becomes "level".
 4. **Tilt alarm.** Add the passive buzzer from Lesson 27 and sound a warning
    whenever the board tips more than 20°.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM** and the red one in **V**, never in **10A**.
+
+The black probe stays in c10 for every reading: column 10 is the GY-521's
+GND, carried across the gap by its black jumper. The red probe goes in row
+f, below the module, where each column is joined to one of its pins. Hold
+the tip straight: f9 carries 5 V and f10, right beside it, is GND, so a tip
+that touched both would join them. Nothing needs slowing down.
+
+!!! question "Predict"
+    Between readings, nothing is being sent on SDA. Will it read 0 V, 5 V,
+    or something else?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **The module's supply** is the 5 V of the top + rail. The MPU-6050 itself
+  runs on 3.3 V, which a small regulator on the module makes from the 5 V.
+- **SDA** reads somewhere between 3.5 and 4 V: neither 0 nor 5. On an I2C
+  bus no chip ever drives a wire high. Each can only pull it low, for a 0,
+  and resistors hold it high the rest of the time. Two sets of them pull on
+  SDA here: the Mega's, up towards 5 V, and the module's own, up towards its
+  3.3 V, so the wire settles between the two. Just where depends on your
+  module's resistors.
+- Every 20 ms the Mega asks for a reading, and 14 bytes go past in under
+  2 ms, far too fast for the meter. It only averages them in, which nudges
+  its number down a little.
+- **AD0** reads 0 V: a resistor on the module holds it low, and a low AD0
+  makes the chip answer to address `0x68`, the number in
+  `adk::Mpu6050 tilt {0x68};`. Joined to 3.3 V instead, it would answer to
+  `0x69`.
