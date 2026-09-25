@@ -11,11 +11,13 @@ adk::Button    clearButton {23};
 adk::Every     step        {20};
 adk::Every     blink       {200};
 
-int  penX     = 350;    // in hundredths of a dot: 350 is halfway across dot 3
+// The pen keeps its place in hundredths of a dot, from 0 to 799 each way, so
+// a gentle push adds up instead of being lost. 350 is halfway across dot 3.
+int  penX     = 350;
 int  penY     = 350;
 bool penDown  = true;
-bool drawn    = true;   // whether the picture has a dot under the pen
-bool penShown = true;
+bool penShown = true;    // while the pen is up, it blinks
+bool drawn    = true;    // whether the picture has a dot under the pen
 
 void setup ()
 {
@@ -51,6 +53,8 @@ void loop ()
     matrix.set (penX / 100, penY / 100, penDown || penShown);
 }
 
+// The further the stick is pushed, the further the pen moves. The matrix
+// counts y downwards, but the stick counts it upwards.
 void movePen ()
 {
     int oldX = penX / 100;
@@ -59,6 +63,7 @@ void movePen ()
     penX = constrain (penX + joystick.x () / 4, 0, 799);
     penY = constrain (penY - joystick.y () / 4, 0, 799);
 
+    // Leaving a dot puts back what the picture has there.
     if (penX / 100 != oldX || penY / 100 != oldY)
     {
         matrix.set (oldX, oldY, drawn);

@@ -101,7 +101,7 @@ Open **File → Examples → Adk → Lesson26Joystick**:
 
 <!-- sketch -->
 
-The new parts:
+What's new:
 
 - `adk::Joystick joystick {A3, A4};` names the stick and the analog pins for
   its x and y knobs.
@@ -114,13 +114,15 @@ The new parts:
 - `movePen ()` runs on every tick of `step`, 50 times a second. It adds
   `joystick.x () / 4`, and takes away `joystick.y () / 4` because the
   matrix counts y downwards while the stick counts it upwards.
-  `constrain (value, 0, 799)` keeps the pen on the matrix.
+  `constrain (value, 0, 799)` keeps the pen on the matrix, as it kept
+  readings in range in Lesson 8.
 - `drawn` remembers whether the picture has a dot under the pen. When the
   pen moves on, `matrix.set (oldX, oldY, drawn)` puts back exactly what was
   there, and `matrix.get ()` reads the dot the pen arrives on.
 - With the pen down, the dot under it stays lit and becomes part of the
-  picture. With the pen up, `blink` switches it on and off every 200
-  milliseconds, so you can see where you are without drawing.
+  picture: `drawn = drawn || penDown` makes sure of that when you put the
+  pen down. With the pen up, `blink` switches `penShown` on and off every
+  200 milliseconds, so you can see where you are without drawing.
 
 ## Upload it
 
@@ -129,6 +131,12 @@ middle of the matrix. Push the stick: the dot moves that way and leaves a
 trail. A small push creeps, a big push races. Click the stick straight
 down: the dot starts to blink, and now it moves without drawing. Click again
 to draw. Press the button and the picture vanishes, leaving just the pen.
+
+You predicted the speed at half a push. `joystick.x ()` reads 50, and
+`50 / 4` is 12 (whole numbers drop the half), so the pen moves 12 hundredths
+of a dot on each of the 50 steps a second: 600 hundredths, or 6 dots a
+second. That is half the full speed, and it crosses the eight dots in a
+little over a second.
 
 ## If it doesn't work
 
@@ -163,6 +171,6 @@ to draw. Press the button and the picture vanishes, leaving just the pen.
 3. **Mirror drawing.** Whenever the pen draws a dot, also light
    `(7 - x, y)`, so everything you draw appears twice, like a butterfly.
 4. **A drawing that fades.** Every two seconds, clear the dot the pen drew
-   longest ago, so the trail is always the same length. You will need an
-   array to remember the order, which is exactly what the snake in the next
-   lesson does.
+   longest ago, so the trail is always the same length. You will need to
+   remember the order the dots were drawn in: come back to this after the
+   next lesson, whose snake does exactly that with an `adk::Deque`.
