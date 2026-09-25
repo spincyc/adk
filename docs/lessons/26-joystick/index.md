@@ -174,3 +174,34 @@ little over a second.
    longest ago, so the trail is always the same length. You will need to
    remember the order the dots were drawn in: come back to this after the
    next lesson, whose snake does exactly that with an `adk::Deque`.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM** and the red one in **V**, never in **10A**. Keep
+each probe tip in its own hole, so it can't bridge two.
+
+The joystick's five wires run straight from the Mega to the module, where a
+probe can't reach them safely, so the readings here are on the clear button,
+the one part on the breadboard. It stands in for the stick's own switch,
+which is wired just the same inside the module: from its pin to GND. Hold
+the button still while the number settles.
+
+!!! question "Predict"
+    Clicking the stick and pressing the clear button look like two very
+    different things. What will pin 23 read with the button up, and held
+    down? What do you think SW, on pin 22, reads when you click the stick?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Released**, pin 23 reads about 5 V: the Mega's pull-up, a resistor
+  inside the chip from the pin to 5 V, holds it there, as in Lesson 2.
+- **Held down**, it reads 0 V: the button joins pin 23 to the − rail.
+- The stick's switch does exactly the same to pin 22: about 5 V until you
+  click, then 0 V. That is why the sketch can make both of them an
+  `adk::Button`, and why `stick.wasPressed ()` and
+  `clearButton.wasPressed ()` work alike: each is true in the one update
+  where its pin falls from 5 V to 0 V.
