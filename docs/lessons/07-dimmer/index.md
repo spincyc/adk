@@ -17,6 +17,7 @@ ideas:
   - Analog input, read as a number from 0 to 1023
   - The potentiometer as a voltage divider
   - Scaling a reading with read (low, high)
+  - Choosing between two values with ?:
   - Dimming with PWM, and the Serial Plotter
 ---
 
@@ -105,13 +106,23 @@ What's new:
 - `adk::AnalogInput knob {A0};` says there is something to measure on pin
   A0. `adk::PwmOutput led {3};` is a pin that can dim. Only some pins can do
   PWM (on the Mega, 2 to 13 and 44 to 46); if you ask for one that can't,
-  `adk::setup ()` stops and blinks its number, as you saw in Lesson 1.
-- `Serial.begin (9600);` and `adk::setup (Serial);` are as in Lesson 2: if
-  something is wrong, the Serial Monitor says what.
+  `adk::setup ()` stops and blinks its number, as in Lesson 4.
 - `knob.read ()` gives the raw reading, 0 to 1023. `knob.read (0, 255)`
-  gives the same reading scaled to 0 to 255, ready for `led.write ()`.
-- `plot ()` prints a line such as `knob:512 brightness:127`. The Serial
-  Plotter reads each `name:number` pair and draws it as a line of its own.
+  gives the same reading scaled to 0 to 255, ready for `led.write ()`. The
+  first number is what a reading of 0 becomes, and the second what 1023
+  becomes, so `knob.read (255, 0)` scales it the other way round: 0 becomes
+  255, and 1023 becomes 0.
+- `constexpr bool reversed = false;` is a setting for you to choose, true or
+  false, before you upload.
+- `reversed ? knob.read (255, 0) : knob.read (0, 255)` is a **conditional
+  expression**: a question with two possible answers. If what comes before
+  the `?` is true, its value is the one after the `?`; if not, the one after
+  the `:`. Here `reversed` is false, so `brightness` is
+  `knob.read (0, 255)`. It does the job of an `if` and an `else`, when all
+  they would do is choose a value.
+- `adk::println ()`, from Lesson 2, prints a line such as
+  `knob:512 brightness:127`. The Serial Plotter reads each `name:number`
+  pair and draws it as a line of its own.
 - `adk::wait (20)` takes 50 readings a second: quick enough to follow your
   hand, and slow enough for the graph to scroll at a comfortable pace.
 
@@ -119,7 +130,14 @@ What's new:
 
 Plug in the Mega and upload the sketch as in Lesson 1. Turn the knob slowly
 from one end to the other. The LED should glide from fully off to fully
-bright, with no steps you can see.
+bright, with no steps you can see. If it gets brighter the way you'd rather
+it got dimmer, change `reversed` to `true` and upload again.
+
+How did your prediction do? With the knob halfway, the LED looks much more
+than half as bright: nearer three quarters, to most people. Your eyes notice
+a change in dim light far more than the same change in bright light, so the
+first few steps up from dark look big, and the last few before full look
+small. The second challenge below makes the knob feel even.
 
 Now choose **Tools → Serial Plotter** and set it to **9600 baud**. Two lines
 scroll across: `knob`, between 0 and 1023, and `brightness`, between 0 and
@@ -152,13 +170,16 @@ a quarter of the height of the knob line.
 
 ## Make it yours
 
-1. **Night light.** Make the LED brightest when the knob is at its lowest:
-   write `255 - brightness` instead of `brightness`.
-2. **Test your prediction.** You probably found that halfway looks brighter
-   than half. Eyes notice changes in dim light far more than in bright light.
-   Make the knob feel even by squaring: `long level = knob.read (0, 255);`
-   then `led.write (level * level / 255);`. It needs a `long`, because
-   255 × 255 is too big for an `int` on the Mega.
+1. **Never quite dark.** Make the lowest setting a faint glow instead of
+   off, like a night light: change `knob.read (0, 255)` to
+   `knob.read (10, 255)`. What does the plotter's brightness line do now at
+   the bottom of the knob?
+2. **Test your prediction.** Make the knob feel even by squaring: change
+   `int brightness` to `long brightness`, and write
+   `led.write (brightness * brightness / 255);`. A `long` is a whole number
+   with far more room than an `int`, which on the Mega stops at 32 767:
+   255 × 255 is 65 025. Lesson 8 says more about `long`. Does halfway look
+   like half now?
 3. **Speed knob.** Use the knob to set a blink speed instead: turn the LED on
    with `led.write (255)`, wait `knob.read (50, 1000)` milliseconds, turn it
    off, and wait again.
