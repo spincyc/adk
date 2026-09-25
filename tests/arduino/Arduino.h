@@ -152,6 +152,25 @@ extern volatile uint16_t TCNT5;
 #define WGM52  3
 #define WGM53  4
 
+// Timer 1, which the 433 MHz radio runs as its sample clock, and the one
+// interrupt it uses. A handler is a plain function here, so a test makes
+// the interrupt happen by calling TIMER1_COMPA_vect ().
+extern volatile uint8_t  TCCR1A;
+extern volatile uint8_t  TCCR1B;
+extern volatile uint8_t  TIMSK1;
+extern volatile uint16_t OCR1A;
+extern volatile uint16_t TCNT1;
+
+#define CS10   0
+#define CS11   1
+#define CS12   2
+#define WGM12  3
+#define OCIE1A 1
+
+#define ISR(vector) void vector ()
+
+void TIMER1_COMPA_vect ();
+
 class Print
 {
   public:
@@ -184,21 +203,34 @@ class Print
     size_t println (double value, int digits = 2);
 };
 
-// The Mega's USB serial port. What a sketch prints is kept in text.
+// The Mega's four serial ports: Serial on USB, and Serial1 to Serial3 on
+// pins 18 and 19, 16 and 17, and 14 and 15. What a sketch sends is kept in
+// text; a test puts what the device at the other end sends in input.
 class HardwareSerial : public Print
 {
   public:
     void   begin     (unsigned long baud);
+    void   end       ();
     int    available ();
     int    read      ();
     size_t write     (uint8_t byte) override;
 
+    using Print::write;
+
     explicit operator bool () const;
 
-    std::string text;
+    // Forget everything sent and received.
+    void clear ();
+
+    std::string   text;
+    std::string   input;
+    unsigned long baud = 0;
 };
 
 extern HardwareSerial Serial;
+extern HardwareSerial Serial1;
+extern HardwareSerial Serial2;
+extern HardwareSerial Serial3;
 
 namespace arduino {
 
@@ -235,6 +267,7 @@ namespace arduino {
     // Hooks a test sets to act as the device on the other end of a pin.
     extern std::function<int (uint8_t pin)>                                         onDigitalRead;
     extern std::function<void (uint8_t pin, uint8_t value)>                         onDigitalWrite;
+    extern std::function<void (uint8_t pin, uint8_t mode)>                          onPinMode;
     extern std::function<unsigned long (uint8_t pin, uint8_t state, unsigned long)> onPulseIn;
 
     // Every byte shiftOut () sent, as a 74HC595 would hold it (most

@@ -51,3 +51,6 @@
 
 #include "adk/spi.h"
 #include "adk/rfid.h"
+
+#include "adk/radio.h"
+#include "adk/fm_radio.h"

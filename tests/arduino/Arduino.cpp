@@ -10,11 +10,17 @@ volatile uint16_t OCR5A  = 0;
 volatile uint16_t OCR5B  = 0;
 volatile uint16_t OCR5C  = 0;
 volatile uint16_t TCNT5  = 0;
+volatile uint8_t  TCCR1A = 0;
+volatile uint8_t  TCCR1B = 0;
+volatile uint8_t  TIMSK1 = 0;
+volatile uint16_t OCR1A  = 0;
+volatile uint16_t TCNT1  = 0;
 
 namespace arduino {
 
     std::function<int (uint8_t pin)>                                         onDigitalRead;
     std::function<void (uint8_t pin, uint8_t value)>                         onDigitalWrite;
+    std::function<void (uint8_t pin, uint8_t mode)>                          onPinMode;
     std::function<unsigned long (uint8_t pin, uint8_t state, unsigned long)> onPulseIn;
     std::string                                                              shifted;
 }
@@ -60,6 +66,7 @@ namespace arduino {
 
         onDigitalRead  = nullptr;
         onDigitalWrite = nullptr;
+        onPinMode      = nullptr;
         onPulseIn      = nullptr;
         shifted.clear ();
 
@@ -70,6 +77,16 @@ namespace arduino {
         OCR5B  = 0;
         OCR5C  = 0;
         TCNT5  = 0;
+        TCCR1A = 0;
+        TCCR1B = 0;
+        TIMSK1 = 0;
+        OCR1A  = 0;
+        TCNT1  = 0;
+
+        for (HardwareSerial* port : {&Serial, &Serial1, &Serial2, &Serial3})
+        {
+            port->clear ();
+        }
     }
 
     PinState& pin (uint8_t pin)
@@ -146,6 +163,11 @@ uint8_t digitalPinToTimer (uint8_t pin)
 void pinMode (uint8_t pin, uint8_t mode)
 {
     pins[pin].mode = mode;
+
+    if (arduino::onPinMode)
+    {
+        arduino::onPinMode (pin, mode);
+    }
 }
 
 void digitalWrite (uint8_t pin, uint8_t value)
@@ -410,19 +432,42 @@ size_t Print::println (double value, int digits)
 }
 
 HardwareSerial Serial;
+HardwareSerial Serial1;
+HardwareSerial Serial2;
+HardwareSerial Serial3;
 
-void HardwareSerial::begin (unsigned long)
+void HardwareSerial::begin (unsigned long rate)
 {
+    baud = rate;
+}
+
+void HardwareSerial::end ()
+{
+    baud = 0;
 }
 
 int HardwareSerial::available ()
 {
-    return 0;
+    return static_cast<int> (input.size ());
 }
 
 int HardwareSerial::read ()
 {
-    return -1;
+    if (input.empty ())
+    {
+        return -1;
+    }
+
+    int byte = static_cast<uint8_t> (input[0]);
+    input.erase (0, 1);
+    return byte;
+}
+
+void HardwareSerial::clear ()
+{
+    text.clear ();
+    input.clear ();
+    baud = 0;
 }
 
 size_t HardwareSerial::write (uint8_t byte)
