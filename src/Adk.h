@@ -17,6 +17,10 @@
 #include "adk/speaker.h"
 
 #include "adk/button.h"
+#include "adk/keypad.h"
+#include "adk/rotary_encoder.h"
+#include "adk/joystick.h"
+#include "adk/thermistor.h"
 
 #include "adk/shift_register.h"
 #include "adk/segments.h"
