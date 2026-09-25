@@ -91,14 +91,26 @@ What's new:
 - `keypad.key ()` is the key pressed in this pass of `loop ()`, or `'\0'`, "no
   key", in every other pass. Like `wasPressed ()` in Lesson 2, it's an event:
   each press gives it once.
-- Keys are characters, and characters are numbers underneath. `'0'` to `'9'`
-  have codes one after another, so `key - '0'` turns `'7'` into the number 7.
-  In the same way `key - 'A'` turns **A** to **D** into 0 to 3, the place of
-  each one's symbol in `symbols`.
+- `char key` holds one character, as in Lesson 14. In single quotes, `'7'` is
+  one character; in double quotes, `"7"` would be a piece of text.
+- Characters are numbers underneath. `'0'` to `'9'` have codes one after
+  another, so `key - '0'` turns `'7'` into the number 7. In the same way
+  `key - 'A'` turns **A** to **D** into 0 to 3, the place of each one's
+  symbol in `symbols`, an `adk::Array` of characters.
 - `typeDigit ()` builds the first number until an operation is chosen, then
-  the second. It stops at four digits, so even 9999 × 9999 fits in a `long`.
-- `showAnswer ()` works out the answer on the bottom row. Division uses
-  `float`, so 7 / 2 shows 3.500; the other three stay whole numbers.
+  the second. `long& number = operation == 0 ? first : second;` makes
+  `number` another name for whichever of the two is being typed. The `&`
+  works as it did for a player in Lesson 3: changing `number` changes
+  `first` or `second` itself.
+- `digits` counts the digits typed into the number and stops at four, so even
+  9999 × 9999 fits in a `long`. Counting them, rather than looking at how big
+  the number is, stops a row of zeros at four too.
+- `showAnswer ()` works out the answer on the bottom row. Divide one whole
+  number by another and the answer is whole too: 7 / 2 would be 3. So
+  division turns `first` into a `float` first, with `float (first)`, and
+  7 / 2 shows 3.500. The other three stay whole numbers.
+- `calculate ()` is a `switch` on the operation's symbol, like `colorOf ()`
+  in Lesson 15.
 
 ## Upload it
 
@@ -109,8 +121,8 @@ Upload the sketch; the screen starts blank. Type **12**, press **C**, type
 the calculator thinks of dividing by zero.
 
 Then test your prediction: hold **1** and press **2**. Only **1** appears at
-first; **2** appears when you let **1** go. The keypad counts one key at a
-time.
+first; **2** appears when you let **1** go. So the screen ends up showing 12,
+but the 2 only arrives when you let go: the keypad counts one key at a time.
 
 ## If it doesn't work
 

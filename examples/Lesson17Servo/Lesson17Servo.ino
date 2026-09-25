@@ -1,5 +1,6 @@
 // Lesson 17: Servo
-// A dial whose needle follows a knob: the servo turns to the knob's angle, 0 to 180 degrees.
+// A dial whose needle follows a knob: the servo turns to the knob's angle,
+// from 0 to 180 degrees.
 
 #include <Adk.h>
 

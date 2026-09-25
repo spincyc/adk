@@ -18,6 +18,8 @@ parts:
   - A small cardboard box and some tape, if you want a real safe
 ideas:
   - A lock as a set of states
+  - A code as a list of keys
+  - Handing a list to a function, with adk::Span
   - Stopping guessers with a lockout
   - Memory that survives the power going off (EEPROM)
   - A servo as a latch
@@ -45,6 +47,11 @@ met states in Lesson 3's Reaction Duel; here they are:
 - **Choosing**: you're typing a new code.
 - **Waiting**: too many wrong guesses, so the keys are ignored for a while.
 
+**A code is a list of keys.** 0123 and 123 are different codes, so the safe
+doesn't turn your keys into a number, the way Lesson 16's calculator did. It
+keeps the keys themselves, in order, in a list, and a code is right when the
+keys you typed and the keys of the code are the same, in the same order.
+
 **A lockout beats guessing.** A four-digit code has 10 × 10 × 10 × 10 =
 10,000 possibilities. Trying one every five seconds, a guesser would find
 yours after about 5,000 tries, in about seven hours. Make them wait 30 seconds
@@ -54,10 +61,10 @@ now it takes about 21 hours.
 **EEPROM keeps the code.** Everything in the Mega's ordinary memory, its
 variables, vanishes when the power goes. But the Mega also has 4,096 bytes of
 **EEPROM**, memory that keeps what's written in it with the power off, for
-many years. Each byte holds a number from 0 to 255, so the sketch keeps a
-four-digit code in two of them: 1234 is stored as 12 and 34, and read back as
-12 × 100 + 34. A third byte, a "mark", says whether a code has been saved at
-all: a fresh EEPROM byte reads 255.
+many years. Each byte holds a number from 0 to 255, enough for one key, so
+the sketch keeps each of the code's four keys in a byte of its own, in
+addresses 1 to 4. One more byte, in address 0, is a "mark" that says whether
+a code has been saved at all: a fresh EEPROM byte reads 255.
 
 EEPROM wears out, slowly: each byte can be rewritten about 100,000 times. The
 sketch writes with `EEPROM.update ()`, which only writes a byte when its value
@@ -72,17 +79,19 @@ years to wear it out.
 ## How the safe works
 
 The sketch starts **Locked**, with the code it finds in EEPROM, or 1234 if
-none has been saved. Every digit you type clicks the buzzer.
+none has been saved. Every digit you type clicks the buzzer, and **\***
+always does the same thing: it locks the safe and rubs out what you typed.
 
 | State | The screen says | Key | What happens |
 |---|---|---|---|
 | Locked | `Locked. Code?` | 0 to 9 | A `*` appears; up to four digits |
 | Locked | | # | Right code: **Open**. Wrong: a long beep and `Wrong! Try again`, or, at the third wrong code in a row, **Waiting** |
 | Locked | | \* | Rub out the digits and start again |
-| Open | `Open. # locks` | # | The arm swings back: **Locked** |
+| Open | `Open. # locks` | # or \* | The arm swings back: **Locked** |
 | Open | | A | **Choosing** |
 | Choosing | `New code, then #` | 0 to 9 | The digit itself appears, so you can check it |
 | Choosing | | # | After four digits, save the code in EEPROM: **Open** |
+| Choosing | | \* | Change your mind: **Locked**, and the old code stays |
 | Waiting | `Too many tries` | any | Nothing, while `Wait 30 s` counts down; then **Locked** |
 
 ## Build it
@@ -106,7 +115,7 @@ none has been saved. Every digit you type clicks the buzzer.
     shaft pointing at the lid. Upload the sketch first, so the servo sits at
     0°, the locked position, then press the horn onto the shaft so that it
     sticks out under the edge of the lid, holding it shut. At 90° it should
-    swing clear. If your box needs different angles, change `closedAngle`
+    swing clear. If your box needs different angles, change `lockedAngle`
     and `openAngle` in the sketch. Run the wires out through a small hole,
     and leave a finger hole or a string so you can still open it by hand while
     you are testing.
@@ -124,28 +133,41 @@ Open **File → Examples → Adk → Lesson18KeypadSafe**:
 
 <!-- sketch -->
 
-Reading it from the top:
+What's new:
 
 - `#include <EEPROM.h>` brings in Arduino's EEPROM library, with its
   `EEPROM.read (address)` and `EEPROM.update (address, value)`.
-- `enum State` names three states. The fourth, Waiting, is simple enough to
-  be a pause inside `refuse ()`.
-- `loop ()` reads one key and hands it on, depending on the key and the state.
-  The rules are the table above.
-- `typeDigit ()` builds the number the way the calculator in
-  [Lesson 16](../16-keypad/index.md) did, and shows a `*`, or the digit when
-  you are choosing a new code.
-- `pressEnter ()` decides what `#` means right now. A code only counts with
-  all four digits typed, so 123 and 0123 are different codes.
+- `enum class State` names three states. The fourth, Waiting, is simple
+  enough to be a pause inside `refuse ()`.
+- `adk::Array code {'1', '2', '3', '4'};` is the code, a list of four keys,
+  and `adk::Vector<char, 4> typed;` is a list of the keys typed so far, which
+  grows as you type, up to four. `typed.full ()` says when it holds four, and
+  `typed.clear ()` empties it.
+- `loop ()` reads one key and hands it on, depending on the key and the
+  state. The rules are the table above.
+- `typeDigit ()` adds the key to `typed` and shows a `*`, or the digit itself
+  while you are choosing a new code.
+- `pressEnter ()` decides what `#` means right now. `same (typed, code)`
+  checks the code.
+- `same ()` takes its two lists as **`adk::Span<const char>`**, a view of a
+  list of characters kept somewhere else: not a copy, but a way to see the
+  list's `size ()` and its items. A Span can be handed an Array or a Vector
+  alike, and here it gets one of each. The `const` means `same ()` may look
+  at the keys but not change them.
+- `size_t` is the type that sizes and places in a list come in, a whole
+  number that is never negative, so the loop in `same ()` counts with a
+  `size_t i`. `return false;` leaves the function the moment two keys differ.
 - `refuse ()` counts wrong codes. On the third, it counts down 30 seconds with
-  `adk::wait (1000)`. Keys pressed meanwhile are scanned but never read, so
-  they do nothing.
-- `enter (Open, "Open. # locks")` is how the safe changes state. It moves
-  the latch to match the new state, writes the message on the top row, and
-  clears the bottom row for typing. Every change goes through it, so the
-  latch and the screen can never disagree.
+  `adk::wait (1000)`, printing the seconds left on the bottom row with one
+  `adk::print ()`. Keys pressed meanwhile are scanned but never read, so they
+  do nothing.
+- `enter (State::Open, "Open. # locks")` is how the safe changes state. It
+  moves the latch to match the new state, writes the message on the top row,
+  and clears the bottom row and `typed` for typing. Every change goes through
+  it, so the latch and the screen can never disagree.
 - `loadCode ()` and `saveCode ()` are the EEPROM: address 0 holds the mark,
-  42, once a code is saved; addresses 1 and 2 hold its two halves.
+  42, once a code is saved, and addresses 1 to 4 hold its keys.
+  `saveCode (typed)` takes a Span too, so the keys you typed go straight in.
 
 ## Upload it
 
@@ -164,7 +186,11 @@ down, and the keys do nothing until it reaches zero.
 Test your prediction: open the safe, press **A**, type **2 4 6 8** and **#**.
 The screen says `New code saved`. Unplug the adapter and the USB cable, plug
 them back in, and only 2468 will open it. Upload the sketch again and it's
-still 2468: uploading a sketch doesn't touch the EEPROM.
+still 2468: uploading a sketch doesn't touch the EEPROM. So the answer is
+2468 both times.
+
+Pressing **A** and then **\*** instead leaves the code as it was: the safe
+locks, and the old code still opens it.
 
 ## If it doesn't work
 
@@ -176,7 +202,7 @@ still 2468: uploading a sketch doesn't touch the EEPROM.
 | Keys come out wrong | See Lesson 16's "Which way round is the ribbon?" |
 | The right code says `Wrong!` | You may have saved a different code. If you've forgotten it, change `savedMark` to 43 and upload: the sketch then ignores the saved code and starts again from 1234. |
 | No clicks or beeps | Check the buzzer's + leg is in f23 with pin 12's wire in j23, and j26 goes to the − rail. |
-| The servo buzzes when locked | It's pressing against its stop or the lid. Try a `closedAngle` of 10. |
+| The servo buzzes when locked | It's pressing against its stop or the lid. Try a `lockedAngle` of 10. |
 | The Mega resets when the servo moves | Something takes power from the Mega's 5V pin. Nothing should in this build. |
 
 ??? note "How it works"
@@ -195,11 +221,14 @@ still 2468: uploading a sketch doesn't touch the EEPROM.
 ## Make it yours
 
 1. **Auto-lock.** Lock the safe again by itself 20 seconds after it opens.
-   An `adk::Every` from Lesson 11, restarted when the safe opens, is one way.
+   An `adk::Timer` from Lesson 3, started in `enter ()` when the safe opens,
+   is one way.
 2. **Longer lockouts.** Double the wait after each lockout: 30 s, then 60,
-   then 120. Should a correct code reset it?
+   then 120. `lockoutTime` will need to be a variable rather than a
+   `constexpr`. Should a correct code reset it?
 3. **Can't unplug your way out.** At the moment, unplugging the Mega forgets
    how many wrong codes were typed. Keep the count in EEPROM too, so a
    guesser can't reset it.
-4. **Six digits.** Allow six-digit codes. An `int` can't hold 999999, but a
-   `long` can, and the code then needs three bytes of EEPROM.
+4. **Six digits.** Allow six-digit codes: give `code` six keys, and `typed`
+   room for six. Why does no function need to change? (Change `savedMark`
+   too, so an old four-key code isn't read back as six.)

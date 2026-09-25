@@ -1,5 +1,5 @@
 // Lesson 18: Keypad Safe
-// A code lock: the right code and # open the servo latch; three wrong codes lock it out.
+// The right code opens the latch; three wrong codes lock the keypad out.
 
 #include <Adk.h>
 #include <EEPROM.h>
@@ -9,31 +9,25 @@ adk::Keypad keypad {{22, 23, 24, 25}, {26, 27, 28, 29}};
 adk::Servo  latch  {44};
 adk::Buzzer buzzer {12};
 
-enum State
-{
-    Locked,
-    Open,
-    Choosing
-};
+enum class State { Locked, Open, Choosing };
 
-const uint8_t closedAngle = 0;
-const uint8_t openAngle   = 90;
-const uint8_t maxTries    = 3;
-const int     lockoutTime = 30;     // seconds
-const uint8_t savedMark   = 42;     // in EEPROM address 0 once a code is saved
+constexpr int     lockedAngle = 0;
+constexpr int     openAngle   = 90;
+constexpr int     maxTries    = 3;
+constexpr int     lockoutTime = 30;    // seconds
+constexpr uint8_t savedMark   = 42;    // in EEPROM once a code is saved
 
-State   state  = Locked;
-int     code   = 1234;              // until you choose your own
-int     typed  = 0;
-uint8_t digits = 0;
-uint8_t wrong  = 0;
+State                state = State::Locked;
+adk::Array           code  {'1', '2', '3', '4'};  // until you choose one
+adk::Vector<char, 4> typed;                       // the keys typed so far
+int                  wrong = 0;                   // wrong codes in a row
 
 void setup ()
 {
     adk::setup ();
 
-    code = loadCode ();
-    enter (Locked, "Locked. Code?");
+    loadCode ();
+    enter (State::Locked, "Locked. Code?");
 }
 
 void loop ()
@@ -44,59 +38,56 @@ void loop ()
 
     if (key >= '0' && key <= '9')
     {
-        typeDigit (key - '0');
+        typeDigit (key);
     }
     else if (key == '#')
     {
         pressEnter ();
     }
-    else if (key == '*' && state == Locked)
+    else if (key == '*')
     {
-        enter (Locked, "Locked. Code?");
+        enter (State::Locked, "Locked. Code?");
     }
-    else if (key == 'A' && state == Open)
+    else if (key == 'A' && state == State::Open)
     {
-        enter (Choosing, "New code, then #");
+        enter (State::Choosing, "New code, then #");
     }
 }
 
-void typeDigit (int digit)
+// Each digit clicks, and shows as a star, or as itself while choosing.
+void typeDigit (char key)
 {
-    if (state == Open || digits == 4)
+    if (state != State::Open && !typed.full ())
     {
-        return;
+        typed.push_back (key);
+        buzzer.beep (20);
+        lcd.print (state == State::Choosing ? key : '*');
     }
-
-    buzzer.beep (20);
-    typed = typed * 10 + digit;
-    ++digits;
-    lcd.print (state == Choosing ? char ('0' + digit) : '*');
 }
 
 void pressEnter ()
 {
-    if (state == Open)
+    if (state == State::Open)
     {
-        enter (Locked, "Locked. Code?");
+        enter (State::Locked, "Locked. Code?");
     }
-    else if (state == Choosing && digits == 4)
+    else if (state == State::Choosing && typed.full ())
     {
-        code = typed;
-        saveCode (code);
-        enter (Open, "New code saved");
+        saveCode (typed);
+        enter (State::Open, "New code saved");
     }
-    else if (state == Locked && digits == 4 && typed == code)
+    else if (state == State::Locked && same (typed, code))
     {
         wrong = 0;
-        enter (Open, "Open. # locks");
+        enter (State::Open, "Open. # locks");
     }
-    else if (state == Locked)
+    else if (state == State::Locked)
     {
         refuse ();
     }
 }
 
-// A wrong code: try again, or after too many, wait. Keys pressed while
+// A wrong code: try again or, after too many, wait. Keys pressed while
 // adk::wait () counts down are never read.
 void refuse ()
 {
@@ -105,55 +96,79 @@ void refuse ()
 
     if (wrong < maxTries)
     {
-        enter (Locked, "Wrong! Try again");
+        enter (State::Locked, "Wrong! Try again");
         return;
     }
 
-    enter (Locked, "Too many tries");
-    lcd.print ("Wait");
+    enter (State::Locked, "Too many tries");
 
     for (int left = lockoutTime; left > 0; --left)
     {
-        lcd.setCursor (5, 1);
-        lcd.print (left);
-        lcd.print (" s ");
+        adk::print (lcd.at (0, 1), "Wait ", left, " s ");
         adk::wait (1000);
     }
 
     wrong = 0;
-    enter (Locked, "Locked. Code?");
+    enter (State::Locked, "Locked. Code?");
 }
 
 // Every change of state comes here: the latch moves to match, the top row
 // says what's happening, and the bottom row is cleared for typing.
 void enter (State next, const char* message)
 {
-    state  = next;
-    typed  = 0;
-    digits = 0;
-    latch.moveTo (state == Locked ? closedAngle : openAngle, 500);
+    state = next;
+    typed.clear ();
+    latch.moveTo (state == State::Locked ? lockedAngle : openAngle, 500);
 
     lcd.clear ();
     lcd.print (message);
-    lcd.setCursor (0, 1);
+    lcd.at (0, 1);
 
-    if (state == Open)
+    if (state == State::Open)
     {
         lcd.print ("A: new code");
     }
 }
 
-// EEPROM keeps its bytes with the power off. A byte holds 0 to 255, so the
-// code's first two digits go in address 1 and its last two in address 2.
-int loadCode ()
+// Whether two lists hold the same keys in the same order.
+bool same (adk::Span<const char> keys, adk::Span<const char> others)
 {
-    bool saved = EEPROM.read (0) == savedMark;
-    return saved ? EEPROM.read (1) * 100 + EEPROM.read (2) : 1234;
+    if (keys.size () != others.size ())
+    {
+        return false;
+    }
+
+    for (size_t i = 0; i < keys.size (); ++i)
+    {
+        if (keys[i] != others[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
 
-void saveCode (int number)
+// EEPROM keeps its bytes with the power off: the mark in address 0 once a
+// code is saved, and the code's four keys in addresses 1 to 4.
+void loadCode ()
 {
-    EEPROM.update (1, number / 100);
-    EEPROM.update (2, number % 100);
+    if (EEPROM.read (0) == savedMark)
+    {
+        for (size_t i = 0; i < code.size (); ++i)
+        {
+            code[i] = EEPROM.read (1 + i);
+        }
+    }
+}
+
+void saveCode (adk::Span<const char> keys)
+{
+    for (size_t i = 0; i < code.size (); ++i)
+    {
+        code[i] = keys[i];
+        EEPROM.update (1 + i, code[i]);
+    }
+
     EEPROM.update (0, savedMark);
 }

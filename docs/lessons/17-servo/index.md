@@ -38,9 +38,11 @@ until the shaft points where it's told. You don't tell it to turn; you tell it
 an **angle**, and it goes there and holds it.
 
 The angle travels down the orange wire as a pulse, fifty times a second. The
-*width* of the pulse is the message. For the kit's SG90, a pulse of 544 µs
-(millionths of a second) means 0°, 2400 µs means 180°, and anything between
-means an angle in proportion. Halfway, 90°, is
+*width* of the pulse is the message. ADK's default, the same as Arduino's own
+Servo library, is a pulse of 544 µs (millionths of a second) for 0° and
+2400 µs for 180°, and anything between means an angle in proportion. Servos
+differ a little, so you can change both ends if yours needs it. Halfway, 90°,
+is
 
 <p class="formula">544 µs + <span class="fraction"><span>90</span><span>180</span></span> × (2400 µs − 544 µs) = 1472 µs</p>
 
