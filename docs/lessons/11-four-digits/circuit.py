@@ -69,3 +69,10 @@ bench.wire ("40", "j51", via=[(4.20, 1.70), (4.90, 1.70), (4.90, 0.30), (X (51),
 bench.wire ("41", "j54", via=[(4.85, 1.75), (4.85, 0.25), (X (54), 0.25)])
 bench.wire ("42", "j55", via=[(4.20, 1.80), (4.80, 1.80), (4.80, 0.20), (X (55), 0.20)])
 bench.wire ("43", "a56")
+
+# Readings to take with a multimeter while the display counts: each digit
+# pin is low, lighting its digit, a quarter of the time.
+bench.measure ("Digit 1's pin", red="40", black="GND", expect="about 3.75 V",
+               when="Counting")
+bench.measure ("Digit 4's pin", red="43", black="GND", expect="about 3.75 V",
+               when="Counting")

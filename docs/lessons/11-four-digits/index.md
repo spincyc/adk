@@ -163,3 +163,36 @@ challenge below lets you watch it happen.
 4. **Tenths.** Count in tenths of a second with a dot: text such as `"12.3"`
    lights the dot of the character before the `.`. Build the text with
    `snprintf ()`, as Lesson 12 does.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM** and the red one in **V**. A meter is slow, like
+your eye: it can't follow a digit that lights for 2 milliseconds at a time,
+so it shows the average, and the average gives multiplexing away.
+
+These readings don't depend on the number showing, so leave the sketch
+counting. The digit pins' holes are close to the display's legs: keep each
+probe tip in the hole shown, touching nothing else.
+
+!!! question "Predict"
+    A digit pin is at 0 V while its digit is lit, and at 5 V while it is
+    dark. What will the meter show on digit 1's pin? Digit 1 stays blank
+    until the count reaches 1000, while digit 4 always shows a number:
+    will their pins read the same?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Digit 1's pin** is at 5 V for three turns in every four, and at 0 V
+  for the fourth, while its digit is lit. The meter blends the two, just
+  as your eye blends the flashes: three quarters of 5 V is 3.75 V.
+- **Digit 4's pin** reads about the same. Every digit gets its quarter of
+  the time, 2 ms in every 8, whether it has anything to show or not.
+- Now watch it in slow motion, slow enough for a meter: add
+  `delay (2000);` at the end of `loop ()`, as in the first challenge, and
+  keep the probes on digit 1's pin. It sits at 5 V for six seconds, then
+  drops to 0 V for two while digit 1 has its turn. Take the delay out
+  again when you're done.
