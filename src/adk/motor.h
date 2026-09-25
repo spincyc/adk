@@ -26,8 +26,9 @@ namespace adk {
     // starting motor draws far more current than the board can give.
     //
     // Reversing a spinning motor at once would briefly draw about twice its
-    // stall current. So when the direction changes, the motor coasts for
-    // 100 ms before it is driven the other way, while the sketch carries on.
+    // stall current. So when the direction changes, the motor coasts for half
+    // a second, long enough for a small fan to slow right down, before it is
+    // driven the other way, while the sketch carries on.
     struct Motor : Object
     {
         Motor (Pin enable, Pin forward, Pin backward);

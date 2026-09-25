@@ -10,7 +10,7 @@ Modules Kit**; those are marked below and in each lesson's parts list.
 |---|---|---|
 | Arduino Mega 2560 and USB cable | The computer that runs your sketches | [Lesson 1](lessons/01-blink/index.md) |
 | 830-hole breadboard and jumper wires | Joins parts without soldering | Lesson 1 |
-| LEDs, 220 Ω and 1 kΩ resistors | Light, and the current that makes it | Lesson 1 |
+| LEDs, and 220 Ω, 1 kΩ and 10 kΩ resistors | Light, and the current that makes it | Lesson 1 |
 | Push buttons | Input you can press | Lesson 2 |
 | Active buzzer | Beeps when switched on | Lesson 3 |
 | RGB LED | Any color, mixed from red, green and blue | Lesson 4 |

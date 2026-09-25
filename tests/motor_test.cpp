@@ -87,7 +87,7 @@ TEST (motorStartsBackwardsAtOnceFromRest)
     CHECK (motor.speed () == -255);
 }
 
-TEST (reversingCoastsForATenthOfASecondFirst)
+TEST (reversingCoastsForHalfASecondFirst)
 {
     adk::Motor motor {5, 30, 31};
 
@@ -100,14 +100,14 @@ TEST (reversingCoastsForATenthOfASecondFirst)
     CHECK (motor.speed () == -150);
 
     adk::update (1000);
-    adk::update (1099);
+    adk::update (1499);
     CHECK (bridge () == "coast");
 
     motor.speed (-150);
-    adk::update (1099);
+    adk::update (1499);
     CHECK (bridge () == "coast");
 
-    adk::update (1100);
+    adk::update (1500);
     CHECK (bridge () == "B150");
 
     motor.speed (-60);
@@ -128,10 +128,10 @@ TEST (coastingBeforeReversingCountsTowardsTheWait)
 
     adk::update (60);
     motor.speed (-100);
-    adk::update (109);
+    adk::update (509);
     CHECK (bridge () == "coast");
 
-    adk::update (110);
+    adk::update (510);
     CHECK (bridge () == "B100");
 }
 
@@ -143,7 +143,7 @@ TEST (aMotorThatHasSpunDownReversesAtOnce)
     motor.speed (200);
     motor.coast ();
     adk::update (0);
-    adk::update (100);
+    adk::update (500);
 
     motor.speed (-100);
     CHECK (bridge () == "B100");
@@ -180,10 +180,10 @@ TEST (brakeShortsTheMotorAndStillWaitsBeforeReversing)
 
     adk::update (0);
     motor.speed (100);
-    adk::update (99);
+    adk::update (499);
     CHECK (bridge () == "brake");
 
-    adk::update (100);
+    adk::update (500);
     CHECK (bridge () == "F100");
 
     motor.coast ();

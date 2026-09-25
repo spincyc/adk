@@ -6,7 +6,7 @@ namespace adk {
 
     namespace {
 
-        const Millis SpinDown = 100;
+        const Millis SpinDown = 500;
     }
 
     Motor::Motor (Pin enable, Pin forward, Pin backward)
