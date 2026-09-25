@@ -32,3 +32,12 @@ bench.wire ("A0", "a46")
 bench.wire ("d47", "T+49")
 
 bench.closeup (1, 50)
+
+# Readings to take with a multimeter, the fan at one fixed speed set in the
+# sketch.
+bench.measure ("The enable pin", red="4", black="GND", expect="about 2.5 V",
+               when="speed 128, forward")
+bench.measure ("The forward pin", red="8", black="GND", expect="about 5 V",
+               when="speed 128, forward")
+bench.measure ("Across the motor", red="h14", black="h17", expect="about 3 V",
+               when="speed 255, forward")

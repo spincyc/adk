@@ -192,3 +192,45 @@ Switch the power module off when you finish, before you unplug the USB.
 4. **Automatic fan.** Add the ultrasonic sensor from Lesson 19 and switch
    the fan on only when someone is within 60 cm. The next lesson takes
    this much further.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts, the black
+lead in **COM** and the red one in **V**. Never use the **10A** jack here: it
+joins the two probes, and across the power module's rails that is a short
+circuit.
+
+First make the fan safe to work beside. Pull the blade off the motor's
+shaft: the motor turns just the same without it, and there is nothing left
+to catch your fingers or the meter's leads. If you keep the blade on, keep
+your fingers, the probes and their leads well out of its circle. Then give
+the fan one slow, fixed speed, so the readings hold still: in `loop ()`,
+change `knobSpeed ()` to `128` and upload. Put it back when you have
+finished. The probes go into holes close beside the chip, so keep each tip
+in its own hole: a tip across two holes joins them.
+
+!!! question "Predict"
+    At a speed of 128 out of 255, what will the meter read on the enable
+    pin, 4? And across the motor, what will change when you press the
+    button?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **The enable pin** reads about 2.5 V. PWM switches it between 5 V and 0
+  about a thousand times a second, on for 128 parts in every 255: half the
+  time. The meter can't follow that, so it shows the average, half of 5 V.
+  Try `200` in place of `128`: 200 ÷ 255 × 5 V ≈ 3.9 V. The meter shows the
+  speed in the code as a voltage.
+- **The forward pin** reads about 5 V while the fan runs forwards, and pin
+  9 reads 0: the first row of the table in *The idea*. Press the button:
+  both read 0 for half a second while the fan coasts, then pin 9 reads 5 V
+  and pin 8 stays at 0.
+- **Across the motor** needs the enable pin on all the time, so change
+  `128` to `255` for this one. The meter reads about 3 V, not 5: the chip
+  keeps a volt or two for itself. Now press the button. After the pause it
+  reads about −3 V. The minus sign means the chip has swapped which of the
+  motor's leads gets the supply and which gets GND, so the current runs
+  through the motor the other way: that is the H-bridge at work.
