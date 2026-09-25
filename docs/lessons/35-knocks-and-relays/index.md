@@ -189,3 +189,31 @@ gaps compare with each other. The second challenge below fixes that.
    seconds, like the lockout in the Keypad Safe of Lesson 18.
 4. **A timer switch.** Make the lamp switch itself off one minute after the
    secret knock turned it on, with an `adk::Timer` like `quiet`.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM**, the red one in **V**, never the **10A** socket.
+Knock the secret to switch the lamp on: it stays on until you knock it
+again, so there's nothing to slow down. All three readings are in the
+lamp's own circuit, which only ever carries the battery's 9 V.
+
+!!! question "Predict"
+    With the lamp on, the battery's 9 V is shared between the resistor and
+    the LED. How much will each get? And what will the first reading show
+    once the relay switches the lamp off?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **The battery, through the relay**: about 9 V; a new battery reads a
+  little more, a tired one less. Knock the secret again and the relay
+  clicks off: the reading drops to 0. The relay's contact is the only thing
+  joining the battery to the lamp, and nothing joins either of them to the
+  Mega.
+- **Across the resistor** and **across the LED** add up to the first
+  reading. The red LED keeps about 2 V for itself, and the resistor takes
+  the rest, about 7 V: 7 V ÷ 1000 Ω is the 7 mA worked out in the idea
+  above.
