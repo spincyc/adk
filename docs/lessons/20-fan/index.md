@@ -3,7 +3,7 @@ lesson: 20
 title: Fan
 arc: Distance and motors
 promise: Spin a fan at any speed, either way round, with a driver chip doing the heavy lifting.
-time: 60 minutes
+time: 1 hour
 level: 2
 sketch: Lesson20Fan
 parts:
@@ -37,9 +37,10 @@ separate supply, through a chip built to handle motors.
 **Why not just use a pin?** A Mega pin can give about 20 mA. The kit's
 little motor wants around 200 mA when it's spinning, and several times
 that for the instant it starts. Ask a pin for ten or twenty times its limit
-and it will be damaged, or the Mega will reset. A spinning motor also
-works like a dynamo: when it's switched off it sends a kick of voltage back
-down its wires. Motors never connect to a pin directly. They go through a
+and it will be damaged, or the Mega will reset. A motor is also a coil of
+wire, and the current in a coil tries to keep flowing: when it's switched
+off it sends a kick of voltage back down its wires. Motors never connect to
+a pin directly. They go through a
 **driver** and take their power from their own supply, here the breadboard
 power module.
 
@@ -59,8 +60,8 @@ direction, and its **enable** input switches that half on or off:
 |---|---|---|---|
 | HIGH | LOW | on | spins forward |
 | LOW | HIGH | on | spins backward |
-| LOW | LOW | either | coasts to a stop |
-| either | either | off | coasts to a stop |
+| LOW | LOW | on | brakes: both leads are joined to GND, so it stops quickly |
+| any | any | off | coasts to a stop |
 
 **Speed.** The enable pin gets PWM, as the dimmer's LED did in Lesson 7. A
 speed of 128 out of 255 switches the motor on about half the time, a
@@ -126,10 +127,12 @@ What's new:
   the enable pin, then the forward pin, then the backward pin.
 - `fan.speed (s)` takes a number from −255 to 255. Positive is forward,
   negative backward, and 0 lets it coast. Multiplying the speed by
-  `direction`, which is 1 or −1, is all it takes to reverse.
-- `knob.read (0, 100)` scales the knob from Lesson 7 to 0–100, how far
-  round it is turned, and `map ()` turns 10–100 into speeds from 100 to
-  255, skipping the humming range.
+  `direction`, which is 1 or −1, is all it takes to reverse: pressing the
+  button turns 1 into −1 and back.
+- `knobSpeed ()` is the knob from Lesson 7, read as how far round it is
+  turned, from 0 to 100. For the first tenth of the turn the `?:` gives 0,
+  so the fan stays still; after that `map ()` turns 10–100 into speeds from
+  `slowest`, 100, up to 255, skipping the range where the motor only hums.
 
 ## Upload it
 
@@ -140,6 +143,11 @@ What's new:
    it starts, slowly, and speeds up as you keep turning.
 4. Press the button. The fan slows, stops for a moment, and spins the other
    way, blowing the air backwards. Press it again to swap back.
+
+You predicted what a press does to a fast fan. It doesn't flip round at
+once: ADK lets it coast for half a second, slowing right down, before it
+drives it the other way. Watch the blade: it slows, nearly stops, then
+speeds up backwards.
 
 Switch the power module off when you finish, before you unplug the USB.
 
@@ -162,18 +170,23 @@ Switch the power module off when you finish, before you unplug the USB.
 
     Reversing a spinning motor at once would briefly draw about twice its
     stall current. So when the direction changes, ADK switches the motor
-    off, lets it coast for 100 ms while your sketch carries on, and only
-    then drives it the other way. That is the pause you saw.
+    off, lets it coast for half a second while your sketch carries on,
+    long enough for a small fan to slow right down, and only then drives
+    it the other way. That is the pause you saw.
 
 ## Make it yours
 
 1. **Emergency stop.** Add a second button on pin 23 that calls
    `fan.brake ()`, which stops the motor faster than coasting by shorting
-   its leads together through the chip.
+   its leads together through the chip. `loop ()` sets the speed on every
+   pass, so keep a `bool stopped`, and leave the speed alone while it's
+   true, until the knob is turned right down.
 2. **Gentle start.** Instead of jumping to the knob's speed, creep towards
-   it by a few steps each time round `loop ()`.
+   it: on each beat of an `adk::Every {20}`, move the fan a few steps from
+   `fan.speed ()`, the speed it has now, towards the knob's.
 3. **Breeze.** Make the fan blow forwards for ten seconds and backwards for
-   ten, like an oscillating fan, using an `adk::Every`.
+   ten, like an oscillating fan: turn `direction` round on each beat of an
+   `adk::Every {10000}` instead of on a press.
 4. **Automatic fan.** Add the ultrasonic sensor from Lesson 19 and switch
    the fan on only when someone is within 60 cm. The next lesson takes
    this much further.
