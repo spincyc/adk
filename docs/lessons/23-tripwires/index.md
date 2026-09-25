@@ -199,3 +199,34 @@ LED shows a tilt, even though the switch says "upright".
 4. **Latch.** Make each LED stay on once its tripwire has gone off, until
    you press a button on pin 22 to reset them all: just like a real alarm
    panel shows where the trouble was.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts, the black
+lead in **COM** and the red one in **V**.
+
+The modules' signal wires run straight to the Mega, with no hole for a
+probe, but the tilt switch stands in the breadboard, where the meter can
+show the pull-up at work. Tip the switch over on its legs, or stand it
+up, before you put the probes in place: it stays where you leave it.
+
+!!! question "Predict"
+    Standing up, the tilt switch's ball joins its legs. Which way up will
+    its pin, A14, read 5 V, and which way 0?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Upright**, the pin reads 0 V. The ball joins it straight to the − rail,
+  and the pull-up inside the chip, tens of thousands of ohms, can only push
+  a trickle through it, 0.25 mA at the very most, as in Lesson 2: far too
+  little to lift the pin.
+- **Tipped over**, it reads about 5 V. Now nothing pulls the pin down, and
+  the pull-up holds it up. So for this switch 0 V means active (upright)
+  and 5 V means not active: that is what active low means.
+- **The bottom rails** read about 5 V, though the Mega's 5 V goes only into
+  the top + rail, at T+3. The red wire from T+61 to B+61 at the far end
+  carries it round to the bottom rails, where the beam-break and obstacle
+  sensors take their power.

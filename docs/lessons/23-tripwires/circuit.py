@@ -37,3 +37,11 @@ bench.wire ("obstacle.+", "B+45")
 bench.wire ("obstacle.GND", "B-46")
 
 bench.closeup (1, 48)
+
+# Readings to take with a multimeter: the tilt switch's pin both ways up,
+# and the bottom rails that feed the modules.
+bench.measure ("The tilt switch's pin, upright", red="A14", black="GND", expect="0 V",
+               when="standing up")
+bench.measure ("The tilt switch's pin, tipped", red="A14", black="GND", expect="about 5 V",
+               when="on its side")
+bench.measure ("The bottom rails", red="B+21", black="B-21", expect="about 5 V", when="any time")
