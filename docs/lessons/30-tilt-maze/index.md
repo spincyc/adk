@@ -201,3 +201,40 @@ seconds, where 10° took under two.
 4. **Traps.** Add holes that send the ball back to the start: a second
    `Maze` of holes for each maze, drawn blinking, and checked the same way
    as the walls.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM** and the red one in **V**, never in **10A**. Keep
+each probe tip in its own hole, so it can't bridge two.
+
+The tick you hear while choosing a maze lasts 10 ms, far too short to read.
+In `chooseMaze ()`, change `speaker.tone (adk::note::c6, 10);` to
+`speaker.tone (adk::note::c6, 3000);` and upload: now each click of the
+knob, as you turn it, holds a high C for three seconds. Turn it, don't
+press it, and read. Then change `c6` to `c3`, a C three octaves lower,
+upload, and read again. Put the line back as it was when you're done. The
+last reading is on SDA, as in Lesson 28, with the black probe in c10, the
+GY-521's GND column.
+
+!!! question "Predict"
+    The high C switches pin 10 on and off about 1047 times a second, the
+    low C about 131 times. Which one will the meter read higher?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Both notes read the same**, about 2.5 V, or a little less as in
+  Lesson 27. Every wave is high for half its time, however long the wave
+  is, so the average is always half of 5 V. The meter shows how much of the
+  time the pin is on; the pitch is how often it switches, and that the
+  meter can't see at all. Your ear is the other way round.
+- **SDA on a tilted board** reads between 3.5 and 4 V, flat or tipped, just
+  as it did in Lesson 28. Hold the probes in their holes and tip the
+  breadboard gently, or have someone tip it for you: the number doesn't
+  follow. Tilt a joystick and its voltages follow the stick, as in
+  Lesson 26; tilt the accelerometer and the angle travels as numbers
+  instead, a burst of bits every 20 ms, far too quick for the meter. All it
+  sees is the bus resting high between them.

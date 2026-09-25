@@ -42,3 +42,12 @@ bench.wire ("10", "j34", via=[(1.9, -2.5), (8.7, -2.5)])
 bench.buzzer ("f34", "e34", kind="passive")
 bench.resistor ("220 Ω", "a34", "B-34")
 bench.closeup (1, 37)
+
+# Readings to take with a multimeter: the buzzer's pin on a high note and a
+# low one, and the data line while the board tilts.
+bench.measure ("Pin 10 on a high C", red="10", black="GND", expect="about 2.5 V",
+               when="a long c6 tick")
+bench.measure ("Pin 10 on a low C", red="10", black="GND", expect="about 2.5 V",
+               when="a long c3 tick")
+bench.measure ("SDA on a tilted board", red="f12", black="c10", expect="3.5 to 4 V",
+               when="board tipped")
