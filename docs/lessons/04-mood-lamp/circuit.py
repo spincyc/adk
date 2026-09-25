@@ -17,3 +17,15 @@ bench.resistor ("220 Ω", "g6", "e6")
 bench.resistor ("220 Ω", "g9", "e9")
 bench.resistor ("220 Ω", "g11", "e11")
 bench.rgb_led (red="a6", common="B-7", green="a9", blue="a11")
+
+# Readings to take with a multimeter: in the orange mood, {255, 64, 0}, the
+# red pin is on all the time and the green pin a quarter of it, which the
+# meter shows as a quarter of 5 V; across the red LED in orange and the blue
+# LED in blue, the two colors' different voltages.
+bench.measure ("The red pin, at 255", red="5", black="GND", expect="about 5 V",
+               when="Orange")
+bench.measure ("The green pin, at 64", red="6", black="GND", expect="about 1.25 V",
+               when="Orange")
+bench.measure ("Across the red LED", red="c6", black="GND", expect="about 2 V", when="Orange")
+bench.measure ("Across the blue LED", red="c11", black="GND", expect="about 3.2 V",
+               when="Blue")

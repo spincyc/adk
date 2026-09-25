@@ -187,3 +187,35 @@ brighter to your eye than the red one.
    2000 ms when the button goes down and `stop ()` it when
    `button.wasReleased ()`. If it `expired ()`, the button was held for two
    seconds.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts, the black
+lead in **COM** and the red in **V**. Never move the red lead to the **A**
+jack for these: set for current, the meter is just a wire, and would short
+out whatever you put it across.
+
+The sketch needs no changes: each mood stays put until you press the
+button. The lamp starts in orange, `{255, 64, 0}`, and one press takes it to
+blue, `{0, 0, 255}`. Keep each tip in its own hole.
+
+!!! question "Predict"
+    In orange, green is 64: pin 6 is on for a quarter of the time and off for
+    the rest, 490 times a second. What will the meter show on pin 6: 5 V,
+    0 V, or something in between?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **The red pin**, at 255, is on all the time: about 5 V, like an LED's pin
+  in Lesson 1.
+- **The green pin**, at 64, reads about 1.25 V. A meter can't follow 490
+  flickers a second any better than your eye can, so it shows the average:
+  on for 64 parts in 255, a quarter of the time, and a quarter of 5 V is
+  1.25 V. Make a mood with a green of 128 and it reads about 2.5 V.
+- **Across the red LED** is about 2 V, and **across the blue LED** about
+  3.2 V: the blue one keeps more for itself. That leaves 3 V across the red
+  leg's 220 Ω resistor but only 1.8 V across the blue's, which is why red
+  takes about 14 mA and blue about 8 mA: 1.8 V ÷ 220 Ω ≈ 8 mA.
