@@ -16,6 +16,9 @@ A new start, built on the library's original 2021 design.
   the 28BYJ-48 stepper, DC motors, the HC-SR04, DHT11 and DS18B20, the IR
   remote, the RC522 RFID reader, the DS1307 clock and the MPU-6050, with
   small register-level I2C and SPI masters in place of Wire and SPI.
+- **Course.** Thirty-six lessons in twelve arcs, from Blink to the Secret
+  Door, each a component lesson or a project that combines them, with a
+  sketch that compiles for the Mega.
 - **Website.** A new design where each lesson is both a web page and a PDF,
   with pencil drawings generated from one description of the build and
   checked against the lesson's code.

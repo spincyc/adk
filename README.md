@@ -77,10 +77,11 @@ design, and [the style guide](docs/STYLE.md) the code.
 
 ## Status
 
-The library is complete and host-tested, and every example compiles for the
-Mega. Nothing here has yet been checked on a physical board; lessons say so
-until they have been. Lesson 1 is written; the other thirty-five are being
-written in order.
+All thirty-six lessons are written, each with its sketch, its build drawn
+from one description, and its PDF. The library is complete and host-tested,
+and every sketch compiles for the Mega. None of it has yet been built and
+checked on a real board, so treat a lesson's promises as what it is designed
+to do until someone has.
 
 ## License
 
