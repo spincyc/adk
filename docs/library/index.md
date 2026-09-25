@@ -34,7 +34,7 @@ void loop ()
 | Call | Where | What it does |
 |---|---|---|
 | `adk::setup ()` | once, in `setup ()` | Checks and prepares every part. |
-| `adk::setup (Serial)` | instead of the above | The same, and prints what went wrong, if anything. |
+| `adk::setup (Serial)` | instead, after `Serial.begin (9600)` | The same, and prints what went wrong, if anything. |
 | `adk::update ()` | top of `loop ()` | Lets every part do its work: debounce buttons, play notes, refresh displays, take readings. |
 | `adk::wait (ms)` | anywhere in `loop ()` | Waits like `delay ()`, while every part keeps working. |
 | `adk::stop ()` | anywhere | Puts every part in its safe state: lights off, sound and motors stopped. |
@@ -60,8 +60,18 @@ the pin number: long flashes for tens, then short flashes for ones.
 | 2 long, 6 short, pause, repeat | Pin 26 has a problem |
 | 9 short, pause, repeat | Pin 9 has a problem |
 
-For the full story, use `adk::setup (Serial)` and open the Serial Monitor at
-9600 baud:
+For the full story, start Serial and pass it to setup, then open the Serial
+Monitor at 9600 baud:
+
+```cpp
+void setup ()
+{
+    Serial.begin (9600);
+    adk::setup (Serial);
+}
+```
+
+It prints one line naming the problem:
 
 ```text
 adk: pin 9 needs a timer that is already in use

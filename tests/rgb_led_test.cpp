@@ -89,3 +89,10 @@ TEST (blendAndWheel)
     CHECK (adk::wheel (85) == adk::color::green);
     CHECK (adk::wheel (170) == adk::color::blue);
 }
+
+TEST (theWheelComesRoundToRed)
+{
+    CHECK (adk::wheel (254).red > 245);
+    CHECK (adk::wheel (254).blue < 10);
+    CHECK (adk::wheel (255) == adk::color::red);
+}

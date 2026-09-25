@@ -11,7 +11,7 @@ namespace adk {
     struct Switch : Object
     {
         // Active low turns on the internal pull-up, for a switch wired to GND.
-        explicit Switch (Pin pin, Polarity polarity = ActiveLow, uint8_t debounce = 20);
+        Switch (Pin pin, Polarity polarity = ActiveLow, uint8_t debounce = 20);
 
         bool isActive    () const;
         bool activated   () const;
@@ -37,7 +37,7 @@ namespace adk {
     // wasReleased () are true for one update after the button moves.
     struct Button : Switch
     {
-        explicit Button (Pin pin, uint8_t debounce = 20);
+        Button (Pin pin, uint8_t debounce = 20);
 
         bool isPressed   () const;
         bool wasPressed  () const;

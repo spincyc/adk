@@ -27,7 +27,7 @@ namespace adk {
         // 2400 microseconds. If one buzzes at either end, it is pushing against
         // its stop: bring minMicros up or maxMicros down. minMicros must stay
         // below maxMicros.
-        explicit Servo (Pin pin, uint16_t minMicros = 544, uint16_t maxMicros = 2400);
+        Servo (Pin pin, uint16_t minMicros = 544, uint16_t maxMicros = 2400);
 
         // Turn at once, as fast as the servo can: to an angle from 0 to 180,
         // or to a pulse width kept between minMicros and maxMicros.

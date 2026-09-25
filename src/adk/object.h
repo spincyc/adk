@@ -43,6 +43,7 @@ namespace adk {
     void setup ();
 
     // As setup (), and first print what went wrong, for example to Serial.
+    // Start Serial first: Serial.begin (9600); adk::setup (Serial);
     void setup (Print& log);
 
     // Start every object and report whether every claim succeeded.

@@ -24,7 +24,7 @@ namespace adk {
     // time, and the rest return at once.
     struct Ds18b20 : Object
     {
-        explicit Ds18b20 (Pin pin);
+        Ds18b20 (Pin pin);
 
         // The latest good reading, in degrees Celsius; 0 until the first.
         float celsius () const;

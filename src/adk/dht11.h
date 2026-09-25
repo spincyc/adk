@@ -16,7 +16,7 @@ namespace adk {
     // just then can be lost.
     struct Dht11 : Object
     {
-        explicit Dht11 (Pin pin);
+        Dht11 (Pin pin);
 
         // The latest good reading: degrees Celsius and percent relative
         // humidity, both 0 until the first.

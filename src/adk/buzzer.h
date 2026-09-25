@@ -7,7 +7,7 @@ namespace adk {
     // An active buzzer: it makes its own tone whenever its pin is high.
     struct Buzzer : Object
     {
-        explicit Buzzer (Pin pin, Polarity polarity = ActiveHigh);
+        Buzzer (Pin pin, Polarity polarity = ActiveHigh);
 
         void on   ();
         void off  ();

@@ -7,7 +7,7 @@ namespace adk {
     // An LED wired from the pin through a resistor (220 or 330 ohm) to GND.
     struct Led : Object
     {
-        explicit Led (Pin pin, Polarity polarity = ActiveHigh);
+        Led (Pin pin, Polarity polarity = ActiveHigh);
 
         void on     ();
         void off    ();

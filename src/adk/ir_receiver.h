@@ -13,7 +13,7 @@ namespace adk {
     // for one. Each receiver has its own interrupt, so several can be used.
     struct IrReceiver : Object
     {
-        explicit IrReceiver (Pin pin);
+        IrReceiver (Pin pin);
 
         // A code arrived in this update: a button press, or a repeat, which
         // the remote sends about nine times a second while it is held.

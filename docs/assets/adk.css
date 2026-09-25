@@ -626,7 +626,6 @@
     .md-typeset table,
     .md-typeset .admonition,
     .md-typeset details,
-    .md-typeset .highlight,
     .lesson-kit,
     .md-typeset li {
         break-inside: avoid;

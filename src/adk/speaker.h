@@ -20,7 +20,7 @@ namespace adk {
     // PWM on pins 9 and 10 cannot be used alongside a Speaker.
     struct Speaker : Object
     {
-        explicit Speaker (Pin pin);
+        Speaker (Pin pin);
 
         // Sound a pitch, for a duration or, if none is given, until stop ().
         void tone (uint16_t hz, Millis duration = 0);

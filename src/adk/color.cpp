@@ -37,9 +37,10 @@ namespace adk {
 
     Color wheel (uint8_t position)
     {
-        // Three thirds: red to green, green to blue, blue back to red.
-        uint8_t third = position / 85;
-        uint8_t step  = static_cast<uint8_t> ((position % 85) * 3);
+        // Three thirds: red to green, green to blue, blue back to red, so
+        // 255 comes round to red again.
+        uint8_t third = position < 85 ? 0 : position < 170 ? 1 : 2;
+        uint8_t step  = static_cast<uint8_t> ((position - third * 85) * 3);
         uint8_t fall  = static_cast<uint8_t> (255 - step);
 
         switch (third)

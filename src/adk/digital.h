@@ -15,7 +15,7 @@ namespace adk {
     // A pin driven high (5 V) or low (0 V).
     struct DigitalOutput : Object
     {
-        explicit DigitalOutput (Pin pin);
+        DigitalOutput (Pin pin);
 
         void write  (bool high);
         void toggle ();
@@ -34,7 +34,7 @@ namespace adk {
     // A pin read as high or low, optionally held high by the internal pull-up.
     struct DigitalInput : Object
     {
-        explicit DigitalInput (Pin pin, bool pullUp = false);
+        DigitalInput (Pin pin, bool pullUp = false);
 
         bool read () const;
         Pin  pin  () const;

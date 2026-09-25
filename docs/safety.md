@@ -36,6 +36,8 @@ alive.
 | Part | Take care |
 |---|---|
 | RFID reader (RC522) | It runs on **3.3 V**. Power it from the Mega's 3.3V pin, never 5V. |
+| Active buzzer | It draws up to about 30 mA: fine on its own pin (a Mega pin's limit is 40 mA), but give it a pin to itself. |
+| Passive buzzer | Always through its 220 Ω resistor: its coil is only about 16 Ω. |
 | 9 V battery | Never let its two terminals touch each other or anything metal. |
 | Laser module | Not used in this course. A laser can damage eyes. |
 | Clock module | If yours charges its coin cell (see its lesson), use a rechargeable LIR2032, never a CR2032. |

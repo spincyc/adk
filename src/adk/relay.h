@@ -22,7 +22,7 @@ namespace adk {
     // starts and off when told on, it is active low.
     struct Relay : Object
     {
-        explicit Relay (Pin pin, Polarity polarity = ActiveHigh);
+        Relay (Pin pin, Polarity polarity = ActiveHigh);
 
         void on     ();
         void off    ();

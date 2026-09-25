@@ -7,7 +7,7 @@ namespace adk {
     // A voltage from 0 V to 5 V on A0-A15, read as 0-1023.
     struct AnalogInput : Object
     {
-        explicit AnalogInput (Pin pin);
+        AnalogInput (Pin pin);
 
         uint16_t read () const;
 
@@ -27,7 +27,7 @@ namespace adk {
     // values between switch fast enough to dim an LED or slow a motor.
     struct PwmOutput : Object
     {
-        explicit PwmOutput (Pin pin);
+        PwmOutput (Pin pin);
 
         void    write (uint8_t duty);
         uint8_t duty  () const;

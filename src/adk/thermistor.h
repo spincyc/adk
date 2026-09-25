@@ -17,7 +17,7 @@ namespace adk {
     {
         // beta and nominalOhms, the resistance at 25 C, come from the
         // thermistor's datasheet; seriesOhms is the fixed resistor.
-        explicit Thermistor (Pin pin, float beta = 3950, float nominalOhms = 10000,
+        Thermistor (Pin pin, float beta = 3950, float nominalOhms = 10000,
                              float seriesOhms = 10000);
 
         float celsius    () const;

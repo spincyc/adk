@@ -339,3 +339,17 @@ TEST (aTimerFaultNamesThePartsThatShareTheTimer)
     CHECK (servo.text.find ("Servo") != std::string::npos);
     CHECK (servo.text.find ("Speaker") == std::string::npos);
 }
+
+TEST (partsCanBeDeclaredInArrays)
+{
+    adk::Led    lamps   [] {{26}, {27}, {28}};
+    adk::Button buttons [] {{22}, {23}};
+
+    CHECK (adk::start ());
+    CHECK (arduino::pin (28).mode == OUTPUT);
+    CHECK (arduino::pin (23).mode == INPUT_PULLUP);
+
+    lamps[2].on ();
+    CHECK (arduino::pin (28).output == HIGH);
+    CHECK (!buttons[1].isPressed ());
+}
