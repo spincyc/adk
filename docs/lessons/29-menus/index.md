@@ -20,7 +20,7 @@ ideas:
   - A knob that turns forever and counts clicks
   - How the encoder tells which way it turned
   - Browsing a menu, and editing a setting
-  - Settings kept in arrays
+  - A menu as an array of items, each with its own choices
 ---
 
 ## What you'll build
@@ -56,17 +56,17 @@ where the knob clicked clockwise, −1 anticlockwise, and 0 the rest of the
 time. Pressing the knob's shaft works a push switch, **SW**, which is just a
 button.
 
-A **menu** needs two moods, and the click swaps between them:
+A **menu** needs two states, and the click swaps between them:
 
-| Mood | The arrow points at | Turning the knob |
+| State | The arrow points at | Turning the knob |
 |---|---|---|
 | Browsing | The item's name, **>Level** | Moves to the next or previous item |
 | Editing | The item's setting, **>60%** | Changes that setting |
 
-The settings live in an **array**, one number per item. Level counts 0 to 10
-in tenths, so a setting of 6 means 60%, and the lamp gets
-6 × 255 ÷ 10 = 153 out of 255 on its PWM pin, the same `analogWrite`
-brightness as the dimmer in Lesson 7.
+Each item has a list of **choices**, and a **setting**: which choice it's
+set to, counting from 0. Level's choices go 0%, 10%, 20% and so on up to
+100%, so a setting of 6 means 60%, and the lamp gets 6 × 255 ÷ 10 = 153 out
+of 255 on its PWM pin, just as the dimmer's `write ()` set it in Lesson 7.
 
 !!! question "Predict"
     The knob has about 20 clicks in a full turn, and each click moves Level
@@ -115,25 +115,43 @@ Open **File → Examples → Adk → Lesson29Menus**:
 
 <!-- sketch -->
 
-The new parts:
+What's new:
 
 - `adk::RotaryEncoder knob {18, 19};` names the encoder's CLK and DT pins.
   `adk::Button click {22};` is its push switch, and `adk::PwmOutput lamp {3};`
   is the LED, dimmed with PWM.
-- `items`, `limits`, `modes` and `speeds` are arrays that describe the menu.
-  `settings` holds what you've chosen, one number for each item, and `item`
-  says which item is chosen.
-- `turnKnob ()` does the right thing for the mood. Editing, it adds the
-  clicks to the setting and uses `constrain` to stop at the ends. Browsing,
-  `(item + clicks + 3) % 3` moves through the three items and wraps round
-  from the last to the first, and back.
-- `showMenu ()` redraws the screen only when something changed: the chosen
-  item on the top row, the next one below it. `showItem ()` prints the arrow
-  either in front of the name or in front of the setting.
-- `brightness ()` turns the settings into a brightness for this moment. It
-  uses `millis () % period`, how far through the current blink or breath we
-  are. Blink is full brightness for the first half and off for the second;
-  Breathe rises steadily through the first half and falls through the second.
+- `levels`, `modes` and `speeds` are the choices, as lists of text.
+- `struct Item` is one line of the menu: its `name`, its `choices` and its
+  `setting`. `adk::Span<const char* const> choices` is a view of a list kept
+  somewhere else, as in Lesson 18, so every item can point at a list of a
+  different length. The second `const` says the texts in the list are fixed
+  too.
+- `adk::Array menu { Item {...}, ... };` is the whole menu, an array of
+  structs as in Lesson 5. Writing `Item` in front of each one says what they
+  are, so the array knows its type without being told.
+- `Item& level = menu[0];` makes `level` another name for the first item,
+  with `&` just as in Lesson 3. So `level.setting` in `brightness ()` says
+  which setting it means, where `menu[0].setting` wouldn't.
+- `current` is the item on the top row, and `editing` says which state the
+  menu is in.
+- `turnKnob ()` does the right thing for the state. Editing, it adds the
+  clicks to the setting, and `constrain` stops it at the first and last
+  choice. Browsing, `wrap ()` moves through the items and round from the last
+  to the first, and back.
+- `wrap ()` counts round in a circle. `%` gives the remainder, but for a
+  number below zero the remainder is below zero too: −1 % 3 is −1. So when
+  it is, `wrap ()` adds the count once more, and −1 becomes 2, the last item.
+- `showMenu ()` redraws the screen only when something changed: the current
+  item on the top row, the next one below it, then the arrow in front of
+  either the name or the setting. `lcd.at (9, row)` moves to column 9 of that
+  row and hands back the screen, so `.print ()` can follow straight on.
+- `brightness ()` turns the settings into a brightness for this moment.
+  `lampTime` is an `adk::Stopwatch`, started in `setup ()`, and
+  `lampTime.elapsed () % period` is how far through the current blink or
+  breath the lamp is. The `switch` picks by `mode.setting`: Blink is full
+  brightness for the first half and off for the second; Breathe rises
+  steadily through the first half and falls through the second; Steady,
+  the `default`, is always full.
 
 ## Upload it
 
@@ -144,7 +162,12 @@ or missing, turn the potentiometer until it's sharp.
 Turn the knob one click clockwise: `>Mode` moves to the top. Click the knob:
 the arrow jumps to `>Steady`. Turn it: `Blink`, `Breathe`. Click again, turn
 to `Speed`, click, and choose `Fast`: the LED now breathes quickly. Go back
-to `Level` and turn it down to 10%, or up to 100%.
+to `Level` and turn it down to 0%, or up to 100%.
+
+You predicted how far to turn from 0% to 100%. That's 10 clicks, and with
+about 20 clicks in a turn it is about half a turn. Keep turning past 100%
+and nothing changes: `constrain` holds Level at its last choice, and the
+first click back brings it straight down to 90%.
 
 ## If it doesn't work
 
@@ -174,11 +197,13 @@ to `Level` and turn it down to 10%, or up to 100%.
 ## Make it yours
 
 1. **A fourth item.** Add `Color` with the choices `Red`, `Green` and
-   `Blue`, and wire the RGB LED from Lesson 4 on pins 5, 6 and 7 instead of
-   the single LED.
-2. **Finer steps.** Let Level go from 0 to 20, in steps of 5%.
-3. **Remember.** Save `settings` in EEPROM, as the safe in Lesson 18 saved
-   its code, so the lamp wakes up the way you left it.
+   `Blue`: a list of its own, and one more `Item` in `menu`. The menu shows
+   it with no other change. Then wire the RGB LED from Lesson 4 on pins 5, 6
+   and 7 instead of the single LED, and light it in the chosen color.
+2. **Finer steps.** Let Level go from 0% to 100% in steps of 5%: give
+   `levels` 21 choices, and divide by 20 instead of 10 in `brightness ()`.
+3. **Remember.** Save each item's `setting` in EEPROM, as the safe in
+   Lesson 18 saved its code, so the lamp wakes up the way you left it.
 4. **Long press.** Hold the knob down for two seconds to put every setting
-   back to its starting value. `click.isPressed ()` and `millis ()` will
-   tell you how long it has been held.
+   back to its starting value. `click.isPressed ()` and an `adk::Stopwatch`,
+   as in Lesson 3, will tell you how long it has been held.

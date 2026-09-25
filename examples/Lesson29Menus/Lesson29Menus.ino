@@ -4,23 +4,43 @@
 
 #include <Adk.h>
 
-adk::Lcd           lcd   {31, 32, 33, 34, 35, 36};
-adk::RotaryEncoder knob  {18, 19};
-adk::Button        click {22};
-adk::PwmOutput     lamp  {3};
+adk::Lcd           lcd      {31, 32, 33, 34, 35, 36};
+adk::RotaryEncoder knob     {18, 19};
+adk::Button        click    {22};
+adk::PwmOutput     lamp     {3};
+adk::Stopwatch     lampTime;    // times the lamp's blinks and breaths
 
-const char* const items  [] = {"Level", "Mode", "Speed"};
-const uint8_t     limits [] = {10, 2, 2};     // the highest setting of each item
-const char* const modes  [] = {"Steady", "Blink", "Breathe"};
-const char* const speeds [] = {"Slow", "Medium", "Fast"};
+constexpr adk::Array levels {"0%", "10%", "20%", "30%", "40%", "50%",
+                             "60%", "70%", "80%", "90%", "100%"};
+constexpr adk::Array modes  {"Steady", "Blink", "Breathe"};
+constexpr adk::Array speeds {"Slow", "Medium", "Fast"};
 
-uint8_t settings [] = {6, 0, 1};
-uint8_t item        = 0;
-bool    editing     = false;
+// A menu item: its name, the choices it offers, and which one is set.
+struct Item
+{
+    const char*                  name;
+    adk::Span<const char* const> choices;
+    int                          setting;
+};
+
+adk::Array menu
+{
+    Item {"Level", levels, 6},
+    Item {"Mode",  modes,  0},
+    Item {"Speed", speeds, 1}
+};
+
+Item& level = menu[0];
+Item& mode  = menu[1];
+Item& speed = menu[2];
+
+int  current = 0;        // the item on the top row
+bool editing = false;    // turning changes its setting, not the item
 
 void setup ()
 {
     adk::setup ();
+    lampTime.start ();
     showMenu ();
 }
 
@@ -43,66 +63,63 @@ void loop ()
     lamp.write (brightness ());
 }
 
-void turnKnob (int8_t clicks)
+// Editing, turn the setting, stopping at either end of its choices.
+// Browsing, move through the items, and round from the last to the first.
+void turnKnob (int clicks)
 {
     if (editing)
     {
-        settings[item] = constrain (settings[item] + clicks, 0, limits[item]);
+        auto& item = menu[current];
+        int   last = item.choices.size () - 1;
+
+        item.setting = constrain (item.setting + clicks, 0, last);
     }
     else
     {
-        item = (item + clicks + 3) % 3;
+        current = wrap (current + clicks, menu.size ());
     }
 }
 
-// The chosen item on the top row, the next one below it. The arrow points
-// at what the knob will change: the item, or its setting.
+// The current item on the top row and the next one below it, then the
+// arrow, in front of what the knob will change: the item, or its setting.
 void showMenu ()
 {
     lcd.clear ();
-    showItem (0, item);
-    showItem (1, (item + 1) % 3);
+
+    for (int row = 0; row < 2; ++row)
+    {
+        auto& item = menu[wrap (current + row, menu.size ())];
+
+        lcd.at (1, row).print (item.name);
+        lcd.at (9, row).print (item.choices[item.setting]);
+    }
+
+    lcd.at (editing ? 8 : 0, 0).print ('>');
 }
 
-void showItem (uint8_t row, uint8_t which)
+// Blink is on for the first half of each period. Breathe rises through the
+// first half and falls through the second.
+int brightness ()
 {
-    bool chosen = (row == 0);
+    constexpr adk::Array<long, 3> periods {2000, 1000, 500};    // by speed
 
-    lcd.setCursor (0, row);
-    lcd.print (chosen && !editing ? '>' : ' ');
-    lcd.print (items[which]);
-    lcd.setCursor (8, row);
-    lcd.print (chosen && editing ? '>' : ' ');
+    int  full   = level.setting * 255 / 10;
+    long period = periods[speed.setting];
+    long moment = lampTime.elapsed () % period;
+    long rise   = moment < period / 2 ? moment : period - moment;
 
-    if (which == 0)
+    switch (mode.setting)
     {
-        lcd.print (settings[0] * 10);
-        lcd.print ('%');
-    }
-    else
-    {
-        lcd.print (which == 1 ? modes[settings[1]] : speeds[settings[2]]);
+        case 1:  return moment < period / 2 ? full : 0;    // Blink
+        case 2:  return full * rise / (period / 2);        // Breathe
+        default: return full;                              // Steady
     }
 }
 
-uint8_t brightness ()
+// Count round in a circle: after the last comes the first, and before the
+// first comes the last.
+int wrap (int index, int count)
 {
-    const unsigned long periods [] = {2000, 1000, 500};
-
-    unsigned long period = periods[settings[2]];
-    unsigned long moment = millis () % period;
-    unsigned long full   = settings[0] * 255UL / 10;
-
-    if (settings[1] == 1)
-    {
-        return moment < period / 2 ? full : 0;
-    }
-
-    if (settings[1] == 2)
-    {
-        unsigned long rise = moment < period / 2 ? moment : period - moment;
-        return full * rise / (period / 2);
-    }
-
-    return full;
+    index = index % count;
+    return index < 0 ? index + count : index;
 }
