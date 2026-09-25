@@ -17,6 +17,7 @@ ideas:
   - Sound is a vibration, and pitch is how fast it vibrates
   - The passive buzzer, and why it needs a resistor
   - Notes and melodies as lists of numbers
+  - A list of keys, and one loop for them all
   - Playing a tune while the sketch carries on
   - Why a sounding buzzer stops pins 9 and 10 dimming
 ---
@@ -105,24 +106,34 @@ Open **File → Examples → Adk → Lesson05MelodyMaker**:
 
 What's new:
 
-- `adk::Button keys [] {{22}, {23}, {24}, {25}};` makes four buttons at once,
-  in an **array**, a numbered row like Lesson 4's list of moods: `keys[0]` is
-  the button on pin 22 and `keys[3]` the one on pin 25. `pitches` lists their
-  notes in the same order, so `keys[2]` plays `pitches[2]`, E.
+- `struct Key` bundles a button with the pitch it plays, as Lesson 3's
+  `Player` bundled a button with a light.
+- `uint16_t pitch` is a whole number from 0 to 65 535: room for any pitch
+  you can hear. A `uint8_t`, which stops at 255, would be too small.
+- `adk::Array keys {Key {22, adk::note::c4}, ...};` is an `adk::Array` of
+  keys, four structs in a row. `Key {22, adk::note::c4}` fills one in: its
+  button's pin, then its pitch.
+- `adk::note::c4` is a pitch by name: C in octave 4, middle C, 262 Hz. An
+  `s` means sharp, so `adk::note::cs4` is C♯.
 - `adk::Speaker speaker {10};` is a passive buzzer on pin 10. (ADK calls it a
   speaker because a small speaker, wired the same way, works too.)
-- `const adk::Note tune [] = {...};` is the melody: a list of notes, each
-  `{pitch, milliseconds}`. The comments beside it are the words, one syllable
-  per note, and the long notes, 800 ms, fall on *lamb*.
+- `constexpr adk::Note tune [] = {...};` is the melody: a list of notes,
+  each `{pitch, milliseconds}`. The `[]` makes it C++'s own kind of list,
+  which counts the notes for you and is what `speaker.play ()` takes. The
+  comments beside it are the words, one syllable per note, and the long
+  notes, 800 ms, fall on *lamb*.
 - `speaker.play (tune);` starts the tune and returns straight away. The
-  Speaker moves on to each next note inside `adk::update ()`, so the loop
+  speaker moves on to each next note inside `adk::update ()`, so the loop
   keeps checking the keys all the time the tune plays.
-- `for (int key = 0; key < 4; key++)` runs the lines inside it four times,
-  with `key` counting 0, 1, 2 and 3, so one set of lines looks after every
-  key. `key++` means "add one to `key`".
-- `speaker.tone (pitches[key]);` sounds a note until `speaker.stop ();`. The
-  variable `sounding` remembers which key is playing, so letting go of a key
-  only stops its own note, not one you've pressed since.
+- `for (auto& key : keys)` is a **range-for**: it runs the lines inside
+  once for each key in the list, in order, with `key` standing for that
+  key. One set of lines looks after all four. `auto` lets the compiler work
+  out that each one is a `Key`, and the `&` means `key` is the real key, not
+  a copy, as in Lesson 3.
+- `speaker.tone (key.pitch);` sounds a note until `speaker.stop ();`. The
+  variable `sounding` remembers the pitch of the key that is playing, or
+  `adk::note::rest` (0) for none, so letting go of a key only stops its own
+  note, not one you've pressed since.
 
 ## Upload it
 
@@ -131,8 +142,8 @@ D D D, E G G. Notice that the three Es are three separate notes, not one long
 one. Then press the keys, left to right: C, D, E and G, each a step higher.
 Each note lasts exactly as long as you hold its key.
 
-Your prediction: holding G for a second moves the disc back and forth 392
-times. C, at 262 Hz, is the slowest.
+You predicted how often the disc moves. Holding G for a second moves it back
+and forth 392 times, and C, at 262 Hz, is the slowest.
 
 Now play the tune yourself. The keys are C, D, E, G from left to right, so the
 first line is: third, second, first, second, third, third, third.
@@ -180,17 +191,18 @@ takes over. That's the sketch carrying on while the tune plays.
 ## Make it yours
 
 1. **Encore.** Make the tune play again whenever nobody has touched a key
-   for ten seconds. Keep `millis ()` in a variable each time a key goes
-   down, and in `loop ()` check whether ten seconds have passed while
-   `speaker.isPlaying ()` is false.
-2. **A new song.** Write another tune in the array. *Twinkle, Twinkle, Little
-   Star* starts C C G G A A G. You'll need `adk::note::a4` (440 Hz) for the A,
-   and `adk::note::rest` makes a silence.
+   for ten seconds. Add an `adk::Timer`, as in Lesson 3. Start it for
+   10 000 ms in `setup ()` and each time a key goes down, and when it
+   `expired ()`, play the tune and start it again.
+2. **A new song.** Write another tune, a list like `tune`. *Twinkle, Twinkle,
+   Little Star* starts C C G G A A G. You'll need `adk::note::a4` (440 Hz)
+   for the A, and `adk::note::rest` makes a silence.
 3. **Higher and lower.** Move all four keys up an octave, to `c5`, `d5`,
-   `e5` and `g5`. Then try other notes altogether: which sets make tunes you
-   recognise?
-4. **Echo.** Keep each note you play in an array, such as
-   `adk::Note recording [50];`, with how long you held it (use `millis ()`
-   when the key goes down and when it comes up). Five seconds after your
-   last note, play it all back with `speaker.play (recording, count);`,
-   where `count` is how many notes you recorded.
+   `e5` and `g5`, by changing their pitches in `keys`. Then try other notes
+   altogether: which sets make tunes you recognise?
+4. **Echo.** Keep each note you play in a list, `adk::Note recording [50];`,
+   with how long you held it: an `adk::Stopwatch`, as in Lesson 3, can
+   `restart ()` when a key goes down and give its `elapsed ()` time when it
+   comes up. Five seconds after your last note, play it all back with
+   `speaker.play (recording, count);`, where `count` is how many notes you
+   recorded.

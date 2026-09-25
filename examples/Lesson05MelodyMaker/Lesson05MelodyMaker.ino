@@ -1,15 +1,20 @@
 // Lesson 05: Melody Maker
-// Four buttons play C, D, E and G on the buzzer, after a little tune.
+// Four keys play C, D, E and G on the buzzer, after a little tune.
 
 #include <Adk.h>
 
-adk::Button  keys [] {{22}, {23}, {24}, {25}};
+// Each key is a button and the pitch it plays.
+struct Key
+{
+    adk::Button button;
+    uint16_t    pitch;
+};
+
+adk::Array   keys    {Key {22, adk::note::c4}, Key {23, adk::note::d4},
+                      Key {24, adk::note::e4}, Key {25, adk::note::g4}};
 adk::Speaker speaker {10};
 
-const uint16_t pitches [] = {adk::note::c4, adk::note::d4, adk::note::e4,
-                             adk::note::g4};
-
-const adk::Note tune [] = {
+constexpr adk::Note tune [] = {
     {adk::note::e4, 400}, {adk::note::d4, 400},     // Ma- ry
     {adk::note::c4, 400}, {adk::note::d4, 400},     // had a
     {adk::note::e4, 400}, {adk::note::e4, 400},     // lit- tle
@@ -20,7 +25,7 @@ const adk::Note tune [] = {
     {adk::note::g4, 800},                           // lamb.
 };
 
-int sounding = -1;          // the key whose note is playing, or -1
+uint16_t sounding = adk::note::rest;    // the pitch a key is playing
 
 void setup ()
 {
@@ -32,17 +37,17 @@ void loop ()
 {
     adk::update ();
 
-    for (int key = 0; key < 4; key++)
+    for (auto& key : keys)
     {
-        if (keys[key].wasPressed ())
+        if (key.button.wasPressed ())
         {
-            speaker.tone (pitches[key]);
-            sounding = key;
+            speaker.tone (key.pitch);
+            sounding = key.pitch;
         }
-        else if (keys[key].wasReleased () && key == sounding)
+        else if (key.button.wasReleased () && key.pitch == sounding)
         {
             speaker.stop ();
-            sounding = -1;
+            sounding = adk::note::rest;
         }
     }
 }
