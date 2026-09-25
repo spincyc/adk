@@ -3,7 +3,7 @@ lesson: 9
 title: Light Theremin
 arc: The analog world
 promise: Play music by waving your hand through the air.
-time: 60 minutes
+time: 1 hour
 level: 2
 sketch: Lesson09LightTheremin
 parts:
@@ -121,19 +121,29 @@ Open the Arduino IDE and choose **File → Examples → Adk → Lesson09LightThe
 
 What's new:
 
-- `scale` is an array of ten pitches, using the note names from Lesson 5:
-  `adk::note::c4` is the C in the middle of a piano, 262 Hz. `octaveUp`
-  holds the three multipliers, 1, 2 and 4.
-- `ready` is a melody, an array of `adk::Note` as in Lesson 5, and
-  `buzzer.play (ready)` plays it while the sketch carries on.
-- `shadowSlice ()` uses `map ()` as the light meter did, then
-  `constrain ()` to keep the answer between 0 and 10, even if the light
-  goes brighter or darker than anything the sketch learned.
+- `adk::Speaker speaker {10};` is the passive buzzer, as in Lesson 5.
+- `scale` is an `adk::Array` of ten pitches, using the note names from
+  Lesson 5: `adk::note::c4` is the C in the middle of a piano, 262 Hz.
+  Written as `adk::Array scale {...}`, with no `<...>`, it takes its type
+  and its size from what's inside the braces. `octaveUp` holds the three
+  multipliers, 1, 2 and 4.
+- `ready` is a melody, a list of `adk::Note` as in Lesson 5, and
+  `speaker.play (ready)` plays it while the sketch carries on.
+- `knob.read () / 342` divides the knob's reading, 0 to 1023, by 342. Whole
+  numbers divide into whole numbers, and any remainder is thrown away, so
+  the answer is 0, 1 or 2: the octave.
+- `learnTheRoom ()` is the light meter's from Lesson 8, except that it
+  keeps the brightest reading, with no hand near, in `open`, and the
+  darkest, with the sensor covered, in `covered`. `for (auto& led : bar)`
+  sets all five LEDs blinking while it learns.
+- `shadowSlice ()` uses `map ()` and `constrain ()` as the light meter did,
+  to keep the answer between 0 and 10, even if the light goes brighter or
+  darker than anything the sketch learned.
 - `playNote ()` works out the pitch, and only if it differs from `playing`
-  does it call `buzzer.tone (pitch)`. A tone with no length keeps sounding
+  does it call `speaker.tone (pitch)`. A tone with no length keeps sounding
   until the next `tone ()` or `stop ()`.
-- `note % 5` gives the note's place in the five note names, 0 to 4, whichever
-  octave it is in: `%` is the remainder after dividing.
+- `note % 5` gives the note's place in the five note names, 0 to 4,
+  whichever octave it is in: `%` is Lesson 4's remainder after dividing.
 - `fallSilent ()` stops the buzzer and darkens the LEDs, once.
 
 ## Upload it
@@ -144,11 +154,15 @@ completely with a finger at least once. When the blinking stops, the buzzer
 plays a quick rising C, E, G, C.
 
 Now hold your hand about a hand's width above the sensor and lower it
-slowly. The notes climb in steps, C, D, E, G, A and up again, and the red,
-yellow, green, blue and white LEDs take turns to light. Cover the sensor
-completely for the highest note. Lift your hand away and the buzzer stops.
-Turn the knob to one end, then the other: the same notes jump down and up
-by an octave.
+slowly. Did you predict a smooth slide? You hear separate steps instead,
+because the sketch cuts the shadow into slices, and every slice is one
+note: C, D, E, G, A and up again. The LEDs don't fill up like the light
+meter's bar: the red, yellow, green, blue and white LEDs take turns to
+light, one at a time, and each lights for its note in either octave.
+
+Cover the sensor completely for the highest note. Lift your hand away and
+the buzzer stops. Turn the knob to one end, then the other: the same notes
+jump down and up by an octave.
 
 ## If it doesn't work
 
@@ -167,7 +181,7 @@ by an octave.
     the sketch having to. That's why a Speaker stops PWM on pins 9 and 10, as
     Lesson 5 explained: they share that timer.
 
-    `buzzer.play (ready)` doesn't wait for the melody to finish. It starts
+    `speaker.play (ready)` doesn't wait for the melody to finish. It starts
     the first note, and each `adk::update ()` checks whether it's time for
     the next one, so the fanfare plays while `loop ()` is already running.
     Calling `tone ()` or `stop ()` ends the melody at once.
@@ -176,15 +190,18 @@ by an octave.
 
 1. **A different mood.** Swap the scale for the blues: C, E♭, F, G♭, G, B♭.
    The note names only have sharps, so E♭ is `adk::note::ds4` (the same
-   key as D♯), G♭ is `fs4` and B♭ is `as4`. Six notes to an octave don't
-   fit five LEDs, so decide what the lights should show.
+   key as D♯), G♭ is `fs4` and B♭ is `as4`. Two octaves are twelve notes,
+   so `shadowSlice ()` needs thirteen slices, and six notes to an octave
+   don't fit five LEDs: decide what the lights should show.
 2. **The real theremin sound.** Instead of steps, slide smoothly: play
-   `buzzer.tone (map (level, open, covered, 200, 2000))` whenever the
+   `speaker.tone (map (level, open, covered, 200, 2000))` whenever the
    pitch has changed by more than a few hertz. It sounds like a 1950s space
    film.
 3. **Stop droning.** If your hand holds still for three seconds, let the
-   note fade out by itself: remember the `millis ()` when the note last
-   changed, and call `fallSilent ()` when it's been too long.
-4. **Record and replay.** Keep the last sixteen notes you played in an
-   array of `adk::Note`, and play them back with `buzzer.play ()` when you
+   note stop by itself: add an `adk::Timer`, start it for 3000 ms in
+   `playNote ()` whenever the note changes, and when it has `expired ()`,
+   keep the speaker quiet until your hand moves to another note.
+4. **Record and replay.** Keep the notes you play in an
+   `adk::Vector<adk::Note, 16>`, the growing list from Lesson 6, and
+   play them back with `speaker.play (tune.data (), tune.size ())` when you
    hold the sensor covered for two seconds.
