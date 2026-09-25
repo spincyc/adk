@@ -22,7 +22,8 @@ beside the board, placed in inches in the drawing's own coordinates, where
 the Mega's top-left corner is (0.35, 0.6) and the breadboard's is (5.15,
 0.55); a wire reaches a module pin as "name.PIN", as in
 bench.wire ("44", "servo.signal"). note () adds a small annotation with an
-arrow.
+arrow. closeup (first, last) picks the columns the close-up shows, for a
+build too wide to show whole.
 
 From that one description come the pencil drawings, the build steps and the
 table of connections, and signal_pins () lets the site check the sketch
@@ -187,8 +188,11 @@ class Bench:
     def buzzer (self, positive, negative, kind="active"):
         _, c1, r1 = parse_hole (positive)
         _, c2, r2 = parse_hole (negative)
-        if r1 != r2 or abs (c1 - c2) != 3:
-            raise ValueError ("a 12 mm buzzer's legs are 0.3 inch apart: same row, three columns apart")
+        along_a_row = r1 == r2 and abs (c1 - c2) == 3
+        across_the_gap = c1 == c2 and {r1, r2} == {"e", "f"}
+        if not (along_a_row or across_the_gap):
+            raise ValueError ("a 12 mm buzzer's legs are 0.3 inch apart: three columns apart in "
+                              "one row, or across the middle gap in rows e and f")
         self._add (Buzzer (positive, negative, kind))
         self.steps.append (f"The {kind} buzzer, its + mark and longer leg in {positive}, the other "
                            f"leg in {negative}.")
@@ -694,7 +698,14 @@ class Bench:
                 y1 = max (y1, by1 + pad)
         return (x0, y0, x1 - x0, y1 - y0)
 
+    # Show these columns in the close-up, for a build too wide to show whole.
+    def closeup (self, first, last):
+        self.closeup_range = (first, last)
+        return self
+
     def _closeup_columns (self):
+        if getattr (self, "closeup_range", None):
+            return self.closeup_range
         columns = [parse_hole (hole)[1] for hole in self.used]
         for part in self.parts:
             for shape in part.footprint (self):

@@ -238,7 +238,8 @@ class Buzzer (Part):
 
     def draw (self, pencil, bench):
         mx, my = self.centre (bench)
-        r, rise = self.RADIUS, 12
+        # Seen almost from above, so it covers only the holes it really does.
+        r, rise = self.RADIUS, 3
         top = my - rise
         if self.kind == "passive":
             pencil.spot (mx, my, r, "#6fa860")
