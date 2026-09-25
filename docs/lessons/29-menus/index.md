@@ -208,3 +208,41 @@ first click back brings it straight down to 90%.
 4. **Long press.** Hold the knob down for two seconds to put every setting
    back to its starting value. `click.isPressed ()` and an `adk::Stopwatch`,
    as in Lesson 3, will tell you how long it has been held.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM** and the red one in **V**, never in **10A**. Keep
+each probe tip in its own hole, so it can't bridge two.
+
+The encoder's wires run straight from the Mega to the module, out of the
+probes' reach, so these readings are on the lamp, where the menu's settings
+end up. Leave Mode on **Steady**, so the brightness holds still, and set
+Level with the knob before each reading. The black probe goes in the bottom
+− rail at column 40, just past the end of the LCD.
+
+!!! question "Predict"
+    At 60% the lamp gets 153 out of 255: as in Lesson 7, pin 3 switches
+    fully on and off about 490 times a second, on at 5 V for 153 parts of
+    every 255 and off at 0 V for the rest. What will the meter show? And at
+    20%?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Pin 3 at 60%** reads about 3 V. The meter is far too slow to follow
+  490 switches a second, so it shows the average: 153 ÷ 255 × 5 V = 3 V.
+- **At 20%**, `level.setting` is 2, the lamp gets 2 × 255 ÷ 10 = 51, and
+  51 ÷ 255 × 5 V = 1 V. Each click of Level adds a tenth of 255, so each
+  click is half a volt on the meter: turn it a click at a time from 0% and
+  watch 0, 0.5, 1, 1.5 ... up to 5 V at 100%.
+- **Across the LED at 60%** is about 1.2 V. A red LED held at a steady
+  1.2 V would stay dark: it needs about 2 V to light. It glows because it is
+  really at 2 V for 60% of the time and at 0 V for the rest, and 60% of 2 V
+  is 1.2 V. PWM never dims the LED's voltage; it switches the LED fully on
+  and off, and your eye, like the meter, sees the average.
+- Now try **Blink** on **Slow**, with Level back at 60%: the meter swings
+  between 3 V and 0 V, a second each. On **Breathe** it rises and falls, a
+  little behind the LED.

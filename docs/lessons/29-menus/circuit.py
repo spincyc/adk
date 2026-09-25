@@ -19,3 +19,10 @@ bench.wire ("3", "j38", via=[(2.65, -2.5), (9.1, -2.5)])
 bench.resistor ("220 Ω", "g38", "e38")
 bench.led ("red", anode="b38", cathode="b39")
 bench.wire ("a39", "B-39")
+
+# Readings to take with a multimeter, with Mode on Steady: the lamp's pin at
+# two levels, and the LED's share.
+bench.measure ("Pin 3 at 60%", red="3", black="B-40", expect="about 3 V", when="Level 60%")
+bench.measure ("Pin 3 at 20%", red="3", black="B-40", expect="about 1 V", when="Level 20%")
+bench.measure ("Across the LED at 60%", red="b38", black="b39", expect="about 1.2 V",
+               when="Level 60%")
