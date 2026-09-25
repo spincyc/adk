@@ -15,9 +15,9 @@ parts:
   - Passive buzzer (the one with a green board showing underneath)
   - 19 jumper wires
 ideas:
-  - Arrays, and a sequence that grows
+  - A list that grows, in an adk::Vector
   - Taking turns, as states
-  - Lights and tones together
+  - Counting loops, and functions that hand back an answer
   - Keeping a high score
 ---
 
@@ -34,25 +34,26 @@ Simon plays you a fanfare.
 
 ## The idea
 
-You met **arrays** in [Lesson 5](../05-melody-maker/index.md): numbered rows
-of things of one kind, under one name, such as the four keys. An array can
-also be a row of empty boxes waiting to be filled. `uint8_t sequence [100];`
-makes 100 boxes for small whole numbers, numbered from `sequence[0]` to
-`sequence[99]` (the sketch gives that 100 a name, `longest`). Simon keeps
-its tune there, one color number in each box, 0 for red up to 3 for blue,
-and a separate variable, `length`, says how many boxes are in use so far.
-Each round adds one:
+Simon has to remember its tune, and the tune grows. An `adk::Array`, like
+[Lesson 4](../04-mood-lamp/index.md)'s moods, always holds the same number
+of things, so Simon keeps its tune in an **`adk::Vector`** instead: a list
+that can grow and shrink, up to a size you choose.
+`adk::Vector<uint8_t, 100> sequence;` has room for 100 steps and starts
+with none. Each step is a key's number, 0 for red up to 3 for blue, and
+each round `sequence.push_back (random (4))` adds a random one at the end.
+`sequence.size ()` says how many there are so far:
 
-| Round | `length` | `sequence` | Simon shows |
+| Round | `sequence.size ()` | `sequence` | Simon shows |
 |---|---|---|---|
 | 1 | 1 | 2 | green |
 | 2 | 2 | 2, 0 | green, red |
 | 3 | 3 | 2, 0, 3 | green, red, blue |
 
-The sketch also keeps the four buttons, the four LEDs and the four tones in
-arrays of their own, in the same color order, so `lights[2]` is the green
-LED, `buttons[2]` its button and `tones[2]` its note. One loop can then do
-the same thing for every color: `lights[color]` works whatever `color` is.
+The four keys are a fixed set, so they stay in an `adk::Array`, in color
+order. Each is a `Key` that groups a button, its light and its tone, as
+[Lesson 5](../05-melody-maker/index.md) grouped a button and a pitch. So
+`keys[2]` is everything green: `keys[2].button`, `keys[2].light` and
+`keys[2].pitch`. One number picks a whole color.
 
 Each color's tone comes from one chord: C, E, G and the C above. That's why
 any sequence Simon picks sounds like a little tune.
@@ -75,12 +76,13 @@ Simon and the player take **turns**, and the game is always in one state:
 |---|---|---|
 | **Idle** | All four lights blink slowly | Any button starts a new game |
 | **Simon's turn** | Simon adds a random step, then shows the whole sequence | Your presses are ignored |
-| **Your turn** (`Listening`) | Each light and its note follow its button while you hold it | Letting go is your answer. Right: the next step. Last step right: Simon's turn again, one step longer. Wrong: game over |
+| **Your turn** | Each light and its note follow its button while you hold it | Letting go is your answer. Right: the next step. Last step right: Simon's turn again, one step longer. Wrong: game over |
 | **Game over** | All four lights on and a low buzz, then a fanfare if you beat your best | Back to *Idle* |
 
 Simon's turn is so short and simple, just show and wait, that the sketch
-does it all in one go, inside `nextRound ()`. So only two states need names
-in the code: `Idle` and `Listening`.
+does it all in one go, inside `nextRound ()`, and game over is just as
+quick, inside `gameOver ()`. So only two states need names in the code:
+`State::Idle` and `State::YourTurn`.
 
 Your score is how many steps you remembered: the length of the last round
 you completed. The best score is kept in a variable, `best`, for as long as
@@ -121,24 +123,35 @@ Open **File → Examples → Adk → Lesson06Simon**:
 
 What's new:
 
-- `adk::Button buttons [] {{22}, {23}, {24}, {25}};` and `adk::Led lights []
-  {{26}, {27}, {28}, {29}};` make the four buttons and the four LEDs as
-  arrays, in color order, as the keys were in Lesson 5. So
-  `buttons[color].wasPressed ()` asks the button of whichever color
-  `color` is.
-- `sequence[length] = random (4);` fills the next empty box with 0, 1, 2 or
-  3, and `length = length + 1;` counts it in.
-- `lights[sequence[index]].on ();` reads from the inside out: the color
-  number at place `index` in the sequence, then the light with that number.
-- `followButton ()` copies each button to its light, as the yellow LED did
-  in [Lesson 2](../02-buttons/index.md), starts the tone on `wasPressed ()`,
-  and checks your answer on `wasReleased ()`. The variable `held` remembers
-  which button went down on your turn, so a button you were already holding
-  while Simon played doesn't count when you let it go.
-- `check ()` compares your color with `sequence[step]`. Wrong ends the game.
-  Right moves `step` on, and when `step` reaches the end of the sequence,
-  Simon takes its turn with `nextRound ()`. The sequence can hold 100 steps;
-  if you ever fill it, you've beaten Simon.
+- `struct Key` is Lesson 5's key with a light added.
+  `Key {22, 26, adk::note::c4}` fills one in: the button's pin, the light's
+  pin, then the pitch.
+- `adk::Vector<uint8_t, 100> sequence;` is Simon's tune: room for 100 key
+  numbers, empty at first. In the `<>`, `uint8_t` says what the list holds
+  and 100 how many it can. `sequence.clear ()` empties it for a new game.
+- `int pressedKey ()` is a function that **returns a value**. The `int`
+  before its name says it hands back a whole number, and `return number;`
+  hands it back and leaves the function at once. When no key was pressed
+  it reaches `return -1;`, which is nobody's number. `loop ()` keeps the
+  answer: `int pressed = pressedKey ();`.
+- `for (int number = 0; number < 4; number++)` is a **counting loop**. It
+  sets `number` to 0, runs the lines inside while `number < 4` is true,
+  and adds one after each pass, so they run for 0, 1, 2 and 3. A
+  range-for hands you each key but not its number, and `pressedKey ()`
+  needs the number.
+- In `nextRound ()`, `for (auto number : sequence)` walks the steps added
+  so far, from the first, and `flash (keys[number])` shows each one: the
+  key with that number lights up and sounds its note.
+- `yourTurn ()` makes each light follow its button, as in
+  [Lesson 2](../02-buttons/index.md), and sounds a key's note when it goes
+  down. `held` remembers which key that was, and letting go of it is your
+  answer. `held` starts each turn at -1, so a button you were already
+  holding while Simon played doesn't count when you let it go.
+- `check ()` compares your answer with `sequence[step]`. Wrong ends the
+  game. Right moves `step` on, until the last step: steps are numbered
+  from 0, so the last is `sequence.size () - 1`. Then Simon takes its turn
+  with `nextRound ()`, unless `sequence.full ()` says all 100 steps are
+  used: then you've beaten Simon.
 - `best` holds the high score. `speaker.play (fanfare);` celebrates a new
   one and returns at once, so the lights start blinking while it plays.
 
@@ -157,8 +170,9 @@ see your scores. All four lights blink together.
    and if that's a new best, you hear a fanfare. The lights blink again,
    ready for the next game.
 
-Your prediction: four colors for each of ten steps is 4 × 4 × 4 × 4 × 4 ×
-4 × 4 × 4 × 4 × 4 = 1 048 576 different sequences. More than a million.
+You predicted how many ten-step sequences there are. Four colors for each
+of ten steps is 4 × 4 × 4 × 4 × 4 × 4 × 4 × 4 × 4 × 4 = 1 048 576 different
+sequences. More than a million.
 
 ## If it doesn't work
 
@@ -182,20 +196,23 @@ Your prediction: four colors for each of ten steps is 4 × 4 × 4 × 4 × 4 ×
     of **EEPROM**, memory that remembers without power; Lesson 18, *Keypad
     Safe*, uses it to keep a secret code.
 
-    The sequence takes 100 bytes of RAM, one per step. `uint8_t` is the
-    smallest whole number there is, 0 to 255, which is plenty for a color
-    number.
+    The sequence takes 100 bytes of RAM, one `uint8_t` per step, even
+    before the first round. An `adk::Vector` sets aside all its room when
+    the sketch starts and never asks for more while it runs, so the RAM the
+    Arduino IDE reports after compiling is all the sketch will ever use.
 
 ## Make it yours
 
-1. **Faster and faster.** Real Simon speeds up. Make each step shorter as
-   the sequence grows, say `400 - length * 10` milliseconds, but never less
-   than 150: `max (150, 400 - length * 10)`.
+1. **Faster and faster.** Real Simon speeds up. Keep the time each step is
+   shown in an `int` variable: set it to 400 in `newGame ()`, use it in
+   `flash ()`, and take 10 off in `nextRound ()` as long as it is still
+   over 150.
 2. **Your score in lights.** After a game, blink the blue light once for each
-   step you remembered, so you don't need the Serial Monitor.
-3. **Hurry up.** Give the player three seconds for each press. Keep
-   `millis ()` when your turn starts and after each answer, and if three
-   seconds pass without one, it's game over.
+   step you remembered, with a counting loop, so you don't need the Serial
+   Monitor.
+3. **Hurry up.** Give the player three seconds for each press. Start an
+   `adk::Timer`, as in Lesson 3, for 3000 ms when your turn starts and after
+   each answer, and if it `expired ()`, it's game over.
 4. **Remember forever.** Keep the best score in EEPROM so it survives being
    unplugged. Add `#include <EEPROM.h>`, read it in `setup ()` with
    `best = EEPROM.read (0);` (a Mega that has never stored anything reads
