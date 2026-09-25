@@ -138,12 +138,16 @@ def load_bench (path):
 
 def sketch_pins (sketch):
     pins = set ()
-    for kind, arguments in re.findall (r"adk::(\w+)\s+\w+\s*(?:\[\s*\])?\s*\{(.*?)\};", sketch, re.S):
+    pattern = r"adk::(\w+)\s+\w+\s*(\[\s*\d*\s*\])?\s*\{(.*?)\};"
+    for kind, array, arguments in re.findall (pattern, sketch, re.S):
         if kind not in PIN_ARGUMENTS:
             continue
-        values = re.findall (r"\bA\d{1,2}\b|\bLED_BUILTIN\b|\b\d+\b", arguments)
-        for value in values[:PIN_ARGUMENTS[kind]]:
-            pins.add ("13" if value == "LED_BUILTIN" else value)
+        # An array of parts lists one brace group per part.
+        groups = re.findall (r"\{([^{}]*)\}", arguments) if array else [arguments]
+        for group in groups:
+            values = re.findall (r"\bA\d{1,2}\b|\bLED_BUILTIN\b|\b\d+\b", group)
+            for value in values[:PIN_ARGUMENTS[kind]]:
+                pins.add ("13" if value == "LED_BUILTIN" else value)
         pins |= BUS_PINS.get (kind, set ())
     return pins
 
