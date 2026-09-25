@@ -17,3 +17,8 @@
 #include "adk/speaker.h"
 
 #include "adk/button.h"
+
+#include "adk/shift_register.h"
+#include "adk/segments.h"
+#include "adk/seven_segment.h"
+#include "adk/four_digit_display.h"

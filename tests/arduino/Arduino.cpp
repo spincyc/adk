@@ -184,8 +184,22 @@ unsigned long pulseIn (uint8_t pin, uint8_t state, unsigned long timeout)
     return arduino::onPulseIn ? arduino::onPulseIn (pin, state, timeout) : 0;
 }
 
-void shiftOut (uint8_t, uint8_t, uint8_t, uint8_t value)
+// Record the byte as a 74HC595 would end up holding it, so sending it in the
+// wrong bit order shows up in a test.
+void shiftOut (uint8_t, uint8_t, uint8_t order, uint8_t value)
 {
+    if (order == LSBFIRST)
+    {
+        uint8_t reversed = 0;
+
+        for (uint8_t bit = 0; bit < 8; ++bit)
+        {
+            reversed = static_cast<uint8_t> (reversed | (((value >> bit) & 1) << (7 - bit)));
+        }
+
+        value = reversed;
+    }
+
     arduino::shifted += static_cast<char> (value);
 }
 

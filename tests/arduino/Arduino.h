@@ -198,7 +198,8 @@ namespace arduino {
     extern std::function<void (uint8_t pin, uint8_t value)>                         onDigitalWrite;
     extern std::function<unsigned long (uint8_t pin, uint8_t state, unsigned long)> onPulseIn;
 
-    // Every byte shiftOut () sent, in order.
+    // Every byte shiftOut () sent, as a 74HC595 would hold it (most
+    // significant bit in Q7), in order.
     extern std::string shifted;
 
     // Collects printed text, for testing anything that explains itself.
