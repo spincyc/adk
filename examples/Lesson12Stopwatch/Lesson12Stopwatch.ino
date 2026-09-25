@@ -147,12 +147,8 @@ void showClock ()
     }
 }
 
-// Seconds and tenths, such as " 12.3", with the dot lit after the seconds.
+// Seconds and tenths, such as 12.3: the time in tenths, with one decimal.
 void showTime (adk::Millis ms)
 {
-    int  tenths = ms / 100 % 10000;
-    char text [6];
-
-    snprintf (text, sizeof text, "%3d.%d", tenths / 10, tenths % 10);
-    display.show (text);
+    display.show (ms / 100 % 10000, 1);
 }

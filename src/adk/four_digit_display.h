@@ -29,8 +29,10 @@ namespace adk {
                           Pin digit1, Pin digit2, Pin digit3, Pin digit4);
 
         // Right-aligned without leading zeros, from -999 to 9999. Anything
-        // else shows ----.
-        void show (int number);
+        // else shows ----. With decimals, the last digits go after the dot,
+        // as Serial.print () writes decimals: show (123, 1) shows 12.3, and
+        // show (5, 1) shows 0.5.
+        void show (int number, uint8_t decimals = 0);
 
         // The first four characters, left-aligned. A '.' lights the dot of
         // the character before it instead of taking a digit of its own.

@@ -50,9 +50,9 @@ namespace adk {
         }
     }
 
-    void FourDigitDisplay::show (int number)
+    void FourDigitDisplay::show (int number, uint8_t decimals)
     {
-        if (number < -999 || number > 9999)
+        if (number < -999 || number > 9999 || decimals >= Digits)
         {
             dashes ();
             return;
@@ -64,14 +64,24 @@ namespace adk {
 
         clear ();
 
+        // Every decimal shows, and one digit before the dot, even if zero.
         do
         {
             glyphs_[--position] = digitGlyph (magnitude % 10);
             magnitude /= 10;
         }
-        while (magnitude != 0);
+        while (magnitude != 0 || Digits - position <= decimals);
 
-        if (negative)
+        if (decimals > 0)
+        {
+            glyphs_[Digits - 1 - decimals] |= segment::dot;
+        }
+
+        if (negative && position == 0)
+        {
+            dashes ();
+        }
+        else if (negative)
         {
             glyphs_[--position] = segments ('-');
         }

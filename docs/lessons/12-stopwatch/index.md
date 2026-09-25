@@ -144,17 +144,12 @@ What's new:
   for the stopwatch, or `total - time` for a kitchen timer.
   `time < total ? total - time : 0` uses Lesson 7's `?:`, so a timer can
   never show less than zero.
-- `showTime ()` splits the time, as in Lesson 10. `ms / 100` is the time in
-  whole tenths of a second, and `% 10000` makes the stopwatch start again
-  from 0.0 after 999.9 seconds. Then `tenths / 10` is the seconds, and
-  `tenths % 10` the tenths left over: 123 tenths are 12 seconds and 3
-  tenths.
-- `char text [6];` is a row of six characters to write into: five for the
-  time, and one more to mark where the text ends. `snprintf ()` writes the
-  time there as text, such as `" 12.3"`. In the
-  pattern `"%3d.%d"`, `%3d` stands for a whole number at least three
-  characters wide, padded with spaces, which the display leaves blank; `%d`
-  stands for the tenths; and the `.` lights the dot after the seconds.
+- `showTime ()` turns milliseconds into what the display shows. With
+  Lesson 10's `/` and `%`, `ms / 100` is the time in whole tenths of a
+  second, and `% 10000` makes the stopwatch start again from 0.0 after
+  999.9 seconds. `display.show (tenths, 1)` shows that number with one
+  decimal, the way `Serial.print ()` writes decimals: 123 tenths show as
+  `12.3`, with the dot lit after the seconds.
 - `finish ()` uses `adk::wait ()` between beeps, so the display stays lit
   while the buzzer sounds.
 

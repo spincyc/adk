@@ -194,6 +194,32 @@ TEST (fourDigitDisplayShowsNumbersRightAligned)
     CHECK (scan (now) == glyphs ("-999"));
 }
 
+TEST (fourDigitDisplayShowsDecimalsAfterTheDot)
+{
+    adk::FourDigitDisplay display {30, 31, 32, 22, 23, 24, 25};
+    adk::Millis           now = 0;
+
+    adk::setup ();
+
+    display.show (123, 1);
+    CHECK (scan (now) == dotted (glyphs (" 123"), 2));
+
+    display.show (5, 1);
+    CHECK (scan (now) == dotted (glyphs ("  05"), 2));
+
+    display.show (7, 3);
+    CHECK (scan (now) == dotted (glyphs ("0007"), 0));
+
+    display.show (-25, 2);
+    CHECK (scan (now) == dotted (glyphs ("-025"), 1));
+
+    display.show (-250, 3);
+    CHECK (scan (now) == glyphs ("----"));
+
+    display.show (1, 4);
+    CHECK (scan (now) == glyphs ("----"));
+}
+
 TEST (fourDigitDisplayShowsDashesOutOfRange)
 {
     adk::FourDigitDisplay display {30, 31, 32, 22, 23, 24, 25};
