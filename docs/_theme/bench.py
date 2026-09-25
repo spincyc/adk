@@ -1269,6 +1269,17 @@ class Bench:
         mx, my = min (xs) - width - 50, by1 + 26
         left, right = mx - 8, max (xs) + 36
         top = min (y for _, y in points.values ()) - 30
+        # Take in the whole body of any part the top edge would cut through,
+        # such as an LED or a buzzer, as far as the top of the board.
+        for part in self.parts:
+            for shape in part.footprint (self):
+                if shape[0] == "rect":
+                    x0, y0, x1, y1 = shape[1:5]
+                else:
+                    cx, cy, r = shape[1:4]
+                    x0, y0, x1, y1 = cx - r, cy - r, cx + r, cy + r
+                if x0 < right and x1 > left and y0 < top < y1:
+                    top = max (by0 - 4, min (top, y0 - 8))
         box = (left, top, right - left, my + height + 8 - top)
         self.label_size = 6.4
         detail = (self._column_at (left), self._column_at (right))
