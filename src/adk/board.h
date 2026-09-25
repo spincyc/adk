@@ -23,6 +23,10 @@ namespace adk {
     // checks that the board can do what is asked and that nothing else already
     // uses the pin, then configures it. The first failed claim is remembered,
     // and adk::setup () halts before the sketch can run with it.
+    //
+    // A timer is taken over by one kind of device. Devices of one kind that
+    // share a timer, such as several servos, claim it with the same non-zero
+    // user number.
 
     bool claimOutput    (Pin pin, bool high = false);
     bool claimInput     (Pin pin, bool pullUp = false);
@@ -30,7 +34,7 @@ namespace adk {
     bool claimAnalog    (Pin pin);
     bool claimInterrupt (Pin pin, bool pullUp = false);
     bool claimShared    (Pin pin);
-    bool claimTimer     (uint8_t timer, Pin pin);
+    bool claimTimer     (uint8_t timer, Pin pin, uint8_t user = 0);
 
     Fault fault    ();
     Pin   faultPin ();

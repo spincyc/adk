@@ -298,3 +298,13 @@ TEST (debouncerWaitsForAQuietWindow)
     CHECK (debouncer.stable ());
     CHECK (!debouncer.sample (true, 29, 20));
 }
+
+TEST (devicesOfOneKindCanShareATimer)
+{
+    CHECK (adk::claimTimer (5, 44, 7));
+    CHECK (adk::claimTimer (5, 45, 7));
+    CHECK (!adk::claimPwm (46));
+    CHECK (!adk::claimTimer (5, 30, 8));
+    CHECK (!adk::claimTimer (5, 31));
+    CHECK (!adk::claimTimer (0, 32, 7));
+}

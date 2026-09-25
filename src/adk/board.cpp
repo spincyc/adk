@@ -9,10 +9,10 @@ namespace adk {
         const uint8_t PinBytes   = (NUM_DIGITAL_PINS + 7) / 8;
         const uint8_t TimerCount = 6;
         const uint8_t NoTimer    = 0xFF;
-        const uint8_t Exclusive  = 0xFF;
+        const uint8_t TakenOver  = 0x80;
 
         // One bit per pin, a second bit for pins a bus shares, and per timer
-        // either the number of PWM pins using it or Exclusive.
+        // either the number of PWM pins using it or TakenOver plus the user.
         uint8_t claimed [PinBytes];
         uint8_t shared  [PinBytes];
         uint8_t timers  [TimerCount];
@@ -117,7 +117,7 @@ namespace adk {
             return fail (Fault::NotPwm, pin);
         }
 
-        if (timers[timer] == Exclusive)
+        if (timers[timer] & TakenOver)
         {
             return fail (Fault::TimerInUse, pin);
         }
@@ -173,16 +173,23 @@ namespace adk {
         return true;
     }
 
-    bool claimTimer (uint8_t timer, Pin pin)
+    bool claimTimer (uint8_t timer, Pin pin, uint8_t user)
     {
         // Timer 0 keeps millis () running, so nothing may take it over.
-        if (timer == 0 || timer >= TimerCount || timers[timer] != 0)
+        if (timer == 0 || timer >= TimerCount)
         {
             return fail (Fault::TimerInUse, pin);
         }
 
-        timers[timer] = Exclusive;
-        return true;
+        uint8_t takenOver = static_cast<uint8_t> (TakenOver | user);
+
+        if (timers[timer] == 0 || (user != 0 && timers[timer] == takenOver))
+        {
+            timers[timer] = takenOver;
+            return true;
+        }
+
+        return fail (Fault::TimerInUse, pin);
     }
 
     Fault fault ()
