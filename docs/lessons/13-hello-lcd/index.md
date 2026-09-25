@@ -96,7 +96,7 @@ animation, exactly like a flip book.
 ??? info "What each of the LCD's sixteen pins does"
     | Pin | Name | Job | Goes to |
     |--:|---|---|---|
-    | 1 | VSS | Ground | GND, through the knob's left leg |
+    | 1 | VSS | Ground | GND, from the knob's left-leg column |
     | 2 | VDD | Power for the chip | 5 V |
     | 3 | V0 | Contrast | The knob's middle leg |
     | 4 | RS | Character or command? | Pin 31 |
@@ -210,3 +210,39 @@ last column it starts again at the left.
    the three free columns at the top right, once a second:
    `lcd.at (13, 0).print (millis () / 1000);` What goes wrong after 999
    seconds, and how could you make room?
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it to DC volts as in [Lesson 1](../01-blink/index.md#measure-it), black lead
+in **COM** and red in **V**. The screen holds still by itself, so the sketch
+needs no change. Keep each probe tip in its own hole, so it can't touch the
+one beside it.
+
+!!! question "Predict"
+    The contrast knob shares out 5 V between its two ends, just as the knob
+    did in Lesson 7. When the letters are at their sharpest, is V0 nearer
+    0 V or 5 V? Write down your guess.
+
+<!-- measure -->
+
+For the first reading, hold the probes on the holes and turn the contrast
+knob slowly from one end to the other, watching the screen and the meter
+together. Then set it back where the letters are sharp.
+
+What the numbers tell you:
+
+- **The contrast voltage** is 0 V at the end where every dot is dark, and
+  5 V at the end where the screen is blank. The letters are sharpest just
+  above 0 V, usually somewhere from 0.3 to 1 V. The screen darkens a dot by
+  the difference between its 5 V supply and V0, so the lower V0, the darker
+  the dots. The best number differs a little from screen to screen, and with
+  how warm the room is.
+- **Across the backlight's resistor** and **across the backlight** add up to
+  the 5 V the backlight is given, as the red LED's two readings did in
+  Lesson 1. The backlight keeps about 3 V and the resistor has the other
+  2 V, so the current is 2 V ÷ 220 Ω ≈ 9 mA, the number worked out in the
+  idea above.
+- Some screens have a small resistor of their own for the backlight, on the
+  back of the board. Then the backlight's reading is a little higher and the
+  220 Ω's a little lower, but the two still add up to 5 V.
