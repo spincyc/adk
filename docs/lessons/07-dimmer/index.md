@@ -74,22 +74,29 @@ the reading into the range you ask for. A reading of 512 becomes 127.
 
 ??? info "About the knob"
     The drawing shows the knob's three legs in three neighboring holes,
-    e8 to e10. Some potentiometers have their legs a little further apart:
-    if yours don't fit, put them in every other hole (e8, e10, e12) and move
-    the knob's three wires to the same columns. The middle leg is always the
-    wiper.
+    e45 to e47. Some potentiometers have their legs a little further apart:
+    if yours don't fit, put them in every other hole, starting at e45, and
+    move each of the knob's three wires to its leg's new column. The middle
+    leg is always the wiper.
 
     Which way is "up" depends only on which outer leg gets 5 V. If your LED
     brightens as you turn the knob counterclockwise and you'd rather it went
-    clockwise, swap the two short wires on the outer legs. Nothing is wrong
-    either way: you have just turned the voltage divider round.
+    clockwise, swap the outer legs' wires, so the left leg goes to the + rail
+    and the right leg to the − rail. Nothing is wrong either way: you have
+    just turned the voltage divider round.
 
-This time the LED's resistor sits after the LED, on its short leg's side,
-standing across the middle gap. The current is the same all the way round a
-loop, so the resistor limits it wherever it is. The LED's legs go two holes
-apart, f2 and f4, so it stands clear of the resistor: spread them gently. A
-white LED keeps about 3 V for itself, so through 220 Ω it takes about 9 mA
-at full brightness. Pin 3 is one of the Mega's pins that can do PWM.
+The white LED is built like Lesson 1's red one, in column 38, where the LED
+that dims always goes: pin 3's wire comes into j38, the resistor stands
+across the middle gap from g38 to e38, the LED's long leg shares column 38
+in b38, and its short leg in b39 has a short black wire down to the − rail.
+A white LED keeps about 3 V for itself, so through 220 Ω it takes about
+9 mA at full brightness. Pin 3 is one of the Mega's pins that can do PWM.
+
+The knob stands over the middle gap with its legs in e45, e46 and e47. A
+black wire takes its left leg from a45 to the − rail, A0's wire goes into
+a46 beside the middle leg, and a red wire takes its right leg from d47 up to
+the top + rail, which the Mega's 5 V feeds at T+3. These are the knob's
+own holes: Lesson 9 puts it back in exactly the same place.
 
 When you are done, these are the connections your circuit makes:
 
@@ -148,10 +155,10 @@ a quarter of the height of the knob line.
 
 | What you see | Try this |
 |---|---|
-| The LED never lights, wherever the knob is | Turn the LED round: its long leg goes in f2. Check the wire from pin 3 is in j2, and the resistor really crosses the gap, from g4 to e4. |
-| The LED flickers or changes by itself | A0 isn't reaching the wiper: its wire must be in a9, the middle leg's column. |
-| The plotter's knob line sits at 0 or 1023 whatever you do | One outer leg has lost its supply. Check the red wire to B+3, the black one to B-3, and the two short wires on the knob's outer legs. |
-| Full brightness comes at the "wrong" end | Nothing is wrong. Swap the wires in a8 and a10 if you'd like it the other way round. |
+| The LED never lights, wherever the knob is | Turn the LED round: its long leg goes in b38. Check the wire from pin 3 is in j38, the resistor really crosses the gap, from g38 to e38, and the black wire joins a39 to the − rail. |
+| The LED flickers or changes by itself | A0 isn't reaching the wiper: its wire must be in a46, the middle leg's column. |
+| The plotter's knob line sits at 0 or 1023 whatever you do | One outer leg has lost its supply. Check the Mega's red wire into T+3 and black wire into B-3, and the knob's two short wires: black from a45 to the − rail, red from d47 to the top + rail. |
+| Full brightness comes at the "wrong" end | Nothing is wrong. Swap the outer legs' wires, as "About the knob" says, if you'd like it the other way round. |
 | The knob or a wire gets warm | Unplug now. The middle leg is joined to 5 V or GND; it must go only to A0. |
 | The Serial Plotter shows nothing, or nonsense | Pick 9600 baud, and close the Serial Monitor: only one of them can use the port at a time. |
 

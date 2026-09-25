@@ -10,11 +10,11 @@ parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
   - The LED matrix and GY-521 from Lesson 28
-  - Rotary encoder module
+  - The rotary encoder from Lesson 29
   - Passive buzzer
   - 220 Ω resistor (red, red, black, black, brown)
   - 10 female-to-male jumper wires
-  - 7 jumper wires
+  - 8 jumper wires
 ideas:
   - A ball with a position and a speed
   - Walls stored as bits, and testing one bit
@@ -81,12 +81,15 @@ buzzer knocks. The edges of the matrix are walls too.
 ## Build it
 
 !!! warning "Unplug first"
-    Unplug the USB cable before you wire. Keep the matrix, and move the
-    GY-521 five columns along, to columns 7 to 14, so the top rail's ground
-    wire fits in at column 3, with room for the wires beside it. The passive buzzer goes through its 220 Ω
-    resistor, as in Lesson 27. You will pick up the breadboard to play, so
-    use wires long enough to let it move, and keep the Mega flat on the
-    table beside it.
+    Unplug the USB cable before you wire. Keep the rotary encoder and its
+    five wires from Lesson 29 and take the rest off. The GY-521 goes back
+    in row j, columns 9 to 16, and the matrix back below the breadboard,
+    both wired as in Lesson 28, except that the matrix's VCC now takes the
+    5V pin on the power header, because the encoder uses the one at the top
+    of the long header. The passive buzzer goes through its 220 Ω resistor,
+    as in Lesson 27. You will pick up the breadboard to play, so use wires
+    long enough to let it move, and keep the Mega flat on the table beside
+    it.
 
 <!-- bench -->
 
@@ -162,12 +165,12 @@ seconds, where 10° took under two.
 
 | What you see | Try this |
 |---|---|
-| *NO SENSOR* scrolls | Check the GY-521: SDA to pin 20, SCL to pin 21, VCC and GND, and its pins well down in row j. |
+| *NO SENSOR* scrolls | Check the GY-521: SDA to pin 20, SCL to pin 21, VCC's red jumper from the top + rail to i9, GND's black jumpers from f10 to e10 and a10 to the − rail, and its pins well down in row j. |
 | The ball rolls uphill | The GY-521's arrows point differently on your module. In `rollBall ()`, change `- (tilt.pitch () - flatPitch)` to `+`, or the `+` before `(tilt.roll () - flatRoll)` to `-`, whichever axis is wrong. |
 | The ball drifts on a level board | Hold it level when you click: that tilt is what counts as flat. |
-| Turning the knob does nothing | Check CLK on 18 and DT on 19, and + and GND from the power header. |
+| Turning the knob does nothing | Check CLK on 18 and DT on 19, + on the inner 5V pin at the top of the long header, and GND on the GND pin beside pin 13. |
 | Clicking doesn't start the maze | The knob's switch is on pin 22: press the shaft straight down. |
-| No sound | Check the buzzer's + leg is in h20, the resistor runs from f16 to f20, and the black jumper from f23 reaches the − rail, which needs its GND wire. |
+| No sound | Check the buzzer's + leg is in f34, under pin 10's wire in j34, its other leg in e34, and the resistor runs from a34 to the bottom − rail, which needs its GND wire. |
 
 ??? note "How it works"
     The accelerometer takes a reading every 20 ms, so `tilt.measured ()`

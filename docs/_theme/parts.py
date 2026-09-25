@@ -1,6 +1,7 @@
 """Parts that stand in the breadboard: each knows its legs and the holes
-they are in, what it joins inside, which holes its body covers, and how
-to draw itself over those holes.
+they are in, what it joins inside, which holes its body covers, how to draw
+itself over those holes, the shapes wires and labels keep clear of, and
+where its label may go.
 
 Tall parts are drawn as if seen a little from the front: an LED's dome
 sits above its legs, so the holes stay in view.
@@ -11,15 +12,49 @@ import re
 
 from modules import Placed, rounded
 from pencil import DPI
+from route import text_width
 
 RAINBOW = ["#eab0aa", "#efdca6", "#b5d6ad", "#adc4e6"]
 METAL   = "#d3d3cf"
+LEAD    = 0.9                       # half a lead's width, as wires keep clear of it
+
+
+class Label:
+    """A label a part or wire wants: its text, and the spots it may go,
+    best first, each (x, y, anchor, cost). at is what a leader points to
+    when the label has to go further out."""
+
+    def __init__ (self, text, spots, at=None, size=1.0):
+        self.text, self.spots, self.at, self.size = text, spots, at, size
+
+
+# Spots round a box for a label of that text: above, then beside, then
+# below, each a little way out.
+def spots_round (box, text, size, first="above", gap=2.5):
+    x0, y0, x1, y1 = box
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    width = text_width (text, size)
+    above = [(cx, y0 - gap - size * 0.26, "middle", 0)]
+    below = [(cx, y1 + gap + size * 0.8, "middle", 6)]
+    right = [(x1 + gap + 1, cy + size * 0.3, "start", 2)]
+    left = [(x0 - gap - 1, cy + size * 0.3, "end", 3)]
+    sides = {"above": above + right + left + below, "right": right + left + above + below,
+             "left": left + right + above + below, "below": below + right + left + above}[first]
+    sides = [(x, y, anchor, index * 6) for index, (x, y, anchor, _) in enumerate (sides)]
+    # The same again, slid along a little, for a crowded spot.
+    slid = []
+    for x, y, anchor, cost in sides:
+        if anchor == "middle":
+            slid += [(x - width / 2 - 2, y, anchor, cost + 5), (x + width / 2 + 2, y, anchor, cost + 5)]
+        else:
+            slid += [(x, y - size - 1, anchor, cost + 5), (x, y + size + 1, anchor, cost + 5)]
+    return sides + slid
 
 
 class Part:
     name = "part"
     sources = ()                    # legs that feed power, listed like the Mega's pins
-    blocks = True                   # wires go round its body off the board
+    blocks = True                   # wires go round its body
 
     def legs (self):
         return []
@@ -32,12 +67,24 @@ class Part:
     def footprint (self, bench):
         return []
 
+    # Everything drawn, bodies and leads, which wires and labels keep clear
+    # of, in the shapes of route.py.
+    def shapes (self, bench):
+        return [("rect", *s[1:]) if s[0] == "rect" else s for s in self.footprint (bench)]
+
     # A body off the board, which grows the drawing and wires go round.
     def box (self, bench):
         return None
 
+    def labels (self, bench):
+        return []
+
     def draw (self, pencil, bench):
         pass
+
+
+def lead_shape (a, b):
+    return ("segment", a[0], a[1], b[0], b[1], LEAD)
 
 
 class Resistor (Part):
@@ -49,6 +96,7 @@ class Resistor (Part):
              "yellow": "#d4b240", "green": "#4f8049", "blue": "#44689f", "violet": "#745a9b",
              "grey": "#999997", "white": "#f1eee6", "gold": "#b39448"}
     BANDS = (-0.68, -0.46, -0.24, -0.02, 0.64)
+    LENGTH = 25
 
     def __init__ (self, value, a, b):
         self.value, self.a, self.b = value, a, b
@@ -57,27 +105,58 @@ class Resistor (Part):
     def legs (self):
         return [("one end", self.a), ("other end", self.b)]
 
+    # Standing across rows, or across the middle gap, the body lies along
+    # its legs, halfway between them; along a row it lies just above them.
+    def standing (self, bench):
+        (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
+        return abs (y2 - y1) > abs (x2 - x1) * 0.2
+
+    def geometry (self, bench):
+        (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
+        if self.standing (bench):
+            return (x1 + x2) / 2, (y1 + y2) / 2
+        return (x1 + x2) / 2, (y1 + y2) / 2 - 7
+
+    def shapes (self, bench):
+        (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
+        cx, cy = self.geometry (bench)
+        half = self.LENGTH / 2
+        if self.standing (bench):
+            span = math.dist ((x1, y1), (x2, y2))
+            ux, uy = (x2 - x1) / span, (y2 - y1) / span
+            ends = (cx - ux * half, cy - uy * half), (cx + ux * half, cy + uy * half)
+            return [("segment", *ends[0], *ends[1], 5.2), lead_shape ((x1, y1), ends[0]),
+                    lead_shape (ends[1], (x2, y2))]
+        return [("rect", cx - half, cy - 5.2, cx + half, cy + 5.2),
+                lead_shape ((x1, y1), (cx - half + 1, cy)), lead_shape ((cx + half - 1, cy), (x2, y2))]
+
+    def labels (self, bench):
+        size = bench.label_size
+        cx, cy = self.geometry (bench)
+        if self.standing (bench):
+            (_, y1), (_, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
+            box = (cx - 5.5, min (y1, y2) + 3, cx + 5.5, max (y1, y2) - 3)
+            return [Label (self.value, spots_round (box, self.value, size, "right"), (cx, cy))]
+        half = self.LENGTH / 2
+        box = (cx - half, cy - 5.5, cx + half, cy + 5.5)
+        return [Label (self.value, spots_round (box, self.value, size, "above"), (cx, cy))]
+
     def draw (self, pencil, bench):
         (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
-        length = 25
-        if abs (y2 - y1) > abs (x2 - x1) * 0.2:
-            # Standing across rows, or across the middle gap: the body lies
-            # along its legs, halfway between them.
+        length = self.LENGTH
+        cx, cy = self.geometry (bench)
+        if self.standing (bench):
             span = math.dist ((x1, y1), (x2, y2))
             angle = math.degrees (math.atan2 (y2 - y1, x2 - x1))
-            pencil.begin ((x1 + x2) / 2, (y1 + y2) / 2, angle)
+            pencil.begin (cx, cy, angle)
             pencil.lead ((-span / 2, 0), (-length / 2 + 1, 0))
             pencil.lead ((length / 2 - 1, 0), (span / 2, 0))
             self._body (pencil, 0, 0, length)
             pencil.end ()
-            bench.tag (pencil, (x1 + x2) / 2 + 7 + len (self.value) * bench.label_size * 0.26,
-                       (y1 + y2) / 2 + 3, self.value)
             return
-        cx, cy = (x1 + x2) / 2, (y1 + y2) / 2 - 7
         pencil.lead ((x1, y1), (cx - length / 2 + 1, cy))
         pencil.lead ((cx + length / 2 - 1, cy), (x2, y2))
         self._body (pencil, cx, cy, length)
-        bench.tag (pencil, cx, cy - 8, self.value)
 
     def _body (self, pencil, cx, cy, length):
         outline = resistor_outline (cx, cy, length)
@@ -101,6 +180,7 @@ class Led (Part):
     # inside its flange, and the flange's flat on the short leg's side.
     TINTS = {"red": "#e39089", "yellow": "#ecd68c", "green": "#9ccb96", "blue": "#9ab7e2",
              "white": "#f4f2ea"}
+    RADIUS = 11.4
 
     def __init__ (self, color, anode, cathode):
         self.color, self.anode, self.cathode = color, anode, cathode
@@ -109,13 +189,33 @@ class Led (Part):
     def legs (self):
         return [("long leg (+)", self.anode), ("short leg (−)", self.cathode)]
 
-    def draw (self, pencil, bench):
+    def dome (self, bench):
         (x1, y1), (x2, y2) = bench.hole_xy (self.anode), bench.hole_xy (self.cathode)
-        cx, cy = (x1 + x2) / 2, min (y1, y2) - 20
-        pencil.lead ((x1, y1), (cx - 3.5, cy + 8))
-        pencil.lead ((x2, y2), (cx + 3.5, cy + 8))
+        return (x1 + x2) / 2, min (y1, y2) - 20
+
+    # Each leg rises to the side of the dome nearer it, so they never cross.
+    def feet (self, bench):
+        (x1, y1), (x2, y2) = bench.hole_xy (self.anode), bench.hole_xy (self.cathode)
+        cx, cy = self.dome (bench)
+        side = -1 if (x1, y2) <= (x2, y1) else 1
+        return [((x1, y1), (cx + side * 3.5, cy + 8)), ((x2, y2), (cx - side * 3.5, cy + 8))]
+
+    def shapes (self, bench):
+        cx, cy = self.dome (bench)
+        return [("circle", cx, cy, self.RADIUS)] + [lead_shape (a, b) for a, b in self.feet (bench)]
+
+    def labels (self, bench):
+        cx, cy = self.dome (bench)
+        r = self.RADIUS
+        return [Label (self.name, spots_round ((cx - r, cy - r, cx + r, cy + r), self.name,
+                                               bench.label_size, "right"), (cx + r, cy))]
+
+    def draw (self, pencil, bench):
+        (x1, _), (x2, _) = bench.hole_xy (self.anode), bench.hole_xy (self.cathode)
+        cx, cy = self.dome (bench)
+        for a, b in self.feet (bench):
+            pencil.lead (a, b)
         lens (pencil, cx, cy, self.TINTS[self.color], 1 if x2 > x1 else -1)
-        bench.tag (pencil, cx, cy - 15, f"{self.color} LED")
 
 
 class Button (Part):
@@ -130,13 +230,11 @@ class Button (Part):
         c = self.column
         return [f"f{c}", f"f{c + 2}", f"e{c}", f"e{c + 2}"]
 
+    # The legs joined inside share a name, so each pair is one junction.
     def legs (self):
         c = self.column
-        return [("left leg", f"e{c}"), ("left leg ", f"f{c}"),
-                ("right leg", f"e{c + 2}"), ("right leg ", f"f{c + 2}")]
-
-    def inside (self):
-        return [("left leg", "left leg "), ("right leg", "right leg ")]
+        return [("left legs", f"e{c}"), ("left legs", f"f{c}"),
+                ("right legs", f"e{c + 2}"), ("right legs", f"f{c + 2}")]
 
     def footprint (self, bench):
         (x1, y1), (x2, y2) = bench.hole_xy (f"f{self.column}"), bench.hole_xy (f"e{self.column + 2}")
@@ -161,6 +259,9 @@ class Button (Part):
 class RgbLed (Part):
     # A 5 mm common-cathode RGB LED: red, common (the longest leg), green and
     # blue, side by side.
+    RADIUS = 11.4
+    LETTERS = ("R", "−", "G", "B")
+
     def __init__ (self, red, common, green, blue):
         self.holes = [red, common, green, blue]
         self.name = "RGB LED"
@@ -169,16 +270,42 @@ class RgbLed (Part):
         return list (zip (("red leg", "common, longest leg (−)", "green leg", "blue leg"),
                           self.holes))
 
-    def draw (self, pencil, bench):
+    def dome (self, bench):
         points = [bench.hole_xy (hole) for hole in self.holes]
-        cx = sum (x for x, _ in points) / 4
-        cy = min (y for _, y in points) - 24
-        for index, (x, y) in enumerate (points):
-            pencil.lead ((x, y), (cx + (index - 1.5) * 3.2, cy + 8))
+        return sum (x for x, _ in points) / 4, min (y for _, y in points) - 24
+
+    def feet (self, bench):
+        points = [bench.hole_xy (hole) for hole in self.holes]
+        cx, cy = self.dome (bench)
+        order = sorted (range (4), key=lambda index: points[index])
+        tops = {index: (cx + (rank - 1.5) * 3.2, cy + 8) for rank, index in enumerate (order)}
+        return [(points[index], tops[index]) for index in range (4)]
+
+    def shapes (self, bench):
+        cx, cy = self.dome (bench)
+        return [("circle", cx, cy, self.RADIUS)] + [lead_shape (a, b) for a, b in self.feet (bench)]
+
+    def labels (self, bench):
+        cx, cy = self.dome (bench)
+        r = self.RADIUS
+        size = bench.label_size
+        labels = [Label (self.name, spots_round ((cx - r, cy - r, cx + r, cy + r), self.name, size,
+                                                 "right"), (cx + r, cy))]
+        # Each leg's letter just below its hole, or above it when a wire
+        # comes in from below.
+        for letter, hole in zip (self.LETTERS, self.holes):
+            x, y = bench.hole_xy (hole)
+            small = size * 0.62
+            spots = [(x, y + 4 + small * 0.8, "middle", 0), (x - 4, y + small * 0.3, "end", 3),
+                     (x + 4, y + small * 0.3, "start", 3)]
+            labels.append (Label (letter, spots, None, 0.62))
+        return labels
+
+    def draw (self, pencil, bench):
+        cx, cy = self.dome (bench)
+        for a, b in self.feet (bench):
+            pencil.lead (a, b)
         lens (pencil, cx, cy, RAINBOW, 0)
-        for letter, (x, y) in zip (("R", "−", "G", "B"), points):
-            pencil.text (x, y + 7.8, letter, size=bench.label_size * 0.62, kind="label", tone=0.8)
-        bench.tag (pencil, cx, cy - 15, "RGB LED")
 
 
 # A 5 mm lens in its 5.8 mm flange, the flange cut flat on one side (0 for
@@ -219,6 +346,7 @@ class Buzzer (Part):
     # active one is sealed and carries a sticker; the passive one is open
     # underneath, where its green board shows.
     RADIUS = 6 / 25.4 * DPI
+    RISE = 3
 
     def __init__ (self, positive, negative, kind):
         if kind not in ("active", "passive"):
@@ -236,10 +364,20 @@ class Buzzer (Part):
     def footprint (self, bench):
         return [("circle", *self.centre (bench), self.RADIUS)]
 
+    def shapes (self, bench):
+        mx, my = self.centre (bench)
+        return [("circle", mx, my - self.RISE / 2, self.RADIUS + 1.5)]
+
+    def labels (self, bench):
+        mx, my = self.centre (bench)
+        r, top = self.RADIUS, my - self.RISE
+        return [Label (self.name, spots_round ((mx - r, top - r, mx + r, my + r), self.name,
+                                               bench.label_size), (mx, top - r))]
+
     def draw (self, pencil, bench):
         mx, my = self.centre (bench)
         # Seen almost from above, so it covers only the holes it really does.
-        r, rise = self.RADIUS, 3
+        r, rise = self.RADIUS, self.RISE
         top = my - rise
         if self.kind == "passive":
             pencil.spot (mx, my, r, "#6fa860")
@@ -262,7 +400,6 @@ class Buzzer (Part):
         side = 1 if px > mx else -1
         pencil.text (mx + side * r * 0.72, top + 4.5, "+", size=12, kind="silk", weight="bold",
                      color="#f4f1e8")
-        bench.tag (pencil, mx, top - r - 6, self.name)
 
 
 class Potentiometer (Part):
@@ -287,6 +424,17 @@ class Potentiometer (Part):
         cx, y, half = self.body (bench)
         return [("rect", cx - half, y - 2 * half - 4, cx + half, y - 4)]
 
+    def shapes (self, bench):
+        cx, y, half = self.body (bench)
+        legs = [lead_shape (bench.hole_xy (hole), (bench.hole_xy (hole)[0], y - 5))
+                for hole in self.holes]
+        return [("rect", cx - half, y - 2 * half - 4, cx + half, y - 4)] + legs
+
+    def labels (self, bench):
+        cx, y, half = self.body (bench)
+        box = (cx - half, y - 2 * half - 4, cx + half, y - 4)
+        return [Label (self.value, spots_round (box, self.value, bench.label_size), (cx, box[1]))]
+
     def draw (self, pencil, bench):
         cx, y, half = self.body (bench)
         for hole in self.holes:
@@ -306,7 +454,6 @@ class Potentiometer (Part):
         angle = math.radians (-60)
         pencil.line ((kx, ky), (kx + (kr - 4) * math.cos (angle), ky + (kr - 4) * math.sin (angle)),
                      width=2.0, layer="top", passes=1)
-        bench.tag (pencil, cx, top - 6, self.value)
 
 
 class TwoLegs (Part):
@@ -319,12 +466,45 @@ class TwoLegs (Part):
     def legs (self):
         return [("one leg", self.a), ("other leg", self.b)]
 
-    def draw (self, pencil, bench):
+    # Standing in one column, across the middle gap, its body sits between
+    # its legs; otherwise it leans back above them.
+    def standing (self, bench):
+        (x1, _), (x2, _) = bench.hole_xy (self.a), bench.hole_xy (self.b)
+        return abs (x1 - x2) < 1
+
+    # Its centre, the box its body fills, and where each leg meets it.
+    def geometry (self, bench):
         (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
+        half_w, half_h, low = {"photoresistor": (10.5, 10.5, 7), "thermistor": (6.5, 9, 3),
+                               "tilt switch": (11, 19.5, 10)}[self.kind]
+        if self.standing (bench):
+            cx, cy = x1, (y1 + y2) / 2
+            box = (cx - half_w, cy - half_h, cx + half_w, cy + half_h)
+            top, bottom = sorted (((x1, y1), (x2, y2)), key=lambda p: p[1])
+            feet = [(top, (cx, cy - half_h + 2)), (bottom, (cx, cy + half_h - 2))]
+            return cx, cy, box, feet
         cx, cy = (x1 + x2) / 2, min (y1, y2) - 20
+        box = (cx - half_w, cy - half_h - (12 if self.kind == "tilt switch" else 0), cx + half_w,
+               cy + half_h - (7.5 if self.kind == "tilt switch" else 0))
+        spread = {"photoresistor": 5, "thermistor": 1.5, "tilt switch": 4}[self.kind]
+        feet = [((x1, y1), (cx - spread, cy + low)), ((x2, y2), (cx + spread, cy + low))]
+        return cx, cy, box, feet
+
+    def shapes (self, bench):
+        _, _, box, feet = self.geometry (bench)
+        return [("rect", *box)] + [lead_shape (a, b) for a, b in feet]
+
+    def labels (self, bench):
+        cx, _, box, _ = self.geometry (bench)
+        first = "right" if self.standing (bench) else "above"
+        return [Label (self.name, spots_round (box, self.name, bench.label_size, first),
+                       (box[2], (box[1] + box[3]) / 2) if first == "right" else (cx, box[1]))]
+
+    def draw (self, pencil, bench):
+        cx, cy, _, feet = self.geometry (bench)
+        for a, b in feet:
+            pencil.lead (a, b)
         if self.kind == "photoresistor":
-            pencil.lead ((x1, y1), (cx - 5, cy + 7))
-            pencil.lead ((x2, y2), (cx + 5, cy + 7))
             pencil.spot (cx, cy, 10.5, "#f3e9d2")
             track = []
             for index in range (7):
@@ -340,8 +520,6 @@ class TwoLegs (Part):
             pencil.circle (cx, cy, 10.5, width=1.0, layer="top")
             pencil.spot (cx - 3, cy - 4, 4, "#ffffff", opacity=0.45)
         elif self.kind == "thermistor":
-            pencil.lead ((x1, y1), (cx - 1.5, cy + 3))
-            pencil.lead ((x2, y2), (cx + 1.5, cy + 3))
             bead = [(cx + 6.5 * math.cos (a / 12 * math.pi), cy - 2 + 7.5 * math.sin (a / 12 * math.pi))
                     for a in range (24)]
             bead = [(x, y + (4 if y > cy - 2 else 0) * abs (x - cx) / 7) for x, y in bead]
@@ -349,15 +527,14 @@ class TwoLegs (Part):
             pencil.polyline (bead, width=1.1, closed=True, layer="top")
             pencil.spot (cx - 2, cy - 5, 2, "#ffffff", opacity=0.4)
         else:
-            pencil.lead ((x1, y1), (cx - 4, cy + 10))
-            pencil.lead ((x2, y2), (cx + 4, cy + 10))
-            pencil.tint (rounded (cx - 11, cy - 16, 22, 28, 4), "#3a3a3a")
-            pencil.rect (cx - 11, cy - 16, 22, 28, width=1.0, radius=4, layer="top")
-            pencil.spot (cx, cy - 16, 11, "#555555")
-            pencil.circle (cx, cy - 16, 11, width=1.1, layer="top", passes=1)
-            pencil.spot (cx - 5, cy - 4, 2.5, "#ffffff", opacity=0.3)
-            cy -= 12
-        bench.tag (pencil, cx, cy - 17, self.name)
+            top = cy - (4 if self.standing (bench) else 16)
+            pencil.tint (rounded (cx - 11, top, 22, 28 - (12 if self.standing (bench) else 0), 4),
+                         "#3a3a3a")
+            pencil.rect (cx - 11, top, 22, 28 - (12 if self.standing (bench) else 0), width=1.0,
+                         radius=4, layer="top")
+            pencil.spot (cx, top, 11, "#555555")
+            pencil.circle (cx, top, 11, width=1.1, layer="top", passes=1)
+            pencil.spot (cx - 5, top + 12, 2.5, "#ffffff", opacity=0.3)
 
     def _track (self, pencil, track):
         pencil.layers["top"].append (
@@ -391,10 +568,23 @@ class Chip (Part):
         _, top = bench.hole_xy (self.holes[half])
         return x1, x2, top, bottom
 
+    def outline (self, bench):
+        x1, x2, top, bottom = self.corners (bench)
+        return x1 - 5.5, top + 2.5, x2 + 5.5, bottom - 2.5
+
+    def shapes (self, bench):
+        x1, x2, top, bottom = self.corners (bench)
+        return [("rect", x1 - 5.5, top - 2.5, x2 + 5.5, bottom + 2.5)]
+
+    def labels (self, bench):
+        x1, x2, top, bottom = self.corners (bench)
+        box = (x1 - 5.5, top - 3, x2 + 5.5, bottom + 3)
+        return [Label (self.name, spots_round (box, self.name, bench.label_size, gap=4),
+                       ((x1 + x2) / 2, top))]
+
     def draw (self, pencil, bench):
         x1, x2, top, bottom = self.corners (bench)
-        left, right = x1 - 5.5, x2 + 5.5
-        upper, lower = top + 2.5, bottom - 2.5
+        left, upper, right, lower = self.outline (bench)
         # The legs' shoulders, splayed out to the holes from under the body.
         for hole in self.holes:
             hx, hy = bench.hole_xy (hole)
@@ -420,7 +610,6 @@ class Chip (Part):
             else:
                 pencil.text (hx + 3.6, upper + 2.2, pin, size=4, rotate=-90, anchor="end",
                              kind="silk", color="#f4f1e8")
-        bench.tag (pencil, (left + right) / 2, upper - 16, self.name)
 
 
 class Display (Chip):
@@ -438,12 +627,12 @@ class Display (Chip):
 
     def __init__ (self, name, pins, labels, holes, width, digits, shows):
         super ().__init__ (name, pins, holes)
-        self.labels, self.width, self.digits = labels, width, digits
+        self.names, self.width, self.digits = labels, width, digits
         self.shows = shows or ""
 
     def legs (self):
         return [(f"{label} (pin {number})", hole)
-                for number, (label, hole) in enumerate (zip (self.labels, self.holes), 1)]
+                for number, (label, hole) in enumerate (zip (self.names, self.holes), 1)]
 
     def rectangle (self, bench):
         x1, x2, top, bottom = self.corners (bench)
@@ -452,6 +641,19 @@ class Display (Chip):
 
     def footprint (self, bench):
         return [("rect", *self.rectangle (bench))]
+
+    # The body, and the printed 1 by pin 1 just below it.
+    def shapes (self, bench):
+        left, upper, right, lower = self.rectangle (bench)
+        x1, _, _, _ = self.corners (bench)
+        return [("rect", left, upper, right, lower), ("rect", x1 - 3, lower, x1 + 3, lower + 11)]
+
+    def labels (self, bench):
+        left, upper, right, lower = self.rectangle (bench)
+        size = bench.label_size
+        name = Label (self.name, spots_round ((left, upper, right, lower + 12), self.name, size),
+                      ((left + right) / 2, upper))
+        return [name]
 
     def draw (self, pencil, bench):
         left, upper, right, lower = self.rectangle (bench)
@@ -466,9 +668,8 @@ class Display (Chip):
             for segment, ((ax, ay), (bx, by)) in self.SEGMENTS.items ():
                 self._segment (pencil, ox, oy, ax, ay, bx, by, segment in lit[digit][0])
             self._dot (pencil, ox + 30, oy + 56, lit[digit][1])
-        x1, _, _, bottom = self.corners (bench)
-        pencil.text (x1, lower + 11, "1", size=8, kind="silk", tone=0.7)
-        bench.tag (pencil, (left + right) / 2, upper - 8, self.name)
+        x1, _, _, _ = self.corners (bench)
+        pencil.text (x1, lower + 9, "1", size=7, kind="silk", tone=0.7)
 
     def _lit (self):
         cells = []
@@ -502,20 +703,29 @@ class Display (Chip):
 
 class PowerModule (Part):
     # The breadboard power supply: it plugs into both pairs of rails at one
-    # end of the board, both sides set to 5 V, its barrel jack and USB socket
-    # hanging over the end.
-    sources = ("5 V", "GND")
-    blocks = False                  # it is low: wires lie over it
+    # end of the board, its barrel jack and USB socket hanging over the end.
+    # Each side has its own jumper: 5 V, 3.3 V or off; its GND is always on.
+    blocks = False                  # it is low: wires may lie over it
     LENGTH, OVERHANG = 1.3 * DPI, 0.3 * DPI
+    SETTINGS = {"5V": "5 V", "3.3V": "3.3 V", "off": None}
 
-    def __init__ (self, end, columns):
-        self.end, self.columns = end, columns
+    def __init__ (self, end, columns, top="5V", bottom="5V"):
+        for side in (top, bottom):
+            if side not in self.SETTINGS:
+                raise ValueError (f"a power module's jumper is on 5V, 3.3V or off, not {side!r}")
+        self.end, self.columns, self.top, self.bottom = end, columns, top, bottom
         self.name = "power module"
+        self.sources = tuple ({self.SETTINGS[s] for s in (top, bottom) if self.SETTINGS[s]}) + ("GND",)
 
+    # A rail pair switched off still has its pins in the + rail, joined to
+    # nothing.
     def legs (self):
         legs = []
-        for rail, leg in (("T+", "5 V"), ("T-", "GND"), ("B+", "5 V"), ("B-", "GND")):
-            legs += [(leg, f"{rail}{column}") for column in self.columns]
+        for side, setting, plus, minus in (("top", self.top, "T+", "T-"),
+                                           ("bottom", self.bottom, "B+", "B-")):
+            voltage = self.SETTINGS[setting] or f"{side} + pin, switched off"
+            legs += [(voltage, f"{plus}{column}") for column in self.columns]
+            legs += [("GND", f"{minus}{column}") for column in self.columns]
         return legs
 
     # Its outline: sign is -1 when it hangs off the left end.
@@ -537,6 +747,16 @@ class PowerModule (Part):
         outer = far + sign * self.OVERHANG
         return min (near, outer), top, max (near, outer), bottom
 
+    def shapes (self, bench):
+        return [("rect", *self.box (bench))]
+
+    def labels (self, bench):
+        sign, near, far, top, bottom = self.frame (bench)
+        size = bench.label_size
+        x = (near + far) / 2 + sign * 30
+        spots = [(x, top - 4 - size * 0.26, "middle", 0), (x, bottom + 4 + size * 0.8, "middle", 4)]
+        return [Label (self.name, spots, (x, top))]
+
     # Drawn beneath the wires, which lie over it.
     def draw (self, pencil, bench):
         sign, near, far, top, bottom = self.frame (bench)
@@ -546,6 +766,7 @@ class PowerModule (Part):
             hx, hy = bench.hole_xy (hole)
             pencil.tint ([(hx - 2.2, hy - 2.2), (hx + 2.2, hy - 2.2), (hx + 2.2, hy + 2.2),
                           (hx - 2.2, hy + 2.2)], "#1d1d1d", layer="shade")
+        pencil.solid (rounded (left, top, right - left, bottom - top, 4), "#d3dde9", layer="crisp")
         pencil.tint (rounded (left, top, right - left, bottom - top, 4), "#c5d4e6", layer="shade")
         pencil.rect (left, top, right - left, bottom - top, width=1.0, radius=4, layer="ink")
         for _, hole in self.legs ():
@@ -553,14 +774,19 @@ class PowerModule (Part):
             pencil.tint ([(hx - 3, hy - 3), (hx + 3, hy - 3), (hx + 3, hy + 3), (hx - 3, hy + 3)],
                          "#c9c3b0", layer="shade")
             pencil.rect (hx - 3, hy - 3, 6, 6, width=0.6, tone=0.6, layer="ink", passes=1)
-        # Both output jumpers on 5 V.
-        for rail, y in (("T", top + 34), ("B", bottom - 34)):
+        # Each side's output jumper, three pins in a row: its cap joins the
+        # pair by 5V or the pair by 3.3V, or is parked on the end pin, off.
+        for setting, y, below in ((self.top, top + 42, True), (self.bottom, bottom - 42, False)):
             for index in range (3):
-                pencil.spot (x (26 + index * 10), y, 1.8, "#9a9a9a", layer="shade")
-            pencil.tint ([(x (21), y - 5), (x (41), y - 5), (x (41), y + 5), (x (21), y + 5)],
-                         "#1f1f1f", layer="shade")
-            pencil.text (x (31), y + (-8 if rail == "T" else 15), "5V", size=6.5, kind="silk")
-            pencil.text (x (57), y + 3, "3.3V", size=5.5, kind="silk", tone=0.6)
+                pencil.spot (x (22 + index * 10), y, 1.8, "#9a9a9a", layer="shade")
+            cap = {"5V": (17, 37), "3.3V": (27, 47), "off": (38, 47)}[setting]
+            pencil.tint ([(x (cap[0]), y - 4.5), (x (cap[1]), y - 4.5), (x (cap[1]), y + 4.5),
+                          (x (cap[0]), y + 4.5)], "#1f1f1f", layer="shade")
+            for word, along, rise in (("5V", 10, 2.2), ("3.3V", 58, 2.2),
+                                      ("OFF", 32, 12 if below else -7)):
+                chosen = setting == ("off" if word == "OFF" else word)
+                pencil.text (x (along), y + rise, word, size=6 if chosen else 5, kind="silk",
+                             weight="bold" if chosen else "normal", tone=0.95 if chosen else 0.55)
         cy = (top + bottom) / 2
         # The regulators, switch and LED, the USB socket and the barrel jack.
         for y in (cy - 40, cy + 28):
@@ -581,12 +807,10 @@ class PowerModule (Part):
                      "#2a2a2a", layer="shade")
         pencil.rect (jack[0], cy - 86, jack[1] - jack[0], 42, width=1.0, layer="ink")
         pencil.spot (x (self.LENGTH + self.OVERHANG - 6), cy - 65, 7, "#555555", layer="shade")
-        for rail, (label, hole) in (("+", ("5 V", "T+")), ("−", ("GND", "T-")),
-                                    ("+ ", ("5 V", "B+")), ("− ", ("GND", "B-"))):
-            hx, hy = bench.hole_xy (f"{hole}{self.columns[0]}")
-            pencil.text (x (46), hy + 4, rail.strip (), size=11, kind="silk", weight="bold")
+        for rail, hole in (("+", "T+"), ("−", "T-"), ("+", "B+"), ("−", "B-")):
+            _, hy = bench.hole_xy (f"{hole}{self.columns[0]}")
+            pencil.text (x (46), hy + 4, rail, size=11, kind="silk", weight="bold")
         pencil.text ((near + far) / 2, cy + 2, "MB102", size=8, kind="silk", tone=0.6)
-        bench.tag (pencil, (near + far) / 2 + sign * 30, top - 8, self.name)
 
 
 class HeaderModule (Part):
@@ -625,8 +849,12 @@ class HeaderModule (Part):
     def box (self, bench):
         return self.placed (bench).box ()
 
+    def shapes (self, bench):
+        placed = self.placed (bench)
+        return [("rect", *placed.box ()), ("rect", *placed.title_box ())]
+
     def draw (self, pencil, bench):
-        self.placed (bench).draw (pencil)
+        self.placed (bench).draw (pencil, size=bench.label_size)
 
 
 def bands_for (value):
@@ -642,3 +870,4 @@ def bands_for (value):
     zeros = len (digits) - 3
     return [names[int (digits[0])], names[int (digits[1])], names[int (digits[2])],
             names[zeros], "brown"]
+

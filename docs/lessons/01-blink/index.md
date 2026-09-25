@@ -73,8 +73,12 @@ That is bright, and comfortably below the 20 mA a Mega pin is happy to give.
     edges, marked **+** and **−**, are the rails: each runs the whole length
     of the board, ready to carry 5 V and GND to wherever they're needed.
 
-    That is why the resistor and the LED's long leg are both in column 5:
-    the strip joins them.
+    That is why the circuit climbs down column 6. The orange wire (j6) and
+    the resistor's top leg (g6) share the upper strip; the resistor stands
+    across the gap, and its lower leg (e6) shares the lower strip with the
+    LED's long leg (b6). The LED's short leg (b7) and the black jumper (a7)
+    share column 7's strip, and the jumper carries it to the − rail, which
+    the black wire from the Mega's GND joins at its first hole.
 
 When you are done, these are the connections your circuit makes:
 
@@ -126,9 +130,9 @@ nearly five times the resistance, only about a fifth of the current flows,
 
 | What you see | Try this |
 |---|---|
-| The LED never lights | Turn the LED round: the long leg goes in c5. |
-| Still dark | Check the resistor's leg and the LED's long leg are in the same column (5), and the yellow wire is in pin 26, not 27. |
-| The LED is always on | The yellow wire may be in 5 V instead of pin 26. |
+| The LED never lights | Turn the LED round: the long leg goes in b6. |
+| Still dark | Check the resistor stands in g6 and e6, the LED's long leg is in the same column (b6), the black jumper joins a7 to the − rail, and the orange wire is in pin 26, not 27. |
+| The LED is always on | The orange wire may be in 5 V instead of pin 26. |
 | Upload fails | Pick the right board and port in the **Tools** menu, and try a different USB cable: some only carry power. |
 | The little **L** LED on the Mega blinks long and short flashes | ADK found a wiring mistake in the sketch and is blinking the pin number. See [Faults](../../library/index.md#faults). |
 
@@ -158,3 +162,30 @@ nearly five times the resistance, only about a fifth of the current flows,
    at a different speed.
 4. **Test your prediction.** Swap the 220 Ω resistor for a 1 kΩ one, and see
    how much dimmer 3 mA is than 14 mA.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. A
+meter lets you see the voltages the idea above talks about, and after a few
+readings "5 V shared between the resistor and the LED" stops being words and
+becomes something you have seen.
+
+Turn the dial to DC volts (**V⎓**), on the 20 V range if yours asks for one,
+plug the black lead into **COM** and the red one into **V**. Each reading
+below needs the LED on, and half a second is too short to read a meter, so
+change both `500`s in the sketch to `3000` and upload again: the LED now
+stays on for three seconds at a time. Touch the probe tips to the holes
+shown, red first, and wait for the number to settle.
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Pin 26 to GND** is the whole 5 V the pin gives while it is on. When the
+  LED goes off, the reading drops to 0.
+- **Across the resistor** and **across the LED** share that 5 V: add your
+  two readings and you get the first one back. The LED keeps about 2 V for
+  itself, whatever resistor you use; the resistor takes the rest.
+- Try the 1 kΩ resistor from *Make it yours*. The LED's share barely moves,
+  so the resistor still has about 3 V across it, and with five times the
+  resistance the current is a fifth: that is why the LED is dimmer.

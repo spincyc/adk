@@ -10,13 +10,13 @@ parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
   - LCD1602 character display
-  - 1 kΩ resistor (brown, black, black, brown, brown)
+  - 10 kΩ potentiometer, for the contrast
   - HC-SR501 PIR motion sensor
   - IR receiver module and the kit's remote
   - Active buzzer
   - RGB LED
   - 4 × 220 Ω resistors (red, red, black, black, brown)
-  - 21 jumper wires
+  - 22 jumper wires
   - 6 female-to-male jumper wires
 ideas:
   - A device as a set of states
@@ -61,12 +61,6 @@ After the fourth digit it compares the number with the secret one,
 and waits for four digits again. Each digit shows as a star, so someone
 looking over your shoulder learns nothing.
 
-**The contrast, without a knob.** In Lesson 13 a knob set the LCD's
-contrast by choosing the voltage on its V0 pin. Here a fixed 1 kΩ resistor
-from V0 to GND does the job and saves space: on most LCD1602 modules it
-gives crisp, dark text. If your screen shows only faint text, or a row of
-solid blocks, use the knob from Lesson 13 instead.
-
 !!! question "Predict"
     You arm the alarm and walk out, but you're still in front of the PIR
     sensor when the countdown reaches zero. What will the alarm do next?
@@ -91,25 +85,21 @@ while you're leaving.
     build so far: take it a step at a time, and check each step against the
     picture before moving on. Match the IR receiver's and the PIR's pins by
     their printed names (the PIR's are under its dome). The buzzer's longer
-    leg, under the **+** on its top, goes in the top row, f40.
+    leg, under the **+** on its top, goes in the top row, f51.
 
 <!-- bench -->
 
 <!-- steps -->
 
-??? info "What the short wires beside the LCD do"
-    The LCD stands in row a, so the rail below it is out of reach there.
-    Its power arrives from the left instead. Column 6 is a small GND
-    column, joined to the − rail; from it, one black wire takes GND to VSS
-    (column 10), another black wire joins RW (column 14) to VSS so the
-    display is only ever written, and the 1 kΩ resistor runs from it to V0
-    (column 12). VDD (column 11) takes 5 V straight from the Mega. The
-    backlight takes 5 V from the top rail through its 220 Ω resistor, and its
-    K pin takes GND from the top − rail.
+??? info "Where everything goes"
+    The screen, its contrast knob and their short wires stand exactly as in
+    Lesson 13, in the same holes. The screen's body covers the bottom rails
+    from column 6 to 37, so the RGB LED and the buzzer use the places they
+    have beside the screen: the LED in columns 41 to 46 and the buzzer in
+    column 51.
 
-    Everything else joins the rails too, and the long black wire at the far
-    end ties the top − rail to the bottom one, so every part shares GND
-    with the Mega.
+    The IR receiver takes 5 V and GND from the top rails below it. The
+    PIR takes them straight from the Mega's power header, as in Lesson 23.
 
 When you are done, these are the connections your circuit makes:
 
@@ -171,12 +161,12 @@ few seconds after the last movement, so leave its view in good time.
 
 | What you see | Try this |
 |---|---|
-| The screen is lit but blank | The contrast is too faint: put the knob from Lesson 13 in place of the 1 kΩ resistor, or try a 330 Ω one. |
-| The top row is solid blocks | The screen has power but isn't hearing the Mega: check pins 31 to 36 land in columns 13, 15 and 20 to 23. |
+| The screen is lit but blank | The contrast is too faint: turn the contrast knob slowly until the letters appear. |
+| The top row is solid blocks | The screen has power but isn't hearing the Mega: check pins 31 to 36 land in columns 12, 14 and 19 to 22. |
 | It arms and straight away asks for the code | The PIR still saw movement when the countdown ended; it stays on for a few seconds after the last movement. Leave sooner, or make `delaySeconds` longer. |
 | It never notices you | Give the PIR a minute after power-up, check its OUT pin goes to A12, and turn its time knob fully anticlockwise. |
 | The remote does nothing | Aim at the receiver's window. Upload Lesson 22's sketch to check your remote's codes, and change `digitButtons` if yours differ. |
-| No beeps | The buzzer's + leg goes in f40, under pin 12's wire in j40, and its other leg's column needs the wire from a40 to the − rail. |
+| No beeps | The buzzer's + leg goes in f51, under pin 12's wire in j51, and its other leg's column needs the black wire from a51 to the − rail. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"

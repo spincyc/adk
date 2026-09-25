@@ -73,7 +73,9 @@ get going.
 the power module, so the big currents never go near the Mega. The Mega's
 GND is joined to the module's GND, or the Mega's "HIGH" would mean nothing
 to the chip. The chip keeps a volt or two for itself, so the motor sees
-about 3 V of the module's 5 V: plenty for this 3–6 V motor.
+about 3 V of the module's 5 V: plenty for this 3–6 V motor. The knob takes
+its 5 V from the module's rails too: close enough to the Mega's own 5 V
+that its reading still runs from 0 to 1023.
 
 !!! question "Predict"
     The fan is spinning fast and you press the button. Does it flip round
@@ -101,9 +103,9 @@ about 3 V of the module's 5 V: plenty for this 3–6 V motor.
     |---|---|---|---|---|---|
     | 1 | 1,2EN | not used | 16 | VCC1 | 5 V for the chip itself |
     | 2 | 1A | not used | 15 | 4A | forward, from pin 8 |
-    | 3 | 1Y | not used | 14 | 4Y | the motor's red lead |
-    | 4, 5 | GND | joined inside | 13, 12 | GND | to the − rail |
-    | 6 | 2Y | not used | 11 | 3Y | the motor's black lead |
+    | 3 | 1Y | not used | 14 | 4Y | the motor's black lead |
+    | 4, 5 | GND | to the − rail | 13, 12 | GND | joined inside |
+    | 6 | 2Y | not used | 11 | 3Y | the motor's red lead |
     | 7 | 2A | not used | 10 | 3A | backward, from pin 9 |
     | 8 | VCC2 | 5 V for the motor | 9 | 3,4EN | enable, from pin 4 |
 
@@ -155,12 +157,12 @@ Switch the power module off when you finish, before you unplug the USB.
 
 | What you see | Try this |
 |---|---|
-| Nothing spins at all | Is the power module's LED on, with both jumpers on 5V? Check the red wire from a24 to the + rail (the motor's supply) and the one from j17 (the chip's). |
+| Nothing spins at all | Is the power module's LED on, with both jumpers on 5V? Check the red wire from a19 to the bottom + rail (the motor's supply) and the one from j12 to the top + rail (the chip's). |
 | It hums but doesn't turn | The speed is too low: turn the knob further. A flick of the blade helps a sluggish motor start. |
-| It only ever spins one way | The wire from pin 8 or pin 9 is in the wrong hole: they go to j18 and j23. |
-| The Mega resets when the fan starts | Something is feeding the motor from the Mega's 5 V. Only the pot's red wire should come from the Mega's 5V pin. |
-| The chip gets hot | Unplug everything at once and check the motor's leads go to g19 and g22, not straight to a rail. |
-| The button does nothing | The button straddles the middle gap; pin 22's wire goes in j13 and the black wire from a15 to the − rail. |
+| It only ever spins one way | The wire from pin 8 or pin 9 is in the wrong hole: they go to j13 and j18. |
+| The Mega resets when the fan starts | Something is feeding the motor from the Mega's 5 V. Nothing here should use the Mega's 5V pin: the chip, the motor and the knob all take their 5 V from the power module's rails. |
+| The chip gets hot | Unplug everything at once and check the motor's leads go to j14 and j17, not straight to a rail. |
+| The button does nothing | The button straddles the middle gap; pin 22's wire goes in j2 and the black wire from a4 to the − rail. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"

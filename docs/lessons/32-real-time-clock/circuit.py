@@ -1,31 +1,13 @@
-# The LCD lies off the bottom edge with its pins in row a, from column 9.
-# The top rails carry 5 V and GND, taken down to the LCD's power pins; the
-# contrast knob sits just before it, joined to its first three pins; and the
-# Mega's pins 31-36 reach its signal pins. The clock module sits above the
-# Mega, on the I2C pins 20 and 21.
-bench = Bench ("A clock module on pins 20 and 21, and the LCD on pins 31 to 36", columns=(1, 30))
+# The course's screen at its home, as in Lesson 13. The clock module lies on
+# its side above the board, clear of the screen's signal wires, where it
+# stays in Lesson 33, whose knob sits above the Mega: GND and VCC drop
+# straight into T-29 and T+30, and SDA and SCL come over the top from pins
+# 20 and 21 and in from the module's right.
+bench = Bench ("A clock module on pins 20 and 21, and the LCD on pins 31 to 36", columns=(1, 35))
 
-bench.wire ("5V", "T+3")
-bench.wire ("GND", "T-3")
-bench.potentiometer ("e5", "e6", "e7")
-bench.lcd (9, row="a", text=("Date  2026-09-24", "Time    20:30:05"))
-bench.wire ("d5", "d9")
-bench.wire ("c6", "c11")
-bench.wire ("b7", "b10")
-bench.wire ("e9", "T-9")
-bench.wire ("e10", "T+10")
-bench.wire ("e13", "T-13")
-bench.wire ("31", "e12")
-bench.wire ("32", "e14")
-bench.wire ("33", "e19")
-bench.wire ("34", "e20")
-bench.wire ("35", "e21")
-bench.wire ("36", "e22")
-bench.resistor ("220 Ω", "e23", "f23")
-bench.wire ("j23", "T+23")
-bench.wire ("e24", "T-24")
-bench.module ("rtc", at=(3.15, -1.25))
-bench.wire ("GND", "rtc.GND")
-bench.wire ("5V", "rtc.VCC")
-bench.wire ("20", "rtc.SDA", color="green")
-bench.wire ("21", "rtc.SCL", color="blue")
+bench.screen (text=("Date  2026-09-24", "Time    20:30:05"))
+bench.module ("rtc", at=(6.5, -1.4), facing="right")
+bench.wire ("rtc.GND", "T-29")
+bench.wire ("rtc.VCC", "T+30")
+bench.wire ("20", "rtc.SDA", via=[(3.75, -1.6), (8.5, -1.6), (8.5, -0.8)])
+bench.wire ("21", "rtc.SCL", via=[(3.85, -1.5), (8.4, -1.5), (8.4, -0.9)])

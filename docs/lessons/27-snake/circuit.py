@@ -1,9 +1,8 @@
-# The joystick and the matrix stay where Lesson 26 put them. On the
-# breadboard, from the end nearest the Mega, in the order the current meets
-# them: pin 10, the 220 ohm resistor, the passive buzzer, and the top rail,
-# reached from below the buzzer so the wire keeps clear of it.
+# Lesson 26's matrix and joystick stay as they were; the button goes. The
+# passive buzzer stands at its home in column 34, pin 10's wire coming over
+# the top of the board and its 220 Ω resistor going down to the bottom − rail.
 bench = Bench ("The joystick and LED matrix of Lesson 26, and a passive buzzer on pin 10 "
-               "through 220 Ω")
+               "through 220 Ω", columns=(1, 40))
 
 # The matrix is drawn turned half round, so its picture is given upside down.
 SNAKE = ["........",
@@ -15,23 +14,22 @@ SNAKE = ["........",
          "..#.....",
          "........"]
 
-bench.module ("joystick", at=(1.95, 4.0), facing="up")
-bench.wire ("A3", "joystick.VRx", color="yellow")
-bench.wire ("A4", "joystick.VRy", color="white")
-bench.wire ("22", "joystick.SW", color="grey")
-bench.wire ("5V", "joystick.+5V")
-bench.wire ("GND4", "joystick.GND")
-
-bench.module ("matrix", at=(5.0, 3.9), facing="up",
+bench.module ("matrix", at=(4.22, 3.9), facing="up",
               pixels=[row[::-1] for row in reversed (SNAKE)])
-bench.wire ("47", "matrix.DIN", color="green")
-bench.wire ("48", "matrix.CLK", color="blue")
-bench.wire ("49", "matrix.CS", color="purple")
-bench.wire ("5V3", "matrix.VCC")
-bench.wire ("GND5", "matrix.GND")
+bench.wire ("48", "matrix.CLK")
+bench.wire ("49", "matrix.CS")
+bench.wire ("47", "matrix.DIN")
+bench.wire ("B-5", "matrix.GND")
+bench.wire ("5V.long", "matrix.VCC")
 
-bench.wire ("10", "j1")
-bench.resistor ("220 Ω", "f1", "f5")
-bench.buzzer ("h5", "h8", kind="passive")
-bench.wire ("T-15", "f8")
-bench.wire ("GND", "T-3")
+bench.module ("joystick", at=(2.08, 3.9), facing="up")
+bench.wire ("A3", "joystick.VRx")
+bench.wire ("A4", "joystick.VRy")
+bench.wire ("5V.power", "joystick.+5V")
+bench.wire ("GND.long", "joystick.GND")
+bench.wire ("22", "joystick.SW")
+
+bench.wire ("10", "j34")
+bench.buzzer ("f34", "e34", kind="passive")
+bench.resistor ("220 Ω", "a34", "B-34")
+bench.closeup (1, 40)

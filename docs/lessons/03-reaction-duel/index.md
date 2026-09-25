@@ -94,7 +94,7 @@ same press in *Go* would win.
     220 Ω resistor. Make sure you have the **active** buzzer, the sealed one:
     the passive buzzer, plugged in here with no resistor, would take far more
     current than a pin can give. The active buzzer stands across the middle
-    gap: its **+** leg, the longer one, with a **+** on its top, goes in f25,
+    gap: its **+** leg, the longer one, with a **+** on its top, goes in f34,
     above the gap.
 
 <!-- bench -->
@@ -105,8 +105,8 @@ same press in *Go* would win.
     The buzzer's legs are 0.3 inch apart, exactly as far as row f is from
     row e across the middle gap, so it stands across the gap like the
     buttons do. Pin 12's wire reaches its **+** leg through the top half of
-    column 25, and its other leg reaches the − rail through the black wire
-    from a25.
+    column 34, and its other leg reaches the − rail through the black wire
+    from a34.
 
     To tell the two buzzers in the kit apart, look underneath. The active
     buzzer is sealed with black plastic, and usually has a paper sticker on
@@ -187,10 +187,10 @@ are faster to a sound, try the first challenge below.
 
 | What you see | Try this |
 |---|---|
-| The yellow LED doesn't blink at the start | Turn it round: its long leg goes in b15. Check its resistor runs from g15, across the gap, to e15. |
-| A button never starts a round | Push it firmly into the board, all four legs in. Check its black wire goes from row a (a3 or a7) to the − rail. |
-| The loser's light flashes, not the winner's | The LED wires may be swapped: pin 26 goes to j10 (red, on the left), pin 28 to j20 (green, on the right). |
-| No beep | The buzzer may be the wrong way round: its **+** leg goes in f25, above the gap. Check the black wire from a25 to the − rail. |
+| The yellow LED doesn't blink at the start | Turn it round: its long leg goes in b12. Check its resistor runs from g12, across the gap, to e12. |
+| A button never starts a round | Push it firmly into the board, all four legs in. Check its black wire goes from row a (a4 or a10) to the − rail. |
+| The loser's light flashes, not the winner's | The LED wires may be swapped: pin 26 goes to j6 (red, on the left), pin 28 to j18 (green, on the right). |
+| No beep | The buzzer may be the wrong way round: its **+** leg goes in f34, above the gap. Check the black wire from a34 to the − rail. |
 | Only a faint click instead of a beep | That is the passive buzzer. Unplug the USB cable at once and swap it for the sealed, active one. |
 | The same wait every game | Make sure nothing is plugged into A7: the seed only changes if the pin is left floating. |
 

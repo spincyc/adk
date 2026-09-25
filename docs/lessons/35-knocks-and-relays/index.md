@@ -15,7 +15,7 @@ parts:
   - Red LED
   - 1 kΩ resistor (brown, black, black, brown, brown)
   - 6 female-to-male jumper wires
-  - 3 jumper wires
+  - 1 jumper wire
   - A small screwdriver for the relay's terminals
 ideas:
   - Timing a pattern of knocks
@@ -90,11 +90,13 @@ screw until the wire can't be pulled out.
 ??? info "Two circuits on one breadboard"
     The lamp's circuit goes from the battery's red lead into the relay's COM
     terminal, out of NO, through the resistor and the LED, and back to the
-    battery's black lead. Nothing in it touches the Mega, its pins or the
-    rails. The relay's contacts join COM to **NO** (normally open) only
-    while the relay is on; when it's off, COM joins **NC** (normally closed)
-    instead. That's why the lamp's wire goes to NO: the lamp is off until the
-    relay is told to switch.
+    battery's black lead. It's laid out like the LEDs you know, with the
+    resistor across the middle gap and the LED below it, but the LED's short
+    leg goes back to the battery, not to the − rail. Nothing in it touches
+    the Mega, its pins or the rails. The relay's contacts join COM to **NO**
+    (normally open) only while the relay is on; when it's off, COM joins
+    **NC** (normally closed) instead. That's why the lamp's wire goes to NO:
+    the lamp is off until the relay is told to switch.
 
 When you are done, these are the connections your circuit makes:
 
@@ -160,9 +162,9 @@ gaps compare with each other. The second challenge below fixes that.
 | The L LED never blinks | Check S goes to A12, + to 5V and − to GND. Tap the sensor itself, not just the table. |
 | The L LED blinks on its own, or stays lit | Your tap sensor may be active high: change `adk::ActiveLow` to `adk::ActiveHigh`. |
 | You hear the right rhythm but the sketch doesn't | Watch the Serial Monitor. Extra `S`s mean one knock counted twice: raise `rattle` to 150. An `L` where you meant `S`: knock faster, or raise `longGap`. |
-| The relay clicks but the lamp stays dark | Check the battery's red lead is tight in COM, the wire from NO goes to j20, and the LED's long leg is in h24. Is the battery flat? |
+| The relay clicks but the lamp stays dark | Check the battery's red lead is tight in COM, the wire from NO goes to j13, the LED's long leg is in b13, and the battery's black lead is in a14. Is the battery flat? |
 | The lamp is on while the relay is off | The wire is in NC. Move it to NO. |
-| The relay never clicks | Check S goes to pin 11, and + and − to the top rails. |
+| The relay never clicks | Check S goes to pin 11, + to the inner 5V pin at the top of the long header, and − to the inner GND pin at its other end. |
 | The relay switches on at start and off when told on | Your relay module is active low: write `adk::Relay relay {11, adk::ActiveLow};`. |
 
 ??? note "How it works"

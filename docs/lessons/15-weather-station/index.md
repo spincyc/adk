@@ -10,12 +10,12 @@ parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
   - The LCD, knob and 220 Ω resistor from Lesson 13, wired as before
-  - DHT11 temperature and humidity module
+  - The DHT11 from Lesson 14, wired as before
   - RGB LED
   - 3 × 220 Ω resistors (red, red, black, black, brown)
   - The kit's second 10 kΩ potentiometer, for the alarm
   - Active buzzer
-  - 3 female-to-male jumper wires and 11 more jumper wires
+  - 8 jumper wires
 ideas:
   - Putting sensors, lights and a screen together
   - Thresholds with a gap between them, so nothing flickers
@@ -83,11 +83,13 @@ times a second, so it answers the knob straight away.
 ## Build it
 
 !!! warning "Unplug first"
-    Unplug the USB cable before you wire. Keep Lesson 13's screen as it is and
-    add the rest to the right. Two things to check twice: the RGB LED's
-    longest leg is the common one and goes in f26, and the buzzer's + mark
-    goes in f42. The two long wires at the far end join the bottom rails to the
-    top ones, so the alarm knob gets power too.
+    Unplug the USB cable before you wire. Keep Lesson 14's screen and DHT11
+    as they are, take out the thermistor, its 10 kΩ resistor and the 18B20
+    with their wires, and add the rest past the screen. Two things to check
+    twice: the RGB LED's longest leg is the common one and goes straight
+    into the bottom − rail at B-42, and the buzzer's + mark goes in f51,
+    above the gap. The wire from A0 runs round below the screen to the alarm
+    knob.
 
 <!-- bench -->
 
@@ -96,9 +98,9 @@ times a second, so it answers the knob straight away.
 ??? info "Two knobs"
     The LCD's contrast knob and the alarm knob are both 10 kΩ potentiometers;
     the Mega kit comes with two. If one has gone missing, use the one you have
-    for the alarm, and give the screen a fixed contrast instead: take out the contrast knob and the brown wire from c2 to
-    c7, and put a 1 kΩ resistor (brown, black, black, brown, brown) from c5 to
-    c7, between the LCD's VSS and V0. Many screens read well like that; if
+    for the alarm, and give the screen a fixed contrast instead: take out the contrast knob and
+    the brown wire from c6 to c11, and put a 1 kΩ resistor (brown, black,
+    black, brown, brown) from c9 to c11, between the LCD's VSS and V0. Many screens read well like that; if
     yours is too faint or too dark, you'll need a second knob after all.
 
 When you are done, these are the connections your circuit makes:
@@ -166,13 +168,13 @@ both ways, which is the gap doing its job.
 
 | What you see | Try this |
 |---|---|
-| `Measuring...` never goes away | The DHT11 isn't answering: check S to pin 16, + to the + rail and − to the − rail at the far end. |
-| The light stays off | Check the RGB LED's longest leg is in f26 and the black wire from j26 goes to the − rail. |
-| One color is missing | Follow that color's pin: pin 5 to j22 and the resistor h22–h25 (red), pin 6 to j31 and g27–g31 (green), pin 7 to j35 and h28–h35 (blue). |
+| `Measuring...` never goes away | The DHT11 isn't answering: check S to pin 16, + to the top + rail (T+36) and − to the top − rail (T-37). |
+| The light stays off | Check the RGB LED's longest leg is in the bottom − rail, at B-42. |
+| One color is missing | Follow that color's pin: pin 5 to j41 and the resistor g41–e41 (red), pin 6 to j44 and g44–e44 (green), pin 7 to j46 and g46–e46 (blue). |
 | The light shows the wrong colors | The LED is in back to front, or the pin wires are swapped. |
-| The alarm setting is stuck at 10 or 40 | The knob has no power: check the long red and black wires from the top rails to the bottom rails, and a37 to + and a39 to −. |
+| The alarm setting is stuck at 10 or 40 | The knob has no power: check the red wire from d59 to the top + rail (T+61), and the black one from a57 to the bottom − rail. |
 | The setting runs backwards | That's fine, or swap the red and black wires on the knob's outer legs. |
-| No beep when it says **TOO HOT!** | Check the buzzer's + leg is in f42 with pin 12's wire in j42, and j45 goes to −. |
+| No beep when it says **TOO HOT!** | Check the buzzer's + leg is in f51 with pin 12's wire in j51, and the black wire from a51 goes to the − rail. |
 
 ??? note "How it works"
     Nothing in `loop ()` ever waits. The DHT11 takes a reading every two

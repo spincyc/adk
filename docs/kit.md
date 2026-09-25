@@ -78,6 +78,63 @@ circuit from an earlier lesson can often stay on the breadboard.
 The passive buzzer sits on pin 10 because a sounding buzzer borrows the timer
 that makes PWM on pins 9 and 10; pin 10 could not dim anything anyway.
 
+## Breadboard homes
+
+Each part also has a home on the breadboard: the same holes in every lesson
+that uses it, so a build carries on from one lesson to the next and you seldom
+move anything that works. Columns count from 1 at the end nearest the Mega;
+rows **a**–**e** are below the middle gap and **f**–**j** above it. The screen
+lies over the bottom rails from column 6 to 37, so the parts that share a
+lesson with it have a second home past it.
+
+| Part | Home | Beside the screen |
+|---|---|---|
+| GND from the Mega | The GND at the end of the long header, outer pin, into B-3 | Same |
+| 5V from the Mega | The 5V at the top of the long header, outer pin, into T+3 | Same |
+| Joining the rails, when a lesson needs both pairs | B-60 to T-60 (GND), T+61 to B+61 (5V) | Same |
+| Button on 22, 23, 24, 25 | Across the gap in columns 2–4, 8–10, 14–16, 20–22: the pin into row j of the left column, a black jumper from row a of the right column to the − rail | 23 in columns 38–40 |
+| LED on 26, 27, 28, 29, 30 | Columns 6, 12, 18, 24, 30: the pin into j, 220 Ω from g across the gap to e, the long leg in b, the short leg in b of the next column, a black jumper from a of that column to the − rail | — |
+| Dimmable LED on 3 | Column 38, laid out like the other LEDs | Same |
+| Buzzer, active on 12 or passive on 10 | Across the gap in column 34: + in f, − in e, the pin into j; a black jumper (active) or the 220 Ω resistor (passive) from a to the − rail | Column 51 |
+| RGB LED on 5, 6, 7 | Legs in a6 (red), a9 (green), a11 (blue), the common leg in B-7; a 220 Ω resistor across the gap above each colored leg, and its pin into j | Columns 41–46, the same shape |
+| Light or temperature divider, on A1 or A2 | Column 40: a red jumper from j40 to T+40, the sensor across the gap in f40 and e40, the pin into a40, 10 kΩ from c40 to c43, a black jumper from a43 to the − rail | Same |
+| Knob on A0 | Legs in e45, e46, e47: a black jumper from a45 to the − rail, A0 into a46, a red jumper from d47 to T+49 | Legs in e57, e58, e59, jumper to T+61 |
+| The screen (LCD, contrast knob, backlight) | Knob in e5–e7, the LCD's pins in a9–a24, wired by `bench.screen ()` | — |
+| Power module | The right end, in columns 60 and 61 of all four rails | Same |
+
+Modules on jumper wires have homes beside the board too, so their wires run
+the same way each time. The Mega's inner 5V and GND pins at the ends of the
+long header, and the ones on the power header, are free for modules; the
+outer pair feed the rails.
+
+| Module | Home | Power |
+|---|---|---|
+| Ultrasonic sensor | Above the Mega, just right of pins 14 and 15 | VCC from the inner 5V pin; GND into T-5 |
+| Motor (on the L293D) | Above the board, its leads straight down into j14 (black) and j17 (red) | From the chip |
+| Servo | Below the board, its plug under columns 52–54 | + into B+53, − into B-54 |
+| Keypad | High above the gap between the Mega and the breadboard, its eight wires rising from pins 22–29 | — |
+| DHT11 | Above the board, its pins over columns 35–37 | + into T+36, − into T-37 |
+| 18B20 | Above the board, its pins over columns 26–28 | + into T+27, − into T-28 |
+| IR receiver | Above the gap between the Mega and the breadboard; beside the screen, above columns 28–30 | The inner 5V and GND pins; beside the screen, T+29 and T-30 |
+| PIR sensor | Below the Mega, under the power header | The power header's 5V and GND |
+| Obstacle and beam-break sensors | Below the board, under columns 45 and 36 | From the bottom rails beside them |
+| LED matrix | Below the gap between the Mega and the breadboard, facing up | VCC from the inner 5V pin; GND into B-5 |
+| Joystick | Below the Mega, under pins A3 and A4 | The power header's 5V and the inner GND pin |
+| Rotary encoder | High above the Mega, over pins 18 and 19 | The inner 5V pin and the GND beside pin 13 |
+| Clock module | Above the board on its side, over the screen's wires | GND into T-29, VCC into T+30 |
+| Stepper driver | Below the Mega, under pins A8–A11 | From the power module's bottom rails: + into B+5, − into B-6 |
+| RFID reader | Below the Mega, facing up | The Mega's 3.3V and the inner GND pin |
+| Tap sensor | Below the Mega, at its left end | The power header's 5V and GND |
+| Relay | Above the board, its terminals facing left | The inner 5V and GND pins |
+
+Chips and parts that stand in the board without a home above keep one place
+too: the 74HC595 across the gap in columns 18–25, the one-digit display
+from column 46 and the four-digit display from column 51 (with the rails
+joined by a black jumper from T-6 to B-6, since the display covers the far
+end); the GY-521 in row j, columns 9–16; the L293D across the gap from
+column 12; the tilt switch in c32 and c33; the relay's lamp in the LED shape
+in column 13.
+
 ## Reading resistors
 
 The kit's resistors are blue, with five colored bands. Hold the resistor

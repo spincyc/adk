@@ -1,26 +1,30 @@
-# The Mega's 5V and GND feed the top rails. The relay sits above the board,
-# its coil pins dropping into the rails and its signal from pin 11; the tap
-# sensor lies below the Mega on three wires. The lamp is a circuit of its
-# own: the 9 V battery's red lead to the relay's COM terminal, NO to a 1 kΩ
-# resistor and a red LED in the top half, and back to the black lead.
+# The tap sensor lies below the left end of the Mega, where it stays in
+# Lesson 36 beside the RFID reader: + and − from the power header's 5V and
+# GND, S from A12. The relay lies on its side above the board, its pins
+# facing the Mega: S from pin 11 over the Mega, + and − from the long
+# header's inner 5V and GND. The lamp is a circuit of its own, laid out like
+# any LED: NO into j13, the 1 kΩ resistor across the gap, the red LED in
+# b13-b14, and the battery's black lead into a14; the battery lies beside
+# the board, its red lead up to COM. Nothing in it touches the rails.
 bench = Bench ("A relay on pin 11 switching a 9 V battery, 1 kΩ resistor and LED, and a tap "
-               "sensor on pin A12", columns=(1, 30))
+               "sensor on pin A12", columns=(1, 24))
 
-bench.wire ("5V", "T+3")
-bench.wire ("GND", "T-3")
-bench.module ("sensor", name="tap", at=(1.4, 3.4), pins=["S", "+", "−"], label="tap sensor",
+bench.module ("sensor", name="tap", at=(0.43, 3.62), pins=["S", "+", "−"], label="tap sensor",
               facing="up")
-bench.wire ("A12", "tap.S", color="yellow")
-bench.wire ("5V", "tap.+")
-bench.wire ("GND", "tap.−")
-bench.module ("relay", at=(6.2, -1.55))
-bench.wire ("11", "relay.S", color="green")
-bench.wire ("T+10", "relay.+")
-bench.wire ("T-11", "relay.−")
-bench.module ("battery9v", name="battery", at=(8.3, -2.3))
-bench.wire ("battery.+", "relay.COM")
-bench.wire ("relay.NO", "j20", color="blue")
-bench.resistor ("1 kΩ", "i20", "i24")
-bench.led ("red", anode="h24", cathode="h25")
-bench.wire ("battery.−", "j25")
-bench.closeup (8, 28)
+bench.wire ("A12", "tap.S", via=[(3.5, 2.95), (0.85, 2.95)])
+bench.wire ("5V.power", "tap.+", via=[(1.7, 2.9), (0.75, 2.9)])
+bench.wire ("GND.power", "tap.−", via=[(1.8, 2.85), (0.65, 2.85)])
+
+bench.module ("relay", at=(5.05, -0.75), facing="left")
+bench.wire ("11", "relay.S", via=[(1.8, -0.35)])
+bench.wire ("5V.long", "relay.+", via=[(4.25, 0.7), (4.25, -0.25)])
+bench.wire ("GND.long", "relay.−", via=[(4.35, 2.4), (4.35, -0.15)])
+
+bench.wire ("relay.NO", "j13", via=[(6.6, -0.45)])
+bench.resistor ("1 kΩ", "g13", "e13")
+bench.led ("red", anode="b13", cathode="b14")
+bench.module ("battery9v", name="battery", at=(8.2, 2.25), facing="left")
+bench.wire ("battery.−", "a14", via=[(6.7, 2.9)])
+bench.wire ("battery.+", "relay.COM", via=[(8.05, 2.65), (8.05, -0.25)])
+
+bench.closeup (1, 24)

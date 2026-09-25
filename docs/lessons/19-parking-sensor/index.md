@@ -13,7 +13,7 @@ parts:
   - Green, yellow and red LEDs
   - 3 × 220 Ω resistors (red, red, black, black, brown)
   - Active buzzer
-  - 11 jumper wires
+  - 10 jumper wires
   - 4 female-to-male jumper wires
 ideas:
   - Measuring distance with an echo
@@ -76,18 +76,19 @@ zones, and makes the gap between beeps 10 ms for every centimeter:
     wiring before you plug it back in. The sensor's four pins are printed
     VCC, Trig, Echo and GND on its front: match them by name. VCC wired to
     GND the wrong way round can ruin the sensor. The buzzer's longer leg,
-    under the **+** on its top, goes nearest the Mega.
+    under the **+** on its top, goes in the top half, in f34.
 
 <!-- bench -->
 
 <!-- steps -->
 
 ??? info "Seen before"
-    The long black wire at the far end joins the top − rail to the bottom
-    one, as in Lesson 15, so every part shares the Mega's GND. And each
-    LED's resistor sits after it, on its short leg's side, as in Lesson 7:
-    the current is the same all the way round, so the resistor limits it
-    wherever it is.
+    The long black wire at the far end, from B-60 to T-60, joins the top −
+    rail to the bottom one, as in Lesson 15, so the sensor on the top rail
+    and the LEDs and buzzer on the bottom one all share the Mega's GND. The
+    sensor's VCC wire takes a 5V pin of its own, the inner one at the top of
+    the long header, just along from Trig and Echo: it needs only about
+    15 mA.
 
 When you are done, these are the connections your circuit makes:
 
@@ -139,12 +140,12 @@ every 30 × 10 = 300 ms, a little over three a second.
 
 | What you see | Try this |
 |---|---|
-| Always green and silent, even close up | The sensor never hears an echo. Check Trig goes to pin 14 and Echo to 15, not the other way round, and that VCC and GND reach the top rails. |
+| Always green and silent, even close up | The sensor never hears an echo. Check Trig goes to pin 14 and Echo to 15, not the other way round, and that VCC goes to the 5V pin at the top of the long header and GND to the top − rail. |
 | Stuck on red with a steady tone | Something is very close to the sensor, or it sees the edge of the breadboard or a wire: point it clear of the desk. |
 | The lights jump about | Soft things like a jumper or a curtain soak up sound, and slanted ones bounce it away. Try a book held square to the sensor. |
 | Closer than about 2 cm it goes green | That is a real limit: the sensor can't hear an echo that comes back while it is still sending. |
-| The lights work but there's no sound | Check the buzzer's + leg is in h27, with pin 12's wire in the same column, and that j30's wire reaches the top − rail. |
-| An LED never lights | Its long leg goes in row a under the wire from the Mega (a6, a13 or a20), and its resistor's other end needs the black wire to the − rail. |
+| The lights work but there's no sound | Check the buzzer's + leg is in f34, under pin 12's wire in j34, and that the black wire from a34 reaches the bottom − rail. |
+| An LED never lights | Its long leg goes in row b of its resistor's column (b6, b12 or b18), its short leg just to the right, where the black wire from row a runs to the − rail. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"
@@ -166,9 +167,9 @@ every 30 × 10 = 300 ms, a little over three a second.
 2. **Watch the numbers.** Start `Serial` as in Lesson 2, print the distance
    with `adk::println (Serial, distance);` in `loop ()`, and open the Serial
    Plotter (Lesson 7) to watch a graph of your hand coming and going.
-3. **Flashing danger.** Add the blue LED on pin 29 (with its own 220 Ω
-   resistor) and make it blink quickly with `blink (200)` whenever
-   something is closer than 10 cm.
+3. **Flashing danger.** Add the blue LED on pin 29, with its own 220 Ω
+   resistor, in column 24, laid out like the other three, and make it blink
+   quickly with `blink (200)` whenever something is closer than 10 cm.
 4. **Doorway counter.** Point the sensor across a doorway and count how many
    times the distance drops below 50 cm and comes back again. Beep once for
    each person who walks through.

@@ -1,39 +1,21 @@
-# The LCD stands in row a from column 1, its screen lying off the bottom edge.
-# Its power comes from the left: GND, then short jumpers to RW and K; the
-# contrast knob sits right above its first pins, jumpered across the middle
-# gap. The data wires follow, then the backlight resistor and, last, the lamp
-# on pin 3. The rotary encoder sits above the Mega, beside pins 18 and 19.
+# The screen at its home, and the red LED on 3 at its home in column 38. The
+# rotary encoder sits at its home above the Mega, its wires rising from 18,
+# 19 and 22, its + from the inner 5V pin at the top of the long header and
+# its GND from the GND beside pin 13; pin 3's wire goes over the encoder to
+# the far end of the board.
 bench = Bench ("An LCD on pins 31 to 36, a rotary encoder on 18 and 19 with its switch "
-               "on 22, and a lamp on pin 3")
+               "on 22, and a lamp on pin 3", columns=(1, 40))
 
-bench.lcd (1, row="a", text=(">Level   60%", " Mode    Steady"))
-bench.wire ("GND4", "d1")
-bench.wire ("c1", "c5", color="black")
-bench.wire ("b5", "b16", color="black")
-bench.potentiometer ("j1", "j3", "j5")
-bench.wire ("5V3", "f5")
-bench.wire ("h5", "h2", color="red")
-bench.wire ("i1", "e1", color="black")
-bench.wire ("i2", "e2", color="red")
-bench.wire ("i3", "e3", color="grey")
-bench.wire ("31", "d4")
-bench.wire ("32", "d6")
-bench.wire ("33", "d11")
-bench.wire ("34", "d12")
-bench.wire ("35", "d13")
-bench.wire ("36", "d14")
-bench.wire ("i5", "i15", color="red")
-bench.resistor ("220 Ω", "g15", "d15")
+bench.screen (text=(">Level   60%", " Mode    Steady"))
 
-bench.wire ("3", "i22")
-bench.resistor ("220 Ω", "h22", "h18")
-bench.led ("red", anode="j18", cathode="j19")
-bench.wire ("f19", "e19", color="black")
-bench.wire ("c19", "c16", color="black")
+bench.module ("encoder", at=(3.0, -2.1))
+bench.wire ("18", "encoder.CLK", via=[(3.55, 0.55), (3.2, 0.55)])
+bench.wire ("19", "encoder.DT", via=[(3.65, 0.45), (3.3, 0.45)])
+bench.wire ("22", "encoder.SW", via=[(4.3, 0.8), (4.3, 0.35), (3.4, 0.35)])
+bench.wire ("5V.long", "encoder.+", via=[(4.25, 0.7), (4.25, 0.25), (3.5, 0.25)])
+bench.wire ("GND.top", "encoder.GND", via=[(1.5, 0.15), (3.6, 0.15)])
 
-bench.module ("encoder", at=(3.0, -1.6))
-bench.wire ("18", "encoder.CLK", color="white")
-bench.wire ("19", "encoder.DT", color="grey")
-bench.wire ("22", "encoder.SW", color="brown")
-bench.wire ("5V", "encoder.+")
-bench.wire ("GND", "encoder.GND")
+bench.wire ("3", "j38", via=[(2.65, -2.5), (9.1, -2.5)])
+bench.resistor ("220 Ω", "g38", "e38")
+bench.led ("red", anode="b38", cathode="b39")
+bench.wire ("a39", "B-39")

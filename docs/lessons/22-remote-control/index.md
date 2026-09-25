@@ -13,7 +13,7 @@ parts:
   - The kit's remote control
   - RGB LED
   - 3 × 220 Ω resistors (red, red, black, black, brown)
-  - 6 jumper wires
+  - 4 jumper wires
   - 3 female-to-male jumper wires
 ideas:
   - Infrared light, which you can't see
@@ -90,12 +90,15 @@ receives: the first thing you'll do is check yours against this table.
 
 <!-- steps -->
 
-??? info "Why the resistors fan out"
-    The RGB LED's four legs are only a tenth of an inch apart, too close for
-    three resistors side by side. So each resistor stands across the middle
-    gap and leans a little, from its wire's column down to its leg's
-    column. Each color gets its own 220 Ω, as in Lesson 4: red takes about
-    14 mA, green and blue about 8 mA.
+??? info "The lamp and the receiver"
+    The RGB LED stands just as it did in Lesson 4: its color legs spread
+    out into a6, a9 and a11, each with its own 220 Ω resistor standing
+    across the middle gap above it, and its longest leg straight down in
+    the − rail. Red takes about 14 mA, green and blue about 8 mA.
+
+    The receiver sits between the Mega and the breadboard, under the LED's
+    three wires. It takes its 5 V and GND straight from the Mega: the inner
+    pins at the top and bottom ends of the long header.
 
 When you are done, these are the connections your circuit makes:
 
@@ -148,7 +151,7 @@ big room, or from far away, the bounce may be too faint.
 
 | What you see | Try this |
 |---|---|
-| Nothing prints and the lamp doesn't react | Check the receiver's signal pin goes to pin 2 and its other two pins to the top rails, the right way round. Try from closer, and away from bright sunlight. |
+| Nothing prints and the lamp doesn't react | Check the receiver's signal pin goes to pin 2, its + to the 5V pin at the top of the long header and its − to the GND pin at the bottom end, the right way round. Try from closer, and away from bright sunlight. |
 | Codes print, but not the ones in the table | Your remote is a different model. Put the numbers you see in the sketch in place of the names, for example `Choice {0x0C, adk::color::red}` or `button == 0x45`. |
 | One press prints the same code several times | Some remotes send the whole code again, instead of a repeat, for as long as a button is held. Tap the button quickly. |
 | A color is missing or wrong | Check that color's wire and resistor: pin 5 is red, 6 green and 7 blue, and each resistor lands in its leg's column. |

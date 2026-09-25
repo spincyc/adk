@@ -12,7 +12,7 @@ parts:
   - The LED matrix from Lessons 25 to 27
   - GY-521 accelerometer module (MPU-6050)
   - 5 female-to-male jumper wires
-  - 4 jumper wires
+  - 7 jumper wires
 ideas:
   - The I2C bus and addresses
   - An accelerometer feels gravity
@@ -67,8 +67,11 @@ side the Y arrow points to. ADK works them out for you in degrees with
 !!! warning "Unplug first"
     Unplug the USB cable before you wire. Keep the LED matrix and its five
     wires from the last three lessons; take the joystick, the buzzer and
-    everything else off. Push the GY-521's pins firmly into row j: it
-    should lie flat, parallel to the breadboard.
+    everything else off. Push the GY-521's pins firmly into row j, in
+    columns 9 to 16: it should lie flat, parallel to the breadboard, over the
+    top rails. Its board hides the rail holes under it, so its 5V comes from
+    the top + rail at column 7, beside it, and its GND crosses the middle gap
+    in column 10 to reach the bottom − rail.
 
 <!-- bench -->
 
@@ -138,7 +141,7 @@ the numbers themselves, try the second challenge below.
 
 | What you see | Try this |
 |---|---|
-| *NO SENSOR* scrolls | Check SDA goes to pin 20 and SCL to 21: they can't be swapped. Check VCC and GND, and that the header is pushed well into row j. |
+| *NO SENSOR* scrolls | Check SDA goes to pin 20 and SCL to 21: they can't be swapped. Check VCC's red jumper from the top + rail to i9, GND's two black jumpers (f10 to e10, a10 to the − rail), and that the header is pushed well into row j. |
 | The bubble moves the wrong way left and right | Your module's X arrow points the other way. In `showBubble ()`, change `3 + lround (pitch / degreesPerDot)` to `3 - lround (pitch / degreesPerDot)`. |
 | The bubble moves the wrong way up and down | Change `3 - lround (roll / degreesPerDot)` to `3 + lround (roll / degreesPerDot)`. |
 | Up and down follow left and right instead | The arrows are turned a quarter round. Swap `pitch` and `roll` in the call to `showBubble ()`, then fix any direction as above. |

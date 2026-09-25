@@ -87,6 +87,10 @@ class Pencil:
             f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.2f}" fill="{GRAPHITE}" '
             f'fill-opacity="{tone:.2f}"/>')
 
+    # Flat, opaque colour, for something that hides what is under it.
+    def solid (self, points, color, layer="top"):
+        self.layers[layer].append (f'<path d="{straight (points)} Z" fill="{color}"/>')
+
     # A wash of colour over any shape, or over a circle.
     def tint (self, points, color, layer="top", opacity=1.0):
         self.layers[layer].append (
@@ -100,9 +104,10 @@ class Pencil:
 
     # A part drawn in its own frame, moved and turned in quarter turns. Text
     # inside keeps reading the right way up.
-    def begin (self, x, y, angle=0):
+    def begin (self, x, y, angle=0, scale=1):
+        zoom = f" scale({scale})" if scale != 1 else ""
         for layer in self.layers.values ():
-            layer.append (f'<g transform="translate({x:.1f} {y:.1f}) rotate({angle})">')
+            layer.append (f'<g transform="translate({x:.1f} {y:.1f}) rotate({angle}){zoom}">')
         self.turns.append (angle)
 
     def end (self):
@@ -213,9 +218,10 @@ class Pencil:
 
     # A jumper wire: coloured, with a fine graphite edge and a soft highlight.
     # Its bends are rounded, and its runs between them straight.
-    def wire (self, points, color, width=3.6):
-        path = rounded_path (points) if len (points) > 3 else curve (points)
-        self.layers["wire"].append (
+    def wire (self, points, color, width=3.6, radius=7, layer="wire", smooth=False, path=None):
+        path = path or (curve (points) if smooth else
+                        rounded_path (points, radius) if len (points) > 2 else straight (points))
+        self.layers[layer].append (
             f'<path d="{path}" fill="none" stroke="{GRAPHITE}" stroke-opacity="0.6" '
             f'stroke-width="{width + 1.1:.1f}" stroke-linecap="round" stroke-linejoin="round"/>'
             f'<path d="{path}" fill="none" stroke="{color}" stroke-width="{width:.1f}" '
@@ -226,16 +232,23 @@ class Pencil:
 
     # A small printed label that keeps a halo of paper, with a fine leader
     # line to what it names when that is not right beside it.
-    def label (self, x, y, content, size=10, anchor="middle", to=None):
+    # It sits on a little patch of paper, so the holes and lines under it
+    # never show through its letters.
+    def label (self, x, y, content, size=10, anchor="middle", to=None, width=None, patch=None):
+        width = width or len (content) * size * 0.5
+        left = {"start": x, "end": x - width}.get (anchor, x - width / 2)
+        # The paper under it, from patch's left to its right when given.
+        under = patch or (left - 1.2, left + width + 1.2)
         if to:
-            width = len (content) * size * 0.5
-            left = {"start": x, "end": x - width}.get (anchor, x - width / 2)
             sx = min (max (to[0], left - 1.5), left + width + 1.5)
             sy = y - size * 0.35 if abs (to[0] - sx) > 1 else (y + 2.5 if to[1] > y else y - size - 0.5)
             self._path (straight ([(sx, sy), to]), 0.45, 0.7, "text")
             self.layers["text"].append (
                 f'<circle cx="{to[0]:.1f}" cy="{to[1]:.1f}" r="0.9" fill="{GRAPHITE}" '
                 f'fill-opacity="0.75"/>')
+        self.layers["text"].append (
+            f'<rect x="{under[0]:.1f}" y="{y - size * 0.78:.1f}" width="{under[1] - under[0]:.1f}" '
+            f'height="{size * 1.02:.1f}" rx="{size * 0.25:.1f}" fill="{PAPER}" fill-opacity="0.92"/>')
         self.text (x, y, content, size=size, anchor=anchor, kind="label")
 
     # Words: "label" names things on the drawing and stays level, "silk" is

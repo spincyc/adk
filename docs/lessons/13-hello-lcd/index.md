@@ -12,7 +12,7 @@ parts:
   - LCD1602 display, with its 16 header pins
   - 10 kΩ potentiometer
   - 220 Ω resistor (red, red, black, black, brown)
-  - 16 jumper wires
+  - 17 jumper wires
 ideas:
   - How a character LCD shows text
   - Contrast and backlight
@@ -107,9 +107,15 @@ animation, exactly like a flip book.
     | 15 | A | Backlight + | 5 V through 220 Ω |
     | 16 | K | Backlight − | GND |
 
-    The Mega's GND arrives at the knob's left leg, and the short black jumper
-    carries it on to VSS; the short red jumper brings 5 V from VDD's column to
-    the knob's right leg. The brown one joins the knob's middle leg to V0.
+    GND reaches the knob's left leg from the bottom − rail, and the short
+    black jumper carries it on to VSS; the short red jumper brings 5 V from
+    VDD's column to the knob's right leg. The brown one joins the knob's
+    middle leg to V0. VDD takes its 5 V from the top + rail, and VSS joins
+    the top − rail, so that rail is GND too: the backlight's K and RW use it.
+
+    This is the course's screen. It sits in the same holes, wired the same
+    way, in every lesson that uses it, so you can leave it on the breadboard
+    from one to the next.
 
 When you are done, these are the connections your circuit makes:
 
@@ -163,10 +169,10 @@ last column it starts again at the left.
 
 | What you see | Try this |
 |---|---|
-| No light at all | Check the red wire from 5V to the top + rail (T+3), the resistor from e19 across the gap to f19, and the wires from j19 to + and e20 to −. |
-| The backlight glows, but the screen is blank | Turn the contrast knob, slowly, all the way through. If nothing ever appears, check the brown wire from c2 to c7. |
-| A row of solid blocks on top, nothing below | The screen has power but isn't hearing the Mega. Check pins 31 and 32 go to e8 (RS) and e10 (E), and that the upload finished. |
-| Strange symbols instead of letters | Two data wires are swapped: pins 33, 34, 35 and 36 go to e15, e16, e17 and e18, in that order. Check too that RW (e9) goes to −. |
+| No light at all | Check the red wire from the Mega's 5V to the top + rail (T+3), the resistor from e23 across the gap to f23, and the wires from j23 to + and e24 to −. |
+| The backlight glows, but the screen is blank | Turn the contrast knob, slowly, all the way through. If nothing ever appears, check the brown wire from c6 to c11 and the black one from a5 to the bottom − rail. |
+| A row of solid blocks on top, nothing below | The screen has power but isn't hearing the Mega. Check pins 31 and 32 go to e12 (RS) and e14 (E), and that the upload finished. |
+| Strange symbols instead of letters | Two data wires are swapped: pins 33, 34, 35 and 36 go to e19, e20, e21 and e22, in that order. Check too that RW (e13) goes to −. |
 | Text appears, then scrambles when you touch a wire | A loose wire. Push each one in firmly. |
 | The heart or the figure is a different shape | Check the rows of the picture: each has exactly five 0s and 1s after `0b`. |
 | The **L** LED on the Mega blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |

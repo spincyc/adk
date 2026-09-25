@@ -14,7 +14,7 @@ parts:
   - 220 Ω resistor (red, red, black, black, brown)
   - DS1307 clock module with its coin cell
   - 4 female-to-male jumper wires
-  - 16 jumper wires
+  - 17 jumper wires
 ideas:
   - A clock chip that runs on a battery
   - Counting seconds with a quartz crystal
@@ -80,6 +80,10 @@ builds it.
 <!-- bench -->
 
 <!-- steps -->
+
+The clock module lies on its side above the board, clear of the LCD's signal
+wires, so its GND and VCC wires drop straight into the top rails. Its SDA and
+SCL wires come over the top from pins 20 and 21.
 
 ??? info "How the LCD is wired"
     The LCD is the one from Lesson 13, lying off the bottom edge of the board

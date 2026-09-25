@@ -13,7 +13,7 @@ parts:
   - RGB LED
   - 3 × 220 Ω resistors (red, red, black, black, brown)
   - 7 female-to-male jumper wires
-  - 5 jumper wires
+  - 4 jumper wires
 ideas:
   - Radio tags that need no battery
   - A card's unique number, in hexadecimal
@@ -147,7 +147,7 @@ away, the card's coil can't catch enough of the field to power its chip.
 | The LED is yellow from the start | The reader didn't answer. Check all seven wires, especially 3.3V and GND, and that SDA goes to 53 and RST to 45. |
 | The LED stays blue when you hold a card | Hold the card flat and still, right against the middle of the reader. Check MISO goes to 50 and MOSI to 51: they're easy to swap. |
 | A card from home is never read | The reader only reads cards with a 4-byte UID, like the kit's card and fob. Stickers, travel cards and phones often have 7-byte UIDs. |
-| The colors are wrong | Check the LED's legs: red in a8, the longest leg in a6, green in a5 and blue in a2. |
+| The colors are wrong | Check the LED's legs: red in a6, the longest leg in B-7, green in a9 and blue in a11. |
 | The Serial Monitor shows nonsense | Set it to 9600 baud. |
 | A known card still flashes red | Check you copied every digit after `0x` exactly. A number shorter than eight digits is fine: the Serial Monitor leaves out leading zeros. |
 | The little **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |

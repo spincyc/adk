@@ -1,58 +1,34 @@
-# Lesson 13's screen stays in columns 1 to 21. After it, on the top half,
-# come the RGB comfort light and the alarm buzzer, in the order their wires
-# arrive from the top header. The alarm knob sits past the screen's
-# overhang, fed from the bottom rails, which are joined to the top ones at
-# the far end; the DHT11 module sits above that end.
+# Lesson 14's screen and DHT11 stay exactly where they were; the thermistor
+# and the 18B20 go. Past the screen, at their homes beside it: the RGB LED
+# in columns 41-46, its resistors across the gap and its common leg in the
+# bottom − rail; the active buzzer across the gap in column 51; and the
+# alarm knob in e57-e59, its wiper reached by A0's wire round the bottom
+# of the screen. The wires from the top header pass over the DHT11.
 bench = Bench ("A weather station: the DHT11 on pin 16, the RGB LED on pins 5 to 7, the knob on A0 "
-               "and the buzzer on pin 12, with the LCD from Lesson 13", columns=(1, 55))
+               "and the buzzer on pin 12, with the screen from Lesson 13", columns=(1, 62))
 
-bench.potentiometer ("e1", "e2", "e3")
-bench.lcd (5, row="a", text=("23°C 45% Comfy", "Alarm at 30°C"))
+bench.screen (text=("23°C 45% Comfy", "Alarm at 30°C"))
 
-bench.wire ("5V", "T+3")
-bench.wire ("GND", "a1")
-bench.wire ("b1", "b5", color="black")
-bench.wire ("e5", "T-5")
-bench.wire ("e6", "T+6")
-bench.wire ("d3", "d6", color="red")
-bench.wire ("c2", "c7", color="brown")
-bench.wire ("e9", "T-9")
-
-bench.wire ("31", "e8")
-bench.wire ("32", "e10")
-bench.wire ("33", "e15")
-bench.wire ("34", "e16")
-bench.wire ("35", "e17")
-bench.wire ("36", "e18")
-
-bench.resistor ("220 Ω", "e19", "f19")
-bench.wire ("j19", "T+19")
-bench.wire ("e20", "T-21")
-
-bench.rgb_led ("f25", "f26", "f27", "f28")
-bench.wire ("5", "j22")
-bench.resistor ("220 Ω", "h22", "h25")
-bench.wire ("j26", "T-25")
-bench.wire ("6", "j31")
-bench.resistor ("220 Ω", "g27", "g31")
-bench.wire ("7", "j35")
-bench.resistor ("220 Ω", "h28", "h35")
-
-bench.potentiometer ("e37", "e38", "e39")
-bench.wire ("a37", "B+37")
-bench.wire ("A0", "a38")
-bench.wire ("a39", "B-39")
-
-bench.buzzer ("f42", "f45")
-bench.wire ("12", "j42")
-bench.wire ("j45", "T-45")
-
-bench.wire ("T+47", "B+47")
-bench.wire ("T-48", "B-48")
-
-bench.module ("dht11", "dht", at=(10.08, -1.25))
+bench.module ("dht11", "dht", at=(8.58, -1.27))
 bench.wire ("16", "dht.S")
-bench.wire ("dht.+", "T+51")
-bench.wire ("dht.−", "T-52")
+bench.wire ("dht.+", "T+36")
+bench.wire ("dht.−", "T-37")
 
-bench.closeup (18, 53)
+bench.wire ("5", "j41", via=[(2.45, -1.55), (9.4, -1.55)])
+bench.wire ("6", "j44", via=[(2.35, -1.65), (9.7, -1.65)])
+bench.wire ("7", "j46", via=[(2.25, -1.75), (9.9, -1.75)])
+bench.resistor ("220 Ω", "g41", "e41")
+bench.resistor ("220 Ω", "g44", "e44")
+bench.resistor ("220 Ω", "g46", "e46")
+bench.rgb_led (red="a41", common="B-42", green="a44", blue="a46")
+
+bench.wire ("12", "j51", via=[(1.7, -1.85), (10.4, -1.85)])
+bench.buzzer ("f51", "e51", kind="active")
+bench.wire ("a51", "B-51")
+
+bench.potentiometer ("e57", "e58", "e59")
+bench.wire ("a57", "B-57")
+bench.wire ("A0", "a58")
+bench.wire ("d59", "T+61")
+
+bench.closeup (21, 62)

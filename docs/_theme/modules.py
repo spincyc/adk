@@ -11,6 +11,7 @@ each of its pins ends up.
 import math
 
 from pencil import DPI, rounded_rectangle
+from route import text_box
 
 SIDES = {"top": (0, -1), "bottom": (0, 1), "left": (-1, 0), "right": (1, 0)}
 PITCH = 0.1 * DPI                   # header pins are 0.1 inch apart
@@ -553,7 +554,7 @@ class Pir (Kind):
         left, right = 48, 78
         pencil.tint ([(left, 89), (right, 89), (right, 96), (left, 96)], PLASTIC)
         for pin in self.header ():
-            pencil.text (pin.x, 85, pin.name, size=4.6, kind="silk")
+            pencil.text (pin.x + 2, 83, pin.name, size=5.4, rotate=-90, anchor="end", kind="silk")
 
 
 class Sensor (Kind):
@@ -609,7 +610,7 @@ class Sensor (Kind):
             led_dot (pencil, cx + 14, 56)
             smd (pencil, cx - 10, 56)
         if self.label:
-            pencil.text (cx, 76, self.label, size=5.5, kind="silk")
+            pencil.text (cx, 72 if len (self.names) >= 4 else 76, self.label, size=5.5, kind="silk")
         self.draw_header (pencil)
 
 
@@ -642,6 +643,10 @@ class Motor (Kind):
     def header (self):
         return [Pin (name, 190, 66 + 18 * index, (1, 0), "lead", self.notes[name],
                      self.COLORS[name]) for index, name in enumerate (self.pins)]
+
+    # What its drawing fills: the blades, can and leads, not the whole frame.
+    def body (self):
+        return 0, 32, self.width, 112
 
     def draw (self, pencil):
         for index in range (3):
@@ -822,7 +827,7 @@ class Placed:
             y0, y1 = min (y0, ry + dy * out), max (y1, ry + dy * out)
         return x0, y0, x1, y1
 
-    def draw (self, pencil, title=True):
+    def draw (self, pencil, title=True, size=10):
         pencil.begin (self.x, self.y, self.angle)
         for pin in self.pins ():
             if pin.style == "male" and self.reach:
@@ -837,7 +842,7 @@ class Placed:
         pencil.end ()
         if title:
             x, y, anchor = self.title_spot ()
-            pencil.text (x, y, self.title, size=10, anchor=anchor)
+            pencil.text (x, y, self.title, size=size, anchor=anchor)
 
     # Where its name goes: on the side away from the main header, unless
     # the kind has wires or pins there.
@@ -856,6 +861,4 @@ class Placed:
     # The box its name fills.
     def title_box (self):
         x, y, anchor = self.title_spot ()
-        width = len (self.title) * 5.4
-        left = {"start": x, "end": x - width}.get (anchor, x - width / 2)
-        return left, y - 9, left + width, y + 3
+        return text_box (x, y, self.title, 10, anchor)

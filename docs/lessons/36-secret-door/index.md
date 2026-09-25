@@ -13,7 +13,7 @@ parts:
   - RC522 RFID reader, with its card and fob
   - Tap sensor module (37 in 1)
   - SG90 servo and active buzzer
-  - 10 female-to-male and 20 jumper wires
+  - 10 female-to-male and 21 jumper wires
   - A box with a lid, and sticky tape
 ideas:
   - Two different keys for one lock
@@ -100,6 +100,10 @@ can't knock on its own door.
 
 <!-- steps -->
 
+Set both of the power module's yellow jumpers to **5V**: the top rails feed
+the screen and the bottom rails the servo. The RFID reader and the tap
+sensor stay where they were in Lessons 34 and 35, below the Mega.
+
 ??? info "Making the latch"
     The servo's arm is the bolt. Tape the servo inside the box, near the top
     of the side opposite the hinge, so that its arm swings across under the
@@ -180,7 +184,7 @@ then `lock ()` forgets them.
 | Knocks never make stars | Check the tap sensor's S goes to A12, + to 5V and − to GND, and knock close to it. |
 | Stars appear, but the knock is always wrong | Knock the gaps more clearly: quick knocks well under half a second apart, and a pause of about a second. |
 | The latch opens the wrong way | Swap `lockedAngle` and `openAngle`, or remount the servo. |
-| No beeps | Check the buzzer's + leg, the longer one, is in g32, and the black wire goes from j35 to the − rail. |
+| No beeps | Check the buzzer's + leg, the longer one, is in f51, and the black wire goes from a51 to the − rail. |
 
 ??? note "How it works"
     While the door is open, `openFor ()` waits five seconds with

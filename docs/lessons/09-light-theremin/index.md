@@ -11,7 +11,7 @@ parts:
   - 10 kΩ potentiometer (the knob)
   - Passive buzzer (green circuit board underneath)
   - 220 Ω resistor (red, red, black, black, brown)
-  - 5 more jumper wires
+  - 4 more jumper wires
 ideas:
   - Turning a sensor reading into steps on a musical scale
   - The pentatonic scale, and octaves as doubling
@@ -87,13 +87,15 @@ pitch it's playing and only calls the buzzer when the pitch changes.
     own it would try to draw far more current than a pin should give. As in
     Lesson 7, the knob's middle leg goes only to A0.
 
-Leave Lesson 8's light meter exactly as it is. The knob goes in after the
-LEDs, and the buzzer after the knob. The whole build looks like this:
+Leave Lesson 8's light meter exactly as it is. The buzzer goes into its
+home in column 34, between the white LED and the light sensor, and the knob
+into its home after the sensor, in the same holes as in Lesson 7. The whole
+build looks like this:
 
 <!-- bench -->
 
-The first steps are Lesson 8's; if your light meter works, start at the
-potentiometer.
+The steps start from your light meter: keep everything in it, and add the
+buzzer and the knob.
 
 <!-- steps -->
 
@@ -105,9 +107,10 @@ potentiometer.
     own single tone; the passive one plays whatever note the Mega sends it.
 
     The buzzer stands across the middle gap: its + leg, the longer one, in
-    f37 in the top half, where the resistor brings pin 10's signal, and its
-    other leg in e37 in the bottom half, where a short black wire takes it
-    to GND. Its legs are 0.3 inch apart, exactly the width of the gap.
+    f34 in the top half, where pin 10's wire comes into j34, and its other
+    leg in e34 in the bottom half, where the 220 Ω resistor takes it from
+    a34 down to the − rail. Its legs are 0.3 inch apart, exactly the width
+    of the gap.
 
 When you are done, these are the connections your circuit makes:
 
@@ -168,11 +171,11 @@ jump down and up by an octave.
 
 | What you see or hear | Try this |
 |---|---|
-| The LEDs follow your hand, but no sound | Check the wire from pin 10 is in j34, the resistor goes from h34 to h37, the buzzer's + leg is in f37 and its other leg in e37, and the black wire joins a37 to the − rail. Make sure it's the passive buzzer. |
+| The LEDs follow your hand, but no sound | Check the wire from pin 10 is in j34, the buzzer's + leg is in f34 and its other leg in e34, and the resistor goes from a34 into the − rail. Make sure it's the passive buzzer. |
 | The slightest shadow plays the top note | The sketch never saw the sensor covered. Press the Mega's reset button and cover the sensor fully while the LEDs blink. |
 | It never goes quiet | The room is darker than when the sketch learned it: a light went off, or your own shadow falls on the sensor. Press reset and let it learn again in the light you'll play in. |
 | Notes flutter between two neighbors | Your hand is at the edge of a slice, or the lamp above you flickers. Move a little, or try a steadier light. |
-| The knob changes nothing | Check A0's wire is in a31 and the knob's outer legs reach both rails. The octave only changes at a third and two thirds of the way round. |
+| The knob changes nothing | Check A0's wire is in a46 and the knob's outer legs reach both rails: the black wire from a45 to the − rail, the red one from d47 to the top + rail. The octave only changes at a third and two thirds of the way round. |
 | No LEDs light at all | Upload Lesson 8's sketch again: if the light meter doesn't work either, fix it first using its table. |
 
 ??? note "How it works"

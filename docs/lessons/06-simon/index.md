@@ -13,7 +13,7 @@ parts:
   - Red, yellow, green and blue LEDs
   - 5 × 220 Ω resistors (red, red, black, black, brown)
   - Passive buzzer (the one with a green board showing underneath)
-  - 19 jumper wires
+  - 18 jumper wires
 ideas:
   - A list that grows, in an adk::Vector
   - Taking turns, as states
@@ -107,9 +107,11 @@ the Mega has power.
     game over, the red one would take nearly all the current and the blue
     one would barely glow. A resistor each keeps every color steady.
 
-    The layout follows the pins in order: the four buttons on pins 22 to 25,
-    then the four LEDs on 26 to 29, red, yellow, green and blue, so the first
-    button belongs to the first light. The buzzer comes last.
+    Lesson 5's four buttons, on pins 22 to 25, and its buzzer stay just
+    where they are. Each LED goes in beside its own button: red, on pin 26,
+    just right of the first button, then yellow, green and blue, on 27 to 29,
+    beside the others. So every light sits next to the button that answers
+    it.
 
 When you are done, these are the connections your circuit makes:
 
@@ -179,9 +181,9 @@ sequences. More than a million.
 | What you see | Try this |
 |---|---|
 | One light never lights | Turn that LED round: long leg in row b, on the left. Check its resistor runs from row g, across the gap, to row e. |
-| A light and its button don't match | The signal wires are out of order. Buttons: pins 22 to 25 into j1, j5, j9 and j13. Lights: pins 26 to 29 into j17, j23, j29 and j35. |
+| A light and its button don't match | The signal wires are out of order. Buttons: pins 22 to 25 into j2, j8, j14 and j20. Lights: pins 26 to 29 into j6, j12, j18 and j24. |
 | The lights blink, but one button never starts a game | Push that button firmly in, all four legs, and check its black wire from row a to the − rail. |
-| No sound | Follow pin 10: j40, the buzzer's legs in f40 and e40, and the resistor from a40 down into the − rail. |
+| No sound | Follow pin 10: j34, the buzzer's legs in f34 and e34, and the resistor from a34 down into the − rail. |
 | Every game starts with the same steps | Leave A7 unconnected: the random seed comes from it floating. |
 | The Mega's **L** LED blinks long and short flashes | A pin in the sketch is wrong. The Serial Monitor says which. |
 

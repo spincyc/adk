@@ -60,8 +60,11 @@ then **2** makes 4, then 4 × 10 + 2 = 42. Type **7** next and it's
 ## Build it
 
 !!! warning "Unplug first"
-    Unplug the USB cable before you wire. The keypad's ribbon is thin: push the
-    jumper wires into its socket gently, and don't fold the ribbon sharply.
+    Unplug the USB cable before you wire. Keep the screen just as it is, and
+    take out everything else from Lesson 15. The keypad lies above the Mega,
+    and its eight wires come from pins 22 to 29, right next to the screen's
+    wires. The keypad's ribbon is thin: push the jumper wires into its socket
+    gently, and don't fold the ribbon sharply.
 
 <!-- bench -->
 

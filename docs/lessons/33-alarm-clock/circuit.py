@@ -1,45 +1,31 @@
-# Lesson 32's clock, unchanged: the LCD in row a from column 9 with its
-# contrast knob before it, and the clock module above the Mega. The snooze
-# button goes in first, at the Mega's end; the passive buzzer and its 220 Ω
-# resistor go after the LCD's pins; and the knob sits above the board,
-# taking its power from the top rails.
+# Lesson 32's clock, unchanged: the screen at its home and the clock module
+# on its side above the board, SDA and SCL now stepping right round the
+# knob. The knob, the rotary encoder, sits at its home above the Mega: CLK
+# and DT from 18 and 19, SW and + from the long header (22 and its inner
+# 5V), GND from the GND beside pin 13. The snooze button and the passive
+# buzzer take their homes beside the screen, in columns 38 and 51, their pin
+# wires coming over the top.
 bench = Bench ("Lesson 32's clock and LCD, with a knob on pins 18, 19 and 22, a snooze button on "
-               "pin 23 and a passive buzzer on pin 10", columns=(1, 40))
+               "pin 23 and a passive buzzer on pin 10", columns=(1, 55))
 
-bench.wire ("23", "j1")
-bench.button (1)
-bench.wire ("j3", "T-4")
-bench.wire ("5V", "T+3")
-bench.wire ("GND", "T-3")
-bench.potentiometer ("e5", "e6", "e7")
-bench.lcd (9, row="a", text=("Time    06:58:30", "Alarm   07:00   "))
-bench.wire ("d5", "d9")
-bench.wire ("c6", "c11")
-bench.wire ("b7", "b10")
-bench.wire ("e9", "T-9")
-bench.wire ("e10", "T+10")
-bench.wire ("e13", "T-13")
-bench.wire ("31", "e12")
-bench.wire ("32", "e14")
-bench.wire ("33", "e19")
-bench.wire ("34", "e20")
-bench.wire ("35", "e21")
-bench.wire ("36", "e22")
-bench.resistor ("220 Ω", "e23", "f23")
-bench.wire ("j23", "T+23")
-bench.wire ("e24", "T-24")
-bench.wire ("10", "j28")
-bench.resistor ("220 Ω", "i28", "i32")
-bench.buzzer ("g32", "g35", kind="passive")
-bench.wire ("j35", "T-35")
-bench.module ("rtc", at=(3.15, -1.25))
-bench.wire ("GND", "rtc.GND")
-bench.wire ("5V", "rtc.VCC")
-bench.wire ("20", "rtc.SDA", color="green")
-bench.wire ("21", "rtc.SCL", color="blue")
-bench.module ("encoder", at=(7.9, -1.45))
-bench.wire ("18", "encoder.CLK", color="white")
-bench.wire ("19", "encoder.DT", color="brown")
-bench.wire ("22", "encoder.SW", color="grey")
-bench.wire ("T+30", "encoder.+")
-bench.wire ("T-31", "encoder.GND")
+bench.screen (text=("Time    06:58:30", "Alarm   07:00   "), risers=(4.55, 0.1))
+bench.module ("rtc", at=(6.5, -1.4), facing="right")
+bench.wire ("rtc.GND", "T-29")
+bench.wire ("rtc.VCC", "T+30")
+bench.wire ("20", "rtc.SDA", via=[(3.75, 0.35), (3.95, 0.35), (3.95, -1.6), (8.5, -1.6), (8.5, -0.8)])
+bench.wire ("21", "rtc.SCL", via=[(3.85, 0.45), (4.05, 0.45), (4.05, -1.5), (8.4, -1.5), (8.4, -0.9)])
+
+bench.module ("encoder", at=(3.0, -2.1))
+bench.wire ("18", "encoder.CLK", via=[(3.55, 0.25), (3.2, 0.25)])
+bench.wire ("19", "encoder.DT", via=[(3.65, 0.15), (3.3, 0.15)])
+bench.wire ("22", "encoder.SW", via=[(4.3, 0.8), (4.3, 0.05), (3.4, 0.05)])
+bench.wire ("5V.long", "encoder.+", via=[(4.25, 0.7), (4.25, -0.05), (3.5, -0.05)])
+bench.wire ("GND.top", "encoder.GND", via=[(1.5, -0.15), (3.6, -0.15)])
+
+bench.wire ("23", "j38", via=[(4.4, 0.85), (4.4, -1.7), (9.1, -1.7)])
+bench.button (38)
+bench.wire ("a40", "B-40")
+
+bench.wire ("10", "j51", via=[(1.9, -2.4), (10.4, -2.4)])
+bench.buzzer ("f51", "e51", kind="passive")
+bench.resistor ("220 Ω", "a51", "B-51")

@@ -1,25 +1,26 @@
-# Laid out from the end of the breadboard nearest the Mega: 5 V onto the top + rail and GND
-# onto the bottom − rail, the sensor above the Mega with Trig and Echo straight over pins 14 and
-# 15, then the gauge in the order its wires leave the header (green on 28 first, so no wire
-# crosses another), the buzzer on 12 at the far end, and a long wire joining the two − rails.
-bench = Bench ("An ultrasonic sensor on pins 14 and 15, green, yellow and red LEDs on 28, 27 "
-               "and 26, and an active buzzer on 12", columns=(1, 34))
+# The ultrasonic sensor sits above the Mega just right of pins 14 and 15,
+# the place it keeps in Lesson 21: 5 V from the inner 5V pin at the top of
+# the long header, GND from the top − rail, which the link at the far end
+# joins to the bottom one. The gauge's LEDs stand at their homes, red on 26
+# in column 6, yellow on 27 in 12 and green on 28 in 18, and the active
+# buzzer on 12 at its home in column 34, its wire passing over the sensor.
+bench = Bench ("An ultrasonic sensor on pins 14 and 15, red, yellow and green LEDs on 26, 27 "
+               "and 28, and an active buzzer on 12", columns=(1, 63))
 
-bench.module ("ultrasonic", name="sensor", at=(2.315, -1.26))
+bench.module ("ultrasonic", name="sensor", at=(2.715, -1.2))
 bench.wire ("14", "sensor.Trig")
 bench.wire ("15", "sensor.Echo")
-bench.wire ("5V", "T+3")
-bench.wire ("sensor.VCC", "T+4")
+bench.wire ("sensor.VCC", "5V.long")
 bench.wire ("sensor.GND", "T-5")
-bench.wire ("GND", "B-3")
 
-for pin, color, column in (("28", "green", 6), ("27", "yellow", 13), ("26", "red", 20)):
-    bench.wire (pin, f"e{column}")
-    bench.led (color, anode=f"a{column}", cathode=f"a{column + 1}")
-    bench.resistor ("220 Ω", f"e{column + 1}", f"e{column + 5}")
-    bench.wire (f"a{column + 5}", f"B-{column + 5}")
+for pin, color, column in (("26", "red", 6), ("27", "yellow", 12), ("28", "green", 18)):
+    bench.wire (pin, f"j{column}")
+    bench.resistor ("220 Ω", f"g{column}", f"e{column}")
+    bench.led (color, anode=f"b{column}", cathode=f"b{column + 1}")
+    bench.wire (f"a{column + 1}", f"B-{column + 1}")
 
-bench.wire ("12", "j27")
-bench.buzzer ("h27", "h30")
-bench.wire ("j30", "T-31")
-bench.wire ("T-33", "B-33")
+bench.wire ("12", "j34", via=[(1.69, -1.47), (8.7, -1.47)])
+bench.buzzer ("f34", "e34", kind="active")
+bench.wire ("a34", "B-34")
+
+bench.closeup (1, 37)

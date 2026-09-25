@@ -13,7 +13,7 @@ parts:
   - Passive buzzer
   - 220 Ω resistor (red, red, black, black, brown)
   - 5 female-to-male jumper wires
-  - 4 jumper wires
+  - 3 jumper wires
 ideas:
   - A device as a set of states
   - Times of day as one number
@@ -86,9 +86,9 @@ alarm (or the end of a snooze), the clock goes from `Showing` to `Ringing`.
     16 Ω, and on its own it would draw far more than a pin should give.
 
 Keep your clock from Lesson 32 just as it is. The new parts are the snooze
-button in the first three columns, the passive buzzer and its resistor after
-the LCD's pins, and the knob, on five wires. Everything is listed below, the
-old parts too, so you can check them.
+button just past the LCD, in columns 38 to 40, the passive buzzer in column
+51 with its resistor down to the − rail, and the knob above the Mega, on
+five wires. The steps below say what to keep and what to add.
 
 <!-- bench -->
 
@@ -96,8 +96,9 @@ old parts too, so you can check them.
 
 ??? info "The knob's wires"
     The knob is the rotary encoder from Lesson 29. Its CLK and DT pins go to
-    18 and 19, its push switch SW to pin 22, and it takes 5 V and GND from
-    the top rails. If yours has its pins in a different order, go by the
+    18 and 19, its push switch SW to pin 22, and it takes 5 V from the inner
+    5V pin at the top of the long header and GND from the GND pin beside
+    pin 13. If yours has its pins in a different order, go by the
     printed names, not their places.
 
 When you are done, these are the connections your circuit makes:
@@ -177,8 +178,8 @@ at 06:50 and a third time at 06:55. While you wait, the bottom row says
 | One click of the knob moves two minutes, or two clicks move one | Your encoder steps differently: give it a third number, as in `adk::RotaryEncoder knob {18, 19, 2};`, and try 2 or 1. |
 | Pressing the knob does nothing | Check SW goes to pin 22. The knob's + and GND must be wired too. |
 | The alarm never rings | It only rings as a new minute begins, so set it at least a minute ahead. Check the bottom row says `Alarm` and not `Hour?` or `Minute?`. |
-| The screen flashes **Wake up!** but there's no sound | Check the buzzer's + leg, the longer one, is in g32 next to the resistor, and the resistor goes from i28 to i32. |
-| The snooze button does nothing | It must straddle the middle gap in columns 1 and 3, with pin 23's wire in j1 and the black wire from j3 to the − rail. |
+| The screen flashes **Wake up!** but there's no sound | Check the buzzer's + leg, the longer one, is in f51, pin 10's wire is in j51, and the resistor goes from a51 to the − rail. |
+| The snooze button does nothing | It must straddle the middle gap in columns 38 and 40, with pin 23's wire in j38 and the black wire from a40 to the − rail. |
 | The time is wrong | See Lesson 32: the clock module keeps whatever time it was set to. |
 | The screen says **No clock found!** | Check the clock module's SDA goes to pin 20 and SCL to pin 21, as in Lesson 32. |
 | A row of solid blocks, or a blank lit screen | Turn the contrast knob, the potentiometer beside the LCD, not the new knob. |

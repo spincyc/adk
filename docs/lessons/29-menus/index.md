@@ -15,7 +15,7 @@ parts:
   - Red LED
   - 2 × 220 Ω resistors (red, red, black, black, brown)
   - 5 female-to-male jumper wires
-  - 18 jumper wires
+  - 19 jumper wires
 ideas:
   - A knob that turns forever and counts clicks
   - How the encoder tells which way it turned
@@ -100,10 +100,11 @@ of 255 on its PWM pin, just as the dimmer's `write ()` set it in Lesson 7.
     | 15 | A | 5V through 220 Ω: the backlight's + |
     | 16 | K | GND: the backlight's − |
 
-    Here the potentiometer stands just above the LCD's first pins, on the
-    other side of the middle gap, and three short jumpers cross the gap to
-    VSS, VDD and V0. The rotary encoder module's pins are labeled CLK, DT, SW,
-    + and GND.
+    As in Lesson 13, the potentiometer stands in e5 to e7, just left of the
+    LCD's first pins, and three short jumpers carry GND, 5 V and its middle
+    leg to VSS, VDD and V0. The rotary encoder module's pins are labeled CLK,
+    DT, SW, + and GND: its + goes to the inner 5V pin at the top of the long
+    header, its GND to the GND pin beside pin 13.
 
 When you are done, these are the connections your circuit makes:
 
@@ -179,7 +180,7 @@ first click back brings it straight down to 90%.
 | Turning clockwise goes backwards | CLK and DT are swapped: CLK goes to 18, DT to 19. |
 | One click moves two items, or it takes two clicks to move one | Your encoder makes a different number of changes per click. Try `adk::RotaryEncoder knob {18, 19, 2};`. |
 | Clicking does nothing | Press the shaft straight down until it clicks, and check SW goes to pin 22. |
-| The menu works but the LED never lights | Check the LED's long leg is in j18, and the resistor runs from h22 to h18. |
+| The menu works but the LED never lights | Check pin 3's wire goes to j38, the resistor runs from g38 across the gap to e38, the LED's long leg is in b38 and its short leg in b39, and the black jumper runs from a39 to the − rail. |
 
 ??? note "How it works"
     On every `adk::update ()` the encoder reads both contacts and compares

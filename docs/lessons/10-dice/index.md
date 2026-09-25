@@ -13,7 +13,7 @@ parts:
   - One-digit seven-segment display (5161AS)
   - 7 × 1 kΩ resistors (brown, black, black, brown, brown)
   - Push button
-  - 17 jumper wires
+  - 27 jumper wires
 ideas:
   - The 74HC595, eight outputs from three pins
   - Bits and bytes, written in binary
@@ -103,8 +103,13 @@ about 21 mA through the chip, comfortably under the 70 mA it can handle. With
     the e bar. Its two common pins, 3 and 8, are joined inside, so one wire
     from pin 3 to GND serves both. The decimal point, pin 5, is left free.
 
-    Some resistor legs pass over holes that other parts use, on their way to
-    the digit's top row. They only touch the holes they go into: follow the
+    Each output has its own resistor. Q0's lies in row i beside the chip;
+    the three whose segments sit on the digit's top row (f, b and g) stand
+    across the middle gap in columns 27, 28 and 30, so each signal crosses
+    over through its resistor; and the three for the bottom row (e, d and c)
+    stand across the gap in columns 39 to 41, just before the digit, fed from
+    above by wires that step up over the gap. The black jumper in column 6
+    joins the two − rails, so OE can take GND from the top one. Follow the
     steps, which give every hole.
 
     Datasheets suggest a small 100 nF capacitor, marked **104**, across the
@@ -161,12 +166,12 @@ right, along the bottom and up the left.
 
 | What you see | Try this |
 |---|---|
-| Nothing lights at all | Check the chip's notch is on the left, the red wires from j6 and j12 reach the top + rail, and the black wires from j9 and a13 reach the top and bottom − rails. |
+| Nothing lights at all | Check the chip's notch is on the left, the red wires from j18 and j24 reach the top + rail, the black wires from j21 and a25 reach the top and bottom − rails, and the black jumper in column 6 joins the two − rails. |
 | The chip gets warm | Unplug now. The chip is in backwards, or a 5 V wire is on a GND pin. |
 | The numbers look scrambled | A resistor is in the wrong column, so a Q output lights the wrong segment. Check each one against the connections list. |
 | One segment never lights | Its resistor or wire is loose, or one column out. |
-| The dash shows, but the button does nothing | The wire from pin 22 goes in a1, the black wire from a3 to the − rail, and the button straddles the gap. |
-| Segments flicker or light at random | Data, clock and latch are swapped: pin 37 to j8, 38 to j11, 39 to j10. |
+| The dash shows, but the button does nothing | The wire from pin 22 goes in j2, the black wire from a4 to the − rail, and the button straddles the gap. |
+| Segments flicker or light at random | Data, clock and latch are swapped: pin 37 to j20, 38 to j23, 39 to j22. |
 | The first roll is the same every time | Nothing may be plugged into A7: its drifting reading is what shuffles the dice. |
 
 ??? note "How it works"
@@ -183,9 +188,9 @@ right, along the bottom and up the left.
 
 ## Make it yours
 
-1. **Light the dot.** Add an eighth 1 kΩ resistor from Q7 (column 12) to
-   the digit's decimal point (pin 5, column 31), then light bit 7 while the
-   die spins: `digit.write ((1 << (step % 6)) | 0b10000000);`.
+1. **Light the dot.** Wire Q7 (column 24) through an eighth 1 kΩ resistor
+   to the digit's decimal point (pin 5, column 50), then light bit 7 while
+   the die spins: `digit.write ((1 << (step % 6)) | 0b10000000);`.
 2. **Tumble.** Instead of a spinning bar, flash random faces that slow down,
    the way a real die bounces before it settles.
 3. **Loaded die.** Make 6 come up twice as often as the other numbers. Is it

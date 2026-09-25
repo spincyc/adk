@@ -12,7 +12,7 @@ parts:
   - 74HC595 shift register chip
   - Four-digit seven-segment display (5461AS)
   - 8 × 1 kΩ resistors (brown, black, black, brown, brown)
-  - 17 jumper wires
+  - 30 jumper wires
 ideas:
   - Multiplexing, one digit at a time
   - Persistence of vision
@@ -86,9 +86,12 @@ every 100 milliseconds, and the rest of the time `loop ()` just carries on.
     | Segment | a | b | c | d | e | f | g | dot |
     | Display pin | 11 | 7 | 4 | 2 | 1 | 10 | 5 | 3 |
 
-    Segments and digits take turns along the display's rows, so a few
-    resistor legs pass over holes used by others on their way. They only
-    touch the holes they go into; the steps give every hole.
+    The chip and the resistors for a, f and b stay where Lesson 10 had them;
+    so do the wires that step up over the gap for e, d and c, and their
+    resistors standing across the gap just before the display, now with a
+    fourth beside them for the dot. g's resistor lies in row b. The lower
+    legs of that row of four drop into the display's bottom pins in turn, so
+    no two wires cross. The steps give every hole.
 
 When you are done, these are the connections your circuit makes:
 
@@ -130,11 +133,11 @@ challenge below lets you watch it happen.
 
 | What you see | Try this |
 |---|---|
-| Nothing lights at all | Check the chip's notch is on the left and its supply: red wires from j6 and j12 to the + rail, black from j9 to the top − rail and from a13 to the bottom − rail. |
-| One digit stays dark | Its digit wire: pin 40 to j30 for digit 1, 41 to j33, 42 to j34, and 43 to a35. |
+| Nothing lights at all | Check the chip's notch is on the left and its supply: red wires from j18 and j24 to the top + rail, black from j21 to the top − rail and from a25 to the bottom − rail, and the black jumper in column 6 between the two − rails. |
+| One digit stays dark | Its digit wire: pin 40 to j51 for digit 1, 41 to j54, 42 to j55, and 43 to a56. |
 | The same segment is missing on every digit | That segment's resistor is loose or one column out: every digit shares it. |
 | The numbers look scrambled | Two segment resistors are swapped. Check each against the table above. |
-| Random flickering segments | Data, clock and latch are swapped: pin 37 to j8, 38 to j11, 39 to j10. |
+| Random flickering segments | Data, clock and latch are swapped: pin 37 to j20, 38 to j23, 39 to j22. |
 | Only one digit lights at a time, flashing | Something in `loop ()` is stopping it. Use `adk::wait ()`, never `delay ()`. |
 
 ??? note "How it works"

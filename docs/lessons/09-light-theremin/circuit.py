@@ -1,33 +1,39 @@
-# Lesson 8's light meter, left as it was, with the knob and the buzzer added
-# after it: from the end of the breadboard nearest the Mega, the light
-# sensor's divider on A1, the five LEDs on pins 26 to 30, then the knob on A0
-# between the GND and 5 V rails, and last the passive buzzer's loop: pin 10,
-# the 220 Ω resistor, the buzzer standing across the middle gap, and down to
-# the GND rail.
-bench = Bench ("Lesson 8's light meter, a knob on A0 and a passive buzzer on pin 10",
-               columns=(1, 40))
+# Lesson 8's light meter, kept exactly as it was: the five LEDs on pins 26
+# to 30 at their homes in columns 6 to 30, and the light sensor's divider on
+# A1 in column 40. Added at their homes: the passive buzzer on pin 10 across
+# the middle gap in column 34, between the white LED and the divider, with
+# its 220 Ω from a34 into the − rail; and the knob on A0 in e45 to e47, its
+# left leg to the − rail and its right leg up to the top + rail.
+bench = Bench ("Lesson 8's light meter, a passive buzzer on pin 10 and a knob on A0",
+               columns=(1, 50))
 
-bench.wire ("5V", "B+3")
-bench.wire ("GND", "B-3")
-bench.wire ("B+4", "a4")
-bench.photoresistor ("c4", "c6")
-bench.wire ("A1", "a6")
-bench.resistor ("10 kΩ", "b6", "b10")
-bench.wire ("a10", "B-10")
+# The five wires leave the double header as a ribbon and spread onto their
+# lanes at once: 27 hops over 26 (the one crossing the header's paired rows
+# make unavoidable) to reach j12 from above, while 28, 29 and 30 run below
+# row j and rise into it. A1's wire runs below the board, clear of its edge.
+lanes = {26: [(4.10, 1.00), (4.50, 1.00), (4.50, 1.05), (5.90, 1.05)],
+         27: [(4.30, 1.05), (4.30, 0.90), (6.50, 0.90)],
+         28: [(4.10, 1.10), (4.40, 1.10), (4.40, 1.15), (7.10, 1.15)],
+         29: [(4.30, 1.15), (4.30, 1.25), (7.70, 1.25)],
+         30: [(4.10, 1.30), (4.20, 1.30), (4.20, 1.35), (8.30, 1.35)]}
+for pin, color, column in ((26, "red", 6), (27, "yellow", 12), (28, "green", 18),
+                           (29, "blue", 24), (30, "white", 30)):
+    bench.wire (str (pin), f"j{column}", via=lanes[pin])
+    bench.resistor ("220 Ω", f"g{column}", f"e{column}")
+    bench.led (color, anode=f"b{column}", cathode=f"b{column + 1}")
+    bench.wire (f"a{column + 1}", f"B-{column + 1}")
 
-for pin, color, column in ((26, "red", 13), (27, "yellow", 16), (28, "green", 19),
-                           (29, "blue", 22), (30, "white", 25)):
-    bench.wire (str (pin), f"j{column}")
-    bench.led (color, anode=f"f{column}", cathode=f"f{column + 2}")
-    bench.resistor ("220 Ω", f"g{column + 2}", f"e{column + 2}")
-    bench.wire (f"a{column + 2}", f"B-{column + 2}")
+bench.wire ("j40", "T+40")
+bench.photoresistor ("f40", "e40")
+bench.wire ("A1", "a40", via=[(2.30, 2.85), (9.25, 2.85)])
+bench.resistor ("10 kΩ", "c40", "c43")
+bench.wire ("a43", "B-43")
 
-bench.potentiometer ("e30", "e31", "e32")
-bench.wire ("B-29", "a30")
-bench.wire ("A0", "a31")
-bench.wire ("a32", "B+33")
+bench.wire ("10", "j34", via=[(1.90, 0.45), (8.65, 0.45)])
+bench.buzzer ("f34", "e34", kind="passive")
+bench.resistor ("220 Ω", "a34", "B-34")
 
-bench.wire ("10", "j34")
-bench.resistor ("220 Ω", "h34", "h37")
-bench.buzzer ("f37", "e37", kind="passive")
-bench.wire ("a37", "B-37")
+bench.potentiometer ("e45", "e46", "e47")
+bench.wire ("a45", "B-45")
+bench.wire ("A0", "a46")
+bench.wire ("d47", "T+49", via=[(10.05, 1.85), (10.25, 1.85), (10.25, 0.75)])

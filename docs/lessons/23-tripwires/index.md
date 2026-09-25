@@ -90,12 +90,18 @@ level that is, and `activated ()` is true for the one moment it changes.
     different makers put them in different orders. The PIR's names are
     printed under its white dome: pull the dome gently off to read them,
     then press it back. The obstacle module may have a fourth pin marked
-    **EN**: leave it unconnected. Each LED's long leg goes under the wire
-    from the Mega, as in Lesson 19.
+    **EN**: leave it unconnected. Each LED stands as in Lesson 19, its long
+    leg in row b of its resistor's column.
 
 <!-- bench -->
 
 <!-- steps -->
+
+??? info "Where the modules get their power"
+    The PIR sits below the Mega and takes its 5 V and GND straight from the
+    Mega's power header. The beam-break and obstacle sensors take theirs
+    from the bottom rails beside them. The bottom + rail gets its 5 V from
+    the top one, through the red wire from T+61 to B+61 at the far end.
 
 ??? info "Setting up the PIR and the obstacle module"
     The PIR has two orange knobs. Turn the **time** knob (often marked Tx)

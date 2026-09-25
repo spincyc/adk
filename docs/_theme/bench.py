@@ -3,27 +3,62 @@ real holes, modules beside the board, and jumper wires from real header pins.
 
 A lesson describes its build once, in circuit.py beside its page:
 
-    bench = Bench ("An LED on pin 26", columns=(1, 30))
-    bench.wire ("26", "a1")
-    bench.resistor ("220 Ω", "b1", "b5")
-    bench.led ("red", anode="c5", cathode="c6")
-    bench.wire ("a6", "B-6")
-    bench.wire ("GND", "B-3")
+    bench = Bench ("An LED on pin 26", columns=(1, 20))
+    bench.wire ("26", "j6")
+    bench.resistor ("220 Ω", "g6", "e6")
+    bench.led ("red", anode="b6", cathode="b7")
+    bench.wire ("a7", "B-7")
 
-Builds start at column 1, the end nearest the Mega, and place parts left to
-right in the order current meets them; next_column () hands out the first
-free column.
+Each part stands in its breadboard home, the holes it has in every lesson
+(docs/kit.md lists them), so one build carries on into the next. The
+Mega's power is wired by the bench itself, the same way every time: once
+circuit.py has run, finish () brings GND from the outer pin at the end of
+the long header into B-3 and 5V from the outer pin at its top into T+3,
+when anything uses the rails, and joins a rail pair at the far end (B-60 to
+T-60, T+61 to B+61) when a part uses the other rail and nothing else feeds
+it. With a power module 5V stays off the rails. Wiring the Mega's GND or 5V
+to a rail, or using those two pins, is an error.
 
 Parts stand in the breadboard: resistor, led, button, rgb_led, buzzer,
 potentiometer, photoresistor, thermistor, tilt_switch, chip (a DIP chip
 across the middle gap), digit and four_digits (seven-segment displays), lcd,
-header_module (a module standing in one row) and power_module. Modules sit
-beside the board, placed in inches in the drawing's own coordinates, where
-the Mega's top-left corner is (0.35, 0.6) and the breadboard's is (5.15,
-0.55); a wire reaches a module pin as "name.PIN", as in
-bench.wire ("44", "servo.signal"). note () adds a small annotation with an
-arrow. closeup (first, last) picks the columns the close-up shows, for a
+header_module (a module standing in one row) and power_module, whose two
+jumpers set each pair of rails to "5V", "3.3V" or "off":
+power_module ("right", top="5V", bottom="off"). screen () builds the
+course's LCD at its home: its contrast knob in e5-e7, the LCD's pins in
+a9-a24, power, and pins 31 to 36, wired the same in every lesson.
+
+Modules sit beside the board, placed in inches in the drawing's own
+coordinates, where the Mega's top-left corner is (0.35, 0.6) and the
+breadboard's is (5.15, 0.55); a wire reaches a module pin as "name.PIN", as
+in bench.wire ("44", "servo.signal"). note () adds a small annotation with
+an arrow. closeup (first, last) picks the columns the close-up shows, for a
 build too wide to show whole.
+
+A wire runs from a Mega pin, a hole or a module pin to another. It is
+routed round parts, modules and labels on its own; via=[...] makes it pass
+through waypoints on the way, each a hole or an (x, y) point in inches, and
+waypoints in line with each other set its corners exactly:
+bench.wire ("36", "e18", via=["j14"]). A hole-to-hole jumper in one row or
+one column lies straight when nothing is in its way.
+
+The Mega's pins go by number ("26", "A0") or name. GND and 5V take the free
+pin of that kind nearest the wire's other end; these names pick one:
+
+    GND.top                 the GND beside pin 13 on the top header
+    5V.power, 3.3V, VIN     on the power header
+    GND.power, GND.power2   the power header's two GNDs, left then right
+    5V.long                 the inner 5V at the top of the long double header
+    GND.long                the inner GND at its bottom end
+    5V.long2, GND.long2     their outer partners, kept for the rails
+
+measure (label, red=..., black=..., expect=..., when=...) records a reading
+to take with a multimeter set to DC volts: each probe on a hole (main or
+rail) that holds or shares a strip with something in the build, on a Mega
+pin number such as "26" (the probe goes in a free hole of the strip that
+pin's wire lands in), or on "GND" or "5V" (a free hole of the − or + rail
+nearest the other probe). measure_svg (index) draws a small close-up of
+the two probe points with the meter below, reading what is expected.
 
 From that one description come the pencil drawings, the build steps and the
 table of connections, and signal_pins () lets the site check the sketch
@@ -31,14 +66,20 @@ declares exactly the pins the build wires. Geometry is in inches on the real
 0.1-inch grid: holes, header pins and leg spacing are where they really are.
 """
 
-import heapq
+import hashlib
+import json
 import math
+import os
 import re
 
+import meter
+
 from modules import HOUSING, Placed, make as make_module
-from parts import (Button, Buzzer, Chip, Display, HeaderModule, Led, PowerModule, Potentiometer,
-                   Resistor, RgbLed, TwoLegs, bands_for)
+from parts import (Button, Buzzer, Chip, Display, HeaderModule, Label, Led, PowerModule,
+                   Potentiometer, Resistor, RgbLed, TwoLegs, bands_for, spots_round)
 from pencil import DPI, Pencil
+from route import (HARD, Placer, Router, corners, node, segment_distance, segment_meets_box,
+                   text_box, text_width)
 
 MEGA_WIDTH, MEGA_HEIGHT = 4.0, 2.1
 BOARD_HEIGHT = 2.2
@@ -46,6 +87,7 @@ GAP = 0.8                           # between the Mega and the breadboard
 MARGIN = 0.35
 MEGA_TINT = "#dfe6e8"
 CLOSEUP_COLUMNS = 16                # the narrowest close-up, so parts keep one scale
+ROUNDS = 6                          # of negotiation between the wires
 
 WIRE_COLORS = {
     "red": "#be4c44", "black": "#3a3a3a", "blue": "#4a72ad", "green": "#56874f",
@@ -53,6 +95,24 @@ WIRE_COLORS = {
     "brown": "#86613f", "grey": "#9a9a98",
 }
 SIGNAL_COLORS = ["yellow", "green", "blue", "orange", "purple", "white", "brown", "grey"]
+# Each home pin's wire keeps one color in every lesson, chosen so the pins
+# that share a lesson differ where they can: an LED's wire in its LED's
+# color (orange for red), the RGB LED's in its channel's.
+PIN_COLORS = {
+    "22": "purple", "23": "grey", "24": "brown", "25": "white",
+    "26": "orange", "27": "yellow", "28": "green", "29": "blue", "30": "white",
+    "31": "brown", "32": "grey", "33": "yellow", "34": "green", "35": "blue", "36": "purple",
+    "37": "yellow", "38": "green", "39": "blue", "40": "orange", "41": "purple", "42": "white",
+    "43": "brown", "44": "orange", "45": "yellow", "47": "green", "48": "blue", "49": "purple",
+    "50": "purple", "51": "white", "52": "brown", "53": "grey",
+    "2": "white", "3": "orange", "4": "yellow", "5": "orange", "6": "green", "7": "blue",
+    "8": "blue", "9": "white", "10": "grey", "11": "green", "12": "white", "14": "grey",
+    "15": "purple", "16": "orange", "17": "white", "18": "white", "19": "grey", "20": "green",
+    "21": "blue",
+    "A0": "brown", "A1": "purple", "A2": "yellow", "A3": "yellow", "A4": "white", "A5": "green",
+    "A8": "green", "A9": "blue", "A10": "purple", "A11": "white",
+    "A12": "purple", "A13": "white", "A14": "brown", "A15": "grey",
+}
 ROWS = {"j": 0.55, "i": 0.65, "h": 0.75, "g": 0.85, "f": 0.95,
         "e": 1.25, "d": 1.35, "c": 1.45, "b": 1.55, "a": 1.65,
         "T+": 0.15, "T-": 0.25, "B+": 1.95, "B-": 2.05}
@@ -71,6 +131,10 @@ CHIPS = {"74HC595": HC595, "L293D": L293D}
 # front, counting anticlockwise: the 5161AS digit and the 5461AS four digits.
 DIGIT = ["e", "d", "common", "c", "dp", "b", "a", "common", "f", "g"]
 FOUR_DIGITS = ["e", "d", "dp", "c", "g", "D4", "b", "D3", "D2", "f", "a", "D1"]
+
+# Directions a wire may leave a header in: the way its pins point, or a
+# little either side, to fan out from its neighbours.
+LEAVING = {"top": (6, 5, 7), "bottom": (2, 1, 3), "side": (0, 7, 1)}
 
 
 # The Mega's header pins as name -> (x, y) in inches from the bottom-left
@@ -104,6 +168,16 @@ ALIASES = {
     "5V":  ["5V", "5V2", "5V3"],
 }
 
+# The pins that feed the rails, kept for them: the outer GND at the end of
+# the long header and the outer 5V at its top.
+RAIL_PINS = {"GND5": "B-3", "5V3": "T+3"}
+
+# Names for particular power pins, as the docstring lists them.
+PIN_NAMES = {
+    "GND.top": "GND", "5V.power": "5V", "GND.power": "GND2", "GND.power2": "GND3",
+    "5V.long": "5V2", "5V.long2": "5V3", "GND.long": "GND4", "GND.long2": "GND5",
+}
+
 
 class Bench:
     def __init__ (self, title, columns=(1, 30), seed=1):
@@ -116,10 +190,24 @@ class Bench:
         self.modules = {}
         self.notes = []
         self.wires = []
-        self.steps = []
+        self.items = []                 # (kind, thing, step) in build order
         self.used = {}
         self.gap = GAP
-        self.palette = iter (SIGNAL_COLORS * 8)
+        self.label_size = 10
+        self._routes = None
+        self._last = None
+        self._finished = False
+        self._powering = False
+        self.measurements = []
+
+    # The build steps, one for each part, module and wire, in build order.
+    @property
+    def steps (self):
+        return [step for _, _, step in self.items]
+
+    def _step (self, text):
+        kind, thing = self._last
+        self.items.append ((kind, thing, text))
 
     # Where things are ---------------------------------------------------
 
@@ -132,6 +220,14 @@ class Bench:
     def board_origin (self):
         mx, my = self.mega_origin ()
         return mx + MEGA_WIDTH + self.gap, my + (MEGA_HEIGHT - BOARD_HEIGHT) / 2
+
+    def board_box (self):
+        bx, by = self.board_origin ()
+        return bx * DPI, by * DPI, (bx + self.board_width ()) * DPI, (by + BOARD_HEIGHT) * DPI
+
+    def mega_box (self):
+        mx, my = self.mega_origin ()
+        return mx * DPI, my * DPI, (mx + MEGA_WIDTH) * DPI, (my + MEGA_HEIGHT) * DPI
 
     def size (self):
         bx, by = self.board_origin ()
@@ -165,25 +261,25 @@ class Bench:
 
     def resistor (self, value, a, b):
         self._add (Resistor (value, a, b))
-        self.steps.append (f"The {value} resistor ({', '.join (bands_for (value))}) "
+        self._step (f"The {value} resistor ({', '.join (bands_for (value))}) "
                            f"from {a} to {b}.")
         return self
 
     def led (self, color, anode, cathode):
         self._add (Led (color, anode, cathode))
-        self.steps.append (f"The {color} LED: long leg in {anode}, short leg in {cathode}.")
+        self._step (f"The {color} LED: long leg in {anode}, short leg in {cathode}.")
         return self
 
     def button (self, column):
         part = Button (column)
         self._add (part)
-        self.steps.append (f"A push button across the middle gap, legs in "
+        self._step (f"A push button across the middle gap, legs in "
                            f"{', '.join (part.holes ())}.")
         return self
 
     def rgb_led (self, red, common, green, blue):
         self._add (RgbLed (red, common, green, blue))
-        self.steps.append (f"The RGB LED: red leg in {red}, the longest leg (common, −) in {common}, "
+        self._step (f"The RGB LED: red leg in {red}, the longest leg (common, −) in {common}, "
                            f"green in {green}, blue in {blue}.")
         return self
 
@@ -196,7 +292,7 @@ class Bench:
             raise ValueError ("a 12 mm buzzer's legs are 0.3 inch apart: three columns apart in "
                               "one row, or across the middle gap in rows e and f")
         self._add (Buzzer (positive, negative, kind))
-        self.steps.append (f"The {kind} buzzer, its + mark and longer leg in {positive}, the other "
+        self._step (f"The {kind} buzzer, its + mark and longer leg in {positive}, the other "
                            f"leg in {negative}.")
         return self
 
@@ -206,7 +302,7 @@ class Bench:
         if len ({row for _, _, row in spots}) != 1 or len (steps) != 1 or steps - {1, 2}:
             raise ValueError ("a potentiometer's three legs stand in one row, evenly spaced")
         self._add (Potentiometer (left, wiper, right, value))
-        self.steps.append (f"The {value} potentiometer, legs in {left}, {wiper} and {right}: the "
+        self._step (f"The {value} potentiometer, legs in {left}, {wiper} and {right}: the "
                            f"middle one is the wiper.")
         return self
 
@@ -221,7 +317,7 @@ class Bench:
 
     def _two_legs (self, kind, a, b):
         self._add (TwoLegs (kind, a, b))
-        self.steps.append (f"The {kind}, legs in {a} and {b}, either way round.")
+        self._step (f"The {kind}, legs in {a} and {b}, either way round.")
         return self
 
     # A DIP chip across the middle gap: pin 1 in e<first>, pins running
@@ -232,7 +328,7 @@ class Bench:
         holes, rows = self._straddle (len (pins), first, span)
         self._add (Chip (name, pins, holes))
         half = len (pins) // 2
-        self.steps.append (
+        self._step (
             f"The {name} across the middle gap, its notch to the left: pin 1 ({pins[0]}) in "
             f"{holes[0]}, pins 1–{half} along row {rows[0]} to {holes[half - 1]}, and pins "
             f"{half + 1}–{len (pins)} back along row {rows[1]} from {holes[half]} to pin "
@@ -250,7 +346,7 @@ class Bench:
         labels = [segment_label (pin) for pin in pins]
         self._add (Display (name, pins, labels, holes, width, digits, shows))
         half = len (pins) // 2
-        self.steps.append (
+        self._step (
             f"The {name} across the middle gap, decimal point{'s' if digits > 1 else ''} at the "
             f"bottom: pins 1–{half} in {holes[0]}–{holes[half - 1]} (pin 1, {labels[0]}, on the "
             f"left) and pins {half + 1}–{len (pins)} in {holes[half]}–{holes[-1]}.")
@@ -272,11 +368,64 @@ class Bench:
         part = self._header_part ("lcd", None, first, row, "LCD", None, {"text": text})
         pins = ", ".join (f"{pin.name} in {hole}" for pin, hole in part.pairs ())
         edge = "bottom" if part.turned else "top"
-        self.steps.append (
+        self._step (
             f"The LCD, face up, its screen lying over the {edge} edge of the board"
             f"{'' if part.turned else ' (upside down from where you sit)'} and its 16 pins in "
             f"{part.holes[0]}–{part.holes[-1]}: {pins}.")
         return self
+
+    # The course's screen, at its home and wired the same in every lesson so
+    # it can stay on the breadboard from one to the next. From column first
+    # (5): the contrast knob, its legs in row e, and the LCD four columns
+    # on, in row a, its screen over the bottom edge. The knob's left leg
+    # takes GND from the bottom − rail; three short jumpers join its legs to
+    # VSS, V0 and VDD; VSS, VDD and RW reach up to the top rails, so VDD
+    # takes 5V from the top + rail and the top − rail is GND through VSS.
+    # The signal wires from pins 31 to 36 rise beside the Mega and cross
+    # over the board in lanes, 31 lowest, each coming straight down into its
+    # pin's column; the backlight's 220 Ω resistor stands across the gap at
+    # the far end. lanes lifts the signal wires' lanes by that many steps,
+    # and risers gives where the first rises and how far apart they stand,
+    # in inches, to make room for other wires from the header.
+    def screen (self, first=5, text=None, lanes=0, risers=(4.45, 0.1)):
+        knob, lcd = first, first + 4
+        column = lambda offset: lcd + offset
+        self.potentiometer (f"e{knob}", f"e{knob + 1}", f"e{knob + 2}")
+        self.lcd (lcd, row="a", text=text)
+        self.wire (f"a{knob}", self._rail ("B-", knob))
+        self.wire (f"b{knob}", f"b{lcd}", color="black")
+        self.wire (f"c{knob + 1}", f"c{column (2)}", color="brown")
+        self.wire (f"d{knob + 2}", f"d{column (1)}", color="red")
+        self.wire (f"e{lcd}", self._rail ("T-", lcd))
+        self.wire (f"e{column (1)}", self._rail ("T+", column (1)))
+        self.wire (f"e{column (4)}", self._rail ("T-", column (4)))
+        # The six signal wires rise beside the Mega and cross over the board
+        # in lanes, 31 lowest, so each comes straight down into its column
+        # and none crosses another over the board.
+        # Each leaves the header at its own height, the inner pins' wires
+        # between their neighbours' plugs.
+        targets = [(31, 3, 0), (32, 5, -0.05), (33, 10, 0), (34, 11, -0.05), (35, 12, 0),
+                   (36, 13, -0.05)]
+        mx, my = self.mega_origin ()
+        _, by = self.board_origin ()
+        for index, (pin, offset, jog) in enumerate (targets):
+            x, _ = self.hole_xy (f"e{column (offset)}")
+            height = my + MEGA_HEIGHT - self.pins[str (pin)][1] + jog
+            lane = by - 0.12 - 0.1 * (index + lanes)
+            riser = risers[0] + risers[1] * index
+            self.wire (str (pin), f"e{column (offset)}",
+                       via=[(mx + MEGA_WIDTH - 0.1, height), (riser, height), (riser, lane),
+                            (x / DPI - 0.05, lane)])
+        self.resistor ("220 Ω", f"e{column (14)}", f"f{column (14)}")
+        self.wire (f"j{column (14)}", self._rail ("T+", column (14)))
+        self.wire (f"e{column (15)}", self._rail ("T-", column (15)))
+        return self
+
+    # The first free hole of a rail at or after a column.
+    def _rail (self, rail, column):
+        while not rail_column (column) or f"{rail}{column}" in self.used:
+            column += 1
+        return f"{rail}{column}"
 
     # A module standing in one row on its own header, pins listed left to
     # right as they meet the columns.
@@ -284,7 +433,7 @@ class Bench:
         part = self._header_part (kind, pins, first, row, name, label, options)
         pins = ", ".join (f"{pin.name} in {hole}" for pin, hole in part.pairs ())
         edge = "bottom" if part.turned else "top"
-        self.steps.append (f"The {part.name}, standing in row {row} with its board toward the "
+        self._step (f"The {part.name}, standing in row {row} with its board toward the "
                            f"{edge} edge: {pins}.")
         return self
 
@@ -299,8 +448,9 @@ class Bench:
         return part
 
     # The breadboard power supply across both pairs of rails at one end,
-    # both sides set to 5 V: wires to the rails take their power from it.
-    def power_module (self, end="left"):
+    # each side's jumper on "5V", "3.3V" or "off": wires to the rails take
+    # their power from it.
+    def power_module (self, end="left", top="5V", bottom="5V"):
         if end not in ("left", "right"):
             raise ValueError ("the power module goes on the left or right end")
         columns = (3, 4) if end == "left" else (60, 61)
@@ -309,12 +459,16 @@ class Bench:
         if end == "left":
             # Its jack hangs over the end, so the board moves over for it.
             self.gap = GAP + 1.3
-        part = PowerModule (end, columns)
+        part = PowerModule (end, columns, top, bottom)
         self._add (part)
-        self.steps.append (
+        setting = lambda value: {"5V": "5 V", "3.3V": "3.3 V", "off": "off"}[value]
+        jumpers = f"both jumpers on {setting (top)}" if top == bottom else \
+            f"the top jumper on {setting (top)} and the bottom one {setting (bottom)}"
+        jumpers = jumpers.replace ("on off", "off")
+        self._step (
             f"The power module on the {end} end of the board, its pins in both pairs of rails "
             f"(T+{columns[0]}, T-{columns[0]}, B+{columns[0]}, B-{columns[0]} and the holes beside "
-            f"them), both jumpers set to 5 V.")
+            f"them), {jumpers}.")
         return self
 
     # Modules beside the board -------------------------------------------
@@ -337,17 +491,17 @@ class Bench:
         # It must lie clear of the Mega, the breadboard and the other
         # modules, jumper housings and all.
         mx, my = self.mega_origin ()
-        bx, by = self.board_origin ()
         things = {"the Mega": ((mx - 0.25) * DPI, my * DPI, (mx + MEGA_WIDTH) * DPI,
                                (my + MEGA_HEIGHT) * DPI),
-                  "the breadboard": (bx * DPI, by * DPI, (bx + self.board_width ()) * DPI,
-                                     (by + BOARD_HEIGHT) * DPI)}
+                  "the breadboard": self.board_box ()}
         things.update ({f"the {other.title}": other.reach_box () for other in self.modules.values ()})
         for thing, box in things.items ():
             if overlaps (placed.reach_box (), grow (box, 8)):
                 raise ValueError (f"the {placed.title} at {at} overlaps {thing}")
         self.modules[name] = placed
-        self.steps.append (f"The {placed.title}, {self._whereabouts (placed.box ())}.")
+        self._routes = None
+        self._last = ("module", placed)
+        self._step (f"The {placed.title}, {self._whereabouts (placed.box ())}.")
         return self
 
     def _facing (self, at, made):
@@ -373,6 +527,146 @@ class Bench:
             return "to the right of the breadboard"
         return "beside the board"
 
+    # The standard power hook-up, the same in every lesson so it never
+    # drifts: the Mega's GND (the pair at the end of the long header, nearest
+    # the board) into the bottom − rail's first hole, B-3, and its 5V (the
+    # pair at the top of the long header) into the top + rail's first hole,
+    # T+3, whenever the rails are used. A rail that nothing else powers is
+    # linked to its partner at the board's far end: GND from B-60 to T-60,
+    # 5V from T+61 to B+61. A power module, at the far end, feeds the rails
+    # itself, and the Mega's GND still joins them at B-3. The site calls this
+    # once circuit.py has run; circuits never wire the Mega's power to a rail.
+    def finish (self):
+        if self._finished:
+            return self
+        self._finished = True
+        module = next ((part for part in self.parts if isinstance (part, PowerModule)), None)
+        # The rails something uses; the power module's own pins don't count.
+        own = {hole for _, hole in module.legs ()} if module else set ()
+        used = {parse_hole (hole)[2] for hole in self.used
+                if parse_hole (hole)[0] == "rail" and hole not in own}
+        if not used:
+            for index in range (len (self.measurements)):
+                self.probes (index)
+            return self
+        power = [self._power_wire (("GND.long2", "GND.long"), "B-3")]
+        if not module and used & {"T+", "B+"}:
+            power.append (self._power_wire (("5V.long2", "5V.long"), "T+3"))
+        links = []
+        for rail, source, a, b in (("T-", "GND", "B-60", "T-60"), ("B+", "5V", "T+61", "B+61"),
+                                   ("T+", "5V", None, None), ("B-", "GND", None, None)):
+            if rail not in used or self._powered (rail, source):
+                continue
+            if module or not a:
+                side = "top" if rail[0] == "T" else "bottom"
+                raise ValueError (f"nothing feeds the {side} {rail[1]} rail: " +
+                                  (f"set the power module's {side} jumper" if module else
+                                   "wire it from a part that does"))
+            self.last = max (self.last, 63)
+            links.append (self._power_wire (None, a, b))
+        # Power first in the build steps, the links after it.
+        rest = [item for item in self.items if item not in power + links]
+        self.items = power + links + rest
+        for index in range (len (self.measurements)):
+            self.probes (index)
+        return self
+
+    def _power_wire (self, pins, hole, end=None):
+        self._powering = True
+        try:
+            if pins:
+                pin = next (p for p in pins if PIN_NAMES[p] not in self.taken)
+                self.wire (pin, hole)
+            else:
+                self.wire (hole, end)
+        finally:
+            self._powering = False
+        return self.items[-1]
+
+    # Whether a wire is one the bench adds itself: a power feed or a link.
+    def _standard (self, ends):
+        holes = {name for kind, name in ends if kind == "hole"}
+        pins = {name for kind, name in ends if kind == "pin"}
+        return bool (pins & set (RAIL_PINS)) and holes <= set (RAIL_PINS.values ()) \
+            or holes in ({"B-60", "T-60"}, {"T+61", "B+61"})
+
+    # Whether a rail is joined to a Mega pin or a power module leg of this
+    # kind: "GND" or "5V".
+    def _powered (self, rail, source):
+        for net in self.nets ():
+            if f"rail {rail}" in net:
+                return self._carries (net, source)
+        return False
+
+    # Whether a net is fed with GND or 5V: by the Mega's pin, or by a power
+    # module's leg; a module that only uses it doesn't count.
+    def _carries (self, net, source):
+        leg = "GND" if source == "GND" else "5 V"
+        feeds = {m for m in self._sources () if m.endswith (": " + leg)}
+        return f"pin {source}" in net or bool (feeds & net)
+
+    # A reading to take with a multimeter on DC volts, between the red
+    # probe's point and the black probe's, expected to be about expect, and
+    # when to take it.
+    def measure (self, label, red, black, expect, when=None):
+        self.measurements.append (dict (label=label, red=red, black=black, expect=expect,
+                                        when=when))
+        return self
+
+    # Where each probe of a measurement touches: (hole, words for it).
+    def probes (self, index):
+        taken = self.measurements[index]
+        red = self._probe (taken["red"], None)
+        black = self._probe (taken["black"], red[0])
+        if taken["red"] in ("GND", "5V"):
+            red = self._probe (taken["red"], black[0])
+        return red, black
+
+    def _probe (self, point, near):
+        if point in ("GND", "5V"):
+            rail = self._rail_of (point)
+            holes = [h for h in self._holes () if h.startswith (rail) and h not in self.used]
+            if not holes:
+                raise ValueError (f"a probe on {point} needs a free hole in a {point} rail")
+            x = self.hole_xy (near)[0] if near else 0
+            hole = min (holes, key=lambda h: abs (self.hole_xy (h)[0] - x))
+            return hole, f"{point}, at {self.describe (('hole', hole))}"
+        if point in self.pins or point in PIN_NAMES:
+            name = PIN_NAMES.get (point, point)
+            landed = [e for s, f, _, _ in self.wires for p, e in ((s, f), (f, s))
+                      if p == ("pin", name) and e[0] == "hole"]
+            if not landed:
+                raise ValueError (f"a probe on pin {point} needs its wire to land in a hole")
+            hole = landed[0][1]
+            strip = [h for h in self._holes () if self.strip_of (h) == self.strip_of (hole)
+                     and h not in self.used]
+            if strip:
+                near = self.hole_xy (landed[0][1])
+                hole = min (strip, key=lambda h: distance (self.hole_xy (h), near))
+            return hole, f"pin {canonical (name)}, at {hole}"
+        self.hole_xy (point)
+        strip = self.strip_of (point)
+        if not any (self.strip_of (h) == strip for h in self.used):
+            raise ValueError (f"a probe at {point} touches nothing in the build")
+        what = self.used.get (point)
+        if what and what != "a wire":
+            return point, f"{self.describe (('hole', point))}, on {what}'s leg"
+        if not what and parse_hole (point)[0] == "main":
+            legs = [hole for hole, owner in self.used.items ()
+                    if owner != "a wire" and self.strip_of (hole) == strip]
+            if legs:
+                near = min (legs, key=lambda hole: distance (self.hole_xy (hole), self.hole_xy (point)))
+                return point, f"{point}, in the same strip as {self.used[near]}'s leg in {near}"
+        return point, self.describe (("hole", point))
+
+    # The rail a GND or 5V probe goes in: one the build has joined to it.
+    def _rail_of (self, point):
+        for rail in (("B-", "T-") if point == "GND" else ("T+", "B+")):
+            for net in self.nets ():
+                if f"rail {rail}" in net and self._carries (net, point):
+                    return rail
+        raise ValueError (f"no rail carries {point} for a probe")
+
     # A small annotation: text set off from what it points at (a hole, a pin,
     # "module.PIN" or (x, y) inches) by offset inches, with an arrow.
     def note (self, text, at, offset=(-0.45, -0.35)):
@@ -381,7 +675,7 @@ class Bench:
 
     # Wires ---------------------------------------------------------------
 
-    def wire (self, start, end, color=None):
+    def wire (self, start, end, color=None, via=None):
         # Resolve a hole before a shared pin name, so GND or 5V can be the
         # header pin nearest the hole.
         if start in ALIASES:
@@ -396,8 +690,19 @@ class Bench:
         if color is None:
             color = self._module_pin (leads[0][1])[1].color if leads else \
                 self._color ((start_end, end_end))
-        self.wires.append ((start_end, end_end, color))
-        self.steps.append (self._wire_step (start_end, end_end, color))
+        for point in via or ():
+            self._point (point)
+        if not self._powering and {start_end[0], end_end[0]} == {"pin", "hole"}:
+            pin = start_end[1] if start_end[0] == "pin" else end_end[1]
+            hole = end_end[1] if end_end[0] == "hole" else start_end[1]
+            if canonical (pin) in ("GND", "5V") and parse_hole (hole)[0] == "rail":
+                raise ValueError (f"the Mega's {canonical (pin)} reaches the rails by itself "
+                                  f"(GND at B-3, 5V at T+3); leave out the wire to {hole}")
+        wire = (start_end, end_end, color, list (via or ()))
+        self.wires.append (wire)
+        self._routes = None
+        self._last = ("wire", wire)
+        self._step (self._wire_step (start_end, end_end, color))
         return self
 
     def _wire_step (self, start, end, color):
@@ -407,16 +712,26 @@ class Bench:
                 return f"The {placed.title}'s {pin.note} into {self.describe (other)}."
         males = sum (self._style (end) == "male" for end in (start, end))
         jumper = ("", "female-to-male ", "female-to-female ")[males]
-        article = "An" if (jumper or color)[0] in "aeiou" else "A"
+        # The article agrees with the first word after it: the colour.
+        article = "An" if color[0] in "aeiou" else "A"
         return f"{article} {color} {jumper}wire from {self.describe (start)} to {self.describe (end)}."
 
+    # Black to ground, red to power, and any other wire a color of its own
+    # that never changes from lesson to lesson: a pin's wire by its number,
+    # a jumper by its holes.
     def _color (self, ends):
         kinds = {self._polarity (end) for end in ends}
         if "ground" in kinds:
             return "black"
         if "power" in kinds:
             return "red"
-        return next (self.palette)
+        pins = [canonical (name) for kind, name in ends if kind == "pin"]
+        if pins and pins[0] in PIN_COLORS:
+            return PIN_COLORS[pins[0]]
+        if pins and numbered (pins[0]):
+            return SIGNAL_COLORS[int (pins[0].lstrip ("A")) % len (SIGNAL_COLORS)]
+        key = "".join (sorted (name for _, name in ends))
+        return SIGNAL_COLORS[sum (key.encode ()) % len (SIGNAL_COLORS)]
 
     def _polarity (self, end):
         kind, name = end
@@ -437,13 +752,18 @@ class Bench:
     # free header pin nearest the wire's other end.
     def _resolve (self, name, toward):
         if name in ALIASES:
-            free = [p for p in ALIASES[name] if p not in self.taken]
+            free = [p for p in ALIASES[name] if p not in self.taken
+                    and (self._powering or p not in RAIL_PINS)]
             if not free:
                 raise ValueError (f"no free {name} pin")
             if toward:
                 free.sort (key=lambda p: distance (self.pin_xy (p), toward))
             self.taken.add (free[0])
             return ("pin", free[0])
+        name = PIN_NAMES.get (name, name)
+        if name in RAIL_PINS and not self._powering:
+            raise ValueError (f"{canonical (name)} {name[-1]} feeds the rail at {RAIL_PINS[name]}; "
+                              f"use another {canonical (name)} pin")
         if name in self.pins:
             if name in self.taken:
                 raise ValueError (f"pin {name} already has a wire")
@@ -495,6 +815,7 @@ class Bench:
             return f"pin {label}"
         if 0.11 < y < 1.99:
             where = "at the end of the long header" if y < 1 else "at the top of the long header"
+            return f"the {'outer' if x > 3.75 else 'inner'} {label} pin {where}"
         elif y > 1.99:
             where = "beside pin 13"
         else:
@@ -523,6 +844,8 @@ class Bench:
             raise ValueError (f"the {part.name} would cover {', '.join (clash)}")
         self._claim (holes, f"the {part.name}")
         self.parts.append (part)
+        self._routes = None
+        self._last = ("part", part)
 
     def _claim (self, holes, what):
         for hole in holes:
@@ -594,7 +917,7 @@ class Bench:
             parent[find (a)] = find (b)
 
         names = self._names ()
-        for start, end, _ in self.wires:
+        for start, end, _, _ in self.wires:
             join (self._node (start), self._node (end))
         for part in self.parts:
             for leg, hole in part.legs ():
@@ -618,7 +941,7 @@ class Bench:
     def connections (self):
         sources = self._sources ()
         nets = [net for net in self.nets ()
-                if len ([m for m in net if not m.startswith (("column ", "rail "))]) >= 2]
+                if len ({m for m in net if not m.startswith (("column ", "rail "))}) >= 2]
         part_of = lambda member: member.split (": ")[0]
         fed = lambda net: any (m.startswith ("pin ") or m in sources for m in net)
         order = []
@@ -648,37 +971,324 @@ class Bench:
         return rows
 
     def signal_pins (self):
-        return {canonical (name) for (kind, name), _, _ in self.wires if kind == "pin"
-                if canonical (name) not in ("GND", "5V", "3.3V", "VIN")} | \
-               {canonical (name) for _, (kind, name), _ in self.wires if kind == "pin"
+        ends = [end for start, finish, _, _ in self.wires for end in (start, finish)]
+        return {canonical (name) for kind, name in ends if kind == "pin"
                 if canonical (name) not in ("GND", "5V", "3.3V", "VIN")}
+
+    # Routing -------------------------------------------------------------
+
+    # Every wire's path, worked out once for both drawings. Jumpers that lie
+    # straight are fixed first; the rest are routed in rounds, the nearer
+    # ends first, each round round the others' last, until no two share any
+    # stretch of grid. Failing that, they are routed strictly, one at a time.
+    def _layout (self):
+        if self._routes is not None:
+            return self._routes
+        self.label_size = 10
+        plans = [self._plan (*wire) for wire in self.wires]
+        paths = self._recall (plans)
+        if paths is None:
+            paths = self._negotiate_all (plans)
+            self._remember (plans, paths)
+        self._paths = paths
+        routes = []
+        for index, plan in enumerate (plans):
+            drawn = corners (paths[index])
+            drawn[0], drawn[-1] = plan["a"], plan["b"]
+            routes.append ((plan["start"], plan["end"], drawn))
+        self._routes = routes
+        return routes
+
+    def _negotiate_all (self, plans):
+        router = self._router ()
+        order = sorted (range (len (plans)), key=lambda index: (not self._jumper (index),
+                                                                  self._reach (index)))
+        paths = {}
+        for index in order:
+            if plans[index]["straight"]:
+                paths[index] = plans[index]["straight"]
+                router.claim (paths[index], index)
+        pressure, best, stale = 0.5, None, 0
+        moving = [index for index in order if not plans[index]["straight"]]
+        for _ in range (ROUNDS):
+            for index in moving:
+                router.unclaim (index)
+                paths[index] = self._negotiate (router, plans[index], index, pressure)
+                router.claim (paths[index], index)
+            shared, crossed = router.clashes ()
+            if not shared:
+                price = router.price ()
+                stale = stale + 1 if best and price >= best[0] else 0
+                if best is None or price < best[0]:
+                    best = (price, dict (paths))
+                if not crossed or stale >= 2:
+                    break
+            for n in shared:
+                router.history[n] = router.history.get (n, 0) + 1
+            for n in crossed:
+                router.history[n] = router.history.get (n, 0) + 0.5
+            pressure *= 2
+            # Only the wires in a clash, or crossing, have anything to settle.
+            involved = {wire for n in shared + crossed for wire in router.occupied.get (n, {})}
+            moving = [index for index in order if index in involved and not plans[index]["straight"]]
+        if best:
+            paths = best[1]
+        else:
+            for index in order:
+                if not plans[index]["straight"]:
+                    router.unclaim (index)
+            for index in order:
+                if not plans[index]["straight"]:
+                    paths[index] = self._negotiate (router, plans[index], index, None)
+                    router.claim (paths[index], index)
+        return paths
+
+    # Routes worked out before are kept under the build directory, by
+    # everything they were worked out from, engine and all, so a rebuild
+    # only routes what has changed.
+    def _fingerprint (self, plans):
+        text = repr ((self.first, self.last, self.gap, sorted (self.used), sorted (self.taken),
+                      [(p["points"], p["first"], sorted (p["allow"]), p["keep_off"], p["straight"])
+                       for p in plans],
+                      [(type (part).__name__, part.legs (), part.shapes (self), part.blocks)
+                       for part in self.parts],
+                      [(m.reach_box (), m.title_box ()) for m in self.modules.values ()]))
+        digest = hashlib.sha256 (text.encode ())
+        for name in sorted (os.listdir (THEME)):
+            if name.endswith (".py"):
+                digest.update (open (os.path.join (THEME, name), "rb").read ())
+        return digest.hexdigest ()
+
+    def _recall (self, plans):
+        folder = route_cache ()
+        if not folder:
+            return None
+        try:
+            with open (os.path.join (folder, self._fingerprint (plans) + ".json")) as file:
+                kept = json.load (file)
+        except (OSError, ValueError):
+            return None
+        return {int (index): [tuple (n) for n in path] for index, path in kept.items ()}
+
+    def _remember (self, plans, paths):
+        folder = route_cache ()
+        if not folder:
+            return
+        os.makedirs (folder, exist_ok=True)
+        with open (os.path.join (folder, self._fingerprint (plans) + ".json"), "w") as file:
+            json.dump ({index: path for index, path in paths.items ()}, file)
+
+    # How a wire is to be routed: its ends in routing order, where each is
+    # drawn, the grid points it passes, and its path when it lies straight.
+    def _plan (self, start, end, color, via):
+        if self._oriented (start, end) != (start, end):
+            start, end, via = end, start, list (reversed (via))
+        a, first, allow_a = self._terminal (start)
+        b, _, allow_b = self._terminal (end)
+        # Into a module's pin straight along the way the pin points.
+        approach = []
+        if end[0] == "module":
+            (x, y), out = self._module_pin (end[1])[0].anchor (self._module_pin (end[1])[1])
+            approach = [node ((b[0] + out[0] * 10, b[1] + out[1] * 10))]
+        plan = dict (start=start, end=end, a=a, b=b, first=first, allow=allow_a | allow_b,
+                     points=[node (a)] + [node (self._point (point)) for point in via] + approach
+                     + [node (b)],
+                     keep_off=self.board_box () if "hole" not in (start[0], end[0]) else None,
+                     straight=None)
+        if start[0] == end[0] == "hole" and not via and self._straight (start[1], end[1]):
+            plan["straight"] = straight_nodes (node (a), node (b))
+        return plan
+
+    def _negotiate (self, router, plan, index, pressure):
+        try:
+            path, _ = router.route (plan["points"], plan["first"], plan["allow"], plan["keep_off"],
+                                    index, pressure)
+        except ValueError as error:
+            raise ValueError (f"the wire from {self.describe (plan['start'])} to "
+                              f"{self.describe (plan['end'])} can't get through ({error}): move "
+                              f"what is in its way, or give it via points") from error
+        return path
+
+    def _reach (self, index):
+        start, end, _, _ = self.wires[index]
+        (x1, y1), (x2, y2) = self._xy (start), self._xy (end)
+        return abs (x1 - x2) + abs (y1 - y2)
+
+    def _jumper (self, index):
+        start, end, _, via = self.wires[index]
+        return start[0] == end[0] == "hole" and not via
+
+    def _router (self):
+        x0, y0, x1, y1 = self._extent ()
+        router = Router ((x0 - 80, y0 - 120, x1 + 80, y1 + 120), self.board_box ())
+        # The Mega's middle is solid; wires only leave its header strips.
+        mx0, my0, mx1, my1 = self.mega_box ()
+        router.block (("rect", mx0 - 25, my0 + 17, mx1 - 37, my1 - 17), grow=0)
+        router.cost (("rect", mx0 - 25, my0, mx1, my1), 14)
+        # Out of each header's strip, never along it: right from the double
+        # header, up from the top one, down from the power and analog one.
+        router.one_way ((mx1 - 37, my0 + 17, mx1, my1 - 17), (0, 1, 7))
+        router.one_way ((mx0 - 25, my0, mx1 - 37, my0 + 17), (5, 6, 7))
+        router.one_way ((mx0 - 25, my1 - 17, mx1 - 37, my1), (1, 2, 3))
+        # Wires leaving the double header run close together until they part.
+        router.close ((mx1 - 37, my0, mx1 + 15, my1))
+        # Wires keep a little way off the Mega's edge and the board's.
+        for box in (self.mega_box (), self.board_box ()):
+            router.fringe (box, 4, 5)
+        for name in self.pins:
+            router.hole (self.pin_xy (name), True, near=False)
+        for hole in self._holes ():
+            router.hole (self.hole_xy (hole), hole in self.used)
+        # The board's printing, which wires would rather not hide.
+        for x, y, w in self._print_marks ():
+            router.cost (("rect", x - w / 2, y - 6, x + w / 2, y), 4)
+        for x, y, w in self._board_signs ():
+            router.cost (("rect", x - w / 2, y - 6, x + w / 2, y), 12, grow=1)
+        bx0, by0, bx1, _ = self.board_box ()
+        for offset in (0.06, 0.34, 1.86, 2.14):
+            y = by0 + offset * DPI
+            router.cost (("rect", bx0 + 14, y - 1, bx1 - 14, y + 1), 3)
+        for part in self.parts:
+            for shape in part.shapes (self):
+                if part.blocks:
+                    router.block (shape)
+                else:
+                    router.cost (shape, 5)
+            # Leave room where each part's label would best go.
+            for label in part.labels (self)[:1]:
+                x, y, anchor, _ = label.spots[0]
+                router.cost (("rect", *text_box (x, y, label.text, 10 * label.size, anchor)), 10)
+        for placed in self.modules.values ():
+            router.block (("rect", *placed.reach_box ()))
+            router.block (("rect", *placed.title_box ()))
+        return router
+
+    # Everything drawn but wires and labels, for sizing the grid.
+    def _extent (self):
+        boxes = [self.mega_box (), self.board_box ()]
+        boxes += [placed.reach_box () for placed in self.modules.values ()]
+        boxes += [placed.title_box () for placed in self.modules.values ()]
+        boxes += [part.box (self) for part in self.parts if part.box (self)]
+        return (min (b[0] for b in boxes), min (b[1] for b in boxes),
+                max (b[2] for b in boxes), max (b[3] for b in boxes))
+
+    # A wire is routed from its Mega end, or failing that its module end.
+    def _oriented (self, start, end):
+        if end[0] == "pin" and start[0] != "pin" or start[0] == "hole" and end[0] == "module":
+            return end, start
+        return start, end
+
+    # Where a wire's end is drawn, the ways it may leave, and grid nodes it
+    # may cross though they are blocked.
+    def _terminal (self, end):
+        kind, name = end
+        if kind == "pin":
+            _, y = self.pins[name]
+            side = "top" if y > 1.99 else "bottom" if y < 0.11 else "side"
+            return self.pin_xy (name), LEAVING[side], set ()
+        if kind == "hole":
+            return self.hole_xy (name), None, set ()
+        placed, pin = self._module_pin (name)
+        (x, y), out = placed.anchor (pin)
+        reach = {"male": HOUSING, "female": 4, "screw": 0, "lead": 0}[pin.style]
+        tip = (x + out[0] * reach, y + out[1] * reach)
+        heading = {(1, 0): 0, (0, 1): 2, (-1, 0): 4, (0, -1): 6}[(round (out[0]), round (out[1]))]
+        start = node (tip)
+        allow = {(start[0] + round (out[0]) * step, start[1] + round (out[1]) * step)
+                 for step in range (0, 4)}
+        return tip, (heading, (heading + 1) % 8, (heading + 7) % 8), allow
+
+    # Whether a jumper between two holes in one row or column can lie flat
+    # and straight: nothing but free holes between.
+    def _straight (self, a, b):
+        (x1, y1), (x2, y2) = self.hole_xy (a), self.hole_xy (b)
+        if abs (x1 - x2) > 0.5 and abs (y1 - y2) > 0.5:
+            return False
+        for hole in self._holes ():
+            if hole in (a, b) or hole not in self.used:
+                continue
+            x, y = self.hole_xy (hole)
+            if min (x1, x2) - 0.5 <= x <= max (x1, x2) + 0.5 and \
+                    min (y1, y2) - 0.5 <= y <= max (y1, y2) + 0.5:
+                return False
+        box = (min (x1, x2), min (y1, y2), max (x1, x2), max (y1, y2))
+        for part in self.parts:
+            if not part.blocks:
+                continue
+            for shape in part.shapes (self):
+                if shape_crosses (shape, (x1, y1), (x2, y2)):
+                    return False
+        for placed in self.modules.values ():
+            if segment_meets_box ((x1, y1), (x2, y2), placed.reach_box (), 2):
+                return False
+        return bool (box)
 
     # Drawing ------------------------------------------------------------
 
     # The whole bench, or a close-up of the breadboard where the parts are.
     def svg (self, view="bench", prefix="bench"):
+        routes = self._layout ()
         pencil = Pencil (self.seed, prefix)
         detail = self._closeup_columns () if view == "closeup" else None
         # Labels are set smaller in the close-up, which the page shows larger.
         self.label_size = 6.4 if detail else 10
-        self.view = self._closeup_box () if detail else None
-        self.labels, self._tags = [], []
+        rough = self._closeup_box () if detail else None
+        placed = self._place_labels (routes, rough, detail)
+        box = self._view_box (rough, placed, detail) if detail else self._canvas (routes, placed)
         self._draw_mega (pencil)
         self._draw_board (pencil, detail)
         for part in self.parts:
             part.draw (pencil, self)
-        routes = self._routes ()
-        for (start, end, color), route in zip (self.wires, routes):
-            self._draw_wire (pencil, start, end, color, route)
-        for placed in self.modules.values ():
-            placed.draw (pencil)
-        for text, at, offset in self.notes:
-            self._draw_note (pencil, text, at, offset)
-        box = self._canvas (routes) if view == "bench" else self._closeup_box ()
+        for start, end, points in routes:
+            self._draw_wire (pencil, start, end, points)
+        for module in self.modules.values ():
+            module.draw (pencil)
+        for text, x, y, anchor, size, to, kind in placed:
+            if kind == "note":
+                pencil.text (x, y, text, size=size, anchor=anchor, kind="label", italic=True)
+                pencil.arrow (to)
+            else:
+                width = text_width (text, size) - 1
+                pencil.label (x, y, text, size=size, anchor=anchor, to=to, width=width,
+                              patch=self._patch (x, y, width, size, anchor))
         return pencil.svg (box, self.title if view == "bench" else f"{self.title}: close-up")
 
-    # The drawing grows to hold every module, overhanging part, wire and note.
-    def _canvas (self, routes):
+    # A measurement: the breadboard round its two probe points, the meter
+    # below the board reading what is expected, and its leads rising to the
+    # probes. Labels are left to the caption and the table.
+    def measure_svg (self, index, prefix="measure"):
+        routes = self._layout ()
+        taken = self.measurements[index]
+        (red, _), (black, _) = self.probes (index)
+        points = {"red": self.hole_xy (red), "black": self.hole_xy (black)}
+        xs = [x for x, _ in points.values ()]
+        bx0, by0, bx1, by1 = self.board_box ()
+        width, height = meter.WIDTH * meter.SCALE, meter.HEIGHT * meter.SCALE
+        # The meter below the board and to the left of the probes, its leads
+        # sweeping up and right into them.
+        mx, my = min (xs) - width - 50, by1 + 26
+        left, right = mx - 8, max (xs) + 36
+        top = min (y for _, y in points.values ()) - 30
+        box = (left, top, right - left, my + height + 8 - top)
+        self.label_size = 6.4
+        detail = (self._column_at (left), self._column_at (right))
+        pencil = Pencil (self.seed, f"{prefix}{index}")
+        self._draw_mega (pencil)
+        self._draw_board (pencil, detail)
+        for part in self.parts:
+            part.draw (pencil, self)
+        for start, end, route in routes:
+            self._draw_wire (pencil, start, end, route)
+        for module in self.modules.values ():
+            module.draw (pencil)
+        meter.draw (pencil, mx, my, taken["expect"])
+        # The lower jack's lead, the black, runs outside the red one.
+        for color, side in (("red", -1), ("black", 1)):
+            meter.lead (pencil, meter.jack (mx, my, color), points[color], color, side)
+        return pencil.svg (box, f"{self.title}: {taken['label']}")
+
+    # The drawing grows to hold every module, overhanging part, wire and label.
+    def _canvas (self, routes, placed):
         width, height = self.size ()
         x0, y0, x1, y1 = 0, 0, width, height
         pad = MARGIN * DPI * 0.7
@@ -687,8 +1297,8 @@ class Bench:
         boxes += [part.placed (self).title_box () for part in self.parts
                   if isinstance (part, HeaderModule)]
         boxes += [part.box (self) for part in self.parts if part.box (self)]
-        boxes += [(x - 4, y - 4, x + 4, y + 4) for route in routes for x, y in route]
-        boxes += [(x - w / 2, y - 12, x + w / 2, y + 4) for x, y, w in self.labels]
+        boxes += [(x - 4, y - 4, x + 4, y + 4) for _, _, points in routes for x, y in points]
+        boxes += self._placed_boxes
         for bx0, by0, bx1, by1 in boxes:
             if bx0 < x0 + pad:
                 x0 = min (x0, bx0 - pad)
@@ -705,10 +1315,14 @@ class Bench:
         self.closeup_range = (first, last)
         return self
 
+    # The columns the build uses, leaving out the Mega's power feeds and the
+    # rail links, which are the same in every lesson.
     def _closeup_columns (self):
         if getattr (self, "closeup_range", None):
             return self.closeup_range
-        columns = [parse_hole (hole)[1] for hole in self.used]
+        standard = {hole for start, end, _, _ in self.wires
+                    if self._standard ((start, end)) for kind, hole in (start, end) if kind == "hole"}
+        columns = [parse_hole (hole)[1] for hole in self.used if hole not in standard]
         for part in self.parts:
             for shape in part.footprint (self):
                 if shape[0] == "rect" and not part.box (self):
@@ -730,169 +1344,273 @@ class Bench:
         column = round ((x / DPI - bx - 0.25) / 0.1) + self.first
         return min (self.last, max (self.first, column))
 
-    # The close-up keeps the columns and rows the build uses, with room for
-    # standing parts, labels and the column numbers, and is never so small
-    # that it zooms in too far.
+    # The close-up before its labels: the columns it shows, and the rows the
+    # build uses with room for every part standing in them.
     def _closeup_box (self):
         low, high = self._closeup_columns ()
         left, _ = self.hole_xy (f"a{low}")
         right, _ = self.hole_xy (f"a{high}")
         _, by = self.board_origin ()
+        ceiling, floor = by * DPI - 40, (by + BOARD_HEIGHT) * DPI + 25
         ys = [self.hole_xy (hole)[1] for hole in self.used] or [(by + 1.1) * DPI]
-        top = max (by * DPI - 30, min (ys) - 0.55 * DPI)
-        bottom = min ((by + BOARD_HEIGHT) * DPI + 15, max (ys) + 0.35 * DPI)
+        for part in self.parts:
+            if any (low <= parse_hole (hole)[1] <= high for _, hole in part.legs ()):
+                for shape in part.shapes (self):
+                    x0, y0, x1, y1 = shape_bounds (shape)
+                    if x1 > left - 10 and x0 < right + 10:
+                        ys += [max (ceiling, y0), min (floor, y1)]
+        top, bottom = min (ys) - 8, max (ys) + 8
         # Keep the nearer row of column numbers in view.
         top = min (top, (by + 0.34) * DPI) if min (ys) < (by + 1.1) * DPI else top
         bottom = max (bottom, (by + 1.88) * DPI) if max (ys) > (by + 1.1) * DPI else bottom
-        left -= 32 if low == 1 else 14
+        # Starting partway along, the row letters stand where the column
+        # before would be, just out of view.
+        left -= 32 if low == 1 else 8
         right += 32 if high == 63 else 14
+        return (left, max (ceiling, top), right, min (floor, bottom))
+
+    # The close-up with its labels, never so flat that it zooms in too far.
+    def _view_box (self, rough, placed, detail):
+        left, top, right, bottom = rough
+        _, by = self.board_origin ()
+        ceiling, floor = by * DPI - 40, (by + BOARD_HEIGHT) * DPI + 25
+        for box in self._placed_boxes:
+            if box[2] > left and box[0] < right:
+                top, bottom = min (top, box[1] - 3), max (bottom, box[3] + 3)
+                left, right = min (left, box[0] - 3), max (right, box[2] + 3)
+        top, bottom = max (ceiling, top), min (floor, bottom)
         width = right - left
         least = 0.62 * width
         if bottom - top < least:
-            grow = (least - (bottom - top)) / 2
-            ceiling, floor = by * DPI - 40, (by + BOARD_HEIGHT) * DPI + 25
-            top, bottom = top - grow, bottom + grow
+            more = (least - (bottom - top)) / 2
+            top, bottom = top - more, bottom + more
             if top < ceiling:
                 top, bottom = ceiling, bottom + ceiling - top
             if bottom > floor:
                 top, bottom = max (ceiling, top - (bottom - floor)), floor
         return (left, top, width, bottom - top)
 
-    # Routing ---------------------------------------------------------------
+    # Labels -----------------------------------------------------------------
 
-    def _routes (self):
-        obstacles = self._obstacles ()
-        self.channels = {"above": 0, "below": 0}
-        # Tall bodies on the board, such as a display or a buzzer: wires lie
-        # over the board, but go round these.
-        self.bodies = []
-        self.clear_of = obstacles[1:]
+    # Every label, placed: the parts' names and values, each wire's pin by
+    # the end that matters (the hole, or the Mega for a module), and the
+    # notes. Each goes where it covers nothing it shouldn't.
+    def _place_labels (self, routes, rough, detail):
+        size = self.label_size
+        placer = Placer ()
+        if rough:
+            _, by = self.board_origin ()
+            placer.view = (rough[0] - 30, by * DPI - 40, rough[2] + 30, (by + BOARD_HEIGHT) * DPI + 25)
+            placer.soft_view = rough
+        placer.avoid (("rect", *self.mega_box ()))
+        for placed in self.modules.values ():
+            placer.avoid (("rect", *placed.reach_box ()))
+            placer.taken (placed.title_box ())
         for part in self.parts:
-            if part.box (self):
-                continue
-            for shape in part.footprint (self):
-                if shape[0] == "rect":
-                    self.bodies.append (shape[1:])
-                else:
-                    _, cx, cy, r = shape
-                    self.bodies.append ((cx - r, cy - r, cx + r, cy + r))
-        return [self._route (start, end, obstacles, index)
-                for index, (start, end, _) in enumerate (self.wires)]
+            for shape in part.shapes (self):
+                placer.avoid (shape)
+        for _, _, points in routes:
+            for a, b in zip (points, points[1:]):
+                placer.avoid (("segment", a[0], a[1], b[0], b[1], 2.4))
+        for hole in self._holes ():
+            xy = self.hole_xy (hole)
+            if hole in self.used:
+                placer.avoid (("circle", xy[0], xy[1], 3.4))
+            else:
+                placer.point (xy, 3)
+        for name in self.taken:
+            if name in self.pins:
+                placer.avoid (("circle", *self.pin_xy (name), 3.4))
+        for x, y, w in self._print_marks (detail):
+            placer.avoid (("rect", x - w / 2, y - 6, x + w / 2, y), 150)
+        for x0, y0, x1, y1 in (self.board_box (), self.mega_box ()):
+            for edge in ((x0, y0, x1, y0), (x0, y1, x1, y1), (x0, y0, x0, y1), (x1, y0, x1, y1)):
+                placer.avoid (("segment", *edge, 0.6), 60)
+        for box in self._silk_boxes ():
+            placer.avoid (("rect", *box), 400)
+        for x, y, w in self._board_signs ():
+            placer.taken ((x - w / 2, y - 7, x + w / 2, y + 1))
 
-    def _obstacles (self):
-        mx, my = self.mega_origin ()
-        boxes = [((mx - 0.25) * DPI, my * DPI, (mx + MEGA_WIDTH) * DPI, (my + MEGA_HEIGHT) * DPI)]
-        boxes += [placed.box () for placed in self.modules.values ()]
-        boxes += [part.box (self) for part in self.parts if part.box (self) and part.blocks]
+        placed, self._placed_boxes = [], []
+
+        named = []
+
+        def put (label, own):
+            text, scale = label.text, label.size
+            # One label serves a row of like parts close together, such as a
+            # row of 220 Ω resistors.
+            if label.at and label.size == 1.0:
+                if any (other == text and abs (at[0] - label.at[0]) < 35
+                        and abs (at[1] - label.at[1]) < 20 for other, at in named):
+                    named.append ((text, label.at))
+                    return
+                named.append ((text, label.at))
+            spots = list (label.spots)
+            # The whole bench names a part on the breadboard only where the
+            # name fits beside it; the close-up names them all.
+            beside = not rough and not part_box (own)
+            if label.at and not beside:
+                spots += ring (label.at, text, size * scale)
+            best = placer.place (text, size * scale, spots, own)
+            if best is None or beside and best[0] >= HARD:
+                return
+            cost, x, y, anchor, box = best
+            to = None
+            # A leader only when the label stands away from what it names.
+            if label.at and (x, y, anchor) not in [s[:3] for s in label.spots]:
+                gap = math.hypot (max (box[0] - label.at[0], 0, label.at[0] - box[2]),
+                                  max (box[1] - label.at[1], 0, label.at[1] - box[3]))
+                to = label.at if gap > 6 else None
+            placer.taken (box)
+            placed.append ((text, x, y, anchor, size * scale, to, "label"))
+            self._placed_boxes.append (box)
+
+        seen = lambda x: not rough or rough[0] - 4 < x < rough[2] + 4
+        board = self.board_box ()
+        # Whether a part lies off the board, as a module standing in a row does.
+        part_box = lambda shapes: any (shape_bounds (shape)[3] > board[3]
+                                       or shape_bounds (shape)[1] < board[1]
+                                       for shape in shapes if shape[0] == "rect")
+        # A row of like resistors in the same two rows is named once, as a
+        # parts list names them: "4 × 220 Ω", beside the last of them.
+        rows = {}
+        resistors = [part for part in self.parts
+                     if isinstance (part, Resistor) and seen (part.geometry (self)[0])]
+        for part in sorted (resistors, key=lambda part: part.geometry (self)[0]):
+            key = (part.value, parse_hole (part.a)[2], parse_hole (part.b)[2])
+            groups = rows.setdefault (key, [[]])
+            # A gap of more than six columns starts another row.
+            if groups[-1] and part.geometry (self)[0] - groups[-1][-1].geometry (self)[0] > 65:
+                groups.append ([])
+            groups[-1].append (part)
+        rows = [(key[0], group) for key, groups in rows.items () for group in groups]
+        grouped = {id (part) for _, group in rows if len (group) > 1 for part in group}
+        for value, group in rows:
+            if len (group) < 2:
+                continue
+            shapes = [shape for part in group for shape in part.shapes (self)]
+            bounds = [shape_bounds (shape) for shape in shapes]
+            box = (min (b[0] for b in bounds), min (b[1] for b in bounds),
+                   max (b[2] for b in bounds), max (b[3] for b in bounds))
+            last = max (group, key=lambda part: part.geometry (self)[0])
+            text = f"{len (group)} × {value}"
+            put (Label (text, spots_round (box, text, size, "right")[:8] + last.labels (self)[0].spots,
+                        last.geometry (self)), shapes)
+        for part in self.parts:
+            # The whole bench leaves an LED's color to speak for it; the
+            # close-up names each one.
+            if not rough and isinstance (part, Led):
+                continue
+            own = part.shapes (self) + [("circle", *self.hole_xy (hole), 3.4)
+                                        for _, hole in part.legs ()]
+            for label in part.labels (self) if id (part) not in grouped else ():
+                if label.at is None or seen (label.at[0]):
+                    put (label, own)
+        for start, end, points in routes:
+            # Named by the end that matters: the hole, or the Mega for a module.
+            if start[0] != "pin" or not seen ((points[-1] if end[0] == "hole" else points[0])[0]):
+                continue
+            text = canonical (start[1])
+            text = f"pin {text}" if numbered (text) else text
+            spots = along (points if end[0] != "hole" else points[::-1], size * 0.9)
+            best = placer.place (text, size * 0.9, spots)
+            if best:
+                _, x, y, anchor, box = best
+                to = next (spot[4] for spot in spots if spot[:3] == (x, y, anchor))
+                placer.taken (box)
+                placed.append ((text, x, y, anchor, size * 0.9, to, "label"))
+                self._placed_boxes.append (box)
+        for text, at, offset in self.notes:
+            tx, ty = self._point_xy (at)
+            if rough and not (rough[0] < tx < rough[2] and rough[1] < ty < rough[3]):
+                continue
+            note_size = size * 0.95
+            spots = [(tx + offset[0] * fx * reach * DPI, ty + offset[1] * fy * reach * DPI, "middle",
+                      (reach - 1) * 20 + (fx < 0) * 3 + (fy < 0) * 3)
+                     for reach in (1, 1.4, 1.8) for fx in (1, -1) for fy in (1, -1)]
+            best = placer.place (text, note_size, spots)
+            _, x, y, anchor, box = best
+            placer.taken (box)
+            placed.append ((text, x, y, anchor, note_size, arrow_to (box, (tx, ty), note_size), "note"))
+            self._placed_boxes.append (box)
+        return placed
+
+    # A label's paper, widened to cover whole any hole it would cut in half.
+    def _patch (self, x, y, width, size, anchor):
+        left = {"start": x, "end": x - width}.get (anchor, x - width / 2) - 1.2
+        right = left + width + 2.4
+        top, bottom = y - size * 0.78, y + size * 0.24
+        for hole in self._holes ():
+            hx, hy = self.hole_xy (hole)
+            if hy + 1.8 < top or hy - 1.8 > bottom:
+                continue
+            if hx - 1.8 < left < hx + 1.8:
+                left = hx - 2.2
+            if hx - 1.8 < right < hx + 1.8:
+                right = hx + 2.2
+        return left, right
+
+    # The Mega's printed pin names, which labels keep clear of.
+    def _silk_boxes (self):
+        boxes = []
+        for name, (px, py) in self.pins.items ():
+            hx, hy = self.pin_xy (name)
+            length = len (canonical (name)) * 4.2 + 2
+            if py > 1.99:
+                boxes.append ((hx - 4, hy + 5, hx + 4, hy + 8 + length))
+            elif py < 0.11:
+                boxes.append ((hx - 4, hy - 8 - length, hx + 4, hy - 5))
+            elif px < 3.75:
+                boxes.append ((hx - 36, hy - 5, hx - 5, hy + 5))
         return boxes
 
-    # A wire's path: from its first end (a Mega pin when it has one), out
-    # the way its pin points, round anything in the way, and into its other
-    # end.
-    def _route (self, start, end, obstacles, index):
-        if end[0] == "pin" and start[0] != "pin" or start[0] == "hole" and end[0] == "module":
-            start, end = end, start
-        a, b = self._xy (start), self._xy (end)
-        lift = 0.3 * DPI
-        if start[0] == "hole" and end[0] == "hole":
-            # A short jumper between holes bows out to one side.
-            dx, dy = b[0] - a[0], b[1] - a[1]
-            length = max (1.0, (dx * dx + dy * dy) ** 0.5)
-            bow = min (0.09 * DPI, length * 0.3)
-            middle = ((a[0] + b[0]) / 2 + dy / length * bow, (a[1] + b[1]) / 2 - dx / length * bow)
-            return [a, middle, b]
-        first, out_a = self._terminal (start)
-        last, out_b = self._terminal (end)
-        exit_a = self._leave (start[1], first, lift) if start[0] == "pin" else \
-            (first[0] + out_a[0] * lift, first[1] + out_a[1] * lift)
-        head = [a] + ([first] if first != a else []) + [exit_a]
-        tail = [last] + ([b] if b != last else [])
-        if out_b:
-            middle = [(last[0] + out_b[0] * lift, last[1] + out_b[1] * lift)]
-        else:
-            middle = self._approach (exit_a, end[1], start[0] == "pin" and out_a == (1, 0))
-        # Round anything in the way, a segment at a time; a wire that doesn't
-        # plug into the breadboard goes round that too.
-        margin = 10 + 5 * (index % 3)
-        boxes = obstacles + [grow (body, 3 - margin) for body in self.bodies]
-        if end[0] != "hole":
-            bx, by = self.board_origin ()
-            boxes.append ((bx * DPI, by * DPI, (bx + self.board_width ()) * DPI,
-                           (by + BOARD_HEIGHT) * DPI))
-        path = head[-1:] + middle
-        routed = [path[0]]
-        for p, q in zip (path, path[1:]):
-            routed += detour (p, q, boxes, margin) + [q]
-        return head[:-1] + routed + tail
+    # Where the board's own printing is: column numbers, which labels
+    # would rather not hide.
+    def _print_marks (self, detail=None):
+        marks = []
+        _, by = self.board_origin ()
+        for column in range (self.first, self.last + 1):
+            listed = detail and detail[0] <= column <= detail[1]
+            if column % 5 == 0 or column == 1 or listed:
+                hx, _ = self.hole_xy (f"a{column}")
+                w = len (str (column)) * 4.5 + 2
+                marks += [(hx, (by + 0.44) * DPI + 1, w), (hx, (by + 1.82) * DPI + 1, w)]
+        return marks
 
-    # From where a wire leaves its first end to just short of a hole. Wires
-    # from the side come across the gap, along a rail into a rail's hole.
-    # Wires from above or below travel in a lane beside the board, each in
-    # its own, and drop into the half of the board on their side; for the
-    # other half, or a hole with something standing over it, they come in
-    # from the gap at the Mega's end.
-    def _approach (self, exit, name, sideways):
-        hole = self.hole_xy (name)
+    # The row letters and rail signs, which labels never cover.
+    def _board_signs (self):
+        signs = []
         bx, by = self.board_origin ()
-        left, top, bottom = bx * DPI, by * DPI, (by + BOARD_HEIGHT) * DPI
-        lift = 0.3 * DPI
-        kind, _, row = parse_hole (name)
-        half = "above" if row in "fghij" or row.startswith ("T") else "below"
-        spots = [(hole[0] - lift, hole[1])] if kind == "rail" else []
-        spots += [(hole[0] - lift * 0.5, hole[1] - lift), (hole[0] - lift * 0.5, hole[1] + lift),
-                  (hole[0] - lift, hole[1]), (hole[0] + lift * 0.5, hole[1] - lift)]
-        if sideways or top < exit[1] < bottom:
-            return [self._clear_spot (spots, hole)]
-        side = "above" if exit[1] <= top else "below"
-        lane = self.channels[side]
-        self.channels[side] += 1
-        sign = -1 if side == "above" else 1
-        y = (min if side == "above" else max) (exit[1], top - 16 if side == "above" else bottom + 16)
-        y += sign * 6 * lane
-        drop = (hole[0] - 6, (max if sign < 0 else min) (y, hole[1] + sign * lift))
-        if (side == half or exit[0] > left) and self._clear_spot ([drop], hole, None):
-            return [(exit[0], y), (hole[0] - 12, y), drop]
-        gap = left - 0.2 * DPI - 5 * lane
-        spots.sort (key=lambda spot: spot[1] * -sign)
-        return [(exit[0], y), (gap, y), self._clear_spot (spots, hole)]
+        x = bx * DPI
+        if self.first == 1:
+            for rail in ("T+", "T-", "B+", "B-"):
+                signs.append ((x + 8, (by + ROWS[rail]) * DPI + 3.5, 7))
+        for row in "abcdefghij":
+            hx, hy = self.hole_xy (f"{row}{self.first}")
+            signs.append ((hx - 11, hy + 2.3, 5))
+        return signs
 
-    # The first spot from which a wire drops into the hole clear of any tall
-    # body, and of anything lying off the board's edge.
-    def _clear_spot (self, spots, hole, fallback=True):
-        boxes = self.bodies + self.clear_of
-        for spot in spots:
-            if not any (within (spot, grow (box, 3)) for box in boxes) and \
-                    all (misses (spot, hole, grow (box, 1)) for box in boxes):
-                return spot
-        return spots[0] if fallback else None
+    def _point (self, at):
+        if isinstance (at, tuple):
+            return at[0] * DPI, at[1] * DPI
+        return self._point_xy (at)
 
-    def _terminal (self, end):
-        kind, name = end
-        if kind == "pin":
-            _, y = self.pins[name]
-            return self.pin_xy (name), (0, -1) if y > 1.99 else (0, 1) if y < 0.11 else (1, 0)
-        if kind == "hole":
-            return self.hole_xy (name), None
-        placed, pin = self._module_pin (name)
-        (x, y), out = placed.anchor (pin)
-        reach = {"male": HOUSING, "female": 4, "screw": 0, "lead": 0}[pin.style]
-        return (x + out[0] * reach, y + out[1] * reach), out
-
-    # A point a little way out from a header, so a wire leaves it cleanly.
-    def _leave (self, name, xy, lift):
-        _, y = self.pins[name]
-        if y > 1.99:
-            return xy[0], xy[1] - lift
-        if y < 0.11:
-            return xy[0], xy[1] + lift
-        return xy[0] + lift * 1.4, xy[1]
+    def _point_xy (self, at):
+        if isinstance (at, tuple):
+            return at[0] * DPI, at[1] * DPI
+        if at in self.pins:
+            return self.pin_xy (at)
+        module, _, pin = at.partition (".")
+        if pin and module in self.modules:
+            placed = self.modules[module]
+            return placed.anchor (placed.pin (pin))[0]
+        return self.hole_xy (at)
 
     # Pictures --------------------------------------------------------------
 
-    def _draw_wire (self, pencil, start, end, color, route):
-        if end[0] == "pin" and start[0] != "pin" or start[0] == "hole" and end[0] == "module":
-            start, end = end, start
+    def _draw_wire (self, pencil, start, end, route):
         lead = next ((e for e in (start, end) if self._style (e) == "lead"), None)
+        color = next (c for s, e, c, _ in self.wires if {s, e} == {start, end})
         pencil.wire (route, WIRE_COLORS[color], width=2.4 if lead else 3.6)
         for which, point in ((start, route[0]), (end, route[-1])):
             style = self._style (which)
@@ -909,115 +1627,6 @@ class Bench:
                 pencil.tip (*point)
             else:
                 pencil.pin_end (*point)
-        if start[0] == "pin":
-            label = canonical (start[1])
-            label = f"pin {label}" if numbered (label) else label
-            self._label_wire (pencil, route if end[0] != "hole" else route[::-1], label)
-
-    # A part's label, at this view's label size, which wire labels keep
-    # clear of. A label that repeats one just beside it (a row of 220 Ω
-    # resistors) is left out; one that would overlap another moves up a
-    # line, or is left out when optional.
-    def tag (self, pencil, x, y, text, size=1.0, to=None, optional=False):
-        size = self.label_size * size
-        width = len (text) * size * 0.52 + 2
-        if any (t == text and abs (x - lx) < 40 and abs (y - ly) < 30
-                for lx, ly, w, t in self._tags):
-            return
-        clash = lambda y: any (abs (x - lx) < (width + w) / 2 + 1 and abs (y - ly) < size + 1
-                               for lx, ly, w in self.labels)
-        for lift in (0, 1, 2):
-            if not clash (y - lift * (size + 1)):
-                y -= lift * (size + 1)
-                break
-        else:
-            if optional:
-                return
-        pencil.label (x, y, text, size=size, to=to)
-        self.labels.append ((x, y, width))
-        self._tags.append ((x, y, width, text))
-
-    # A wire's name beside it, near the end that matters: the hole, or the
-    # Mega when it goes to a module. It sits clear of other labels, with a
-    # fine leader to the wire.
-    def _label_wire (self, pencil, route, text):
-        size = self.label_size * 0.9
-        width = len (text) * size * 0.52 + 2
-        spots = []
-        for along in range (26, 150, 12):
-            point, (dx, dy) = point_along (route, along)
-            normal = (dy, -dx) if dx > 0 else (-dy, dx)
-            for side in (1, -1):
-                cx = point[0] + normal[0] * side * (width / 2 + 3)
-                cy = point[1] + normal[1] * side * (size * 0.8 + 2) + size * 0.35
-                spots.append ((self._label_cost (cx, cy, width, size) + along * 0.4, cx, cy, point))
-        _, cx, cy, point = min (spots)
-        self.labels.append ((cx, cy, width))
-        pencil.label (cx, cy, text, size=size, to=point)
-
-    # How badly a label there would sit: over another label, out of view,
-    # or over holes in use or holes at all.
-    def _label_cost (self, cx, cy, width, size):
-        box = (cx - width / 2 - 1, cy - size * 0.8, cx + width / 2 + 1, cy + size * 0.25)
-        cost = 0
-        for x, y, w in self.labels:
-            if abs (cx - x) < (width + w) / 2 + 2 and abs (cy - y) < size + 1:
-                cost += 1000
-        if self.view:
-            vx, vy, vw, vh = self.view
-            if box[0] < vx + 2 or box[2] > vx + vw - 2 or box[1] < vy + 2 or box[3] > vy + vh - 2:
-                cost += 500
-        for hole in self._holes ():
-            hx, hy = self.hole_xy (hole)
-            if box[0] - 2 < hx < box[2] + 2 and box[1] - 2 < hy < box[3] + 2:
-                cost += 40 if hole in self.used else 8
-        for part in self.parts:
-            for shape in part.footprint (self):
-                if shape[0] == "rect" and shape[1] < box[2] and box[0] < shape[3] \
-                        and shape[2] < box[3] and box[1] < shape[4]:
-                    cost += 60
-        return cost
-
-    def _draw_note (self, pencil, text, at, offset):
-        tx, ty = self._point (at)
-        size = self.label_size * 0.95
-        width = len (text) * size * 0.5
-        # Where it was asked for, or mirrored round its point, or further out,
-        # whichever overlaps the fewest labels.
-        spots = [(tx + offset[0] * fx * reach * DPI, ty + offset[1] * fy * reach * DPI)
-                 for reach in (1, 1.4) for fx, fy in ((1, 1), (-1, 1), (1, -1), (-1, -1))]
-        def cost (spot):
-            clashes = sum (abs (spot[0] - x) < (width + w) / 2 + 2 and abs (spot[1] - y) < size + 2
-                           for x, y, w in self.labels)
-            if self.view:
-                vx, vy, vw, vh = self.view
-                clashes += 0.5 * (not (vx + 2 < spot[0] - width / 2 and spot[0] + width / 2 < vx + vw - 2
-                                       and vy + size < spot[1] < vy + vh - 2))
-            return clashes
-
-        lx, ly = min (spots, key=cost)
-        pencil.text (lx, ly, text, size=size, kind="label", italic=True)
-        self.labels.append ((lx, ly, width))
-        sx = lx + (width / 2 + 3 if tx > lx + width / 2 else
-                   -width / 2 - 3 if tx < lx - width / 2 else 0)
-        sy = ly - size * 0.35 if sx != lx else (ly + 3 if ty > ly else ly - size)
-        dx, dy = tx - sx, ty - sy
-        length = max (1.0, math.hypot (dx, dy))
-        ex, ey = tx - dx / length * 4, ty - dy / length * 4
-        bend = 0.18 * length
-        mid = ((sx + ex) / 2 - dy / length * bend, (sy + ey) / 2 + dx / length * bend)
-        pencil.arrow ([(sx, sy), mid, (ex, ey)])
-
-    def _point (self, at):
-        if isinstance (at, tuple):
-            return at[0] * DPI, at[1] * DPI
-        if at in self.pins:
-            return self.pin_xy (at)
-        module, _, pin = at.partition (".")
-        if pin and module in self.modules:
-            placed = self.modules[module]
-            return placed.anchor (placed.pin (pin))[0]
-        return self.hole_xy (at)
 
     def _draw_mega (self, pencil):
         mx, my = self.mega_origin ()
@@ -1124,7 +1733,7 @@ class Bench:
         torn_left, torn_right = self.first > 1, self.last < 63
         outline = board_outline (x, y, w, h, torn_left, torn_right, pencil.random)
         pencil.paper_fill (outline, "#ffffff")
-        pencil.polyline (outline, width=1.0, closed=True, passes=2)
+        pencil.polyline (outline, width=1.0, closed=True, passes=2, layer="crisp")
         # The channel down the middle, where chips straddle.
         pencil.fill ([(x + 6, y + 1.05 * DPI), (x + w - 6, y + 1.05 * DPI),
                       (x + w - 6, y + 1.15 * DPI), (x + 6, y + 1.15 * DPI)], tone=0.07)
@@ -1134,10 +1743,8 @@ class Bench:
             pencil.stripe ((x + 14, y + offset * DPI), (x + w - 14, y + offset * DPI), color)
             sign = "+" if rail.endswith ("+") else "−"
             hy = (by + ROWS[rail]) * DPI
-            # Printing near the Mega's end, which wire labels keep clear of.
             if not torn_left:
                 pencil.text (x + 8, hy + 3.5, sign, size=9, tone=0.7, **board)
-                self.labels.append ((x + 8, hy + 3.5, 6))
             if not torn_right:
                 pencil.text (x + w - 8, hy + 3.5, sign, size=9, tone=0.7, **board)
         for column in range (self.first, self.last + 1):
@@ -1161,8 +1768,16 @@ class Bench:
             for row in "abcdefghij":
                 hx, hy = self.hole_xy (f"{row}{column}")
                 pencil.text (hx + offset, hy + 2.3, row, size=6.5, tone=0.7, **board)
-                if offset < 0:
-                    self.labels.append ((hx + offset, hy + 2.3, 4))
+
+
+THEME = os.path.dirname (os.path.abspath (__file__))
+
+
+# Where routes are kept: beside the build's Python cache, which the Makefile
+# puts in the build directory; nowhere when there is none.
+def route_cache ():
+    prefix = os.environ.get ("PYTHONPYCACHEPREFIX")
+    return os.path.join (os.path.dirname (prefix), "routes") if prefix else None
 
 
 def board_outline (x, y, w, h, torn_left, torn_right, random):
@@ -1205,6 +1820,13 @@ def rail_column (column):
     return 3 <= column <= 61 and (column - 3) % 6 != 5
 
 
+# The rail hole in this column, or the nearest one after it.
+def rail_near (column):
+    while not rail_column (column):
+        column += 1
+    return column
+
+
 def canonical (name):
     return re.sub (r"^(GND|5V)\d$", r"\1", name)
 
@@ -1236,7 +1858,7 @@ def pin_order (name):
     return (2, name)
 
 
-# Geometry for wires ---------------------------------------------------------
+# Geometry ---------------------------------------------------------------------
 
 def inside_shapes (shapes, point):
     x, y = point
@@ -1249,82 +1871,46 @@ def inside_shapes (shapes, point):
     return False
 
 
+def shape_bounds (shape):
+    if shape[0] == "rect":
+        return shape[1:5]
+    if shape[0] == "circle":
+        _, cx, cy, r = shape
+        return cx - r, cy - r, cx + r, cy + r
+    _, ax, ay, bx, by, half = shape
+    return min (ax, bx) - half, min (ay, by) - half, max (ax, bx) + half, max (ay, by) + half
+
+
+# Whether the line from a to b passes over a shape, away from its ends.
+def shape_crosses (shape, a, b):
+    length = max (1e-9, math.dist (a, b))
+    for step in range (1, int (length / 2)):
+        t = step * 2 / length
+        p = (a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t)
+        x0, y0, x1, y1 = shape_bounds (shape)
+        if not (x0 - 2 < p[0] < x1 + 2 and y0 - 2 < p[1] < y1 + 2):
+            continue
+        if shape[0] == "rect" or shape[0] == "circle" and \
+                math.hypot (p[0] - shape[1], p[1] - shape[2]) < shape[3] + 2:
+            return True
+        if shape[0] == "segment":
+            if segment_distance (shape[1:3], shape[3:5], p) < shape[5] + 2:
+                return True
+    return False
+
+
+def straight_nodes (a, b):
+    steps = max (abs (b[0] - a[0]), abs (b[1] - a[1]))
+    return [(a[0] + (b[0] - a[0]) * k // steps, a[1] + (b[1] - a[1]) * k // steps)
+            for k in range (steps + 1)]
+
+
 def grow (box, margin):
     return box[0] - margin, box[1] - margin, box[2] + margin, box[3] + margin
 
 
 def overlaps (a, b):
     return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
-
-
-def within (point, box):
-    return box[0] < point[0] < box[2] and box[1] < point[1] < box[3]
-
-
-# Whether the segment from a to b stays out of the box (Liang-Barsky).
-def misses (a, b, box):
-    x0, y0, x1, y1 = box[0] + 0.3, box[1] + 0.3, box[2] - 0.3, box[3] - 0.3
-    dx, dy = b[0] - a[0], b[1] - a[1]
-    low, high = 0.0, 1.0
-    for p, q in ((-dx, a[0] - x0), (dx, x1 - a[0]), (-dy, a[1] - y0), (dy, y1 - a[1])):
-        if abs (p) < 1e-9:
-            if q < 0:
-                return True
-        else:
-            t = q / p
-            if p < 0:
-                low = max (low, t)
-            else:
-                high = min (high, t)
-            if low > high:
-                return True
-    return False
-
-
-def clear_path (points, boxes):
-    return all (misses (a, b, box) for a, b in zip (points, points[1:]) for box in boxes)
-
-
-# The shortest way from start to goal round the boxes, through their
-# corners: the points in between.
-def detour (start, goal, boxes, margin):
-    # Each box grows by the margin, or less where an end is close to it; a
-    # box an end is inside is ignored.
-    grown = []
-    for box in boxes:
-        room = margin
-        while room > 0 and (within (start, grow (box, room)) or within (goal, grow (box, room))):
-            room -= 2
-        if room > 0 or not (within (start, box) or within (goal, box)):
-            grown.append (grow (box, max (room, 0.5)))
-    corners = [(x, y) for box in grown for x in (box[0] - 0.5, box[2] + 0.5)
-               for y in (box[1] - 0.5, box[3] + 0.5)]
-    nodes = [start, goal] + [c for c in corners if not any (within (c, box) for box in grown)]
-    best = {0: 0.0}
-    came = {}
-    heap = [(0.0, 0)]
-    while heap:
-        cost, node = heapq.heappop (heap)
-        if node == 1:
-            break
-        if cost > best.get (node, math.inf):
-            continue
-        for other in range (1, len (nodes)):
-            if other == node:
-                continue
-            if not all (misses (nodes[node], nodes[other], box) for box in grown):
-                continue
-            total = cost + math.dist (nodes[node], nodes[other]) + 8
-            if total < best.get (other, math.inf):
-                best[other], came[other] = total, node
-                heapq.heappush (heap, (total, other))
-    if 1 not in came:
-        return []
-    path, node = [], came[1]
-    while node != 0:
-        path.append (nodes[node])
-        node = came[node]
-    return path[::-1]
 
 
 # The point a given distance along a polyline, and the way it runs there.
@@ -1339,3 +1925,50 @@ def point_along (points, along):
     a, b = points[-2], points[-1]
     length = max (1e-9, math.dist (a, b))
     return b, ((b[0] - a[0]) / length, (b[1] - a[1]) / length)
+
+
+# Spots for a wire's label beside it, from its labelled end outwards: above
+# or below a level run, right or left of an upright one. Each ends with the
+# point on the wire its leader goes to.
+def along (points, size):
+    spots = []
+    total = sum (math.dist (a, b) for a, b in zip (points, points[1:]))
+    for out in range (10, int (min (total - 6, 200)), 5):
+        (px, py), (dx, dy) = point_along (points, out)
+        cost = out * 0.35
+        # Beside the wire, or further out on a longer leader when crowded.
+        for reach, extra in ((1, 0), (2.4, 30), (4, 60), (7, 90), (10, 120)):
+            if abs (dx) >= abs (dy):
+                spots += [(px, py - 4.5 * reach - size * 0.26, "middle", cost + extra, (px, py)),
+                          (px, py + 4.5 * reach + size * 0.8, "middle", cost + extra + 1, (px, py))]
+            else:
+                spots += [(px + 5 * reach, py + size * 0.3, "start", cost + extra, (px, py)),
+                          (px - 5 * reach, py + size * 0.3, "end", cost + extra + 1, (px, py))]
+    return spots
+
+
+# Spots further out round a point, each with a leader back to it, for a
+# label crowded out of its own.
+def ring (at, text, size):
+    spots = []
+    for reach in (16, 24, 34, 46, 60):
+        for step in range (16):
+            angle = step * math.pi / 8
+            x, y = at[0] + math.cos (angle) * reach * 1.4, at[1] + math.sin (angle) * reach
+            spots.append ((x, y + size * 0.3, "middle", 40 + reach * 1.2, at))
+    return spots
+
+
+# An arrow's curve from a note's box to what it points at.
+def arrow_to (box, target, size):
+    x0, y0, x1, y1 = box
+    lx, ly = (x0 + x1) / 2, (y0 + y1) / 2
+    tx, ty = target
+    sx = x1 + 3 if tx > x1 else x0 - 3 if tx < x0 else lx
+    sy = ly if sx != lx else (y1 + 2 if ty > ly else y0 - 2)
+    dx, dy = tx - sx, ty - sy
+    length = max (1.0, math.hypot (dx, dy))
+    ex, ey = tx - dx / length * 4, ty - dy / length * 4
+    bend = 0.18 * length
+    mid = ((sx + ex) / 2 - dy / length * bend, (sy + ey) / 2 + dx / length * bend)
+    return [(sx, sy), mid, (ex, ey)]

@@ -14,7 +14,7 @@ parts:
   - SG90 servo
   - Breadboard power module and its 9 V adapter
   - Active buzzer
-  - 28 jumper wires
+  - 29 jumper wires
   - A small cardboard box and some tape, if you want a real safe
 ideas:
   - A lock as a set of states
@@ -98,13 +98,15 @@ always does the same thing: it locks the safe and rubs out what you typed.
 
 !!! warning "Unplug first"
     Unplug the USB cable and the power module's adapter before you wire.
-    In this build the power module powers everything on the breadboard, so
-    **nothing** connects to the Mega's 5V pin: if you still have Lesson 13's
-    red wire from 5V to the top + rail, take it out. The screen's black GND
-    wire joins the Mega's GND to the rails. Plug the power module in at the
-    far end with its **+** and **−** matching the rails' stripes on both
-    sides, and set both jumpers to **5V**. Keep fingers clear of the servo's
-    arm.
+    Keep Lesson 17's power module, servo and black GND wire just as they
+    are, and take out the knob. Put the screen and the keypad back where
+    they were in Lesson 16, and add the buzzer past the screen. In this
+    build the power module powers everything on the breadboard, the screen
+    included: with its top jumper on **5V** it feeds the top + rail, where
+    the screen's VDD takes its 5 V, and with its bottom jumper on **5V** it
+    feeds the servo. So **nothing** connects to the Mega's 5V pin: leave out
+    the red wire from 5V to the top + rail that Lesson 16 had. Keep fingers
+    clear of the servo's arm.
 
 <!-- bench -->
 
@@ -197,12 +199,12 @@ locks, and the old code still opens it.
 
 | What you see | Try this |
 |---|---|
-| The servo never moves | Is the power module on, with its LED lit and both jumpers on 5V? Check the servo's red and black wires reach the bottom rails (B+45, B-46) and its orange wire pin 44. |
-| The screen is dark and nothing works | The screen now takes its power from the power module: switch it on. |
+| The servo never moves | Is the power module on, with its LED lit and both jumpers on 5V? Check the servo's red and black wires reach the bottom rails (B+53, B-54) and its orange wire pin 44. |
+| The screen is dark and nothing works | The screen now takes its power from the power module: switch it on, and check its top jumper is on 5V. |
 | The screen is blank, but the backlight is on | Turn the contrast knob. |
 | Keys come out wrong | See Lesson 16's "Which way round is the ribbon?" |
 | The right code says `Wrong!` | You may have saved a different code. If you've forgotten it, change `savedMark` to 43 and upload: the sketch then ignores the saved code and starts again from 1234. |
-| No clicks or beeps | Check the buzzer's + leg is in f23 with pin 12's wire in j23, and j26 goes to the − rail. |
+| No clicks or beeps | Check the buzzer's + leg is in f51 with pin 12's wire in j51, and the black wire from a51 goes to the − rail. |
 | The servo buzzes when locked | It's pressing against its stop or the lid. Try a `lockedAngle` of 10. |
 | The Mega resets when the servo moves | Something takes power from the Mega's 5V pin. Nothing should in this build. |
 

@@ -72,7 +72,8 @@ Eight of those, one per row, make a picture, and the whole picture takes just
     Unplug the USB cable before you wire. The matrix gets its power from the
     Mega's 5V pin: with all 64 LEDs at full brightness it can draw about
     330 mA, most of what a USB port gives. ADK starts it at half brightness,
-    which is plenty indoors.
+    which is plenty indoors. Its ground comes from the bottom − rail, which
+    the button shares.
 
 <!-- bench -->
 
@@ -141,10 +142,10 @@ from 0. They are the two bumps on top of the heart.
 
 | What you see | Try this |
 |---|---|
-| Nothing lights at all | Check VCC goes to 5V and GND to GND, and that you used the matrix's input end, marked **DIN**. |
+| Nothing lights at all | Check VCC goes to 5V and GND to the bottom − rail, that the rail has its black wire from the Mega's GND, and that you used the matrix's input end, marked **DIN**. |
 | Random dots, or pictures made of junk | CLK and CS are probably swapped: CLK goes to pin 48 and CS to 49. Push each jumper fully onto its pin. |
 | The fill starts in another corner or runs down a column | The module is turned round. Turn it until the fill starts top left and runs along the top row. |
-| The button does nothing | The button must straddle the middle gap, with the jumper in a3 to the − rail and the black wire from GND to that rail. |
+| The button does nothing | The button must straddle the middle gap, with the jumper from a4 to the − rail and the black wire from GND to that rail. |
 | The Mega's **L** LED blinks long and short flashes | ADK found a pin problem and is blinking its number. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"

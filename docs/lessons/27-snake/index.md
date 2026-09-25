@@ -13,7 +13,7 @@ parts:
   - Passive buzzer
   - 220 Ω resistor (red, red, black, black, brown)
   - 10 female-to-male jumper wires
-  - 3 jumper wires
+  - 2 jumper wires
 ideas:
   - A game loop that moves on a steady beat
   - The snake as a deque: on at the front, off at the back
@@ -81,10 +81,11 @@ always appears on a random dot the snake doesn't cover.
 
 !!! warning "Unplug first"
     Unplug the USB cable before you wire. If you have Lesson 26 built, take
-    out the button and its two jumpers, but keep the black wire from GND to
-    the top − rail: the buzzer uses it. The passive buzzer always goes
-    through its 220 Ω resistor: its coil is only about 16 Ω, and on its own
-    it would take far more current than a pin should give.
+    out the button, its wire from pin 23 and its black jumper, but keep the
+    black wire from GND to the bottom − rail: the matrix and the buzzer both
+    use it. The passive buzzer always goes through its 220 Ω resistor: its
+    coil is only about 16 Ω, and on its own it would take far more current
+    than a pin should give.
 
 <!-- bench -->
 
@@ -181,7 +182,7 @@ more than three times the 2½ steps a second it starts with.
 |---|---|
 | The snake turns the wrong way | Hold the joystick with its pins pointing to your left. |
 | The snake ignores some pushes | It won't reverse into its own neck, and a push has to go more than halfway to count. Push firmly, one way at a time. |
-| No sound | Check the buzzer's + leg is in h5, in the resistor's column, and the resistor runs from f1 to f5. The black jumper from f8 must reach the − rail, which needs its GND wire. |
+| No sound | Check the buzzer's + leg is in f34, in the column of pin 10's wire at j34, and its other leg in e34. The resistor runs from a34 to the bottom − rail, which needs its GND wire. |
 | A click starts nothing | The stick's switch is on pin 22: press straight down until it clicks. |
 | The snake dies at once | The first step comes 400 ms after the click: be ready to steer. |
 | The matrix shows junk | Check the matrix's wires, especially CLK on 48 and CS on 49. |

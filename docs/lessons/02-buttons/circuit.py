@@ -1,24 +1,25 @@
-# Laid out from the end of the breadboard nearest the Mega, in pin order: the
-# buttons on 22 and 23, then the LEDs on 26 and 27. Each signal comes in along
-# the top, crosses the middle gap through its part, and leaves by the − rail.
-bench = Bench ("Two buttons on pins 22 and 23, and two LEDs on pins 26 and 27", columns=(1, 24))
+# Lesson 1's red LED stays at its home in column 6. The buttons on 22 and 23
+# join it at their homes, across the middle gap in columns 2-4 and 8-10, and
+# the yellow LED on 27 stands at its home in column 12. Each signal comes in
+# at row j, crosses the gap through its part, and returns by the bottom
+# − rail, which the Mega's GND feeds at B-3. The buttons' wires reach row j
+# from above and the LEDs' from lanes just below it, nested so none cross.
+bench = Bench ("Two buttons on pins 22 and 23, and two LEDs on pins 26 and 27", columns=(1, 20))
 
-bench.wire ("22", "j1")
-bench.button (1)
-bench.wire ("a3", "B-3")
+bench.wire ("22", "j2")
+bench.button (2)
+bench.wire ("a4", "B-4")
 
-bench.wire ("23", "j5")
-bench.button (5)
+bench.wire ("23", "j8")
+bench.button (8)
+bench.wire ("a10", "B-10")
+
+bench.wire ("26", "j6", via=[(4.45, 1.0), (4.45, 1.15)])
+bench.resistor ("220 Ω", "g6", "e6")
+bench.led ("red", anode="b6", cathode="b7")
 bench.wire ("a7", "B-7")
 
-bench.wire ("26", "j10")
-bench.resistor ("220 Ω", "g10", "e10")
-bench.led ("red", anode="b10", cathode="b11")
-bench.wire ("a11", "B-11")
-
-bench.wire ("27", "j15")
-bench.resistor ("220 Ω", "g15", "e15")
-bench.led ("yellow", anode="b15", cathode="b16")
-bench.wire ("a16", "B-16")
-
-bench.wire ("GND", "B-5")
+bench.wire ("27", "j12", via=[(4.35, 1.05), (4.35, 1.25)])
+bench.resistor ("220 Ω", "g12", "e12")
+bench.led ("yellow", anode="b12", cathode="b13")
+bench.wire ("a13", "B-13")

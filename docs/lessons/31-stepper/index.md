@@ -76,6 +76,10 @@ module, just as the servo in Lesson 17 took its power from there.
 
 <!-- steps -->
 
+Set the power module's bottom yellow jumper to **5V**: it feeds the driver
+through the bottom rails. Nothing uses the top rails, so set the top jumper to
+**OFF**.
+
 Last, push the motor's white plug into the socket on the driver board. It only
 fits one way round. Plug the 9 V adapter into the power module's round socket,
 tape the paper arrow to the motor's shaft so it points straight up, and stand
@@ -140,10 +144,10 @@ way positive means for your motor.
 
 | What you see | Try this |
 |---|---|
-| Nothing moves, and the driver's LEDs stay dark | Check the power module is switched on, its LED is lit, and the red and black wires go from the bottom rails to the driver's + and − pins. |
+| Nothing moves, and the driver's LEDs stay dark | Check the power module is switched on, its LED is lit, its bottom jumper is on 5V, and the red and black wires go from the bottom rails to the driver's + and − pins. |
 | The LEDs flicker but the shaft doesn't turn | Push the motor's white plug fully into its socket. |
 | The motor hums or shakes but hardly turns | Two of the IN wires are swapped: IN1 to A8, IN2 to A9, IN3 to A10, IN4 to A11. |
-| Nothing happens when you press | The button must straddle the middle gap, with pin 22's wire in column 8 and the black wire from a10 to the − rail. |
+| Nothing happens when you press | The button must straddle the middle gap, with pin 22's wire in column 2 and the black wire from a4 to the − rail. |
 | The Mega resets when the motor starts | The driver is taking power from the Mega. Its + pin must go to the power module's rail, never the Mega's 5V. |
 | The little **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 

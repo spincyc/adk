@@ -68,7 +68,10 @@ it if they share the same GND.
 
 !!! warning "Unplug first"
     Unplug the USB cable and the power module's adapter before you wire.
-    Plug the power module in so that its **+** and **−** pins match the
+    Take out Lesson 16's screen and keypad with their wires, and the red
+    wire from the Mega's 5V to the top + rail: the power module feeds the
+    rails now. Keep the black GND wire into B-3. Plug the power module into
+    the far end of the breadboard so that its **+** and **−** pins match the
     red **+** and blue **−** stripes on *both* sides of the breadboard, and
     set both of its yellow jumpers to **5V**, never 3.3V. Never connect the
     servo's red wire to the Mega's 5V pin. Keep fingers and hair away from
@@ -131,9 +134,9 @@ back on and the servo snaps to wherever the knob now points.
 
 | What you see | Try this |
 |---|---|
-| The servo never moves | Is the power module's LED on? Check the adapter, the button and that both jumpers are on 5V. Then check the black wire from GND to the bottom − rail (B-6): without it the servo can't read the signal. |
+| The servo never moves | Is the power module's LED on? Check the adapter, the button and that both jumpers are on 5V. Then check the black wire from the Mega's GND to the bottom − rail (B-3): without it the servo can't read the signal. |
 | It moves, but not with the knob | Check the servo's orange wire goes to pin 44, and the knob's middle leg to A0. |
-| The Mega resets or the USB disconnects when the servo moves | The servo is getting power from the Mega. Its red wire must go to the + rail, fed by the power module. |
+| The Mega resets or the USB disconnects when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail (B+53), fed by the power module. |
 | The needle turns the opposite way to the knob | Nothing is wrong. To swap it, change `knob.read (0, 180)` to `knob.read (180, 0)`. |
 | The servo hums or twitches when it should be still | The knob's reading wobbles by one step, and the servo chases it. See the second challenge below. |
 | It buzzes at one end of its travel | It's pushing against its end stop. Use `adk::Servo needle {44, 600, 2300};` to narrow the pulses a little. |

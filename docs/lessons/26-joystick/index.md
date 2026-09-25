@@ -73,9 +73,9 @@ steps: about 12 dots a second.
 
 !!! warning "Unplug first"
     Unplug the USB cable before you wire. If you still have Lesson 25 built,
-    keep the matrix as it is. The joystick's own switch takes pin 22, so move
-    the button's wire from pin 22 to pin 23, and give the button its ground
-    from the top rail instead, as the steps show.
+    keep the matrix as it is. The joystick's own switch takes pin 22, so the
+    button moves to its place for pin 23, in columns 8 to 10, with its wire
+    from pin 23 and its ground from the bottom − rail, as the steps show.
 
 <!-- bench -->
 
@@ -146,7 +146,7 @@ little over a second.
 | The dot goes the wrong way | Hold the joystick with its pins pointing left. If up and down still swap with left and right, VRx and VRy are swapped: A3 goes to VRx. |
 | The dot doesn't move at all | Check +5V goes to 5V and GND to GND; without power both axes read 0. |
 | Clicking the stick does nothing | Press the stick straight down until it clicks, and check SW goes to pin 22. |
-| The button doesn't clear | Its wire belongs in pin 23 now, and its right-hand column needs the black jumper to the top − rail, which needs the GND wire. |
+| The button doesn't clear | Its wire belongs in pin 23 now, going to j8, and its right-hand column needs the black jumper from a10 to the bottom − rail. |
 | The matrix stays dark | Its wiring from Lesson 25 may have come loose: DIN 47, CLK 48, CS 49. |
 
 ??? note "How it works"

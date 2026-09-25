@@ -12,7 +12,7 @@ parts:
   - 4 push buttons
   - Passive buzzer (the one with a green board showing underneath)
   - 220 Ω resistor (red, red, black, black, brown)
-  - 11 jumper wires
+  - 10 jumper wires
 ideas:
   - Sound is a vibration, and pitch is how fast it vibrates
   - The passive buzzer, and why it needs a resistor
@@ -75,16 +75,16 @@ while your sketch carries on with other things.
     buzzer's 220 Ω resistor**, here or in any lesson: without it, the buzzer
     would draw far more current than pin 10 can safely give. Use the passive
     buzzer, with the green board showing underneath; either leg can go in
-    either hole, though if yours has a **+**, put that leg in f19.
+    either hole, though if yours has a **+**, put that leg in f34.
 
 <!-- bench -->
 
 <!-- steps -->
 
 ??? info "The signal's path through the buzzer"
-    Follow pin 10's wire into j19. The buzzer stands across the middle gap,
-    its legs in f19 and e19: they are 0.3 inch apart, just as far as the gap
-    is wide. Below it, the 220 Ω resistor runs from a19 down into the − rail.
+    Follow pin 10's wire into j34. The buzzer stands across the middle gap,
+    its legs in f34 and e34: they are 0.3 inch apart, just as far as the gap
+    is wide. Below it, the 220 Ω resistor runs from a34 down into the − rail.
 
     For an LED the resistor came first, between the pin and the LED. Here it
     comes after the buzzer, between it and GND, and that works just as well.
@@ -92,7 +92,9 @@ while your sketch carries on with other things.
     anywhere in the loop limits it.
 
     The four buttons are wired just as in [Lesson 2](../02-buttons/index.md):
-    signal in at the top left, GND out at the bottom right.
+    signal in at the top left, GND out at the bottom right. The first, on
+    pin 22, is Lesson 4's button, left where it was; the RGB LED and its
+    resistors come out to make room for the other three.
 
 When you are done, these are the connections your circuit makes:
 
@@ -155,10 +157,10 @@ takes over. That's the sketch carrying on while the tune plays.
 
 | What you see | Try this |
 |---|---|
-| Silence, from the tune and the keys | Follow pin 10's path: j19, the buzzer's legs in f19 and e19, and the resistor from a19 down into the − rail. |
+| Silence, from the tune and the keys | Follow pin 10's path: j34, the buzzer's legs in f34 and e34, and the resistor from a34 down into the − rail. |
 | Every key makes the same harsh buzz, or no sound at all | You may have the active buzzer. Unplug, and swap in the passive one, with the green board underneath. |
 | The tune plays, but a key does nothing | Push that button firmly into the board, all four legs in, and check its black wire from row a to the − rail. |
-| Two keys play the same note, or the wrong ones | The signal wires may be in the wrong holes: pins 22, 23, 24 and 25 go to j1, j5, j9 and j13. |
+| Two keys play the same note, or the wrong ones | The signal wires may be in the wrong holes: pins 22, 23, 24 and 25 go to j2, j8, j14 and j20. |
 | The sound is very quiet | Check it's the 220 Ω resistor (red, red, black, black, brown), not a 1 kΩ one. |
 
 ??? note "How it works"

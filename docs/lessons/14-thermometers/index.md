@@ -79,9 +79,12 @@ reading and is good to ±0.5 °C, the best of the three.
 
 !!! warning "Unplug first"
     Unplug the USB cable before you wire. Keep Lesson 13's circuit as it is:
-    everything new goes to the right of it. Each module's pins are marked
-    **S**, **+** and **−**. Check the marks on yours before you wire it, because
-    a module wired backwards can get hot; if one does, unplug at once.
+    the thermistor goes just past the screen, in column 40, built like
+    Lesson 8's light sensor, and its wire from A2 runs round below the
+    screen. The two modules sit above the board and take their power from
+    the top rails. Each module's pins are marked **S**, **+** and **−**.
+    Check the marks on yours before you wire it, because a module wired
+    backwards can get hot; if one does, unplug at once.
 
 <!-- bench -->
 
@@ -156,8 +159,8 @@ settles over the next minute; its temperature moves much less.
 | What you see | Try this |
 |---|---|
 | `DHT11 --` never changes to a number | Check the DHT11's S goes to pin 16, + to the + rail and − to the − rail. It needs a second after power-up, so wait two. |
-| `NTC` shows about −77 | A2 reads 0: the thermistor isn't connected. Check its legs are in b35 and b37, and the red wire from e35 to the + rail. |
-| `NTC` shows hundreds of degrees | A2 reads 1023: the thermistor is shorted, or the 10 kΩ resistor isn't connected to the − rail (e40). |
+| `NTC` shows about −77 | A2 reads 0: the thermistor isn't connected. Check its legs are in f40 and e40, and the red wire from j40 to the top + rail. |
+| `NTC` shows hundreds of degrees | A2 reads 1023: the thermistor is shorted, or the 10 kΩ resistor isn't connected to the − rail. Check it goes from c40 to c43, and the black wire from a43 to the bottom − rail. |
 | `NTC` is ten degrees or more away from the others | Check the resistor is 10 kΩ (brown, black, black, red, brown), not 1 kΩ. |
 | `DS --` with the 18B20 fitted | Check its S goes to pin 17, and its + and − aren't swapped. |
 | The screen is blank or shows blocks | Go back to Lesson 13's table: the LCD wiring or the contrast knob. |

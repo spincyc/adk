@@ -1,6 +1,8 @@
-# The joystick sits below the Mega, under the analog pins it uses, and the
-# matrix below the breadboard, as in Lesson 25. On the breadboard, from the end
-# nearest the Mega: pin 23, the clear button, and its ground from the top rail.
+# Lesson 25's matrix stays as it was. The button moves to its home for pin
+# 23, columns 8 to 10, since the joystick's switch takes 22. The joystick
+# lies below the Mega under A3 and A4, its +5V from the power header and its
+# GND from the inner GND pin at the end of the long header; the switch's
+# wire from 22 comes down beside the header, across the matrix's wires.
 bench = Bench ("A joystick on A3 and A4 with its switch on pin 22, the LED matrix, "
                "and a clear button on pin 23")
 
@@ -14,22 +16,22 @@ DRAWING = ["........",
            ".######.",
            "........"]
 
-bench.module ("joystick", at=(1.95, 4.0), facing="up")
-bench.wire ("A3", "joystick.VRx", color="yellow")
-bench.wire ("A4", "joystick.VRy", color="white")
-bench.wire ("22", "joystick.SW", color="grey")
-bench.wire ("5V", "joystick.+5V")
-bench.wire ("GND4", "joystick.GND")
+bench.wire ("23", "j8")
+bench.button (8)
+bench.wire ("a10", "B-10")
 
-bench.module ("matrix", at=(5.0, 3.9), facing="up",
+bench.module ("matrix", at=(4.22, 3.9), facing="up",
               pixels=[row[::-1] for row in reversed (DRAWING)])
-bench.wire ("47", "matrix.DIN", color="green")
-bench.wire ("48", "matrix.CLK", color="blue")
-bench.wire ("49", "matrix.CS", color="purple")
-bench.wire ("5V3", "matrix.VCC")
-bench.wire ("GND5", "matrix.GND")
+bench.wire ("48", "matrix.CLK")
+bench.wire ("49", "matrix.CS")
+bench.wire ("47", "matrix.DIN")
+bench.wire ("B-5", "matrix.GND")
+bench.wire ("5V.long", "matrix.VCC")
 
-bench.wire ("23", "j1")
-bench.button (1)
-bench.wire ("T-5", "j3")
-bench.wire ("GND", "T-3")
+bench.module ("joystick", at=(2.08, 3.9), facing="up")
+bench.wire ("A3", "joystick.VRx")
+bench.wire ("A4", "joystick.VRy")
+bench.wire ("5V.power", "joystick.+5V")
+bench.wire ("GND.long", "joystick.GND")
+bench.wire ("22", "joystick.SW")
+bench.closeup (1, 16)

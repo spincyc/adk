@@ -1,38 +1,39 @@
-# Laid out from the end of the breadboard nearest the Mega: 5 V and GND onto the rails, the
-# tilt switch on A14 first, then the four LEDs in the order their wires leave the header (blue on
-# 29 first, so no wire crosses another). The three modules sit below the board and take their
-# power from the bottom rails; a long wire at the far end brings 5 V down to the bottom + rail.
+# The four LEDs at their homes: red on 26 in column 6, yellow on 27 in 12,
+# green on 28 in 18 and blue on 29 in 24. The tilt switch follows them in
+# columns 32 and 33, its wire from A14 coming up from below, and the
+# beam-break and obstacle sensors lie below the board past it, each
+# powered from the bottom rails above it. The PIR sits below the Mega at
+# the place it keeps in Lesson 24, powered from the Mega's own 5V and GND.
 bench = Bench ("A PIR sensor on A12, an obstacle sensor on A13, a tilt switch on A14 and a "
                "beam-break sensor on A15, lighting the red, yellow, green and blue LEDs on 26 "
-               "to 29", columns=(1, 40))
+               "to 29", columns=(1, 63))
 
-bench.wire ("5V", "T+3")
-bench.wire ("GND", "B-3")
+for pin, color, column in (("26", "red", 6), ("27", "yellow", 12), ("28", "green", 18),
+                           ("29", "blue", 24)):
+    bench.wire (pin, f"j{column}")
+    bench.resistor ("220 Ω", f"g{column}", f"e{column}")
+    bench.led (color, anode=f"b{column}", cathode=f"b{column + 1}")
+    bench.wire (f"a{column + 1}", f"B-{column + 1}")
 
-bench.tilt_switch ("c4", "c5")
-bench.wire ("A14", "a4", color="brown")
-bench.wire ("a5", "B-5")
+bench.module ("pir", name="pir", at=(1.26, 3.8), facing="up")
+bench.wire ("A12", "pir.OUT", via=[(3.49, 3.05), (1.89, 3.05)])
+bench.wire ("5V.power", "pir.VCC", via=[(1.69, 2.9), (1.99, 2.9)])
+bench.wire ("GND.power", "pir.GND")
 
-for pin, color, wire, column in (("29", "blue", "blue", 10), ("28", "green", "green", 17),
-                                 ("27", "yellow", "yellow", 24), ("26", "red", "orange", 31)):
-    bench.wire (pin, f"e{column}", color=wire)
-    bench.led (color, anode=f"a{column}", cathode=f"a{column + 1}")
-    bench.resistor ("220 Ω", f"e{column + 1}", f"e{column + 5}")
-    bench.wire (f"a{column + 5}", f"B-{column + 5}")
+bench.tilt_switch ("c32", "c33")
+bench.wire ("A14", "a32")
+bench.wire ("a33", "B-33")
 
-bench.wire ("T+37", "B+37")
+bench.module ("sensor", name="beam", at=(8.58, 3.45), label="beam-break sensor",
+              pins=("−", "+", "S"), facing="up")
+bench.wire ("A15", "beam.S")
+bench.wire ("beam.+", "B+36")
+bench.wire ("beam.−", "B-37")
 
-bench.module ("sensor", name="beam", at=(5.9, 3.9), label="beam-break sensor",
-              pins=("-", "+", "S"))
-bench.wire ("A15", "beam.S", color="grey")
-bench.wire ("beam.+", "B+10")
-bench.wire ("beam.-", "B-11")
-bench.module ("sensor", name="obstacle", at=(7.0, 3.9), label="obstacle sensor",
-              pins=("GND", "+", "OUT", "EN"))
-bench.wire ("A13", "obstacle.OUT", color="white")
-bench.wire ("obstacle.+", "B+21")
-bench.wire ("obstacle.GND", "B-23")
-bench.module ("pir", name="pir", at=(8.4, 3.9))
-bench.wire ("A12", "pir.OUT", color="purple")
-bench.wire ("pir.GND", "B-37")
-bench.wire ("pir.VCC", "B+39")
+bench.module ("sensor", name="obstacle", at=(9.43, 3.45), label="obstacle sensor",
+              pins=("GND", "+", "OUT", "EN"), facing="up")
+bench.wire ("A13", "obstacle.OUT")
+bench.wire ("obstacle.+", "B+45")
+bench.wire ("obstacle.GND", "B-46")
+
+bench.closeup (1, 48)

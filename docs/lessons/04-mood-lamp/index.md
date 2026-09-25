@@ -87,6 +87,10 @@ time you choose.
     The common leg is long enough to reach straight down into the − rail,
     so it needs no wire of its own.
 
+    The RGB LED takes the red LED's place from Lesson 3, so that LED's
+    resistor, in g6 and e6, can stay where it is: it now feeds the red leg.
+    The button on pin 22 stays too, with its wires.
+
 When you are done, these are the connections your circuit makes:
 
 <!-- connections -->
@@ -145,12 +149,12 @@ brighter to your eye than the red one.
 
 | What you see | Try this |
 |---|---|
-| Nothing lights at all | Check the longest leg is in the − rail (B-9), and the black wire from the Mega's GND reaches B-5. |
-| One color never appears | Follow that color from its pin: pin 5 to j8, the resistor from g8 across the gap to e8, the red leg in a8. Green is pin 6 and column 10, blue pin 7 and column 11. |
+| Nothing lights at all | Check the longest leg is in the − rail (B-7), and the black wire from the Mega's GND reaches B-3. |
+| One color never appears | Follow that color from its pin: pin 5 to j6, the resistor from g6 across the gap to e6, the red leg in a6. Green is pin 6 and column 9, blue pin 7 and column 11. |
 | The colors are in the wrong places | Your LED's legs are in a different order. Swap the numbers in `adk::RgbLed lamp {5, 6, 7};` until orange looks orange, or swap the wires. |
 | Still nothing, and the longest leg is in the − rail | You may have a common-anode LED, whose longest leg is +. Move that leg to the + rail, add a red wire from the Mega's 5V pin to the + rail, and write `adk::RgbLed lamp {5, 6, 7, adk::ActiveLow};`. |
 | White looks a little pink or blue | That's normal: the three tiny LEDs are not exactly equally bright. |
-| The button does nothing | Push it firmly into the board, and check the black wire from a3 to the − rail. |
+| The button does nothing | Push it firmly into the board, and check the black wire from a4 to the − rail. |
 
 ??? note "How it works"
     Each PWM pin is driven by a **timer**, a counter inside the Mega that

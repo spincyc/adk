@@ -14,7 +14,7 @@ parts:
   - HC-SR04 ultrasonic sensor
   - L293D motor driver chip
   - DC motor with its fan blade
-  - 11 jumper wires
+  - 10 jumper wires
   - 4 female-to-male jumper wires
   - Sticky tape or putty, and a strip of card
 ideas:
@@ -183,10 +183,10 @@ at the wall.
 
 | What you see | Try this |
 |---|---|
-| The servo doesn't move | Is the power module on? Check the servo's plug: brown to the − rail, red to the + rail, and orange through a8 and c8 to pin 44. |
+| The servo doesn't move | Is the power module on? Check the servo's plug: brown to the − rail, red to the + rail, and orange straight to pin 44. |
 | It sweeps but never stops to blow | It never saw anything within 80 cm. Stand closer, or check the sensor still faces forwards on the horn. |
 | It turns to the wrong place | The sensor sees a wall, the desk or a wire that's nearer than you. Clear the space in front of it, or tilt the sensor up a little. |
-| The fan never spins | Check the power module's jumpers are on 5V and the motor's leads reach g13 and g16. Lesson 20's table has more. |
+| The fan never spins | Check the power module's jumpers are on 5V and the motor's leads reach j14 and j17. Lesson 20's table has more. |
 | The Mega resets or the servo jerks when the fan starts | The supply is struggling: make sure the servo's red wire goes to the module's + rail, not the Mega's 5V, and that the Mega's GND is joined to the module's. |
 | The turret twitches at the ends of its sweep | Some servos can't reach 30° or 150°. Try `leftmost = 40` and `rightmost = 140`. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |

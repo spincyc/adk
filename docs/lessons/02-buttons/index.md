@@ -94,16 +94,17 @@ state. This sketch uses one of each.
     the gap from it, so the button's left legs are always joined to each
     other, and so are its right legs. Pressing joins left to right.
 
-    So the signal comes in at the top left, in column 1, and GND leaves at
-    the bottom right, in column 3: the pin only reaches GND while you press.
+    So the signal comes in at the top left, in column 2, and GND leaves at
+    the bottom right, in column 4: the pin only reaches GND while you press.
     Using opposite corners like this works even if your button happens to
     join its legs the other way inside. Push each button down firmly until all
     four legs are in; they are stiff, and a leg that misses its hole makes a
     button that never works.
 
-    The LEDs are wired as in Lesson 1, but the resistor now stands across the
-    middle gap: the signal arrives at the top of the board, crosses the gap
-    through the resistor, and reaches the LED's long leg below.
+    The red LED stays just where it was in Lesson 1, in column 6, between
+    the two buttons. The yellow LED is wired the same way in column 12. Each
+    part has a place like this that it keeps from lesson to lesson, so the
+    next build can start from this one.
 
 When you are done, these are the connections your circuit makes:
 
@@ -182,9 +183,9 @@ long it lasts.
 | What you see | Try this |
 |---|---|
 | Pressing a button does nothing | Push the button firmly down until all four legs are in, across the gap in rows e and f. Check its black wire runs from row a to the − rail. |
-| The yellow LED is on all the time | The right button's black wire may be on the wrong side. It belongs in a7; in column 5 it would join pin 23 to GND all the time. |
-| Nothing works at all, buttons or LEDs | Check the black wire from the Mega's GND pin to the − rail (B-5). Every part here returns through it. |
-| An LED never lights | Turn it round: its long leg goes in b10 (red) or b15 (yellow). Check its resistor reaches from row g, across the gap, to row e. |
+| The yellow LED is on all the time | The right button's black wire may be on the wrong side. It belongs in a10; in column 8 it would join pin 23 to GND all the time. |
+| Nothing works at all, buttons or LEDs | Check the black wire from the Mega's GND pin to the − rail (B-3). Every part here returns through it. |
+| An LED never lights | Turn it round: its long leg goes in b6 (red) or b12 (yellow). Check its resistor reaches from row g, across the gap, to row e. |
 | The Serial Monitor shows strange characters | Set the Serial Monitor's speed menu to 9600 baud. |
 | The Serial Monitor stays empty | Tap the left button: the sketch only prints when you do. Check the port in **Tools → Port**. |
 | The Mega's **L** LED blinks long and short flashes | ADK found a pin mistake in the sketch. Open the Serial Monitor to read what it is. |
