@@ -72,33 +72,35 @@ adk: a Speaker stops PWM on pins 9 and 10
 
 | Part | Class | For |
 |---|---|---|
-| LED | `Led` | on, off, toggle, blink |
-| RGB LED | `RgbLed` | any colour, and fades between them |
-| Active buzzer | `Buzzer` | on, off, beep |
-| Passive buzzer | `Speaker` | notes and whole melodies |
-| Relay | `Relay` | switching a separate low-voltage circuit |
-| Push button | `Button` | pressed, released, held |
-| On/off sensor or switch | `Switch` | PIR, tilt, reed, obstacle, flame, sound, touch |
-| Potentiometer, light sensor | `AnalogInput` | 0 to 1023, or scaled to any range |
-| Thermistor | `Thermistor` | temperature from a resistor that changes with heat |
-| Keypad | `Keypad` | the key pressed, one at a time |
-| Rotary encoder | `RotaryEncoder` | detents turned, either way |
-| Joystick | `Joystick` | two axes, and directions for games |
-| 74HC595 | `ShiftRegister` | eight outputs from three pins |
-| One digit | `SevenSegment` | a digit or letter |
-| Four digits | `FourDigitDisplay` | numbers, words and times |
-| LCD1602 | `Lcd` | text, anything `Serial` can print |
-| 8×8 matrix | `LedMatrix` | pixels, pictures and scrolling text |
-| Servo | `Servo` | an angle, or a glide to one |
-| Stepper | `Stepper` | exact steps, at a set speed |
-| DC motor | `Motor` | speed and direction through an L293D |
-| Ultrasonic sensor | `Ultrasonic` | distance in centimetres |
-| DHT11 | `Dht11` | temperature and humidity |
-| IR receiver | `IrReceiver` | the remote's button codes |
-| Real-time clock | `Rtc` | the date and time |
-| Accelerometer | `Mpu6050` | tilt, acceleration and rotation |
-| Plain pins | `DigitalOutput`, `DigitalInput`, `PwmOutput` | anything else |
-| Helpers | `Every`, `Smoother`, `Debouncer`, `Color` | beats, smoothing and colours |
+| LED | [`Led`](outputs.md#led) | on, off, toggle, blink |
+| RGB LED | [`RgbLed`](outputs.md#rgbled) | any colour, and fades between them |
+| Active buzzer | [`Buzzer`](outputs.md#buzzer) | on, off, beep |
+| Passive buzzer | [`Speaker`](outputs.md#speaker) | notes and whole melodies |
+| Relay | [`Relay`](outputs.md#relay) | switching a separate low-voltage circuit |
+| Push button | [`Button`](inputs.md#button) | pressed, released, held |
+| On/off sensor or switch | [`Switch`](inputs.md#switch) | PIR, tilt, reed, obstacle, flame, sound, touch |
+| Potentiometer, light sensor | [`AnalogInput`](core.md#analoginput) | 0 to 1023, or scaled to any range |
+| Thermistor | [`Thermistor`](sensors.md#thermistor) | temperature from a resistor that changes with heat |
+| Keypad | [`Keypad`](inputs.md#keypad) | the key pressed, one at a time |
+| Rotary encoder | [`RotaryEncoder`](inputs.md#rotaryencoder) | detents turned, either way |
+| Joystick | [`Joystick`](inputs.md#joystick) | two axes, and directions for games |
+| 74HC595 | [`ShiftRegister`](displays.md#shiftregister) | eight outputs from three pins |
+| One digit | [`SevenSegment`](displays.md#sevensegment) | a digit or letter |
+| Four digits | [`FourDigitDisplay`](displays.md#fourdigitdisplay) | numbers, words and times |
+| LCD1602 | [`Lcd`](displays.md#lcd) | text, anything `Serial` can print |
+| 8×8 matrix | [`LedMatrix`](displays.md#ledmatrix) | pixels, pictures and scrolling text |
+| Servo | [`Servo`](motion.md#servo) | an angle, or a glide to one |
+| Stepper | [`Stepper`](motion.md#stepper) | exact steps, at a set speed |
+| DC motor | [`Motor`](motion.md#motor) | speed and direction through an L293D |
+| Ultrasonic sensor | [`Ultrasonic`](sensors.md#ultrasonic) | distance in centimetres |
+| DHT11 | [`Dht11`](sensors.md#dht11) | temperature and humidity |
+| IR receiver | [`IrReceiver`](sensors.md#irreceiver) | the remote's button codes |
+| 18B20 thermometer | [`Ds18b20`](sensors.md#ds18b20) | a precise temperature |
+| RFID reader | [`Rfid`](sensors.md#rfid) | the card held to it |
+| Real-time clock | [`Rtc`](sensors.md#rtc) | the date and time |
+| Accelerometer | [`Mpu6050`](sensors.md#mpu6050) | tilt, acceleration and rotation |
+| Plain pins | [`DigitalOutput`](core.md#digitaloutput), [`DigitalInput`](core.md#digitalinput), [`PwmOutput`](core.md#pwmoutput) | anything else |
+| Helpers | [`Every`](core.md#every), [`Smoother`](core.md#smoother), [`Debouncer`](core.md#debouncer), [`Color`](outputs.md#color) | beats, smoothing and colours |
 
 Each part's header in [`src/adk/`](https://github.com/spincyc/adk/tree/main/src/adk)
 starts with how to wire it. [How ADK works](../ARCHITECTURE.md) explains the

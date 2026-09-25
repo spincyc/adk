@@ -10,8 +10,9 @@ replaced when the site builds:
     <!-- connections -->   which Mega pin reaches which part
     <!-- sketch -->        the example sketch, exactly as it compiles
 
-Any page may also use <!-- arcs --> for the course as cards, and
-<!-- course --> for the course as a table. The course comes from course.yml,
+Any page may also use <!-- arcs --> for the course as cards,
+<!-- course --> for the course as a table, and <!-- api led.h Led --> for a
+part's reference, read from its header. The course comes from course.yml,
 which also builds the Course navigation from the lessons that exist.
 
 The build fails if the sketch and the circuit disagree about any pin, so a
@@ -27,6 +28,7 @@ from mkdocs.exceptions import PluginError
 
 sys.path.insert (0, os.path.dirname (__file__))
 
+from api import document  # noqa: E402
 from bench import Bench  # noqa: E402
 
 ROOT = os.path.dirname (os.path.dirname (os.path.dirname (os.path.abspath (__file__))))
@@ -73,6 +75,7 @@ def on_page_markdown (markdown, page, config, files):
     markdown = markdown.replace ("<!-- arcs -->", arcs ())
     markdown = markdown.replace ("<!-- course -->", course_table ())
     markdown = re.sub (r"<!-- drawing (\S+) (bench|closeup) -->", drawing, markdown)
+    markdown = re.sub (r"<!-- api (\S+)(?: (\w+))? -->", reference, markdown)
     if "lesson" not in meta:
         return markdown
 
@@ -106,6 +109,15 @@ def on_page_markdown (markdown, page, config, files):
     for marker, content in replacements.items ():
         markdown = markdown.replace (f"<!-- {marker} -->", content)
     return markdown
+
+
+# The reference for a part, read from its header.
+def reference (match):
+    header, name = match.groups ()
+    try:
+        return document (os.path.join (ROOT, "src", "adk", header), name)
+    except (OSError, ValueError) as error:
+        raise PluginError (str (error)) from error
 
 
 # A drawing from any lesson, for use on another page.

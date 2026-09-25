@@ -95,6 +95,12 @@ nav:
           - lessons/01-blink/index.md
   - Library:
       - library/index.md
+      - library/core.md
+      - library/outputs.md
+      - library/inputs.md
+      - library/displays.md
+      - library/motion.md
+      - library/sensors.md
   - Contribute:
       - contributing.md
       - ARCHITECTURE.md

@@ -18,11 +18,6 @@ namespace adk {
     //
     // Until setup () shifts in zeros, the outputs hold whatever the chip
     // powered up with.
-
-    // Shift eight bits into a 74HC595, bit 7 first so that it lands on Q7,
-    // then raise the latch to copy all eight to the outputs at once.
-    void shiftByte (Pin data, Pin clock, Pin latch, uint8_t bits);
-
     struct ShiftRegister : Object
     {
         ShiftRegister (Pin data, Pin clock, Pin latch);
@@ -41,4 +36,8 @@ namespace adk {
         Pin     latch_;
         uint8_t bits_;
     };
+
+    // Shift eight bits into a 74HC595, bit 7 first so that it lands on Q7,
+    // then raise the latch to copy all eight to the outputs at once.
+    void shiftByte (Pin data, Pin clock, Pin latch, uint8_t bits);
 }
