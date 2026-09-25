@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-namespace adk { namespace i2c {
+namespace adk::i2c {
 
     // The Mega's I2C bus, driven by the ATmega2560's TWI at 100 kHz. Every
     // I2C module shares the same two wires:
@@ -33,4 +33,4 @@ namespace adk { namespace i2c {
 
     // Set one register.
     bool writeRegister (uint8_t address, uint8_t reg, uint8_t value);
-}}
+}

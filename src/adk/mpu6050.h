@@ -5,7 +5,7 @@
 namespace adk {
 
     // Three readings, one along each axis printed on a module.
-    struct Vector
+    struct Axes
     {
         int16_t x;
         int16_t y;
@@ -37,8 +37,8 @@ namespace adk {
         explicit Mpu6050 (uint8_t address = 0x68);
 
         // From the latest reading.
-        Vector acceleration () const;   // milli-g, up to 2000 either way
-        Vector rotation     () const;   // degrees per second, up to 250
+        Axes   acceleration () const;   // milli-g, up to 2000 either way
+        Axes   rotation     () const;   // degrees per second, up to 250
         float  pitch        () const;   // degrees, -90 to 90
         float  roll         () const;   // degrees, -180 to 180
         float  temperature  () const;   // degrees Celsius, of the chip
@@ -58,8 +58,8 @@ namespace adk {
         bool measure   ();
 
         Millis  readAt_;
-        Vector  rawAcceleration_;
-        Vector  rawRotation_;
+        Axes    rawAcceleration_;
+        Axes    rawRotation_;
         int16_t rawTemperature_;
         uint8_t address_;
         bool    ok_;

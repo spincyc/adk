@@ -20,6 +20,9 @@ jobs:
         timeout-minutes: 15
         permissions:
             contents: read
+        env:
+            # GCC 14 is the runner's first to report C++23 as 202302L.
+            CXX: g++-14
         steps:
             - name: Check out repository
               uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -65,6 +68,9 @@ jobs:
               run: |
                   arduino-cli core update-index
                   arduino-cli core install arduino:avr@1.8.8
+
+            - name: Fetch the C++23 avr-gcc
+              run: make toolchain
 
             - name: Compile every example
               run: make -j4 examples

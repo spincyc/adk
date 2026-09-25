@@ -3,9 +3,16 @@
 // ADK: declare the parts of a circuit, call adk::setup () once, and
 // adk::update () at the top of every loop ().
 
+#if __cplusplus < 202302L
+#error "ADK needs C++23. Choose the ADK Mega 2560 board, as Getting started explains."
+#endif
+
 #include "adk/object.h"
 #include "adk/board.h"
 #include "adk/every.h"
+#include "adk/timer.h"
+#include "adk/containers.h"
+#include "adk/print.h"
 
 #include "adk/digital.h"
 #include "adk/analog.h"

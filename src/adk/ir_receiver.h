@@ -62,26 +62,26 @@ namespace adk {
     // other codes: print command () to find theirs.
     namespace remote {
 
-        constexpr uint8_t power      = 0x45;
-        constexpr uint8_t volumeUp   = 0x46;
-        constexpr uint8_t stop       = 0x47;   // FUNC/STOP
-        constexpr uint8_t back       = 0x44;
-        constexpr uint8_t play       = 0x40;   // play/pause
-        constexpr uint8_t forward    = 0x43;
-        constexpr uint8_t down       = 0x07;
-        constexpr uint8_t volumeDown = 0x15;
-        constexpr uint8_t up         = 0x09;
-        constexpr uint8_t eq         = 0x19;
-        constexpr uint8_t repeat     = 0x0D;   // ST/REPT
-        constexpr uint8_t digit0     = 0x16;
-        constexpr uint8_t digit1     = 0x0C;
-        constexpr uint8_t digit2     = 0x18;
-        constexpr uint8_t digit3     = 0x5E;
-        constexpr uint8_t digit4     = 0x08;
-        constexpr uint8_t digit5     = 0x1C;
-        constexpr uint8_t digit6     = 0x5A;
-        constexpr uint8_t digit7     = 0x42;
-        constexpr uint8_t digit8     = 0x52;
-        constexpr uint8_t digit9     = 0x4A;
+        inline constexpr uint8_t power      = 0x45;
+        inline constexpr uint8_t volumeUp   = 0x46;
+        inline constexpr uint8_t stop       = 0x47;   // FUNC/STOP
+        inline constexpr uint8_t back       = 0x44;
+        inline constexpr uint8_t play       = 0x40;   // play/pause
+        inline constexpr uint8_t forward    = 0x43;
+        inline constexpr uint8_t down       = 0x07;
+        inline constexpr uint8_t volumeDown = 0x15;
+        inline constexpr uint8_t up         = 0x09;
+        inline constexpr uint8_t eq         = 0x19;
+        inline constexpr uint8_t repeat     = 0x0D;   // ST/REPT
+        inline constexpr uint8_t digit0     = 0x16;
+        inline constexpr uint8_t digit1     = 0x0C;
+        inline constexpr uint8_t digit2     = 0x18;
+        inline constexpr uint8_t digit3     = 0x5E;
+        inline constexpr uint8_t digit4     = 0x08;
+        inline constexpr uint8_t digit5     = 0x1C;
+        inline constexpr uint8_t digit6     = 0x5A;
+        inline constexpr uint8_t digit7     = 0x42;
+        inline constexpr uint8_t digit8     = 0x52;
+        inline constexpr uint8_t digit9     = 0x4A;
     }
 }

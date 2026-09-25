@@ -7,12 +7,22 @@ CXX       ?= c++
 PYTHON    ?= python3
 CHROMIUM  ?= chromium
 
+# ADK is C++23. The Arduino core's own compiler (GCC 7) stops at C++17, so
+# examples build with a newer avr-gcc, fetched once into $(BUILD_DIR) and
+# checked against its published SHA-256.
+AVR_GCC         := avr-gcc-16.1.0-x64-linux
+AVR_GCC_URL     := https://github.com/ZakKemble/avr-gcc-build/releases/download/v16.1.0-1/$(AVR_GCC).tar.bz2
+AVR_GCC_SHA256  := 8621ecc6514df50202b58b23b0f8f72f0e535ec35ee40426194e9a15c57692f6
+TOOLCHAIN       := $(BUILD_DIR)/toolchain/$(AVR_GCC)
+AVR_PROPERTIES  := --build-property "compiler.path=$(abspath $(TOOLCHAIN))/bin/" \
+                   --build-property "compiler.cpp.extra_flags=-std=gnu++23"
+
 LIBRARY_SOURCES := $(wildcard src/adk/*.cpp)
 TEST_SOURCES    := $(wildcard tests/*.cpp tests/arduino/*.cpp)
 EXAMPLES        := $(patsubst examples/%/,%,$(sort $(dir $(wildcard examples/*/*.ino))))
 
 HOST_DIR   := $(BUILD_DIR)/host
-HOST_FLAGS := -std=c++11 -g -Os -Wall -Wextra -Wpedantic -Wconversion -Wshadow -Werror \
+HOST_FLAGS := -std=c++23 -g -Os -Wall -Wextra -Wpedantic -Wconversion -Wshadow -Werror \
               -fno-exceptions -fno-rtti -Isrc -Itests/arduino -Itests
 HOST_OBJECTS := $(patsubst %.cpp,$(HOST_DIR)/obj/%.o,$(LIBRARY_SOURCES) $(TEST_SOURCES))
 
@@ -34,7 +44,7 @@ export NO_MKDOCS_2_WARNING := 1
 
 .DEFAULT_GOAL := test
 .SECONDEXPANSION:
-.PHONY: all check test sanitize examples size site pdf serve style upload monitor clean help
+.PHONY: all check test sanitize toolchain examples size site pdf serve style upload monitor clean help
 
 all: check
 
@@ -67,14 +77,25 @@ $(SANITIZE_DIR)/obj/%.o: %.cpp
 
 -include $(HOST_OBJECTS:.o=.d) $(SANITIZE_OBJECTS:.o=.d)
 
+## toolchain     fetch the C++23 avr-gcc the examples build with
+toolchain: $(TOOLCHAIN)/bin/avr-g++
+
+$(TOOLCHAIN)/bin/avr-g++:
+	@mkdir -p $(BUILD_DIR)/toolchain
+	curl --fail --location --silent --show-error --output $(TOOLCHAIN).tar.bz2 $(AVR_GCC_URL)
+	echo "$(AVR_GCC_SHA256)  $(TOOLCHAIN).tar.bz2" | sha256sum --check --quiet
+	tar -xjf $(TOOLCHAIN).tar.bz2 -C $(BUILD_DIR)/toolchain
+	@rm $(TOOLCHAIN).tar.bz2
+	@touch $@
+
 ## examples      compile every example for the Mega 2560
 examples: $(ARDUINO_LOGS)
 
-$(ARDUINO_DIR)/%.log: examples/$$*/$$*.ino $(LIBRARY_FILES)
+$(ARDUINO_DIR)/%.log: examples/$$*/$$*.ino $(LIBRARY_FILES) | $(TOOLCHAIN)/bin/avr-g++
 	@mkdir -p $(ARDUINO_DIR)/$* $(ARDUINO_CACHE)
 	@echo "  AVR  examples/$*"
 	@ARDUINO_BUILD_CACHE_PATH=$(abspath $(ARDUINO_CACHE)) \
-	    arduino-cli compile --fqbn $(FQBN) --library . --warnings all \
+	    arduino-cli compile --fqbn $(FQBN) --library . --warnings all $(AVR_PROPERTIES) \
 	    --build-path $(ARDUINO_DIR)/$* examples/$* > $@.tmp 2>&1 \
 	    || (cat $@.tmp; rm -f $@.tmp; exit 1)
 	@if grep -A3 -E '(src/adk|examples)/.*warning' $@.tmp; then rm -f $@.tmp; exit 1; fi

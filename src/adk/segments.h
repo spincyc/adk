@@ -15,14 +15,14 @@ namespace adk {
     //        d
     namespace segment {
 
-        constexpr uint8_t a   = 0x01;
-        constexpr uint8_t b   = 0x02;
-        constexpr uint8_t c   = 0x04;
-        constexpr uint8_t d   = 0x08;
-        constexpr uint8_t e   = 0x10;
-        constexpr uint8_t f   = 0x20;
-        constexpr uint8_t g   = 0x40;
-        constexpr uint8_t dot = 0x80;
+        inline constexpr uint8_t a   = 0x01;
+        inline constexpr uint8_t b   = 0x02;
+        inline constexpr uint8_t c   = 0x04;
+        inline constexpr uint8_t d   = 0x08;
+        inline constexpr uint8_t e   = 0x10;
+        inline constexpr uint8_t f   = 0x20;
+        inline constexpr uint8_t g   = 0x40;
+        inline constexpr uint8_t dot = 0x80;
     }
 
     // The segments that draw a character: 0-9; A-F in either case, with b

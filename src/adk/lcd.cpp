@@ -83,6 +83,12 @@ namespace adk {
         moveTo (static_cast<uint8_t> ((row == 0 ? 0 : SecondRow) + column));
     }
 
+    Lcd& Lcd::at (uint8_t column, uint8_t row)
+    {
+        setCursor (column, row);
+        return *this;
+    }
+
     void Lcd::createChar (uint8_t slot, const uint8_t rows [8])
     {
         send (static_cast<uint8_t> (SetCgram | ((slot & 0x07) << 3)), LOW);

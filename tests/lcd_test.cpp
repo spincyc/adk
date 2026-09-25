@@ -285,3 +285,12 @@ TEST (lcdSharingAPinHaltsBeforeStarting)
     CHECK (check::halted.pin == 10);
     CHECK (latches.empty ());
 }
+
+TEST (lcdAtMovesTheCursorAndHandsBackTheScreen)
+{
+    adk::Lcd lcd {7, 8, 9, 10, 11, 12};
+
+    adk::setup ();
+    adk::Lcd& same = lcd.at (3, 1);
+    CHECK (&same == &lcd);
+}

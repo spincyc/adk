@@ -58,7 +58,7 @@ namespace fake_i2c {
     }
 }
 
-namespace adk { namespace i2c {
+namespace adk::i2c {
 
     namespace {
 
@@ -148,4 +148,4 @@ namespace adk { namespace i2c {
 
         return write (address, bytes, sizeof bytes);
     }
-}}
+}

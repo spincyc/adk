@@ -64,7 +64,7 @@ namespace fake {
     }
 }
 
-namespace adk { namespace spi {
+namespace adk::spi {
 
     bool begin ()
     {
@@ -107,4 +107,4 @@ namespace adk { namespace spi {
 
         return target->exchange (byte);
     }
-}}
+}

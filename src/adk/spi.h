@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-namespace adk { namespace spi {
+namespace adk::spi {
 
     // The Mega's SPI unit as the bus master: mode 0, most significant bit
     // first, 4 MHz. Every chip on the bus shares three pins, and each has a
@@ -26,4 +26,4 @@ namespace adk { namespace spi {
     // Send a byte and return the one that came back at the same time. The
     // chip's select pin must already be low. Takes about 2 us.
     uint8_t transfer (uint8_t byte);
-}}
+}

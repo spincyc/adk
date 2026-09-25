@@ -36,6 +36,10 @@ namespace adk {
         void home      ();
         void setCursor (uint8_t column, uint8_t row);
 
+        // Move the cursor and hand the screen back, so printing can follow:
+        // adk::print (lcd.at (0, 1), "Temp ", celsius, " C");
+        Lcd& at (uint8_t column, uint8_t row);
+
         // Draw character 0-7 from eight rows of five dots, bit 4 the leftmost
         // dot. Show it with write (slot); slot 0 needs write (uint8_t (0)),
         // because a bare 0 could also be a null text pointer.

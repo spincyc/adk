@@ -21,18 +21,19 @@ namespace adk {
     // A color around the color wheel: 0 is red, 85 green, 170 blue.
     Color wheel (uint8_t position);
 
-    namespace color {
+}
 
-        constexpr Color off     = {0,   0,   0};
-        constexpr Color white   = {255, 255, 255};
-        constexpr Color red     = {255, 0,   0};
-        constexpr Color orange  = {255, 64,  0};
-        constexpr Color yellow  = {255, 160, 0};
-        constexpr Color green   = {0,   255, 0};
-        constexpr Color cyan    = {0,   255, 255};
-        constexpr Color blue    = {0,   0,   255};
-        constexpr Color purple  = {128, 0,   255};
-        constexpr Color magenta = {255, 0,   255};
-        constexpr Color pink    = {255, 64,  128};
-    }
+namespace adk::color {
+
+    inline constexpr Color off     {0,   0,   0};
+    inline constexpr Color white   {255, 255, 255};
+    inline constexpr Color red     {255, 0,   0};
+    inline constexpr Color orange  {255, 64,  0};
+    inline constexpr Color yellow  {255, 160, 0};
+    inline constexpr Color green   {0,   255, 0};
+    inline constexpr Color cyan    {0,   255, 255};
+    inline constexpr Color blue    {0,   0,   255};
+    inline constexpr Color purple  {128, 0,   255};
+    inline constexpr Color magenta {255, 0,   255};
+    inline constexpr Color pink    {255, 64,  128};
 }

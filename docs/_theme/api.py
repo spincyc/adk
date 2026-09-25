@@ -38,7 +38,7 @@ def document_struct (lines, name, path):
         if depth >= 1 and not (depth == 1 and stripped == "{"):
             body.append (line)
 
-    calls = declarations (body)
+    calls = without_const_twins (declarations (body))
     out = [f"### {name}", "", paragraphs (description), ""]
     if calls:
         out += ["| Call | Does |", "|---|---|"]
@@ -68,6 +68,8 @@ def document_functions (lines, path):
 def comment_above (lines, index):
     comment = []
     i = index - 1
+    if i >= 0 and lines[i].strip ().startswith ("template"):
+        i -= 1
     while i >= 0 and lines[i].strip ().startswith ("//"):
         comment.insert (0, lines[i].strip ()[2:])
         i -= 1
@@ -118,14 +120,38 @@ def clean (signature):
     signature = re.sub (r"\s+", " ", signature)
     signature = re.sub (r"\s*;\s*$", "", signature)
     signature = re.sub (r"\s*\{\s*$", "", signature)
+    if not signature.startswith ("enum"):
+        signature = without_body (signature)
     signature = re.sub (r"\s+override$", "", signature)
-    signature = signature.replace ("template <uint8_t Length> ", "")
+    signature = re.sub (r"^template <[^>]*> ", "", signature)
+    signature = re.sub (r"^constexpr ", "", signature)
     return signature.replace ("|", "\\|").strip ()
 
 
+# An accessor defined in the header shows only its declaration; so does a
+# constructor, without its initializer list.
+def without_body (signature):
+    if signature.endswith ("}"):
+        depth = 0
+        for at in range (len (signature) - 1, -1, -1):
+            depth += {"}": 1, "{": -1}.get (signature[at], 0)
+            if depth == 0:
+                signature = signature[:at].rstrip ()
+                break
+    return re.sub (r"\)\s*:\s.*$", ")", signature)
+
+
 def keep (signature):
-    return not (signature.startswith ("~") or "= delete" in signature or
+    return not (signature.startswith (("~", "struct ")) or "= delete" in signature or
                 signature.startswith (("{", "}")) or not signature)
+
+
+# A container's const overloads mirror its others: show each call once.
+def without_const_twins (calls):
+    signatures = {signature for signature, _ in calls}
+    return [(signature, comment) for signature, comment in calls
+            if not (signature.endswith (" const") and
+                    re.sub (r"^const |(?<=\)) const$", "", signature) in signatures)]
 
 
 def paragraphs (comment):

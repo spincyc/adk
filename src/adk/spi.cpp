@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 
-namespace adk { namespace spi {
+namespace adk::spi {
 
     bool begin ()
     {
@@ -40,6 +40,6 @@ namespace adk { namespace spi {
 
         return SPDR;
     }
-}}
+}
 
 #endif

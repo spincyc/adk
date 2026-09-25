@@ -23,9 +23,41 @@ and a few helpers.
 
 <!-- api every.h Every -->
 
+<!-- api timer.h Timer -->
+
+<!-- api timer.h Stopwatch -->
+
 <!-- api analog.h Smoother -->
 
 <!-- api debouncer.h Debouncer -->
+
+## Containers and printing
+
+The AVR has no C++ standard library, so ADK brings the few containers a sketch
+wants, with the standard names for the same operations. None of them uses the
+heap: each reserves all its room when it is declared, so the compiler's RAM
+report counts it.
+
+<!-- api containers.h Array -->
+
+<!-- api containers.h Vector -->
+
+<!-- api containers.h Deque -->
+
+<!-- api containers.h Span -->
+
+### Printing
+
+`Serial.print ()` prints one thing at a time. These print a whole line in one
+call, to `Serial` or an `Lcd`:
+
+```cpp
+adk::println (Serial, "Red wins in ", time, " ms!");
+lcd.at (0, 1);
+adk::print (lcd, celsius, " C");
+```
+
+<!-- api print.h -->
 
 ## Claiming pins
 

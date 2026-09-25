@@ -14,9 +14,9 @@ namespace {
         return fabsf (value - expected) < 0.01f;
     }
 
-    bool same (adk::Vector vector, int16_t x, int16_t y, int16_t z)
+    bool same (adk::Axes axes, int16_t x, int16_t y, int16_t z)
     {
-        return vector.x == x && vector.y == y && vector.z == z;
+        return axes.x == x && axes.y == y && axes.z == z;
     }
 
     // Raw counts as the chip stores them, big-endian from 0x3B.

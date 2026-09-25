@@ -11,10 +11,10 @@ repository. Read these before changing anything:
 
 - **Everything built goes in `build/`**, which git ignores. No tool, test or
   script may write anywhere else in the tree.
-- **The library stays small and honest.** C++11, no heap, exceptions, RTTI or
-  Arduino libraries. One `adk::Object` per part; pins are claimed in
-  `setup ()`; time enters only through `update (now)`; events last exactly one
-  update. Every part has host tests, and `make examples` must stay free of
+- **The library stays small and honest.** C++23, with no heap, exceptions,
+  RTTI, coroutines or Arduino libraries. One `adk::Object` per part; pins are
+  claimed in `setup ()`; time enters only through `update (now)`; events last
+  exactly one update. Every part has host tests, and `make examples` must stay free of
   warnings.
 - **A lesson's wiring is described once**, in its `circuit.py`. The drawings,
   build steps and connection list come from it, and the site refuses to build

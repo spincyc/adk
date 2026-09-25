@@ -56,14 +56,14 @@ namespace adk {
         }
     }
 
-    Vector Mpu6050::acceleration () const
+    Axes Mpu6050::acceleration () const
     {
         return {milliG (rawAcceleration_.x),
                 milliG (rawAcceleration_.y),
                 milliG (rawAcceleration_.z)};
     }
 
-    Vector Mpu6050::rotation () const
+    Axes Mpu6050::rotation () const
     {
         return {degreesPerSecond (rawRotation_.x),
                 degreesPerSecond (rawRotation_.y),
