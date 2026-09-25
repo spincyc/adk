@@ -97,7 +97,7 @@ power wires stay. Each LED of the bar is built the way you built Lesson 7's,
 in its own home, columns 6, 12, 18, 24 and 30: its pin's wire comes into
 row j, its resistor crosses the middle gap to the long leg, and the short
 leg's column has a short black wire down to the − rail. The red LED takes
-about 14 mA and the white one about 9 mA; all five together are well within
+about 14 mA and the white one about 8 mA; all five together are well within
 what the Mega can supply.
 
 The light sensor's divider stands in column 40, in the order the current

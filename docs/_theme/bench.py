@@ -292,8 +292,10 @@ class Bench:
             raise ValueError ("a 12 mm buzzer's legs are 0.3 inch apart: three columns apart in "
                               "one row, or across the middle gap in rows e and f")
         self._add (Buzzer (positive, negative, kind))
-        self._step (f"The {kind} buzzer, its + mark and longer leg in {positive}, the other "
-                           f"leg in {negative}.")
+        # A new active buzzer's + leg is also the longer; follow the mark on either.
+        mark = "+ mark and longer leg" if kind == "active" else "+ mark"
+        self._step (f"The {kind} buzzer, its {mark} in {positive}, the other leg in "
+                    f"{negative}.")
         return self
 
     def potentiometer (self, left, wiper, right, value="10 kΩ"):
@@ -648,6 +650,13 @@ class Bench:
         strip = self.strip_of (point)
         if not any (self.strip_of (h) == strip for h in self.used):
             raise ValueError (f"a probe at {point} touches nothing in the build")
+        # A wire's end fills its hole, so the probe goes in a free one beside it.
+        if self.used.get (point) == "a wire":
+            free = [h for h in self._holes () if self.strip_of (h) == strip and h not in self.used]
+            if not free:
+                raise ValueError (f"a probe at {point} needs a free hole in its strip")
+            near = self.hole_xy (point)
+            point = min (free, key=lambda h: distance (self.hole_xy (h), near))
         what = self.used.get (point)
         if what and what != "a wire":
             return point, f"{self.describe (('hole', point))}, on {what}'s leg"

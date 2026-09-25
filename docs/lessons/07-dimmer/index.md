@@ -89,8 +89,8 @@ The white LED is built like Lesson 1's red one, in column 38, where the LED
 that dims always goes: pin 3's wire comes into j38, the resistor stands
 across the middle gap from g38 to e38, the LED's long leg shares column 38
 in b38, and its short leg in b39 has a short black wire down to the − rail.
-A white LED keeps about 3 V for itself, so through 220 Ω it takes about
-9 mA at full brightness. Pin 3 is one of the Mega's pins that can do PWM.
+A white LED keeps about 3.2 V for itself, like the blue one, so through
+220 Ω it takes about 8 mA at full brightness. Pin 3 is one of the Mega's pins that can do PWM.
 
 The knob stands over the middle gap with its legs in e45, e46 and e47. A
 black wire takes its left leg from a45 to the − rail, A0's wire goes into
