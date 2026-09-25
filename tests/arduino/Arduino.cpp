@@ -1,0 +1,383 @@
+#include "Arduino.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+
+volatile uint8_t  TCCR5A = 0;
+volatile uint8_t  TCCR5B = 0;
+volatile uint16_t ICR5   = 0;
+volatile uint16_t OCR5A  = 0;
+volatile uint16_t OCR5B  = 0;
+volatile uint16_t OCR5C  = 0;
+volatile uint16_t TCNT5  = 0;
+
+namespace arduino {
+
+    std::function<int (uint8_t pin)>                                         onDigitalRead;
+    std::function<void (uint8_t pin, uint8_t value)>                         onDigitalWrite;
+    std::function<unsigned long (uint8_t pin, uint8_t state, unsigned long)> onPulseIn;
+    std::string                                                              shifted;
+}
+
+namespace {
+
+    struct Handler
+    {
+        void (*function) ();
+        int  mode;
+    };
+
+    arduino::PinState pins     [NUM_DIGITAL_PINS];
+    Handler           handlers [6];
+    unsigned long     nowUs    = 0;
+    unsigned long     callCost = 0;
+    unsigned long     seed     = 1;
+
+    void charge ()
+    {
+        nowUs += callCost;
+    }
+}
+
+namespace arduino {
+
+    void reset ()
+    {
+        memset (pins,     0, sizeof pins);
+        memset (handlers, 0, sizeof handlers);
+
+        // Unconnected inputs read high, as if pulled up.
+        for (auto& state : pins)
+        {
+            state.input = HIGH;
+        }
+
+        nowUs    = 0;
+        callCost = 0;
+        seed     = 1;
+
+        onDigitalRead  = nullptr;
+        onDigitalWrite = nullptr;
+        onPulseIn      = nullptr;
+        shifted.clear ();
+
+        TCCR5A = TCCR5B = 0;
+        ICR5 = OCR5A = OCR5B = OCR5C = TCNT5 = 0;
+    }
+
+    PinState& pin (uint8_t pin)
+    {
+        return pins[pin];
+    }
+
+    void drive (uint8_t pin, uint8_t level)
+    {
+        uint8_t previous = pins[pin].input;
+        pins[pin].input  = level;
+
+        int interrupt = digitalPinToInterrupt (pin);
+
+        if (interrupt == NOT_AN_INTERRUPT || !handlers[interrupt].function || previous == level)
+        {
+            return;
+        }
+
+        int mode = handlers[interrupt].mode;
+
+        bool rose = level == HIGH;
+
+        if (mode == CHANGE || (mode == RISING && rose) || (mode == FALLING && !rose))
+        {
+            handlers[interrupt].function ();
+        }
+    }
+
+    void advance (unsigned long ms)
+    {
+        nowUs += ms * 1000;
+    }
+
+    void advanceMicros (unsigned long us)
+    {
+        nowUs += us;
+    }
+
+    unsigned long now ()
+    {
+        return nowUs;
+    }
+
+    void setCallCost (unsigned long us)
+    {
+        callCost = us;
+    }
+
+    size_t Log::write (uint8_t byte)
+    {
+        text += static_cast<char> (byte);
+        return 1;
+    }
+}
+
+uint8_t digitalPinToTimer (uint8_t pin)
+{
+    static const uint8_t timers [NUM_DIGITAL_PINS] = {
+        NOT_ON_TIMER, NOT_ON_TIMER, TIMER3B, TIMER3C, TIMER0B, TIMER3A, TIMER4A,
+        TIMER4B,      TIMER4C,      TIMER2B, TIMER2A, TIMER1A, TIMER1B, TIMER0A,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        TIMER5C, TIMER5B, TIMER5A};
+
+    return pin < NUM_DIGITAL_PINS ? timers[pin] : NOT_ON_TIMER;
+}
+
+void pinMode (uint8_t pin, uint8_t mode)
+{
+    pins[pin].mode = mode;
+}
+
+void digitalWrite (uint8_t pin, uint8_t value)
+{
+    charge ();
+    pins[pin].output = value;
+
+    if (arduino::onDigitalWrite)
+    {
+        arduino::onDigitalWrite (pin, value);
+    }
+}
+
+int digitalRead (uint8_t pin)
+{
+    charge ();
+
+    if (arduino::onDigitalRead)
+    {
+        return arduino::onDigitalRead (pin);
+    }
+
+    return pins[pin].input;
+}
+
+int analogRead (uint8_t pin)
+{
+    return pins[pin < NUM_ANALOG_INPUTS ? pin + A0 : pin].analog;
+}
+
+void analogWrite (uint8_t pin, int value)
+{
+    pins[pin].pwm = value;
+}
+
+void tone (uint8_t pin, unsigned int frequency, unsigned long)
+{
+    pins[pin].tone = frequency;
+}
+
+void noTone (uint8_t pin)
+{
+    pins[pin].tone = 0;
+}
+
+unsigned long pulseIn (uint8_t pin, uint8_t state, unsigned long timeout)
+{
+    return arduino::onPulseIn ? arduino::onPulseIn (pin, state, timeout) : 0;
+}
+
+void shiftOut (uint8_t, uint8_t, uint8_t, uint8_t value)
+{
+    arduino::shifted += static_cast<char> (value);
+}
+
+void attachInterrupt (uint8_t interrupt, void (*handler) (), int mode)
+{
+    handlers[interrupt] = {handler, mode};
+}
+
+void detachInterrupt (uint8_t interrupt)
+{
+    handlers[interrupt] = {nullptr, 0};
+}
+
+void interrupts ()
+{
+}
+
+void noInterrupts ()
+{
+}
+
+unsigned long millis ()
+{
+    return nowUs / 1000;
+}
+
+unsigned long micros ()
+{
+    charge ();
+    return nowUs;
+}
+
+void delay (unsigned long ms)
+{
+    nowUs += ms * 1000;
+}
+
+void delayMicroseconds (uint16_t us)
+{
+    nowUs += us;
+}
+
+long random (long high)
+{
+    return random (0, high);
+}
+
+long random (long low, long high)
+{
+    // A small linear congruential generator, so tests repeat exactly.
+    seed = seed * 1103515245UL + 12345UL;
+    if (high <= low)
+    {
+        return low;
+    }
+
+    unsigned long span = static_cast<unsigned long> (high - low);
+    return low + static_cast<long> ((seed >> 16) % span);
+}
+
+void randomSeed (unsigned long value)
+{
+    seed = value;
+}
+
+size_t Print::write (const uint8_t* buffer, size_t size)
+{
+    size_t written = 0;
+
+    while (size--)
+    {
+        written += write (*buffer++);
+    }
+
+    return written;
+}
+
+size_t Print::write (const char* text)
+{
+    return write (reinterpret_cast<const uint8_t*> (text), strlen (text));
+}
+
+size_t Print::print (const __FlashStringHelper* text)
+{
+    return write (reinterpret_cast<const char*> (text));
+}
+
+size_t Print::print (const char* text)
+{
+    return write (text);
+}
+
+size_t Print::print (char character)
+{
+    return write (static_cast<uint8_t> (character));
+}
+
+size_t Print::print (unsigned char value, int base)
+{
+    return print (static_cast<unsigned long> (value), base);
+}
+
+size_t Print::print (int value, int base)
+{
+    return print (static_cast<long> (value), base);
+}
+
+size_t Print::print (unsigned int value, int base)
+{
+    return print (static_cast<unsigned long> (value), base);
+}
+
+size_t Print::print (long value, int base)
+{
+    if (base == DEC && value < 0)
+    {
+        return print ('-') + print (static_cast<unsigned long> (-value), base);
+    }
+
+    return print (static_cast<unsigned long> (value), base);
+}
+
+size_t Print::print (unsigned long value, int base)
+{
+    char  digits [33];
+    char* end = digits + sizeof digits - 1;
+    *end      = '\0';
+
+    do
+    {
+        unsigned long digit = value % static_cast<unsigned long> (base);
+        *--end = static_cast<char> (digit < 10 ? '0' + digit : 'A' + digit - 10);
+        value /= static_cast<unsigned long> (base);
+    }
+    while (value);
+
+    return write (end);
+}
+
+size_t Print::print (double value, int digits)
+{
+    char text [48];
+    snprintf (text, sizeof text, "%.*f", digits, value);
+    return write (text);
+}
+
+size_t Print::println ()
+{
+    return write ("\r\n");
+}
+
+size_t Print::println (const __FlashStringHelper* text)
+{
+    return print (text) + println ();
+}
+
+size_t Print::println (const char* text)
+{
+    return print (text) + println ();
+}
+
+size_t Print::println (char character)
+{
+    return print (character) + println ();
+}
+
+size_t Print::println (unsigned char value, int base)
+{
+    return print (value, base) + println ();
+}
+
+size_t Print::println (int value, int base)
+{
+    return print (value, base) + println ();
+}
+
+size_t Print::println (unsigned int value, int base)
+{
+    return print (value, base) + println ();
+}
+
+size_t Print::println (long value, int base)
+{
+    return print (value, base) + println ();
+}
+
+size_t Print::println (unsigned long value, int base)
+{
+    return print (value, base) + println ();
+}
+
+size_t Print::println (double value, int digits)
+{
+    return print (value, digits) + println ();
+}
