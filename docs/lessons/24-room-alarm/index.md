@@ -126,16 +126,16 @@ Read it from the top:
 - Seven parts: the screen, the PIR sensor (active high, as in Lesson 23),
   the receiver, the siren, the status light, and two beats: `second` for the
   countdowns and `wail` for the siren.
-- `secretCode` and `delaySeconds` are yours to change. `digitButtons` is an
-  `adk::Array` of the remote's 0 to 9 buttons in order, so a button's place
-  in it is its digit.
+- `secretCode` and `delaySeconds` are yours to change.
 - `enum class State` names the five states, as in Lesson 3, and `state`
   holds the one the alarm is in now.
 - `loop ()` passes each fresh button press to `pressed ()`. Then it checks
   the one thing the current state is waiting for, and moves on to the next
   state with its light and message: it is the table above, row by row.
-- `pressed ()` arms a disarmed alarm on POWER, and turns number buttons into
-  digits for `keyIn ()`, which adds a star and checks the fourth digit.
+- `pressed ()` arms a disarmed alarm on POWER.
+  `adk::remote::digitOf (button)` turns a number button into its digit, 0
+  to 9, or -1 for any other button; each digit goes to `keyIn ()`, which
+  adds a star and checks the fourth digit.
   `screen.at (5 + keys, 1)` moves to the next place on the bottom row and
   hands back the screen, so `.print ('*')` can follow on the same line.
 - `countedDown ()` does one second's work on each tick of `second`: counts

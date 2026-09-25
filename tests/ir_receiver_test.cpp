@@ -345,3 +345,12 @@ TEST (irReceiversOnTwoInterruptsDecodeApart)
     CHECK (right.command () == adk::remote::forward);
     CHECK (left.command () == adk::remote::back);
 }
+
+TEST (remoteDigitButtonsKnowTheirNumbers)
+{
+    static_assert (adk::remote::digitOf (adk::remote::digit0) == 0);
+    static_assert (adk::remote::digitOf (adk::remote::digit7) == 7);
+
+    CHECK (adk::remote::digitOf (adk::remote::digit9) == 9);
+    CHECK (adk::remote::digitOf (adk::remote::power) == -1);
+}

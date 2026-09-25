@@ -15,13 +15,6 @@ constexpr int        secretCode   = 1234;   // any four digits
 constexpr int        delaySeconds = 10;     // to leave, or to key in the code
 constexpr adk::Color dimRed       {40, 0, 0};
 
-// The remote's number buttons in order, so each one's place is its digit.
-constexpr adk::Array digitButtons {adk::remote::digit0, adk::remote::digit1,
-                                   adk::remote::digit2, adk::remote::digit3,
-                                   adk::remote::digit4, adk::remote::digit5,
-                                   adk::remote::digit6, adk::remote::digit7,
-                                   adk::remote::digit8, adk::remote::digit9};
-
 enum class State { Disarmed, Leaving, Armed, Entering, Sounding };
 
 State state     = State::Disarmed;
@@ -74,12 +67,11 @@ void pressed (uint8_t button)
         enter (State::Leaving, adk::color::yellow, "Leave now...");
     }
 
-    for (int digit = 0; digit < 10; ++digit)
+    int digit = adk::remote::digitOf (button);
+
+    if (state != State::Disarmed && digit >= 0)
     {
-        if (state != State::Disarmed && button == digitButtons[digit])
-        {
-            keyIn (digit);
-        }
+        keyIn (digit);
     }
 }
 
@@ -138,6 +130,7 @@ void enter (State next, adk::Color light, const char* message)
         screen.at (14, 0).print (countdown);
     }
 
-    screen.setCursor (0, 1);
-    screen.print (state == State::Disarmed ? "Power arms it" : "Code:");
+    auto hint = state == State::Disarmed ? "Power arms it" : "Code:";
+
+    screen.at (0, 1).print (hint);
 }

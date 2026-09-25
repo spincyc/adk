@@ -83,5 +83,23 @@ namespace adk {
         inline constexpr uint8_t digit7     = 0x42;
         inline constexpr uint8_t digit8     = 0x52;
         inline constexpr uint8_t digit9     = 0x4A;
+
+        // The number a digit button stands for, 0 to 9, or -1 for any other
+        // button.
+        constexpr int digitOf (uint8_t command)
+        {
+            constexpr uint8_t digits [] = {digit0, digit1, digit2, digit3, digit4,
+                                           digit5, digit6, digit7, digit8, digit9};
+
+            for (int digit = 0; digit < 10; ++digit)
+            {
+                if (digits[digit] == command)
+                {
+                    return digit;
+                }
+            }
+
+            return -1;
+        }
     }
 }
