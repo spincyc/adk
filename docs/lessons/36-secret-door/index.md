@@ -55,8 +55,8 @@ struct Friend
 };
 ```
 
-`Friends` is then a list of these, and `person.card` and `person.name` are
-the two halves of one friend.
+`friends` is then an `adk::Array` of these, as in Lesson 5, and
+`person.card` and `person.name` are the two halves of one friend.
 
 !!! question "Predict"
     You knock twice, then change your mind and hold a card to the reader
@@ -74,6 +74,12 @@ The door is always in one of four states:
 | Open | `Welcome,` and a name, with the latch open | Five seconds pass: back to Locked |
 | Refused | The reason, and `Access denied` | Two seconds pass: back to Locked |
 
+In the sketch, `loop ()` is the Locked and Listening states: it watches for
+a card, and for knocks, and it is Listening while the `quiet` timer runs.
+`openFor ()` and `refuse ()` are the other two: each sets the latch, the
+screen and the buzzer, waits out its time with `adk::wait ()`, and locks the
+door again.
+
 Every time the door locks, the sketch waits until the servo has swung shut and
 the table has stopped shaking before it listens for knocks again, so the latch
 can't knock on its own door.
@@ -82,9 +88,13 @@ can't knock on its own door.
 
 !!! warning "Unplug first"
     Unplug the USB cable and switch the power module off before you change
-    any wiring. The screen and the servo take their power from the power
+    any wiring. Set both of the power module's yellow jumpers to **5V**,
+    never 3.3V. The screen and the servo take their power from the power
     module, so switch it on whenever the Mega is running. The RFID reader
-    takes **3.3 V** from the Mega's 3.3V pin: never 5V.
+    takes **3.3 V** from the Mega's 3.3V pin: never 5V. Its signal wires get
+    5 V from the Mega, more than its chip is rated for, as Lesson 34
+    explains; the [safety page](../../safety.md) says how to protect them in
+    a build that has to last.
 
 <!-- bench -->
 
@@ -95,7 +105,7 @@ can't knock on its own door.
     of the side opposite the hinge, so that its arm swings across under the
     lid's edge. The sketch holds it at 0° when locked and 90° when open. Try
     it with the lid open first: if the arm swings the wrong way or not far
-    enough, change `LockedAngle` and `OpenAngle`. Mount the reader just
+    enough, change `closedAngle` and `openAngle`. Mount the reader just
     inside the front of the box, so a card held against the outside is a
     centimetre or two away, and tape the tap sensor inside the lid.
 
@@ -113,21 +123,32 @@ Read it from the top:
 
 - Five parts: the screen, the reader, the tap sensor, the latch and the
   buzzer.
-- `Friends` lists your cards and who carries each. The two numbers are
-  stand-ins: put your own cards' numbers in, from the Serial Monitor.
+- `friends` lists your cards and who carries each. Written as
+  `Friend {...}`, one per line, the `adk::Array` counts them itself, so
+  another friend is just another line. The two numbers are stand-ins: put
+  your own cards' numbers in, from the Serial Monitor.
+- `secret`, `longGap`, `rattle` and `finished`, with `rhythm`, `sinceKnock`
+  and `quiet`, are Lesson 35's secret knock. `closedAngle` and `openAngle`
+  are the latch's, named as in the Keypad Safe of Lesson 18.
 - `setup ()` warns on the screen if the reader didn't answer, then locks the
   door.
-- `loop ()` does one thing at a time. When the door is open, it only watches
-  the clock. Otherwise it checks for a card first, then a knock, then whether
-  the knocking has stopped.
-- `checkCard ()` looks for the card in `Friends` and opens for its owner, or
-  refuses a stranger.
-- `hearKnock ()` and `judgeRhythm ()` are Lesson 35's secret knock, with a
-  star on the screen for every knock.
+- `loop ()` watches for the two keys. It checks for a card first, then a
+  knock. When `quiet` runs out, the knocking has stopped: the secret opens
+  the door, and any other rhythm is refused.
+- `checkCard ()` prints the card's number, then looks for it in `friends`.
+  `const Friend& person` is each friend in turn: the `&` means the real one
+  in the list, not a copy, and `const` promises not to change it. A friend's
+  card opens the door for them; a stranger's is refused.
+- `hearKnock ()` is Lesson 35's, with a star on the screen for every knock.
+  The first knock clears the screen to say `Listening...`. Each star goes in
+  the column after the last: `rhythm.size ()`, the number of gaps so far.
 - `openFor ()`, `refuse ()` and `lock ()` are the three things the door can
-  do. Each one sets the latch, the screen and the buzzer together.
-- `latch.moveTo (OpenAngle, 500)` glides the servo open over half a second,
+  do. Each sets the latch, the screen and the buzzer together, and the
+  first two wait out their time with `adk::wait ()` before they lock.
+- `latch.moveTo (openAngle, 500)` glides the servo open over half a second,
   so the lid isn't flung.
+- `isSecret ()` is Lesson 35's test: as many letters as the secret, all the
+  same.
 
 ## Upload it
 
@@ -137,11 +158,17 @@ Monitor at 9600 baud.
 1. The latch swings shut and the screen says `Secret Door`.
 2. Hold your card to the reader. It isn't known yet: `Access denied`, a long
    beep, and its number on the Serial Monitor. Copy the number into
-   `Friends` with your name, and upload again.
+   `friends` with your name, and upload again.
 3. Hold the card again: `Welcome,` and your name, two short beeps, and the
    latch opens for five seconds before it swings shut.
 4. Knock the secret on the lid: two quick knocks, a pause, two more. Four
    stars appear, and after a moment, `Welcome, the knocker`.
+
+You predicted what happens to two knocks when a card comes next. `loop ()`
+checks the reader before anything else, so the card is dealt with at once:
+the door opens for a friend, or refuses a stranger. The two knocks are never
+judged: `quiet` runs out while the door is busy and nothing is looking, and
+then `lock ()` forgets them.
 
 ## If it doesn't work
 
@@ -153,14 +180,15 @@ Monitor at 9600 baud.
 | Your card always gets `Unknown card` | Copy its number from the Serial Monitor exactly, with `0x` in front. |
 | Knocks never make stars | Check the tap sensor's S goes to A12, + to 5V and − to GND, and knock close to it. |
 | Stars appear, but the knock is always wrong | Knock the gaps more clearly: quick knocks well under half a second apart, and a pause of about a second. |
-| The latch opens the wrong way | Swap `LockedAngle` and `OpenAngle`, or remount the servo. |
+| The latch opens the wrong way | Swap `closedAngle` and `openAngle`, or remount the servo. |
 | No beeps | Check the buzzer's + leg, the longer one, is in g32, and the black wire goes from j35 to the − rail. |
 
 ??? note "How it works"
-    While the door is open, `loop ()` doesn't check the reader or the tap
-    sensor at all, and `refuse ()` waits two seconds with `adk::wait ()`.
-    Cards and knocks that come during those moments are simply missed:
-    `wasRead ()` and `activated ()` are events, true for one update only.
+    While the door is open, `openFor ()` waits five seconds with
+    `adk::wait ()`, and `refuse ()` waits two, so `loop ()` isn't running to
+    check the reader or the tap sensor. Cards and knocks that come during
+    those moments are simply missed: `wasRead ()` and `activated ()` are
+    events, true for one update only.
     `adk::wait ()` still updates every part while it waits, so the servo
     glides and the buzzer stops on time.
 
@@ -170,11 +198,14 @@ Monitor at 9600 baud.
 
 ## Make it yours
 
-1. **Your names.** Put every card and fob you own in `Friends`, each with
+1. **Your names.** Put every card and fob you own in `friends`, each with
    its own name, and change the secret knock to one of your own.
 2. **Three strikes.** After three refusals in a row, show `Locked out` and
    ignore everything for 30 seconds, like the Keypad Safe in Lesson 18.
 3. **Stay open.** Make a known card toggle the door: open until the same
-   card is shown again.
+   card is shown again. `openFor ()` can't just wait any more, so `loop ()`
+   will need to know whether the door is open: a `bool`, or an
+   `enum class` of the door's states.
 4. **Visitor's book.** Count how many times each friend has come in, and
-   show the count after their name: `Welcome, Ada (7)`.
+   show the count after their name: `Welcome, Ada (7)`. Add `int visits`
+   to `Friend`, and take `constexpr` off `friends`, so the list can change.
