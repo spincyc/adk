@@ -215,3 +215,39 @@ at the wall.
    walk slowly past.
 4. **Show off.** Add the LED gauge from Lesson 19 so the lights show how
    close the target is while the fan blows.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts, the black
+lead in **COM** and the red one in **V**. Never use the **10A** jack here: it
+joins the two probes, and across the power module's rails that is a short
+circuit.
+
+The fan's speed comes from a distance, and the meter can watch that happen
+on the enable pin, 4. To give it time, change `blowTime` to `20000` and
+upload, so the fan blows for 20 seconds at a time. Stand a book up on the
+desk 70 cm in front of the turret, with nothing else nearer, and work from
+beside the breadboard. The fan blows at the book, and the turret swings it
+round at every sweep, so keep your fingers, the probes and their leads out
+of its reach. Keep each probe tip in its own hole: a tip across two holes
+joins them.
+
+!!! question "Predict"
+    The sketch sets the speed with `map (distance, 15, 80, 255, 110)`. What
+    will the meter read with the book at 70 cm, and then at 40 cm?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **At 70 cm** the sketch works out a speed of 133, and PWM gives the pin
+  133 ÷ 255 × 5 V ≈ 2.6 V: the fan is switched on a little over half the
+  time.
+- **At 40 cm** it works out 200, and the meter reads about 3.9 V: nearer,
+  so the fan is on for more of the time, and blows harder. Try other
+  distances between 15 and 80 cm, and work out what the meter should say
+  before you look.
+- **During a sweep** the reading drops to 0. The fan rests whenever the
+  turret turns, so the servo and the motor never pull hard on the power
+  module together.

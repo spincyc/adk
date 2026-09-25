@@ -35,3 +35,9 @@ bench.wire ("44", "servo.signal")
 bench.note ("tape the sensor and the fan to the horn", "servo.signal", offset=(-1.6, 1.2))
 
 bench.closeup (1, 32)
+
+# Readings to take with a multimeter while the fan blows at a book.
+bench.measure ("The enable pin, a book at 70 cm", red="4", black="GND", expect="about 2.6 V",
+               when="blowing")
+bench.measure ("The enable pin, a book at 40 cm", red="4", black="GND", expect="about 3.9 V",
+               when="blowing")
