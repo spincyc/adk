@@ -73,7 +73,7 @@ That is bright, and comfortably below the 20 mA a Mega pin is happy to give.
     edges, marked **+** and **−**, are the rails: each runs the whole length
     of the board, ready to carry 5 V and GND to wherever they're needed.
 
-    That is why the resistor and the LED's long leg are both in column 14:
+    That is why the resistor and the LED's long leg are both in column 5:
     the strip joins them.
 
 When you are done, these are the connections your circuit makes:
@@ -114,8 +114,8 @@ The LED should flash: on for half a second, off for half a second.
 
 | What you see | Try this |
 |---|---|
-| The LED never lights | Turn the LED round: the long leg goes in c14. |
-| Still dark | Check the resistor's leg and the LED's long leg are in the same column (14), and the yellow wire is in pin 26, not 27. |
+| The LED never lights | Turn the LED round: the long leg goes in c5. |
+| Still dark | Check the resistor's leg and the LED's long leg are in the same column (5), and the yellow wire is in pin 26, not 27. |
 | The LED is always on | The yellow wire may be in 5 V instead of pin 26. |
 | Upload fails | Pick the right board and port in the **Tools** menu, and try a different USB cable: some only carry power. |
 | The little **L** LED on the Mega blinks long and short flashes | ADK found a wiring mistake in the sketch and is blinking the pin number. See [Faults](../../library/index.md#faults). |

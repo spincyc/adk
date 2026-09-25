@@ -26,14 +26,14 @@ theme:
   favicon: assets/logo.svg
   palette:
     - media: "(prefers-color-scheme: light)"
-      scheme: paper
+      scheme: default
       primary: custom
       accent: custom
       toggle:
         icon: material/weather-night
         name: Switch to dark
     - media: "(prefers-color-scheme: dark)"
-      scheme: graphite
+      scheme: slate
       primary: custom
       accent: custom
       toggle:

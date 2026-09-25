@@ -43,7 +43,11 @@ that starts with how to wire the part, its source, host tests, and a line in
 1. Add or check its entry in `docs/_theme/course.yml`.
 2. Write the sketch in `examples/LessonNNName/LessonNNName.ino`.
 3. Describe the build in `docs/lessons/NN-name/circuit.py`: every part in its
-   holes, every wire from pin to hole. The site draws the bench from it.
+   holes, every wire from pin to hole. The site draws the bench from it. Lay
+   it out the way a tidy builder would: start at column 1, the end nearest
+   the Mega, and place parts left to right in the order the current meets
+   them, each in the next free columns; use each part's home pins from
+   [the kit page](kit.md), in order.
 4. Write `docs/lessons/NN-name/index.md` from Lesson 1's shape, with the
    markers `<!-- bench -->`, `<!-- closeup -->`, `<!-- steps -->`,
    `<!-- connections -->` and `<!-- sketch -->` where those belong.

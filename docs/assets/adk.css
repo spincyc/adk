@@ -1,71 +1,61 @@
-/* ADK: a sketchbook look. Paper, graphite, and one warm LED red. */
+/* ADK: a quiet sketchbook look. Paper, graphite, and one warm LED red.
+   Built on Material's own light (default) and dark (slate) schemes, so code,
+   callouts and search keep Material's tuned colors in both. */
 
-/* Color ----------------------------------------------------------------- */
+/* Color ------------------------------------------------------------------ */
 
-[data-md-color-scheme="paper"] {
-    --adk-paper:        #fbf9f3;
-    --adk-paper-deep:   #f3efe4;
-    --adk-graphite:     #262626;
-    --adk-pencil:       #5c5a55;
-    --adk-rule:         #dcd6c8;
-    --adk-red:          #c43d24;
-    --adk-red-soft:     #f7e2dc;
-    --adk-card:         #ffffff;
-    --adk-shadow:       0 1px 2px rgb(60 50 30 / 8%), 0 6px 24px rgb(60 50 30 / 8%);
+[data-md-color-scheme="default"] {
+    --adk-paper:      #fbfaf6;
+    --adk-paper-deep: #f2efe7;
+    --adk-ink:        #232220;
+    --adk-muted:      #5d5a54;
+    --adk-rule:       #e2ddd1;
+    --adk-red:        #b93a22;
+    --adk-card:       #ffffff;
+    --adk-shadow:     0 1px 2px rgb(40 35 25 / 6%), 0 4px 16px rgb(40 35 25 / 6%);
 
-    --md-default-bg-color:           var(--adk-paper);
-    --md-default-fg-color:           var(--adk-graphite);
-    --md-default-fg-color--light:    #4a4844;
-    --md-default-fg-color--lighter:  #8b877e;
-    --md-default-fg-color--lightest: #d8d2c3;
-    --md-primary-fg-color:           var(--adk-paper);
-    --md-primary-fg-color--light:    var(--adk-paper);
-    --md-primary-fg-color--dark:     var(--adk-paper-deep);
-    --md-primary-bg-color:           var(--adk-graphite);
-    --md-primary-bg-color--light:    var(--adk-pencil);
-    --md-accent-fg-color:            var(--adk-red);
-    --md-accent-fg-color--transparent: rgb(196 61 36 / 10%);
-    --md-typeset-color:              var(--adk-graphite);
-    --md-typeset-a-color:            var(--adk-red);
-    --md-code-bg-color:              #f4f1e8;
-    --md-code-fg-color:              #2f2d29;
-    --md-footer-bg-color:            #2b2a27;
-    --md-footer-bg-color--dark:      #22211f;
-    --md-typeset-table-color:        var(--adk-rule);
+    --md-default-bg-color:        var(--adk-paper);
+    --md-default-fg-color:        var(--adk-ink);
+    --md-default-fg-color--light: #46443f;
+    --md-primary-fg-color:        var(--adk-paper);
+    --md-primary-fg-color--light: var(--adk-paper);
+    --md-primary-fg-color--dark:  var(--adk-paper-deep);
+    --md-primary-bg-color:        var(--adk-ink);
+    --md-primary-bg-color--light: var(--adk-muted);
+    --md-accent-fg-color:         var(--adk-red);
+    --md-typeset-color:           var(--adk-ink);
+    --md-typeset-a-color:         var(--adk-red);
+    --md-code-bg-color:           #f3f0e8;
+    --md-footer-bg-color:         #2a2926;
+    --md-footer-bg-color--dark:   #211f1d;
 }
 
-[data-md-color-scheme="graphite"] {
-    color-scheme: dark;
+[data-md-color-scheme="slate"] {
+    --md-hue: 35;
 
-    --adk-paper:        #1d1c1a;
-    --adk-paper-deep:   #242320;
-    --adk-graphite:     #ebe7de;
-    --adk-pencil:       #b4afa4;
-    --adk-rule:         #3a3833;
-    --adk-red:          #ff8a6b;
-    --adk-red-soft:     #3a2622;
-    --adk-card:         #262521;
-    --adk-shadow:       0 1px 2px rgb(0 0 0 / 30%), 0 8px 28px rgb(0 0 0 / 35%);
+    --adk-paper:      #1c1b19;
+    --adk-paper-deep: #24231f;
+    --adk-ink:        #ece8e0;
+    --adk-muted:      #b9b4aa;
+    --adk-rule:       #3a3833;
+    --adk-red:        #ff8f73;
+    --adk-card:       #24231f;
+    --adk-shadow:     0 1px 2px rgb(0 0 0 / 30%), 0 6px 20px rgb(0 0 0 / 30%);
 
-    --md-default-bg-color:           var(--adk-paper);
-    --md-default-fg-color:           var(--adk-graphite);
-    --md-default-fg-color--light:    #cfcac0;
-    --md-default-fg-color--lighter:  #8f8a80;
-    --md-default-fg-color--lightest: #45423c;
-    --md-primary-fg-color:           var(--adk-paper);
-    --md-primary-fg-color--light:    var(--adk-paper);
-    --md-primary-fg-color--dark:     var(--adk-paper-deep);
-    --md-primary-bg-color:           var(--adk-graphite);
-    --md-primary-bg-color--light:    var(--adk-pencil);
-    --md-accent-fg-color:            var(--adk-red);
-    --md-accent-fg-color--transparent: rgb(255 138 107 / 12%);
-    --md-typeset-color:              var(--adk-graphite);
-    --md-typeset-a-color:            var(--adk-red);
-    --md-code-bg-color:              #262521;
-    --md-code-fg-color:              #e6e1d6;
-    --md-footer-bg-color:            #151412;
-    --md-footer-bg-color--dark:      #0f0e0d;
-    --md-typeset-table-color:        var(--adk-rule);
+    --md-default-bg-color:        var(--adk-paper);
+    --md-default-fg-color:        var(--adk-ink);
+    --md-default-fg-color--light: #d6d1c7;
+    --md-primary-fg-color:        var(--adk-paper);
+    --md-primary-fg-color--light: var(--adk-paper);
+    --md-primary-fg-color--dark:  var(--adk-paper-deep);
+    --md-primary-bg-color:        var(--adk-ink);
+    --md-primary-bg-color--light: var(--adk-muted);
+    --md-accent-fg-color:         var(--adk-red);
+    --md-typeset-color:           var(--adk-ink);
+    --md-typeset-a-color:         var(--adk-red);
+    --md-code-bg-color:           #262521;
+    --md-footer-bg-color:         #151412;
+    --md-footer-bg-color--dark:   #0f0e0d;
 }
 
 /* Type ------------------------------------------------------------------- */
@@ -74,48 +64,53 @@
     --md-text-font: "Atkinson Hyperlegible Next";
     --md-code-font: "JetBrains Mono";
     --adk-display: "Fraunces", Georgia, serif;
-    --adk-hand: "Patrick Hand", cursive;
-}
-
-body {
-    font-feature-settings: "kern", "liga";
 }
 
 .md-typeset {
-    font-size: 0.86rem;
-    line-height: 1.7;
+    font-size: 0.85rem;
+    line-height: 1.65;
+}
+
+.md-typeset p,
+.md-typeset ul,
+.md-typeset ol {
+    margin: 0 0 1em;
+}
+
+.md-typeset li {
+    margin-bottom: 0.35em;
 }
 
 .md-typeset h1,
 .md-typeset h2,
 .md-typeset h3 {
     font-family: var(--adk-display);
-    color: var(--adk-graphite);
+    color: var(--adk-ink);
     letter-spacing: -0.01em;
 }
 
 .md-typeset h1 {
-    font-weight: 800;
-    font-size: 2.4em;
+    margin: 0 0 0.5em;
+    font-size: 2.3em;
+    font-weight: 700;
     line-height: 1.1;
-    margin-bottom: 0.4em;
 }
 
 .md-typeset h2 {
+    margin: 2.2em 0 0.7em;
+    font-size: 1.5em;
     font-weight: 700;
-    font-size: 1.55em;
-    margin-top: 2.2em;
-    padding-top: 0.6em;
-    border-top: 1px solid var(--adk-rule);
+    line-height: 1.25;
 }
 
 .md-typeset h3 {
+    margin: 1.6em 0 0.5em;
+    font-size: 1.15em;
     font-weight: 600;
-    font-size: 1.2em;
 }
 
 .md-typeset code {
-    font-size: 0.86em;
+    font-size: 0.85em;
     border-radius: 0.2rem;
 }
 
@@ -127,8 +122,14 @@ body {
 
 .md-typeset .highlight a,
 .md-typeset .md-button,
-.md-typeset .headerlink {
+.md-typeset .headerlink,
+.md-typeset .lesson-sections a {
     text-decoration: none;
+}
+
+.md-typeset hr {
+    margin: 2em 0;
+    border-color: var(--adk-rule);
 }
 
 /* Header and navigation -------------------------------------------------- */
@@ -140,8 +141,7 @@ body {
 
 .md-header__title {
     font-family: var(--adk-display);
-    font-weight: 800;
-    font-size: 1.05rem;
+    font-weight: 700;
 }
 
 .md-tabs {
@@ -150,12 +150,10 @@ body {
 
 .md-tabs__link {
     font-size: 0.72rem;
-    opacity: 0.8;
 }
 
 .md-tabs__link--active,
 .md-tabs__link:hover {
-    opacity: 1;
     color: var(--adk-red);
 }
 
@@ -163,112 +161,79 @@ body {
     font-weight: 700;
 }
 
-.md-nav__item--section > .md-nav__link {
-    font-family: var(--adk-display);
-    font-weight: 700;
-}
-
-/* Lesson layout: one reading column, with the bench drawing free to spread
-   wider than the text. */
+/* Lesson layout: one reading column; the bench drawing may spread wider. */
 
 .lesson-header,
 .lesson-body {
-    max-width: 34rem;
+    max-width: 36rem;
     margin-left: auto;
     margin-right: auto;
 }
 
 @media screen and (min-width: 60em) {
     .md-typeset .lesson-body > .bench-bench {
-        width: min(100vw - 20rem, 52rem);
+        width: min(100vw - 20rem, 54rem);
         max-width: none;
         margin-left: 50%;
         transform: translateX(-50%);
     }
 }
 
-.lesson-sections {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin: 0 0 1.2rem;
-}
-
-.md-typeset .lesson-sections a {
-    padding: 0.2rem 0.7rem;
-    border: 1px solid var(--adk-rule);
-    border-radius: 999px;
-    font-size: 0.72rem;
-    color: var(--md-default-fg-color--light);
-    text-decoration: none;
-    background: var(--adk-card);
-}
-
-.md-typeset .lesson-sections a:hover {
-    border-color: var(--adk-red);
-    color: var(--adk-red);
-}
-
 /* Lesson header ---------------------------------------------------------- */
 
 .lesson-header {
-    margin: 0.2rem 0 2.4rem;
+    margin-bottom: 2rem;
 }
 
 .lesson-eyebrow {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    margin: 0 0 0.6rem;
-    font-size: 0.78rem;
+    margin: 0 0 0.5rem;
+    font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--adk-pencil);
+    color: var(--adk-muted);
 }
 
 .lesson-number {
-    padding: 0.15rem 0.55rem;
+    padding: 0.1rem 0.5rem;
     border-radius: 999px;
-    color: #fff;
+    color: var(--adk-paper);
     background: var(--adk-red);
 }
 
-[data-md-color-scheme="graphite"] .lesson-number {
-    color: #1d1c1a;
-}
-
 .md-typeset .lesson-header h1 {
-    margin: 0 0 0.3rem;
-    font-size: 3.1em;
+    margin: 0 0 0.25rem;
+    font-size: 2.8em;
 }
 
-.lesson-promise {
-    margin: 0 0 1.1rem;
+.md-typeset .lesson-promise {
+    margin: 0 0 1rem;
     font-family: var(--adk-display);
-    font-size: 1.3em;
-    font-weight: 600;
-    line-height: 1.35;
+    font-size: 1.2em;
+    font-weight: 500;
+    line-height: 1.4;
     color: var(--md-default-fg-color--light);
 }
 
 .md-typeset ul.lesson-facts {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 1.4rem;
+    gap: 0.4rem 1.2rem;
     align-items: center;
-    margin: 0 0 1.4rem;
+    margin: 0 0 1rem;
     padding: 0;
     list-style: none;
 }
 
 [dir] .md-typeset ul.lesson-facts > li {
-    flex: 0 0 auto;
     display: flex;
     align-items: center;
     gap: 0.35rem;
     margin: 0;
-    color: var(--md-default-fg-color--light);
+    color: var(--adk-muted);
 }
 
 .lesson-facts svg {
@@ -293,7 +258,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.3rem 0.8rem;
+    padding: 0.25rem 0.75rem;
     border: 1.5px solid var(--adk-red);
     border-radius: 999px;
     font-weight: 700;
@@ -301,63 +266,88 @@ body {
 }
 
 .md-typeset .lesson-pdf a:hover {
-    color: #fff;
+    color: var(--adk-paper);
     background: var(--adk-red);
+}
+
+.lesson-sections {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin: 0 0 1.25rem;
+}
+
+.md-typeset .lesson-sections a {
+    padding: 0.15rem 0.65rem;
+    border: 1px solid var(--adk-rule);
+    border-radius: 999px;
+    font-size: 0.7rem;
+    color: var(--adk-muted);
+    background: var(--adk-card);
+}
+
+.md-typeset .lesson-sections a:hover {
+    border-color: var(--adk-red);
+    color: var(--adk-red);
 }
 
 .lesson-kit {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-    gap: 1rem;
-    padding: 1rem 1.2rem;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 0.5rem 1.5rem;
+    padding: 1rem 1.25rem 0.5rem;
     border: 1px solid var(--adk-rule);
-    border-radius: 0.6rem;
+    border-radius: 0.5rem;
     background: var(--adk-card);
     box-shadow: var(--adk-shadow);
 }
 
 .md-typeset .lesson-kit-title {
-    margin: 0 0 0.3rem;
-    font-family: var(--adk-display);
+    margin: 0 0 0.4rem;
+    font-size: 0.72rem;
     font-weight: 700;
-    font-size: 1.05em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--adk-muted);
 }
 
 .md-typeset .lesson-kit ul {
-    margin: 0;
-    padding-left: 1.1rem;
+    margin: 0 0 0.5rem;
+    padding-left: 1rem;
 }
 
 .md-typeset .lesson-kit li {
-    margin: 0.15rem 0;
+    margin: 0 0 0.3rem;
+    line-height: 1.45;
 }
 
 /* Drawings --------------------------------------------------------------- */
 
 .md-typeset .bench-figure {
     width: 100%;
-    margin: 1.6rem 0;
+    margin: 1.5rem 0;
 }
 
 .md-typeset .bench-closeup {
     width: min(100%, 34rem);
-    margin: 1.6rem auto;
+    margin: 1.25rem auto 1.5rem;
 }
 
 .bench-figure svg.pencil-drawing {
     display: block;
     width: 100%;
     height: auto;
-    border-radius: 0.5rem;
+    border: 1px solid var(--adk-rule);
+    border-radius: 0.4rem;
     box-shadow: var(--adk-shadow);
 }
 
-.bench-figure figcaption {
+.md-typeset .bench-figure figcaption {
     max-width: none;
-    margin-top: 0.6rem;
-    font-family: var(--adk-hand);
-    font-size: 1.1em;
-    color: var(--md-default-fg-color--light);
+    margin: 0.5rem 0 0;
+    font-size: 0.72rem;
+    font-style: italic;
+    color: var(--adk-muted);
     text-align: center;
 }
 
@@ -367,8 +357,8 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.6rem;
-    margin: 1.2rem 0;
-    font-size: 1.15em;
+    margin: 1rem 0 1.2rem;
+    font-size: 1.1em;
 }
 
 .formula .fraction {
@@ -382,43 +372,61 @@ body {
     border-bottom: 1.5px solid currentcolor;
 }
 
-/* Build steps: numbered circles down a line, like a checklist. */
+/* Build steps: numbered circles down the page, like a checklist. */
 .md-typeset .build-steps ol {
     counter-reset: step;
     list-style: none;
-    margin-left: 0;
-    padding-left: 0;
+    margin: 0 0 1.25rem;
+    padding: 0;
 }
 
-.md-typeset .build-steps li {
+[dir] .md-typeset .build-steps li {
     position: relative;
-    margin: 0 0 0.7rem;
-    padding: 0.1rem 0 0 2.4rem;
+    margin: 0 0 0.45rem;
+    padding: 0.05rem 0 0 2rem;
     counter-increment: step;
 }
 
 .md-typeset .build-steps li::before {
     content: counter(step);
     position: absolute;
-    top: 0;
+    top: 0.1rem;
     left: 0;
-    width: 1.7rem;
-    height: 1.7rem;
-    border: 1.5px solid var(--adk-graphite);
+    width: 1.35rem;
+    height: 1.35rem;
+    border: 1.5px solid var(--adk-ink);
     border-radius: 50%;
-    font-family: var(--adk-hand);
-    font-size: 1.05em;
-    line-height: 1.55rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.2rem;
     text-align: center;
 }
 
-/* Tables, admonitions, code ---------------------------------------------- */
+/* The circuit, point by point: a compact ruled list. */
+.md-typeset .connections ul {
+    list-style: none;
+    margin: 0 0 1.25rem;
+    padding: 0;
+    border-top: 1px solid var(--adk-rule);
+}
+
+[dir] .md-typeset .connections li {
+    margin: 0;
+    padding: 0.35rem 0.1rem;
+    border-bottom: 1px solid var(--adk-rule);
+}
+
+/* Tables, callouts, code ------------------------------------------------- */
 
 .md-typeset table:not([class]) {
     border: 1px solid var(--adk-rule);
-    border-radius: 0.5rem;
-    font-size: 0.8rem;
+    border-radius: 0.4rem;
+    font-size: 0.78rem;
     box-shadow: none;
+}
+
+.md-typeset table:not([class]) :is(th, td) {
+    padding: 0.55em 0.9em;
 }
 
 .md-typeset table:not([class]) th {
@@ -426,24 +434,19 @@ body {
     font-weight: 700;
 }
 
-.md-typeset .admonition,
-.md-typeset details {
-    border-width: 0 0 0 4px;
-    border-radius: 0.4rem;
+.md-typeset :is(.admonition, details) {
+    --adk-callout: var(--adk-muted);
+    margin: 1.25em 0;
+    border: 0;
+    border-left: 3px solid var(--adk-callout);
+    border-radius: 0.3rem;
     font-size: 0.8rem;
     box-shadow: none;
     background: var(--adk-card);
 }
 
-/* Callouts in the sketchbook's own colors: red for danger, amber for care,
-   green for tips, graphite for everything else. */
-.md-typeset :is(.admonition, details) {
-    --adk-callout: var(--adk-pencil);
-    border-color: var(--adk-callout);
-}
-
 .md-typeset :is(.admonition, details):is(.danger, .warning) {
-    --adk-callout: #d08a1e;
+    --adk-callout: #c98a1b;
 }
 
 .md-typeset :is(.admonition, details).danger {
@@ -451,32 +454,26 @@ body {
 }
 
 .md-typeset :is(.admonition, details):is(.tip, .success) {
-    --adk-callout: #4c8a4a;
+    --adk-callout: #4f8a4d;
 }
 
-.md-typeset :is(.admonition, details):is(.question) {
-    --adk-callout: #3f6fb5;
+.md-typeset :is(.admonition, details).question {
+    --adk-callout: #4a78b8;
+}
+
+/* Material colors each callout type's border itself; use the palette. */
+.md-typeset :is(.admonition, details):is(.note, .abstract, .info, .tip, .success, .question,
+                                         .warning, .failure, .danger, .bug, .example, .quote) {
+    border-color: var(--adk-callout);
 }
 
 .md-typeset :is(.admonition, details) > :is(.admonition-title, summary) {
-    background: color-mix(in srgb, var(--adk-callout) 10%, transparent);
+    background: color-mix(in srgb, var(--adk-callout) 9%, transparent);
+    font-weight: 700;
 }
 
 .md-typeset :is(.admonition, details) > :is(.admonition-title, summary)::before {
     background-color: var(--adk-callout);
-}
-
-/* The circuit, point by point. */
-.md-typeset .connections ul {
-    list-style: none;
-    margin-left: 0;
-}
-
-.md-typeset .connections li {
-    margin: 0.3rem 0;
-    padding: 0.4rem 0.7rem;
-    border: 1px dashed var(--adk-rule);
-    border-radius: 0.4rem;
 }
 
 .md-typeset .highlight .filename {
@@ -489,39 +486,34 @@ body {
 .hero {
     display: grid;
     grid-template-columns: 1.1fr 1fr;
-    gap: 2rem;
+    gap: 2.5rem;
     align-items: center;
-    margin: 1rem 0 3rem;
+    margin: 0.5rem 0 1rem;
 }
 
 .md-typeset .hero h1 {
-    font-size: 3.2em;
     margin: 0 0 0.5rem;
+    font-size: 2.9em;
 }
 
-.hero-lead {
-    font-size: 1.15em;
+.md-typeset .hero-lead {
+    font-size: 1.1em;
     color: var(--md-default-fg-color--light);
 }
 
 .md-typeset .hero .md-button {
-    margin: 0.6rem 0.6rem 0 0;
+    margin: 0.5rem 0.5rem 0 0;
     border-radius: 999px;
 }
 
 .md-typeset .md-button {
-    color: var(--adk-graphite);
-    border-color: var(--adk-graphite);
+    color: var(--adk-ink);
+    border-color: var(--adk-ink);
 }
 
-.md-typeset .md-button:is(:hover, :focus) {
-    color: #fff;
-    background: var(--adk-red);
-    border-color: var(--adk-red);
-}
-
+.md-typeset .md-button:is(:hover, :focus),
 .md-typeset .md-button--primary {
-    color: #fff;
+    color: var(--adk-paper);
     background: var(--adk-red);
     border-color: var(--adk-red);
 }
@@ -529,35 +521,41 @@ body {
 .arcs {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-    gap: 1rem;
-    margin: 1.2rem 0 2rem;
+    gap: 0.9rem;
+    margin: 1rem 0 2rem;
 }
 
 .md-typeset .arc {
-    padding: 1rem 1.1rem;
+    padding: 0.9rem 1.1rem 0.4rem;
     border: 1px solid var(--adk-rule);
-    border-radius: 0.6rem;
+    border-radius: 0.5rem;
     background: var(--adk-card);
     box-shadow: var(--adk-shadow);
 }
 
+.md-typeset .arc .arc-number {
+    margin: 0;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--adk-red);
+}
+
 .md-typeset .arc h3 {
-    margin: 0 0 0.3rem;
+    margin: 0.1rem 0 0.5rem;
 }
 
 .md-typeset .arc ol {
-    margin: 0.4rem 0 0;
+    margin: 0 0 0.5rem;
     font-size: 0.95em;
+}
+
+.md-typeset .arc li {
+    margin-bottom: 0.2em;
 }
 
 .md-typeset .arc .project {
     font-weight: 700;
-}
-
-.arc-number {
-    font-family: var(--adk-hand);
-    font-size: 1.1em;
-    color: var(--adk-red);
 }
 
 @media screen and (max-width: 60em) {
@@ -587,7 +585,6 @@ body {
 }
 
 @media print {
-    :root,
     [data-md-color-scheme] {
         --adk-card: #ffffff;
         --adk-shadow: none;
@@ -601,7 +598,7 @@ body {
 
     .md-typeset {
         font-size: 10.5pt;
-        line-height: 1.55;
+        line-height: 1.5;
     }
 
     .md-content__inner {
@@ -609,8 +606,14 @@ body {
         padding: 0;
     }
 
+    .lesson-header,
+    .lesson-body > * {
+        max-width: none;
+    }
+
     .md-typeset h2 {
-        margin-top: 1.4em;
+        margin-top: 1.5em;
+        clear: both;
         break-after: avoid;
     }
 
@@ -623,29 +626,32 @@ body {
     .md-typeset table,
     .md-typeset .admonition,
     .md-typeset details,
+    .md-typeset .highlight,
     .lesson-kit,
     .md-typeset li {
         break-inside: avoid;
     }
 
-
-    .md-typeset .highlight {
-        break-inside: avoid;
-    }
-
-    .md-typeset h1 {
-        font-size: 30pt;
-    }
-
     .md-typeset .lesson-header h1 {
-        font-size: 38pt;
+        font-size: 34pt;
+    }
+
+    .md-typeset .bench-closeup {
+        float: right;
+        width: 46%;
+        margin: 0 0 0.8rem 1.2rem;
+    }
+
+    .bench-figure svg.pencil-drawing {
+        box-shadow: none;
     }
 
     .lesson-pdf,
     .lesson-sections,
     .md-typeset .headerlink,
-    .md-clipboard,
-    .md-source-file {
+    .md-code__nav,
+    .md-code__button,
+    .md-typeset details > summary::after {
         display: none !important;
     }
 
@@ -655,34 +661,8 @@ body {
         display: block;
     }
 
-    .md-typeset details > summary::after,
-    .md-code__nav,
-    .md-code__button {
-        display: none !important;
-    }
-
     .md-typeset a {
         color: inherit;
         text-decoration: none;
-    }
-
-    .bench-figure svg.pencil-drawing {
-        box-shadow: none;
-        border: 0.5pt solid #ccc;
-    }
-
-    .md-typeset .bench-closeup {
-        float: right;
-        width: 46%;
-        margin: 0 0 0.8rem 1.2rem;
-    }
-
-    .md-typeset h2 {
-        clear: both;
-    }
-
-    .lesson-header,
-    .lesson-body > * {
-        max-width: none;
     }
 }

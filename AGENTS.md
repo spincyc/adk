@@ -19,7 +19,8 @@ repository. Read these before changing anything:
 - **A lesson's wiring is described once**, in its `circuit.py`. The drawings,
   build steps and connection list come from it, and the site refuses to build
   if the sketch and the circuit disagree about a pin. Use each part's home
-  pins from `docs/kit.md`.
+  pins from `docs/kit.md`, and lay the breadboard out from column 1 (the end
+  nearest the Mega) in the order the current flows.
 - **Lessons are for beginners.** Plain words, one new idea at a time, a
   prediction before each experiment, and something that visibly works at the
   end. Keep sketches short: one screen for a part, about 150 lines for a
