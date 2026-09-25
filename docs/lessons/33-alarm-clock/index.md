@@ -64,18 +64,19 @@ button press means "set the hour" when the clock is showing the time, and
 
 ## How the alarm clock works
 
-The sketch is always in one of four states:
+The sketch is always in one of four states, and these are their names in
+the code:
 
-| State | The screen shows | The knob | The knob's button | Snooze |
+| State | The bottom row shows | The knob | The knob's button | Snooze |
 |---|---|---|---|---|
-| Showing | The time, and `Alarm 07:00` or `Snooze 07:05` | Nothing | Go to Hour? | Nothing |
-| Hour? | The time, and `Hour?` with the alarm | Changes the hour | Go to Minute? | Nothing |
-| Minute? | The time, and `Minute?` with the alarm | Changes the minutes | Back to Showing, with a beep | Nothing |
-| Ringing | The time, and **Wake up!** flashing | Nothing | Stop until tomorrow | Five more minutes |
+| **Showing** | `Alarm 07:00`, or `Snooze 07:05` | Nothing | Go to SettingHour | Nothing |
+| **SettingHour** | `Hour?` and the alarm | Changes the hour | Go to SettingMinute | Nothing |
+| **SettingMinute** | `Minute?` and the alarm | Changes the minutes | Back to Showing, with a beep | Nothing |
+| **Ringing** | **Wake up!**, flashing | Nothing | Stop until tomorrow: Showing | Five more minutes: Showing |
 
-Four times a second the sketch reads the clock and updates the screen. When a
-new minute begins and it matches the alarm (or the end of a snooze), the
-clock goes from Showing to Ringing.
+The top row always shows the time. Ten times a second the sketch reads the
+clock and redraws the screen. When a new minute begins and it matches the
+alarm (or the end of a snooze), the clock goes from `Showing` to `Ringing`.
 
 ## Build it
 
@@ -111,34 +112,48 @@ Open the Arduino IDE and choose **File → Examples → Adk → Lesson33AlarmClo
 
 Read it from the top:
 
-- The parts: the LCD and clock from Lesson 32, the knob (`knob` turns,
-  `knobButton` is its push switch), the passive buzzer as an `adk::Speaker`,
-  and the snooze button.
-- `WakeUp` is a tune, written as notes the way you did in Lesson 5. It ends
+- The parts: the LCD and clock from Lesson 32, the knob from Lesson 29
+  (`knob` turns, `knobButton` is its push switch), the passive buzzer as an
+  `adk::Speaker`, and the snooze button. The potentiometer beside the LCD is
+  a knob too, but it only sets the contrast: on this page, *the knob* always
+  means the rotary encoder.
+- `wakeUp` is a tune, written as notes the way you did in Lesson 5. It ends
   with a rest, so there's a pause each time it repeats.
-- `enum State` lists the four states, and `state` says which one the clock is
-  in now. `alarm` and `ringAt` are times in minutes after midnight: `ringAt`
-  is the alarm itself, or the end of a snooze.
-- `loop ()` checks the clock four times a second, then does what the current
-  state asks: answer the alarm, move on to the next setting, or change the
-  alarm when the knob turns.
-- `checkTheClock ()` only starts the alarm as a **new** minute begins
-  (`minute != lastMinute`). Without that, stopping the alarm at 07:00 would
-  set it off again a quarter of a second later, because it would still be
-  07:00.
-- `nextSetting ()` moves to the next state in the list with
-  `State (state + 1)`: from Showing to Hour? to Minute?, and then back to
-  Showing.
-- `changeAlarm ()` adds 60 minutes for each click while you set the hour, and
-  1 minute while you set the minutes, and wraps round with `%`.
-- `answerAlarm ()` starts the tune again whenever it finishes, and
-  `speaker.play ()` never waits for it, so the clock keeps ticking on the
-  screen and the buttons still work while it plays.
+- `enum class State` names the four states from the table, as the Reaction
+  Duel did in Lesson 3. `alarm` and `ringAt` are times in minutes after
+  midnight: `ringAt` is the alarm itself, or the end of a snooze.
+  `clockTime` is the clock's time when the sketch last read it.
+- `loop ()` hands each press and each turn of the knob to a function of its
+  own, lets snooze stop the alarm while it rings, and reads the clock ten
+  times a second, when `tick` ticks.
+- `knobPressed ()` is the *knob's button* column of the table, as a
+  `switch`. The `SettingMinute` case does two things, so its lines sit
+  under its label, ending with `break`.
+- `knobTurned ()` moves the alarm 60 minutes for each click while you set
+  the hour, and 1 while you set the minutes. In the other two states the
+  knob does nothing: a bare `return;` leaves the function at once. The last
+  line wraps the alarm round the day with `%`.
+- `sleepUntil ()` stops the tune, sets when to ring next, and goes back to
+  `Showing`. Snooze calls it with five minutes from now; the knob's button
+  calls it with the alarm, which comes round again tomorrow.
+- `readTheClock ()` checks `rtc.ok ()` first, as in Lesson 32. It starts
+  ringing only as a **new** minute begins (`time != clockTime`). Without that,
+  stopping the alarm at 07:00 would set it off again a tenth of a second
+  later, because it would still be 07:00. While it rings, it starts the tune
+  again each time it ends. `speaker.play ()` never waits, so the clock keeps
+  ticking on the screen and the buttons still work while it plays.
+- `showAlarm ()` fills the bottom row. `label` starts as `Alarm` or
+  `Snooze`, and the `switch` changes it while you set the alarm. While the
+  alarm rings, **Wake up!** shows when the seconds are even and a blank row
+  when they're odd (`second % 2`), so it flashes in time with the clock.
+- `printTime ()` turns minutes after midnight back into hours and minutes,
+  425 into `07:05`, and prints each as two digits with the `/` and `%` of
+  Lesson 10.
 
 ## Upload it
 
 Upload the sketch. The top row shows the time; the bottom row shows
-`Alarm   07:00`. Now set the alarm for two minutes from now:
+`Alarm 07:00`. Now set the alarm for two minutes from now:
 
 1. Press the knob. The bottom row says `Hour?`. Turn the knob until the hour
    is right.
@@ -148,6 +163,11 @@ Upload the sketch. The top row shows the time; the bottom row shows
 When the minute comes, the tune plays and **Wake up!** flashes. Press snooze:
 the tune stops and the bottom row shows `Snooze` with a time five minutes
 later. When it rings again, press the knob, and it stops until tomorrow.
+
+You predicted what happens with an alarm at 06:45 and two quick snoozes.
+Each snooze is five minutes from the minute you press it, so it rings again
+at 06:50 and a third time at 06:55. While you wait, the bottom row says
+`Snooze 06:50`, and then `Snooze 06:55`.
 
 ## If it doesn't work
 
@@ -160,6 +180,8 @@ later. When it rings again, press the knob, and it stops until tomorrow.
 | The screen flashes **Wake up!** but there's no sound | Check the buzzer's + leg, the longer one, is in g32 next to the resistor, and the resistor goes from i28 to i32. |
 | The snooze button does nothing | It must straddle the middle gap in columns 1 and 3, with pin 23's wire in j1 and the black wire from j3 to the − rail. |
 | The time is wrong | See Lesson 32: the clock module keeps whatever time it was set to. |
+| The screen says **No clock found!** | Check the clock module's SDA goes to pin 20 and SCL to pin 21, as in Lesson 32. |
+| A row of solid blocks, or a blank lit screen | Turn the contrast knob, the potentiometer beside the LCD, not the new knob. |
 
 ??? note "How it works"
     `adk::Speaker` plays each note with the Mega's Timer 2, which makes the
@@ -168,18 +190,22 @@ later. When it rings again, press the knob, and it stops until tomorrow.
     dimming LEDs, as you found in Lesson 5.
 
     Rewriting both rows of the LCD takes about three milliseconds, so the
-    sketch only does it four times a second, or when something changes. The
-    knob is read on every `adk::update ()`, so no click is missed while the
-    screen is being written.
+    sketch doesn't do it on every pass of `loop ()`, only when `tick` ticks,
+    ten times a second. That's still quick enough that the numbers seem to
+    follow the knob at once. The knob itself is read on every
+    `adk::update ()`, so no click is missed while the screen is being
+    written.
 
 ## Make it yours
 
 1. **An off switch.** Make the snooze button switch the alarm on and off when
-   it isn't ringing, and show `on` or `off` at the end of the bottom row.
-2. **Your own tune.** Replace `WakeUp` with a tune of your own. Something
+   it isn't ringing: a `bool` that `readTheClock ()` checks before it rings.
+   Show `on` or `off` at the end of the bottom row.
+2. **Your own tune.** Replace `wakeUp` with a tune of your own. Something
    gentle to start, perhaps, or something you really can't sleep through.
 3. **Give up.** A clock left ringing all day is annoying. Make it stop by
-   itself after two minutes. You'll need to remember when it started ringing.
+   itself after two minutes: start an `adk::Timer` when it starts ringing,
+   and call `sleepUntil (alarm)` when the timer runs out.
 4. **Big digits.** Show the time on the four-digit display from Lessons 11
    and 12 as well, with `adk::FourDigitDisplay` and
    `showTime (hour, minute)`. It won't fit alongside everything else on this
