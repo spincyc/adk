@@ -176,3 +176,30 @@ away, the card's coil can't catch enough of the field to power its chip.
    read is added to the list of known cards. You'll need a list that can
    grow: make `knownCards` an `adk::Vector<uint32_t, 10>`, as in Lesson 6,
    and `push_back ()` each new card.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM**, the red one in **V**. The reader's seven wires
+run straight from the Mega's pins to the reader, with no breadboard hole on
+the way, so there's nowhere on this build to touch a probe to its 3.3 V
+supply, or to the 5 V on its signal wires. The RGB LED's pins, though, show
+what the sketch does with each card.
+
+!!! question "Predict"
+    `quietBlue` is `{0, 0, 40}`: blue at 40 out of 255. What will the meter
+    read on the blue leg's pin while the LED waits?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **The blue leg's pin** reads about 0.8 V. The pin is switched on for 40
+  parts in 255 of the time, too fast to see, and the meter shows the
+  average, just as your eye does: 40 ÷ 255 × 5 V ≈ 0.8 V.
+- **The red leg's pin** reads 0 while the LED waits. Hold a card the sketch
+  doesn't know to the reader, and it jumps to about 5 V as the LED flashes
+  red, then slides back down to 0 over two seconds as `fadeTo` runs, while
+  the blue pin climbs back to 0.8 V. Take the card away and bring it back
+  to see it again: each arrival is read once.

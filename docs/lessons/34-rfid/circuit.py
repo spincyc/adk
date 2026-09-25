@@ -26,3 +26,9 @@ bench.wire ("50", "rfid.MISO", via=[(4.65, 3.4), (2.5, 3.4)])
 bench.wire ("45", "rfid.RST", via=[(4.75, 3.5), (2.2, 3.5)])
 
 bench.closeup (1, 28)
+
+# Readings to take with a multimeter on the RGB LED's pins.
+bench.measure ("The blue leg's pin, waiting", red="7", black="GND", expect="about 0.8 V",
+               when="LED glowing dim blue")
+bench.measure ("The red leg's pin, for a stranger's card", red="5", black="GND",
+               expect="about 5 V, falling to 0", when="As the red flash fades")
