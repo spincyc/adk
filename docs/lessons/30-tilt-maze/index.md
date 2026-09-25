@@ -55,9 +55,10 @@ in under two seconds.
 
 The mazes are pictures, like those in Lesson 25: eight bytes, one per row,
 where each 1 is a wall. To ask whether the dot at column 5 of a row is a
-wall, the sketch makes a byte with a single 1 in column 5, `0x80 >> 5`,
-which is `0b00000100`, and uses `&` to keep only the bits the two bytes
-share. If anything is left, it's a wall.
+wall, the sketch makes a byte with a single 1 in column 5. It starts from
+`0b10000000`, a 1 in column 0, and `>> 5` shifts the 1 five places to the
+right: `0b00000100`. Then `&` keeps only the 1s the two bytes share. If
+anything is left, it's a wall.
 
 !!! question "Predict"
     At 10° the ball settles at 5 dots a second. How fast will it roll with
@@ -97,8 +98,8 @@ buzzer knocks. The edges of the matrix are walls too.
     towards the low side: lower the right end and it rolls right, lower the
     near edge and it rolls down the matrix. The matrix itself stays flat on
     the table, the right way up, like a screen showing the tray from above.
-    If the ball rolls uphill, turn back to *If it doesn't work* in Lesson 28:
-    the same fixes apply here, in `rollBall ()`.
+    If the ball rolls uphill, see *If it doesn't work* below: the fix is a
+    sign in `rollBall ()`.
 
 When you are done, these are the connections your circuit makes:
 
@@ -110,25 +111,33 @@ Open **File → Examples → Adk → Lesson30TiltMaze**:
 
 <!-- sketch -->
 
-Read it from the top:
+What's new:
 
 - Every part is one you've met: the accelerometer and matrix from Lesson 28,
   the encoder from Lesson 29, and the speaker from Lesson 27.
-- `mazes` holds four mazes of eight rows each. Every maze is open in the
-  top-left corner, where the ball starts, and the bottom-right, where the
-  exit is.
+- `using Maze = adk::Array<uint8_t, 8>;` names a maze's type, as `Picture`
+  did in Lesson 25. `mazes` holds four of them, each written `Maze {...}` so
+  the array knows what it holds, as the menu's items did in Lesson 29. Every
+  maze is open in the top-left corner, where the ball starts, and the
+  bottom-right, where the exit is.
+- `struct Ball` keeps the ball's place, `x` and `y`, and its speed each way,
+  all `float`s. `ball = {0, 0, 0, 0};` puts it back in the corner, standing
+  still, in one line.
 - `loop ()` has the game's states: *NO SENSOR* if the accelerometer didn't
   answer, `chooseMaze ()` while not playing, and the game itself while
   playing.
-- `chooseMaze ()` moves through the mazes with `knob.turned ()`, wrapping
-  round with `% 4`. The click resets the ball and records `flatPitch` and
-  `flatRoll`, the tilt that counts as flat.
+- `chooseMaze ()` moves through the mazes with `knob.turned ()` and `wrap ()`,
+  the same count-round-in-a-circle as Lesson 29's menu. The click resets the
+  ball and records `flatPitch` and `flatRoll`, the tilt that counts as flat.
 - `rollBall ()` runs once per reading. It updates the speed, then tries the
   move in x and in y separately, so a ball rolling along a wall keeps
-  sliding the way it's free to go. `bump ()` stops it, and knocks if it was
-  going faster than 0.05 dots per reading.
-- `isFree ()` rounds the ball's position to a dot with `lround ()` and tests
-  that dot's bit in the maze. A dot off the edge of the matrix is never free.
+  sliding the way it's free to go. When a wall is in the way, `bump ()`
+  stops the ball, and knocks if it was going faster than 0.05 dots per
+  reading.
+- `isFree ()` rounds the ball's position to a dot with `lround ()` and checks
+  that it is on the matrix. `&&` stops at the first thing that is false, so
+  a dot off the matrix is never looked up in the maze. Then
+  `mazes[maze][row] & (0b10000000 >> column)` tests that dot's bit.
 - `drawGame ()` shows the maze, lights the exit only while `exitLit` is on,
   and lights the ball.
 - `celebrate ()` plays the `cheer`, lets it finish with `adk::wait ()`, and
@@ -143,6 +152,11 @@ hold the breadboard level and click. Two rising notes play, the ball sits
 in the top-left corner and the exit blinks in the bottom-right. Tip the
 board to your right: the ball rolls along the top row. Roll it down through
 each gap to the exit, and listen for the cheer.
+
+You predicted the speed at 5°. Half the tilt gives half the push, 0.005 of a
+dot per reading, and it balances the friction at half the speed: 0.05 dots
+per reading, or 2.5 dots a second. It crosses the matrix in about three
+seconds, where 10° took under two.
 
 ## If it doesn't work
 
@@ -173,13 +187,14 @@ each gap to the exit, and listen for the cheer.
 ## Make it yours
 
 1. **Your own maze.** Design one on squared paper, keeping the top-left
-   and bottom-right corners open, and add it as a fifth maze. Every 4 that
-   counts mazes becomes 5: the size of `mazes`, and the 4s in
-   `chooseMaze ()` and `celebrate ()`.
-2. **Against the clock.** Record `millis ()` when the maze starts, and
-   when the ball escapes, scroll the time in seconds.
+   and bottom-right corners open, and add it to `mazes` as a fifth `Maze`.
+   Nothing else needs to change: the sketch counts the mazes with
+   `mazes.size ()`.
+2. **Against the clock.** Start an `adk::Stopwatch`, as in Lesson 3, when
+   the maze starts. When the ball escapes, scroll the time in seconds,
+   written into text with `snprintf` as Lesson 27 wrote the score.
 3. **Bouncy walls.** Instead of stopping dead, make the ball bounce back
    at half speed: have `bump ()` return `-speed * 0.5`.
 4. **Traps.** Add holes that send the ball back to the start: a second
-   array of bytes for each maze, drawn blinking, checked the same way as
-   the walls.
+   `Maze` of holes for each maze, drawn blinking, and checked the same way
+   as the walls.
