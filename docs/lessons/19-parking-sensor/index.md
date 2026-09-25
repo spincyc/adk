@@ -3,7 +3,7 @@ lesson: 19
 title: Parking Sensor
 arc: Distance and motors
 promise: Measure distance with an echo, and turn it into lights and faster and faster beeps.
-time: 60 minutes
+time: 1 hour
 level: 2
 sketch: Lesson19ParkingSensor
 parts:
@@ -82,17 +82,12 @@ zones, and makes the gap between beeps 10 ms for every centimeter:
 
 <!-- steps -->
 
-??? info "Two things that look new"
-    **A wire joining the two − rails.** The rails along the top and bottom of
-    the breadboard are not joined inside it. The sensor and the buzzer take
-    their GND from the top − rail, and the LEDs from the bottom one, so the
-    long black wire at the far end ties the two together.
-
-    **The resistor after the LED.** In Lesson 1 the resistor came first.
-    Here each LED's long leg meets the wire from the Mega, and the resistor
-    sits between its short leg and GND. It works just the same: the same
-    current flows all the way round the loop, so a resistor anywhere in it
-    sets that current. With 220 Ω each LED takes about 13 mA.
+??? info "Seen before"
+    The long black wire at the far end joins the top − rail to the bottom
+    one, as in Lesson 15, so every part shares the Mega's GND. And each
+    LED's resistor sits after it, on its short leg's side, as in Lesson 7:
+    the current is the same all the way round, so the resistor limits it
+    wherever it is.
 
 When you are done, these are the connections your circuit makes:
 
@@ -109,17 +104,21 @@ What's new:
 - `adk::Ultrasonic sensor {14, 15};` is the sensor, with its trigger pin
   first and its echo pin second. From then on ADK measures by itself,
   about sixteen times a second.
+- The four `constexpr` numbers are the table above: where the ticking
+  starts, and where the light turns yellow, then red, and the tone goes
+  steady. Each is used in more than one place, so a name keeps them in
+  step when you change one.
 - `sensor.distance ()` is the latest distance in centimeters, and
   `sensor.hasEcho ()` says whether anything answered at all. When nothing
-  is within about 4 m, the sketch counts it as 400 cm: plenty of room.
-- `condition ? this : that` is a question in one line: if the condition is
-  true it gives the first value, otherwise the second.
+  is within about 4 m, the `?:` from Lesson 7 counts it as 400 cm: plenty
+  of room.
 - `showGauge ()` switches each LED with `set ()`, which takes true or false,
   so each light is simply on in its own zone.
 - `soundWarning ()` changes the beat of an `adk::Every` from Lesson 11 on
-  the fly with `beeps.period ()`. On each beat, `buzzer.beep (50)` sounds
-  the buzzer for 50 ms and switches it off by itself; `buzzer.on ()` holds
-  it on for the steady tone.
+  the fly: `beeps.period (cm * 10)` sets the time between beats, 300 ms at
+  30 cm. On each beat, `buzzer.beep (50)` sounds the buzzer for 50 ms and
+  switches it off by itself; `buzzer.on ()` holds it on for the steady
+  tone.
 
 ## Upload it
 
@@ -130,6 +129,11 @@ ticks come faster; at 20 cm it's red; and at a hand's width the ticks join
 into one steady tone. Pull back, and it all happens in reverse.
 
 A flat, hard surface such as a book or a wall gives the steadiest readings.
+
+You predicted the echo, the light and the beeps for a hand 30 cm away.
+Hold it there and check: the echo takes 30 × 58 = 1,740 µs, under two
+thousandths of a second; 30 cm is in the yellow zone; and the beeps come
+every 30 × 10 = 300 ms, a little over three a second.
 
 ## If it doesn't work
 
@@ -157,11 +161,11 @@ A flat, hard surface such as a book or a wall gives the steadiest readings.
 
 ## Make it yours
 
-1. **Your own garage.** Change the 50, 20 and 10 cm limits in the sketch
-   to suit a toy car, or your bike against a wall.
+1. **Your own garage.** Change `slowDown`, `danger` and `touching` to suit
+   a toy car, or your bike against a wall.
 2. **Watch the numbers.** Start `Serial` as in Lesson 2, print the distance
-   in `loop ()`, and open the Serial Plotter (Lesson 7) to watch a graph of
-   your hand coming and going.
+   with `adk::println (Serial, distance);` in `loop ()`, and open the Serial
+   Plotter (Lesson 7) to watch a graph of your hand coming and going.
 3. **Flashing danger.** Add the blue LED on pin 29 (with its own 220 Ω
    resistor) and make it blink quickly with `blink (200)` whenever
    something is closer than 10 cm.
