@@ -28,6 +28,10 @@ LIBRARY_FILES := $(wildcard src/*.h src/adk/*.h src/adk/*.cpp) library.propertie
 VENV := $(BUILD_DIR)/venv
 export PYTHONPYCACHEPREFIX := $(abspath $(BUILD_DIR))/pycache
 
+# The pinned MkDocs 1.6 is what the site is built with; skip Material's
+# notice about the incompatible MkDocs 2.0.
+export NO_MKDOCS_2_WARNING := 1
+
 .DEFAULT_GOAL := test
 .SECONDEXPANSION:
 .PHONY: all check test sanitize examples size site pdf serve style upload monitor clean help
