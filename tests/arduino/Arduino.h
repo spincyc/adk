@@ -6,6 +6,7 @@
 // delayMicroseconds () takes a uint16_t and an overflow fails to compile.
 
 #include <functional>
+#include <math.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -106,9 +107,27 @@ unsigned long millis            ();
 unsigned long micros            ();
 void          delay             (unsigned long ms);
 void          delayMicroseconds (uint16_t us);
+long          map               (long value, long fromLow, long fromHigh, long toLow, long toHigh);
 long          random            (long high);
 long          random            (long low, long high);
 void          randomSeed        (unsigned long seed);
+
+// Arduino's min, max and constrain are macros; functions do the same here
+// without clashing with the standard library.
+constexpr auto min (auto a, auto b)
+{
+    return a < b ? a : b;
+}
+
+constexpr auto max (auto a, auto b)
+{
+    return a > b ? a : b;
+}
+
+constexpr auto constrain (auto value, auto low, auto high)
+{
+    return value < low ? low : (value > high ? high : value);
+}
 
 // Timer 5, the 16-bit timer a Servo drives directly.
 extern volatile uint8_t  TCCR5A;
@@ -165,6 +184,22 @@ class Print
     size_t println (double value, int digits = 2);
 };
 
+// The Mega's USB serial port. What a sketch prints is kept in text.
+class HardwareSerial : public Print
+{
+  public:
+    void   begin     (unsigned long baud);
+    int    available ();
+    int    read      ();
+    size_t write     (uint8_t byte) override;
+
+    explicit operator bool () const;
+
+    std::string text;
+};
+
+extern HardwareSerial Serial;
+
 namespace arduino {
 
     struct PinState
@@ -192,6 +227,10 @@ namespace arduino {
     // Charge this many microseconds for every pin read or write, so a
     // bit-banged protocol sees time pass while it polls.
     void setCallCost (unsigned long us);
+
+    // Move time on by this many microseconds whenever millis () is read, so
+    // a sketch waiting for time to pass gets there without a test's help.
+    void setClockStep (unsigned long us);
 
     // Hooks a test sets to act as the device on the other end of a pin.
     extern std::function<int (uint8_t pin)>                                         onDigitalRead;

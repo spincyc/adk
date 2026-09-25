@@ -15,8 +15,10 @@ Any page may also use <!-- arcs --> for the course as cards,
 part's reference, read from its header. The course comes from course.yml,
 which also builds the Course navigation from the lessons that exist.
 
-The build fails if the sketch and the circuit disagree about any pin, so a
-drawing can never show a wire the code doesn't use, or miss one it does.
+`make pins` holds each sketch to its circuit: it runs the sketch's setup ()
+on the host and fails unless the pins it claims are exactly the pins the
+circuit wires, so a drawing can never show a wire the code doesn't use, or
+miss one it does.
 """
 
 import os
@@ -32,18 +34,6 @@ from api import document  # noqa: E402
 from bench import HC595, L293D, Bench  # noqa: E402
 
 ROOT = os.path.dirname (os.path.dirname (os.path.dirname (os.path.abspath (__file__))))
-
-# How many leading constructor arguments of each part are pins, and the bus
-# pins a part uses without naming them.
-PIN_ARGUMENTS = {
-    "Led": 1, "Button": 1, "Switch": 1, "Buzzer": 1, "Speaker": 1, "RgbLed": 3,
-    "DigitalOutput": 1, "DigitalInput": 1, "AnalogInput": 1, "PwmOutput": 1,
-    "ShiftRegister": 3, "SevenSegment": 3, "FourDigitDisplay": 7, "Lcd": 6,
-    "LedMatrix": 3, "Servo": 1, "Stepper": 4, "Motor": 3, "Relay": 1, "Keypad": 8,
-    "RotaryEncoder": 2, "Joystick": 2, "Thermistor": 1, "Ultrasonic": 2, "Dht11": 1,
-    "IrReceiver": 1, "Ds18b20": 1, "Rfid": 2, "Rtc": 0, "Mpu6050": 0,
-}
-BUS_PINS = {"Rtc": {"20", "21"}, "Mpu6050": {"20", "21"}, "Rfid": {"50", "51", "52"}}
 
 COURSE = yaml.safe_load (open (os.path.join (os.path.dirname (__file__), "course.yml"),
                                encoding="utf-8"))
@@ -95,8 +85,6 @@ def on_page_markdown (markdown, page, config, files):
     sketch_name = meta["sketch"]
     sketch_path = os.path.join (ROOT, "examples", sketch_name, sketch_name + ".ino")
     sketch = open (sketch_path, encoding="utf-8").read ()
-
-    check_pins (page.file.src_uri, sketch, bench)
 
     replacements = {
         "bench": figure (bench.svg ("bench", "bench"), bench.title, "bench"),
@@ -163,37 +151,6 @@ def load_bench (path):
     except Exception as error:
         raise PluginError (f"{path}: {error}") from error
     return scope["bench"]
-
-
-def sketch_pins (sketch):
-    pins = set ()
-    # A part with its pins in braces, or one that needs none: adk::Rtc rtc;
-    pattern = r"adk::(\w+)\s+\w+\s*(\[\s*\d*\s*\])?\s*(?:\{(.*?)\})?\s*;"
-    for kind, array, arguments in re.findall (pattern, sketch, re.S):
-        if kind not in PIN_ARGUMENTS:
-            continue
-        # An array of parts lists one brace group per part.
-        groups = re.findall (r"\{([^{}]*)\}", arguments) if array else [arguments]
-        for group in groups:
-            values = re.findall (r"\bA\d{1,2}\b|\bLED_BUILTIN\b|\b\d+\b", group)
-            for value in values[:PIN_ARGUMENTS[kind]]:
-                pins.add ("13" if value == "LED_BUILTIN" else value)
-        pins |= BUS_PINS.get (kind, set ())
-    return pins
-
-
-def check_pins (where, sketch, bench):
-    declared = sketch_pins (sketch)
-    wired = bench.signal_pins ()
-    # The built-in LED is on the board itself and needs no wire.
-    wired_or_built_in = wired | ({"13"} & declared)
-    missing = declared - wired_or_built_in
-    extra = wired - declared
-    if missing or extra:
-        raise PluginError (
-            f"{where}: the sketch and the circuit disagree. "
-            f"Declared but not wired: {sorted (missing) or 'none'}. "
-            f"Wired but not declared: {sorted (extra) or 'none'}.")
 
 
 def figure (svg, caption, kind):

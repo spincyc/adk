@@ -30,7 +30,8 @@ namespace adk {
 
     // Measures time while it runs, as of the latest adk::update (). Stopping
     // and starting again carries on from where it stopped, like a real
-    // stopwatch; reset () goes back to zero.
+    // stopwatch; reset () goes back to zero, and restart () goes back to zero
+    // and runs.
     struct Stopwatch : Object
     {
         Stopwatch ();
@@ -38,6 +39,7 @@ namespace adk {
         void   start     ();
         void   stop      ();
         void   reset     ();
+        void   restart   ();
         bool   isRunning () const;
         Millis elapsed   () const;
 

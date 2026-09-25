@@ -157,6 +157,11 @@ namespace adk {
         return claimInput (pin, pullUp);
     }
 
+    bool isClaimed (Pin pin)
+    {
+        return pin < NUM_DIGITAL_PINS && test (claimed, pin);
+    }
+
     bool claimShared (Pin pin)
     {
         if (pin < NUM_DIGITAL_PINS && test (shared, pin))

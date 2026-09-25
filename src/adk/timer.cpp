@@ -102,6 +102,13 @@ namespace adk {
         startedAt_ = now_;
     }
 
+    void Stopwatch::restart ()
+    {
+        banked_   = 0;
+        running_  = true;
+        starting_ = true;
+    }
+
     bool Stopwatch::isRunning () const
     {
         return running_;

@@ -44,6 +44,9 @@ namespace adk {
     // The hardware timer behind a pin's PWM, or 0xFF if it has none.
     uint8_t timerOf (Pin pin);
 
+    // Whether some part has claimed the pin, alone or as a shared bus pin.
+    bool isClaimed (Pin pin);
+
     Fault fault    ();
     Pin   faultPin ();
 

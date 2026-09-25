@@ -51,5 +51,6 @@ that starts with how to wire the part, its source, host tests, and a line in
 4. Write `docs/lessons/NN-name/index.md` from Lesson 1's shape, with the
    markers `<!-- bench -->`, `<!-- closeup -->`, `<!-- steps -->`,
    `<!-- connections -->` and `<!-- sketch -->` where those belong.
-5. `make examples site` must pass. The site will not build if the sketch
-   and the drawing disagree about a single pin.
+5. `make pins site` must pass. `make pins` runs each sketch's `setup ()` on
+   the host and fails if the pins it claims and the pins the circuit wires
+   differ by a single pin.

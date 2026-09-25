@@ -33,6 +33,13 @@ SANITIZE_OBJECTS := $(patsubst %.cpp,$(SANITIZE_DIR)/obj/%.o,$(LIBRARY_SOURCES) 
 ARDUINO_DIR   := $(BUILD_DIR)/arduino
 ARDUINO_CACHE := $(BUILD_DIR)/arduino-cache
 ARDUINO_LOGS  := $(patsubst %,$(ARDUINO_DIR)/%.log,$(EXAMPLES))
+PIN_CHECKS    := $(patsubst %,$(ARDUINO_DIR)/%/pins.ok,$(EXAMPLES))
+
+# A sketch's setup () runs on the host against the fake core, to list the
+# pins it claims; warnings are the AVR build's business.
+PROBE_FLAGS   := -std=gnu++23 -w -fno-exceptions -fno-rtti -Isrc -Itests/arduino -Itests
+PROBE_OBJECTS := $(filter $(HOST_DIR)/obj/src/% $(HOST_DIR)/obj/tests/arduino/% \
+                          $(HOST_DIR)/obj/tests/fake_%,$(HOST_OBJECTS))
 LIBRARY_FILES := $(wildcard src/*.h src/adk/*.h src/adk/*.cpp) library.properties
 
 VENV := $(BUILD_DIR)/venv
@@ -44,12 +51,13 @@ export NO_MKDOCS_2_WARNING := 1
 
 .DEFAULT_GOAL := test
 .SECONDEXPANSION:
-.PHONY: all check test sanitize toolchain examples size site pdf serve style upload monitor clean help
+.PHONY: all check test sanitize toolchain examples pins size site pdf serve style upload monitor \
+        clean help
 
 all: check
 
 ## check         everything CI runs: tests, examples, sizes, the site and its PDFs
-check: style test sanitize examples size pdf
+check: style test sanitize examples pins size pdf
 
 ## test          build and run the host tests (TEST=name runs matching cases)
 test: $(HOST_DIR)/tests
@@ -101,6 +109,19 @@ $(ARDUINO_DIR)/%.log: examples/$$*/$$*.ino $(LIBRARY_FILES) | $(TOOLCHAIN)/bin/a
 	@if grep -A3 -E '(src/adk|examples)/.*warning' $@.tmp; then rm -f $@.tmp; exit 1; fi
 	@mv $@.tmp $@
 
+## pins          check each example claims exactly the pins its lesson's circuit wires
+pins: $(PIN_CHECKS)
+
+$(ARDUINO_DIR)/%/pins.ok: $(ARDUINO_DIR)/%.log $(PROBE_OBJECTS) tests/probe/pins.cpp tests/pins.py \
+                          $$(wildcard docs/lessons/$$(shell echo $$* | cut -c7-8)-*/circuit.py) \
+                          $(wildcard docs/_theme/*.py)
+	@echo "  PINS examples/$*"
+	@$(CXX) $(PROBE_FLAGS) $(ARDUINO_DIR)/$*/sketch/$*.ino.cpp tests/probe/pins.cpp \
+	    $(PROBE_OBJECTS) -o $(ARDUINO_DIR)/$*/probe
+	@$(ARDUINO_DIR)/$*/probe > $(ARDUINO_DIR)/$*/pins.txt
+	@$(PYTHON) tests/pins.py $* $(ARDUINO_DIR)/$*/pins.txt
+	@touch $@
+
 ## size          print the flash and RAM each example uses
 size: $(ARDUINO_LOGS)
 	@printf '%-36s %8s %6s\n' Example Flash RAM
@@ -136,7 +157,8 @@ $(VENV)/.installed: docs/requirements.txt
 	$(VENV)/bin/pip install --quiet --disable-pip-version-check -r $<
 	@touch $@
 
-STYLED := $(wildcard src/*.h src/adk/*.h src/adk/*.cpp tests/*.h tests/*.cpp tests/arduino/*) \
+STYLED := $(wildcard src/*.h src/adk/*.h src/adk/*.cpp tests/*.h tests/*.cpp tests/arduino/* \
+                    tests/probe/*.cpp) \
           $(wildcard examples/*/*.ino)
 
 ## style         check the mechanical rules of docs/STYLE.md

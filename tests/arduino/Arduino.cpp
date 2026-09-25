@@ -31,6 +31,7 @@ namespace {
     Handler           handlers [6];
     unsigned long     nowUs    = 0;
     unsigned long     callCost = 0;
+    unsigned long     step     = 0;
     unsigned long     seed     = 1;
 
     void charge ()
@@ -54,6 +55,7 @@ namespace arduino {
 
         nowUs    = 0;
         callCost = 0;
+        step     = 0;
         seed     = 1;
 
         onDigitalRead  = nullptr;
@@ -61,8 +63,13 @@ namespace arduino {
         onPulseIn      = nullptr;
         shifted.clear ();
 
-        TCCR5A = TCCR5B = 0;
-        ICR5 = OCR5A = OCR5B = OCR5C = TCNT5 = 0;
+        TCCR5A = 0;
+        TCCR5B = 0;
+        ICR5   = 0;
+        OCR5A  = 0;
+        OCR5B  = 0;
+        OCR5C  = 0;
+        TCNT5  = 0;
     }
 
     PinState& pin (uint8_t pin)
@@ -110,6 +117,11 @@ namespace arduino {
     void setCallCost (unsigned long us)
     {
         callCost = us;
+    }
+
+    void setClockStep (unsigned long us)
+    {
+        step = us;
     }
 
     size_t Log::write (uint8_t byte)
@@ -223,6 +235,7 @@ void noInterrupts ()
 
 unsigned long millis ()
 {
+    nowUs += step;
     return nowUs / 1000;
 }
 
@@ -394,4 +407,36 @@ size_t Print::println (unsigned long value, int base)
 size_t Print::println (double value, int digits)
 {
     return print (value, digits) + println ();
+}
+
+HardwareSerial Serial;
+
+void HardwareSerial::begin (unsigned long)
+{
+}
+
+int HardwareSerial::available ()
+{
+    return 0;
+}
+
+int HardwareSerial::read ()
+{
+    return -1;
+}
+
+size_t HardwareSerial::write (uint8_t byte)
+{
+    text += static_cast<char> (byte);
+    return 1;
+}
+
+HardwareSerial::operator bool () const
+{
+    return true;
+}
+
+long map (long value, long fromLow, long fromHigh, long toLow, long toHigh)
+{
+    return (value - fromLow) * (toHigh - toLow) / (fromHigh - fromLow) + toLow;
 }

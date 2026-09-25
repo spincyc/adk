@@ -14,13 +14,13 @@ repository. Read these before changing anything:
 - **The library stays small and honest.** C++23, with no heap, exceptions,
   RTTI, coroutines or Arduino libraries. One `adk::Object` per part; pins are
   claimed in `setup ()`; time enters only through `update (now)`; events last
-  exactly one update. Every part has host tests, and `make examples` must stay free of
-  warnings.
+  exactly one update. Every part has host tests, and `make examples` must stay
+  free of warnings.
 - **A lesson's wiring is described once**, in its `circuit.py`. The drawings,
-  build steps and connection list come from it, and the site refuses to build
-  if the sketch and the circuit disagree about a pin. Use each part's home
-  pins from `docs/kit.md`, and lay the breadboard out from column 1 (the end
-  nearest the Mega) in the order the current flows.
+  build steps and connection list come from it, and `make pins` fails unless
+  the pins the sketch claims are exactly the pins the circuit wires. Use each
+  part's home pins from `docs/kit.md`, and lay the breadboard out from column
+  1 (the end nearest the Mega) in the order the current flows.
 - **Lessons continue each other.** The Mega's GND always lands in the same
   − rail hole, the one nearest the Mega, and power always comes in the same
   way. A part that recurs keeps its home position on the breadboard, so each
@@ -45,6 +45,7 @@ repository. Read these before changing anything:
 | `make test` | Host tests |
 | `make sanitize` | Host tests under ASan and UBSan |
 | `make examples` | Compile every example for the Mega |
+| `make pins` | Check each sketch claims exactly the pins its circuit wires |
 | `make site` / `make pdf` | The website, and every lesson as a PDF |
 | `make style` | The mechanical style rules |
 | `make check` | Everything CI runs |

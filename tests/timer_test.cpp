@@ -59,3 +59,18 @@ TEST (stopwatchCountsWhileRunningAndCarriesOn)
     adk::update (3150);
     CHECK (watch.elapsed () == 50);
 }
+
+TEST (stopwatchRestartsFromZero)
+{
+    adk::Stopwatch watch;
+
+    watch.start ();
+    adk::update (100);
+    adk::update (400);
+
+    watch.restart ();
+    CHECK (watch.elapsed () == 0);
+    adk::update (500);
+    adk::update (731);
+    CHECK (watch.isRunning () && watch.elapsed () == 231);
+}
