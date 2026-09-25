@@ -77,6 +77,26 @@ TEST (speakerPlaysAMelodyWithGapsBetweenNotes)
     CHECK (!speaker.isPlaying ());
 }
 
+TEST (speakerPlaysARecordedVector)
+{
+    adk::Vector<adk::Note, 8> recorded;
+    adk::Speaker              speaker {30};
+
+    recorded.push_back ({adk::note::e4, 200});
+    recorded.push_back ({adk::note::g4, 200});
+
+    adk::setup ();
+    speaker.play (recorded);
+    adk::update (0);
+    CHECK (arduino::pin (30).tone == 330);
+
+    adk::update (200);
+    CHECK (arduino::pin (30).tone == 392);
+
+    adk::update (400);
+    CHECK (!speaker.isPlaying ());
+}
+
 TEST (speakerIsSilencedByStopAll)
 {
     adk::Speaker speaker {30};

@@ -235,6 +235,13 @@ namespace adk {
         {
         }
 
+        template <typename U, size_t Capacity>
+        constexpr Span (const Vector<U, Capacity>& items)
+            : items_ (items.data ())
+            , size_  (items.size ())
+        {
+        }
+
         constexpr size_t size  () const { return size_; }
         constexpr bool   empty () const { return size_ == 0; }
 
@@ -260,4 +267,7 @@ namespace adk {
 
     template <typename T, size_t Capacity>
     Span (Vector<T, Capacity>&) -> Span<T>;
+
+    template <typename T, size_t Capacity>
+    Span (const Vector<T, Capacity>&) -> Span<const T>;
 }

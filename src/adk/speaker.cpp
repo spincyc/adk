@@ -32,16 +32,16 @@ namespace adk {
         start ({hz, static_cast<uint16_t> (duration)});
     }
 
-    void Speaker::play (const Note* melody, uint8_t length)
+    void Speaker::play (Span<const Note> melody)
     {
-        if (length == 0)
+        if (melody.empty ())
         {
             stop ();
             return;
         }
 
-        melody_ = melody;
-        length_ = length;
+        melody_ = melody.begin ();
+        length_ = static_cast<uint8_t> (min (melody.size (), size_t {255}));
         next_   = 1;
         start (melody[0]);
     }

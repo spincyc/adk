@@ -1,5 +1,6 @@
 #pragma once
 
+#include "containers.h"
 #include "notes.h"
 #include "object.h"
 
@@ -25,15 +26,10 @@ namespace adk {
         // Sound a pitch, for a duration or, if none is given, until stop ().
         void tone (uint16_t hz, Millis duration = 0);
 
-        // Play a melody. Each note sounds for 7/8 of its length, so repeated
-        // notes stay separate.
-        template <uint8_t Length>
-        void play (const Note (&melody)[Length])
-        {
-            play (melody, Length);
-        }
-
-        void play (const Note* melody, uint8_t length);
+        // Play a melody of up to 255 notes: an array, an adk::Array or an
+        // adk::Vector of them, which must last until it has played. Each
+        // note sounds for 7/8 of its length, so repeated notes stay separate.
+        void play (Span<const Note> melody);
 
         void stop      () override;
         bool isPlaying () const;
