@@ -109,10 +109,10 @@ if (button.isPressed ())    // true while held
 ## Blocking
 
 `update ()` should return quickly so everything else keeps moving. A few
-protocols cannot be interrupted: a DHT11 reading takes about 25 ms, an HC-SR04
-echo up to 25 ms. Those devices do their blocking work at most once per
-reading period and say so in their header. A multiplexed display will flicker
-while they do.
+protocols cannot be interrupted: a DHT11 reading holds the processor for about
+4 ms with interrupts off, and an HC-SR04 echo can take up to 25 ms. Those
+devices do their blocking work at most once per reading period and say so in
+their header. A multiplexed display will flicker while they do.
 
 ## Memory
 
@@ -137,9 +137,9 @@ Arduino core where pins are memory and time only moves when a test says so.
 Hooks let a test act as the device at the other end of a wire:
 
 ```cpp
-arduino::onPulseIn = [] (uint8_t, uint8_t, unsigned long) { return 1166UL; };
-adk::update (60);
-CHECK (ranger.distance () == 200);
+arduino::onPulseIn = [] (uint8_t, uint8_t, unsigned long) { return 1160UL; };
+adk::update (0);
+CHECK (ranger.distance () == 20);
 ```
 
 `make examples` compiles every example for the Mega with all warnings, and

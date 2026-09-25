@@ -21,6 +21,9 @@
 #include "adk/rotary_encoder.h"
 #include "adk/joystick.h"
 #include "adk/thermistor.h"
+#include "adk/ultrasonic.h"
+#include "adk/dht11.h"
+#include "adk/ir_receiver.h"
 
 #include "adk/shift_register.h"
 #include "adk/segments.h"
