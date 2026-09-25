@@ -308,3 +308,21 @@ TEST (devicesOfOneKindCanShareATimer)
     CHECK (!adk::claimTimer (5, 31));
     CHECK (!adk::claimTimer (0, 32, 7));
 }
+
+TEST (devicesCanRefuseAPinThemselves)
+{
+    CHECK (!adk::refuse (adk::Fault::NotServo, 30));
+    CHECK (adk::fault () == adk::Fault::NotServo);
+
+    arduino::Log log;
+    adk::explain (log, adk::fault (), adk::faultPin ());
+    CHECK (log.text == "adk: pin 30 cannot drive a servo; use 44, 45 or 46\r\n");
+}
+
+TEST (timerOfNamesThePwmTimer)
+{
+    CHECK (adk::timerOf (9) == 2);
+    CHECK (adk::timerOf (44) == 5);
+    CHECK (adk::timerOf (13) == 0);
+    CHECK (adk::timerOf (22) == 0xFF);
+}

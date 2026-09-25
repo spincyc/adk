@@ -56,26 +56,26 @@ namespace adk {
             return true;
         }
 
-        uint8_t timerOf (Pin pin)
-        {
-            switch (digitalPinToTimer (pin))
-            {
-                case TIMER0A: case TIMER0B:                             return 0;
-                case TIMER1A: case TIMER1B: case TIMER1C:               return 1;
-                case TIMER2:  case TIMER2A: case TIMER2B:               return 2;
-                case TIMER3A: case TIMER3B: case TIMER3C:               return 3;
-                case TIMER4A: case TIMER4B: case TIMER4C: case TIMER4D: return 4;
-                case TIMER5A: case TIMER5B: case TIMER5C:               return 5;
-                default:                                                return NoTimer;
-            }
-        }
-
         void flash (unsigned long on)
         {
             digitalWrite (LED_BUILTIN, HIGH);
             delay        (on);
             digitalWrite (LED_BUILTIN, LOW);
             delay        (300);
+        }
+    }
+
+    uint8_t timerOf (Pin pin)
+    {
+        switch (digitalPinToTimer (pin))
+        {
+            case TIMER0A: case TIMER0B:                             return 0;
+            case TIMER1A: case TIMER1B: case TIMER1C:               return 1;
+            case TIMER2:  case TIMER2A: case TIMER2B:               return 2;
+            case TIMER3A: case TIMER3B: case TIMER3C:               return 3;
+            case TIMER4A: case TIMER4B: case TIMER4C: case TIMER4D: return 4;
+            case TIMER5A: case TIMER5B: case TIMER5C:               return 5;
+            default:                                                return NoTimer;
         }
     }
 
@@ -192,6 +192,11 @@ namespace adk {
         return fail (Fault::TimerInUse, pin);
     }
 
+    bool refuse (Fault fault, Pin pin)
+    {
+        return fail (fault, pin);
+    }
+
     Fault fault ()
     {
         return firstFault;
@@ -236,6 +241,9 @@ namespace adk {
                 break;
             case Fault::NotInterrupt:
                 log.println (F (" cannot interrupt; use 2, 3, 18, 19, 20 or 21"));
+                break;
+            case Fault::NotServo:
+                log.println (F (" cannot drive a servo; use 44, 45 or 46"));
                 break;
             case Fault::TimerInUse:
                 log.println (F (" needs a timer that is already in use"));

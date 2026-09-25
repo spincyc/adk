@@ -16,6 +16,7 @@ namespace adk {
         NotPwm,
         NotAnalog,
         NotInterrupt,
+        NotServo,
         TimerInUse
     };
 
@@ -35,6 +36,13 @@ namespace adk {
     bool claimInterrupt (Pin pin, bool pullUp = false);
     bool claimShared    (Pin pin);
     bool claimTimer     (uint8_t timer, Pin pin, uint8_t user = 0);
+
+    // Record a fault a device found itself, such as a servo on a pin its
+    // timer cannot reach. Returns false, like a failed claim.
+    bool refuse (Fault fault, Pin pin);
+
+    // The hardware timer behind a pin's PWM, or 0xFF if it has none.
+    uint8_t timerOf (Pin pin);
 
     Fault fault    ();
     Pin   faultPin ();
