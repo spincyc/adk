@@ -26,6 +26,9 @@
 #include "adk/segments.h"
 #include "adk/seven_segment.h"
 #include "adk/four_digit_display.h"
+#include "adk/font.h"
+#include "adk/lcd.h"
+#include "adk/led_matrix.h"
 
 #include "adk/i2c.h"
 #include "adk/rtc.h"
