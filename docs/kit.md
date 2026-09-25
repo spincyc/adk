@@ -79,11 +79,22 @@ that makes PWM on pins 9 and 10; pin 10 could not dim anything anyway.
 
 ## Reading resistors
 
-The colored bands give the value: two digits, then how many zeros.
+The kit's resistors are blue, with five colored bands. Hold the resistor
+with the lone band that sits apart (brown, for 1%) on the right, and read
+from the left: three digits, then how many zeros follow.
 
 | Color | Black | Brown | Red | Orange | Yellow | Green | Blue | Violet | Gray | White |
 |---|---|---|---|---|---|---|---|---|---|---|
 | Digit | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
 
-So red, red, brown is 2, 2 and one zero: 220 Ω. Brown, black, red is 1, 0 and
-two zeros: 1000 Ω, or 1 kΩ. The last band, gold, is the tolerance.
+| Resistor | Bands |
+|---|---|
+| 220 Ω | red, red, black, black, brown |
+| 330 Ω | orange, orange, black, black, brown |
+| 1 kΩ | brown, black, black, brown, brown |
+| 10 kΩ | brown, black, black, red, brown |
+
+So red, red, black, then black, is 2, 2, 0 and no more zeros: 220 Ω. Some
+resistors have four bands instead (two digits, then the zeros); 220 Ω is
+then red, red, brown. The kit's resistor card is labelled too, so check the
+card when in doubt.

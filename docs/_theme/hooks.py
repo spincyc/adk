@@ -29,7 +29,7 @@ from mkdocs.exceptions import PluginError
 sys.path.insert (0, os.path.dirname (__file__))
 
 from api import document  # noqa: E402
-from bench import Bench  # noqa: E402
+from bench import HC595, L293D, Bench  # noqa: E402
 
 ROOT = os.path.dirname (os.path.dirname (os.path.dirname (os.path.abspath (__file__))))
 
@@ -128,7 +128,7 @@ def drawing (match):
 
 
 def load_bench (path):
-    scope = {"Bench": Bench}
+    scope = {"Bench": Bench, "HC595": HC595, "L293D": L293D}
     try:
         exec (compile (open (path, encoding="utf-8").read (), path, "exec"), scope)
     except Exception as error:

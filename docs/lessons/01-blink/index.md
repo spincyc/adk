@@ -10,7 +10,7 @@ parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
   - Red LED
-  - 220 Ω resistor (red, red, brown)
+  - 220 Ω resistor (red, red, black, black, brown)
   - 3 jumper wires
 ideas:
   - Pins you can switch on and off
@@ -52,7 +52,7 @@ current:
 That is bright, and comfortably below the 20 mA a Mega pin is happy to give.
 
 !!! question "Predict"
-    If you swapped the 220 Ω resistor for a 1 kΩ one (brown, black, red), would
+    If you swapped the 220 Ω resistor for a 1 kΩ one (brown, black, black, brown, brown), would
     the LED be brighter, dimmer, or the same? Write down your guess. You can
     test it at the end.
 
