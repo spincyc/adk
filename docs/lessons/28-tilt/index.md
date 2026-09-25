@@ -96,7 +96,7 @@ Open **File → Examples → Adk → Lesson28Tilt**:
 
 <!-- sketch -->
 
-The new parts:
+What's new:
 
 - `adk::Mpu6050 tilt {0x68};` names the accelerometer and its address on the
   bus. It needs no pin numbers: I2C is always pins 20 and 21 on the Mega.
@@ -104,13 +104,18 @@ The new parts:
   arrived, which happens every 20 ms.
 - `tilt.ok ()` is false if the chip didn't answer. Then the matrix scrolls
   *NO SENSOR* instead of a bubble, so a loose wire is easy to spot.
-- `showBubble ()` turns degrees into dots: `lround (pitch / 3)` rounds to
-  the nearest whole number, so every 3° moves the bubble one dot, and
-  `constrain` stops it at the edge, 9° either way. The bubble is 2 × 2 dots,
-  so its top-left corner goes from 0 to 6, with 3 in the middle.
+- `tilt.pitch ()` and `tilt.roll ()` are `float`s, numbers with decimals, as
+  in Lesson 14: 2.7 degrees, say.
+- `showBubble ()` turns degrees into dots. `degreesPerDot` is 3, and
+  `lround (pitch / degreesPerDot)` rounds to the nearest whole number, so
+  every 3° moves the bubble one dot. `constrain` stops it at the edge, 9°
+  either way. The bubble is 2 × 2 dots, so its top-left corner goes from 0
+  to 6, with 3 in the middle.
 - `roll` has a minus sign because the matrix counts y downwards: raising the
   far edge should send the bubble up.
-- `drawFrame ()` lights the border when both angles are under 1°, using
+- `fabs (pitch) < 1` asks whether the pitch is under 1° either way: `fabs ()`
+  is a number's size without its sign, so `fabs (-0.4)` is 0.4. When both
+  angles are that small, `drawFrame ()` lights the border, using
   `matrix.row (0, 0b11111111)` for the top and bottom rows, binary just as
   in Lesson 25.
 
@@ -122,13 +127,20 @@ around it. Lift the right-hand end of the breadboard, the end away from the
 Mega: the bubble slides right. Lift the far edge: the bubble slides up. The
 bubble always rises to the high side, like a real bubble in a real level.
 
+You predicted the readings with the breadboard stood on a long edge. Now no
+part of gravity lies along z, so z reads about 0. The whole 1000 mg moves to
+the axis that now points up, y, which reads about 1000, or −1000 on the
+other edge; x stays near 0. The bubble shows it: the roll is 90°, so the
+bubble runs to the top or bottom edge of the matrix and stays there. To see
+the numbers themselves, try the second challenge below.
+
 ## If it doesn't work
 
 | What you see | Try this |
 |---|---|
 | *NO SENSOR* scrolls | Check SDA goes to pin 20 and SCL to 21: they can't be swapped. Check VCC and GND, and that the header is pushed well into row j. |
-| The bubble moves the wrong way left and right | Your module's X arrow points the other way. Change `3 + lround (pitch / 3)` to `3 - lround (pitch / 3)`. |
-| The bubble moves the wrong way up and down | Change `3 - lround (roll / 3)` to `3 + lround (roll / 3)`. |
+| The bubble moves the wrong way left and right | Your module's X arrow points the other way. In `showBubble ()`, change `3 + lround (pitch / degreesPerDot)` to `3 - lround (pitch / degreesPerDot)`. |
+| The bubble moves the wrong way up and down | Change `3 - lround (roll / degreesPerDot)` to `3 + lround (roll / degreesPerDot)`. |
 | Up and down follow left and right instead | The arrows are turned a quarter round. Swap `pitch` and `roll` in the call to `showBubble ()`, then fix any direction as above. |
 | The frame never lights, even on a level table | Cheap MPU-6050s can be a degree or two out. Try the calibration in *Make it yours*. |
 | The bubble shivers | Tap the table and watch: the chip feels every bump. Keep the breadboard still. |
@@ -149,11 +161,13 @@ bubble always rises to the high side, like a real bubble in a real level.
 
 ## Make it yours
 
-1. **A finer level.** Make each dot worth 1.5° instead of 3°. What happens
-   to the shivering?
+1. **A finer level.** Make each dot worth 1.5° instead of 3°: change
+   `degreesPerDot` to 1.5. What happens to the shivering?
 2. **Watch the numbers.** Start Serial with `Serial.begin (9600);` before
-   `adk::setup ()`, print pitch and roll on one line separated by a tab, and
-   open the Serial Plotter to see both angles as moving lines.
+   `adk::setup ()`. With each reading, print pitch and roll on one line
+   separated by a tab, `adk::println (Serial, pitch, '\t', roll);`, and open
+   the Serial Plotter to see both angles as moving lines. Print
+   `tilt.acceleration ().z` too, and stand the board on its edge.
 3. **Zero it.** Add a button on pin 22. When it's pressed, remember the
    current pitch and roll and subtract them from every reading, so any
    surface you like becomes "level".
