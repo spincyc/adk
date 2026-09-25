@@ -3,7 +3,7 @@ lesson: 11
 title: Four Digits
 arc: Digits
 promise: Light four digits by flashing them one at a time, faster than your eye can follow.
-time: 60 minutes
+time: 1 hour
 level: 2
 sketch: Lesson11FourDigits
 parts:
@@ -120,6 +120,11 @@ counts: 1, 2, 3, and on, ten a second. The right-hand digit changes too
 fast to read, the next one once a second, and the left-hand one only every
 100 seconds. Look closely: all four digits seem steady and equally bright,
 though each is dark three quarters of the time.
+
+You predicted what a new digit every half second would look like. The trick
+would give itself away: you would see one digit lit at a time, stepping from
+left to right and round again, and never all four at once. The first
+challenge below lets you watch it happen.
 
 ## If it doesn't work
 

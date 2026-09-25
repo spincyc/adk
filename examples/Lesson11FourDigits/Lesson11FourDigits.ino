@@ -1,6 +1,6 @@
 // Lesson 11: Four Digits
-// A four-digit display behind a 74HC595 on pins 37, 38 and 39, its digits on pins 40 to 43,
-// says HI, then counts up ten times a second.
+// A four-digit display behind a 74HC595 on pins 37, 38 and 39, its digits
+// on pins 40 to 43, says HI, then counts up ten times a second.
 
 #include <Adk.h>
 
