@@ -180,3 +180,37 @@ from 0. They are the two bumps on top of the heart.
    between the two on each tick of an `adk::Every` of 300 ms, so it walks.
    Or make a single dot bounce around the edges using `set (x, y)` and
    `set (x, y, false)`.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM** and the red one in **V**, never in **10A**. Keep
+each probe tip in its own hole, so it can't bridge two.
+
+The matrix's five wires run straight from the Mega's header to the module,
+where a probe can't reach them safely, so the readings here are on the one
+part on the breadboard: the button that changes the picture. Nothing needs
+slowing down; just keep the button still while the number settles.
+
+!!! question "Predict"
+    Pin 22 is an input: the Mega only listens to it, and nothing in your
+    circuit joins it to 5 V. What will it read with the button up? And held
+    down?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Released**, pin 22 reads about 5 V after all. The Mega does it inside
+  the chip: `adk::Button` switches on the pin's **pull-up**, a resistor of
+  20 to 50 kΩ from the pin to 5 V, as in Lesson 2. Almost no current flows
+  through it, so almost no voltage is lost across it, and the pin sits at
+  the full 5 V.
+- **Held down**, the button joins pin 22 to the − rail and the reading drops
+  to 0. Now the pull-up has the whole 5 V across it, and passes at most
+  0.25 mA: far too little to harm anything.
+- `button.wasPressed ()` is true in the one update where pin 22 falls from
+  5 V to 0 V, and each fall moves `slide` on by one. Letting go, back up to
+  5 V, changes nothing, which is why a long press still shows just one new
+  picture.

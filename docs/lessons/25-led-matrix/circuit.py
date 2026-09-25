@@ -29,3 +29,9 @@ bench.wire ("47", "matrix.DIN")
 bench.wire ("B-5", "matrix.GND")
 bench.wire ("5V.long", "matrix.VCC")
 bench.closeup (1, 16)
+
+# Readings to take with a multimeter: the button's pin, held at 5 V by the
+# Mega's pull-up until the button joins it to GND.
+bench.measure ("Pin 22, released", red="22", black="GND", expect="about 5 V", when="button up")
+bench.measure ("Pin 22, held down", red="22", black="GND", expect="about 0 V",
+               when="button held down")
