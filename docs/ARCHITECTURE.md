@@ -119,7 +119,10 @@ their header. A multiplexed display will flicker while they do.
 The Mega has 8 KB of RAM and 256 KB of flash. Objects stay small: store pins
 as `Pin` (one byte), times as `Millis`, and flags as `bool`. Tables larger than
 a few bytes (fonts, glyphs, step sequences) live in flash with `PROGMEM`. The
-library never allocates. Nothing costs anything unless a sketch declares it:
+library never allocates, and neither do its containers: `adk::Array`,
+`Vector`, `Deque` and `Span` reserve all their room where they are declared,
+so the compiler's RAM report counts it. Nothing costs anything unless a
+sketch declares it:
 unused code is removed by the linker, and the library uses no Arduino libraries
 whose global objects would be linked in anyway.
 
@@ -144,8 +147,10 @@ CHECK (ranger.distance () == 20);
 ```
 
 `make examples` compiles every example for the Mega with all warnings, and
-fails on any warning from the library or an example. Neither replaces trying a
-circuit on a real board.
+fails on any warning from the library or an example. `make pins` then runs
+each example's `setup ()` on the host and checks, with `adk::isClaimed ()`,
+that the pins it claims are exactly the pins its lesson's `circuit.py` wires.
+None of these replaces trying a circuit on a real board.
 
 ## Adding a device
 
