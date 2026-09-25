@@ -217,3 +217,42 @@ more than three times the 2½ steps a second it starts with.
 4. **Obstacles.** Keep a few wall dots in an `adk::Vector<Dot, 8>`, draw
    them at the start of each game, and make `moveSnake ()` treat them like
    the edges. Or add a second food that is worth three dots.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM** and the red one in **V**, never in **10A**. Keep
+each probe tip in its own hole, so it can't bridge two.
+
+The game's sounds are over far too quickly to read, so make one of them
+last. In `crash`, change the last note's `500` to `5000` and upload again.
+Click the stick to start, then keep your hands off it and let the snake run
+into the right-hand wall: the crash's last, lowest note now holds for over
+four seconds. Take each reading during that note, crashing again for the
+next. Put the `500` back when you're done.
+
+!!! question "Predict"
+    While a note plays, pin 10 switches between 5 V and 0 V hundreds of
+    times a second, high for half of every wave. A meter on DC volts is far too slow
+    to follow that. What will it show?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Pin 10 during a note** reads about 2.5 V: the meter can only show the
+  average, and 5 V for half the time and 0 V for the other half averages to
+  half of 5 V. Yours may read a little less, nearer 2.3 V, because a pin's
+  5 V sags slightly while it pushes 20 mA. Between notes the pin rests at
+  0 V.
+- **Across the buzzer** is tiny, about 0.2 V, and **across the resistor** is
+  nearly all the rest, about 2.3 V: add the two and you get the pin's
+  reading back. The same current flows through both, so they share the
+  voltage as their resistances do, 16 Ω to 220 Ω, just as *Why the buzzer
+  needs 220 Ω* works out.
+- The resistor's reading gives that current: 2.3 V ÷ 220 Ω is about 10 mA,
+  the 20 mA of each high half-wave averaged with the silent half.
+- The buzzer's small share is still plenty. It is the current that moves its
+  disc, not the voltage: those 20 mA switch on and off with every wave, and
+  each switch pulls the disc and lets it go. That is the sound.
