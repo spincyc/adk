@@ -17,6 +17,7 @@ ideas:
   - How one chip runs 64 LEDs from three pins
   - Pixels, and where x and y are
   - Pictures written as binary numbers
+  - An array of pictures, each an array of rows
   - Scrolling text
 ---
 
@@ -97,21 +98,29 @@ Open **File → Examples → Adk → Lesson25LedMatrix**:
 
 <!-- sketch -->
 
-The new parts:
+What's new:
 
 - `adk::LedMatrix matrix {47, 48, 49};` names the matrix and its data, clock
   and CS pins, in that order.
-- `pictures` is an **array of arrays**: three pictures, each made of eight
-  rows. `pictures[1]` is the heart, and `pictures[1][0]` is its top row.
+- `using Picture = adk::Array<uint8_t, 8>;` gives a type a name of your own.
+  A picture is an `adk::Array` of eight `uint8_t`s, one byte for each row,
+  and from here on the sketch can simply say `Picture`.
+- `constexpr Picture heart { ... };` writes the heart's eight rows one under
+  another, so the 1s draw the heart right there in the code.
+- `adk::Array pictures {smiley, heart, invader};` is an **array of arrays**:
+  three pictures, each made of eight rows. `pictures[1]` is the heart, and
+  `pictures[1][0]` is its top row.
 - `fillDotByDot ()` has one `for` loop inside another. The outer loop picks a
   row, `y`; the inner one walks along it, `x` from 0 to 7, lighting each dot
   with `matrix.set (x, y)`. `adk::wait (30)` keeps the matrix updating, so
   you can watch every dot arrive.
-- `slide` counts button presses from 0 to 3, then wraps back to 0, like the
-  counter in Lesson 2.
-- `matrix.show (pictures[slide])` puts a whole picture up at once. Calling it
-  on every pass of `loop ()` costs almost nothing: the matrix only sends rows
-  that changed.
+- `slide` counts button presses. 0, 1 and 2 are the pictures; 3, one past
+  the last picture, is the message. `% (pictures.size () + 1)` wraps it back
+  to 0, just as `% 5` counted the moods round in Lesson 4.
+- `matrix.show (pictures[slide].data ())` puts a whole picture up at once.
+  `.data ()` hands `show ()` the picture's rows themselves, which is the form
+  the matrix takes them in. Calling it on every pass of `loop ()` costs
+  almost nothing: the matrix only sends rows that changed.
 - `matrix.scroll ("HELLO!")` slides the text in from the right, one column
   every 80 milliseconds. Asking again while it scrolls changes nothing, and
   asking once it has finished starts it over, so the message repeats for as
@@ -124,6 +133,10 @@ along each row, row after row, in about two seconds. Half a second later the
 smiley appears. Press the button: a heart. Again: a space invader. Again:
 HELLO! scrolls past, over and over, until the next press brings back the
 smiley.
+
+You predicted the heart's top row, `0b01100110`. Reading from the left, the
+dots are off, on, on, off, off, on, on, off: dots 1, 2, 5 and 6, counting
+from 0. They are the two bumps on top of the heart.
 
 ## If it doesn't work
 
@@ -155,12 +168,15 @@ smiley.
 ## Make it yours
 
 1. **Your own picture.** Draw an 8 × 8 grid on paper, shade a design, and
-   turn each row into a `0b` number. Replace the space invader with it.
+   turn each row into a `0b` number. Make it a `Picture` of its own and add
+   its name to `pictures`. The button shows it too, with no other change:
+   the sketch counts the pictures with `pictures.size ()`.
 2. **Your message.** Change `"HELLO!"` to your name. Scroll it faster with
    `matrix.scroll ("SAM", 40);`, where 40 is the milliseconds per step.
 3. **Brightness.** Add `matrix.brightness (1);` after `adk::setup ();`. Try
    0 and 15. Then put a potentiometer on A0, as in
    Lesson 7, and set the brightness with it.
 4. **Animate.** Draw a second invader with its legs the other way and swap
-   between the two every 300 ms, so it walks. Or make a single dot bounce
-   around the edges using `set (x, y)` and `set (x, y, false)`.
+   between the two on each tick of an `adk::Every` of 300 ms, so it walks.
+   Or make a single dot bounce around the edges using `set (x, y)` and
+   `set (x, y, false)`.
