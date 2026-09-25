@@ -90,21 +90,33 @@ Read it from the top:
 
 - `#include <Adk.h>` brings in the ADK library.
 - `adk::Led led {26};` says there is an LED on pin 26 and names it `led`.
-  Every part of the circuit gets a line like this, at the top of the sketch.
+  In the code, each part of the circuit is an **object**: a thing with a
+  name that knows how to do its job. Every part gets a line like this, at
+  the top of the sketch.
 - `setup ()` runs once when the Mega starts. `adk::setup ()` gets every part
   ready: here, it makes pin 26 an output and turns the LED off.
-- `loop ()` runs again and again, forever. It turns the LED on, waits 500
-  milliseconds (half a second), turns it off, and waits again.
+- `loop ()` runs again and again, forever.
+- `led.on ();` **calls** a function: it asks `led` to switch on. The
+  brackets hold whatever the function needs to know. `led.on ()` needs
+  nothing, but `adk::wait (500);` needs to know how long to wait: 500
+  milliseconds, half a second. A semicolon ends each instruction.
+- So `loop ()` turns the LED on, waits, turns it off, and waits again: one
+  blink a second, for as long as the Mega has power.
 
 ## Upload it
 
 1. Plug the Mega into your computer with the USB cable.
-2. In the Arduino IDE, choose **Tools → Board → Arduino Mega or Mega 2560**,
-   and the port it appears on under **Tools → Port**.
+2. In the Arduino IDE, choose **Tools → Board → ADK Boards → ADK Mega 2560**,
+   and the port it appears on under **Tools → Port**. If the board isn't
+   there, [Getting started](../../start.md) shows how to add it.
 3. Press **Upload** (the arrow button). After a few seconds the IDE says
    *Done uploading*.
 
 The LED should flash: on for half a second, off for half a second.
+
+You predicted what a 1 kΩ resistor would do. It makes the LED dimmer: with
+nearly five times the resistance, only about a fifth of the current flows,
+(5 V − 2 V) ÷ 1000 Ω = 3 mA. Try it in the last challenge below.
 
 !!! tip "From the command line"
     With `arduino-cli` installed, `make upload EXAMPLE=Lesson01Blink` in the
@@ -144,5 +156,5 @@ The LED should flash: on for half a second, off for half a second.
    inside `loop ()`. The LED blinks just the same. Add
    `adk::Led builtIn {LED_BUILTIN};` and make the Mega's own LED blink too,
    at a different speed.
-4. **Test your prediction.** Swap the 220 Ω resistor for a 1 kΩ one. Were you
-   right? Use Ohm's law to work out the new current.
+4. **Test your prediction.** Swap the 220 Ω resistor for a 1 kΩ one, and see
+   how much dimmer 3 mA is than 14 mA.
