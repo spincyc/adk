@@ -3,7 +3,7 @@ lesson: 23
 title: Tripwires
 arc: Invisible signals
 promise: Set four invisible tripwires that notice movement, an obstacle, a tilt and a broken beam.
-time: 60 minutes
+time: 1 hour
 level: 2
 sketch: Lesson23Tripwires
 parts:
@@ -144,11 +144,18 @@ Then try each tripwire in turn:
 - **Movement:** wave your arm in front of the PIR. The red LED lights and
   "Movement!" prints; keep still and it goes out a few seconds later.
 - **Obstacle:** hold your hand close in front of the obstacle module. The
-  yellow LED lights with the module's own LED.
+  yellow LED lights with the module's own LED, and "Something in front!"
+  prints.
 - **Tilt:** tip the tilt switch on its side. The green LED lights and
   "Tilted!" prints; stand it up again and it goes out.
 - **Beam:** push a strip of card into the photo-interrupter's slot. The blue
-  LED lights while the beam is blocked.
+  LED lights while the beam is blocked, and "Beam broken!" prints.
+
+You predicted the green LED with the tilt switch standing up and lying
+down. Standing up, the ball joins the switch's legs, so `upright` is
+active, and the `!` turns that into false: green is **off**. On its side,
+`upright` is not active, `!` makes it true, and green is **on**. So the
+LED shows a tilt, even though the switch says "upright".
 
 ## If it doesn't work
 
@@ -180,7 +187,7 @@ Then try each tripwire in turn:
    Hall sensor module from the 37 in 1 kit, and trip it with a magnet. Is
    yours active high or active low? Find out by watching its LED.
 2. **Keep score.** Count how many times each tripwire goes off, and print
-   the four totals every time one changes.
+   the four totals with one `adk::println ()` every time one changes.
 3. **Chime.** Add the active buzzer on pin 12, as in Lesson 3, and give a
    short beep whenever any tripwire goes off.
 4. **Latch.** Make each LED stay on once its tripwire has gone off, until
