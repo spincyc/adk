@@ -53,9 +53,21 @@ void loop ()
 
 ## Install
 
-In the Arduino IDE: **Code → Download ZIP** on this page, then **Sketch →
-Include Library → Add .ZIP Library**. Every lesson's sketch is then under
-**File → Examples → Adk**. [Getting started](https://spincyc.github.io/adk/start/)
+ADK is C++23, newer than the Arduino IDE's own compiler, so it comes with a
+board package: the same Mega 2560, built with avr-gcc 16.
+
+1. In Arduino IDE 2, add
+   `https://spincyc.github.io/adk/package_adk_index.json` under **File →
+   Preferences → Additional boards manager URLs**.
+2. In **Tools → Board → Boards Manager**, install **ADK Boards** (and
+   **Arduino AVR Boards**, if the IDE hasn't already).
+3. **Code → Download ZIP** on this page, then **Sketch → Include Library →
+   Add .ZIP Library**. Every lesson's sketch is then under **File → Examples
+   → Adk**.
+4. Choose **Tools → Board → ADK Boards → ADK Mega 2560**, and the port.
+
+The compiler is ready for Windows and Linux on x86-64; macOS and Linux on
+ARM are still to come. [Getting started](https://spincyc.github.io/adk/start/)
 has the details.
 
 ## Build

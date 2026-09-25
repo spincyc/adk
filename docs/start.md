@@ -11,11 +11,35 @@ The course uses an **Arduino Mega 2560** and the parts in the Elegoo *Mega
 *37 in 1 Sensor Modules Kit*. [What's in the kit](kit.md) lists every part,
 and which lessons use it.
 
-## 2. The Arduino IDE
+## 2. The Arduino IDE and ADK Boards
 
 Download the free **Arduino IDE 2** from
 [arduino.cc/en/software](https://www.arduino.cc/en/software) and install it.
-It runs on Windows, macOS and Linux.
+It runs on Windows, macOS and Linux. The first time it opens, it installs
+**Arduino AVR Boards**, the files for the Mega. Let it finish.
+
+ADK is written in a newer C++ than the IDE's own compiler understands, so
+it comes with a board of its own: **ADK Boards**. It is the same Mega 2560,
+with a newer compiler.
+
+1. Choose **File → Preferences** (on a Mac, **Arduino IDE → Settings**).
+   Paste this address into **Additional boards manager URLs**, then click
+   **OK**:
+
+    ```text
+    https://spincyc.github.io/adk/package_adk_index.json
+    ```
+
+2. Choose **Tools → Board → Boards Manager…** and search for **ADK**. Click
+   **Install** under **ADK Boards**. The compiler is a large download, so
+   give it a few minutes.
+3. Check that **Arduino AVR Boards** says **Installed** too. ADK Boards uses
+   its files, so install it if it doesn't.
+
+!!! note "On a Mac, or Linux on ARM"
+    The compiler is ready for Windows and for Linux on a PC. For a Mac, or
+    Linux on an ARM board such as a Raspberry Pi, it is still being built,
+    so the Boards Manager can't install ADK Boards there yet.
 
 ## 3. The ADK library
 
@@ -31,7 +55,9 @@ It runs on Windows, macOS and Linux.
 
 1. Plug the Mega into your computer with the USB cable. Its green **ON** LED
    lights.
-2. Choose **Tools → Board → Arduino AVR Boards → Arduino Mega or Mega 2560**.
+2. Choose **Tools → Board → ADK Boards → ADK Mega 2560**. Not *Arduino Mega
+   ADK*: that is a different board. If a sketch stops with "ADK needs
+   C++23", this is the setting to check.
 3. Choose the port under **Tools → Port**. On Windows it is a `COM` port; on
    macOS and Linux its name contains `usbmodem` or `ttyACM`.
 
