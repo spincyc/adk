@@ -26,3 +26,7 @@
 #include "adk/segments.h"
 #include "adk/seven_segment.h"
 #include "adk/four_digit_display.h"
+
+#include "adk/i2c.h"
+#include "adk/rtc.h"
+#include "adk/mpu6050.h"
