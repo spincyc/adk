@@ -27,3 +27,13 @@ bench.wire ("a22", "B-22")
 bench.wire ("10", "j34", via=[(1.9, 0.45), (8.65, 0.45)])
 bench.buzzer ("f34", "e34", kind="passive")
 bench.resistor ("220 Ω", "a34", "B-34")
+
+# Readings to take with a multimeter while a key is held and its note
+# sounds: pin 10 switches between 5 V and 0 V, so the meter shows about half,
+# which the resistor and the buzzer's 16 Ω coil share in proportion.
+bench.measure ("Pin 10, playing a note", red="10", black="GND", expect="a little under 2.5 V",
+               when="Holding a key")
+bench.measure ("Across the buzzer", red="i34", black="b34", expect="about 0.15 V",
+               when="Holding a key")
+bench.measure ("Across the resistor", red="b34", black="GND", expect="about 2.1 V",
+               when="Holding a key")

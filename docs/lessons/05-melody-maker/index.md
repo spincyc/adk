@@ -74,8 +74,9 @@ while your sketch carries on with other things.
     Unplug the USB cable before you change any wiring. **Never leave out the
     buzzer's 220 Ω resistor**, here or in any lesson: without it, the buzzer
     would draw far more current than pin 10 can safely give. Use the passive
-    buzzer, with the green board showing underneath; either leg can go in
-    either hole, though if yours has a **+**, put that leg in f34.
+    buzzer, with the green board showing underneath. It has a **+** marked on
+    top beside one leg: follow the mark, and put that leg in f34, on pin
+    10's side of the gap.
 
 <!-- bench -->
 
@@ -83,8 +84,9 @@ while your sketch carries on with other things.
 
 ??? info "The signal's path through the buzzer"
     Follow pin 10's wire into j34. The buzzer stands across the middle gap,
-    its legs in f34 and e34: they are 0.3 inch apart, just as far as the gap
-    is wide. Below it, the 220 Ω resistor runs from a34 down into the − rail.
+    its **+** leg in f34 and its other leg in e34: they are 0.3 inch apart,
+    just as far as the gap is wide. Below it, the 220 Ω resistor runs from
+    a34 down into the − rail.
 
     For an LED the resistor came first, between the pin and the LED. Here it
     comes after the buzzer, between it and GND, and that works just as well.
@@ -157,7 +159,7 @@ takes over. That's the sketch carrying on while the tune plays.
 
 | What you see | Try this |
 |---|---|
-| Silence, from the tune and the keys | Follow pin 10's path: j34, the buzzer's legs in f34 and e34, and the resistor from a34 down into the − rail. |
+| Silence, from the tune and the keys | Follow pin 10's path: j34, the buzzer's **+** leg in f34 and its other leg in e34, and the resistor from a34 down into the − rail. |
 | Every key makes the same harsh buzz, or no sound at all | You may have the active buzzer. Unplug, and swap in the passive one, with the green board underneath. |
 | The tune plays, but a key does nothing | Push that button firmly into the board, all four legs in, and check its black wire from row a to the − rail. |
 | Two keys play the same note, or the wrong ones | The signal wires may be in the wrong holes: pins 22, 23, 24 and 25 go to j2, j8, j14 and j20. |
@@ -208,3 +210,38 @@ takes over. That's the sketch carrying on while the tune plays.
    comes up. Five seconds after your last note, play it all back with
    `speaker.play (recording, count);`, where `count` is how many notes you
    recorded.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts, the black
+lead in **COM** and the red in **V**. Never move the red lead to the **A**
+jack for these: set for current, the meter is just a wire, and would short
+out whatever you put it across.
+
+The sketch needs no changes: a key's note sounds for as long as you hold
+it. Ask a helper to hold a key while you hold the probes, or hold both
+probes in one hand like chopsticks. Keep each tip in its own hole.
+
+!!! question "Predict"
+    While a note sounds, pin 10 switches from 5 V to 0 V and back hundreds
+    of times a second. What will a meter, which is far too slow to follow
+    that, show? And will G, at 392 Hz, read higher than C, at 262 Hz?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Pin 10** reads about half of 5 V: the meter shows the average, and the
+  pin is high for half of every vibration. Hold G, then C: the number stays
+  the same. A higher note switches faster, but it is still high half the
+  time. It reads a little under 2.5 V, because a pin gives slightly less
+  than 5 V while it drives the buzzer.
+- **Across the buzzer** is only about 0.15 V, and **across the resistor**
+  about 2.1 V. In one loop the voltage is shared in proportion to
+  resistance, and the coil is only 16 Ω of the loop's 236 Ω. Add the two
+  and you get pin 10's reading back.
+- The resistor's reading gives the current, by Ohm's law:
+  2.1 V ÷ 220 Ω ≈ 10 mA on average, just what *The idea* worked out.
+  Lesson 3's active buzzer read a steady, nearly full 5 V: that buzzer
+  makes its own vibration, and this one's is made by the Mega.
