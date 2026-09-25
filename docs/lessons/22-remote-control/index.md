@@ -95,7 +95,7 @@ receives: the first thing you'll do is check yours against this table.
     three resistors side by side. So each resistor stands across the middle
     gap and leans a little, from its wire's column down to its leg's
     column. Each color gets its own 220 Ω, as in Lesson 4: red takes about
-    13 mA, green and blue about 9 mA.
+    14 mA, green and blue about 8 mA.
 
 When you are done, these are the connections your circuit makes:
 
@@ -111,19 +111,22 @@ What's new:
 
 - `adk::IrReceiver receiver {2};` is the receiver. It must go on a pin that
   can interrupt the Mega (2, 3, 18, 19, 20 or 21); more on that below.
+- `struct Choice` pairs a number button with the color it chooses, and
+  `choices` is an `adk::Array` of them, as in Lesson 5: one row for each
+  button, so each button sits beside its color.
 - `receiver.wasReceived ()` is true for one pass of `loop ()` each time a
   code arrives, and `receiver.isRepeat ()` says whether it was a repeat
   from a held button. `receiver.command ()` is the button's number.
-- `printCode ()` prints each new code in hexadecimal: the `HEX` in
-  `Serial.println (button, HEX)` asks for it.
 - `obey ()` decides what each button does. Power only toggles on a fresh
   press, so holding it doesn't make the lamp flicker; volume works on
-  repeats too, so holding it keeps going.
-- The two arrays, as in Lesson 6, pair each number button with a color:
-  the loop finds the button in the first and takes the color from the
-  second.
-- `dimmed ()` uses `adk::blend ()` to find the color some eighths of the way
-  up from off, and `lamp.fadeTo ()` from Lesson 4 glides to it in 200 ms.
+  repeats too, so holding it keeps going. The `for` loop looks through the
+  choices for the button, and takes its color.
+- `showLamp ()` uses `adk::blend ()` to find the color some eighths of the
+  way up from off, and `lamp.fadeTo ()` from Lesson 4 glides to it, or to
+  off, in 200 ms.
+- `printCode ()` prints each new code in hexadecimal: the `HEX` in
+  `Serial.println (button, HEX)` asks for it. `adk::println ()` can't do
+  that, so this is one place for `Serial.print ()` a piece at a time.
 
 ## Upload it
 
@@ -136,12 +139,17 @@ What's new:
    color, hold VOL− to dim it and VOL+ to brighten it, and press POWER to
    fade it out.
 
+You predicted whether the lamp would come on with the remote aimed at the
+ceiling. Try it: in most rooms it does. Infrared bounces off ceilings and
+walls just as light does, and the receiver only needs a little of it. In a
+big room, or from far away, the bounce may be too faint.
+
 ## If it doesn't work
 
 | What you see | Try this |
 |---|---|
 | Nothing prints and the lamp doesn't react | Check the receiver's signal pin goes to pin 2 and its other two pins to the top rails, the right way round. Try from closer, and away from bright sunlight. |
-| Codes print, but not the ones in the table | Your remote is a different model. Change the names in the sketch to the numbers you see, for example `button == 0x45`. |
+| Codes print, but not the ones in the table | Your remote is a different model. Put the numbers you see in the sketch in place of the names, for example `Choice {0x0C, adk::color::red}` or `button == 0x45`. |
 | One press prints the same code several times | Some remotes send the whole code again, instead of a repeat, for as long as a button is held. Tap the button quickly. |
 | A color is missing or wrong | Check that color's wire and resistor: pin 5 is red, 6 green and 7 blue, and each resistor lands in its leg's column. |
 | The lamp is always off | The longest leg must be in the − rail, and that rail joined to GND. |
@@ -162,10 +170,11 @@ What's new:
 
 1. **Rainbow.** Make the EQ button start a slow walk round the color wheel
    with `adk::wheel ()`, as in Lesson 4, and any number button stop it.
-2. **Sleep timer.** Make ⏯ fade the lamp slowly to off over a minute:
-   `lamp.fadeTo (adk::color::off, 60000)`.
-3. **More colors.** Use buttons 7, 8 and 9 for orange, cyan and pink
-   (`adk::color::orange`, `cyan` and `pink`).
+2. **Sleep timer.** Make ⏯ (`adk::remote::play`) fade the lamp slowly to
+   off over a minute, with `lamp.fadeTo (adk::color::off, 60000)` in place
+   of `showLamp ()`.
+3. **More colors.** Add three more rows to `choices`, so buttons 7, 8 and 9
+   give orange, cyan and pink (`adk::color::orange`, `cyan` and `pink`).
 4. **Another remote.** Try a TV remote from home. Some speak NEC and will
    print codes; many use other languages that ADK doesn't decode, and print
    nothing at all.
