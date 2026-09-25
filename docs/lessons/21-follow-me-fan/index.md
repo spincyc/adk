@@ -3,7 +3,7 @@ lesson: 21
 title: Follow-Me Fan
 arc: Distance and motors
 promise: Build a little turret that looks around, finds the nearest person and turns a fan on them.
-time: 90 minutes
+time: 1½ hours
 level: 3
 sketch: Lesson21FollowMeFan
 parts:
@@ -21,6 +21,7 @@ ideas:
   - Scanning with a sensor on a servo
   - Finding the nearest thing in a sweep
   - A machine that works in steps
+  - A function that answers with a struct
   - Two motors sharing one supply
 ---
 
@@ -45,11 +46,11 @@ the servo's horn and step it from 30° to 150° in 10° steps, taking a reading
 at each, and you get 13 readings across a wide arc: a rough picture of what
 is around, like a bat or a ship's sonar.
 
-**Finding the nearest.** The sketch keeps two notes as it sweeps: the
-smallest distance so far, and the angle where it saw it. Each new reading
-is compared with the note; if it's smaller, both notes are replaced. At the
-end, the notes hold the answer. Anything beyond 80 cm is ignored, so a far
-wall doesn't count as "somebody".
+**Finding the nearest.** The sketch keeps a note as it sweeps, called a
+**sighting**: the smallest distance so far, and the angle where it saw it.
+Each new reading is compared with the note; if it's smaller, the note is
+replaced. At the end, the note holds the answer. If even the nearest thing
+is beyond 80 cm, it doesn't count as "somebody": a far wall is ignored.
 
 | Angle | 30° | 40° | 50° | 60° | 70° | … |
 |---|---|---|---|---|---|---|
@@ -71,9 +72,9 @@ the fan rests whenever the turret turns, and the turret keeps still while
 the fan blows: the two never pull hard together.
 
 !!! question "Predict"
-    Stand 40 cm in front of the turret with a wall 60 cm behind it. Which
-    will the turret turn to, and why? What happens if you walk away while
-    it's blowing?
+    Stand 40 cm in front of the turret, with a wall 60 cm from it off to
+    one side. Which will the turret turn to, and why? What happens if you
+    walk away while it's blowing?
 
 ## How the fan works
 
@@ -81,9 +82,9 @@ The sketch repeats three steps for as long as it runs:
 
 | Step | What happens | Moves on when |
 |---|---|---|
-| **Sweep** | The fan stops. The turret steps from 30° to 150°, pausing at every 10° to take a fresh reading, and remembers the nearest thing within 80 cm. | The sweep ends. If nothing was in reach, it waits a second and sweeps again. |
+| **Sweep** | The fan rests. The turret steps from 30° to 150°, pausing at every 10° to take a fresh reading, and remembers the nearest thing. | The sweep ends. If nothing was within 80 cm, it waits a second and sweeps again. |
 | **Aim** | The turret turns back to the nearest thing's angle, gently, 8 ms per degree. | It arrives. |
-| **Blow** | It keeps measuring, and sets the fan's speed from the distance. | 4 seconds pass, or the target moves out of reach or closer than 15 cm. Then it's back to Sweep. |
+| **Blow** | It keeps measuring, and sets the fan's speed from the distance. | 4 seconds pass, or the target moves out of reach or closer than 15 cm. Then the fan stops, and it's back to Sweep. |
 
 ## Build it
 
@@ -127,29 +128,42 @@ Open **File → Examples → Adk → Lesson21FollowMeFan**:
 
 Read it from the top:
 
-- Three parts: `turret` (the servo), `sensor` and `fan`. The constants below
-  them are the numbers to play with: the sweep's ends and step, the safety
-  distance, the reach and how long it blows.
-- `loop ()` is the three steps: `sweep ()`, then, if it found anyone,
-  `turnTo ()` their angle and `blowAtTarget ()`.
-- `sweep ()` is a `for` loop over the angles, keeping the nearest reading
-  in `targetDistance` and `targetAngle` as in the table above.
-- `measure ()` waits until the turret has stopped (`turret.isMoving ()`),
-  waits 50 ms more for it to settle and for old echoes to die away, then
-  calls `adk::update ()` until `sensor.measured ()` says a brand new
-  reading has arrived.
+- Three parts, `turret` (the servo), `sensor` and `fan`, and `blowing`, an
+  `adk::Timer` as in Lesson 3. The constants below them are the numbers to
+  play with: the sweep's ends and step, the safety distance, the reach and
+  how long it blows.
+- `struct Sighting` is the note from the table above: an angle and a
+  distance, kept together.
+- `loop ()` is the three steps: `sweep ()`, then, if the nearest thing is
+  within reach, `turnTo ()` its angle and `blow ()`. Each step finishes
+  before the next begins, so the loop reads like the table.
+- `Sighting sweep ()` is a function that answers with a whole sighting,
+  both numbers at once. The note starts at 400 cm, which is what
+  `measure ()` gives when no echo comes back, as in Lesson 19, so anything
+  the sensor really sees is nearer. Then a `for` loop steps over the
+  angles, and `nearest = {angle, cm};` replaces both halves of the note
+  together.
+- `blow ()` starts the timer, then measures and sets the speed for as long
+  as `blowing.isRunning ()`. `break` leaves the `while` loop early, just as
+  it leaves a `switch`, when the target walks out of reach or comes too
+  close. Either way, the fan stops at the end.
 - `turnTo ()` glides with `turret.moveTo ()` from Lesson 17, taking 8 ms per
   degree it has to travel: slow enough that the sensor and motor on the
-  horn don't swing about.
-- `blowAtTarget ()` uses `millis ()` from Lesson 3 to keep blowing for
-  `BlowTime`, and `map ()` to turn the distance into a speed.
+  horn don't swing about. `abs ()` gives a number without its sign, so a
+  turn of −40° or 40° takes the same 320 ms. `adk::wait ()` then waits for
+  the glide and 50 ms more, for the turret to settle and old echoes to die
+  away.
+- `measure ()` calls `adk::update ()` until `sensor.measured ()` says a brand
+  new reading has arrived. `do { ... } while (...)` is a `while` loop that
+  asks its question at the end, so it always updates at least once: the
+  reading can never be one that `measure ()` already handed back.
 
 ## Upload it
 
 1. Plug in the USB cable and upload the sketch.
 2. Plug in the power module's adapter and switch it on.
 3. The turret swings to 30° and starts its sweep, stepping steadily to 150°,
-   which takes about two and a half seconds.
+   which takes a little over two seconds.
 4. Stand in front of it, 30 to 60 cm away. At the end of the sweep it turns
    to face you and the fan spins up. Lean closer and it blows harder; lean
    in closer than 15 cm and it stops.
@@ -157,6 +171,13 @@ Read it from the top:
    your new spot.
 
 With nobody in reach, it sweeps, waits a second, and sweeps again.
+
+You predicted which it would turn to, you or the wall. It turns to you:
+the sweep keeps only the nearest thing it saw, and at 40 cm you are nearer
+than the wall at 60. Walk away while it's blowing, and once the sensor sees
+nothing within 80 cm, the fan stops. The turret sweeps again and turns to
+the nearest thing left: the wall, which is within reach, so now it blows
+at the wall.
 
 ## If it doesn't work
 
@@ -167,7 +188,7 @@ With nobody in reach, it sweeps, waits a second, and sweeps again.
 | It turns to the wrong place | The sensor sees a wall, the desk or a wire that's nearer than you. Clear the space in front of it, or tilt the sensor up a little. |
 | The fan never spins | Check the power module's jumpers are on 5V and the motor's leads reach g13 and g16. Lesson 20's table has more. |
 | The Mega resets or the servo jerks when the fan starts | The supply is struggling: make sure the servo's red wire goes to the module's + rail, not the Mega's 5V, and that the Mega's GND is joined to the module's. |
-| The turret twitches at the ends of its sweep | Some servos can't reach 30° or 150°. Try `Leftmost = 40` and `Rightmost = 140`. |
+| The turret twitches at the ends of its sweep | Some servos can't reach 30° or 150°. Try `leftmost = 40` and `rightmost = 140`. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"
@@ -175,19 +196,22 @@ With nobody in reach, it sweeps, waits a second, and sweeps again.
     hardware, so they stay steady even while the sensor holds everything
     up for up to 25 ms timing an echo. `turret.moveTo ()` glides by moving
     the pulse a little further on every `adk::update ()`, which is why
-    `measure ()` keeps calling `adk::update ()` while it waits.
+    `turnTo ()` waits with `adk::wait ()`, which keeps updating, and never
+    with `delay ()`.
 
     `turret.angle ()` reports where the servo has been told to be, which is
     how `turnTo ()` knows how far it has to go.
 
 ## Make it yours
 
-1. **Wider or finer.** Change `Step` to 5 degrees for a finer sweep. How
+1. **Wider or finer.** Change `step` to 5 degrees for a finer sweep. How
    much longer does a sweep take? Is it worth it?
 2. **Sweep both ways.** Sweep from left to right, then right to left, so
-   the turret never has to fling itself back to the start.
+   the turret never has to fling itself back to the start. A second `for`
+   loop can count down, with `angle -= step`.
 3. **Follow closely.** Instead of a full sweep, after blowing check just
-   three angles: 10° either side of the last target, and the target itself.
-   The turret will track you as you walk slowly past.
+   three angles with `turnTo ()` and `measure ()`: 10° either side of the
+   last target, and the target itself. The turret will track you as you
+   walk slowly past.
 4. **Show off.** Add the LED gauge from Lesson 19 so the lights show how
    close the target is while the fan blows.
