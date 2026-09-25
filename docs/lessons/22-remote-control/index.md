@@ -181,3 +181,34 @@ big room, or from far away, the bounce may be too faint.
 4. **Another remote.** Try a TV remote from home. Some speak NEC and will
    print codes; many use other languages that ADK doesn't decode, and print
    nothing at all.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts, the black
+lead in **COM** and the red one in **V**.
+
+A meter is far too slow to see a code: a whole press is over in 67 ms. The
+receiver's wires also run straight to the Mega, with no hole for a probe.
+What the meter can see is what each code does to the lamp's pins, and the
+lamp keeps its color until the next press, so there is plenty of time to
+read it. Press the buttons first, then put the probes in place.
+
+!!! question "Predict"
+    Press 1 for red, then VOL− four times. What will the red pin, 5, read?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **At full brightness** the red pin reads about 5 V: its number is 255 out
+  of 255, on all the time.
+- **Four presses dimmer**, `brightness` is 4 eighths, so `adk::blend ()`
+  makes the red number 255 × 4 ÷ 8 = 127, and PWM gives the pin
+  127 ÷ 255 × 5 V ≈ 2.5 V. Each press of VOL− takes about 0.6 V off, an
+  eighth of 5 V, until it stops at one eighth, as `brightness > 1` in the
+  sketch says.
+- **Across the blue LED**, after pressing 3 and VOL+ until it is back at
+  full, the meter reads about 3.2 V. Red keeps about 2 V; measure it from
+  b6 to the − rail after pressing 1. That is why blue takes about 8 mA to
+  red's 14: (5 V − 3.2 V) ÷ 220 Ω ≈ 8 mA.

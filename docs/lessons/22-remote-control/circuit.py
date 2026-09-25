@@ -21,3 +21,11 @@ bench.wire ("receiver.+", "5V.long")
 bench.wire ("receiver.−", "GND.long")
 
 bench.closeup (1, 30)
+
+# Readings to take with a multimeter while the lamp holds a color.
+bench.measure ("The red pin, full brightness", red="5", black="GND", expect="about 5 V",
+               when="after pressing 1")
+bench.measure ("The red pin, four presses dimmer", red="5", black="GND", expect="about 2.5 V",
+               when="after 1, then VOL− four times")
+bench.measure ("Across the blue LED", red="b11", black="GND", expect="about 3.2 V",
+               when="after pressing 3, full brightness")
