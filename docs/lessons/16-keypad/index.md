@@ -162,3 +162,38 @@ but the 2 only arrives when you let go: the keypad counts one key at a time.
 4. **Hide it.** Print a `*` for each digit instead of the digit itself, like a
    password box. You'll need exactly that in
    [Lesson 18](../18-keypad-safe/index.md).
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it to DC volts as in [Lesson 1](../01-blink/index.md#measure-it), black lead
+in **COM** and red in **V**. The keypad's wires go straight from the Mega to
+its socket, with no hole for a probe, but the screen's data wires land in
+the breadboard. After each character the Mega leaves the second half of its
+code on D4 to D7 until it sends the next one, so they hold still between
+key presses and the sketch needs no change.
+
+!!! question "Predict"
+    The character `'5'` is code 53, which is `0011 0101` in binary, and the
+    screen gets it in two halves, as in Lesson 13. Which half stays on the
+    wires once it has gone? Which of D4 to D7 will read 5 V? Write down your
+    guess.
+
+<!-- measure -->
+
+Press **\*** to clear, type **5**, and measure each wire in turn. The black
+probe stays in c24, in the column of the backlight's K, which is GND: the
+bottom − rail is under the screen. The data wires stand side by side, so
+keep the red tip in its own hole.
+
+What the numbers tell you:
+
+- Read from D7 down to D4, the wires say 0 V, 5 V, 0 V, 5 V. Call 5 V a 1
+  and 0 V a 0 and that's `0101`, the second half of `0011 0101`: the half
+  sent last is the one still on the wires.
+- `0101` is 5 in binary, 4 + 1. Every digit's code ends in the digit
+  itself: `'0'` is `0011 0000` and `'7'` is `0011 0111`. That's why
+  `key - '0'` works: taking away `'0'` takes away the first half, `0011`,
+  and leaves the digit.
+- Type another digit and measure again: 6 is `0110`, 9 is `1001`. The
+  meter reads the key you pressed, in binary, off four wires.
