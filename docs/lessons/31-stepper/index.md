@@ -1,0 +1,165 @@
+---
+lesson: 31
+title: Stepper
+arc: Time
+promise: Turn a motor to an exact angle, and bring it back to exactly where it started.
+time: 45 minutes
+level: 2
+sketch: Lesson31Stepper
+parts:
+  - Arduino Mega 2560 and its USB cable
+  - Breadboard
+  - Power module and 9 V adapter
+  - 28BYJ-48 stepper and ULN2003 driver
+  - Push button
+  - 6 female-to-male jumper wires
+  - 3 jumper wires
+  - A paper arrow and sticky tape
+ideas:
+  - How a stepper motor moves in steps
+  - Half-steps and gearing
+  - Why the motor needs a driver and its own power
+  - Counting steps to reach an exact angle
+---
+
+## What you'll build
+
+<!-- closeup -->
+
+A paper arrow taped to a small motor points straight up. Press the button and
+it swings round exactly a quarter of a turn, then stops dead. Press again:
+right, down, left, and home, pointing straight up again. While it moves, the
+four red lights on the driver board flicker through a pattern, showing you
+which of the motor's coils are switched on.
+
+## The idea
+
+The fan in Lesson 20 spun freely: you chose its speed, but never where it
+stopped. A **stepper motor** is different: it moves in small, exact jumps called **steps**, and it stops after
+each one. Inside the 28BYJ-48 are four coils of wire around a magnet. Switch
+one coil on and the magnet turns to face it; switch on the next and it turns
+on to that one. Your sketch switches the coils in order, and every switch is
+one step.
+
+ADK uses **half-steps**: one coil, then that coil and the next together, then
+the next alone. That makes eight patterns for each round of the four coils,
+and each pattern moves the motor half as far as a full step. The motor itself
+takes 64 half-steps to turn once, and behind it is a **gearbox** that slows it
+down 64 times, which makes it much stronger as well. So one turn of the
+shaft takes:
+
+<p class="formula">64 × 64 = 4096 half-steps</p>
+
+A quarter turn is 1024 of them. Because the sketch counts every one, it always
+knows exactly where the shaft is, without any sensor to check.
+
+The coils need up to about 200 mA, ten times what a Mega pin can give. So
+the pins don't power the coils: they tell the **ULN2003 driver** which coils
+to switch, and the driver switches the current from the breadboard power
+module, just as the servo in Lesson 17 took its power from there.
+
+!!! question "Predict"
+    The sketch moves the motor 500 half-steps every second. How long will one
+    press take to turn the arrow a quarter of a turn? After four presses, will
+    the arrow point exactly where it started? Write down your guesses.
+
+## Build it
+
+!!! warning "Unplug first"
+    Unplug the USB cable and switch the power module off before you change
+    any wiring. Never power the driver from the Mega's 5V pin: the motor
+    could pull the Mega's power down and reset it, or damage it.
+
+<!-- bench -->
+
+<!-- steps -->
+
+Last, push the motor's white plug into the socket on the driver board. It only
+fits one way round. Plug the 9 V adapter into the power module's round socket,
+tape the paper arrow to the motor's shaft so it points straight up, and stand
+the motor on the table with the shaft facing you.
+
+??? info "What the driver board does"
+    The black chip on the driver board, the ULN2003, holds seven electronic
+    switches. A milliamp or so from a Mega pin into IN1 closes the switch for
+    the first coil, and then up to 200 mA can flow through that coil from the
+    power module. The four LEDs, A to D, light
+    with IN1 to IN4, so they show you each coil switching.
+
+    The black wire from the Mega's GND to the − rail matters: the driver
+    measures the Mega's signals against its own GND, so the two grounds have
+    to be joined.
+
+When you are done, these are the connections your circuit makes:
+
+<!-- connections -->
+
+## Code it
+
+Open the Arduino IDE and choose **File → Examples → Adk → Lesson31Stepper**:
+
+<!-- sketch -->
+
+What's new:
+
+- `adk::Stepper motor {A8, A9, A10, A11};` is the driver board on four pins,
+  given in the order IN1 to IN4. The analog pins work as ordinary on/off
+  pins here.
+- `adk::Stepper::StepsPerRevolution` is 4096, so `QuarterTurn` is 1024.
+- `motor.speed (500);` asks for 500 half-steps a second. The motor copes with
+  anything up to 1000; much faster and it just hums.
+- `motor.step (QuarterTurn);` starts a move of 1024 half-steps from wherever
+  the last move ends. It doesn't wait: `adk::update ()` takes each step when
+  its moment comes, so the button is still watched while the motor turns.
+  Press twice quickly and it goes on for half a turn.
+
+## Upload it
+
+Switch the power module on, then plug in the Mega and upload the sketch.
+Press the button. The arrow swings a quarter of a turn in about two seconds
+and stops, and while it moves the driver's four LEDs flicker. Four presses
+bring it all the way round.
+
+Which way does it turn? ADK means positive steps to turn the shaft clockwise,
+seen from the shaft end, but that hasn't been checked on a real motor yet.
+Watch yours: if it goes anticlockwise, that's fine, and you now know which
+way positive means for your motor.
+
+## If it doesn't work
+
+| What you see | Try this |
+|---|---|
+| Nothing moves, and the driver's LEDs stay dark | Check the power module is switched on, its LED is lit, and the red and black wires go from the bottom rails to the driver's + and − pins. |
+| The LEDs flicker but the shaft doesn't turn | Push the motor's white plug fully into its socket. |
+| The motor hums or shakes but hardly turns | Two of the IN wires are swapped: IN1 to A8, IN2 to A9, IN3 to A10, IN4 to A11. |
+| Nothing happens when you press | The button must straddle the middle gap, with pin 22's wire in column 8 and the black wire from a10 to the − rail. |
+| The Mega resets when the motor starts | The driver is taking power from the Mega. Its + pin must go to the power module's rail, never the Mega's 5V. |
+| The little **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
+
+??? note "How it works"
+    ADK keeps two numbers for the motor: where it is and where it's going,
+    both counted in half-steps from where it was when the Mega started. Each
+    `adk::update ()` works out how many milliseconds have passed, and at 500
+    half-steps a second it moves one half-step every two milliseconds,
+    switching the four pins to the next of the eight patterns.
+
+    When a move ends, ADK switches all four coils off, so the motor doesn't
+    get warm standing still. The gearbox is stiff enough to hold the shaft
+    where it is. `motor.hold (true)` keeps the coils on instead.
+
+## Make it yours
+
+1. **Slow motion.** Change `motor.speed (500)` to `motor.speed (2)`. Now
+   watch the driver's LEDs: one, two, one, two... can you see the eight
+   half-step patterns go round?
+2. **Home.** Add a second button on pin 23 that sends the arrow home with
+   `motor.moveTo (0);`. After four presses, does it turn back the short way or
+   the long way? Work out why from what `moveTo` counts.
+3. **The true turn.** The gearbox isn't exactly 64 to 1: it's about 63.68, so
+   a real turn is about 4076 half-steps, and 4096 overshoots by nearly 2
+   degrees. Press the button 40 times and see how far the arrow has crept.
+   Then set `QuarterTurn` to 1019 and try again.
+4. **A second hand.** Make the arrow tick round once a minute, one step every
+   second, like a clock's second hand. Use an `adk::Every tick {1000};` and
+   count seconds, then move to `seconds * 4096L / 60` each tick, so the
+   rounding never builds up.

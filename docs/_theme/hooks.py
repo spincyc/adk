@@ -167,7 +167,8 @@ def load_bench (path):
 
 def sketch_pins (sketch):
     pins = set ()
-    pattern = r"adk::(\w+)\s+\w+\s*(\[\s*\d*\s*\])?\s*\{(.*?)\};"
+    # A part with its pins in braces, or one that needs none: adk::Rtc rtc;
+    pattern = r"adk::(\w+)\s+\w+\s*(\[\s*\d*\s*\])?\s*(?:\{(.*?)\})?\s*;"
     for kind, array, arguments in re.findall (pattern, sketch, re.S):
         if kind not in PIN_ARGUMENTS:
             continue

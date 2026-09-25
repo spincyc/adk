@@ -1,0 +1,48 @@
+# The power module at the Mega's end feeds both pairs of rails; the Mega's GND joins them.
+# After it come the contrast knob and the LCD in row a, with its power from the
+# top rails, then the active buzzer. Below the board the servo latch takes its
+# power from the rails; below the Mega sit the RFID reader, on 3.3 V and the SPI
+# pins, and the tap sensor.
+bench = Bench ("The Secret Door: an LCD on pins 31 to 36, an RFID reader on the SPI pins and 45, "
+               "a tap sensor on A12, a servo latch on 44 and an active buzzer on 12", columns=(1, 40))
+
+bench.power_module ("left")
+bench.wire ("GND", "B-7")
+bench.potentiometer ("e11", "e12", "e13")
+bench.lcd (15, row="a", text=("Secret Door", "Card or knock..."))
+bench.wire ("d11", "d15")
+bench.wire ("c12", "c17")
+bench.wire ("b13", "b16")
+bench.wire ("e15", "T-15")
+bench.wire ("e16", "T+16")
+bench.wire ("e19", "T-19")
+bench.wire ("31", "e18")
+bench.wire ("32", "e20")
+bench.wire ("33", "e25")
+bench.wire ("34", "e26")
+bench.wire ("35", "e27")
+bench.wire ("36", "e28")
+bench.resistor ("220 Ω", "e29", "f29")
+bench.wire ("j29", "T+29")
+bench.wire ("e30", "T-30")
+bench.wire ("12", "j32")
+bench.buzzer ("g32", "g35")
+bench.wire ("j35", "T-35")
+bench.module ("servo", at=(6.3, 3.3), facing="up")
+bench.wire ("44", "servo.signal")
+bench.wire ("B+9", "servo.+")
+bench.wire ("B-10", "servo.−")
+bench.module ("rfid", at=(2.6, 3.9), facing="up")
+bench.wire ("3.3V", "rfid.3.3V")
+bench.wire ("45", "rfid.RST", color="yellow")
+bench.wire ("GND", "rfid.GND")
+bench.wire ("50", "rfid.MISO", color="purple")
+bench.wire ("51", "rfid.MOSI", color="white")
+bench.wire ("52", "rfid.SCK", color="brown")
+bench.wire ("53", "rfid.SDA", color="grey")
+bench.module ("sensor", name="tap", at=(0.6, 3.6), pins=["S", "+", "−"], label="tap sensor",
+              facing="up")
+bench.wire ("A12", "tap.S", color="yellow")
+bench.wire ("5V", "tap.+")
+bench.wire ("GND", "tap.−")
+bench.closeup (8, 38)
