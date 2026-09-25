@@ -37,3 +37,11 @@ bench.potentiometer ("e45", "e46", "e47")
 bench.wire ("a45", "B-45")
 bench.wire ("A0", "a46")
 bench.wire ("d47", "T+49", via=[(10.05, 1.85), (10.25, 1.85), (10.25, 0.75)])
+
+# Readings to take with a multimeter, with the sensor covered so that one
+# note keeps sounding: pin 10's average, and the knob's wiper where the
+# octave changes.
+bench.measure ("Pin 10, playing a note", red="10", black="GND", expect="about 2.5 V",
+               when="A note sounding")
+bench.measure ("The knob's wiper, where the octave jumps", red="d46", black="GND",
+               expect="about 1.7 V", when="The note just jumping up an octave")

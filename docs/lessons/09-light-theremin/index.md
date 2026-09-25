@@ -106,11 +106,12 @@ buzzer and the knob.
     often has a white sticker on top. The active buzzer can only make its
     own single tone; the passive one plays whatever note the Mega sends it.
 
-    The buzzer stands across the middle gap: its + leg, the longer one, in
-    f34 in the top half, where pin 10's wire comes into j34, and its other
-    leg in e34 in the bottom half, where the 220 Ω resistor takes it from
-    a34 down to the − rail. Its legs are 0.3 inch apart, exactly the width
-    of the gap.
+    The buzzer stands across the middle gap. It has a **+** marked on top
+    beside one leg: follow the mark, and put that leg in f34, on pin 10's
+    side of the gap, where pin 10's wire comes into j34. Its other leg goes
+    in e34 in the bottom half, where the 220 Ω resistor takes it from a34
+    down to the − rail. Its legs are 0.3 inch apart, exactly the width of
+    the gap.
 
 When you are done, these are the connections your circuit makes:
 
@@ -171,7 +172,7 @@ jump down and up by an octave.
 
 | What you see or hear | Try this |
 |---|---|
-| The LEDs follow your hand, but no sound | Check the wire from pin 10 is in j34, the buzzer's + leg is in f34 and its other leg in e34, and the resistor goes from a34 into the − rail. Make sure it's the passive buzzer. |
+| The LEDs follow your hand, but no sound | Check the wire from pin 10 is in j34, the buzzer's **+** leg in f34 and its other leg in e34, and the resistor goes from a34 into the − rail. Make sure it's the passive buzzer. |
 | The slightest shadow plays the top note | The sketch never saw the sensor covered. Press the Mega's reset button and cover the sensor fully while the LEDs blink. |
 | It never goes quiet | The room is darker than when the sketch learned it: a light went off, or your own shadow falls on the sensor. Press reset and let it learn again in the light you'll play in. |
 | Notes flutter between two neighbors | Your hand is at the edge of a slice, or the lamp above you flickers. Move a little, or try a steadier light. |
@@ -208,3 +209,39 @@ jump down and up by an octave.
    `adk::Vector<adk::Note, 16>`, the growing list from Lesson 6, and
    play them back with `speaker.play (tune.data (), tune.size ())` when you
    hold the sensor covered for two seconds.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM** and the red one in **V**.
+
+Both readings need a note that keeps sounding while your hands hold the
+probes. Put a bottle cap over the sensor: the shadow stays put, and so does
+the note. Lift the cap off when you want quiet. For the second reading,
+turn the knob to the end where the notes are lowest, then turn it back
+slowly, and stop the moment the note jumps up an octave.
+
+A note is pin 10 switching between 0 V and 5 V, hundreds of times a second:
+high for exactly half of every cycle, low for the other half.
+
+!!! question "Predict"
+    What will the meter show on pin 10 while a note sounds? When you turn
+    the knob and the note jumps up an octave, twice as many cycles a
+    second, will the reading change?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Pin 10, playing a note** reads about half of 5 V, the average of a pin
+  that is high half the time; a little under 2.5 V is normal, since the
+  buzzer's current pulls the pin a little below 5 V while it is high. Turn
+  the knob to another octave and the reading stays where it is: the pitch
+  doubles, but the pin is still high half the time. The meter can't hear
+  pitch. Lift the cap, the buzzer stops, and pin 10 reads 0 V.
+- **The knob's wiper, where the octave jumps**, shows the sketch's `/ 342`
+  as a voltage. The octave goes from 0 to 1 when the reading reaches 342,
+  and 342 × 5 ÷ 1023 ≈ 1.7 V. Keep turning: the next jump, at 684, comes
+  at about 3.3 V. The sketch cuts the knob's 5 V into three equal parts,
+  and the meter shows you where the cuts are.
