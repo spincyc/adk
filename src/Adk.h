@@ -15,6 +15,10 @@
 #include "adk/rgb_led.h"
 #include "adk/buzzer.h"
 #include "adk/speaker.h"
+#include "adk/relay.h"
+#include "adk/motor.h"
+#include "adk/servo.h"
+#include "adk/stepper.h"
 
 #include "adk/button.h"
 #include "adk/keypad.h"

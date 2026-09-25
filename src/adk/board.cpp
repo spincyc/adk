@@ -247,7 +247,16 @@ namespace adk {
                 break;
             case Fault::TimerInUse:
                 log.println (F (" needs a timer that is already in use"));
-                log.println (F ("adk: a Speaker stops PWM on pins 9 and 10"));
+
+                if (timerOf (pin) != 5)
+                {
+                    log.println (F ("adk: a Speaker stops PWM on pins 9 and 10"));
+                }
+
+                if (timerOf (pin) != 2)
+                {
+                    log.println (F ("adk: a Servo stops PWM on pins 44, 45 and 46"));
+                }
                 break;
         }
     }

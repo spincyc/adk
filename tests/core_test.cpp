@@ -326,3 +326,16 @@ TEST (timerOfNamesThePwmTimer)
     CHECK (adk::timerOf (13) == 0);
     CHECK (adk::timerOf (22) == 0xFF);
 }
+
+TEST (aTimerFaultNamesThePartsThatShareTheTimer)
+{
+    arduino::Log speaker;
+    adk::explain (speaker, adk::Fault::TimerInUse, 9);
+    CHECK (speaker.text.find ("Speaker") != std::string::npos);
+    CHECK (speaker.text.find ("Servo") == std::string::npos);
+
+    arduino::Log servo;
+    adk::explain (servo, adk::Fault::TimerInUse, 45);
+    CHECK (servo.text.find ("Servo") != std::string::npos);
+    CHECK (servo.text.find ("Speaker") == std::string::npos);
+}
