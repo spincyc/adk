@@ -189,7 +189,7 @@ def measurements (bench):
         (_, red), (_, black) = bench.probes (index - 1)
         figures.append (
             f'<figure class="bench-figure bench-measure" markdown="0" '
-            f'style="flex: 1 1 9rem; max-width: 12rem; margin: 0">\n{bench.measure_svg (index - 1)}\n'
+            f'style="flex: 1 1 7.5rem; max-width: 12rem; margin: 0">\n{bench.measure_svg (index - 1)}\n'
             f'<figcaption>{index}. {escape (taken["label"])}</figcaption>\n</figure>')
         rows.append (f"| {index}. {taken['label']} | {red} | {black} | {taken['expect']} | "
                      f"{taken['when'] or ''} |")

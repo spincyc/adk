@@ -627,7 +627,9 @@ class Bench:
     def _probe (self, point, near):
         if point in ("GND", "5V"):
             rail = self._rail_of (point)
-            holes = [h for h in self._holes () if h.startswith (rail) and h not in self.used]
+            covered = self._covered ()
+            holes = [h for h in self._holes ()
+                     if h.startswith (rail) and h not in self.used and h not in covered]
             if not holes:
                 raise ValueError (f"a probe on {point} needs a free hole in a {point} rail")
             x = self.hole_xy (near)[0] if near else 0
@@ -650,9 +652,13 @@ class Bench:
         strip = self.strip_of (point)
         if not any (self.strip_of (h) == strip for h in self.used):
             raise ValueError (f"a probe at {point} touches nothing in the build")
+        if point in self._covered ():
+            raise ValueError (f"a probe at {point} can't reach it under a part")
         # A wire's end fills its hole, so the probe goes in a free one beside it.
         if self.used.get (point) == "a wire":
-            free = [h for h in self._holes () if self.strip_of (h) == strip and h not in self.used]
+            covered = self._covered ()
+            free = [h for h in self._holes ()
+                    if self.strip_of (h) == strip and h not in self.used and h not in covered]
             if not free:
                 raise ValueError (f"a probe at {point} needs a free hole in its strip")
             near = self.hole_xy (point)
@@ -826,10 +832,9 @@ class Bench:
             where = "at the end of the long header" if y < 1 else "at the top of the long header"
             return f"the {'outer' if x > 3.75 else 'inner'} {label} pin {where}"
         elif y > 1.99:
-            where = "beside pin 13"
-        else:
-            where = "on the power header"
-        return f"a {label} pin {where}"
+            return f"the {label} pin beside pin 13"
+        # The power header has two GND pins, and one of each other.
+        return f"{'a' if label == 'GND' else 'the'} {label} pin on the power header"
 
     def _xy (self, end):
         kind, name = end
@@ -874,6 +879,16 @@ class Bench:
             if rail_column (column):
                 for rail in ("T+", "T-", "B+", "B-"):
                     yield f"{rail}{column}"
+
+    # Holes a probe can't reach, under a part's body or a module lying on the
+    # board. The kit's jumpers are flexible and arch clear of the holes.
+    def _covered (self):
+        covered = set ()
+        for part in self.parts:
+            covered |= self._under (part.footprint (self))
+        for placed in self.modules.values ():
+            covered |= self._under ([("rect", *placed.box ())])
+        return covered - set (self.used)
 
     def _under (self, shapes):
         return {hole for hole in self._holes ()
@@ -1277,6 +1292,13 @@ class Bench:
         # sweeping up and right into them.
         mx, my = min (xs) - width - 50, by1 + 26
         left, right = mx - 8, max (xs) + 36
+        # Below a module hanging under the board there, such as the screen,
+        # rather than over it.
+        hanging = [placed.box () for placed in self.modules.values ()]
+        hanging += [part.box (self) for part in self.parts if part.box (self)]
+        for x0, y0, x1, y1 in hanging:
+            if x0 < mx + width and x1 > mx and y0 < my + height and y1 > by1:
+                my = max (my, y1 + 12)
         top = min (y for _, y in points.values ()) - 30
         # Take in the whole body of any part the top edge would cut through,
         # such as an LED or a buzzer, as far as the top of the board.
