@@ -195,3 +195,39 @@ settles over the next minute; its temperature moves much less.
    warm hand than at room temperature, its beta may not be 3950. Try
    `adk::Thermistor thermistor {A2, 3435};` and other values from 3000 to
    4300, and keep the one that agrees best.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it to DC volts as in [Lesson 1](../01-blink/index.md#measure-it), black lead
+in **COM** and red in **V**. Of the three thermometers, only the thermistor
+turns the temperature into a voltage, so that's the one to measure. The
+sketch needs no change: a room's temperature moves slowly enough to read.
+
+!!! question "Predict"
+    When you warm the thermistor's bead, will the voltage on A2 go up or
+    down? Write down your guess.
+
+<!-- measure -->
+
+For the last reading, pinch the bead between finger and thumb for twenty
+seconds, let go, and measure straight away. It cools slowly, so the
+number falls only a little while you watch.
+
+What the numbers tell you:
+
+- **The divider's middle** and **across the thermistor** add up to 5 V.
+  The two parts share it out by their resistance: at 25 °C both are 10 kΩ
+  and each has 2.5 V. A cooler room gives the thermistor more resistance
+  and a bigger share, so A2 reads less: about 2.2 V at 20 °C, 2.3 V at
+  22 °C. Your numbers depend on your room.
+- Turn the readings back into a resistance. The same current flows
+  through both parts, so their resistances are in the same proportion as
+  their voltages: with 2.7 V and 2.3 V the thermistor has
+  10 kΩ × 2.7 ÷ 2.3 ≈ 11.7 kΩ, which the beta equation turns into about
+  21 °C. Compare it with the `NTC` number on your screen.
+- **Warmed**, the thermistor's resistance falls, so its share shrinks and
+  A2 rises: up is the answer. It's the idea above, on your meter: 2.5 V at
+  25 °C, 2.77 V at 30 °C.
+- The DHT11 and the 18B20 send their temperature as a number, in pulses, so
+  there is no voltage on their wires that follows the heat.

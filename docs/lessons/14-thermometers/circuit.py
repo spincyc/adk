@@ -24,3 +24,12 @@ bench.module ("sensor", "probe", at=(7.68, -1.15), label="18B20")
 bench.wire ("17", "probe.S")
 bench.wire ("probe.+", "T+27")
 bench.wire ("probe.−", "T-28")
+
+# Readings to take with a multimeter: the thermistor divider's middle point
+# on A2, at room temperature and warmed, and the thermistor's own share.
+bench.measure ("The divider's middle, on A2", red="A2", black="GND", expect="about 2.3 V",
+               when="at room temperature")
+bench.measure ("Across the thermistor", red="h40", black="b40", expect="about 2.7 V",
+               when="at room temperature")
+bench.measure ("A2 with the bead warmed", red="A2", black="GND", expect="about 2.8 V",
+               when="just after pinching the bead for 20 s")
