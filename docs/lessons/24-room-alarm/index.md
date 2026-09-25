@@ -56,8 +56,8 @@ multiplies what's there by ten and adds itself.
 
 <p class="formula">1 → 12 → 123 → 1234</p>
 
-After the fourth digit it compares the number with the secret one, `Code`
-in the sketch. Right, and the alarm disarms; wrong, and it gives a long beep
+After the fourth digit it compares the number with the secret one,
+`secretCode` in the sketch. Right, and the alarm disarms; wrong, and it gives a long beep
 and waits for four digits again. Each digit shows as a star, so someone
 looking over your shoulder learns nothing.
 
@@ -126,19 +126,27 @@ Read it from the top:
 - Seven parts: the screen, the PIR sensor (active high, as in Lesson 23),
   the receiver, the siren, the status light, and two beats: `second` for the
   countdowns and `wail` for the siren.
-- `Code` and `Delay` are yours to change. `digitButtons` lists the remote's
-  0 to 9 buttons in order, so a button's place in the list is its digit.
-- `enum State` names the five states, and `state` holds the one the alarm is
-  in now.
-- `loop ()` passes each fresh button press to `pressed ()`, then checks the
-  one thing the current state is waiting for.
+- `secretCode` and `delaySeconds` are yours to change. `digitButtons` is an
+  `adk::Array` of the remote's 0 to 9 buttons in order, so a button's place
+  in it is its digit.
+- `enum class State` names the five states, as in Lesson 3, and `state`
+  holds the one the alarm is in now.
+- `loop ()` passes each fresh button press to `pressed ()`. Then it checks
+  the one thing the current state is waiting for, and moves on to the next
+  state with its light and message: it is the table above, row by row.
 - `pressed ()` arms a disarmed alarm on POWER, and turns number buttons into
   digits for `keyIn ()`, which adds a star and checks the fourth digit.
+  `screen.at (5 + keys, 1)` moves to the next place on the bottom row and
+  hands back the screen, so `.print ('*')` can follow on the same line.
 - `countedDown ()` does one second's work on each tick of `second`: counts
   down, beeps and shows the number, and says when it has reached zero.
-- `startCountdown ()` and `enter ()` change state: the light's color, the
-  message and a fresh code line. `second.restart ()` makes the first tick
-  come a whole second later.
+  `adk::print ()` works on the screen just as `adk::println ()` works on
+  `Serial`, and the `?:` puts a space in front of a one-digit number, which
+  rubs out the 1 of the 10.
+- `enter ()` is how the alarm changes state: the light's color, the message,
+  the countdown if the state has one, and a fresh code line.
+  `second.restart ()` makes the countdown's first tick come a whole second
+  later.
 
 ## Upload it
 
@@ -149,10 +157,15 @@ Read it from the top:
    down from 10, beeping every second. Leave its view.
 4. At zero the screen says *ARMED* and the light glows dim red.
 5. Walk back in. The light turns orange, *Code, quick!* appears and the
-   countdown beeps again. Key in 1, 2, 3, 4 on the remote: four stars, and
-   the alarm is *Disarmed*.
+   countdown beeps again. Key in 1, 2, 3, 4 on the remote: a star for each
+   of the first three, and at the fourth the alarm is *Disarmed*.
 6. Now let the countdown run out: the siren wails and the light flashes red
    and blue until you key in the code.
+
+You predicted what happens if you are still in front of the PIR sensor when
+the exit countdown reaches zero. The alarm arms, sees you at once and
+starts the entry countdown: *Code, quick!* The PIR's output stays on for a
+few seconds after the last movement, so leave its view in good time.
 
 ## If it doesn't work
 
@@ -160,7 +173,7 @@ Read it from the top:
 |---|---|
 | The screen is lit but blank | The contrast is too faint: put the knob from Lesson 13 in place of the 1 kΩ resistor, or try a 330 Ω one. |
 | The top row is solid blocks | The screen has power but isn't hearing the Mega: check pins 31 to 36 land in columns 13, 15 and 20 to 23. |
-| It arms and straight away asks for the code | The PIR still saw movement when the countdown ended; it stays on for a few seconds after the last movement. Leave sooner, or make `Delay` longer. |
+| It arms and straight away asks for the code | The PIR still saw movement when the countdown ended; it stays on for a few seconds after the last movement. Leave sooner, or make `delaySeconds` longer. |
 | It never notices you | Give the PIR a minute after power-up, check its OUT pin goes to A12, and turn its time knob fully anticlockwise. |
 | The remote does nothing | Aim at the receiver's window. Upload Lesson 22's sketch to check your remote's codes, and change `digitButtons` if yours differ. |
 | No beeps | The buzzer's + leg goes in f40, under pin 12's wire in j40, and its other leg's column needs the wire from a40 to the − rail. |
@@ -180,13 +193,14 @@ Read it from the top:
 
 ## Make it yours
 
-1. **Your own code.** Change `Code` to four digits of your own, and `Delay`
-   to suit how far you have to walk.
-2. **Three strikes.** Count wrong codes, and after three go straight to the
-   siren, even during the entry delay.
+1. **Your own code.** Change `secretCode` to four digits of your own, and
+   `delaySeconds` to suit how far you have to walk.
+2. **Three strikes.** Count wrong codes in `keyIn ()`, and after three go
+   straight to the siren with `enter (State::Sounding, ...)`, even during
+   the entry delay.
 3. **Silent alarm.** Add a mode, chosen with the EQ button, where the alarm
    only flashes the light and writes *INTRUDER* on the screen, without a
    sound.
 4. **More tripwires.** Add the obstacle module or the beam-break sensor from
-   Lesson 23 across your doorway, so that opening the door starts the entry
-   delay too.
+   Lesson 23 across your doorway, as another `adk::Switch`, so that opening
+   the door starts the entry delay too.
