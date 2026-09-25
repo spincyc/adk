@@ -73,9 +73,11 @@ it if they share the same GND.
     rails now. Keep the black GND wire into B-3. Plug the power module into
     the far end of the breadboard so that its **+** and **−** pins match the
     red **+** and blue **−** stripes on *both* sides of the breadboard, and
-    set both of its yellow jumpers to **5V**, never 3.3V. Never connect the
-    servo's red wire to the Mega's 5V pin. Keep fingers and hair away from
-    the horn when it moves, and don't force it round by hand.
+    set both of its yellow jumpers to **5V**, never 3.3V. The knob is the
+    only thing on the Mega's 5V: its own red wire runs from the 5V pin on
+    the power header, left of A0, into a47 by the knob's right leg. Never
+    connect the servo's red wire to the Mega's 5V pin. Keep fingers and hair
+    away from the horn when it moves, and don't force it round by hand.
 
 <!-- bench -->
 
@@ -88,9 +90,11 @@ it if they share the same GND.
     lights when it is. It has a USB socket too; in this course, always power
     it through the barrel socket with the kit's adapter.
 
-    The knob takes its 5 V from the rails as well. That's the power module's
-    5 V, not the Mega's, but they are close enough that the knob's reading
-    still runs from 0 to 1023.
+    The knob doesn't use the rails' 5 V. It takes the Mega's own, from the
+    5V pin on the power header: the Mega measures A0 against that 5 V, so a
+    knob fed from it reads from 0 to 1023 exactly, and it keeps working with
+    the power module switched off. The two 5 Vs never meet; only their GNDs
+    join, at the − rail.
 
 When you are done, these are the connections your circuit makes:
 
@@ -126,16 +130,17 @@ knob points and stops. Turn the knob slowly: the needle follows, a third of a
 second behind. Turn it quickly from one end to the other and the needle
 glides smoothly across instead of jerking.
 
-Now test your prediction. With the module switched off, the knob still works
-but the servo is limp: it has the signal but no power to act on it. Switch it
-back on and the servo snaps to wherever the knob now points.
+Now test your prediction. With the module switched off, the knob still works,
+because it runs on the Mega's own 5 V, but the servo is limp: it has the
+signal but no power to act on it. Switch it back on and the servo snaps to
+wherever the knob now points.
 
 ## If it doesn't work
 
 | What you see | Try this |
 |---|---|
 | The servo never moves | Is the power module's LED on? Check the adapter, the button and that both jumpers are on 5V. Then check the black wire from the Mega's GND to the bottom − rail (B-3): without it the servo can't read the signal. |
-| It moves, but not with the knob | Check the servo's orange wire goes to pin 44, and the knob's middle leg to A0. |
+| It moves, but not with the knob | Check the servo's orange wire goes to pin 44, the knob's middle leg to A0, and the red wire from the 5V pin on the Mega's power header to a47. |
 | The Mega resets or the USB disconnects when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail (B+53), fed by the power module. |
 | The needle turns the opposite way to the knob | Nothing is wrong. To swap it, change `knob.read (0, 180)` to `knob.read (180, 0)`. |
 | The servo hums or twitches when it should be still | The knob's reading wobbles by one step, and the servo chases it. See the second challenge below. |
@@ -168,3 +173,36 @@ back on and the servo snaps to wherever the knob now points.
 4. **A real gauge.** Add the thermistor from
    [Lesson 14](../14-thermometers/index.md) on A2, and make the needle point
    to the temperature on a dial marked from 15 °C to 35 °C.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it to DC volts as in [Lesson 1](../01-blink/index.md#measure-it), black lead
+in **COM** and red in **V**. The servo holds its angle and the knob stays
+where you leave it, so the sketch needs no change. Keep your fingers clear
+of the horn, and take care on the rails: a probe tip touching the + and −
+rails together would short the power module.
+
+!!! question "Predict"
+    The servo's 5 V and the knob's 5 V come from two different places. When
+    you switch the power module off, which of them will fall to 0 V? Write
+    down your guess, then take the first two readings with the module on,
+    and again with it off.
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **The servo's 5 V** comes from the power module's own regulator. Switch
+  the module off and it falls close to 0 V, and the servo goes limp.
+- **The knob's 5 V** comes from the Mega, which gets it from your computer's
+  USB port, so it stays with the module off. That's why the knob still
+  works. Compare it with the first reading: the two are seldom exactly
+  equal. Joined, the higher would push current back into the other, which
+  is why the Mega's 5V never goes to the rails while the power module is
+  there. Only their GNDs are joined, so that the servo can read the
+  pulses.
+- **The knob's wiper** is the angle, as a voltage. `knob.read (0, 180)`
+  turns 0 V into 0° and 5 V into 180°, so 90° is 2.5 V, and each degree is
+  5 V ÷ 180 ≈ 0.03 V. Turn the knob and watch the needle and the meter move
+  together.
