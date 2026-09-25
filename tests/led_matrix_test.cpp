@@ -190,6 +190,19 @@ TEST (matrixSendsOnlyTheRowsThatChanged)
     CHECK (dark ());
 }
 
+TEST (matrixShowsAnArrayPicture)
+{
+    constexpr adk::Array<uint8_t, 8> heart {0x00, 0x66, 0xFF, 0xFF, 0x7E, 0x3C, 0x18, 0x00};
+    adk::LedMatrix                   matrix {Data, Clock, Load};
+
+    adk::setup ();
+    listen ();
+
+    matrix.show (heart);
+    adk::update (0);
+    CHECK (sent () == "0266 03FF 04FF 057E 063C 0718");
+}
+
 TEST (matrixBrightnessIsSentOnceAndLimited)
 {
     adk::LedMatrix matrix {Data, Clock, Load};

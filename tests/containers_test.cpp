@@ -99,3 +99,44 @@ TEST (spanViewsAVectorsItemsSoFar)
     adk::Span view {taps};
     CHECK (view.size () == 2 && view[1] == 480);
 }
+
+TEST (equalComparesAnyTwoLists)
+{
+    adk::Array          code {'2', '4', '6', '8'};
+    adk::Vector<char, 4> typed;
+
+    for (char key : {'2', '4', '6'})
+    {
+        typed.push_back (key);
+    }
+    CHECK (!adk::equal (typed, code));
+
+    typed.push_back ('8');
+    CHECK (adk::equal (typed, code));
+
+    typed[0] = '1';
+    CHECK (!adk::equal (code, typed));
+}
+
+TEST (textCollectsWhatIsPrinted)
+{
+    adk::Text<10> message;
+
+    adk::print (message, "SCORE ", 17);
+    CHECK (strcmp (message.c_str (), "SCORE 17") == 0);
+
+    adk::print (message, " and more");
+    CHECK (message.size () == 10);
+    CHECK (strcmp (message.c_str (), "SCORE 17 a") == 0);
+
+    message.clear ();
+    CHECK (message.size () == 0 && message.c_str ()[0] == '\0');
+}
+
+TEST (fixedPrintsASetCountOfDecimals)
+{
+    arduino::Log log;
+
+    adk::print (log, adk::fixed (21.46, 1), "C ", adk::fixed (54.0, 0), '%');
+    CHECK (log.text == "21.5C 54%");
+}

@@ -67,7 +67,7 @@ void loop ()
 
     if (slide < pictures.size ())
     {
-        matrix.show (pictures[slide].data ());
+        matrix.show (pictures[slide]);
     }
     else
     {

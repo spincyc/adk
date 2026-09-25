@@ -20,8 +20,8 @@ constexpr adk::Note crash   [] {{adk::note::g4, 200}, {adk::note::e4, 200},
 // A dot on the matrix: x from 0 on the left, y from 0 at the top.
 struct Dot
 {
-    int x;
-    int y;
+    int8_t x;
+    int8_t y;
 
     bool operator== (const Dot&) const = default;
 };
@@ -30,12 +30,13 @@ adk::Deque<Dot, 64>      snake;      // its head at the front, tail at the back
 adk::Joystick::Direction turn;       // the way it goes on its next step
 Dot                      food;
 bool                     playing = false;
-char                     message [24] = "SNAKE! CLICK TO PLAY   ";
+adk::Text<24>            message;    // what scrolls between games
 
 void setup ()
 {
     adk::setup ();
     randomSeed (analogRead (A7));
+    adk::print (message, "SNAKE! CLICK TO PLAY   ");
 }
 
 void loop ()
@@ -44,7 +45,7 @@ void loop ()
 
     if (!playing)
     {
-        matrix.scroll (message);
+        matrix.scroll (message.c_str ());
 
         if (stick.wasPressed ())
         {
@@ -73,7 +74,7 @@ void newGame ()
     matrix.clear ();
     snake.clear ();
 
-    for (int x = 1; x <= 3; ++x)
+    for (int8_t x = 1; x <= 3; ++x)
     {
         snake.push_front ({x, 4});
         matrix.set (x, 4);
@@ -174,10 +175,10 @@ void placeFood ()
 
 void gameOver ()
 {
-    int score = snake.size () - 3;
-
     speaker.play (crash);
     adk::wait (1500);
-    snprintf (message, sizeof message, "SCORE %d   ", score);
+
+    message.clear ();
+    adk::print (message, "SCORE ", snake.size () - 3, "   ");
     playing = false;
 }

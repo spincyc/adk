@@ -92,7 +92,7 @@ void chooseMaze ()
         speaker.tone (adk::note::c6, 10);
     }
 
-    matrix.show (mazes[maze].data ());
+    matrix.show (mazes[maze]);
 
     if (click.wasPressed ())
     {
@@ -150,7 +150,7 @@ float bump (float speed)
 
 void drawGame ()
 {
-    matrix.show (mazes[maze].data ());
+    matrix.show (mazes[maze]);
     matrix.set (7, 7, exitLit);
     matrix.set (lround (ball.x), lround (ball.y));
 }

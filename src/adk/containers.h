@@ -270,4 +270,28 @@ namespace adk {
 
     template <typename T, size_t Capacity>
     Span (const Vector<T, Capacity>&) -> Span<const T>;
+
+    // Whether two lists hold equal items in the same order, like
+    // std::ranges::equal: any two of Array, Vector, Deque and Span.
+    constexpr bool equal (const auto& list, const auto& other)
+    {
+        if (list.size () != other.size ())
+        {
+            return false;
+        }
+
+        auto item = other.begin ();
+
+        for (const auto& mine : list)
+        {
+            if (!(mine == *item))
+            {
+                return false;
+            }
+
+            ++item;
+        }
+
+        return true;
+    }
 }

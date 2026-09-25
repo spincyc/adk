@@ -106,6 +106,11 @@ namespace adk {
         }
     }
 
+    void LedMatrix::show (const Array<uint8_t, 8>& rows)
+    {
+        show (rows.data ());
+    }
+
     void LedMatrix::brightness (uint8_t level)
     {
         level = level < MaxLevel ? level : MaxLevel;

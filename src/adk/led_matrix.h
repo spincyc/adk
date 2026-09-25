@@ -1,5 +1,6 @@
 #pragma once
 
+#include "containers.h"
 #include "object.h"
 
 namespace adk {
@@ -33,6 +34,7 @@ namespace adk {
 
         // A whole picture, eight rows from top to bottom.
         void show (const uint8_t rows [8]);
+        void show (const Array<uint8_t, 8>& rows);
 
         // 0 is dim, not off, and 15 is brightest.
         void brightness (uint8_t level);

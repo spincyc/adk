@@ -147,16 +147,9 @@ What's new:
   state. The rules are the table above.
 - `typeDigit ()` adds the key to `typed` and shows a `*`, or the digit itself
   while you are choosing a new code.
-- `pressEnter ()` decides what `#` means right now. `same (typed, code)`
-  checks the code.
-- `same ()` takes its two lists as **`adk::Span<const char>`**, a view of a
-  list of characters kept somewhere else: not a copy, but a way to see the
-  list's `size ()` and its items. A Span can be handed an Array or a Vector
-  alike, and here it gets one of each. The `const` means `same ()` may look
-  at the keys but not change them.
-- `size_t` is the type that sizes and places in a list come in, a whole
-  number that is never negative, so the loop in `same ()` counts with a
-  `size_t i`. `return false;` leaves the function the moment two keys differ.
+- `pressEnter ()` decides what `#` means right now.
+  `adk::equal (typed, code)` checks the code: it is true when the two lists
+  hold the same keys in the same order, whatever kinds of list they are.
 - `refuse ()` counts wrong codes. On the third, it counts down 30 seconds with
   `adk::wait (1000)`, printing the seconds left on the bottom row with one
   `adk::print ()`. Keys pressed meanwhile are scanned but never read, so they
@@ -167,7 +160,15 @@ What's new:
   it, so the latch and the screen can never disagree.
 - `loadCode ()` and `saveCode ()` are the EEPROM: address 0 holds the mark,
   42, once a code is saved, and addresses 1 to 4 hold its keys.
-  `saveCode (typed)` takes a Span too, so the keys you typed go straight in.
+- `saveCode ()` takes its keys as **`adk::Span<const char>`**, a view of a
+  list of characters kept somewhere else: not a copy, but a way to see the
+  list's `size ()` and its items. A Span can be handed an Array or a Vector
+  alike, so `saveCode (typed)` takes the Vector of keys you typed straight
+  in. The `const` means `saveCode ()` may look at the keys but not change
+  them.
+- `size_t` is the type that sizes and places in a list come in, a whole
+  number that is never negative, so the loops over the code count with a
+  `size_t i`.
 
 ## Upload it
 

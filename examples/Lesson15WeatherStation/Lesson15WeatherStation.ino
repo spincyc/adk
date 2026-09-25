@@ -108,10 +108,8 @@ void showWeather ()
 
     if (dht.ok ())
     {
-        lcd.print (dht.temperature (), 0);
-        adk::print (lcd, degree, "C ");
-        lcd.print (dht.humidity (), 0);
-        adk::print (lcd, "% ", nameOf (comfort));
+        adk::print (lcd, adk::fixed (dht.temperature (), 0), degree, "C ",
+                    adk::fixed (dht.humidity (), 0), "% ", nameOf (comfort));
     }
     else
     {

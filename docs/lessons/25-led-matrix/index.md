@@ -117,10 +117,9 @@ What's new:
 - `slide` counts button presses. 0, 1 and 2 are the pictures; 3, one past
   the last picture, is the message. `% (pictures.size () + 1)` wraps it back
   to 0, just as `% 5` counted the moods round in Lesson 4.
-- `matrix.show (pictures[slide].data ())` puts a whole picture up at once.
-  `.data ()` hands `show ()` the picture's rows themselves, which is the form
-  the matrix takes them in. Calling it on every pass of `loop ()` costs
-  almost nothing: the matrix only sends rows that changed.
+- `matrix.show (pictures[slide])` puts a whole picture up at once. Calling
+  it on every pass of `loop ()` costs almost nothing: the matrix only sends
+  rows that changed.
 - `matrix.scroll ("HELLO!")` slides the text in from the right, one column
   every 80 milliseconds. Asking again while it scrolls changes nothing, and
   asking once it has finished starts it over, so the message repeats for as

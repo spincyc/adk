@@ -131,8 +131,11 @@ What's new:
 - `checkAlarm ()` has the same kind of gap: it starts ringing at the setting,
   and stops a degree below it. `beat.restart ()` starts the once-a-second
   beeps from that moment.
-- `showWeather ()` writes each row with `lcd.at ()` and `adk::print ()`.
-  `ringing ? "TOO HOT! " : "Alarm at "` picks how the bottom row starts.
+- `showWeather ()` writes each row with `lcd.at ()` and one `adk::print ()`.
+  `adk::fixed (dht.temperature (), 0)` is the reading with no decimals, as
+  `lcd.print (value, 0)` printed it in Lesson 14, but it can go in a row of
+  pieces. `ringing ? "TOO HOT! " : "Alarm at "` picks how the bottom row
+  starts.
 - `colorOf ()` and `nameOf ()` turn a mood into a color and a word, each with
   a `switch`. A `case` that `return`s needs no `break`, because `return`
   leaves the function at once. `default:` catches every value without a

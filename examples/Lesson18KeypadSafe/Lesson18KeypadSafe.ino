@@ -76,7 +76,7 @@ void pressEnter ()
         saveCode (typed);
         enter (State::Open, "New code saved");
     }
-    else if (state == State::Locked && same (typed, code))
+    else if (state == State::Locked && adk::equal (typed, code))
     {
         wrong = 0;
         enter (State::Open, "Open. # locks");
@@ -128,25 +128,6 @@ void enter (State next, const char* message)
     {
         lcd.print ("A: new code");
     }
-}
-
-// Whether two lists hold the same keys in the same order.
-bool same (adk::Span<const char> keys, adk::Span<const char> others)
-{
-    if (keys.size () != others.size ())
-    {
-        return false;
-    }
-
-    for (size_t i = 0; i < keys.size (); ++i)
-    {
-        if (keys[i] != others[i])
-        {
-            return false;
-        }
-    }
-
-    return true;
 }
 
 // EEPROM keeps its bytes with the power off: the mark in address 0 once a

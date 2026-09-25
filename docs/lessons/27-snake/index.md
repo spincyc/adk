@@ -115,7 +115,10 @@ What's new:
   `speaker.play (gulp)` starts one and returns at once, so the game never
   stops to wait for a sound.
 - `struct Dot` holds a dot's `x` and `y` together, so the sketch can hand a
-  whole dot around: `Dot food` is where the food is.
+  whole dot around: `Dot food` is where the food is. They are `int8_t`, a
+  one-byte number like Lesson 4's `uint8_t`, but one that can go below zero,
+  from -128 to 127: a head that leaves by the left wall is at `x` -1. One
+  byte each keeps the 64-dot snake to 128 bytes of the Mega's 8192.
 - `bool operator== (const Dot&) const = default;` lets you compare two dots
   with `==` and `!=`, as you would two numbers. `= default` asks the
   compiler to write the comparison for you: two dots are equal when their
@@ -151,10 +154,11 @@ What's new:
   with `matrix.get ()`.
 - `newGame ()` lays out three dots, sets the beat back to 400 ms, and
   `step.restart ()` makes the first step come a whole beat after the click.
-- `gameOver ()` plays the crash, leaves the dead snake on show for a moment,
-  and writes the score into `message` with `snprintf`. It prints into a row
-  of characters instead of to the Serial Monitor, putting the number where
-  `%d` stands.
+- `adk::Text<24> message` is text you print into, up to 24 characters, the
+  way `adk::print` prints to `Serial` or the screen. `gameOver ()` plays the
+  crash, leaves the dead snake on show for a moment, then empties `message`
+  with `clear ()` and prints the score into it. `message.c_str ()` hands the
+  text to `matrix.scroll ()`.
 
 ## Upload it
 
