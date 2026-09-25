@@ -1,0 +1,688 @@
+/* ADK: a sketchbook look. Paper, graphite, and one warm LED red. */
+
+/* Colour ----------------------------------------------------------------- */
+
+[data-md-color-scheme="paper"] {
+    --adk-paper:        #fbf9f3;
+    --adk-paper-deep:   #f3efe4;
+    --adk-graphite:     #262626;
+    --adk-pencil:       #5c5a55;
+    --adk-rule:         #dcd6c8;
+    --adk-red:          #c43d24;
+    --adk-red-soft:     #f7e2dc;
+    --adk-card:         #ffffff;
+    --adk-shadow:       0 1px 2px rgb(60 50 30 / 8%), 0 6px 24px rgb(60 50 30 / 8%);
+
+    --md-default-bg-color:           var(--adk-paper);
+    --md-default-fg-color:           var(--adk-graphite);
+    --md-default-fg-color--light:    #4a4844;
+    --md-default-fg-color--lighter:  #8b877e;
+    --md-default-fg-color--lightest: #d8d2c3;
+    --md-primary-fg-color:           var(--adk-paper);
+    --md-primary-fg-color--light:    var(--adk-paper);
+    --md-primary-fg-color--dark:     var(--adk-paper-deep);
+    --md-primary-bg-color:           var(--adk-graphite);
+    --md-primary-bg-color--light:    var(--adk-pencil);
+    --md-accent-fg-color:            var(--adk-red);
+    --md-accent-fg-color--transparent: rgb(196 61 36 / 10%);
+    --md-typeset-color:              var(--adk-graphite);
+    --md-typeset-a-color:            var(--adk-red);
+    --md-code-bg-color:              #f4f1e8;
+    --md-code-fg-color:              #2f2d29;
+    --md-footer-bg-color:            #2b2a27;
+    --md-footer-bg-color--dark:      #22211f;
+    --md-typeset-table-color:        var(--adk-rule);
+}
+
+[data-md-color-scheme="graphite"] {
+    color-scheme: dark;
+
+    --adk-paper:        #1d1c1a;
+    --adk-paper-deep:   #242320;
+    --adk-graphite:     #ebe7de;
+    --adk-pencil:       #b4afa4;
+    --adk-rule:         #3a3833;
+    --adk-red:          #ff8a6b;
+    --adk-red-soft:     #3a2622;
+    --adk-card:         #262521;
+    --adk-shadow:       0 1px 2px rgb(0 0 0 / 30%), 0 8px 28px rgb(0 0 0 / 35%);
+
+    --md-default-bg-color:           var(--adk-paper);
+    --md-default-fg-color:           var(--adk-graphite);
+    --md-default-fg-color--light:    #cfcac0;
+    --md-default-fg-color--lighter:  #8f8a80;
+    --md-default-fg-color--lightest: #45423c;
+    --md-primary-fg-color:           var(--adk-paper);
+    --md-primary-fg-color--light:    var(--adk-paper);
+    --md-primary-fg-color--dark:     var(--adk-paper-deep);
+    --md-primary-bg-color:           var(--adk-graphite);
+    --md-primary-bg-color--light:    var(--adk-pencil);
+    --md-accent-fg-color:            var(--adk-red);
+    --md-accent-fg-color--transparent: rgb(255 138 107 / 12%);
+    --md-typeset-color:              var(--adk-graphite);
+    --md-typeset-a-color:            var(--adk-red);
+    --md-code-bg-color:              #262521;
+    --md-code-fg-color:              #e6e1d6;
+    --md-footer-bg-color:            #151412;
+    --md-footer-bg-color--dark:      #0f0e0d;
+    --md-typeset-table-color:        var(--adk-rule);
+}
+
+/* Type ------------------------------------------------------------------- */
+
+:root {
+    --md-text-font: "Atkinson Hyperlegible Next";
+    --md-code-font: "JetBrains Mono";
+    --adk-display: "Fraunces", Georgia, serif;
+    --adk-hand: "Patrick Hand", cursive;
+}
+
+body {
+    font-feature-settings: "kern", "liga";
+}
+
+.md-typeset {
+    font-size: 0.86rem;
+    line-height: 1.7;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 {
+    font-family: var(--adk-display);
+    color: var(--adk-graphite);
+    letter-spacing: -0.01em;
+}
+
+.md-typeset h1 {
+    font-weight: 800;
+    font-size: 2.4em;
+    line-height: 1.1;
+    margin-bottom: 0.4em;
+}
+
+.md-typeset h2 {
+    font-weight: 700;
+    font-size: 1.55em;
+    margin-top: 2.2em;
+    padding-top: 0.6em;
+    border-top: 1px solid var(--adk-rule);
+}
+
+.md-typeset h3 {
+    font-weight: 600;
+    font-size: 1.2em;
+}
+
+.md-typeset code {
+    font-size: 0.86em;
+    border-radius: 0.2rem;
+}
+
+.md-typeset a {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+}
+
+.md-typeset .highlight a,
+.md-typeset .md-button,
+.md-typeset .headerlink {
+    text-decoration: none;
+}
+
+/* Header and navigation -------------------------------------------------- */
+
+.md-header {
+    border-bottom: 1px solid var(--adk-rule);
+    box-shadow: none;
+}
+
+.md-header__title {
+    font-family: var(--adk-display);
+    font-weight: 800;
+    font-size: 1.05rem;
+}
+
+.md-tabs {
+    border-bottom: 1px solid var(--adk-rule);
+}
+
+.md-tabs__link {
+    font-size: 0.72rem;
+    opacity: 0.8;
+}
+
+.md-tabs__link--active,
+.md-tabs__link:hover {
+    opacity: 1;
+    color: var(--adk-red);
+}
+
+.md-nav__link--active {
+    font-weight: 700;
+}
+
+.md-nav__item--section > .md-nav__link {
+    font-family: var(--adk-display);
+    font-weight: 700;
+}
+
+/* Lesson layout: one reading column, with the bench drawing free to spread
+   wider than the text. */
+
+.lesson-header,
+.lesson-body {
+    max-width: 34rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media screen and (min-width: 60em) {
+    .md-typeset .lesson-body > .bench-bench {
+        width: min(100vw - 20rem, 52rem);
+        max-width: none;
+        margin-left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+.lesson-sections {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0 0 1.2rem;
+}
+
+.md-typeset .lesson-sections a {
+    padding: 0.2rem 0.7rem;
+    border: 1px solid var(--adk-rule);
+    border-radius: 999px;
+    font-size: 0.72rem;
+    color: var(--md-default-fg-color--light);
+    text-decoration: none;
+    background: var(--adk-card);
+}
+
+.md-typeset .lesson-sections a:hover {
+    border-color: var(--adk-red);
+    color: var(--adk-red);
+}
+
+/* Lesson header ---------------------------------------------------------- */
+
+.lesson-header {
+    margin: 0.2rem 0 2.4rem;
+}
+
+.lesson-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0 0 0.6rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--adk-pencil);
+}
+
+.lesson-number {
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    color: #fff;
+    background: var(--adk-red);
+}
+
+[data-md-color-scheme="graphite"] .lesson-number {
+    color: #1d1c1a;
+}
+
+.md-typeset .lesson-header h1 {
+    margin: 0 0 0.3rem;
+    font-size: 3.1em;
+}
+
+.lesson-promise {
+    margin: 0 0 1.1rem;
+    font-family: var(--adk-display);
+    font-size: 1.3em;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--md-default-fg-color--light);
+}
+
+.md-typeset ul.lesson-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.4rem;
+    align-items: center;
+    margin: 0 0 1.4rem;
+    padding: 0;
+    list-style: none;
+}
+
+[dir] .md-typeset ul.lesson-facts > li {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    color: var(--md-default-fg-color--light);
+}
+
+.lesson-facts svg {
+    width: 1.1em;
+    height: 1.1em;
+    fill: currentcolor;
+}
+
+.lesson-level span {
+    display: inline-block;
+    width: 0.55em;
+    height: 0.55em;
+    border-radius: 50%;
+    border: 1.5px solid var(--adk-red);
+}
+
+.lesson-level span.on {
+    background: var(--adk-red);
+}
+
+.md-typeset .lesson-pdf a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.8rem;
+    border: 1.5px solid var(--adk-red);
+    border-radius: 999px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.md-typeset .lesson-pdf a:hover {
+    color: #fff;
+    background: var(--adk-red);
+}
+
+.lesson-kit {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--adk-rule);
+    border-radius: 0.6rem;
+    background: var(--adk-card);
+    box-shadow: var(--adk-shadow);
+}
+
+.md-typeset .lesson-kit-title {
+    margin: 0 0 0.3rem;
+    font-family: var(--adk-display);
+    font-weight: 700;
+    font-size: 1.05em;
+}
+
+.md-typeset .lesson-kit ul {
+    margin: 0;
+    padding-left: 1.1rem;
+}
+
+.md-typeset .lesson-kit li {
+    margin: 0.15rem 0;
+}
+
+/* Drawings --------------------------------------------------------------- */
+
+.md-typeset .bench-figure {
+    width: 100%;
+    margin: 1.6rem 0;
+}
+
+.md-typeset .bench-closeup {
+    width: min(100%, 34rem);
+    margin: 1.6rem auto;
+}
+
+.bench-figure svg.pencil-drawing {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    box-shadow: var(--adk-shadow);
+}
+
+.bench-figure figcaption {
+    max-width: none;
+    margin-top: 0.6rem;
+    font-family: var(--adk-hand);
+    font-size: 1.1em;
+    color: var(--md-default-fg-color--light);
+    text-align: center;
+}
+
+/* A worked formula, set like a sum on the page. */
+.md-typeset .formula {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin: 1.2rem 0;
+    font-size: 1.15em;
+}
+
+.formula .fraction {
+    display: inline-flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.formula .fraction span:first-child {
+    padding: 0 0.3rem 0.1rem;
+    border-bottom: 1.5px solid currentcolor;
+}
+
+/* Build steps: numbered circles down a line, like a checklist. */
+.md-typeset .build-steps ol {
+    counter-reset: step;
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.md-typeset .build-steps li {
+    position: relative;
+    margin: 0 0 0.7rem;
+    padding: 0.1rem 0 0 2.4rem;
+    counter-increment: step;
+}
+
+.md-typeset .build-steps li::before {
+    content: counter(step);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1.7rem;
+    height: 1.7rem;
+    border: 1.5px solid var(--adk-graphite);
+    border-radius: 50%;
+    font-family: var(--adk-hand);
+    font-size: 1.05em;
+    line-height: 1.55rem;
+    text-align: center;
+}
+
+/* Tables, admonitions, code ---------------------------------------------- */
+
+.md-typeset table:not([class]) {
+    border: 1px solid var(--adk-rule);
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    box-shadow: none;
+}
+
+.md-typeset table:not([class]) th {
+    background: var(--adk-paper-deep);
+    font-weight: 700;
+}
+
+.md-typeset .admonition,
+.md-typeset details {
+    border-width: 0 0 0 4px;
+    border-radius: 0.4rem;
+    font-size: 0.8rem;
+    box-shadow: none;
+    background: var(--adk-card);
+}
+
+/* Callouts in the sketchbook's own colours: red for danger, amber for care,
+   green for tips, graphite for everything else. */
+.md-typeset :is(.admonition, details) {
+    --adk-callout: var(--adk-pencil);
+    border-color: var(--adk-callout);
+}
+
+.md-typeset :is(.admonition, details):is(.danger, .warning) {
+    --adk-callout: #d08a1e;
+}
+
+.md-typeset :is(.admonition, details).danger {
+    --adk-callout: var(--adk-red);
+}
+
+.md-typeset :is(.admonition, details):is(.tip, .success) {
+    --adk-callout: #4c8a4a;
+}
+
+.md-typeset :is(.admonition, details):is(.question) {
+    --adk-callout: #3f6fb5;
+}
+
+.md-typeset :is(.admonition, details) > :is(.admonition-title, summary) {
+    background: color-mix(in srgb, var(--adk-callout) 10%, transparent);
+}
+
+.md-typeset :is(.admonition, details) > :is(.admonition-title, summary)::before {
+    background-color: var(--adk-callout);
+}
+
+/* The circuit, point by point. */
+.md-typeset .connections ul {
+    list-style: none;
+    margin-left: 0;
+}
+
+.md-typeset .connections li {
+    margin: 0.3rem 0;
+    padding: 0.4rem 0.7rem;
+    border: 1px dashed var(--adk-rule);
+    border-radius: 0.4rem;
+}
+
+.md-typeset .highlight .filename {
+    font-family: var(--md-code-font);
+    font-weight: 600;
+}
+
+/* Home page -------------------------------------------------------------- */
+
+.hero {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 2rem;
+    align-items: center;
+    margin: 1rem 0 3rem;
+}
+
+.md-typeset .hero h1 {
+    font-size: 3.2em;
+    margin: 0 0 0.5rem;
+}
+
+.hero-lead {
+    font-size: 1.15em;
+    color: var(--md-default-fg-color--light);
+}
+
+.md-typeset .hero .md-button {
+    margin: 0.6rem 0.6rem 0 0;
+    border-radius: 999px;
+}
+
+.md-typeset .md-button {
+    color: var(--adk-graphite);
+    border-color: var(--adk-graphite);
+}
+
+.md-typeset .md-button:is(:hover, :focus) {
+    color: #fff;
+    background: var(--adk-red);
+    border-color: var(--adk-red);
+}
+
+.md-typeset .md-button--primary {
+    color: #fff;
+    background: var(--adk-red);
+    border-color: var(--adk-red);
+}
+
+.arcs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 1rem;
+    margin: 1.2rem 0 2rem;
+}
+
+.md-typeset .arc {
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--adk-rule);
+    border-radius: 0.6rem;
+    background: var(--adk-card);
+    box-shadow: var(--adk-shadow);
+}
+
+.md-typeset .arc h3 {
+    margin: 0 0 0.3rem;
+}
+
+.md-typeset .arc ol {
+    margin: 0.4rem 0 0;
+    font-size: 0.95em;
+}
+
+.md-typeset .arc .project {
+    font-weight: 700;
+}
+
+.arc-number {
+    font-family: var(--adk-hand);
+    font-size: 1.1em;
+    color: var(--adk-red);
+}
+
+@media screen and (max-width: 60em) {
+    .hero {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Print ------------------------------------------------------------------ */
+
+@page {
+    size: letter;
+    margin: 16mm 16mm 18mm;
+
+    @bottom-right {
+        content: counter(page) " / " counter(pages);
+        font-family: "Atkinson Hyperlegible Next", sans-serif;
+        font-size: 9pt;
+        color: #777;
+    }
+
+    @bottom-left {
+        font-family: "Atkinson Hyperlegible Next", sans-serif;
+        font-size: 9pt;
+        color: #777;
+    }
+}
+
+@media print {
+    :root,
+    [data-md-color-scheme] {
+        --adk-card: #ffffff;
+        --adk-shadow: none;
+        --md-default-bg-color: #ffffff;
+    }
+
+    html,
+    body {
+        background: #ffffff;
+    }
+
+    .md-typeset {
+        font-size: 10.5pt;
+        line-height: 1.55;
+    }
+
+    .md-content__inner {
+        margin: 0;
+        padding: 0;
+    }
+
+    .md-typeset h2 {
+        margin-top: 1.4em;
+        break-after: avoid;
+    }
+
+    .md-typeset h3,
+    .md-typeset .formula {
+        break-after: avoid;
+    }
+
+    .bench-figure,
+    .md-typeset table,
+    .md-typeset .admonition,
+    .md-typeset details,
+    .lesson-kit,
+    .md-typeset li {
+        break-inside: avoid;
+    }
+
+
+    .md-typeset .highlight {
+        break-inside: avoid;
+    }
+
+    .md-typeset h1 {
+        font-size: 30pt;
+    }
+
+    .md-typeset .lesson-header h1 {
+        font-size: 38pt;
+    }
+
+    .lesson-pdf,
+    .lesson-sections,
+    .md-typeset .headerlink,
+    .md-clipboard,
+    .md-source-file {
+        display: none !important;
+    }
+
+    /* Print every collapsed section open. */
+    .md-typeset details::details-content {
+        content-visibility: visible;
+        display: block;
+    }
+
+    .md-typeset details > summary::after,
+    .md-code__nav,
+    .md-code__button {
+        display: none !important;
+    }
+
+    .md-typeset a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .bench-figure svg.pencil-drawing {
+        box-shadow: none;
+        border: 0.5pt solid #ccc;
+    }
+
+    .md-typeset .bench-closeup {
+        float: right;
+        width: 46%;
+        margin: 0 0 0.8rem 1.2rem;
+    }
+
+    .md-typeset h2 {
+        clear: both;
+    }
+
+    .lesson-header,
+    .lesson-body > * {
+        max-width: none;
+    }
+}

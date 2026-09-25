@@ -3,3 +3,6 @@
 
 # Claude Code local settings and agent worktrees
 /.claude/
+
+# Python byte-code from running the site tools by hand
+__pycache__/

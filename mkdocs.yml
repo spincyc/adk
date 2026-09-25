@@ -1,0 +1,101 @@
+site_name: ADK
+site_description: >-
+  Thirty-six hands-on lessons for the Arduino Mega 2560, from a blinking LED
+  to a tilt-controlled maze, and the small C++ library that makes them simple.
+site_url: https://spincyc.github.io/adk/
+repo_url: https://github.com/spincyc/adk
+repo_name: spincyc/adk
+edit_uri: edit/main/docs/
+copyright: ADK Project · MIT License
+
+docs_dir: docs
+site_dir: build/site
+strict: true
+
+exclude_docs: |
+  _theme/
+  *.py
+  requirements.txt
+
+theme:
+  name: material
+  custom_dir: docs/_theme/overrides
+  language: en
+  font: false
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: paper
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark
+    - media: "(prefers-color-scheme: dark)"
+      scheme: graphite
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.footer
+    - navigation.top
+    - navigation.tracking
+    - content.code.copy
+    - content.tooltips
+    - search.suggest
+    - search.highlight
+    - toc.follow
+
+extra_css:
+  - assets/fonts.css
+  - assets/adk.css
+
+hooks:
+  - docs/_theme/hooks.py
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.superfences
+  - sane_lists
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Home: index.md
+  - Start:
+      - start.md
+      - kit.md
+      - safety.md
+  - Course:
+      - course.md
+      - First light:
+          - lessons/01-blink/index.md
+  - Library:
+      - library/index.md
+  - Contribute:
+      - contributing.md
+      - ARCHITECTURE.md
+      - STYLE.md

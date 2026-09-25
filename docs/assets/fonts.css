@@ -1,0 +1,66 @@
+/* Self-hosted Latin subsets of four SIL Open Font License families. */
+
+@font-face {
+    font-family: 'Atkinson Hyperlegible Next';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('fonts/atkinson-hyperlegible-next-italic-400.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Atkinson Hyperlegible Next';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('fonts/atkinson-hyperlegible-next-normal-400.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Atkinson Hyperlegible Next';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('fonts/atkinson-hyperlegible-next-normal-400.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Fraunces';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('fonts/fraunces-normal-600.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Fraunces';
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url('fonts/fraunces-normal-600.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('fonts/jetbrains-mono-normal-400.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('fonts/jetbrains-mono-normal-400.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Patrick Hand';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('fonts/patrick-hand-normal-400.woff2') format('woff2');
+}
+

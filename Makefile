@@ -5,6 +5,7 @@ FQBN      ?= arduino:avr:mega
 PORT      ?= /dev/ttyACM0
 CXX       ?= c++
 PYTHON    ?= python3
+CHROMIUM  ?= chromium
 
 LIBRARY_SOURCES := $(wildcard src/adk/*.cpp)
 TEST_SOURCES    := $(wildcard tests/*.cpp tests/arduino/*.cpp)
@@ -29,12 +30,12 @@ export PYTHONPYCACHEPREFIX := $(abspath $(BUILD_DIR))/pycache
 
 .DEFAULT_GOAL := test
 .SECONDEXPANSION:
-.PHONY: all check test sanitize examples size site serve style upload monitor clean help
+.PHONY: all check test sanitize examples size site pdf serve style upload monitor clean help
 
 all: check
 
-## check         everything CI runs: tests, examples, sizes, and the site
-check: style test sanitize examples size site
+## check         everything CI runs: tests, examples, sizes, the site and its PDFs
+check: style test sanitize examples size pdf
 
 ## test          build and run the host tests (TEST=name runs matching cases)
 test: $(HOST_DIR)/tests
@@ -88,6 +89,18 @@ size: $(ARDUINO_LOGS)
 ## site          build the website into build/site
 site: $(VENV)/.installed
 	$(VENV)/bin/mkdocs build --strict --site-dir $(abspath $(BUILD_DIR))/site
+
+## pdf           print every lesson page to build/site/pdf
+pdf: site
+	@mkdir -p $(BUILD_DIR)/site/pdf
+	@for page in $(BUILD_DIR)/site/lessons/*/index.html; do \
+	    lesson=$$(basename $$(dirname $$page)); \
+	    echo "  PDF  $$lesson"; \
+	    $(CHROMIUM) --headless=new --no-sandbox --disable-gpu --no-pdf-header-footer \
+	        --virtual-time-budget=10000 --run-all-compositor-stages-before-draw \
+	        --print-to-pdf=$$PWD/$(BUILD_DIR)/site/pdf/$$lesson.pdf \
+	        file://$$PWD/$$page 2>/dev/null || exit 1; \
+	done
 
 ## serve         preview the website at http://127.0.0.1:8000
 serve: $(VENV)/.installed

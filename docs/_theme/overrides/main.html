@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{#- Lessons get their own header: number, title, promise, and what's needed. -#}
+{% block content %}
+  {% if page.meta and page.meta.lesson %}
+    {% include "partials/lesson.html" %}
+  {% else %}
+    {{ super() }}
+  {% endif %}
+{% endblock %}

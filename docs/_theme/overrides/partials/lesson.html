@@ -1,0 +1,39 @@
+{% set number = "%02d" | format(page.meta.lesson) %}
+{% set slug = page.file.src_uri.split("/")[1] %}
+<style media="print">
+  @page { @bottom-left { content: "ADK · Lesson {{ number }} · {{ page.meta.title }}"; } }
+</style>
+<header class="lesson-header">
+  <p class="lesson-eyebrow">
+    <span class="lesson-number">Lesson {{ number }}</span>
+    <span class="lesson-arc">{{ page.meta.arc }}</span>
+  </p>
+  <h1>{{ page.meta.title }}</h1>
+  <p class="lesson-promise">{{ page.meta.promise }}</p>
+  <ul class="lesson-facts">
+    <li>{% include ".icons/material/clock-outline.svg" %} {{ page.meta.time }}</li>
+    <li class="lesson-level" aria-label="Level {{ page.meta.level }} of 3">
+      {% for step in range(3) %}<span class="{{ 'on' if step < page.meta.level else 'off' }}"></span>{% endfor %}
+      Level {{ page.meta.level }}
+    </li>
+    <li class="lesson-pdf">
+      <a href="../../pdf/{{ slug }}.pdf">{% include ".icons/material/printer-outline.svg" %} Printable PDF</a>
+    </li>
+  </ul>
+  <nav class="lesson-sections" aria-label="Sections">
+    {% for heading in page.toc %}<a href="{{ heading.url }}">{{ heading.title }}</a>{% endfor %}
+  </nav>
+  <div class="lesson-kit">
+    <section>
+      <p class="lesson-kit-title">You'll need</p>
+      <ul>{% for part in page.meta.parts %}<li>{{ part }}</li>{% endfor %}</ul>
+    </section>
+    <section>
+      <p class="lesson-kit-title">You'll learn</p>
+      <ul>{% for idea in page.meta.ideas %}<li>{{ idea }}</li>{% endfor %}</ul>
+    </section>
+  </div>
+</header>
+<article class="lesson-body">
+  {{ page.content }}
+</article>

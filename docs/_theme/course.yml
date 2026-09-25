@@ -1,0 +1,76 @@
+# The course: twelve arcs of three lessons. Two lessons each teach a part;
+# the third is a project that puts them together. This file is the one list
+# of lessons: the navigation, the course map and the home page are built
+# from it, and a lesson appears as a link once its page exists.
+
+- arc: First light
+  lessons:
+    - {slug: 01-blink, title: Blink, builds: An LED that blinks on and off}
+    - {slug: 02-buttons, title: Buttons, builds: Buttons that switch lights and count presses}
+    - {slug: 03-reaction-duel, title: Reaction Duel, builds: A two-player reflex game with a buzzer, project: true}
+
+- arc: Colour and sound
+  lessons:
+    - {slug: 04-mood-lamp, title: Mood Lamp, builds: An RGB lamp that fades through colours}
+    - {slug: 05-melody-maker, title: Melody Maker, builds: A four-button keyboard that plays tunes}
+    - {slug: 06-simon, title: Simon, builds: The memory game, with sound and a high score, project: true}
+
+- arc: The analog world
+  lessons:
+    - {slug: 07-dimmer, title: Dimmer, builds: A knob that dims an LED smoothly}
+    - {slug: 08-light-meter, title: Light Meter, builds: A bar graph of how bright the room is}
+    - {slug: 09-light-theremin, title: Light Theremin, builds: An instrument you play by waving your hand, project: true}
+
+- arc: Digits
+  lessons:
+    - {slug: 10-dice, title: Dice, builds: An electronic die on a seven-segment digit}
+    - {slug: 11-four-digits, title: Four Digits, builds: A counter on a four-digit display}
+    - {slug: 12-stopwatch, title: Stopwatch, builds: A stopwatch and countdown timer, project: true}
+
+- arc: Words and weather
+  lessons:
+    - {slug: 13-hello-lcd, title: "Hello, LCD", builds: Text and little animations on a character screen}
+    - {slug: 14-thermometers, title: Thermometers, builds: Temperature and humidity three ways}
+    - {slug: 15-weather-station, title: Weather Station, builds: A desk weather station with a comfort light, project: true}
+
+- arc: Keys and motion
+  lessons:
+    - {slug: 16-keypad, title: Keypad, builds: A calculator on a keypad and screen}
+    - {slug: 17-servo, title: Servo, builds: A dial whose needle follows a knob}
+    - {slug: 18-keypad-safe, title: Keypad Safe, builds: A box that opens with a secret code, project: true}
+
+- arc: Distance and motors
+  lessons:
+    - {slug: 19-parking-sensor, title: Parking Sensor, builds: Beeps that speed up as you get closer}
+    - {slug: 20-fan, title: Fan, builds: A motor-driven fan with speed and direction}
+    - {slug: 21-follow-me-fan, title: Follow-Me Fan, builds: A fan that turns to find you, project: true}
+
+- arc: Invisible signals
+  lessons:
+    - {slug: 22-remote-control, title: Remote Control, builds: A lamp you control from the sofa}
+    - {slug: 23-tripwires, title: Tripwires, builds: Motion, tilt and beam-break sensors}
+    - {slug: 24-room-alarm, title: Room Alarm, builds: An alarm you arm and disarm with the remote, project: true}
+
+- arc: Pixels and games
+  lessons:
+    - {slug: 25-led-matrix, title: LED Matrix, builds: Pictures and scrolling text on 64 LEDs}
+    - {slug: 26-joystick, title: Joystick, builds: An etch-a-sketch for the matrix}
+    - {slug: 27-snake, title: Snake, builds: The classic game, with sound, project: true}
+
+- arc: Tilt and turn
+  lessons:
+    - {slug: 28-tilt, title: Tilt, builds: A spirit level that shows which way is down}
+    - {slug: 29-menus, title: Menus, builds: A menu you scroll with a rotary knob}
+    - {slug: 30-tilt-maze, title: Tilt Maze, builds: A maze you solve by tilting the board, project: true}
+
+- arc: Time
+  lessons:
+    - {slug: 31-stepper, title: Stepper, builds: A motor that moves in exact steps}
+    - {slug: 32-real-time-clock, title: Real-Time Clock, builds: A clock that remembers the time}
+    - {slug: 33-alarm-clock, title: Alarm Clock, builds: A clock that wakes you with a tune, project: true}
+
+- arc: Keys you can't see
+  lessons:
+    - {slug: 34-rfid, title: RFID, builds: A reader that knows your card}
+    - {slug: 35-knocks-and-relays, title: Knocks and Relays, builds: A secret knock that switches a lamp}
+    - {slug: 36-secret-door, title: Secret Door, builds: A door that opens for the right card or knock, project: true}
