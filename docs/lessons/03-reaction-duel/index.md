@@ -223,3 +223,40 @@ are faster to a sound, try the first challenge below.
    update. Right now red would win, because `loop ()` asks red's button
    first. In the *Go* state, check whether both were pressed, and call it a
    draw with both lights flashing.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts, the black
+lead in **COM** and the red in **V**. Never move the red lead to the **A**
+jack for these: set for current, the meter is just a wire, and would short
+out whatever you put it across.
+
+A 200 ms beep is over before the meter settles, so change
+`buzzer.beep (200);` in `go ()` to `buzzer.beep (5000);` and upload again.
+Now at *Go* the buzzer sounds for five seconds, and the yellow light stays
+on until somebody presses, so start a round and don't press. Put 200 back
+when you have finished.
+
+!!! question "Predict"
+    The yellow LED keeps about 2 V for itself and leaves the other 3 V to its
+    resistor. The buzzer has no resistor. How much of the pin's 5 V do you
+    think it gets?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Across the yellow LED** is about 2 V, like the red LED in Lesson 1: the
+  LED shares the pin's 5 V with its resistor, and the resistor sets the
+  current.
+- **Across the buzzer** is nearly the whole 5 V, because nothing else in its
+  loop takes a share. It is made for 5 V, and its own circuit keeps its
+  current to 30 mA at most. That is more than an LED takes, and a pin gives
+  a little less than 5 V when it works that hard, so yours may read 4.5 V
+  or so.
+- The number holds steady while you hear a note of over 2000 vibrations a
+  second. The pin is simply on, like an LED's; the buzzer makes the
+  vibration inside itself. The passive buzzer in
+  [Lesson 5](../05-melody-maker/index.md) is different, and the meter shows
+  it.

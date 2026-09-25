@@ -34,3 +34,11 @@ bench.wire ("a19", "B-19")
 bench.wire ("12", "j34", via=[(1.7, 0.45), (8.65, 0.45)])
 bench.buzzer ("f34", "e34", kind="active")
 bench.wire ("a34", "B-34")
+
+# Readings to take with a multimeter at Go, while the yellow light is on and
+# the buzzer sounds: the LED shares the pin's 5 V with its resistor, the
+# buzzer takes it all.
+bench.measure ("Across the yellow LED", red="b12", black="b13", expect="about 2 V",
+               when="Yellow light on, at Go")
+bench.measure ("Across the buzzer", red="i34", black="b34", expect="a little under 5 V",
+               when="Buzzer sounding, at Go")
