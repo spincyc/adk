@@ -109,6 +109,9 @@ adk: a Speaker stops PWM on pins 9 and 10
 | RFID reader | [`Rfid`](sensors.md#rfid) | the card held to it |
 | Real-time clock | [`Rtc`](sensors.md#rtc) | the date and time |
 | Accelerometer | [`Mpu6050`](sensors.md#mpu6050) | tilt, acceleration and rotation |
+| FM radio *(add-on)* | [`FmRadio`](radio.md#fmradio) | stations, their names, and the volume |
+| 433 MHz radio *(add-on)* | [`RadioTransmitter`](radio.md#radiotransmitter), [`RadioReceiver`](radio.md#radioreceiver) | short messages across a house |
+| LoRa radio *(add-on)* | [`LoraModem`](radio.md#loramodem), [`LoraLink`](radio.md#loralink), [`MeshNode`](radio.md#meshnode) | messages across a town, or to a phone |
 | Plain pins | [`DigitalOutput`](core.md#digitaloutput), [`DigitalInput`](core.md#digitalinput), [`PwmOutput`](core.md#pwmoutput) | anything else |
 | Helpers | [`Every`](core.md#every), [`Smoother`](core.md#smoother), [`Debouncer`](core.md#debouncer), [`Color`](outputs.md#color) | beats, smoothing and colors |
 

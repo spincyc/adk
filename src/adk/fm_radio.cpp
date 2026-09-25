@@ -175,7 +175,7 @@ namespace adk {
         frequency        = constrain (frequency, band.bottom, band.top);
         wanted_          = static_cast<uint16_t> ((frequency - band.bottom) / band.spacing);
 
-        if (state_ == State::Idle)
+        if (state_ == State::Idle && wanted_ != channel_)
         {
             startTune ();
         }
@@ -187,7 +187,7 @@ namespace adk {
         int32_t next  = (static_cast<int32_t> (wanted_) + stations) % count;
         wanted_       = static_cast<uint16_t> (next < 0 ? next + count : next);
 
-        if (state_ == State::Idle)
+        if (state_ == State::Idle && wanted_ != channel_)
         {
             startTune ();
         }
@@ -231,8 +231,15 @@ namespace adk {
 
     void FmRadio::setVolume (uint8_t volume)
     {
-        uint16_t others          = registers_[SysConfig2] & 0xFFF0;
-        registers_[SysConfig2]   = static_cast<uint16_t> (others | min (volume, Loudest));
+        uint16_t others = registers_[SysConfig2] & 0xFFF0;
+        uint16_t loud   = static_cast<uint16_t> (others | min (volume, Loudest));
+
+        if (loud == registers_[SysConfig2] && (registers_[PowerConfig] & Unmute))
+        {
+            return;
+        }
+
+        registers_[SysConfig2]   = loud;
         registers_[PowerConfig] |= Unmute;
 
         if (state_ != State::Off)

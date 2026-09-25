@@ -42,6 +42,7 @@ namespace adk {
         bool        wasReceived () const;
         const char* text        () const;
 
+        // The longest line, in characters.
         static constexpr uint8_t MaxLength = 56;
 
       protected:

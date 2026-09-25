@@ -48,6 +48,7 @@ namespace adk {
         int16_t signal () const;
         int8_t  margin () const;
 
+        // The longest message, in characters.
         static constexpr uint8_t MaxLength = 60;
 
       protected:

@@ -34,6 +34,7 @@ namespace adk {
         const char* sender      () const;
         const char* text        () const;
 
+        // The longest message, in characters.
         static constexpr uint8_t MaxLength = 100;
 
       protected:

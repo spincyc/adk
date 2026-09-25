@@ -48,6 +48,8 @@ namespace adk {
         // 101.1 MHz, or move a number of stations' spacing up or down, as
         // step (encoder.turned ()). Both stay in the band, and wrap round
         // at its ends; a frequency between stations goes to the one below.
+        // Asking for where it already is changes nothing, so both can be
+        // called from every pass of loop ().
         void tune (uint16_t frequency);
         void step (int8_t stations);
 
@@ -68,7 +70,8 @@ namespace adk {
         uint8_t signal   () const;
         bool    isStereo () const;
 
-        // From 0, silent, to 15. It starts at 8.
+        // From 0, silent, to 15. It starts at 8. Only a change is sent to
+        // the radio, so it too can be called from every pass of loop ().
         void    setVolume (uint8_t volume);
         uint8_t volume    () const;
 

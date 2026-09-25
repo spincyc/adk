@@ -19,7 +19,8 @@ namespace adk {
     // The WL102 runs on 3.3 V, so its DAT pin gets the Mega's 5 V divided
     // down to 3.3 V. (An FS1000A runs on 5 V and needs no divider.) A wire
     // or coil on each module's antenna hole makes the range tens of metres;
-    // without one it is a few.    //
+    // without one it is a few.
+    //
     // Messages of up to 60 characters go out as RadioHead's RH_ASK driver
     // sends them at its default 2000 bits a second, so a sketch can talk to
     // any Arduino running RadioHead. Each character becomes two 6-bit
@@ -43,6 +44,7 @@ namespace adk {
 
         bool isSending () const;
 
+        // The longest message, in characters.
         static constexpr uint8_t MaxLength = 60;
 
       protected:
@@ -63,6 +65,8 @@ namespace adk {
         volatile bool    sending_;
     };
 
+    // The receiver listens all the time, and hands the sketch each message
+    // that arrives whole.
     struct RadioReceiver : Object
     {
         explicit RadioReceiver (Pin data);

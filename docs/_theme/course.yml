@@ -1,7 +1,8 @@
-# The course: twelve arcs of three lessons. Two lessons each teach a part;
-# the third is a project that puts them together. This file is the one list
-# of lessons: the navigation, the course map and the home page are built
-# from it, and a lesson appears as a link once its page exists.
+# The course: fourteen arcs of three lessons. Two lessons each teach a part;
+# the third is a project that puts them together. The first twelve use the
+# kits' parts; the last two, add-on radios. This file is the one list of
+# lessons: the navigation, the course map and the home page are built from
+# it, and a lesson appears as a link once its page exists.
 
 - arc: First light
   lessons:
@@ -74,3 +75,15 @@
     - {slug: 34-rfid, title: RFID, builds: A reader that knows your card}
     - {slug: 35-knocks-and-relays, title: Knocks and Relays, builds: A secret knock that switches a lamp}
     - {slug: 36-secret-door, title: Secret Door, builds: A door that opens for the right card or knock, project: true}
+
+- arc: On the air
+  lessons:
+    - {slug: 37-fm-radio, title: FM Radio, builds: A radio you tune with the rotary knob}
+    - {slug: 38-radio-messages, title: Radio Messages, builds: Messages sent through the air at 433 MHz}
+    - {slug: 39-clock-radio, title: Clock Radio, builds: A radio that wakes you with your station, project: true}
+
+- arc: Long range
+  lessons:
+    - {slug: 40-lora, title: LoRa, builds: Messages that reach a kilometre}
+    - {slug: 41-lora-link, title: LoRa Link, builds: A weather report sent by radio}
+    - {slug: 42-mesh-messenger, title: Mesh Messenger, builds: Texts from your phone to your Mega, project: true}

@@ -290,3 +290,27 @@ TEST (fmRadioSetsTheVolumeAndStopFallsSilent)
     CHECK ((chip.registers[0x05] & 0x0F) == 5);
     CHECK (!chip.drivenHigh);
 }
+
+TEST (fmRadioLeavesAStationAloneWhenAskedForItAgain)
+{
+    fake::Si4703 chip  {Sdio, Sclk, Reset};
+    adk::FmRadio radio {Sdio, Sclk, Reset};
+
+    adk::setup ();
+    radio.tune (1011);
+    run (200, radio);
+
+    // As a sketch would, every pass of loop (): nothing turned, same knob.
+    for (int pass = 0; pass < 20; ++pass)
+    {
+        radio.step (0);
+        radio.tune (1011);
+        radio.setVolume (8);
+        CHECK (!radio.isTuning ());
+        arduino::advance (10);
+        adk::update ();
+    }
+
+    CHECK (chip.registers[0x03] == 136);
+    CHECK (radio.frequency () == 1011);
+}

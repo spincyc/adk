@@ -103,7 +103,7 @@ PIN_COLORS = {
     "26": "orange", "27": "yellow", "28": "green", "29": "blue", "30": "white",
     "31": "brown", "32": "grey", "33": "yellow", "34": "green", "35": "blue", "36": "purple",
     "37": "yellow", "38": "green", "39": "blue", "40": "orange", "41": "purple", "42": "white",
-    "43": "brown", "44": "orange", "45": "yellow", "47": "green", "48": "blue", "49": "purple",
+    "43": "brown", "44": "orange", "45": "yellow", "46": "orange", "47": "green", "48": "blue", "49": "purple",
     "50": "purple", "51": "white", "52": "brown", "53": "grey",
     "2": "white", "3": "orange", "4": "yellow", "5": "orange", "6": "green", "7": "blue",
     "8": "blue", "9": "white", "10": "grey", "11": "green", "12": "white", "14": "grey",
@@ -557,7 +557,8 @@ class Bench:
         links = []
         for rail, source, a, b in (("T-", "GND", "B-60", "T-60"), ("B+", "5V", "T+61", "B+61"),
                                    ("T+", "5V", None, None), ("B-", "GND", None, None)):
-            if rail not in used or self._powered (rail, source):
+            if rail not in used or self._powered (rail, source) \
+                    or (source == "5V" and self._powered (rail, "3.3V")):
                 continue
             if module or not a:
                 side = "top" if rail[0] == "T" else "bottom"
@@ -593,17 +594,17 @@ class Bench:
             or holes in ({"B-60", "T-60"}, {"T+61", "B+61"})
 
     # Whether a rail is joined to a Mega pin or a power module leg of this
-    # kind: "GND" or "5V".
+    # kind: "GND", "5V" or, from a power module, "3.3V".
     def _powered (self, rail, source):
         for net in self.nets ():
             if f"rail {rail}" in net:
                 return self._carries (net, source)
         return False
 
-    # Whether a net is fed with GND or 5V: by the Mega's pin, or by a power
-    # module's leg; a module that only uses it doesn't count.
+    # Whether a net is fed with GND, 5V or 3.3V: by the Mega's pin, or by a
+    # power module's leg; a module that only uses it doesn't count.
     def _carries (self, net, source):
-        leg = "GND" if source == "GND" else "5 V"
+        leg = {"GND": "GND", "5V": "5 V", "3.3V": "3.3 V"}[source]
         feeds = {m for m in self._sources () if m.endswith (": " + leg)}
         return f"pin {source}" in net or bool (feeds & net)
 
@@ -647,7 +648,8 @@ class Bench:
             if strip:
                 near = self.hole_xy (landed[0][1])
                 hole = min (strip, key=lambda h: distance (self.hole_xy (h), near))
-            return hole, f"pin {canonical (name)}, at {hole}"
+            name = canonical (name)
+            return hole, f"{'pin ' if numbered (name) else ''}{name}, at {hole}"
         self.hole_xy (point)
         strip = self.strip_of (point)
         if not any (self.strip_of (h) == strip for h in self.used):

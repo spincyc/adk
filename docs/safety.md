@@ -42,6 +42,40 @@ alive.
 | Laser module | Not used in this course. A laser can damage eyes. |
 | Clock module | If yours charges its coin cell (see its lesson), use a rechargeable LIR2032, never a CR2032. |
 
+## Radios
+
+The add-on radios in Lessons 37 to 42 need two kinds of care: their pins
+work at 3.3 V, and a radio that sends is ruled by law.
+
+- **Never put 5 V on a 3.3 V pin.** The FM radio, the 433 MHz
+  transmitter, the LoRa radios and the Meshtastic board all work at 3.3 V.
+  Where the Mega drives one of their pins, the signal goes through a
+  divider: 1 kΩ from the Mega's pin to the radio's, and 2 kΩ from the
+  radio's pin to GND, which turns 5 V into 3.3 V. Where the Mega only pulls
+  a pin low or lets it go (the FM radio's three pins, the LoRa module's M0
+  and M1), the radio's own resistors lift it to 3.3 V instead. Their
+  outputs are safe for the Mega to read directly.
+- **Power them as the lesson says.** The FM radio and the 433 MHz
+  transmitter take little enough for the Mega's 3.3V pin. The LoRa modem
+  draws more than that pin can give when it sends, so it runs from the
+  breadboard power module set to 3.3 V. The Meshtastic board runs from its
+  own USB cable.
+- **Fit the aerial before powering a LoRa radio.** Sending into no aerial
+  can damage it, and the Meshtastic board starts sending as soon as it is
+  set up.
+- **Send only where it's allowed.** Receiving is fine anywhere; sending is
+  not. Check your country's rules; in outline:
+
+| Radio | Band | Licence-free |
+|---|---|---|
+| FM radio | 87.5–108 MHz | Receive only, so anywhere |
+| 433 MHz modules, E32 LoRa module | 433 MHz | In Europe, 433.05–434.79 MHz at up to 10 mW, which is how ADK sets the E32. In the USA and Canada it is an amateur band: unlicensed transmitters there are limited to very weak, occasional signals, like a car key's, so use the E32 only with an amateur licence, and keep the little transmitter's messages short and few. |
+| RYLR896 modem, Heltec board | 915 MHz | In the Americas and Australia, 902–928 MHz. Europe uses 868 MHz instead, with different modules and settings, at up to 25 mW for 1% of the time. |
+
+- **Mesh messages are public.** Anyone nearby with Meshtastic can read
+  the default channel. Lesson 42 sets up a private one; even so, never send
+  anything personal.
+
 ## Grown-ups
 
 The lessons are written for learners from about twelve upwards, working

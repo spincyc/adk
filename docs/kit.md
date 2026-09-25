@@ -38,6 +38,24 @@ Modules Kit**; those are marked below and in each lesson's parts list.
 | RC522 RFID reader, card and fob | Knows which card is which | Lesson 34 |
 | Tap sensor and relay *(37 in 1)* | Knocks, and switching a separate circuit | Lesson 35 |
 
+## Add-on radios
+
+Lessons 37 to 42 use radios that aren't in either kit. Each costs a few
+dollars; the LoRa radios come in pairs, because it takes two to talk.
+
+| Part | What it does | First used |
+|---|---|---|
+| Si4703 FM radio board (CJMCU-470) and wired earbuds | FM stations, their names and songs | Lesson 37 |
+| 433 MHz transmitter (WL102-341) and receiver (RX470C) | Short messages across a house | Lesson 38 |
+| Two REYAX RYLR896 LoRa modems | Messages across a kilometre or more, on 915 MHz | Lesson 40 |
+| Two Ebyte E32-433T20D LoRa modules | A 433 MHz link that passes on lines of text | Lesson 41 |
+| Two Heltec WiFi LoRa 32 V3 boards running Meshtastic, and a phone | Text messages from a phone, across a mesh | Lesson 42 |
+
+Their pins work at 3.3 V, so the Mega's signals reach them through a
+resistor divider, 1 kΩ and 2 kΩ; [Safety](safety.md#radios) explains why, and
+which bands you may send on where you live. If your resistor card has no
+2 kΩ, two 1 kΩ resistors in a row make one.
+
 ## Home pins
 
 Each part has a home: the pins it uses in every lesson. Keep to them and a
@@ -74,6 +92,11 @@ circuit from an earlier lesson can often stay on the breadboard.
 | Sound or water sensor | A5 |
 | Stepper driver: IN1 to IN4 | A8, A9, A10, A11 |
 | On/off sensor modules | A12, A13, A14, A15 |
+| FM radio: SDIO, SCLK, RST (lessons without the four-digit display) | 40, 41, 42 |
+| 433 MHz radio: receiver DATA, transmitter DAT | 43, 46 |
+| A serial radio (LoRa modem or module, Meshtastic board) on Serial1: TX1, RX1 (lessons without the rotary encoder) | 18, 19 |
+| A second serial radio, on Serial3: TX3, RX3 (lessons without the ultrasonic sensor) | 14, 15 |
+| LoRa module: M0 and M1 joined, AUX; the second module's | 40, 41; 42, 43 |
 
 The passive buzzer sits on pin 10 because a sounding buzzer borrows the timer
 that makes PWM on pins 9 and 10; pin 10 could not dim anything anyway.
@@ -101,6 +124,13 @@ lesson with it have a second home past it.
 | Knob on A0 | Legs in e45, e46, e47: a black jumper from a45 to the − rail, A0 into a46, a red jumper from d47 to T+49 | Legs in e57, e58, e59, jumper to T+61 |
 | The screen (LCD, contrast knob, backlight) | Knob in e5–e7, the LCD's pins in a9–a24, wired by `bench.screen ()` | — |
 | Power module | The right end, in columns 60 and 61 of all four rails | Same |
+| FM radio | Standing in row j, columns 45–52 (GPIO2 in j45 to 3.3V in j52), its board over the top rails: pins 42, 41 and 40 up from below into f47, f49 and f50, the Mega's 3.3V into f52, 1 kΩ from h47 to h52, a black jumper from f51 to B-51 | Same |
+| 433 MHz receiver | Standing in row j, columns 48–51 (VCC in j48): 5V from the power header into f48, pin 43 into f49, a black jumper from f51 to B-51 | Same |
+| 433 MHz transmitter | Standing in row j, columns 56–59 (EN in j56): pin 46 into f54, 1 kΩ from h54 to h57 and 2 kΩ from g57 to e57, a black jumper from a57 to B-57; the Mega's 3.3V into f58, a black jumper from f59 to B-59 | Same |
+
+The radios' homes overlap others beside the screen: the FM radio's the RGB
+LED's and the buzzer's, the receiver's the buzzer's, and the transmitter's
+the knob's. No lesson uses those together.
 
 Modules on jumper wires have homes beside the board too, so their wires run
 the same way each time. The Mega's inner 5V and GND pins at the ends of the
@@ -150,6 +180,7 @@ from the left: three digits, then how many zeros follow.
 | 220 Ω | red, red, black, black, brown |
 | 330 Ω | orange, orange, black, black, brown |
 | 1 kΩ | brown, black, black, brown, brown |
+| 2 kΩ | red, black, black, brown, brown |
 | 10 kΩ | brown, black, black, red, brown |
 
 So red, red, black, then black, is 2, 2, 0 and no more zeros: 220 Ω. Some

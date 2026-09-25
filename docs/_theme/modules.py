@@ -20,7 +20,10 @@ HOUSING = 57                        # a jumper's female housing, 14.5 mm
 
 PCB_BLUE  = "#c5d4e6"
 PCB_GREEN = "#c8dbbd"
+PCB_PURPLE = "#d8c8e2"
 METAL     = "#d3d3cf"
+GOLD      = "#dcbb62"
+COPPER    = "#c98f58"
 PLASTIC   = "#3a3a3a"
 WHITE     = "#f4f2ec"
 LED_RED   = "#f0604f"
@@ -179,6 +182,76 @@ def grid_in_circle (pencil, cx, cy, r, gap, tone=0.35):
         pencil.line ((cx + offset, cy - half), (cx + offset, cy + half), width=0.5, tone=tone,
                      layer="top", passes=1, wobble=0.2)
         offset += gap
+
+
+def level (pencil, x, y, text, size, **options):
+    # Printing that stands level, centred on y however the module is
+    # turned: turned half round, silk swings over about its baseline.
+    turn = sum (pencil.turns) % 360
+    rise = size * 0.36 if not 90 < turn <= 270 else -size * 0.36
+    pencil.text (x, y + rise, text, size=size, kind="silk", **options)
+
+
+def hole (pencil, cx, cy, r=3.2, square=False):
+    # A plated hole or pad, tinned silver.
+    if square:
+        pencil.tint ([(cx - r, cy - r), (cx + r, cy - r), (cx + r, cy + r), (cx - r, cy + r)], METAL)
+        pencil.rect (cx - r, cy - r, 2 * r, 2 * r, width=0.6, layer="top", passes=1)
+    else:
+        pencil.spot (cx, cy, r, METAL)
+        pencil.circle (cx, cy, r, width=0.6, layer="top", passes=1)
+    pencil.spot (cx, cy, r * 0.45, "#8a8a86")
+
+
+def coil (pencil, x, bottom, top, r, turns, color=METAL):
+    # A spring antenna standing on its axis at x, from bottom up to top: each
+    # turn a bright stroke across the front and a fainter one behind.
+    pitch = (bottom - top) / turns
+    for index in range (turns):
+        y = bottom - index * pitch
+        pencil.line ((x + r, y - pitch / 2), (x - r, y - pitch), width=0.7, tone=0.4, layer="top",
+                     passes=1, wobble=0.1)
+    for index in range (turns):
+        y = bottom - index * pitch
+        pencil.wire ([(x - r, y), (x + r, y - pitch / 2)], color, width=1.3, layer="top")
+
+
+def sma (pencil, x, y, length):
+    # A gold SMA socket standing on (x, y), pointing up: a hex nut, then the
+    # threaded barrel an antenna screws onto.
+    pencil.tint ([(x - 15, y), (x + 15, y), (x + 15, y - 9), (x - 15, y - 9)], GOLD)
+    pencil.rect (x - 15, y - 9, 30, 9, width=0.8, layer="top", passes=1)
+    for dx in (-5, 5):
+        pencil.line ((x + dx, y), (x + dx, y - 9), width=0.5, tone=0.5, layer="top", passes=1)
+    pencil.tint ([(x - 12, y - 9), (x + 12, y - 9), (x + 12, y - length), (x - 12, y - length)], GOLD)
+    pencil.rect (x - 12, y - length, 24, length - 9, width=0.8, layer="top", passes=1)
+    thread = y - 12
+    while thread > y - length + 2:
+        pencil.line ((x - 12, thread), (x + 12, thread - 1.5), width=0.5, tone=0.45, layer="top",
+                     passes=1, wobble=0.05)
+        thread -= 3.2
+
+
+def whip (pencil, x, bottom, top, width):
+    # A black rubber antenna's whip, tapering a little to a rounded tip.
+    half, tip = width / 2, width / 2 - 2
+    outline = [(x - half, bottom), (x + half, bottom), (x + tip, top + tip)]
+    outline += [(x + tip * math.cos (math.pi * step / 8),
+                 top + tip - tip * math.sin (math.pi * step / 8)) for step in range (1, 8)]
+    outline += [(x - tip, top + tip), (x - half, bottom)]
+    pencil.tint (outline, "#2e2e2e")
+    pencil.polyline (outline, width=1.0, closed=True, layer="top", passes=1)
+    pencil.line ((x - half * 0.4, bottom - 4), (x - tip * 0.4, top + tip + 2), width=1.2, tone=0.2,
+                 layer="top", passes=1)
+
+
+def knurled (pencil, x, bottom, top, width):
+    # The knurled black nut at the foot of a rubber antenna.
+    pencil.tint (rounded (x - width / 2, top, width, bottom - top, 2), "#262626")
+    pencil.rect (x - width / 2, top, width, bottom - top, width=0.9, radius=2, layer="top", passes=1)
+    for index in range (1, 6):
+        lx = x - width / 2 + index * width / 6
+        pencil.line ((lx, bottom - 2), (lx, top + 2), width=0.5, tone=0.35, layer="top", passes=1)
 
 
 def ribbon (pencil, start, end, colors, spread_start, spread_end, width=3.0):
@@ -744,16 +817,281 @@ class Lcd1602 (Kind):
                          kind="silk")
 
 
+# The radios ---------------------------------------------------------------
+
+class FmRadio (Kind):
+    # CJMCU-470: an Si4703 FM receiver on a purple 22 x 29 mm board, with a
+    # TPA6111A2 amplifier and a 3.5 mm headphone jack at the far end, whose
+    # socket stands 3 mm out of the side. Seen from above with the header
+    # at the bottom, pin 1 (GPIO2, the square pad) is on the left and 3.3V
+    # on the right, as the back of the board prints them.
+    title  = "FM radio"
+    pins   = ("GPIO2", "GPIO1", "RST", "SEN", "SCLK", "SDIO", "GND", "3.3V")
+    width, height = 99, 114
+    color  = PCB_PURPLE
+    LEFT   = 12                     # the jack's socket, out past the board's left edge
+
+    def header_x (self):
+        return self.LEFT + 43.5
+
+    def draw (self, pencil):
+        x0 = self.LEFT
+        pencil.tint (rounded (0, 16, 14, 24, 2), "#262626")
+        pencil.rect (0, 16, 14, 24, width=0.9, radius=2, layer="top", passes=1)
+        board (pencil, x0, 0, 87, 114, self.color, radius=3)
+        # The jack, its spring contact showing on top.
+        pencil.tint (rounded (x0 + 1, 3, 46, 50, 2), PLASTIC)
+        pencil.rect (x0 + 1, 3, 46, 50, width=1.0, radius=2, layer="top")
+        pencil.tint (rounded (x0 + 5, 21, 18, 12, 2), METAL)
+        pencil.rect (x0 + 5, 21, 18, 12, width=0.7, radius=2, layer="top", passes=1)
+        for cy in (15, 41):
+            smd (pencil, x0 + 53, cy, 13, 10, "#3d3d3d")
+            level (pencil, x0 + 53, cy, "47", 4.5, color=WHITE)
+        ic (pencil, x0 + 72, 31, 18, 13, legs=4)
+        level (pencil, x0 + 67, 57, "Si470x", 6.5, weight="bold")
+        ic (pencil, x0 + 27, 73, 12, 12)
+        pencil.tint (rounded (x0 + 56, 67, 24, 8, 4), METAL)
+        pencil.rect (x0 + 56, 67, 24, 8, width=0.8, radius=4, layer="top", passes=1)
+        for sx, sy in ((x0 + 10, 64), (x0 + 10, 72), (x0 + 44, 71)):
+            smd (pencil, sx, sy, 7, 3.5)
+        self.draw_header (pencil, size=5.4)
+
+
+class RfReceiver (Kind):
+    # RX470C-V01: a 433 MHz superheterodyne receiver on a green 30 x 9.5 mm
+    # board, a right-angle header near one end of a long edge. Seen from
+    # above with the header at the bottom, pin 1 (VCC, the square pad) is
+    # on the left. The two DATA pins are joined on the board; the second is
+    # DATA2, as the bench names the second of a pair. The ANT and GND pads
+    # are at the far end, a spring antenna standing up from ANT.
+    title  = "radio receiver"
+    pins   = ("VCC", "DATA", "DATA2", "GND")
+    width, height = 118, 106
+    color  = PCB_GREEN
+    TOP    = 68.5                   # the board's top edge, below the spring
+
+    def header_x (self):
+        return 98
+
+    def draw (self, pencil):
+        top = self.TOP
+        board (pencil, 0, top, 118, self.height - top, self.color, radius=2)
+        for sy in (5, 12, 19):
+            smd (pencil, 12, top + sy, 8, 4)
+        ic (pencil, 44, top + 18.5, 38, 13, legs=8)
+        pencil.tint (rounded (70, top + 0.8, 45, 12.6, 6), METAL)
+        pencil.rect (70, top + 0.8, 45, 12.6, width=0.9, radius=6, layer="top", passes=1)
+        level (pencil, 92.5, top + 7.1, "6.7458", 5, tone=0.6)
+        hole (pencil, 5, top + 31)
+        hole (pencil, 14, top + 31)
+        pencil.line ((5, top + 31), (5, top - 1), width=1.3, tone=0.6, layer="top", passes=1)
+        pencil.line ((5, top - 1), (9, top - 3), width=1.3, tone=0.6, layer="top", passes=1)
+        coil (pencil, 9, top - 3, 1, 7, 12)
+        self.draw_header (pencil, size=4.5)
+
+
+class RfTransmitter (Kind):
+    # WL102-341: a 433 MHz transmitter on a green 17.7 x 13 mm board, its
+    # right-angle header on one long edge and a 13.56 MHz crystal across
+    # the other. Seen from above with the header at the bottom, EN (the
+    # square pad) is on the left and − on the right: the back prints them
+    # − + DAT EN. OUT, in the top left corner, takes the spring antenna.
+    title  = "radio transmitter"
+    pins   = ("EN", "DAT", "+", "−")
+    width, height = 70, 121
+    color  = PCB_GREEN
+    TOP    = 70                     # the board's top edge, below the spring
+
+    def header_x (self):
+        return 36
+
+    def draw (self, pencil):
+        top = self.TOP
+        board (pencil, 0, top, 70, self.height - top, self.color, radius=2)
+        pencil.tint (rounded (19, top + 2, 44, 15, 7), METAL)
+        pencil.rect (19, top + 2, 44, 15, width=0.9, radius=7, layer="top", passes=1)
+        level (pencil, 41, top + 9.5, "13.560", 6, tone=0.65)
+        ic (pencil, 43, top + 25, 16, 9, legs=4)
+        for sx, sy in ((9, top + 20), (9, top + 28), (62, top + 26)):
+            smd (pencil, sx, sy, 6, 3)
+        hole (pencil, 7, top + 6)
+        pencil.line ((7, top + 6), (7, top - 2), width=1.3, tone=0.6, layer="top", passes=1)
+        pencil.line ((7, top - 2), (10, top - 4), width=1.3, tone=0.6, layer="top", passes=1)
+        coil (pencil, 10, top - 4, 1, 7, 12)
+        self.draw_header (pencil, size=5.4)
+
+
+class LoraModem (Kind):
+    # REYAX RYLR896: a LoRa modem on a blue 17 x 25 mm board, its radio
+    # under a can labelled RYLR890, a gold spring antenna standing on its
+    # top corner. Lying flat with the header at the bottom, pin 1 (VDD) is
+    # on the left, as the datasheet numbers them; the back of the board,
+    # seen from behind, prints them the other way: GND ... VDD.
+    title  = "LoRa modem"
+    pins   = ("VDD", "NRST", "RXD", "TXD", "NC", "GND")
+    width, height = 67, 168
+    color  = PCB_BLUE
+    TOP    = 70                     # the board's top edge, below the spring
+
+    def draw (self, pencil):
+        top = self.TOP
+        board (pencil, 0, top, 67, self.height - top, "#9fb7d9", radius=2)
+        pencil.line ((55, top + 6), (55, top - 3), width=1.2, tone=0.6, layer="top", passes=1)
+        hole (pencil, 55, top + 6, 2.6)
+        coil (pencil, 55, top - 3, 1, 10, 13, GOLD)
+        pencil.tint (rounded (3, top + 2, 48, 38, 2), METAL)
+        pencil.rect (3, top + 2, 48, 38, width=1.0, radius=2, layer="top")
+        level (pencil, 27, top + 15, "REYAX", 7, weight="bold")
+        level (pencil, 27, top + 26, "RYLR890", 6)
+        for index in range (7):
+            x, y = 23 + index * 3.6, top + 47 + index * 3.6
+            for side in (-1, 1):
+                pencil.line ((x, top + 58 + side * 11), (x, top + 58 + side * 14), width=0.8, tone=0.5,
+                             layer="top", passes=1)
+                pencil.line ((34 + side * 11, y), (34 + side * 14, y), width=0.8, tone=0.5, layer="top",
+                             passes=1)
+        ic (pencil, 34, top + 58, 22, 22)
+        for sx, sy in ((9, top + 50), (9, top + 58), (59, top + 50)):
+            smd (pencil, sx, sy, 6, 3)
+        self.draw_header (pencil, size=5.2)
+
+
+class LoraModule (Kind):
+    # Ebyte E32-433T20D: a LoRa module on a green 21 x 36 mm board under a
+    # shield, an SMA socket standing 12.5 mm out of the far end. Its rubber
+    # antenna is 110 mm long; it is drawn upright and cut to a quarter of
+    # that, so the module fits beside the bench. Seen from above with the
+    # header at the bottom, pin 1 (M0) is on the left, 3.5 mm in from the
+    # edge. The board prints no names on its pins.
+    title  = "LoRa module"
+    pins   = ("M0", "M1", "RXD", "TXD", "AUX", "VCC", "GND")
+    width, height = 83, 301
+    color  = PCB_GREEN
+    TOP    = 159                    # the board's top edge, below the antenna
+
+    def header_x (self):
+        return 43.8
+
+    def draw (self, pencil):
+        top = self.TOP
+        whip (pencil, 61.4, top - 90, 0, 22)
+        pencil.tint (rounded (47.4, top - 92, 28, 20, 5), "#2e2e2e")
+        pencil.rect (47.4, top - 92, 28, 20, width=0.9, radius=5, layer="top", passes=1)
+        knurled (pencil, 61.4, top - 49, top - 73, 32)
+        sma (pencil, 61.4, top, 49)
+        board (pencil, 0, top, 83, self.height - top, self.color, radius=2)
+        for sx in (51, 72):
+            pencil.tint ([(sx - 3, top + 1), (sx + 3, top + 1), (sx + 3, top + 12), (sx - 3, top + 12)],
+                         GOLD)
+        for index, hx in enumerate ((40.5, 28.7, 16.5)):
+            hole (pencil, hx, top + 12, square=index == 2)
+        pencil.tint ([(3, top + 24), (80, top + 24), (80, top + 120), (3, top + 120)], METAL)
+        pencil.rect (3, top + 24, 77, 96, width=1.0, layer="top")
+        pencil.text (35, top + 72, "E32-433T20D", size=9, rotate=-90, kind="silk", weight="bold")
+        pencil.text (52, top + 72, "EBYTE", size=6.5, rotate=-90, kind="silk", weight="bold")
+        self.draw_header (pencil, size=5.4)
+
+
+class MeshBoard (Kind):
+    # Heltec WiFi LoRa 32 V3: an ESP32-S3 and an SX1262 radio on a white
+    # 50.2 x 25.5 mm board under a 0.96 inch OLED, with 18 pins along each
+    # long edge. Its LoRa antenna hangs off a U.FL socket at the far end on
+    # a short lead to an SMA socket; the antenna turns up at its knuckle.
+    # The bottom header is J2 and the top one J3, each counted from the
+    # USB-C end on the left. Where a name comes twice, the second takes a 2
+    # (Ve2, GND2, as the bench names the Mega's second GND.power2), and the
+    # second 3V3 is 3V3b, since 3V32 would read as a number.
+    title  = "Meshtastic board"
+    pins   = ("GND", "5V", "Ve", "Ve2", "44", "43", "RST", "0", "36", "35", "34", "33", "47", "48",
+              "26", "21", "20", "19")
+    J3     = ("GND2", "3V3", "3V3b", "37", "46", "45", "42", "41", "40", "39", "38", "1", "2", "3",
+              "4", "5", "6", "7")
+    width, height = 303, 160
+    inset  = 5.5                    # the pins stand in holes 1.4 mm in from each edge
+    color  = WHITE
+    TOP    = 60                     # the board's top edge, below the antenna
+    LEFT   = 3                      # the USB socket, out past the board's left edge
+
+    def header_x (self):
+        return self.LEFT + 10 + 8.5 * PITCH
+
+    def header_y (self):
+        return self.height - self.inset
+
+    def extra (self):
+        return [Pin (name, self.LEFT + 10 + index * PITCH, self.TOP + self.inset, (0, -1), "male")
+                for index, name in enumerate (self.J3)]
+
+    def draw (self, pencil):
+        x0, top, bottom = self.LEFT, self.TOP, self.height
+        outline = [(x0, top), (x0 + 187, top), (x0 + 197.6, top + 18), (x0 + 197.6, bottom - 18),
+                   (x0 + 187, bottom), (x0, bottom)]
+        pencil.tint (outline, self.color)
+        pencil.polyline (outline, width=1.0, closed=True, layer="top")
+        # The LoRa antenna: a lead from the U.FL socket to an SMA socket, the
+        # antenna's nut, then its knuckle turning it up.
+        y = top + 50
+        pencil.wire ([(x0 + 189, y), (x0 + 206, y + 5), (x0 + 224, y)], "#555555", width=2.4,
+                     layer="top", smooth=True)
+        pencil.begin (x0 + 224, y, 90)
+        sma (pencil, 0, 0, 34)
+        knurled (pencil, 0, -34, -54, 30)
+        pencil.end ()
+        whip (pencil, x0 + 288, y - 12, 0, 22)
+        pencil.tint (rounded (x0 + 277, y - 16, 22, 30, 6), "#2e2e2e")
+        pencil.rect (x0 + 277, y - 16, 22, 30, width=0.9, radius=6, layer="top", passes=1)
+        pencil.tint (rounded (x0 + 183, y - 5.5, 11, 11, 1), METAL)
+        pencil.rect (x0 + 183, y - 5.5, 11, 11, width=0.7, radius=1, layer="top", passes=1)
+        pencil.circle (x0 + 188.5, y, 2.6, width=0.6, layer="top", passes=1)
+        pencil.tint (rounded (x0 + 184, top + 20, 9, 12, 0), PLASTIC)
+        pencil.text (x0 + 188.5, top + 26, "V3", size=5, rotate=-90, kind="silk", color=WHITE)
+        # The USB-C socket, the PRG and RST buttons, the 2.4 GHz spring and
+        # the charge LED.
+        pencil.tint (rounded (x0 - 3, top + 35, 32, 30, 4), METAL)
+        pencil.rect (x0 - 3, top + 35, 32, 30, width=1.0, radius=4, layer="top")
+        pencil.tint (rounded (x0 - 1, top + 44, 6, 12, 2), "#6a6a66")
+        for name, by in (("PRG", top + 21), ("RST", top + 79)):
+            pencil.tint (rounded (x0 + 12, by - 7, 14, 14, 1.5), METAL)
+            pencil.rect (x0 + 12, by - 7, 14, 14, width=0.8, radius=1.5, layer="top", passes=1)
+            pencil.spot (x0 + 19, by, 3.8, PLASTIC)
+            level (pencil, x0 + 34, by, name, 4.6)
+        pencil.begin (x0 + 40, top + 50, 90)
+        coil (pencil, 0, 7, -7, 4, 5, COPPER)
+        pencil.end ()
+        led_dot (pencil, x0 + 44, top + 64, r=2.4)
+        pencil.text (x0 + 53, top + 50, "WiFi LoRa 32 V3", size=5, rotate=-90, kind="silk")
+        # The OLED on its clear frame.
+        pencil.tint (rounded (x0 + 58, top + 15, 129, 69, 0), "#dfe7ea")
+        pencil.rect (x0 + 58, top + 15, 129, 69, width=0.9, layer="top", passes=1)
+        pencil.tint (rounded (x0 + 67, top + 15, 107, 69, 0), "#262a2e")
+        pencil.rect (x0 + 67, top + 15, 107, 69, width=1.0, layer="top")
+        pencil.rect (x0 + 76, top + 24, 89, 45, width=0.5, tone=0.3, layer="top", passes=1)
+        for row, line in enumerate (list (self.options.get ("text") or ())[:4]):
+            pencil.text (x0 + 78, top + 33 + row * 11, line, size=8, anchor="start", kind="mono",
+                         color="#dce8ff", tone=1.0)
+        # Both headers' holes, and their names: J2's under the OLED, J3's above.
+        for pin in self.header () + self.extra ():
+            pencil.spot (pin.x, pin.y, 3.4, "#d9c98f")
+            pencil.circle (pin.x, pin.y, 1.6, width=0.8, layer="top", passes=1)
+        for pin in self.header ():
+            level (pencil, pin.x, top + 87.5, pin.name, 4.8)
+        for pin in self.extra ():
+            level (pencil, pin.x, top + 12, pin.name, 3.9)
+
+
 KINDS = {
     "lcd": Lcd1602, "servo": Servo, "ultrasonic": Ultrasonic, "matrix": Matrix, "joystick": Joystick,
     "keypad": Keypad, "ir_receiver": IrReceiver, "rfid": Rfid, "gy521": Gy521, "rtc": Rtc,
     "relay": Relay, "stepper": Stepper, "encoder": Encoder, "pir": Pir, "sensor": Sensor,
-    "dht11": Dht11, "motor": Motor, "battery9v": Battery9V, "module": Kind,
+    "dht11": Dht11, "motor": Motor, "battery9v": Battery9V, "fm_radio": FmRadio,
+    "rf_receiver": RfReceiver, "rf_transmitter": RfTransmitter, "lora_modem": LoraModem,
+    "lora_module": LoraModule, "mesh_board": MeshBoard, "module": Kind,
 }
 
 # Other names a wire may use for a pin, when the module has no pin by that
-# name: GND for −, VCC for +, and so on.
-SAME = [{"−", "-", "GND", "G"}, {"+", "VCC", "5V", "+5V", "VDD"}, {"S", "SIG", "SIGNAL", "OUT"}]
+# name: GND for −, VCC for +, and so on. 3.3 V keeps a group of its own.
+SAME = [{"−", "-", "GND", "G"}, {"+", "VCC", "5V", "+5V", "VDD"}, {"S", "SIG", "SIGNAL", "OUT"},
+        {"3.3V", "3V3", "+3.3V"}]
 
 
 def make (kind, pins=None, label=None, **options):
