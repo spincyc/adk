@@ -27,3 +27,12 @@ bench.photoresistor ("f40", "e40")
 bench.wire ("A1", "a40", via=[(2.30, 2.85), (9.25, 2.85)])
 bench.resistor ("10 kΩ", "c40", "c43")
 bench.wire ("a43", "B-43")
+
+# Readings to take with a multimeter: the divider's middle in room light and
+# with the sensor covered, and the photoresistor's own share of the 5 V.
+bench.measure ("The divider's middle, in room light", red="d40", black="GND",
+               expect="about 2.5 V", when="Room light")
+bench.measure ("The divider's middle, covered", red="d40", black="GND",
+               expect="about 0.5 V", when="Sensor covered")
+bench.measure ("Across the photoresistor, covered", red="h40", black="d40",
+               expect="about 4.5 V", when="Sensor covered")

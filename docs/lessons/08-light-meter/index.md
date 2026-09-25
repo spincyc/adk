@@ -211,3 +211,36 @@ challenge below lets you check.
    in column 38, as an `adk::PwmOutput`, and make it brighter the darker the
    room gets, with `map (level, darkest, brightest, 255, 0)`. Keep the
    result between 0 and 255 with `constrain ()`, as `showBar ()` does.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM** and the red one in **V**. With it you can watch
+the divider share out the 5 V as the light changes.
+
+The divider doesn't need the sketch at all, so it stays still as long as the
+light does. For the covered readings your hands are busy with the probes, so
+cover the sensor with a bottle cap, or a small cup turned upside down.
+
+!!! question "Predict"
+    In room light, with the photoresistor near 10 kΩ, what should the
+    divider's middle read? When you cover the sensor, will it go up or
+    down? Use the formula above.
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **In room light** the middle sits somewhere near half of 5 V. Anything
+  from about 1.5 V to 4 V is normal: the brighter the room, the lower the
+  photoresistor's resistance, and the higher the reading. The plotter's
+  level × 5 ÷ 1023 comes out close to your meter's reading.
+- **Covered**, the middle drops, to under 1 V: in the dark the photoresistor
+  has far more resistance than the 10 kΩ, so it takes nearly all of the
+  5 V, and little is left for A1.
+- **Across the photoresistor** is its share. Add readings 2 and 3 and you
+  get 5 V back. The two parts share the 5 V in proportion to their
+  resistance, so your meter can work out the photoresistor's: 4.5 V is
+  nine times 0.5 V, so it is nine times the 10 kΩ, about 90 kΩ. Try the
+  same sum in room light, and under a lamp.
