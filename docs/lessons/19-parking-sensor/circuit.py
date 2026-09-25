@@ -24,3 +24,12 @@ bench.buzzer ("f34", "e34", kind="active")
 bench.wire ("a34", "B-34")
 
 bench.closeup (1, 37)
+
+# Readings to take with a multimeter, with a book standing still in front of
+# the sensor, or nothing there at all.
+bench.measure ("The yellow light's pin", red="27", black="GND", expect="about 5 V",
+               when="a book 30 cm away")
+bench.measure ("Across the buzzer", red="i34", black="b34", expect="about 4.5 V",
+               when="a book 5 cm away")
+bench.measure ("Across the green LED", red="b18", black="b19", expect="about 3.2 V",
+               when="nothing within 50 cm")

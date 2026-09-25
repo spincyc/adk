@@ -173,3 +173,43 @@ every 30 × 10 = 300 ms, a little over three a second.
 4. **Doorway counter.** Point the sensor across a doorway and count how many
    times the distance drops below 50 cm and comes back again. Beep once for
    each person who walks through.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts, the black
+lead in **COM** and the red one in **V**.
+
+A meter is far too slow to see an echo: at 30 cm the round trip is over in
+under two thousandths of a second. The sensor's wires also run straight to
+the Mega, with no hole for a probe. What the meter can see is what the
+sketch decides from the echoes. Each reading needs something that keeps
+still in front of the sensor, so stand a book up on the desk: it is much
+steadier than a hand, and it leaves both hands free for the probes.
+
+!!! question "Predict"
+    With the book 30 cm in front of the sensor, which of the lights' pins,
+    26, 27 or 28, reads 5 V? And as you slide the book slowly away, where
+    will that reading drop to 0?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **The yellow light's pin** reads about 5 V with the book at 30 cm, and
+  pins 26 and 28 read 0: 30 cm is in the yellow zone. Now slide the book
+  slowly away along a ruler, with the probes still in place. The reading
+  drops to 0 as the book passes 50 cm, `slowDown` in the sketch, give or
+  take a centimeter. The distance the Mega worked out from echo times, at
+  58 µs for every centimeter, agrees with the ruler.
+- **Across the buzzer**, with the book 5 cm away, the buzzer is held on and
+  the meter settles at about 4.5 V. That is a little under 5 V because the
+  buzzer takes up to 30 mA, and a pin's voltage sags a little under that
+  much load. Move the book back to 30 cm and the number jumps about and
+  never settles: the pin is on for 50 ms in every 300, too quick for the
+  meter to follow.
+- **Across the green LED** is about 3.2 V, where the red LED in Lesson 1
+  kept about 2 V. That leaves only 1.8 V for the green one's resistor, so
+  it takes about 8 mA, against red's 14 mA. Measure the red LED here too,
+  from b6 to b7 with the book closer than 20 cm, and see the difference
+  for yourself.
