@@ -4,7 +4,8 @@
 Usage: style.py FILE...
 
 Reports tabs, trailing whitespace, missing final newlines, lines over 100
-characters, and calls or declarations without a space before their opening
+characters (80 in a sketch, which the lesson page and its PDF show whole),
+and calls or declarations without a space before their opening
 parenthesis. Alignment is a judgement for people and is not checked.
 """
 
@@ -12,6 +13,7 @@ import re
 import sys
 
 LIMIT = 100
+SKETCH_LIMIT = 80
 TIGHT_CALL = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]*)\(")
 STRING = re.compile(r'"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'')
 
@@ -55,8 +57,9 @@ def check(path):
             problems.append((number, "tab"))
         if line != line.rstrip():
             problems.append((number, "trailing whitespace"))
-        if len(line) > LIMIT:
-            problems.append((number, f"longer than {LIMIT} characters"))
+        limit = SKETCH_LIMIT if path.endswith(".ino") else LIMIT
+        if len(line) > limit:
+            problems.append((number, f"longer than {limit} characters"))
 
         code, in_comment = code_only(line, in_comment)
 
