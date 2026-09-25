@@ -156,6 +156,9 @@ outer pair feed the rails.
 | RFID reader | Below the Mega, facing up | The Mega's 3.3V and the inner GND pin |
 | Tap sensor | Below the Mega, at its left end | The power header's 5V and GND |
 | Relay | Above the board, its terminals facing left | The inner 5V and GND pins |
+| LoRa modems (RYLR896) | Below the board past the button, aerials down: B (on Serial3) under columns 42–47, A (on Serial1) under columns 51–57. Each modem's TXD comes up into row f (44 for B, 53 for A), beside its RX pin in row j; its TX pin goes into j46 or j55, then 1 kΩ across the gap from g to e and 2 kΩ from a down to the − rail, and its RXD into row c of that column | The power module's bottom rails at 3.3 V: B's VDD into B+47 and GND into B-42, A's into B+57 and B-51 |
+| LoRa modules (E32) | The same places and dividers as the modems, aerials down. AUX comes up into f43 beside pin 43 (B) or f52 beside pin 41 (A); M0 and M1 into f and g of column 48 beside pin 42 (B) or column 57 beside pin 40 (A) | The power module's bottom rails at 5 V: B's VCC into B+42 and GND into B-41, A's into B+51 and B-49 |
+| Meshtastic board | In LoRa modem A's place below the board, its pins up: its 48 into f53, its 47 into c55 through A's divider, its GND into B-59 | Its own USB-C cable |
 
 Chips and parts that stand in the board without a home above keep one place
 too: the 74HC595 across the gap in columns 18–25, the one-digit display

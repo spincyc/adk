@@ -1,7 +1,7 @@
 site_name: ADK
 site_description: >-
-  Thirty-six hands-on lessons for the Arduino Mega 2560, from a blinking LED
-  to a tilt-controlled maze, and the small C++ library that makes them simple.
+  Forty-two hands-on lessons for the Arduino Mega 2560, from a blinking LED
+  to texting it from a phone, and the small C++ library that makes them simple.
 site_url: https://spincyc.github.io/adk/
 repo_url: https://github.com/spincyc/adk
 repo_name: spincyc/adk
@@ -103,6 +103,7 @@ nav:
       - library/displays.md
       - library/motion.md
       - library/sensors.md
+      - library/radio.md
   - Contribute:
       - contributing.md
       - ARCHITECTURE.md

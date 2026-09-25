@@ -16,13 +16,22 @@ A new start, built on the library's original 2021 design.
   the 28BYJ-48 stepper, DC motors, the HC-SR04, DHT11 and DS18B20, the IR
   remote, the RC522 RFID reader, the DS1307 clock and the MPU-6050, with
   small register-level I2C and SPI masters in place of Wire and SPI.
+- **Radios**, add-ons beyond the kits: `FmRadio` for an Si4703 FM board,
+  tuned, stepped and seeking while the sketch runs, with the station's RDS
+  name and text; `RadioTransmitter` and `RadioReceiver` for 433 MHz modules,
+  speaking RadioHead's RH_ASK; and three LoRa radios over the Mega's spare
+  serial ports, `LoraModem` (REYAX RYLR896), `LoraLink` (Ebyte E32) and
+  `MeshNode` (a Meshtastic board). Their 3.3 V pins are only ever pulled low
+  or reached through a divider, and the E32 is set to a licence-free channel
+  and power at every start.
 - **C++23**, built with avr-gcc 16 (the Arduino core's GCC 7 stops at
   C++17). `adk::Array`, `Vector`, `Deque` and `Span` give sketches the
   standard containers' shape without the heap; `adk::Timer` and
   `adk::Stopwatch` keep time; `adk::println` prints a line in one call.
-- **Course.** Thirty-six lessons in twelve arcs, from Blink to the Secret
-  Door, each a component lesson or a project that combines them, with a
-  sketch that compiles for the Mega.
+- **Course.** Forty-two lessons in fourteen arcs, from Blink to texting
+  the Mega from a phone, each a component lesson or a project that combines
+  them, with a sketch that compiles for the Mega. The last two arcs use
+  add-on radios: an FM clock radio, 433 MHz messages, and LoRa.
 - **Website.** A new design where each lesson is both a web page and a PDF,
   with pencil drawings generated from one description of the build and
   checked against the lesson's code. Wires route round parts and labels;
