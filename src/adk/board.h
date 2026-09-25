@@ -17,7 +17,8 @@ namespace adk {
         NotAnalog,
         NotInterrupt,
         NotServo,
-        TimerInUse
+        TimerInUse,
+        NotSerial
     };
 
     // A device claims the pins and timers it uses from its setup (). Each claim

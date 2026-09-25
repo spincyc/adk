@@ -205,7 +205,8 @@ class Print
 
 // The Mega's four serial ports: Serial on USB, and Serial1 to Serial3 on
 // pins 18 and 19, 16 and 17, and 14 and 15. What a sketch sends is kept in
-// text; a test puts what the device at the other end sends in input.
+// text; a test puts what the device at the other end sends in input, and
+// can answer each byte as it is sent with onWrite.
 class HardwareSerial : public Print
 {
   public:
@@ -222,9 +223,10 @@ class HardwareSerial : public Print
     // Forget everything sent and received.
     void clear ();
 
-    std::string   text;
-    std::string   input;
-    unsigned long baud = 0;
+    std::string                         text;
+    std::string                         input;
+    unsigned long                       baud = 0;
+    std::function<void (uint8_t byte)> onWrite;
 };
 
 extern HardwareSerial Serial;

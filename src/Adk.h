@@ -54,3 +54,7 @@
 
 #include "adk/radio.h"
 #include "adk/fm_radio.h"
+#include "adk/serial_port.h"
+#include "adk/lora_modem.h"
+#include "adk/lora_link.h"
+#include "adk/mesh_node.h"

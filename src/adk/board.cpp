@@ -262,6 +262,14 @@ namespace adk {
                 {
                     log.println (F ("adk: a Servo stops PWM on pins 44, 45 and 46"));
                 }
+
+                if (timerOf (pin) != 2 && timerOf (pin) != 5)
+                {
+                    log.println (F ("adk: a 433 MHz radio stops PWM on pins 11 and 12"));
+                }
+                break;
+            case Fault::NotSerial:
+                log.println (F (" is not on a spare serial port; use Serial1, Serial2 or Serial3"));
                 break;
         }
     }

@@ -467,12 +467,19 @@ void HardwareSerial::clear ()
 {
     text.clear ();
     input.clear ();
-    baud = 0;
+    baud    = 0;
+    onWrite = nullptr;
 }
 
 size_t HardwareSerial::write (uint8_t byte)
 {
     text += static_cast<char> (byte);
+
+    if (onWrite)
+    {
+        onWrite (byte);
+    }
+
     return 1;
 }
 
