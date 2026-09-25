@@ -81,3 +81,10 @@ bench.wire ("43", "a56")
 bench.wire ("12", "j35")
 bench.buzzer ("f35", "e35")
 bench.wire ("a35", "B-35")
+
+# Readings to take with a multimeter: the dot's segment line, high only
+# while digit 3 has its turn, and the start/stop button's pin.
+bench.measure ("The dot's line, Q7", red="a24", black="GND", expect="about 1.25 V",
+               when="Showing a time")
+bench.measure ("Start/stop's pin", red="22", black="GND", expect="about 5 V",
+               when="Released; 0 V while held down")

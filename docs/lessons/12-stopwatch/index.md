@@ -209,3 +209,35 @@ the stopwatch.
    while a timer is stopped, instead of choosing from fixed modes.
 4. **Final countdown.** Make the buzzer click once a second during a timer's
    last five seconds, like the end of a quiz show.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM** and the red one in **V**.
+
+The first reading needs the display to show a time, standing still or
+running: `0.0` after a reset is fine. For the second, hold the probes on the
+holes shown and press start/stop with a spare finger, or ask someone to
+press it for you.
+
+!!! question "Predict"
+    The display lights one digit at a time, each for a quarter of the time,
+    and only digit 3 shows a dot, after the seconds. What will the meter
+    read on the dot's line, Q7? And on the start/stop button's pin, while
+    you hold the button down for a few seconds?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **The dot's line** is at 5 V only while digit 3 has its turn, because
+  `display.show (…, 1)` puts the one dot there. For the other three turns
+  it is at 0 V, so the meter shows a quarter of 5 V, about 1.25 V. Run a
+  10-second timer to the end: **donE** has no dot, and Q7 reads 0 V.
+- **Start/stop's pin** reads 5 V released, held up by the pull-up inside the
+  Mega as in Lesson 2, and 0 V while you hold the button down. It stays at
+  0 V for as long as you hold it, yet the stopwatch starts only once:
+  `wasPressed ()` is true for the one turn of `loop ()` just after the pin
+  changes, not for every turn while it stays low. That is what lets one
+  button start the clock, and the next press stop it.
