@@ -235,3 +235,38 @@ long it lasts.
    in milliseconds, and 0 turns debouncing off. Tap the button many times and
    watch the count. Does it ever jump by two or three? Some buttons bounce
    more than others. Put it back to `{22}` when you have seen it.
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts, the black
+lead in **COM** and the red in **V**. Never move the red lead to the **A**
+jack for these: set for current, the meter is just a wire, and would short
+out whatever you put it across.
+
+Nothing in the sketch needs changing: a button stays pressed for as long as
+your finger holds it. Ask a helper to press while you hold the probes, or
+hold both probes in one hand like chopsticks. Keep each tip in its own
+hole.
+
+!!! question "Predict"
+    With the left button up, nothing on the breadboard joins pin 22 to 5 V.
+    What will the meter read from pin 22 to GND: 0 V, 5 V, or a number that
+    wanders about?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Button up**, pin 22 reads about 5 V, though no wire brings it 5 V. That
+  is the pull-up inside the chip, holding the pin HIGH. The meter takes
+  almost no current, so even that weak pull-up holds the pin at the full
+  5 V. A floating pin would wander; this one stays put.
+- **Button pressed**, the reading falls to 0 V: the button joins the pin
+  straight to GND, a far stronger path than the pull-up. That is LOW, and
+  `isPressed ()` reports it as *true*. Let go and the 5 V is back at once.
+- **The yellow LED's pin** shows a pin that listens and a pin that switches
+  side by side. While you hold the right button, pin 23 reads 0 V (move the
+  red tip to i8, in pin 23's column, to see) and pin 27 reads about 5 V:
+  `yellow.set (rightButton.isPressed ())` turns the button's LOW into the
+  LED's HIGH.

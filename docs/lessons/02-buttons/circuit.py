@@ -23,3 +23,12 @@ bench.wire ("27", "j12", via=[(4.35, 1.05), (4.35, 1.25)])
 bench.resistor ("220 Ω", "g12", "e12")
 bench.led ("yellow", anode="b12", cathode="b13")
 bench.wire ("a13", "B-13")
+
+# Readings to take with a multimeter: the left button's pin up and pressed,
+# and the yellow LED's pin while the right button is held.
+bench.measure ("Pin 22, button up", red="22", black="GND", expect="about 5 V",
+               when="Left button up")
+bench.measure ("Pin 22, button pressed", red="22", black="GND", expect="0 V",
+               when="Left button held down")
+bench.measure ("The yellow LED's pin", red="27", black="GND", expect="about 5 V",
+               when="Right button held down")
