@@ -1131,19 +1131,18 @@ def load (path):
         names = [bench.sketch for bench in boards.values ()]
         if not all (names) or len (set (names)) != len (names):
             raise ValueError ("each board names its own sketch, as Bench (..., sketch=\"Dial\") "
-                              "for examples/LessonNNName/Dial/Dial.ino")
+                              "for examples/lessons/NNN-name/Dial/Dial.ino")
     for letter, bench in boards.items ():
         bench.board = letter
         bench.finish ()
     return boards
 
 
-# The folder a lesson's example is in: examples/Lesson13HelloLcd for
-# docs/lessons/13-hello-lcd. A one-board lesson's sketch is in it, named
+# The folder a lesson's example is in, under examples: lessons/013-hello-lcd
+# for docs/lessons/013-hello-lcd. A one-board lesson's sketch is in it, named
 # the same; a two-board lesson's are in folders of their own inside it.
 def example (slug):
-    number, _, words = slug.partition ("-")
-    return f"Lesson{number}" + "".join (word.capitalize () for word in words.split ("-"))
+    return f"lessons/{slug}"
 
 
 def parse_hole (hole):

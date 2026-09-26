@@ -1,7 +1,7 @@
 """Hold each sketch to its circuit.
 
-    python3 tests/pins.py Lesson03ReactionDuel claimed.txt
-    python3 tests/pins.py Lesson44RemoteDial/Dial claimed.txt
+    python3 tests/pins.py lessons/003-reaction-duel claimed.txt
+    python3 tests/pins.py lessons/044-remote-dial/Dial claimed.txt
 
 claimed.txt lists each pin the sketch's parts claimed when its setup () ran
 on the host (tests/probe/pins.cpp), and the mode it was left in, output or
@@ -19,9 +19,7 @@ swapped with a button fails. Two pins wired to parts of one kind, such as
 two LEDs, can still be swapped unnoticed.
 """
 
-import glob
 import os
-import re
 import sys
 
 ROOT = os.path.dirname (os.path.dirname (os.path.abspath (__file__)))
@@ -30,17 +28,16 @@ sys.path.insert (0, os.path.join (ROOT, "docs", "_theme"))
 import bench  # noqa: E402
 
 
-# The circuit an example's sketch runs on.
+# The circuit an example's sketch runs on: lessons/013-hello-lcd, or a
+# board's, lessons/044-remote-dial/Dial, runs on docs/lessons/<lesson>.
 def circuit (example):
-    folder, _, sketch = example.partition ("/")
-    number = re.match (r"Lesson(\d\d)", folder).group (1)
-    paths = glob.glob (os.path.join (ROOT, "docs", "lessons", f"{number}-*", "circuit.py"))
-    if len (paths) != 1:
-        sys.exit (f"{example}: expected one docs/lessons/{number}-*/circuit.py")
-    path = os.path.relpath (paths[0], ROOT)
-    expected = bench.example (os.path.basename (os.path.dirname (path)))
-    if folder != expected:
-        sys.exit (f"{example}: Lesson {number}'s example is examples/{expected}")
+    parts = example.split ("/")
+    if len (parts) not in (2, 3) or parts[0] != "lessons":
+        sys.exit (f"{example}: examples are lessons/NNN-name or lessons/NNN-name/Board")
+    folder, sketch = "/".join (parts[:2]), "/".join (parts[2:])
+    path = os.path.join ("docs", "lessons", parts[1], "circuit.py")
+    if not os.path.exists (os.path.join (ROOT, path)):
+        sys.exit (f"{example}: no {path} beside it")
     try:
         boards = bench.load (os.path.join (ROOT, path))
     except ValueError as error:
@@ -50,7 +47,7 @@ def circuit (example):
         sketches = " and ".join (f"examples/{folder}/{board.sketch}" for board in boards.values ())
         sys.exit (f"{example}: {path} has no board for this sketch; "
                   + (f"its boards' sketches are {sketches}" if "" not in boards else
-                     f"its one sketch is examples/{folder}/{folder}.ino"))
+                     f"its one sketch is examples/{folder}/{parts[1]}.ino"))
     return found[0]
 
 

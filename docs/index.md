@@ -20,12 +20,12 @@ right card, and a game of Pong played between two rooms.
 [Get set up](start.md){ .md-button .md-button--primary }
 [See the whole course](course.md){ .md-button }
 
-Already set up? [Start with Lesson 1](lessons/01-blink/index.md).
+Already set up? [Start with Lesson 1](lessons/001-blink/index.md).
 { .hero-aside }
 
 </div>
 
-<!-- drawing 01-blink closeup -->
+<!-- drawing 001-blink closeup -->
 
 </div>
 

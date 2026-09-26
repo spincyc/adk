@@ -105,7 +105,7 @@ nav:
   - Course:
       - course.md
       - First light:
-          - lessons/01-blink/index.md
+          - lessons/001-blink/index.md
   - Library:
       - library/index.md
       - library/core.md

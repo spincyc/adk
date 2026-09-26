@@ -43,15 +43,15 @@ AVR_PROPERTIES   := --build-property "compiler.path=$(abspath $(TOOLCHAIN))/bin/
 
 # Sources and examples ---------------------------------------------------------
 #
-# One sketch per lesson, examples/Lesson01Blink/Lesson01Blink.ino, or one per
-# board in a two-board lesson, examples/Lesson44RemoteDial/Dial/Dial.ino.
+# One sketch per lesson, examples/lessons/001-blink/001-blink.ino, or one per
+# board in a two-board lesson, examples/lessons/044-remote-dial/Dial/Dial.ino.
 # Each example builds in a folder of its own, build/arduino/<example>.
 
 LIBRARY_SOURCES  := $(wildcard src/adk/*.cpp)
 LIBRARY_FILES    := $(wildcard src/*.h src/adk/*.h src/adk/*.cpp)  \
                     library.properties
 TEST_SOURCES     := $(wildcard tests/*.cpp tests/arduino/*.cpp)
-SKETCHES         := $(wildcard examples/*/*.ino examples/*/*/*.ino)
+SKETCHES         := $(wildcard examples/lessons/*/*.ino examples/lessons/*/*/*.ino)
 EXAMPLES         := $(patsubst examples/%/,%,$(sort $(dir $(SKETCHES))))
 STYLED           := $(wildcard src/*.h src/adk/*.h src/adk/*.cpp)  \
                     $(wildcard tests/*.h tests/*.cpp)              \
@@ -111,24 +111,25 @@ PROBE_OBJECTS    := $(filter $(HOST_DIR)/obj/src/%            \
 
 # Each lesson's own targets ----------------------------------------------------
 #
-# Every lesson has targets named by its folder in docs/lessons: make 01-blink
-# compiles its sketch, and make upload-01-blink sends it to the Mega on PORT.
-# In a two-board lesson make 44-remote-dial compiles both sketches, and each
+# Every lesson's folder has the same name in docs/lessons and in
+# examples/lessons, and targets of that name: make 001-blink compiles its
+# sketch, and make upload-001-blink sends it to the Mega on PORT. In a
+# two-board lesson make 044-remote-dial compiles both sketches, and each
 # board's sketch has a pair of its own, named by the sketch in lower case:
-# make 44-remote-dial-servo and make upload-44-remote-dial-servo. Each target
-# is name:example in LESSON_TARGETS, which make lessons lists.
+# make 044-remote-dial-servo and make upload-044-remote-dial-servo. Each
+# target is name:example in LESSON_TARGETS, which make lessons lists.
 
-LESSONS          := $(patsubst docs/lessons/%/,%,$(wildcard docs/lessons/[0-9][0-9]-*/))
-BOARD_SKETCHES   := $(foreach example,$(EXAMPLES),$(if $(findstring /,$(example)),$(example)))
+LESSONS          := $(patsubst docs/lessons/%/,%,$(wildcard docs/lessons/[0-9][0-9][0-9]-*/))
+board_of          = $(word 3,$(subst /, ,$1))
+BOARD_SKETCHES   := $(foreach example,$(EXAMPLES),$(if $(call board_of,$(example)),$(example)))
 BOARD_NAMES      := $(join $(addsuffix :,$(BOARD_SKETCHES)),  \
                            $(shell echo $(notdir $(BOARD_SKETCHES)) | tr A-Z a-z))
-number_of         = $(firstword $(subst -, ,$1))
-example_of        = $(patsubst examples/%/,%,$(wildcard examples/Lesson$(call number_of,$1)*/))
-sketches_of       = $(filter $(call example_of,$1) $(call example_of,$1)/%,$(EXAMPLES))
+sketches_of       = $(filter lessons/$1 lessons/$1/%,$(EXAMPLES))
+two_boards        = $(filter lessons/$1/%,$(EXAMPLES))
 board_name        = $(patsubst $1:%,%,$(filter $1:%,$(BOARD_NAMES)))
-target_of         = $1$(if $(findstring /,$2),-$(call board_name,$2))
-circuit_of        = $(wildcard docs/lessons/$(shell echo $1 | cut -c7-8)-*/circuit.py)
-lesson_lines      = $(if $(findstring /,$(call sketches_of,$1)),$1:$(call example_of,$1)/*)  \
+target_of         = $1$(if $(call board_of,$2),-$(call board_name,$2))
+circuit_of        = $(wildcard docs/lessons/$(word 2,$(subst /, ,$1))/circuit.py)
+lesson_lines      = $(if $(call two_boards,$1),$1:lessons/$1/*)  \
                     $(filter $1:% $1-%,$(LESSON_TARGETS))
 LESSON_TARGETS   := $(foreach lesson,$(LESSONS),                         \
                         $(foreach sketch,$(call sketches_of,$(lesson)),  \
@@ -143,8 +144,8 @@ LESSON_LINES     := $(foreach lesson,$(LESSONS),$(call lesson_lines,$(lesson)))
 BOARDS_DIR       := $(BUILD_DIR)/boards
 BOARDS_HOME      := $(abspath $(BOARDS_DIR))
 BOARDS_INDEX     := file://$(abspath $(BUILD_DIR))/site/package_adk_index.json
-BOARDS_EXAMPLES  := Lesson01Blink  \
-                    Lesson06Simon
+BOARDS_EXAMPLES  := lessons/001-blink  \
+                    lessons/006-simon
 BOARDS_CLI       := ARDUINO_CONFIG_FILE=$(BOARDS_HOME)/arduino-cli.yaml     \
                     ARDUINO_DIRECTORIES_DATA=$(BOARDS_HOME)/data            \
                     ARDUINO_DIRECTORIES_DOWNLOADS=$(BOARDS_HOME)/downloads  \
@@ -323,14 +324,14 @@ $(ARDUINO_DIR)/%.log: examples/$$*/$$(notdir $$*).ino  \
 	@if grep -A3 -E $(WARNINGS) $@.tmp; then rm -rf $@.tmp $(ARDUINO_DIR)/$*; exit 1; fi
 	@mv $@.tmp $@
 
-## NN-name         compile one lesson's sketches, as in make 01-blink
-## upload-NN-name  compile a lesson's sketch and upload it to the Mega on PORT
+## NNN-name        compile one lesson's sketches, as in make 001-blink
+## upload-NNN-name compile a lesson's sketch and upload it to the Mega on PORT
 ## lessons         list every lesson's targets and the examples each builds
 lessons:
 	@$(foreach line,$(LESSON_LINES),printf '%-32s examples/%s\n' $(subst :, ,$(line));)
 
 # make <name> compiles one example, and make upload-<name> uploads it; $1
-# is the name and the example, as in "01-blink Lesson01Blink".
+# is the name and the example, as in "001-blink lessons/001-blink".
 define example_targets
 .PHONY: $(word 1,$1) upload-$(word 1,$1)
 $(word 1,$1): $(ARDUINO_DIR)/$(word 2,$1).log
@@ -340,7 +341,7 @@ endef
 
 # A two-board lesson's own target compiles both its boards' sketches.
 define lesson_target
-$(if $(findstring /,$(call sketches_of,$1)),.PHONY: $1
+$(if $(call two_boards,$1),.PHONY: $1
 $1: $(patsubst %,$(ARDUINO_DIR)/%.log,$(call sketches_of,$1)))
 endef
 
@@ -454,7 +455,7 @@ $(VENV)/.installed: docs/requirements.txt
 style:
 	@$(PYTHON) tests/style.py $(STYLED)
 
-## upload          upload one example: make upload EXAMPLE=Lesson01Blink PORT=/dev/ttyACM0
+## upload          upload an example by its path: make upload EXAMPLE=lessons/001-blink
 upload: $(ARDUINO_DIR)/$(EXAMPLE).log
 	arduino-cli upload --fqbn $(FQBN) --port $(PORT) --input-dir $(ARDUINO_DIR)/$(EXAMPLE)
 

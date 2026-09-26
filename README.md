@@ -67,7 +67,7 @@ board package: the same Mega 2560, built with avr-gcc 16.
    **Arduino AVR Boards**, if the IDE hasn't already).
 3. **Code → Download ZIP** on this page, then **Sketch → Include Library →
    Add .ZIP Library**. Every lesson's sketch is then under **File → Examples
-   → Adk**.
+   → Adk → lessons**, from `001-blink` on.
 4. Choose **Tools → Board → ADK Boards → ADK Mega 2560**, and the port.
 
 The compiler comes for Windows, macOS (Apple silicon and Intel) and Linux
@@ -79,12 +79,15 @@ has the details.
 Everything builds with `make` and lands in `build/`.
 
 ```sh
-make test       # host tests
-make examples   # compile every lesson for the Mega (needs arduino-cli)
-make site       # the website, in build/site
-make pdf        # every lesson as a PDF (needs Chromium)
-make check      # all of it, as CI runs it
-make help       # everything else
+make deps                                # install what the build needs (Arch Linux; others: a list)
+make test                                # host tests
+make examples                            # compile every lesson for the Mega
+make 001-blink                           # compile one lesson; make lessons lists them all
+make upload-001-blink PORT=/dev/ttyACM0  # compile it and upload it to the Mega
+make site                                # the website, in build/site
+make pdf                                 # every lesson as a PDF
+make check                               # all of it, as CI runs it
+make help                                # everything else
 ```
 
 [Contributing](https://spincyc.github.io/adk/contributing/) explains the

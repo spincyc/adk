@@ -8,7 +8,7 @@ Modules Kit**; those are marked below and in each lesson's parts list.
 
 | Part | What it does | First used |
 |---|---|---|
-| Arduino Mega 2560 and USB cable | The computer that runs your sketches | [Lesson 1](lessons/01-blink/index.md) |
+| Arduino Mega 2560 and USB cable | The computer that runs your sketches | [Lesson 1](lessons/001-blink/index.md) |
 | 830-hole breadboard and jumper wires | Joins parts without soldering | Lesson 1 |
 | LEDs, and 220 Ω, 1 kΩ and 10 kΩ resistors | Light, and the current that makes it | Lesson 1 |
 | Push buttons | Input you can press | Lesson 2 |
@@ -18,7 +18,7 @@ Modules Kit**; those are marked below and in each lesson's parts list.
 | 10 kΩ potentiometer | A knob that sets a voltage | Lesson 7 |
 | Photoresistor | Senses light | Lesson 8 |
 | 74HC595 shift register | Eight outputs from three pins | Lesson 10 |
-| One- and four-digit 7-segment displays | Numbers in light | [Lesson 10](lessons/10-dice/index.md), [Lesson 11](lessons/11-four-digits/index.md) |
+| One- and four-digit 7-segment displays | Numbers in light | [Lesson 10](lessons/010-dice/index.md), [Lesson 11](lessons/011-four-digits/index.md) |
 | LCD1602 character display | Two lines of sixteen letters | Lesson 13 |
 | DHT11 sensor and thermistor | Temperature and humidity | Lesson 14 |
 | 18B20 temperature module *(37 in 1)* | A precise digital thermometer | Lesson 14 |

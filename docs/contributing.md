@@ -24,8 +24,8 @@ repository. Everything builds with `make`, and everything it builds goes in
 | `make sanitize` | The same tests under AddressSanitizer and UBSan |
 | `make toolchain` | Fetch the C++23 avr-gcc the examples build with |
 | `make examples` | Compile every example for the Mega, failing on any library or sketch warning |
-| `make 01-blink` | Compile one lesson's sketches; `make lessons` lists every lesson's name |
-| `make upload-01-blink PORT=…` | Compile one lesson's sketch and upload it to the Mega on `PORT` |
+| `make 001-blink` | Compile one lesson's sketches; `make lessons` lists every lesson's name |
+| `make upload-001-blink PORT=…` | Compile one lesson's sketch and upload it to the Mega on `PORT` |
 | `make pins` | Test the circuit model (`tests/circuits.py`), then hold each sketch to its circuit (below) |
 | `make size` | Flash and RAM used by each example |
 | `make site` | Build this website into `build/site` |
@@ -51,16 +51,18 @@ that starts with how to wire the part, its source, host tests, and a line in
 
 1. Add or check its entry in `docs/_theme/course.yml`. The lesson's title
    and arc come from there, so its page doesn't repeat them.
-2. Write the sketch in `examples/LessonNNName/LessonNNName.ino`, the lesson's
-   folder name in capitals: `Lesson13HelloLcd` for `13-hello-lcd`.
-3. Describe the build in `docs/lessons/NN-name/circuit.py`: every part in its
+2. Write the sketch in `examples/lessons/NNN-name/NNN-name.ino`, named as
+   the lesson's folder is: `examples/lessons/013-hello-lcd/013-hello-lcd.ino`
+   for `docs/lessons/013-hello-lcd`. The number has three digits, so the
+   lessons sort in order however many there are.
+3. Describe the build in `docs/lessons/NNN-name/circuit.py`: every part in its
    holes, every wire from pin to hole. The site draws the bench from it. Put
    each part in its [breadboard home](kit.md#breadboard-homes) and on its
    home pins, so the build carries on from the lesson before; keep every
    part and wire the lesson before already has just where it was. A part
    with no home goes where a tidy builder would put it: in the next free
    columns, in the order the current meets it.
-4. Write `docs/lessons/NN-name/index.md` from Lesson 1's shape, with the
+4. Write `docs/lessons/NNN-name/index.md` from Lesson 1's shape, with the
    markers `<!-- bench -->`, `<!-- closeup -->`, `<!-- steps -->`,
    `<!-- connections -->` and `<!-- sketch -->` where those belong. Its front
    matter gives `lesson: NN`, the promise, time, level, parts and ideas.
@@ -106,8 +108,8 @@ Mega, and carries on from the lesson before; Board B is a second one.
 
 - **The sketches** are in folders of their own inside the lesson's example,
   each named as its board's `sketch=`:
-  `examples/Lesson44RemoteDial/Dial/Dial.ino` and
-  `examples/Lesson44RemoteDial/Servo/Servo.ino`. The Arduino IDE shows them
+  `examples/lessons/044-remote-dial/Dial/Dial.ino` and
+  `examples/lessons/044-remote-dial/Servo/Servo.ino`. The Arduino IDE shows them
   as a folder of two examples. `make pins` holds each sketch to its own
   board's circuit, and `make size` lists them both.
 - **The page** gives every marker a board's letter: `<!-- bench A -->`,
@@ -118,10 +120,10 @@ Mega, and carries on from the lesson before; Board B is a second one.
 - **The build steps** carry each board on from the same board in the lesson
   before, "Keep from Lesson 44's Board A: …". After a one-board lesson,
   Board A carries on from its bench and Board B starts from nothing.
-- **Make.** `make 44-remote-dial` compiles both sketches; each board has
+- **Make.** `make 044-remote-dial` compiles both sketches; each board has
   its own pair of targets, named by its sketch in lower case:
-  `make 44-remote-dial-servo` and
-  `make upload-44-remote-dial-servo PORT=/dev/ttyACM1`.
+  `make 044-remote-dial-servo` and
+  `make upload-044-remote-dial-servo PORT=/dev/ttyACM1`.
 
 ## Describing a build
 

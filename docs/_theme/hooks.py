@@ -1,8 +1,8 @@
 """Build lesson pages from their parts.
 
-A lesson page is docs/lessons/NN-name/index.md, with a circuit.py beside it
+A lesson page is docs/lessons/NNN-name/index.md, with a circuit.py beside it
 describing the build and a sketch in examples/. Its title and arc come from
-course.yml, and its sketch from its name: examples/Lesson13HelloLcd for
+course.yml, and its sketch from its name: examples/lessons/013-hello-lcd for
 13-hello-lcd. Markers in the page are replaced when the site builds:
 
     <!-- bench -->         the pencil drawing of the whole bench
@@ -19,7 +19,7 @@ builds, and each board's sketch is in a folder of its own in the lesson's
 example (docs/contributing.md, Two-board lessons).
 
 Any page may also use <!-- arcs --> for the course as cards,
-<!-- course --> for the course as a table, <!-- drawing 01-blink closeup -->
+<!-- course --> for the course as a table, <!-- drawing 001-blink closeup -->
 for a drawing from a lesson (with a board's letter after it in a two-board
 lesson), and <!-- api led.h Led --> for a part's reference, read from its
 header. The course comes from course.yml, which also builds the Course
@@ -153,9 +153,9 @@ def on_page_markdown (markdown, page, config, files):
 
 # Everything the markers show of one board.
 def board_pieces (lesson, letter, bench):
-    # examples/Lesson44RemoteDial/Dial/Dial.ino for a board, or
-    # examples/Lesson01Blink/Lesson01Blink.ino for a lesson's only one.
-    name = bench.sketch or example (lesson["slug"])
+    # examples/lessons/044-remote-dial/Dial/Dial.ino for a board, or
+    # examples/lessons/001-blink/001-blink.ino for a lesson's only one.
+    name = bench.sketch or lesson["slug"]
     folder = os.path.join (ROOT, "examples", example (lesson["slug"]), bench.sketch or "")
     path = os.path.join (folder, name + ".ino")
     try:

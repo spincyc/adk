@@ -46,8 +46,8 @@ with a newer compiler.
    Download ZIP**.
 2. In the Arduino IDE, choose **Sketch → Include Library → Add .ZIP
    Library…** and pick the file you downloaded.
-3. Check it worked: **File → Examples → Adk** now lists every lesson's
-   sketch.
+3. Check it worked: **File → Examples → Adk → lessons** now lists every
+   lesson's sketch, from `001-blink` on.
 
 ## 4. Connect the Mega
 
@@ -76,7 +76,7 @@ Every lesson follows the same path, and every lesson is also a printable PDF.
 
 You're ready. The first lesson makes an LED blink.
 
-[Start Lesson 1](lessons/01-blink/index.md){ .md-button .md-button--primary }
+[Start Lesson 1](lessons/001-blink/index.md){ .md-button .md-button--primary }
 
 ## From the command line
 
@@ -84,8 +84,9 @@ If you prefer a terminal to the IDE, the repository's `Makefile` builds and
 uploads every example with [`arduino-cli`](https://arduino.github.io/arduino-cli/):
 
 ```sh
-make examples                                     # compile every lesson
-make upload EXAMPLE=Lesson01Blink PORT=/dev/ttyACM0
-make monitor                                      # watch Serial output
-make help                                         # everything else
+make examples                            # compile every lesson
+make upload-001-blink PORT=/dev/ttyACM0  # compile Lesson 1 and upload it
+make lessons                             # every lesson's own targets
+make monitor                             # watch Serial output
+make help                                # everything else
 ```
