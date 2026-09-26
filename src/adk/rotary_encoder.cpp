@@ -10,14 +10,17 @@ namespace adk {
         // and DT as the low one, indexed by previous << 2 | current. Turning
         // clockwise CLK changes first: 11, 01, 00, 10, 11. When both change
         // at once a step was missed, and which way it went is unknown.
-        const int8_t Steps [16] PROGMEM = {0, -1, 1, 0, 1, 0, 0, -1, -1, 0, 0, 1, 0, 1, -1, 0};
+        constexpr int8_t Steps [16] PROGMEM = {0, -1, 1, 0, 1, 0, 0, -1, -1, 0, 0, 1, 0, 1, -1, 0};
+
+        // Both contacts open, as a KY-040's are in every detent.
+        constexpr uint8_t Resting = 0b11;
     }
 
     RotaryEncoder::RotaryEncoder (Pin clk, Pin dt, uint8_t stepsPerDetent)
         : position_       (0)
         , clk_            (clk)
         , dt_             (dt)
-        , stepsPerDetent_ (stepsPerDetent)
+        , stepsPerDetent_ (stepsPerDetent > 0 ? stepsPerDetent : 1)
         , contacts_       (0)
         , steps_          (0)
         , turned_         (0)
@@ -31,6 +34,7 @@ namespace adk {
         if (claimInput (clk_, true) && claimInput (dt_, true))
         {
             contacts_ = read ();
+            steps_    = 0;
         }
     }
 
@@ -41,18 +45,19 @@ namespace adk {
         int8_t  step     = static_cast<int8_t> (pgm_read_byte (&Steps[index]));
 
         contacts_ = contacts;
+        steps_    = static_cast<int8_t> (steps_ + step);
         turned_   = 0;
 
-        if (step == 0)
+        // Detents count only where the knob comes to rest, as the steps
+        // taken since the last rest rounded to whole detents. A missed step
+        // then costs nothing, a bounce cancels out, and the count can never
+        // drift out of step with the clicks.
+        if (isResting (contacts))
         {
-            return;
-        }
+            int8_t half = static_cast<int8_t> (stepsPerDetent_ / 2);
+            int8_t away = static_cast<int8_t> (steps_ < 0 ? steps_ - half : steps_ + half);
 
-        steps_ = static_cast<int8_t> (steps_ + step);
-
-        if (steps_ >= stepsPerDetent_ || steps_ <= -stepsPerDetent_)
-        {
-            turned_    = (steps_ > 0) ? 1 : -1;
+            turned_    = static_cast<int8_t> (away / stepsPerDetent_);
             position_ += turned_;
             steps_     = 0;
         }
@@ -71,6 +76,14 @@ namespace adk {
     void RotaryEncoder::reset (long position)
     {
         position_ = position;
+    }
+
+    bool RotaryEncoder::isResting (uint8_t contacts) const
+    {
+        // Four steps apart, detents rest with both contacts open; two steps
+        // apart, with both open or both closed; one step apart, anywhere.
+        return contacts == Resting || stepsPerDetent_ == 1
+            || (stepsPerDetent_ == 2 && contacts == 0);
     }
 
     uint8_t RotaryEncoder::read () const

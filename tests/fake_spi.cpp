@@ -26,6 +26,31 @@ namespace fake {
                 }
             }
         }
+
+        uint8_t transfer (uint8_t byte)
+        {
+            SpiChip* target = nullptr;
+
+            ++spiLog.bytes;
+
+            for (SpiChip* chip = chips; chip; chip = chip->next_)
+            {
+                if (selected (chip))
+                {
+                    spiLog.clashes += target ? 1 : 0;
+                    target = chip;
+                }
+            }
+
+            if (!target)
+            {
+                // Nothing drives MISO, and an idle line reads high.
+                ++spiLog.strays;
+                return 0xFF;
+            }
+
+            return target->exchange (byte);
+        }
     }
 
     SpiChip::SpiChip (adk::Pin select)
@@ -37,6 +62,8 @@ namespace fake {
         {
             spiLog                  = {0, 0, 0, 0};
             arduino::onDigitalWrite = watch;
+            arduino::spi.onTransfer = transfer;
+            arduino::spi.onEnable   = [] { ++spiLog.begins; };
         }
 
         chips = this;
@@ -56,55 +83,12 @@ namespace fake {
         if (!chips)
         {
             arduino::onDigitalWrite = nullptr;
+            arduino::spi.onTransfer = nullptr;
+            arduino::spi.onEnable   = nullptr;
         }
     }
 
     void SpiChip::deselected ()
     {
-    }
-}
-
-namespace adk::spi {
-
-    bool begin ()
-    {
-        ++fake::spiLog.begins;
-
-        if (!claimShared (MISO) || !claimShared (MOSI) || !claimShared (SCK) || !claimShared (SS))
-        {
-            return false;
-        }
-
-        digitalWrite (SS, HIGH);
-        pinMode      (SS,   OUTPUT);
-        pinMode      (SCK,  OUTPUT);
-        pinMode      (MOSI, OUTPUT);
-        pinMode      (MISO, INPUT);
-        return true;
-    }
-
-    uint8_t transfer (uint8_t byte)
-    {
-        fake::SpiChip* target = nullptr;
-
-        ++fake::spiLog.bytes;
-
-        for (fake::SpiChip* chip = fake::chips; chip; chip = chip->next_)
-        {
-            if (fake::selected (chip))
-            {
-                fake::spiLog.clashes += target ? 1 : 0;
-                target = chip;
-            }
-        }
-
-        if (!target)
-        {
-            // Nothing drives MISO, and an idle line reads high.
-            ++fake::spiLog.strays;
-            return 0xFF;
-        }
-
-        return target->exchange (byte);
     }
 }

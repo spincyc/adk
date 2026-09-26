@@ -16,7 +16,7 @@ namespace {
 
 TEST (segmentsDrawEveryDigit)
 {
-    const uint8_t digits [10] = {
+    constexpr uint8_t digits [10] = {
         a | b | c | d | e | f,     b | c,             a | b | d | e | g,
         a | b | c | d | g,         b | c | f | g,     a | c | d | f | g,
         a | c | d | e | f | g,     a | b | c,         a | b | c | d | e | f | g,

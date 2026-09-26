@@ -6,9 +6,9 @@ namespace adk {
 
     namespace {
 
-        const uint8_t Width = 5;
+        constexpr uint8_t Width = 5;
 
-        const uint8_t glyphs [] PROGMEM = {
+        constexpr uint8_t glyphs [] PROGMEM = {
             0x00, 0x00, 0x00, 0x00, 0x00,   // ' '
             0x00, 0x00, 0x5F, 0x00, 0x00,   // !
             0x00, 0x07, 0x00, 0x07, 0x00,   // "

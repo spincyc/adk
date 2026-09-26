@@ -1,6 +1,7 @@
 #pragma once
 
 #include "digital.h"
+#include "shift_register.h"
 
 namespace adk {
 
@@ -37,11 +38,9 @@ namespace adk {
       private:
         void write ();
 
-        Pin      data_;
-        Pin      clock_;
-        Pin      latch_;
-        Polarity polarity_;
-        uint8_t  glyph_;
-        bool     dot_;
+        ShiftPins pins_;
+        Polarity  polarity_;
+        uint8_t   glyph_;
+        bool      dot_;
     };
 }

@@ -10,9 +10,9 @@
 namespace {
 
     // The wiring of the Elegoo MAX7219 lesson: DIN 12, CLK 11, CS 10.
-    const adk::Pin Data  = 12;
-    const adk::Pin Clock = 11;
-    const adk::Pin Load  = 10;
+    constexpr adk::Pin Data  = 12;
+    constexpr adk::Pin Clock = 11;
+    constexpr adk::Pin Load  = 10;
 
     // Play the MAX7219: while load is low the bytes shifted in are one
     // register write, taken as load rises. Every write is logged as "AAVV"
@@ -169,8 +169,8 @@ TEST (matrixRowBitSevenIsTheLeftColumn)
 
 TEST (matrixSendsOnlyTheRowsThatChanged)
 {
-    const uint8_t smile [8] = {0x3C, 0x42, 0xA5, 0x81, 0xA5, 0x99, 0x42, 0x3C};
-    const uint8_t frown [8] = {0x3C, 0x42, 0xA5, 0x81, 0x99, 0xA5, 0x42, 0x3C};
+    constexpr uint8_t smile [8] = {0x3C, 0x42, 0xA5, 0x81, 0xA5, 0x99, 0x42, 0x3C};
+    constexpr uint8_t frown [8] = {0x3C, 0x42, 0xA5, 0x81, 0x99, 0xA5, 0x42, 0x3C};
     adk::LedMatrix matrix {Data, Clock, Load};
 
     adk::setup ();
@@ -284,6 +284,24 @@ TEST (matrixScrollsOneColumnEachStep)
     adk::update (2300);
     CHECK (sent () == "");
     CHECK (chip.framed);
+}
+
+TEST (matrixScrollKeepsTimeAcrossTheWrapOfMillis)
+{
+    adk::LedMatrix matrix {Data, Clock, Load};
+
+    adk::setup ();
+    listen ();
+
+    matrix.scroll ("A", 100);
+    adk::update (0xFFFFFFC0);
+    CHECK (shown (1) == 0x01);
+
+    adk::update (0x23);
+    CHECK (shown (1) == 0x01);
+
+    adk::update (0x24);
+    CHECK (shown (1) == 0x02);
 }
 
 TEST (matrixLeavesAGapBetweenCharacters)

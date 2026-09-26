@@ -4,7 +4,12 @@
 
 namespace adk {
 
-    void shiftByte (Pin data, Pin clock, Pin latch, uint8_t bits)
+    bool ShiftPins::claim () const
+    {
+        return claimOutput (data) && claimOutput (clock) && claimOutput (latch);
+    }
+
+    void ShiftPins::write (uint8_t bits) const
     {
         digitalWrite (latch, LOW);
         shiftOut     (data, clock, MSBFIRST, bits);
@@ -12,16 +17,14 @@ namespace adk {
     }
 
     ShiftRegister::ShiftRegister (Pin data, Pin clock, Pin latch)
-        : data_  (data)
-        , clock_ (clock)
-        , latch_ (latch)
-        , bits_  (0)
+        : pins_ {data, clock, latch}
+        , bits_ (0)
     {
     }
 
     void ShiftRegister::setup ()
     {
-        if (claimOutput (data_) && claimOutput (clock_) && claimOutput (latch_))
+        if (pins_.claim ())
         {
             write (bits_);
         }
@@ -29,7 +32,7 @@ namespace adk {
 
     void ShiftRegister::write (uint8_t bits)
     {
-        shiftByte (data_, clock_, latch_, bits);
+        pins_.write (bits);
         bits_ = bits;
     }
 

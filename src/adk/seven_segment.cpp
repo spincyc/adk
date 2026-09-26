@@ -1,14 +1,11 @@
 #include "seven_segment.h"
 
 #include "segments.h"
-#include "shift_register.h"
 
 namespace adk {
 
     SevenSegment::SevenSegment (Pin data, Pin clock, Pin latch, Polarity polarity)
-        : data_     (data)
-        , clock_    (clock)
-        , latch_    (latch)
+        : pins_     {data, clock, latch}
         , polarity_ (polarity)
         , glyph_    (0)
         , dot_      (false)
@@ -17,7 +14,7 @@ namespace adk {
 
     void SevenSegment::setup ()
     {
-        if (claimOutput (data_) && claimOutput (clock_) && claimOutput (latch_))
+        if (pins_.claim ())
         {
             write ();
         }
@@ -68,6 +65,6 @@ namespace adk {
             lit = static_cast<uint8_t> (~lit);
         }
 
-        shiftByte (data_, clock_, latch_, lit);
+        pins_.write (lit);
     }
 }

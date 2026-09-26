@@ -1,6 +1,7 @@
 #pragma once
 
 #include "object.h"
+#include "shift_register.h"
 
 namespace adk {
 
@@ -28,11 +29,20 @@ namespace adk {
         FourDigitDisplay (Pin data, Pin clock, Pin latch,
                           Pin digit1, Pin digit2, Pin digit3, Pin digit4);
 
-        // Right-aligned without leading zeros, from -999 to 9999. Anything
-        // else shows ----. With decimals, the last digits go after the dot,
-        // as Serial.print () writes decimals: show (123, 1) shows 12.3, and
-        // show (5, 1) shows 0.5.
-        void show (int number, uint8_t decimals = 0);
+        // A whole number of any type, right-aligned without leading zeros,
+        // from -999 to 9999. Anything else shows ----. With decimals, the
+        // last digits go after the dot, as Serial.print () writes decimals:
+        // show (123, 1) shows 12.3, and show (5, 1) shows 0.5.
+        void show (auto number, uint8_t decimals = 0)
+        {
+            // A fraction would be dropped without a word, so refuse one.
+            static_assert (decltype (number) (1) / 2 == 0,
+                           "show () takes a whole number: for 21.5, show (215, 1)");
+
+            // Checked at full width, so 70000 shows ---- rather than the
+            // 4464 left of it in the Mega's 16-bit int.
+            showNumber (static_cast<long long> (number), decimals);
+        }
 
         // The first four characters, left-aligned. A '.' lights the dot of
         // the character before it instead of taking a digit of its own.
@@ -50,15 +60,14 @@ namespace adk {
         void stop   () override;
 
       private:
-        void dashes ();
+        void showNumber (long long number, uint8_t decimals);
+        void dashes     ();
 
-        Millis  switchedAt_;
-        Pin     data_;
-        Pin     clock_;
-        Pin     latch_;
-        Pin     digits_ [4];
-        uint8_t glyphs_ [4];
-        uint8_t current_;
-        bool    starting_;
+        Millis    switchedAt_;
+        ShiftPins segments_;
+        Pin       digits_ [4];
+        uint8_t   glyphs_ [4];
+        uint8_t   current_;
+        bool      starting_;
     };
 }

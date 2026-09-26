@@ -32,6 +32,7 @@
 #define NUM_ANALOG_INPUTS 16
 #define LED_BUILTIN       13
 #define NOT_AN_INTERRUPT  -1
+#define F_CPU             16000000UL
 
 #define NOT_ON_TIMER 0
 #define TIMER0A      1
@@ -53,28 +54,28 @@
 #define TIMER5B      17
 #define TIMER5C      18
 
-static const uint8_t A0   = 54;
-static const uint8_t A1   = 55;
-static const uint8_t A2   = 56;
-static const uint8_t A3   = 57;
-static const uint8_t A4   = 58;
-static const uint8_t A5   = 59;
-static const uint8_t A6   = 60;
-static const uint8_t A7   = 61;
-static const uint8_t A8   = 62;
-static const uint8_t A9   = 63;
-static const uint8_t A10  = 64;
-static const uint8_t A11  = 65;
-static const uint8_t A12  = 66;
-static const uint8_t A13  = 67;
-static const uint8_t A14  = 68;
-static const uint8_t A15  = 69;
-static const uint8_t SDA  = 20;
-static const uint8_t SCL  = 21;
-static const uint8_t MISO = 50;
-static const uint8_t MOSI = 51;
-static const uint8_t SCK  = 52;
-static const uint8_t SS   = 53;
+inline constexpr uint8_t A0   = 54;
+inline constexpr uint8_t A1   = 55;
+inline constexpr uint8_t A2   = 56;
+inline constexpr uint8_t A3   = 57;
+inline constexpr uint8_t A4   = 58;
+inline constexpr uint8_t A5   = 59;
+inline constexpr uint8_t A6   = 60;
+inline constexpr uint8_t A7   = 61;
+inline constexpr uint8_t A8   = 62;
+inline constexpr uint8_t A9   = 63;
+inline constexpr uint8_t A10  = 64;
+inline constexpr uint8_t A11  = 65;
+inline constexpr uint8_t A12  = 66;
+inline constexpr uint8_t A13  = 67;
+inline constexpr uint8_t A14  = 68;
+inline constexpr uint8_t A15  = 69;
+inline constexpr uint8_t SDA  = 20;
+inline constexpr uint8_t SCL  = 21;
+inline constexpr uint8_t MISO = 50;
+inline constexpr uint8_t MOSI = 51;
+inline constexpr uint8_t SCK  = 52;
+inline constexpr uint8_t SS   = 53;
 
 #define analogInputToDigitalPin(p) (((p) < 16) ? (p) + 54 : -1)
 #define digitalPinHasPWM(p)        (((p) >= 2 && (p) <= 13) || ((p) >= 44 && (p) <= 46))
@@ -208,6 +209,64 @@ extern volatile uint16_t TCNT1;
 
 void TIMER1_COMPA_vect ();
 
+namespace arduino {
+
+    // A register of the TWI or the SPI unit. Reading and writing one runs
+    // a model of the unit (buses.cpp), as the hardware reacts to its own.
+    struct Register
+    {
+        enum Name : uint8_t
+        {
+            Twbr,
+            Twsr,
+            Twdr,
+            Twcr,
+            Spcr,
+            Spsr,
+            Spdr
+        };
+
+        Register& operator= (uint8_t value);
+        Register& operator= (const Register&) = delete;
+        operator uint8_t () const;
+
+        Name name;
+    };
+}
+
+// The TWI, the ATmega2560's I2C unit, and the bits of its registers.
+extern arduino::Register TWBR;
+extern arduino::Register TWSR;
+extern arduino::Register TWDR;
+extern arduino::Register TWCR;
+
+#define TWINT 7
+#define TWEA  6
+#define TWSTA 5
+#define TWSTO 4
+#define TWWC  3
+#define TWEN  2
+#define TWIE  0
+#define TWPS1 1
+#define TWPS0 0
+
+// The SPI unit, and the bits of its registers.
+extern arduino::Register SPCR;
+extern arduino::Register SPSR;
+extern arduino::Register SPDR;
+
+#define SPIE  7
+#define SPE   6
+#define DORD  5
+#define MSTR  4
+#define CPOL  3
+#define CPHA  2
+#define SPR1  1
+#define SPR0  0
+#define SPIF  7
+#define WCOL  6
+#define SPI2X 0
+
 class Print
 {
   public:
@@ -312,6 +371,47 @@ namespace arduino {
     // Every byte shiftOut () sent, as a 74HC595 would hold it (most
     // significant bit in Q7), in order.
     extern std::string shifted;
+
+    // The TWI as a test sees it. It takes one step at a time (a start, a
+    // byte or a stop), as its registers ask, and each step finishes once
+    // the library has polled for it a few times.
+    struct Twi
+    {
+        // The chips on the wires, played by tests/fake_i2c.cpp: whether one
+        // acknowledges its address, and each byte written to it; the byte
+        // it sends when read, told whether the master will acknowledge it;
+        // and the end of the transfer. Unset, no chip answers.
+        std::function<bool (uint8_t address, bool reading)> onAddress;
+        std::function<bool (uint8_t byte)>                  onWrite;
+        std::function<uint8_t (bool acknowledged)>          onRead;
+        std::function<void ()>                              onStop;
+
+        // What happened on the bus, such as "S 68w+ 00+ Sr 68r+ 12+ 34- P":
+        // S a start, Sr a repeated start and P a stop; an address with w or
+        // r, or a byte, then + if it was acknowledged or - if not; "off" when
+        // the TWI is switched off, and ? for a step that makes no sense.
+        std::string log;
+
+        unsigned polls = 3;       // how many polls each step takes
+        bool     stuck = false;   // a line held low: no step ever finishes
+    };
+
+    extern Twi twi;
+
+    // The SPI unit as a test sees it. Each transfer finishes once the
+    // library has polled for it a few times.
+    struct Spi
+    {
+        // The chips on the bus, played by tests/fake_spi.cpp: the byte that
+        // comes back on MISO for each byte sent, and the unit being set up
+        // as the master. Unset, MISO idles high.
+        std::function<uint8_t (uint8_t byte)> onTransfer;
+        std::function<void ()>                onEnable;
+
+        unsigned polls = 3;   // how many polls each transfer takes
+    };
+
+    extern Spi spi;
 
     // Collects printed text, for testing anything that explains itself.
     struct Log : Print

@@ -6,10 +6,16 @@ namespace adk {
 
     namespace {
 
-        const uint8_t PinBytes   = (NUM_DIGITAL_PINS + 7) / 8;
-        const uint8_t TimerCount = 6;
-        const uint8_t NoTimer    = 0xFF;
-        const uint8_t TakenOver  = 0x80;
+        constexpr uint8_t PinBytes   = (NUM_DIGITAL_PINS + 7) / 8;
+        constexpr uint8_t TimerCount = 6;
+        constexpr uint8_t NoTimer    = 0xFF;
+        constexpr uint8_t TakenOver  = 0x80;
+
+        // How a halted board blinks a pin number, in milliseconds.
+        constexpr unsigned long LongFlash  = 800;
+        constexpr unsigned long ShortFlash = 200;
+        constexpr unsigned long FlashGap   = 300;
+        constexpr unsigned long Pause      = 2000;
 
         // One bit per pin, a second bit for pins a bus shares, and per timer
         // either the number of PWM pins using it or TakenOver plus the user.
@@ -61,12 +67,18 @@ namespace adk {
             digitalWrite (LED_BUILTIN, HIGH);
             delay        (on);
             digitalWrite (LED_BUILTIN, LOW);
-            delay        (300);
+            delay        (FlashGap);
         }
     }
 
     uint8_t timerOf (Pin pin)
     {
+        // The core looks the pin up in a table in flash without checking it.
+        if (pin >= NUM_DIGITAL_PINS)
+        {
+            return NoTimer;
+        }
+
         switch (digitalPinToTimer (pin))
         {
             case TIMER0A: case TIMER0B:                             return 0;
@@ -251,23 +263,31 @@ namespace adk {
                 log.println (F (" cannot drive a servo; use 44, 45 or 46"));
                 break;
             case Fault::TimerInUse:
+            {
                 log.println (F (" needs a timer that is already in use"));
 
-                if (timerOf (pin) != 5)
+                // Name the parts that take this pin's timer over. A pin with
+                // no timer was refused by a part that takes one for itself,
+                // and which part that was is not known, so name them all.
+                uint8_t timer   = timerOf (pin);
+                bool    unknown = timer == NoTimer;
+
+                if (unknown || timer == 2)
                 {
                     log.println (F ("adk: a Speaker stops PWM on pins 9 and 10"));
                 }
 
-                if (timerOf (pin) != 2)
+                if (unknown || timer == 5)
                 {
                     log.println (F ("adk: a Servo stops PWM on pins 44, 45 and 46"));
                 }
 
-                if (timerOf (pin) != 2 && timerOf (pin) != 5)
+                if (unknown || timer == 1)
                 {
                     log.println (F ("adk: a 433 MHz radio stops PWM on pins 11 and 12"));
                 }
                 break;
+            }
             case Fault::NotSerial:
                 log.println (F (" is not on a spare serial port; use Serial1, Serial2 or Serial3"));
                 break;
@@ -291,17 +311,27 @@ namespace adk {
 
         for (;;)
         {
-            for (uint8_t tens = 0; tens < pin / 10; ++tens)
-            {
-                flash (800);
-            }
-
-            for (uint8_t ones = 0; ones < pin % 10; ++ones)
-            {
-                flash (200);
-            }
-
-            delay (2000);
+            blinkPin (pin);
         }
+    }
+
+    void blinkPin (Pin pin)
+    {
+        // Pin 0 has no tens and no ones, and would leave the LED dark, just
+        // like a board that never halted; it shows as ten ones instead.
+        uint8_t tens = static_cast<uint8_t> (pin / 10);
+        uint8_t ones = static_cast<uint8_t> (pin == 0 ? 10 : pin % 10);
+
+        for (uint8_t flashes = 0; flashes < tens; ++flashes)
+        {
+            flash (LongFlash);
+        }
+
+        for (uint8_t flashes = 0; flashes < ones; ++flashes)
+        {
+            flash (ShortFlash);
+        }
+
+        delay (Pause);
     }
 }

@@ -4,6 +4,23 @@
 
 namespace adk {
 
+    // The three Mega pins that fill a 74HC595: data, clock and latch. Parts
+    // built on the chip, such as a SevenSegment, hold one as a plain value
+    // and claim its pins from their own setup ().
+    struct ShiftPins
+    {
+        Pin data;
+        Pin clock;
+        Pin latch;
+
+        // Claim all three as low outputs.
+        bool claim () const;
+
+        // Shift eight bits in, bit 7 first so that it lands on Q7, then
+        // raise the latch to copy all eight to the outputs at once.
+        void write (uint8_t bits) const;
+    };
+
     // A 74HC595 shift register: eight outputs, Q0-Q7, from three Mega pins.
     // Wire it with the notch up, pin 1 at the top left:
     //
@@ -31,13 +48,7 @@ namespace adk {
         void stop  () override;
 
       private:
-        Pin     data_;
-        Pin     clock_;
-        Pin     latch_;
-        uint8_t bits_;
+        ShiftPins pins_;
+        uint8_t   bits_;
     };
-
-    // Shift eight bits into a 74HC595, bit 7 first so that it lands on Q7,
-    // then raise the latch to copy all eight to the outputs at once.
-    void shiftByte (Pin data, Pin clock, Pin latch, uint8_t bits);
 }

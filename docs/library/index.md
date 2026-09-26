@@ -59,6 +59,8 @@ the pin number: long flashes for tens, then short flashes for ones.
 |---|---|
 | 2 long, 6 short, pause, repeat | Pin 26 has a problem |
 | 9 short, pause, repeat | Pin 9 has a problem |
+| 1 long, pause, repeat | Pin 10 has a problem |
+| 10 short, pause, repeat | Pin 0 has a problem: zero shows as ten |
 
 For the full story, start Serial and pass it to setup, then open the Serial
 Monitor at 9600 baud:
@@ -71,7 +73,8 @@ void setup ()
 }
 ```
 
-It prints one line naming the problem:
+It prints a line naming the problem, and for a timer in use, the part that
+takes that timer over:
 
 ```text
 adk: pin 9 needs a timer that is already in use

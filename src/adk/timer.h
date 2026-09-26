@@ -5,13 +5,18 @@
 namespace adk {
 
     // A countdown. start () sets it going; expired () is true for the one
-    // update in which it runs out, like a button's wasPressed ().
+    // update in which it runs out, like a button's wasPressed (), even if
+    // the sketch starts it again in that update.
     struct Timer : Object
     {
         Timer ();
 
-        void   start     (Millis duration);
-        void   stop      ();
+        void start (Millis duration);
+
+        // Cancel the countdown, so it never expires. adk::stop () stops
+        // every Timer too, so none goes off after it.
+        void stop () override;
+
         bool   isRunning () const;
         bool   expired   () const;
         Millis remaining () const;
@@ -36,8 +41,11 @@ namespace adk {
     {
         Stopwatch ();
 
-        void   start     ();
-        void   stop      ();
+        void start ();
+
+        // Hold the time it has. adk::stop () stops every Stopwatch too.
+        void stop () override;
+
         void   reset     ();
         void   restart   ();
         bool   isRunning () const;

@@ -11,18 +11,6 @@ namespace adk {
         }
     }
 
-    bool operator== (Color left, Color right)
-    {
-        return left.red   == right.red
-            && left.green == right.green
-            && left.blue  == right.blue;
-    }
-
-    bool operator!= (Color left, Color right)
-    {
-        return !(left == right);
-    }
-
     Color blend (Color from, Color to, uint16_t step, uint16_t steps)
     {
         if (steps == 0 || step >= steps)

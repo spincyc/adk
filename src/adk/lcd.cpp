@@ -5,19 +5,19 @@ namespace adk {
     namespace {
 
         // HD44780 instructions, from the datasheet's instruction table.
-        const uint8_t ClearDisplay = 0x01;
-        const uint8_t ReturnHome   = 0x02;
-        const uint8_t EntryMode    = 0x06;   // move right after each character
-        const uint8_t DisplayOn    = 0x0C;   // no cursor, no blink
-        const uint8_t FunctionSet  = 0x28;   // 4-bit bus, two lines, 5x8 dots
-        const uint8_t SetCgram     = 0x40;
-        const uint8_t SetDdram     = 0x80;
+        constexpr uint8_t ClearDisplay = 0x01;
+        constexpr uint8_t ReturnHome   = 0x02;
+        constexpr uint8_t EntryMode    = 0x06;   // move right after each character
+        constexpr uint8_t DisplayOn    = 0x0C;   // no cursor, no blink
+        constexpr uint8_t FunctionSet  = 0x28;   // 4-bit bus, two lines, 5x8 dots
+        constexpr uint8_t SetCgram     = 0x40;
+        constexpr uint8_t SetDdram     = 0x80;
 
         // Each row holds 40 characters in display RAM, 16 of them on screen.
         // Row 0 starts at address 0x00 and row 1 at 0x40.
-        const uint8_t Columns   = 16;
-        const uint8_t RowLength = 40;
-        const uint8_t SecondRow = 0x40;
+        constexpr uint8_t Columns   = 16;
+        constexpr uint8_t RowLength = 40;
+        constexpr uint8_t SecondRow = 0x40;
     }
 
     Lcd::Lcd (Pin rs, Pin enable, Pin d4, Pin d5, Pin d6, Pin d7)

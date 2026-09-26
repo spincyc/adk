@@ -36,7 +36,7 @@ before the Arduino core has set the board up. Objects override three hooks:
 |---|---|---|
 | `setup ()` | `adk::setup ()` | Claim pins and timers, and configure them. |
 | `update (Millis now)` | `adk::update ()` | Advance anything that depends on time. |
-| `stop ()` | `adk::stop ()` | Enter the safe state: outputs off, sound and motion stopped. |
+| `stop ()` | `adk::stop ()` | Enter the safe state: outputs off, sound, motion and countdowns stopped. |
 
 The free functions drive the whole list:
 
@@ -46,7 +46,7 @@ The free functions drive the whole list:
 | `adk::setup (Serial)` | The same, and prints what went wrong first. |
 | `adk::update ()` | At the top of `loop ()`. Reads `millis ()` once and passes it to every object. |
 | `adk::wait (ms)` | Instead of `delay ()`. Keeps every object updating while it waits. |
-| `adk::stop ()` | Put everything in its safe state at once. |
+| `adk::stop ()` | Put everything in its safe state at once. Every `Timer` stops too, and never expires, and every `Stopwatch` holds its time. |
 
 An object is a whole device. Its parts (pins, a debouncer, a buffer) are plain
 members, never objects of their own, so a device is set up and updated as one.
@@ -67,9 +67,11 @@ A device claims what it uses from its `setup ()`:
 
 The first failed claim is a fault. `adk::setup ()` then releases every pin and
 blinks the fault's pin number on the built-in LED forever: long flashes for
-tens, short flashes for ones. Two long and two short means pin 22. With
-`adk::setup (Serial)` it also prints a sentence such as
-`adk: pin 9 needs a timer that is already in use`.
+tens, short flashes for ones. Two long and two short means pin 22. Pin 0,
+which has neither, is ten short flashes, so a halted board never sits dark.
+With `adk::setup (Serial)` it also prints a sentence such as
+`adk: pin 9 needs a timer that is already in use`, and names the parts that
+take that pin's timer over.
 
 Timers matter on the Mega:
 
@@ -92,8 +94,16 @@ A command that starts something timed (`blink ()`, `beep ()`, `fadeTo ()`,
 `play ()`) sets a flag, and the next `update ()` records the start time. The
 effect that can happen immediately, such as the first flash, does.
 
+Asking a part for what it is already doing changes nothing, so commands such
+as `blink ()`, `beep ()`, `fadeTo ()`, `play ()`, `moveTo ()`, `tune ()` and
+`setVolume ()` may be called from every pass of `loop ()`: a lamp told to
+blink on every pass keeps blinking in step. A different request starts
+afresh.
+
 Compare times by subtraction, `now - start >= length`, which stays correct when
-`millis ()` wraps after 49 days.
+`millis ()` wraps round to zero after 49.7 days. The tests of `Timer`,
+`Stopwatch`, `Every`, `Debouncer`, `FourDigitDisplay` and `LedMatrix` cross
+the wrap.
 
 ## Events
 
@@ -105,6 +115,10 @@ which it happened, and reading it does not clear it:
 if (button.wasPressed ())   // true for one update
 if (button.isPressed ())    // true while held
 ```
+
+Nothing a sketch does takes an event back before the next update. A `Timer`
+started again as it expires, or an `Every` restarted as it ticks, still says
+`expired ()` or `ticked ()` to the rest of that pass of `loop ()`.
 
 ## Blocking
 
@@ -128,11 +142,11 @@ whose global objects would be linked in anyway.
 
 ## Buses
 
-I2C and SPI are small register-level masters in `i2c.cpp` and `spi.cpp`,
-compiled only for the AVR (`#ifdef __AVR__`). Host tests link fakes instead
-that play the part of each chip. Devices on a bus claim the bus pins with
-`claimShared ()`; a chip-select pin is claimed exclusively, except pin 53,
-the SPI unit's own select pin, which the bus already holds as an output.
+I2C and SPI are small register-level masters in `i2c.cpp` and `spi.cpp`.
+Devices on a bus claim the bus pins with `claimShared ()`. An SPI device
+claims its chip-select pin through `spi::begin (select)`, exclusively, except
+that one device may select with pin 53, the SPI unit's own select pin, which
+the bus already holds as an output.
 
 ## Testing
 
@@ -146,6 +160,13 @@ adk::update (0);
 CHECK (ranger.distance () == 20);
 ```
 
+The fake core models the ATmega2560's TWI and SPI unit from their registers
+(`tests/arduino/buses.cpp`), so the real `i2c.cpp` and `spi.cpp` run in every
+host test, a step at a time, polling as they would on the chip. The chips on
+the far end are played by `tests/fake_i2c.cpp` and `tests/fake_spi.cpp`, and
+`arduino::twi.log` records what crossed the I2C wires, such as
+`S 68w+ 00+ Sr 68r+ 12- P`.
+
 `make examples` compiles every example for the Mega with all warnings, and
 fails on any warning from the library or an example. `make pins` then runs
 each example's `setup ()` on the host and checks, with `adk::isClaimed ()`,
@@ -158,6 +179,6 @@ None of these replaces trying a circuit on a real board.
    then the declaration.
 2. `src/adk/<name>.cpp`: the implementation.
 3. Add the header to `src/Adk.h`.
-4. `tests/<name>_test.cpp`: setup, claims, the normal behavior, timing edges,
-   and `stop ()`.
+4. `tests/<name>_test.cpp`: setup, claims, the normal behavior, timing edges
+   (the wrap of `millis ()` among them), and `stop ()`.
 5. Use it in a lesson, and list it on the matching library page in `docs/library/`.

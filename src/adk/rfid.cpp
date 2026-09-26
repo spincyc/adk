@@ -71,11 +71,7 @@ namespace adk {
         step_ = Step::Off;
         ok_   = false;
 
-        // Pin 53 is SS, which spi::begin () already holds as a high output
-        // for the bus, so a reader can share it as its chip select.
-        bool claimed = spi::begin ()
-                    && (select_ == SS ? claimShared (select_) : claimOutput (select_, true))
-                    && claimOutput (reset_, true);
+        bool claimed = spi::begin (select_) && claimOutput (reset_, true);
 
         if (!claimed)
         {

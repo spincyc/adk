@@ -1,7 +1,6 @@
 #include "four_digit_display.h"
 
 #include "segments.h"
-#include "shift_register.h"
 
 #include <Arduino.h>
 
@@ -9,11 +8,11 @@ namespace adk {
 
     namespace {
 
-        const uint8_t Digits = 4;
+        constexpr uint8_t Digits = 4;
 
         // Each digit stays lit this long, so the display refreshes 125 times
         // a second: well above what the eye sees as flicker.
-        const Millis DigitTime = 2;
+        constexpr Millis DigitTime = 2;
 
         uint8_t digitGlyph (unsigned value)
         {
@@ -24,9 +23,7 @@ namespace adk {
     FourDigitDisplay::FourDigitDisplay (Pin data, Pin clock, Pin latch,
                                         Pin digit1, Pin digit2, Pin digit3, Pin digit4)
         : switchedAt_ (0)
-        , data_       (data)
-        , clock_      (clock)
-        , latch_      (latch)
+        , segments_   {data, clock, latch}
         , digits_     {digit1, digit2, digit3, digit4}
         , glyphs_     {0, 0, 0, 0}
         , current_    (Digits - 1)
@@ -36,7 +33,7 @@ namespace adk {
 
     void FourDigitDisplay::setup ()
     {
-        bool claimed = claimOutput (data_) && claimOutput (clock_) && claimOutput (latch_);
+        bool claimed = segments_.claim ();
 
         // A digit pin held high keeps its digit dark.
         for (Pin digit : digits_)
@@ -46,11 +43,11 @@ namespace adk {
 
         if (claimed)
         {
-            shiftByte (data_, clock_, latch_, 0);
+            segments_.write (0);
         }
     }
 
-    void FourDigitDisplay::show (int number, uint8_t decimals)
+    void FourDigitDisplay::showNumber (long long number, uint8_t decimals)
     {
         if (number < -999 || number > 9999 || decimals >= Digits)
         {
@@ -146,10 +143,10 @@ namespace adk {
 
         // Darken the lit digit before the segment lines change, or the next
         // digit's pattern would flash on it.
-        digitalWrite (digits_[current_], HIGH);
+        digitalWrite    (digits_[current_], HIGH);
         current_ = static_cast<uint8_t> ((current_ + 1) % Digits);
-        shiftByte    (data_, clock_, latch_, glyphs_[current_]);
-        digitalWrite (digits_[current_], LOW);
+        segments_.write (glyphs_[current_]);
+        digitalWrite    (digits_[current_], LOW);
     }
 
     void FourDigitDisplay::stop ()
@@ -161,7 +158,7 @@ namespace adk {
             digitalWrite (digit, HIGH);
         }
 
-        shiftByte (data_, clock_, latch_, 0);
+        segments_.write (0);
     }
 
     void FourDigitDisplay::dashes ()

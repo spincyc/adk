@@ -1,9 +1,9 @@
 #pragma once
 
-// A host stand-in for the I2C bus. src/adk/i2c.cpp is compiled only for the
-// AVR; here adk::i2c talks to simulated chips instead. Declaring a Chip
-// connects it at its address until it goes out of scope, so every test
-// starts with an empty bus.
+// Chips on the I2C wires, for host tests. src/adk/i2c.cpp drives the fake
+// core's model of the TWI, and these answer it as real chips would.
+// Declaring a Chip connects it at its address until it goes out of scope,
+// so every test starts with an empty bus.
 
 #include <stdint.h>
 
