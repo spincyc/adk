@@ -10,7 +10,7 @@ volatile uint16_t OCR5A  = 0;
 volatile uint16_t OCR5B  = 0;
 volatile uint16_t OCR5C  = 0;
 volatile uint16_t TCNT5  = 0;
-arduino::Register TCCR3A;
+arduino::WatchedRegister TCCR3A;
 volatile uint8_t  TCCR3B = 0;
 volatile uint16_t ICR3   = 0;
 volatile uint16_t OCR3A  = 0;
@@ -158,29 +158,29 @@ namespace arduino {
         step = us;
     }
 
-    Register& Register::operator= (uint8_t next)
+    WatchedRegister& WatchedRegister::operator= (uint8_t next)
     {
         value = next;
         history.emplace_back (nowUs, value);
         return *this;
     }
 
-    Register& Register::operator|= (uint8_t bits)
+    WatchedRegister& WatchedRegister::operator|= (uint8_t bits)
     {
         return *this = static_cast<uint8_t> (value | bits);
     }
 
-    Register& Register::operator&= (uint8_t bits)
+    WatchedRegister& WatchedRegister::operator&= (uint8_t bits)
     {
         return *this = static_cast<uint8_t> (value & bits);
     }
 
-    Register::operator uint8_t () const
+    WatchedRegister::operator uint8_t () const
     {
         return value;
     }
 
-    void Register::clear ()
+    void WatchedRegister::clear ()
     {
         value = 0;
         history.clear ();

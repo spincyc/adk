@@ -136,12 +136,12 @@ namespace arduino {
 
     // A register a test can watch: every value written to it, with the time
     // in microseconds, so a test can time what a part switched on and off.
-    struct Register
+    struct WatchedRegister
     {
-        Register& operator=  (uint8_t value);
-        Register& operator|= (uint8_t bits);
-        Register& operator&= (uint8_t bits);
-        operator  uint8_t    () const;
+        WatchedRegister& operator=  (uint8_t value);
+        WatchedRegister& operator|= (uint8_t bits);
+        WatchedRegister& operator&= (uint8_t bits);
+        operator         uint8_t    () const;
 
         void clear ();
 
@@ -152,12 +152,12 @@ namespace arduino {
 
 // Timer 3, which an IrTransmitter runs as its 38 kHz carrier. Writes to
 // TCCR3A, which connects the carrier to its pin, are watched.
-extern arduino::Register  TCCR3A;
-extern volatile uint8_t   TCCR3B;
-extern volatile uint16_t  ICR3;
-extern volatile uint16_t  OCR3A;
-extern volatile uint16_t  OCR3B;
-extern volatile uint16_t  OCR3C;
+extern arduino::WatchedRegister TCCR3A;
+extern volatile uint8_t         TCCR3B;
+extern volatile uint16_t        ICR3;
+extern volatile uint16_t        OCR3A;
+extern volatile uint16_t        OCR3B;
+extern volatile uint16_t        OCR3C;
 
 #define COM3C1 3
 #define COM3B1 5
