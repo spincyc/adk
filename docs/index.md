@@ -17,8 +17,11 @@ a tilt maze, a door that opens for the right card, and messages that cross a
 town.
 { .hero-lead }
 
-[Start with Lesson 1](lessons/01-blink/index.md){ .md-button .md-button--primary }
+[Get set up](start.md){ .md-button .md-button--primary }
 [See the whole course](course.md){ .md-button }
+
+Already set up? [Start with Lesson 1](lessons/01-blink/index.md).
+{ .hero-aside }
 
 </div>
 
@@ -31,6 +34,8 @@ town.
 Each part of your circuit is one line of code. ADK checks the wiring in your
 code before anything runs, and keeps every part working while your program
 gets on with the interesting bits.
+
+<div class="split" markdown>
 
 ```cpp title="A button that switches an LED"
 #include <Adk.h>
@@ -61,6 +66,8 @@ void loop ()
   and blinks the pin number on the Mega's own LED.
 - **Nothing blocks.** `adk::update ()` keeps buttons debounced, melodies
   playing and displays lit, so there is no juggling of `delay ()`.
+
+</div>
 
 ## Fourteen builds, three lessons each
 

@@ -7,4 +7,8 @@ them together. Lessons build on each other, so take them in order.
 The first twelve arcs use only the parts in the kits. The last two need
 [add-on radios](kit.md#add-on-radios), a few dollars each.
 
+<div class="course-list" markdown>
+
 <!-- course -->
+
+</div>

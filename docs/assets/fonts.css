@@ -1,66 +1,35 @@
-/* Self-hosted Latin subsets of four SIL Open Font License families. */
+/* Self-hosted Latin subsets of three SIL Open Font License families. The
+   upright faces are variable fonts: one file covers every weight in its
+   range, so each weight asked for is the weight drawn. */
+
+@font-face {
+    font-family: 'Atkinson Hyperlegible Next';
+    font-style: normal;
+    font-weight: 200 800;
+    font-display: swap;
+    src: url('fonts/atkinson-hyperlegible-next.woff2') format('woff2');
+}
 
 @font-face {
     font-family: 'Atkinson Hyperlegible Next';
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/atkinson-hyperlegible-next-italic-400.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Atkinson Hyperlegible Next';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('fonts/atkinson-hyperlegible-next-normal-400.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Atkinson Hyperlegible Next';
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url('fonts/atkinson-hyperlegible-next-normal-400.woff2') format('woff2');
+    src: url('fonts/atkinson-hyperlegible-next-italic.woff2') format('woff2');
 }
 
 @font-face {
     font-family: 'Fraunces';
     font-style: normal;
-    font-weight: 600;
+    font-weight: 100 900;
     font-display: swap;
-    src: url('fonts/fraunces-normal-600.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Fraunces';
-    font-style: normal;
-    font-weight: 800;
-    font-display: swap;
-    src: url('fonts/fraunces-normal-600.woff2') format('woff2');
+    src: url('fonts/fraunces.woff2') format('woff2');
 }
 
 @font-face {
     font-family: 'JetBrains Mono';
     font-style: normal;
-    font-weight: 400;
+    font-weight: 400 800;
     font-display: swap;
-    src: url('fonts/jetbrains-mono-normal-400.woff2') format('woff2');
+    src: url('fonts/jetbrains-mono.woff2') format('woff2');
 }
-
-@font-face {
-    font-family: 'JetBrains Mono';
-    font-style: normal;
-    font-weight: 600;
-    font-display: swap;
-    src: url('fonts/jetbrains-mono-normal-400.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Patrick Hand';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('fonts/patrick-hand-normal-400.woff2') format('woff2');
-}
-

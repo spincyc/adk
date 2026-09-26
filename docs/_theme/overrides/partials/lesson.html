@@ -20,9 +20,6 @@
       <a href="../../pdf/{{ slug }}.pdf">{% include ".icons/material/printer-outline.svg" %} Printable PDF</a>
     </li>
   </ul>
-  <nav class="lesson-sections" aria-label="Sections">
-    {% for heading in page.toc %}<a href="{{ heading.url }}">{{ heading.title }}</a>{% endfor %}
-  </nav>
   <div class="lesson-kit">
     <section>
       <p class="lesson-kit-title">You'll need</p>
@@ -33,6 +30,9 @@
       <ul>{% for idea in page.meta.ideas %}<li>{{ idea }}</li>{% endfor %}</ul>
     </section>
   </div>
+  <nav class="lesson-sections" aria-label="Sections">
+    {% for heading in page.toc %}<a href="{{ heading.url }}">{{ heading.title }}</a>{% endfor %}
+  </nav>
 </header>
 <article class="lesson-body">
   {{ page.content }}

@@ -1,8 +1,8 @@
 # Getting started
 
 You need three things: the kit, the Arduino IDE, and the ADK library. Setting
-them up takes about fifteen minutes, and then you're ready for
-[Lesson 1](lessons/01-blink/index.md).
+them up takes about fifteen minutes, and you only do it once. Then you're
+ready for Lesson 1.
 
 ## 1. The kit
 
@@ -10,6 +10,9 @@ The course uses an **Arduino Mega 2560** and the parts in the Elegoo *Mega
 2560 Most Complete Starter Kit*, with a few extras from the Elegoo
 *37 in 1 Sensor Modules Kit*. [What's in the kit](kit.md) lists every part,
 and which lessons use it.
+
+Before you build anything, read [Safety](safety.md). It is short, and it
+keeps you and your parts safe.
 
 ## 2. The Arduino IDE and ADK Boards
 
@@ -56,26 +59,29 @@ with a newer compiler.
 3. Choose the port under **Tools → Port**. On Windows it is a `COM` port; on
    macOS and Linux its name contains `usbmodem` or `ttyACM`.
 
-Now open [Lesson 1](lessons/01-blink/index.md).
-
 ## How a lesson works
 
 Every lesson follows the same path, and every lesson is also a printable PDF.
 
 | Section | What happens |
 |---|---|
-| **What you'll build** | The finished circuit, so you know where you're heading. |
+| **What you'll build** | A close-up of the finished circuit, so you know where you're heading. |
 | **The idea** | The one new idea, with a question to predict the answer to before you try it. |
-| **Build it** | A drawing of the whole bench, a close-up of the breadboard, and step-by-step wiring. |
+| **Build it** | A drawing of the whole bench, and the wiring step by step. |
 | **Code it** | The sketch, and what each part of it does. |
 | **Upload it** | What you should see when it works. |
 | **If it doesn't work** | The usual mistakes, and how to spot them. |
 | **Make it yours** | Challenges, from a small change to something new. |
+| **Measure it** | For anyone with a multimeter: where to touch the probes, and what the meter should say. |
+
+You're ready. The first lesson makes an LED blink.
+
+[Start Lesson 1](lessons/01-blink/index.md){ .md-button .md-button--primary }
 
 ## From the command line
 
-If you prefer a terminal, the repository's `Makefile` builds and uploads
-every example with [`arduino-cli`](https://arduino.github.io/arduino-cli/):
+If you prefer a terminal to the IDE, the repository's `Makefile` builds and
+uploads every example with [`arduino-cli`](https://arduino.github.io/arduino-cli/):
 
 ```sh
 make examples                                     # compile every lesson
