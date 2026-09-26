@@ -198,8 +198,39 @@ class Braces:
         return problems
 
 
+def check_makefile (path):
+    """The Makefile reads as tables: a continued line's backslashes share one
+    column, tabs only start a recipe's lines, and nothing trails or runs long."""
+    problems = []
+    lines    = open (path, encoding="utf-8").read ().split ("\n")
+    block    = []
+
+    def aligned (block):
+        columns = {len (text) - 1 for _, text in block}
+        if len (columns) > 1:
+            problems.append (f"{path}:{block[0][0]}: the backslashes of a continued line "
+                             f"share one column")
+
+    for number, text in enumerate (lines, 1):
+        if len (text) > LIMIT:
+            problems.append (f"{path}:{number}: longer than {LIMIT} characters")
+        if text != text.rstrip ():
+            problems.append (f"{path}:{number}: trailing space")
+        if "\t" in text.lstrip ("\t"):
+            problems.append (f"{path}:{number}: a tab only starts a recipe line")
+        if text.endswith ("\\"):
+            block.append ((number, text))
+        elif block:
+            aligned (block)
+            block = []
+
+    return problems
+
+
 def main (paths):
-    problems = [problem for path in paths for problem in check (path)]
+    problems = [problem for path in paths
+                for problem in (check_makefile (path) if os.path.basename (path) == "Makefile"
+                                else check (path))]
     if problems:
         print ("\n".join (problems))
     return 1 if problems else 0

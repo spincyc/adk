@@ -86,3 +86,19 @@ the interesting part of a lesson is what the reader sees first.
 - Keep sketches short. A component lesson fits on one screen; a project fits
   in about 150 lines. Keep their lines to 80 characters, so they fit the
   lesson page and its PDF without scrolling.
+
+## The Makefile
+
+The Makefile reads as a set of tables, section by section under a
+`# Name ---` header.
+
+- A list has one item to a line, continued with a backslash, and the
+  backslashes of one list share a column a couple of spaces past its
+  longest line.
+- The `:=` and `?=` of a section's assignments line up, and so do the
+  descriptions of the `## target  description` comments `make help` prints.
+- Recipes are indented with one tab; tabs appear nowhere else.
+- Comments say why, and no line is longer than 100 characters.
+
+`make style` checks the backslashes, the tabs, trailing spaces and line
+lengths; the rest is for people to keep.

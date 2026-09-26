@@ -56,7 +56,8 @@ EXAMPLES         := $(patsubst examples/%/,%,$(sort $(dir $(SKETCHES))))
 STYLED           := $(wildcard src/*.h src/adk/*.h src/adk/*.cpp)  \
                     $(wildcard tests/*.h tests/*.cpp)              \
                     $(wildcard tests/arduino/* tests/probe/*.cpp)  \
-                    $(SKETCHES)
+                    $(SKETCHES)                                    \
+                    Makefile
 
 # Host tests -------------------------------------------------------------------
 
