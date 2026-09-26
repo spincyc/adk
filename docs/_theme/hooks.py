@@ -89,6 +89,20 @@ def arc_title (arc, lessons):
     return title + (f"{NBSP}·{NBSP}two boards" if arc.get ("boards", 1) == 2 else "")
 
 
+# Inline code would break at the space before a call's parentheses, leaving
+# "delay" at the end of one line and "()" at the start of the next. Each
+# name is held to its opening parenthesis; code blocks are left alone, and
+# the text copied from the page is unchanged.
+def on_page_content (html, page, config, files):
+    def hold (code):
+        text = re.sub (r"([\w:.\]]+) \(", r'<span class="call">\1 (</span>', code.group (1))
+        return f"<code>{text}</code>"
+
+    parts = re.split (r"(<pre\b.*?</pre>)", html, flags=re.S)
+    parts[::2] = [re.sub (r"<code>([^<]*)</code>", hold, part) for part in parts[::2]]
+    return "".join (parts)
+
+
 def on_page_markdown (markdown, page, config, files):
     meta = page.meta
     markdown = markdown.replace ("<!-- arcs -->", arcs ())

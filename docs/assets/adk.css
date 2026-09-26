@@ -968,3 +968,9 @@
         text-decoration: none;
     }
 }
+
+/* A call's name stays with its parentheses: "delay ()", never "delay" and
+   "()" on two lines (hooks.py wraps them). */
+.md-typeset code .call {
+  white-space: nowrap;
+}
