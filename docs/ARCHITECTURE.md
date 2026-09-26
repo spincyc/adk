@@ -123,10 +123,13 @@ started again as it expires, or an `Every` restarted as it ticks, still says
 ## Blocking
 
 `update ()` should return quickly so everything else keeps moving. A few
-protocols cannot be interrupted: a DHT11 reading holds the processor for about
-4 ms with interrupts off, and an HC-SR04 echo can take up to 25 ms. Those
-devices do their blocking work at most once per reading period and say so in
-their header. A multiplexed display will flicker while they do.
+protocols have to be timed by the processor itself: a DHT11 reading holds it
+for about 4 ms, timing each bit with interrupts off and letting them in
+between bits, so `millis ()`, serial and the IR receiver keep up; an HC-SR04
+echo can take up to 25 ms; the FM radio's two-wire bus about 1.5 ms; and an
+IR transmitter's code about 70 ms. Those devices do their blocking work at
+most once per reading period, or when told to send, and say so in their
+header. A multiplexed display will flicker while they do.
 
 ## Memory
 

@@ -106,7 +106,7 @@ adk: a Speaker stops PWM on pins 9 and 10
 | Servo | [`Servo`](motion.md#servo) | an angle, or a glide to one |
 | Stepper | [`Stepper`](motion.md#stepper) | exact steps, at a set speed |
 | DC motor | [`Motor`](motion.md#motor) | speed and direction through an L293D |
-| Ultrasonic sensor | [`Ultrasonic`](sensors.md#ultrasonic) | distance in centimetres |
+| Ultrasonic sensor | [`Ultrasonic`](sensors.md#ultrasonic) | distance in centimeters |
 | DHT11 | [`Dht11`](sensors.md#dht11) | temperature and humidity |
 | IR receiver | [`IrReceiver`](sensors.md#irreceiver) | the remote's button codes |
 | 18B20 thermometer | [`Ds18b20`](sensors.md#ds18b20) | a precise temperature |

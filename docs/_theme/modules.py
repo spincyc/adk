@@ -189,7 +189,7 @@ def grid_in_circle (pencil, cx, cy, r, gap, tone=0.35):
 
 
 def level (pencil, x, y, text, size, **options):
-    # Printing that stands level, centred on y however the module is
+    # Printing that stands level, centered on y however the module is
     # turned: turned half round, silk swings over about its baseline.
     turn = sum (pencil.turns) % 360
     rise = size * 0.36 if not 90 < turn <= 270 else -size * 0.36
@@ -539,7 +539,7 @@ class Relay (Kind):
 
 
 class Stepper (Kind):
-    # A ULN2003 driver board with its 28BYJ-48 motor on a five-colour cable.
+    # A ULN2003 driver board with its 28BYJ-48 motor on a five-color cable.
     title  = "stepper driver"
     pins   = ("IN1", "IN2", "IN3", "IN4")
     pin_modes = {"IN1": "output", "IN2": "output", "IN3": "output", "IN4": "output"}
@@ -554,7 +554,7 @@ class Stepper (Kind):
                 for index, name in enumerate (self.POWER)]
 
     def draw (self, pencil):
-        # The motor: a 28 mm can on a flange, the shaft off centre.
+        # The motor: a 28 mm can on a flange, the shaft off center.
         pencil.tint (rounded (4, 51, 162, 22, 11), METAL)
         pencil.rect (4, 51, 162, 22, width=1.1, radius=11, layer="top", passes=1)
         for ex in (15, 155):
@@ -941,7 +941,7 @@ class RfTransmitter (Kind):
 
 class LoraModem (Kind):
     # REYAX RYLR896: a LoRa modem on a blue 17 x 25 mm board, its radio
-    # under a can labelled RYLR890, a gold spring antenna standing on its
+    # under a can labeled RYLR890, a gold spring antenna standing on its
     # top corner. Lying flat with the header at the bottom, pin 1 (VDD) is
     # on the left, as the datasheet numbers them; the back of the board,
     # seen from behind, prints them the other way: GND ... VDD.

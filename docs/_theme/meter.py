@@ -99,7 +99,7 @@ def lead (pencil, start, touch, color, side):
     (sx, sy), (tx, ty) = start, touch
     # The probe: a slim handle, a guard, and a metal tip ending at the hole,
     # leaning in from below: the red from the left and the black from the
-    # right, so two probes on neighbouring holes stand apart.
+    # right, so two probes on neighboring holes stand apart.
     angle = math.radians (-90 + 30 * side * -1)
     ux, uy = math.cos (angle), math.sin (angle)
     tip = (tx - ux * 1.5, ty - uy * 1.5)

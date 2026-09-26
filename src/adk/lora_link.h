@@ -7,7 +7,7 @@
 namespace adk {
 
     // An Ebyte E32-433T20D LoRa module (sold as the E32-TTL-100 and under
-    // other names): a 433 MHz radio that reaches a kilometre or more and
+    // other names): a 433 MHz radio that reaches a kilometer or more and
     // passes on whatever the Mega sends it to every module on its channel.
     // ADK sends and receives a line of text at a time.
     //
@@ -23,7 +23,7 @@ namespace adk {
     //
     // setup () lets M0 and M1 go high, which puts the module in its settings
     // mode, and gives it a channel, 410 MHz plus its number, and its lowest
-    // power, 10 mW. Europe allows 10 mW without a licence from 433.05 to
+    // power, 10 mW. Europe allows 10 mW without a license from 433.05 to
     // 434.79 MHz, so the channel is 24, 434 MHz, unless told otherwise; in
     // the USA, 433 MHz belongs to licensed radio amateurs. It then pulls
     // them low again for normal mode, taking about 0.2 s in all.

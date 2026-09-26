@@ -35,7 +35,7 @@ CLOSEUP_COLUMNS = 16                # the narrowest close-up, so parts keep one 
 ROUNDS = 6                          # of negotiation between the wires
 
 # Directions a wire may leave a header in: the way its pins point, or a
-# little either side, to fan out from its neighbours.
+# little either side, to fan out from its neighbors.
 LEAVING = {"top": (6, 5, 7), "bottom": (2, 1, 3), "double": (0, 7, 1)}
 
 # Where routes are kept, if anywhere, and this version of the engine: a
@@ -947,7 +947,7 @@ def point_along (points, along):
     return b, ((b[0] - a[0]) / length, (b[1] - a[1]) / length)
 
 
-# Spots for a wire's label beside it, from its labelled end outwards: above
+# Spots for a wire's label beside it, from its labeled end outwards: above
 # or below a level run, right or left of an upright one. Each ends with the
 # point on the wire its leader goes to.
 def along (points, size):

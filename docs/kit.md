@@ -47,7 +47,7 @@ dollars; the LoRa radios come in pairs, because it takes two to talk.
 |---|---|---|
 | Si4703 FM radio board (CJMCU-470) and wired earbuds | FM stations, their names and songs | Lesson 37 |
 | 433 MHz transmitter (WL102-341) and receiver (RX470C) | Short messages across a house | Lesson 38 |
-| Two REYAX RYLR896 LoRa modems | Messages across a kilometre or more, on 915 MHz | Lesson 40 |
+| Two REYAX RYLR896 LoRa modems | Messages across a kilometer or more, on 915 MHz | Lesson 40 |
 | Two Ebyte E32-433T20D LoRa modules | A 433 MHz link that passes on lines of text | Lesson 41 |
 | Two Heltec WiFi LoRa 32 V3 boards running Meshtastic, and a phone | Text messages from a phone, across a mesh | Lesson 42 |
 
@@ -197,5 +197,5 @@ from the left: three digits, then how many zeros follow.
 
 So red, red, black, then black, is 2, 2, 0 and no more zeros: 220 Ω. Some
 resistors have four bands instead (two digits, then the zeros); 220 Ω is
-then red, red, brown. The kit's resistor card is labelled too, so check the
+then red, red, brown. The kit's resistor card is labeled too, so check the
 card when in doubt.

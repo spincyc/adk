@@ -6,7 +6,7 @@ namespace adk {
 
     // The RC522 RFID reader module (an NXP MFRC522 on the SPI bus) and the
     // kit's card and key fob. Each tag holds a unique ID (UID) that the
-    // reader picks up when the tag is within a few centimetres of it.
+    // reader picks up when the tag is within a few centimeters of it.
     //
     // THE MODULE RUNS ON 3.3 V. Connect its 3.3V pin to the Mega's 3.3V pin,
     // never to 5V:

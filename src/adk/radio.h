@@ -19,7 +19,7 @@ namespace adk {
     //
     // The WL102 runs on 3.3 V, so its DAT pin gets the Mega's 5 V divided
     // down to 3.3 V. (An FS1000A runs on 5 V and needs no divider.) A wire
-    // or coil on each module's antenna hole makes the range tens of metres;
+    // or coil on each module's antenna hole makes the range tens of meters;
     // without one it is a few.
     //
     // Messages of up to 60 characters go out as RadioHead's RH_ASK driver

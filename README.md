@@ -39,7 +39,7 @@ void loop ()
   ultrasonic ranger, DHT11, DS18B20, IR remote, RFID reader, real-time clock
   and accelerometer: everything in the Elegoo Mega and sensor kits. And a
   few add-on radios: an FM radio, 433 MHz modules, and LoRa radios that
-  reach a kilometre or a phone.
+  reach a kilometer or a phone.
 - **Mistakes found early.** `adk::setup ()` checks that every pin exists, is
   used once, and can do what its part needs. If not, it stops and blinks the
   pin number on the Mega's own LED, or explains in words with

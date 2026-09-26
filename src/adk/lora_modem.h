@@ -25,7 +25,7 @@ namespace adk {
     };
 
     // A REYAX RYLR896 LoRa modem: a radio on 915 MHz (868 in Europe) that
-    // reaches a kilometre or more, commanded in words over one of the
+    // reaches a kilometer or more, commanded in words over one of the
     // Mega's spare serial ports. Each modem has an address, and modems with
     // the same network number hear each other.
     //

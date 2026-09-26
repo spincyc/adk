@@ -22,7 +22,7 @@ A new start, built on the library's original 2021 design.
   speaking RadioHead's RH_ASK; and three LoRa radios over the Mega's spare
   serial ports, `LoraModem` (REYAX RYLR896), `LoraLink` (Ebyte E32) and
   `MeshNode` (a Meshtastic board). Their 3.3 V pins are only ever pulled low
-  or reached through a divider, and the E32 is set to a licence-free channel
+  or reached through a divider, and the E32 is set to a license-free channel
   and power at every start.
 - **C++23**, built with avr-gcc 16 (the Arduino core's GCC 7 stops at
   C++17). `adk::Array`, `Vector`, `Deque` and `Span` give sketches the

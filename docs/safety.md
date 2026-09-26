@@ -66,10 +66,10 @@ work at 3.3 V, and a radio that sends is ruled by law.
 - **Send only where it's allowed.** Receiving is fine anywhere; sending is
   not. Check your country's rules; in outline:
 
-| Radio | Band | Licence-free |
+| Radio | Band | License-free |
 |---|---|---|
 | FM radio | 87.5–108 MHz | Receive only, so anywhere |
-| 433 MHz modules, E32 LoRa module | 433 MHz | In Europe, 433.05–434.79 MHz at up to 10 mW, which is how ADK sets the E32. In the USA and Canada it is an amateur band: unlicensed transmitters there are limited to very weak, occasional signals, like a car key's, so use the E32 only with an amateur licence, and keep the little transmitter's messages short and few. |
+| 433 MHz modules, E32 LoRa module | 433 MHz | In Europe, 433.05–434.79 MHz at up to 10 mW, which is how ADK sets the E32. In the USA and Canada it is an amateur band: unlicensed transmitters there are limited to very weak, occasional signals, like a car key's, so use the E32 only with an amateur license, and keep the little transmitter's messages short and few. |
 | RYLR896 modem, Heltec board | 915 MHz | In the Americas and Australia, 902–928 MHz. Europe uses 868 MHz instead, with different modules and settings, at up to 25 mW for 1% of the time. |
 
 - **Mesh messages are public.** Anyone nearby with Meshtastic can read

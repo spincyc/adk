@@ -396,7 +396,7 @@ class Bench:
         # in lanes, 31 lowest, so each comes straight down into its column
         # and none crosses another over the board.
         # Each leaves the header at its own height, the inner pins' wires
-        # between their neighbours' plugs.
+        # between their neighbors' plugs.
         targets = [(31, 3, 0), (32, 5, -0.05), (33, 10, 0), (34, 11, -0.05), (35, 12, 0),
                    (36, 13, -0.05)]
         mx, my = self.mega_origin ()
@@ -818,7 +818,7 @@ class Bench:
                 return f"The {placed.title}'s {pin.note} into {self.describe (other)}."
         males = sum (self.style (end) == "male" for end in (start, end))
         jumper = ("", "female-to-male ", "female-to-female ")[males]
-        # The article agrees with the first word after it: the colour.
+        # The article agrees with the first word after it: the color.
         article = "An" if color[0] in "aeiou" else "A"
         return f"{article} {color} {jumper}wire from {self.describe (start)} to {self.describe (end)}."
 

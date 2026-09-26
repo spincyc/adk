@@ -147,7 +147,7 @@ own:
     The names are printed on the board beside its pins. Go by the names:
     lying below the breadboard, spring down, a modem's pins run from GND
     on the left to VDD on the right. The radio chip hides under a metal can
-    labelled **RYLR890**; that's normal for an RYLR896.
+    labeled **RYLR890**; that's normal for an RYLR896.
 
     The spring is the aerial, soldered on. Keep the two springs upright and
     apart, and don't bend them.

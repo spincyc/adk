@@ -85,7 +85,7 @@
 
 - arc: Long range
   lessons:
-    - {slug: 40-lora, title: LoRa, builds: Messages that reach a kilometre}
+    - {slug: 40-lora, title: LoRa, builds: Messages that reach a kilometer}
     - {slug: 41-lora-link, title: LoRa Link, builds: A weather report sent by radio}
     - {slug: 42-mesh-messenger, title: Mesh Messenger, builds: Texts from your phone to your Mega, project: true}
 

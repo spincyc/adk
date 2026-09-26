@@ -1,6 +1,6 @@
 """A pencil for SVG, in the manner of a careful engineer's sketch: fine,
 near-straight graphite lines with only a hint of hand, light hatching for
-shade, a little restrained colour, and small printed labels that keep a
+shade, a little restrained color, and small printed labels that keep a
 halo of paper so they read over anything. The same seed always draws the
 same picture, so a drawing only changes when its circuit does.
 """
@@ -11,7 +11,7 @@ from xml.sax.saxutils import escape
 
 GRAPHITE = "#2b2b2b"
 PAPER    = "#fbf9f3"
-# Jumper wires and parts' own leads, by colour: one set for every drawing.
+# Jumper wires and parts' own leads, by color: one set for every drawing.
 WIRES    = {
     "red": "#be4c44", "black": "#3a3a3a", "blue": "#4a72ad", "green": "#56874f",
     "yellow": "#d3ae3f", "orange": "#cf8243", "white": "#ece8de", "purple": "#7a63a0",
@@ -84,7 +84,7 @@ class Pencil:
         self.layers[layer].append (
             f'<path d="{straight (points)} Z" fill="{GRAPHITE}" fill-opacity="{tone:.2f}"/>')
 
-    # A flat area of colour under the drawing, like a light wash.
+    # A flat area of color under the drawing, like a light wash.
     def paper_fill (self, points, color, layer="paper"):
         self.layers[layer].append (f'<path d="{straight (points)} Z" fill="{color}"/>')
 
@@ -93,11 +93,11 @@ class Pencil:
             f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.2f}" fill="{GRAPHITE}" '
             f'fill-opacity="{tone:.2f}"/>')
 
-    # Flat, opaque colour, for something that hides what is under it.
+    # Flat, opaque color, for something that hides what is under it.
     def solid (self, points, color, layer="top"):
         self.layers[layer].append (f'<path d="{straight (points)} Z" fill="{color}"/>')
 
-    # A wash of colour over any shape, or over a circle.
+    # A wash of color over any shape, or over a circle.
     def tint (self, points, color, layer="top", opacity=1.0):
         self.layers[layer].append (
             f'<path d="{straight (points)} Z" fill="{color}" fill-opacity="{opacity:.2f}" '
@@ -151,7 +151,7 @@ class Pencil:
             f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" fill="{color}"/>')
 
     # A clear lens seen from above, tinted, with a highlight. A list of
-    # colours tints it with all of them, as an RGB LED looks.
+    # colors tints it with all of them, as an RGB LED looks.
     def dome (self, cx, cy, r, color):
         gradient = self.id (f"dome{len (self.layers['top'])}")
         if isinstance (color, (list, tuple)):
@@ -253,7 +253,7 @@ class Pencil:
     # Words: "label" names things on the drawing and stays level, "silk" is
     # the printing on a board and turns with it but never reads upside
     # down, and "mono" is a screen's characters, which turn with it. A halo
-    # of paper, or of the board's colour, keeps words readable over lines.
+    # of paper, or of the board's color, keeps words readable over lines.
     def text (self, x, y, content, size=10, anchor="middle", tone=0.9, weight="normal",
               rotate=0, kind="label", color=GRAPHITE, halo=None, layer="text", italic=False):
         kind = "label" if kind == "note" else kind

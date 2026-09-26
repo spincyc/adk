@@ -369,25 +369,25 @@ class Buzzer (Part):
     def legs (self):
         return [("+ leg (long)", self.positive), ("− leg", self.negative)]
 
-    def centre (self, bench):
+    def center (self, bench):
         (x1, y1), (x2, y2) = bench.hole_xy (self.positive), bench.hole_xy (self.negative)
         return (x1 + x2) / 2, (y1 + y2) / 2
 
     def footprint (self, bench):
-        return [("circle", *self.centre (bench), self.RADIUS)]
+        return [("circle", *self.center (bench), self.RADIUS)]
 
     def shapes (self, bench):
-        mx, my = self.centre (bench)
+        mx, my = self.center (bench)
         return [("circle", mx, my - self.RISE / 2, self.RADIUS + 1.5)]
 
     def labels (self, bench):
-        mx, my = self.centre (bench)
+        mx, my = self.center (bench)
         r, top = self.RADIUS, my - self.RISE
         return [Label (self.name, spots_round ((mx - r, top - r, mx + r, my + r), self.name,
                                                bench.label_size), (mx, top - r))]
 
     def draw (self, pencil, bench):
-        mx, my = self.centre (bench)
+        mx, my = self.center (bench)
         # Seen almost from above, so it covers only the holes it really does.
         r, rise = self.RADIUS, self.RISE
         top = my - rise
@@ -488,7 +488,7 @@ class TwoLegs (Part):
         (x1, _), (x2, _) = bench.hole_xy (self.a), bench.hole_xy (self.b)
         return abs (x1 - x2) < 1
 
-    # Its centre, the box its body fills, and where each leg meets it.
+    # Its center, the box its body fills, and where each leg meets it.
     def geometry (self, bench):
         (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
         half_w, half_h, low = {"photoresistor": (10.5, 10.5, 7), "thermistor": (6.5, 9, 3),
