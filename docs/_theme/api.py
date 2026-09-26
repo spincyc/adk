@@ -2,11 +2,24 @@
 
 The library's headers follow one layout: a comment saying what a part is and
 how to wire it, then the struct, with a comment above each public call that
-needs one. document () turns that into Markdown, so the reference can never
-drift from the code.
+needs one. A comment covers the calls right after it, up to a blank line,
+as in
+
+    // Find the next station up or down the band.
+    void seekUp   ();
+    void seekDown ();
+
+document () turns that into Markdown, so the reference can never drift from
+the code: the calls that need no comment listed plainly, then a table of
+the others with what each does.
 
     <!-- api led.h Led -->     the Led struct in src/adk/led.h
     <!-- api i2c.h -->         the free functions in src/adk/i2c.h
+
+A header's free functions leave out its structs, which have markers of their
+own, and the helpers its other functions call, such as print.h's
+printPart (). A function with no comment of its own that makes the struct
+just above it, as fixed () makes a Fixed, takes the struct's comment.
 """
 
 import re
@@ -16,7 +29,7 @@ def document (path, name=None):
     lines = open (path, encoding="utf-8").read ().splitlines ()
     if name:
         return document_struct (lines, name, path)
-    return document_functions (lines, path)
+    return document_functions (lines)
 
 
 def document_struct (lines, name, path):
@@ -38,31 +51,54 @@ def document_struct (lines, name, path):
         if depth >= 1 and not (depth == 1 and stripped == "{"):
             body.append (line)
 
-    calls = without_const_twins (declarations (body))
     out = [f"### {name}", "", paragraphs (description), ""]
-    if calls:
-        out += ["| Call | Does |", "|---|---|"]
-        out += [f"| `{signature}` | {comment} |" for signature, comment in calls]
-    return "\n".join (out)
+    return "\n".join (out + calls (without_const_twins (declarations (body))))
 
 
-def document_functions (lines, path):
-    body = []
-    depth = 0
-    for line in lines:
-        depth += line.count ("{") - line.count ("}")
-        if re.match (r"\s*struct \w+", line):
-            depth = 1000        # skip struct bodies entirely
-        if depth >= 1000 and "};" in line:
-            depth -= 1000
+def document_functions (lines):
+    body, made = [], {}
+    index = 0
+    while index < len (lines):
+        match = re.match (r"\s*struct (\w+)\b(?!.*;)", lines[index])
+        if not match:
+            body.append (lines[index])
+            index += 1
             continue
-        if depth < 1000:
-            body.append (line)
-    calls = [(signature, comment) for signature, comment in declarations (body)
-             if "(" in signature and not signature.startswith (("namespace", "#"))]
-    out = ["| Call | Does |", "|---|---|"]
-    out += [f"| `{signature}` | {comment} |" for signature, comment in calls]
-    return "\n".join (out)
+        # A struct is left to its own marker; its comment and template line
+        # go with it, and a blank line stands in its place.
+        made[match.group (1)] = " ".join (line.strip () for line in comment_above (lines, index))
+        while body and body[-1].strip ().startswith (("//", "template")):
+            body.pop ()
+        depth = 0
+        while True:
+            depth += lines[index].count ("{") - lines[index].count ("}")
+            index += 1
+            if depth == 0 and "}" in lines[index - 1]:
+                break
+        body.append ("")
+    # Functions only, the header's types having markers of their own.
+    groups = only ([[[s for s in signatures if "(" in s], comment]
+                    for signatures, comment in declarations (body)])
+    for group in groups:
+        returns = re.match (r"(?:inline )?(\w+) ", group[0][0])
+        if not group[1] and returns and returns.group (1) in made:
+            group[1] = made[returns.group (1)]
+    # A helper is a function the header's own functions call.
+    code = "\n".join (line for line in lines if not line.strip ().startswith ("//"))
+    declared = [name_of (signature) for signatures, _ in groups for signature in signatures]
+    helper = lambda signature: len (re.findall (rf"\b{name_of (signature)} \(", code)) > \
+        declared.count (name_of (signature))
+    return "\n".join (calls (only ([[[s for s in signatures if comment or not helper (s)], comment]
+                                    for signatures, comment in groups])))
+
+
+def only (groups):
+    return [group for group in groups if group[0]]
+
+
+def name_of (signature):
+    match = re.search (r"([\w:~]+|operator\S+) \(", signature)
+    return re.escape (match.group (1)) if match else None
 
 
 def comment_above (lines, index):
@@ -76,9 +112,11 @@ def comment_above (lines, index):
     return comment
 
 
-# Collect each public declaration with the comment directly above it.
+# Each public declaration, in groups: the calls a comment covers, up to a
+# blank line or the next comment, as [signatures, comment]. Calls with no
+# comment above them make groups of their own, with an empty comment.
 def declarations (body):
-    calls = []
+    groups, group = [], None
     comment = []
     pending = ""
     skipping = 0
@@ -89,9 +127,11 @@ def declarations (body):
             continue
         if not stripped:
             if not pending:
-                comment = []
+                comment, group = [], None
             continue
         if stripped.startswith ("//"):
+            if group:
+                comment, group = [], None
             comment.append (stripped[2:].strip ())
             continue
         if stripped.startswith (("#", "namespace", "}", "using ", "friend ")) and \
@@ -101,9 +141,9 @@ def declarations (body):
         # An enum is shown whole, with its values.
         if pending.startswith ("enum"):
             if pending.endswith ("};"):
-                calls.append ((clean (pending.replace ("{ ", "{").replace (" }", "}")),
-                               " ".join (comment)))
-                pending, comment = "", []
+                signature, pending = clean (pending.replace ("{ ", "{").replace (" }", "}")), ""
+                group = [[signature], " ".join (comment)]
+                groups.append (group)
             continue
         if pending.endswith ((";", "}")) or pending.endswith ("{") or stripped == "{":
             if pending.endswith ("{") or stripped == "{":
@@ -111,9 +151,30 @@ def declarations (body):
             signature = clean (pending)
             pending = ""
             if keep (signature):
-                calls.append ((signature, " ".join (comment)))
-            comment = []
-    return calls
+                if group is None:
+                    group = [[], " ".join (comment)]
+                    groups.append (group)
+                group[0].append (signature)
+    return groups
+
+
+# The calls that need no words listed plainly, as the header declares them,
+# and a table of the others with what each group does.
+def calls (groups):
+    plain = [signature for signatures, comment in groups if not comment for signature in signatures]
+    described = [(signatures, comment) for signatures, comment in groups if comment]
+    out = []
+    if plain:
+        out += ["```cpp"] + [s if s.endswith (";") else s + ";" for s in plain] + ["```", ""]
+    if described:
+        out += ["| Call | Does |", "|---|---|"]
+        out += ["| " + "<br>".join (f"`{cell (s)}`" for s in signatures) + f" | {cell (comment)} |"
+                for signatures, comment in described]
+    return out
+
+
+def cell (text):
+    return text.replace ("|", "\\|")
 
 
 def clean (signature):
@@ -125,7 +186,7 @@ def clean (signature):
     signature = re.sub (r"\s+override$", "", signature)
     signature = re.sub (r"^template <[^>]*> ", "", signature)
     signature = re.sub (r"^constexpr ", "", signature)
-    return signature.replace ("|", "\\|").strip ()
+    return signature.strip ()
 
 
 # An accessor defined in the header shows only its declaration; so does a
@@ -141,17 +202,21 @@ def without_body (signature):
     return re.sub (r"\)\s*:\s.*$", ")", signature)
 
 
+# Not a call: a destructor, a deleted function, a nested struct, or a
+# deduction guide such as Array (T, More...) -> Array<...>.
 def keep (signature):
     return not (signature.startswith (("~", "struct ")) or "= delete" in signature or
-                signature.startswith (("{", "}")) or not signature)
+                signature.startswith (("{", "}")) or not signature or
+                re.match (r"[\w:]+ \(.*\) -> ", signature))
 
 
 # A container's const overloads mirror its others: show each call once.
-def without_const_twins (calls):
-    signatures = {signature for signature, _ in calls}
-    return [(signature, comment) for signature, comment in calls
-            if not (signature.endswith (" const") and
-                    re.sub (r"^const |(?<=\)) const$", "", signature) in signatures)]
+def without_const_twins (groups):
+    signatures = {signature for group, _ in groups for signature in group}
+    twin = lambda signature: signature.endswith (" const") and \
+        re.sub (r"^const |(?<=\)) const$", "", signature) in signatures
+    return only ([[[signature for signature in group if not twin (signature)], comment]
+                  for group, comment in groups])
 
 
 def paragraphs (comment):

@@ -10,7 +10,7 @@ each of its pins ends up.
 
 import math
 
-from pencil import DPI, rounded_rectangle
+from pencil import DPI, WIRES, rounded_rectangle
 from route import text_box
 
 SIDES = {"top": (0, -1), "bottom": (0, 1), "left": (-1, 0), "right": (1, 0)}
@@ -27,7 +27,6 @@ COPPER    = "#c98f58"
 PLASTIC   = "#3a3a3a"
 WHITE     = "#f4f2ec"
 LED_RED   = "#f0604f"
-LEADS     = {"red": "#be4c44", "black": "#3a3a3a"}
 
 
 class Pin:
@@ -59,6 +58,11 @@ class Kind:
     style  = "male"
     color  = PCB_BLUE
     flexible = False                # takes any row of pins
+    supply = "5V"                   # what its +, VCC or VDD pin takes
+    # How a sketch claims the Mega pin wired to each pin it names: "output"
+    # for a pin the Mega drives, "input" for one it reads. A pin left out
+    # may be either, as a bus's are.
+    pin_modes = {}
     inset  = 0                      # how far in from the edge the header sits
     title_side, title_gap = "top", 8
 
@@ -273,6 +277,7 @@ class Servo (Kind):
     title  = "servo"
     pins   = ("−", "+", "signal")
     notes  = {"−": "brown", "+": "red", "signal": "orange"}
+    pin_modes = {"signal": "output"}
     width, height = 150, 160
     style  = "female"
 
@@ -316,6 +321,7 @@ class Ultrasonic (Kind):
     # HC-SR04: 45 x 20 mm, two 16 mm transducers 26 mm apart.
     title  = "ultrasonic sensor"
     pins   = ("VCC", "Trig", "Echo", "GND")
+    pin_modes = {"Trig": "output", "Echo": "input"}
     width, height = 177, 79
 
     def draw (self, pencil):
@@ -341,6 +347,7 @@ class Matrix (Kind):
     title  = "LED matrix"
     pins   = ("VCC", "GND", "DIN", "CS", "CLK")
     title_gap = 32                  # clear of the output header
+    pin_modes = {"DIN": "output", "CS": "output", "CLK": "output"}
     width, height = 126, 197
 
     def draw (self, pencil):
@@ -368,6 +375,7 @@ class Joystick (Kind):
     # KY-023: a thumbstick on a 26 x 34 mm board.
     title  = "joystick"
     pins   = ("GND", "+5V", "VRx", "VRy", "SW")
+    pin_modes = {"VRx": "input", "VRy": "input", "SW": "input"}
     width, height = 102, 150
 
     def draw (self, pencil):
@@ -425,6 +433,7 @@ class IrReceiver (Kind):
     # KY-022: a VS1838B receiver on a small board.
     title  = "IR receiver"
     pins   = ("S", "+", "−")
+    pin_modes = {"S": "input"}
     width, height = 62, 80
 
     def draw (self, pencil):
@@ -503,6 +512,7 @@ class Relay (Kind):
     title  = "relay"
     pins   = ("S", "+", "−")
     title_side = "right"            # wires leave its terminals at the top
+    pin_modes = {"S": "output"}
     width, height = 102, 134
     TERMINALS = ("NO", "COM", "NC")
 
@@ -532,6 +542,7 @@ class Stepper (Kind):
     # A ULN2003 driver board with its 28BYJ-48 motor on a five-colour cable.
     title  = "stepper driver"
     pins   = ("IN1", "IN2", "IN3", "IN4")
+    pin_modes = {"IN1": "output", "IN2": "output", "IN3": "output", "IN4": "output"}
     width, height = 170, 290
     POWER = ("−", "+")
 
@@ -584,6 +595,7 @@ class Encoder (Kind):
     # KY-040: a rotary encoder with a knurled shaft, 19 x 32 mm.
     title  = "rotary encoder"
     pins   = ("CLK", "DT", "SW", "+", "GND")
+    pin_modes = {"CLK": "input", "DT": "input", "SW": "input"}
     width, height = 75, 126
 
     def draw (self, pencil):
@@ -608,6 +620,7 @@ class Pir (Kind):
     # HC-SR501: 32 x 24 mm under a 23 mm Fresnel dome.
     title  = "PIR sensor"
     pins   = ("VCC", "OUT", "GND")
+    pin_modes = {"OUT": "input"}
     width, height = 126, 96
 
     def draw (self, pencil):
@@ -635,6 +648,7 @@ class Sensor (Kind):
     # four-pin ones a comparator with its sensitivity trimmer.
     title  = "sensor"
     pins   = ("S", "+", "−")
+    pin_modes = {"S": "input", "OUT": "input", "DO": "input", "AO": "input"}
     width, height = 64, 100
     flexible = True
 
@@ -782,6 +796,7 @@ class Lcd1602 (Kind):
     pins   = ("K", "A", "D7", "D6", "D5", "D4", "D3", "D2", "D1", "D0", "E", "RW", "RS", "V0",
               "VDD", "VSS")
     notes  = {name: f"pin {16 - index}" for index, name in enumerate (pins)}
+    pin_modes = {name: "output" for name in ("RS", "E", "D4", "D5", "D6", "D7")}
     width, height = 315, 142
     inset  = 8
     color  = "#a3cc8e"
@@ -866,6 +881,7 @@ class RfReceiver (Kind):
     # are at the far end, a spring antenna standing up from ANT.
     title  = "radio receiver"
     pins   = ("VCC", "DATA", "DATA2", "GND")
+    pin_modes = {"DATA": "input", "DATA2": "input"}
     width, height = 118, 106
     color  = PCB_GREEN
     TOP    = 68.5                   # the board's top edge, below the spring
@@ -898,6 +914,8 @@ class RfTransmitter (Kind):
     # − + DAT EN. OUT, in the top left corner, takes the spring antenna.
     title  = "radio transmitter"
     pins   = ("EN", "DAT", "+", "−")
+    pin_modes = {"DAT": "output"}
+    supply = "3.3V"
     width, height = 70, 121
     color  = PCB_GREEN
     TOP    = 70                     # the board's top edge, below the spring
@@ -929,6 +947,8 @@ class LoraModem (Kind):
     # seen from behind, prints them the other way: GND ... VDD.
     title  = "LoRa modem"
     pins   = ("VDD", "NRST", "RXD", "TXD", "NC", "GND")
+    pin_modes = {"RXD": "output", "TXD": "input"}
+    supply = "3.3V"
     width, height = 67, 168
     color  = PCB_BLUE
     TOP    = 70                     # the board's top edge, below the spring
@@ -965,6 +985,7 @@ class LoraModule (Kind):
     # edge. The board prints no names on its pins.
     title  = "LoRa module"
     pins   = ("M0", "M1", "RXD", "TXD", "AUX", "VCC", "GND")
+    pin_modes = {"RXD": "output", "TXD": "input", "AUX": "input"}
     width, height = 83, 301
     color  = PCB_GREEN
     TOP    = 159                    # the board's top edge, below the antenna
@@ -1066,9 +1087,15 @@ class MeshBoard (Kind):
         pencil.tint (rounded (x0 + 67, top + 15, 107, 69, 0), "#262a2e")
         pencil.rect (x0 + 67, top + 15, 107, 69, width=1.0, layer="top")
         pencil.rect (x0 + 76, top + 24, 89, 45, width=0.5, tone=0.3, layer="top", passes=1)
+        # The screen reads the right way up however the board is turned:
+        # turned half round, its lines turn half round about its middle.
+        flip = 90 < sum (pencil.turns) % 360 <= 270
         for row, line in enumerate (list (self.options.get ("text") or ())[:4]):
-            pencil.text (x0 + 78, top + 33 + row * 11, line, size=8, anchor="start", kind="mono",
-                         color="#dce8ff", tone=1.0)
+            x, y = x0 + 78, top + 33 + row * 11
+            if flip:
+                x, y = 2 * (x0 + 120.5) - x, 2 * (top + 46.5) - y
+            pencil.text (x, y, line, size=8, anchor="start", kind="mono", color="#dce8ff", tone=1.0,
+                         rotate=180 if flip else 0)
         # Both headers' holes, and their names: J2's under the OLED, J3's above.
         for pin in self.header () + self.extra ():
             pencil.spot (pin.x, pin.y, 3.4, "#d9c98f")
@@ -1089,9 +1116,13 @@ KINDS = {
 }
 
 # Other names a wire may use for a pin, when the module has no pin by that
-# name: GND for −, VCC for +, and so on. 3.3 V keeps a group of its own.
-SAME = [{"−", "-", "GND", "G"}, {"+", "VCC", "5V", "+5V", "VDD"}, {"S", "SIG", "SIGNAL", "OUT"},
-        {"3.3V", "3V3", "+3.3V"}]
+# name: GND for −, S for OUT, VCC for + or VDD. A voltage names a supply pin
+# only of a module that runs on it: 5V finds the servo's +, but no pin of
+# the LoRa modem, whose VDD takes 3.3 V.
+GROUND  = {"−", "-", "GND", "G"}
+SIGNAL  = {"S", "SIG", "SIGNAL", "OUT"}
+SUPPLY  = {"+", "VCC", "VDD"}
+VOLTAGE = {"5V": {"5V", "+5V"}, "3.3V": {"3.3V", "3V3", "+3.3V"}}
 
 
 def make (kind, pins=None, label=None, **options):
@@ -1134,11 +1165,21 @@ class Placed:
             found = [p for p in pins if match (p)]
             if found:
                 return found[0]
-        for group in SAME:
-            if name.upper () in {g.upper () for g in group}:
-                found = [p for p in pins if p.name.upper () in {g.upper () for g in group}]
-                if len (found) == 1:
-                    return found[0]
+        asked = name.upper ()
+        volts = next ((volts for volts, names in VOLTAGE.items () if asked in names), None)
+        if volts:
+            group = VOLTAGE[volts] | (SUPPLY if self.kind.supply == volts else set ())
+        else:
+            group = next ((group for group in (GROUND, SIGNAL, SUPPLY) if asked in group), set ())
+            if group is SUPPLY:
+                group = SUPPLY | VOLTAGE["5V"] | VOLTAGE["3.3V"]
+        found = [p for p in pins if p.name.upper () in group]
+        if len (found) == 1:
+            return found[0]
+        supply = [p for p in pins if p.name.upper () in SUPPLY]
+        if volts and supply and self.kind.supply != volts:
+            raise ValueError (f"the {self.title}'s {supply[0].name} takes {self.kind.supply}, not "
+                              f"{volts}")
         raise ValueError (f"the {self.title} has no pin {name!r}; its pins are "
                           f"{', '.join (p.name for p in pins)}")
 
@@ -1174,7 +1215,7 @@ class Placed:
                              width=2.4, tone=0.55, layer="top", passes=1, wobble=0.1)
             elif pin.style == "lead" and pin.name not in self.wired:
                 dx, dy = pin.direction
-                pencil.wire ([(pin.x, pin.y), (pin.x + dx * 14, pin.y + dy * 14)], LEADS[pin.color],
+                pencil.wire ([(pin.x, pin.y), (pin.x + dx * 14, pin.y + dy * 14)], WIRES[pin.color],
                              width=2.4)
         self.kind.draw (pencil)
         pencil.end ()

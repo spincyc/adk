@@ -24,7 +24,6 @@ import math
 STEP = 5                            # the grid, in drawing units: half the hole pitch
 SQRT2 = math.sqrt (2)
 DIRECTIONS = [(1, 0), (1, 1), (0, 1), (-1, 1), (-1, 0), (-1, -1), (0, -1), (1, -1)]
-EAST, SOUTH, WEST, NORTH = 0, 2, 4, 6
 TURN = [0, 7, 18, 70]               # by eighths of a turn; a U-turn is never made
 
 HOLE     = 16                       # passing over a free hole
@@ -93,7 +92,6 @@ class Router:
     def close (self, box):
         self.closes.append (tuple (v / STEP for v in box))
 
-    # A cost for passing just outside a box's edge, within width of it.
     # A cost for running along a box's edge, within width of it either side.
     def fringe (self, box, amount, width):
         x0, y0, x1, y1 = box
@@ -310,11 +308,6 @@ class Router:
                     push (queue, (total + guess, total, there, e))
         return None, heading, 0.0
 
-    def _on_board (self, n):
-        x, y = spot (n)
-        x0, y0, x1, y1 = self.board
-        return x0 < x < x1 and y0 < y < y1
-
     # Taking a way -------------------------------------------------------
 
     def claim (self, path, wire):
@@ -517,7 +510,7 @@ class Placer:
     def taken (self, box):
         self.labels.append (box)
 
-    def score (self, box):
+    def score (self, box, mine=()):
         cost = 0.0
         if self.view:
             vx0, vy0, vx1, vy1 = self.view
@@ -532,7 +525,7 @@ class Placer:
                     and other[1] < box[3] + 1:
                 cost += HARD
         for shape, amount in self.shapes:
-            if shape_meets_box (shape, box, 0.8):
+            if shape not in mine and shape_meets_box (shape, box, 0.8):
                 cost += amount
         for (x, y), amount in self.points.items ():
             if box[0] - 1.5 < x < box[2] + 1.5 and box[1] - 1.5 < y < box[3] + 1.5:
@@ -541,13 +534,14 @@ class Placer:
 
     # The best of the spots, each (x, y, anchor, cost), or with a leader
     # to a point (x, y, anchor, cost, point), which must not cross a wire
-    # or a part on its way.
-    def place (self, text, size, spots, own=()):
+    # or a part on its way, but may cross its own part. A label may touch
+    # the holes of its own part's legs, mine, which it names.
+    def place (self, text, size, spots, own=(), mine=()):
         best = None
         for spot in spots:
             x, y, anchor, extra = spot[:4]
             box = text_box (x, y, text, size, anchor)
-            total = self.score (box) + extra
+            total = self.score (box, mine) + extra
             if len (spot) > 4 and spot[4] and (best is None or total < best[0]):
                 total += self.leader_cost (box, spot[4], own)
             if best is None or total < best[0]:

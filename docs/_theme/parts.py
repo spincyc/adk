@@ -22,10 +22,11 @@ LEAD    = 0.9                       # half a lead's width, as wires keep clear o
 class Label:
     """A label a part or wire wants: its text, and the spots it may go,
     best first, each (x, y, anchor, cost). at is what a leader points to
-    when the label has to go further out."""
+    when the label has to go further out; leg is the hole of the leg it
+    names, if it names one, which it may touch."""
 
-    def __init__ (self, text, spots, at=None, size=1.0):
-        self.text, self.spots, self.at, self.size = text, spots, at, size
+    def __init__ (self, text, spots, at=None, size=1.0, leg=None):
+        self.text, self.spots, self.at, self.size, self.leg = text, spots, at, size, leg
 
 
 # Spots round a box for a label of that text: above, then beside, then
@@ -55,9 +56,15 @@ class Part:
     name = "part"
     sources = ()                    # legs that feed power, listed like the Mega's pins
     blocks = True                   # wires go round its body
+    # How a sketch claims a Mega pin wired to its legs: "output" to drive
+    # it, "input" to read it, or None when that isn't the part's to say.
+    mode = None
 
     def legs (self):
         return []
+
+    def modes (self):
+        return [self.mode for _ in self.legs ()]
 
     def inside (self):
         return []
@@ -178,6 +185,7 @@ class Resistor (Part):
 class Led (Part):
     # A 5 mm LED seen from above, leaning back so its legs show: the lens
     # inside its flange, and the flange's flat on the short leg's side.
+    mode = "output"
     TINTS = {"red": "#e39089", "yellow": "#ecd68c", "green": "#9ccb96", "blue": "#9ab7e2",
              "white": "#f4f2ea"}
     RADIUS = 11.4
@@ -222,6 +230,8 @@ class Button (Part):
     # A 6 mm push button across the middle gap, its legs in e and f of two
     # columns two apart. The two legs in each column are joined inside;
     # pressing joins the columns.
+    mode = "input"
+
     def __init__ (self, column):
         self.column = column
         self.name = f"button at column {column}"
@@ -259,6 +269,7 @@ class Button (Part):
 class RgbLed (Part):
     # A 5 mm common-cathode RGB LED: red, common (the longest leg), green and
     # blue, side by side.
+    mode = "output"
     RADIUS = 11.4
     LETTERS = ("R", "−", "G", "B")
 
@@ -298,7 +309,7 @@ class RgbLed (Part):
             small = size * 0.62
             spots = [(x, y + 4 + small * 0.8, "middle", 0), (x - 4, y + small * 0.3, "end", 3),
                      (x + 4, y + small * 0.3, "start", 3)]
-            labels.append (Label (letter, spots, None, 0.62))
+            labels.append (Label (letter, spots, None, 0.62, leg=(x, y)))
         return labels
 
     def draw (self, pencil, bench):
@@ -345,6 +356,7 @@ class Buzzer (Part):
     # A 12 mm buzzer, 9.5 mm tall, legs 7.6 mm (0.3 inch) apart under it. The
     # active one is sealed and carries a sticker; the passive one is open
     # underneath, where its green board shows.
+    mode = "output"
     RADIUS = 6 / 25.4 * DPI
     RISE = 3
 
@@ -405,6 +417,8 @@ class Buzzer (Part):
 class Potentiometer (Part):
     # The kit's 10 kΩ knob: three legs in a row, the wiper in the middle, its
     # body standing behind them.
+    mode = "input"
+
     def __init__ (self, left, wiper, right, value):
         self.holes = [left, wiper, right]
         self.value = value
@@ -459,6 +473,8 @@ class Potentiometer (Part):
 class TwoLegs (Part):
     # A small part on two legs: a photoresistor, a thermistor or a tilt
     # switch. Either way round.
+    mode = "input"
+
     def __init__ (self, kind, a, b):
         self.kind, self.a, self.b = kind, a, b
         self.name = kind
@@ -545,6 +561,8 @@ class TwoLegs (Part):
 class Chip (Part):
     # A DIP chip across the middle gap: pin 1 at the bottom left beside the
     # notch, counting anticlockwise seen from above.
+    mode = "output"
+
     def __init__ (self, name, pins, holes):
         self.name, self.pins, self.holes = name, list (pins), holes
 
@@ -830,6 +848,9 @@ class HeaderModule (Part):
 
     def legs (self):
         return [(pin.label (), hole) for pin, hole in self.pairs ()]
+
+    def modes (self):
+        return [self.kind.pin_modes.get (pin.name) for pin, _ in self.pairs ()]
 
     def placed (self, bench):
         pins = self.kind.header ()

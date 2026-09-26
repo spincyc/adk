@@ -13,14 +13,13 @@ import math
 import re
 
 from modules import rounded
-from pencil import GRAPHITE
+from pencil import GRAPHITE, WIRES
 
 WIDTH, HEIGHT = 70, 112
 SCALE = 0.72
 HOLSTER = "#e7cf7d"
 FACE    = "#3c4046"
 SCREEN  = "#c9d2b6"
-LEADS   = {"red": "#be4c44", "black": "#3a3a3a"}
 JACKS   = {"10A": 60, "red": 77, "black": 94}      # down the right of the face
 JACK_X  = 57
 
@@ -55,7 +54,7 @@ def frame (pencil, x, y, expect):
         jx, jy = x + JACK_X, y + JACKS[key]
         pencil.spot (jx, jy, 4.2, "#1c1c1c")
         pencil.circle (jx, jy, 4.2, width=0.8, layer="top", passes=1)
-        pencil.spot (jx, jy, 1.8, LEADS[key] if key in LEADS else "#6a6a6a")
+        pencil.spot (jx, jy, 1.8, WIRES[key] if key in WIRES else "#6a6a6a")
         pencil.text (jx, jy - 6.5, words, size=3.8, kind="silk", color="#f1eee6",
                      tone=0.55 if key == "10A" else 0.9)
     # The display: the reading, and V with the DC mark.
@@ -114,10 +113,10 @@ def lead (pencil, start, touch, color, side):
     turn = 10 if side < 0 else 22
     path = (f"M {sx:.1f} {sy:.1f} C {sx + turn:.1f} {sy:.1f} {end[0] - ux * k:.1f} "
             f"{end[1] - uy * k:.1f} {end[0]:.1f} {end[1]:.1f}")
-    pencil.wire ([], LEADS[color], width=2.2, layer="top", path=path)
+    pencil.wire ([], WIRES[color], width=2.2, layer="top", path=path)
     # The handle in the lead's color, and a black guard ring at its tip end.
     guard = ((shoulder[0] - ux, shoulder[1] - uy), (shoulder[0] + ux, shoulder[1] + uy))
-    for half, (a, b), tint in ((2.6, (shoulder, handle), LEADS[color]), (3.4, guard, "#222222")):
+    for half, (a, b), tint in ((2.6, (shoulder, handle), WIRES[color]), (3.4, guard, "#222222")):
         points = band (a, b, half)
         pencil.solid (points, tint)
         pencil.polyline (points, width=0.6, closed=True, layer="top", passes=1)
