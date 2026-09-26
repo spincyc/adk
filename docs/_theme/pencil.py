@@ -11,6 +11,12 @@ from xml.sax.saxutils import escape
 
 GRAPHITE = "#2b2b2b"
 PAPER    = "#fbf9f3"
+# Jumper wires and parts' own leads, by colour: one set for every drawing.
+WIRES    = {
+    "red": "#be4c44", "black": "#3a3a3a", "blue": "#4a72ad", "green": "#56874f",
+    "yellow": "#d3ae3f", "orange": "#cf8243", "white": "#ece8de", "purple": "#7a63a0",
+    "brown": "#86613f", "grey": "#9a9a98",
+}
 DPI      = 100                      # drawing units per inch
 WOBBLE   = 0.15                     # how far a hand strays, in drawing units
 
@@ -139,13 +145,6 @@ class Pencil:
         self.layers["top"].append (
             f'<path d="M {a[0]:.1f} {a[1]:.1f} L {b[0]:.1f} {b[1]:.1f}" stroke="#e4e2dc" '
             f'stroke-width="0.6"/>')
-
-    # A part's body, coloured in, under its pencil outline.
-    def body (self, box, color, radius=0):
-        x, y, w, h = box
-        self.layers["top"].append (
-            f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" rx="{radius}" '
-            f'fill="{color}" filter="url(#{self.id ("grain")})"/>')
 
     def band (self, x, y, w, h, color):
         self.layers["top"].append (

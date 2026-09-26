@@ -1,7 +1,7 @@
 // Runs a sketch's setup () on the host and prints every pin its parts
-// claimed, one per line, so tests/pins.py can hold the sketch to its
-// lesson's circuit. The Makefile links this with the sketch as Arduino
-// preprocessed it.
+// claimed, one per line with the mode setup () left it in, output or input,
+// so tests/pins.py can hold the sketch to its circuit. The Makefile links
+// this with the sketch as Arduino preprocessed it.
 
 #include <Adk.h>
 #include <Arduino.h>
@@ -44,13 +44,15 @@ int main ()
     {
         if (adk::isClaimed (pin))
         {
+            const char* mode = arduino::pin (pin).mode == OUTPUT ? "output" : "input";
+
             if (pin >= A0)
             {
-                printf ("A%d\n", pin - A0);
+                printf ("A%d %s\n", pin - A0, mode);
             }
             else
             {
-                printf ("%d\n", pin);
+                printf ("%d %s\n", pin, mode);
             }
         }
     }
