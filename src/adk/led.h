@@ -1,6 +1,7 @@
 #pragma once
 
-#include "digital.h"
+#include "on_off_pin.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -17,7 +18,9 @@ namespace adk {
         Pin  pin    () const;
 
         // Flash on and off, a whole period per flash, until on (), off (),
-        // toggle () or set () takes over.
+        // toggle () or set () takes over. Asking again for the same blink
+        // changes nothing, so blink () can be called from every pass of
+        // loop (); a new period starts afresh.
         void blink (Millis period);
 
       protected:
@@ -26,13 +29,8 @@ namespace adk {
         void stop   () override;
 
       private:
-        void show (bool lit);
-
-        Millis   period_;
-        Millis   toggledAt_;
-        Pin      pin_;
-        Polarity polarity_;
-        bool     lit_;
-        bool     starting_;
+        OnOffPin  light_;
+        StartTime flash_;
+        Millis    period_;
     };
 }

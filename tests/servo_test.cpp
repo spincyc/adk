@@ -266,3 +266,53 @@ TEST (writeOrStopEndsAGlide)
     CHECK (!servo.isMoving ());
     CHECK (servo.angle () == 10);
 }
+
+TEST (stopLetsThePulseUnderWayFinishFirst)
+{
+    adk::Servo servo {44};
+
+    adk::setup ();
+    servo.write (90);
+
+    // Timer 5 counts half microseconds; 400 counts into a period, the
+    // widest pulse, 2400 us, could still have 2200 us to go.
+    TCNT5 = 400;
+    unsigned long before = arduino::now ();
+    adk::stop ();
+
+    CHECK (TCCR5A == Mode14);
+    CHECK (arduino::now () - before >= 2200);
+    CHECK (arduino::now () - before <= 2210);
+}
+
+TEST (stopAfterThePulseDisconnectsAtOnce)
+{
+    adk::Servo servo {44};
+
+    adk::setup ();
+    servo.write (90);
+
+    TCNT5 = 10000;
+    unsigned long before = arduino::now ();
+    adk::stop ();
+
+    CHECK (TCCR5A == Mode14);
+    CHECK (arduino::now () == before);
+}
+
+TEST (stopNearTheEndOfAPeriodWaitsOutTheNextPulse)
+{
+    adk::Servo servo {45, 1000, 2000};
+
+    adk::setup ();
+    servo.write (90);
+
+    // 1000 us before the period ends, then a pulse of up to 2000 us.
+    TCNT5 = 38000;
+    unsigned long before = arduino::now ();
+    adk::stop ();
+
+    CHECK (TCCR5A == Mode14);
+    CHECK (arduino::now () - before >= 3000);
+    CHECK (arduino::now () - before <= 3010);
+}

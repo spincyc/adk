@@ -154,7 +154,7 @@ TEST (aLateUpdateTakesOneStepNotABurst)
     CHECK (stepper.position () == 3);
 }
 
-TEST (speedIsKeptBetweenOneAndAThousand)
+TEST (speedIsKeptBetweenOneAndFiveHundred)
 {
     adk::Stepper stepper {22, 23, 24, 25};
 
@@ -169,11 +169,11 @@ TEST (speedIsKeptBetweenOneAndAThousand)
     adk::update (1000);
     CHECK (stepper.position () == 2);
 
-    stepper.speed (5000);
+    stepper.speed (1000);
     adk::update (1001);
-    CHECK (stepper.position () == 3);
+    CHECK (stepper.position () == 2);
 
-    adk::update (1001);
+    adk::update (1002);
     CHECK (stepper.position () == 3);
 }
 
@@ -261,6 +261,44 @@ TEST (moveToGoesToAPositionEitherWay)
     CHECK (coils () == "0000");
 }
 
+TEST (askingAgainForTheSamePositionKeepsThePace)
+{
+    adk::Stepper stepper {22, 23, 24, 25};
+
+    adk::setup ();
+
+    for (adk::Millis now = 0; now <= 10; ++now)
+    {
+        stepper.moveTo (100);
+        adk::update (now);
+    }
+
+    CHECK (stepper.position () == 6);
+    CHECK (stepper.isMoving ());
+}
+
+TEST (aMoveAskedForJustAfterTheLastStepStillStartsWithOneStep)
+{
+    adk::Stepper stepper {22, 23, 24, 25};
+
+    adk::setup ();
+    stepper.step (1);
+    adk::update (0);
+    CHECK (stepper.position () == 1);
+    CHECK (!stepper.isMoving ());
+
+    // Before any update has seen the motor at rest.
+    stepper.step (3);
+    adk::update (1000);
+    CHECK (stepper.position () == 2);
+
+    adk::update (1001);
+    CHECK (stepper.position () == 2);
+
+    adk::update (1002);
+    CHECK (stepper.position () == 3);
+}
+
 TEST (stepCountsOnFromTheEndOfTheCurrentMove)
 {
     adk::Stepper stepper {22, 23, 24, 25};
@@ -304,10 +342,9 @@ TEST (aRevolutionEndsOnThePhaseItStartedFrom)
 
     adk::setup ();
     stepper.hold (true);
-    stepper.speed (1000);
     stepper.step (adk::Stepper::StepsPerRevolution);
 
-    for (adk::Millis now = 0; now < 4096; ++now)
+    for (adk::Millis now = 0; now < 8192; ++now)
     {
         adk::update (now);
     }

@@ -7,9 +7,9 @@ namespace adk {
 
     namespace {
 
-        const Millis SamplePeriod  = 100;
-        const float  NominalKelvin = 298.15f;
-        const float  ZeroCelsius   = 273.15f;
+        constexpr Millis SamplePeriod  = 100;
+        constexpr float  NominalKelvin = 298.15f;
+        constexpr float  ZeroCelsius   = 273.15f;
     }
 
     Thermistor::Thermistor (Pin pin, float beta, float nominalOhms, float seriesOhms)
@@ -18,9 +18,8 @@ namespace adk {
         , nominalOhms_ (nominalOhms)
         , seriesOhms_  (seriesOhms)
         , celsius_     (0)
-        , sampledAt_   (0)
+        , sampled_     ()
         , pin_         (pin)
-        , starting_    (false)
     {
     }
 
@@ -29,25 +28,17 @@ namespace adk {
         if (claimAnalog (pin_))
         {
             smoother_ = Smoother ();
-            starting_ = true;
             sample ();
         }
     }
 
+    // setup () took the first sample; the next comes a period after the
+    // first update.
     void Thermistor::update (Millis now)
     {
-        // setup () took the first sample; the next comes a period after the
-        // first update.
-        if (starting_)
+        if (sampled_.elapsed (now) >= SamplePeriod)
         {
-            sampledAt_ = now;
-            starting_  = false;
-            return;
-        }
-
-        if (now - sampledAt_ >= SamplePeriod)
-        {
-            sampledAt_ = now;
+            sampled_.restart (now);
             sample ();
         }
     }

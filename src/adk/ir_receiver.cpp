@@ -10,17 +10,17 @@ namespace adk {
         // mark. In a frame a 4.5 ms space follows, then 32 bits, each a short
         // mark and a short space for a 0 or a long one for a 1, then a final
         // short mark. In a repeat a 2.25 ms space and the final mark follow.
-        const uint32_t LeaderMark  = 9000;
-        const uint32_t FrameSpace  = 4500;
-        const uint32_t RepeatSpace = 2250;
-        const uint32_t BitMark     = 562;
-        const uint32_t ZeroSpace   = 562;
-        const uint32_t OneSpace    = 1687;
+        constexpr uint32_t LeaderMark  = 9000;
+        constexpr uint32_t FrameSpace  = 4500;
+        constexpr uint32_t RepeatSpace = 2250;
+        constexpr uint32_t BitMark     = 562;
+        constexpr uint32_t ZeroSpace   = 562;
+        constexpr uint32_t OneSpace    = 1687;
 
         // A held button repeats every 108 ms. A repeat much later than the
         // code before it may follow a press whose frame was missed, so it is
         // ignored rather than taken for the button before.
-        const uint32_t RepeatWindow = 250000;
+        constexpr uint32_t RepeatWindow = 250000;
 
         enum Phase : uint8_t
         {

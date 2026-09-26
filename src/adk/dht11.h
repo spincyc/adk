@@ -1,6 +1,6 @@
 #pragma once
 
-#include "object.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -12,8 +12,9 @@ namespace adk {
     // The sensor needs a second after power-up and at least a second between
     // readings, so the first reading comes a second after the first update
     // and then one every two seconds. Receiving a reading blocks update () for
-    // about 4 ms with interrupts off, so a serial byte or an IR code arriving
-    // just then can be lost.
+    // about 4 ms. Interrupts are held off while each bit is timed, a tenth of
+    // a millisecond at a time, and let in at the start of the next, so
+    // millis () keeps time and serial bytes and IR codes still arrive.
     struct Dht11 : Object
     {
         Dht11 (Pin pin);
@@ -23,12 +24,12 @@ namespace adk {
         float temperature () const;
         float humidity    () const;
 
+        // A reading finished in this update, good or not: an event.
+        bool measured () const;
+
         // Whether the latest reading arrived whole with a matching checksum.
         // A failed one leaves the values of the last good one.
         bool ok () const;
-
-        // A reading finished in this update, good or not.
-        bool measured () const;
 
       protected:
         void setup  () override;
@@ -38,13 +39,13 @@ namespace adk {
       private:
         void receive ();
 
-        Millis   signalledAt_;
-        int16_t  temperature_;
-        uint16_t humidity_;
-        Pin      pin_;
-        bool     signalling_;
-        bool     ok_;
-        bool     measured_;
-        bool     starting_;
+        StartTime signalled_;
+        int16_t   temperature_;
+        uint16_t  humidity_;
+        Pin       pin_;
+        bool      signalling_;
+        bool      warm_;
+        bool      ok_;
+        bool      measured_;
     };
 }

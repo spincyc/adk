@@ -1,6 +1,6 @@
 #pragma once
 
-#include "object.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -21,6 +21,8 @@ namespace adk {
     // A servo gets no pulses until its first write () or moveTo (), so it does
     // not jump at power-up; until then angle () reports 90. adk::stop () ends
     // the pulses and the servo goes limp; the next write () starts them again.
+    // Stopping lets the pulse under way finish first, which can hold stop ()
+    // up for as long as 3.4 ms.
     struct Servo : Object
     {
         // Most SG90s turn through about 180 degrees for pulses from 544 to
@@ -55,15 +57,14 @@ namespace adk {
         uint16_t pulseFor (uint8_t degrees) const;
         void     pulse    (uint16_t micros);
 
-        Millis   moveStart_;
-        Millis   moveLength_;
-        uint16_t minMicros_;
-        uint16_t maxMicros_;
-        uint16_t micros_;
-        uint16_t from_;
-        uint16_t to_;
-        Pin      pin_;
-        bool     pulsing_;
-        bool     starting_;
+        StartTime move_;
+        Millis    moveLength_;
+        uint16_t  minMicros_;
+        uint16_t  maxMicros_;
+        uint16_t  micros_;
+        uint16_t  from_;
+        uint16_t  to_;
+        Pin       pin_;
+        bool      pulsing_;
     };
 }

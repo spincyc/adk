@@ -6,9 +6,9 @@ namespace adk {
 
     namespace {
 
-        const int8_t DeadZone = 10;
-        const int8_t Enter    = 50;
-        const int8_t Leave    = 30;
+        constexpr int8_t DeadZone = 10;
+        constexpr int8_t Enter    = 50;
+        constexpr int8_t Leave    = 30;
 
         // Each side of the center is scaled on its own, so both ends of the
         // travel reach 100 however far the center is from 512.

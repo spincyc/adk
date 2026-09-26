@@ -1,49 +1,39 @@
 #include "relay.h"
 
-#include <Arduino.h>
-
 namespace adk {
 
     Relay::Relay (Pin pin, Polarity polarity)
-        : pin_      (pin)
-        , polarity_ (polarity)
-        , on_       (false)
+        : coil_ (pin, polarity)
     {
     }
 
     void Relay::setup ()
     {
-        claimOutput (pin_, polarity_ == ActiveLow);
+        coil_.claim ();
     }
 
     void Relay::on ()
     {
-        set (true);
+        coil_.set (true);
     }
 
     void Relay::off ()
     {
-        set (false);
+        coil_.set (false);
     }
 
     void Relay::toggle ()
     {
-        set (!on_);
+        coil_.set (!coil_.isOn ());
     }
 
     bool Relay::isOn () const
     {
-        return on_;
+        return coil_.isOn ();
     }
 
     void Relay::stop ()
     {
         off ();
-    }
-
-    void Relay::set (bool on)
-    {
-        digitalWrite (pin_, (on == (polarity_ == ActiveHigh)) ? HIGH : LOW);
-        on_ = on;
     }
 }

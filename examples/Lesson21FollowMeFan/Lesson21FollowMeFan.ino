@@ -104,5 +104,5 @@ int measure ()
     }
     while (!sensor.measured ());
 
-    return sensor.hasEcho () ? sensor.distance () : 400;
+    return sensor.ok () ? sensor.distance () : 400;
 }

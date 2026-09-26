@@ -25,20 +25,25 @@ namespace adk {
     // watch which way yours goes.
     struct Stepper : Object
     {
-        static const uint16_t StepsPerRevolution = 4096;
+        static constexpr uint16_t StepsPerRevolution = 4096;
 
         Stepper (Pin in1, Pin in2, Pin in3, Pin in4);
 
         // Move this many half-steps on from where the current move ends, or
         // to a position counted from where the motor was at adk::setup ().
+        // Asking again for the position it is already moving to changes
+        // nothing, so moveTo () can be called from every pass of loop ();
+        // step () counts on each time.
         void step   (long steps);
         void moveTo (long position);
 
         long position () const;
         bool isMoving () const;
 
-        // Half-steps a second, 1 to 1000 (500 to begin with). Much faster
-        // than 1000 the motor stalls and only hums.
+        // Half-steps a second, from 1 up to 500, which it starts at. A
+        // 28BYJ-48 is only sure to start, stop and turn back without missing
+        // a step below about 600 half-steps a second; faster, it can stall
+        // and only hum.
         void speed (uint16_t stepsPerSecond);
 
         // Keep the coils powered when the motor is still, so it resists
@@ -63,6 +68,6 @@ namespace adk {
         Pin      pins_ [4];
         bool     holding_;
         bool     energized_;
-        bool     starting_;
+        bool     resting_;
     };
 }

@@ -6,10 +6,15 @@ namespace adk {
 
     namespace {
 
-        // Servos share Timer 5 with each other and with nothing else.
-        const uint8_t  ServoTimer = 5;
-        const uint8_t  ServoUser  = 1;
-        const uint16_t Period     = 39999;
+        // Servos share Timer 5 with each other and with nothing else. It
+        // counts half microseconds, so a period of 40000 counts is 20 ms.
+        constexpr uint8_t  ServoTimer = 5;
+        constexpr uint8_t  ServoUser  = 1;
+        constexpr uint16_t Period     = 39999;
+
+        // Within the last millisecond of a period, stop () also waits out the
+        // next pulse, which could otherwise begin while it disconnects.
+        constexpr uint16_t LastMillisecond = Period - 2000;
 
         // Pins 44, 45 and 46 are Timer 5's outputs C, B and A.
         volatile uint16_t& compare (Pin pin)
@@ -34,7 +39,7 @@ namespace adk {
     }
 
     Servo::Servo (Pin pin, uint16_t minMicros, uint16_t maxMicros)
-        : moveStart_  (0)
+        : move_       ()
         , moveLength_ (0)
         , minMicros_  (minMicros)
         , maxMicros_  (maxMicros)
@@ -43,7 +48,6 @@ namespace adk {
         , to_         (0)
         , pin_        (pin)
         , pulsing_    (false)
-        , starting_   (false)
     {
     }
 
@@ -109,7 +113,7 @@ namespace adk {
         from_       = micros_;
         to_         = target;
         moveLength_ = duration;
-        starting_   = true;
+        move_.restart ();
     }
 
     bool Servo::isMoving () const
@@ -137,46 +141,45 @@ namespace adk {
             return;
         }
 
-        if (starting_)
-        {
-            moveStart_ = now;
-            starting_  = false;
-        }
+        Millis elapsed = move_.elapsed (now);
 
-        Millis elapsed = now - moveStart_;
+        pulse (interpolate (from_, to_, elapsed, moveLength_));
 
         if (elapsed >= moveLength_)
         {
             moveLength_ = 0;
-            pulse (to_);
-            return;
         }
-
-        // Glides longer than about a minute are measured in coarser steps, so
-        // that distance times elapsed still fits in 32 bits.
-        Millis   length   = moveLength_;
-        uint16_t distance = static_cast<uint16_t> (to_ > from_ ? to_ - from_ : from_ - to_);
-
-        while (length > 0xFFFF)
-        {
-            length  >>= 1;
-            elapsed >>= 1;
-        }
-
-        uint16_t moved = static_cast<uint16_t> (distance * elapsed / length);
-        pulse (static_cast<uint16_t> (to_ > from_ ? from_ + moved : from_ - moved));
     }
 
     void Servo::stop ()
     {
         moveLength_ = 0;
 
-        // Disconnected from the timer, the pin sits at the low level its claim set.
-        if (pulsing_)
+        if (!pulsing_)
         {
-            TCCR5A   = static_cast<uint8_t> (TCCR5A & ~output (pin_));
-            pulsing_ = false;
+            return;
         }
+
+        // Disconnected from the timer, the pin sits at the low level its
+        // claim set, but the timer's own copy of the output keeps the level
+        // it had. Disconnected during a pulse, that copy would stay high, and
+        // the next write () would begin with one pulse up to 22 ms long. So
+        // the pulse under way is let finish first: every pulse ends by
+        // maxMicros after its period starts.
+        uint16_t count  = TCNT5;
+        uint16_t widest = static_cast<uint16_t> (maxMicros_ * 2);
+
+        if (count < widest)
+        {
+            delayMicroseconds (static_cast<uint16_t> ((widest - count) / 2 + 1));
+        }
+        else if (count > LastMillisecond)
+        {
+            delayMicroseconds (static_cast<uint16_t> ((Period - count + widest) / 2 + 1));
+        }
+
+        TCCR5A   = static_cast<uint8_t> (TCCR5A & ~output (pin_));
+        pulsing_ = false;
     }
 
     uint16_t Servo::pulseFor (uint8_t degrees) const

@@ -6,12 +6,12 @@ namespace adk {
 
     namespace {
 
-        const uint8_t Debounce = 20;
+        constexpr uint8_t Debounce = 20;
 
         // Key codes count along each row in turn, as the keys are printed.
         // NoKey indexes the terminating '\0'.
-        const char    Keys [] PROGMEM = "123A456B789C*0#D";
-        const uint8_t NoKey           = 16;
+        constexpr char    Keys [] PROGMEM = "123A456B789C*0#D";
+        constexpr uint8_t NoKey           = 16;
     }
 
     Keypad::Keypad (const Pin (&rows) [4], const Pin (&columns) [4])

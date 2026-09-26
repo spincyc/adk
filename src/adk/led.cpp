@@ -1,22 +1,17 @@
 #include "led.h"
 
-#include <Arduino.h>
-
 namespace adk {
 
     Led::Led (Pin pin, Polarity polarity)
-        : period_    (0)
-        , toggledAt_ (0)
-        , pin_       (pin)
-        , polarity_  (polarity)
-        , lit_       (false)
-        , starting_  (false)
+        : light_  (pin, polarity)
+        , flash_  ()
+        , period_ (0)
     {
     }
 
     void Led::setup ()
     {
-        claimOutput (pin_, polarity_ == ActiveLow);
+        light_.claim ();
     }
 
     void Led::on ()
@@ -31,67 +26,48 @@ namespace adk {
 
     void Led::toggle ()
     {
-        set (!lit_);
+        set (!light_.isOn ());
     }
 
     void Led::set (bool lit)
     {
         period_ = 0;
-        show (lit);
+        light_.set (lit);
     }
 
     bool Led::isOn () const
     {
-        return lit_;
+        return light_.isOn ();
     }
 
     Pin Led::pin () const
     {
-        return pin_;
+        return light_.pin ();
     }
 
     void Led::blink (Millis period)
     {
-        // Asking again for the same blink changes nothing, so blink () can be
-        // called from every pass of loop ().
         if (period == period_)
         {
             return;
         }
 
-        period_   = period;
-        starting_ = true;
-        show (true);
+        period_ = period;
+        flash_.restart ();
+        light_.set (true);
     }
 
     void Led::update (Millis now)
     {
-        if (period_ == 0)
+        if (period_ != 0 && flash_.elapsed (now) >= period_ / 2)
         {
-            return;
-        }
-
-        if (starting_)
-        {
-            toggledAt_ = now;
-            starting_  = false;
-        }
-
-        if (now - toggledAt_ >= period_ / 2)
-        {
-            toggledAt_ = now;
-            show (!lit_);
+            flash_.restart (now);
+            light_.set (!light_.isOn ());
         }
     }
 
     void Led::stop ()
     {
         off ();
-    }
-
-    void Led::show (bool lit)
-    {
-        digitalWrite (pin_, (lit == (polarity_ == ActiveHigh)) ? HIGH : LOW);
-        lit_ = lit;
     }
 }

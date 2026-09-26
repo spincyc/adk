@@ -1,6 +1,6 @@
 #pragma once
 
-#include "digital.h"
+#include "on_off_pin.h"
 
 namespace adk {
 
@@ -34,10 +34,6 @@ namespace adk {
         void stop  () override;
 
       private:
-        void set (bool on);
-
-        Pin      pin_;
-        Polarity polarity_;
-        bool     on_;
+        OnOffPin coil_;
     };
 }

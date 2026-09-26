@@ -68,6 +68,27 @@ TEST (blinkingAgainAtTheSamePeriodKeepsTheRhythm)
     CHECK (!led.isOn ());
 }
 
+TEST (blinkingAtANewPeriodStartsAfresh)
+{
+    adk::Led led {8};
+
+    adk::setup ();
+    led.blink (1000);
+    adk::update (0);
+    adk::update (500);
+    CHECK (!led.isOn ());
+
+    led.blink (200);
+    CHECK (led.isOn ());
+
+    adk::update (600);
+    adk::update (699);
+    CHECK (led.isOn ());
+
+    adk::update (700);
+    CHECK (!led.isOn ());
+}
+
 TEST (stoppedLedIsOff)
 {
     adk::Led led {8};

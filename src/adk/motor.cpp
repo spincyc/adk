@@ -6,18 +6,17 @@ namespace adk {
 
     namespace {
 
-        const Millis SpinDown = 500;
+        constexpr Millis SpinDown = 500;
     }
 
     Motor::Motor (Pin enable, Pin forward, Pin backward)
-        : stoppedAt_ (0)
+        : spinDown_  ()
         , speed_     (0)
         , enable_    (enable)
         , forward_   (forward)
         , backward_  (backward)
         , spin_      (0)
         , driving_   (false)
-        , starting_  (false)
     {
     }
 
@@ -81,18 +80,7 @@ namespace adk {
 
     void Motor::update (Millis now)
     {
-        if (driving_ || spin_ == 0)
-        {
-            return;
-        }
-
-        if (starting_)
-        {
-            stoppedAt_ = now;
-            starting_  = false;
-        }
-
-        if (now - stoppedAt_ < SpinDown)
+        if (driving_ || spin_ == 0 || spinDown_.elapsed (now) < SpinDown)
         {
             return;
         }
@@ -130,8 +118,8 @@ namespace adk {
         // brake () or coast () does not restart it.
         if (driving_)
         {
-            driving_  = false;
-            starting_ = true;
+            driving_ = false;
+            spinDown_.restart ();
         }
     }
 }

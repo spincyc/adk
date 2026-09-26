@@ -1,6 +1,7 @@
 #pragma once
 
 #include "analog.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -30,13 +31,12 @@ namespace adk {
       private:
         void sample ();
 
-        Smoother smoother_;
-        float    beta_;
-        float    nominalOhms_;
-        float    seriesOhms_;
-        float    celsius_;
-        Millis   sampledAt_;
-        Pin      pin_;
-        bool     starting_;
+        Smoother  smoother_;
+        float     beta_;
+        float     nominalOhms_;
+        float     seriesOhms_;
+        float     celsius_;
+        StartTime sampled_;
+        Pin       pin_;
     };
 }

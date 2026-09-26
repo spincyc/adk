@@ -6,16 +6,16 @@ namespace adk {
 
     namespace {
 
-        const uint8_t Address = 0x68;
+        constexpr uint8_t Address = 0x68;
 
         // The time registers, from 0x00: seconds, minutes, hours, day of the
         // week, date, month, and year, each in binary-coded decimal.
-        const uint8_t Seconds    = 0x00;
-        const uint8_t ClockHalt  = 0x80;
-        const uint8_t TwelveHour = 0x40;
-        const uint8_t Afternoon  = 0x20;
+        constexpr uint8_t Seconds    = 0x00;
+        constexpr uint8_t ClockHalt  = 0x80;
+        constexpr uint8_t TwelveHour = 0x40;
+        constexpr uint8_t Afternoon  = 0x20;
 
-        const char MonthNames [] PROGMEM = "JanFebMarAprMayJunJulAugSepOctNovDec";
+        constexpr char MonthNames [] PROGMEM = "JanFebMarAprMayJunJulAugSepOctNovDec";
 
         uint8_t fromBcd (uint8_t bcd)
         {

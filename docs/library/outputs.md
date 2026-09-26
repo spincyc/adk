@@ -1,5 +1,9 @@
 # Lights and sound
 
+Asking a part for what it is already doing changes nothing, so `blink ()`,
+`fadeTo ()`, `beep ()`, `tone ()` and `play ()` can be called from every
+pass of `loop ()`; asking for something different starts afresh.
+
 <!-- api led.h Led -->
 
 <!-- api rgb_led.h RgbLed -->

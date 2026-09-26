@@ -110,7 +110,7 @@ What's new:
   steady. Each is used in more than one place, so a name keeps them in
   step when you change one.
 - `sensor.distance ()` is the latest distance in centimeters, and
-  `sensor.hasEcho ()` says whether anything answered at all. When nothing
+  `sensor.ok ()` says whether an echo came back at all. When nothing
   is within about 4 m, the `?:` from Lesson 7 counts it as 400 cm: plenty
   of room.
 - `showGauge ()` switches each LED with `set ()`, which takes true or false,
@@ -154,7 +154,7 @@ every 30 × 10 = 300 ms, a little over three a second.
     time by 58 to get centimeters, rounding to the nearest one. Waiting for
     the echo holds everything else up for as long as the round trip takes,
     so ADK gives up after 25 ms, the time an echo takes from about 4.3 m;
-    beyond that, `hasEcho ()` is false.
+    beyond that, `ok ()` is false.
 
     The 60 ms between pings is the shortest the sensor's datasheet allows:
     it lets the echoes of one ping die away, so they can't be mistaken for

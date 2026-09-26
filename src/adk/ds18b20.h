@@ -29,12 +29,13 @@ namespace adk {
         // The latest good reading, in degrees Celsius; 0 until the first.
         float celsius () const;
 
+        // A reading finished in this update, good or not: an event. Without
+        // a sensor, one fails every 750 ms.
+        bool measured () const;
+
         // The latest reading arrived intact. False while the sensor is
         // missing or its data was garbled, and until the first reading.
         bool ok () const;
-
-        // A reading arrived in this update.
-        bool measured () const;
 
       protected:
         void setup  () override;
@@ -48,7 +49,7 @@ namespace adk {
             Missing
         };
 
-        void    collect ();
+        bool    collect ();
         bool    command (uint8_t function);
         bool    reset   ();
         uint8_t touch   (uint8_t byte);
