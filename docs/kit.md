@@ -18,7 +18,7 @@ Modules Kit**; those are marked below and in each lesson's parts list.
 | 10 kΩ potentiometer | A knob that sets a voltage | Lesson 7 |
 | Photoresistor | Senses light | Lesson 8 |
 | 74HC595 shift register | Eight outputs from three pins | Lesson 10 |
-| One- and four-digit 7-segment displays | Numbers in light | Lessons 10, 11 |
+| One- and four-digit 7-segment displays | Numbers in light | [Lesson 10](lessons/10-dice/index.md), [Lesson 11](lessons/11-four-digits/index.md) |
 | LCD1602 character display | Two lines of sixteen letters | Lesson 13 |
 | DHT11 sensor and thermistor | Temperature and humidity | Lesson 14 |
 | 18B20 temperature module *(37 in 1)* | A precise digital thermometer | Lesson 14 |
@@ -174,9 +174,18 @@ The kit's resistors are blue, with five colored bands. Hold the resistor
 with the lone band that sits apart (brown, for 1%) on the right, and read
 from the left: three digits, then how many zeros follow.
 
-| Color | Black | Brown | Red | Orange | Yellow | Green | Blue | Violet | Gray | White |
-|---|---|---|---|---|---|---|---|---|---|---|
-| Digit | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+<ul class="color-code" aria-label="The digit each color stands for">
+  <li><span class="band black"></span><b>0</b> black</li>
+  <li><span class="band brown"></span><b>1</b> brown</li>
+  <li><span class="band red"></span><b>2</b> red</li>
+  <li><span class="band orange"></span><b>3</b> orange</li>
+  <li><span class="band yellow"></span><b>4</b> yellow</li>
+  <li><span class="band green"></span><b>5</b> green</li>
+  <li><span class="band blue"></span><b>6</b> blue</li>
+  <li><span class="band violet"></span><b>7</b> violet</li>
+  <li><span class="band gray"></span><b>8</b> gray</li>
+  <li><span class="band white"></span><b>9</b> white</li>
+</ul>
 
 | Resistor | Bands |
 |---|---|

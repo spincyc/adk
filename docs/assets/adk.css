@@ -1,61 +1,91 @@
 /* ADK: a quiet sketchbook look. Paper, graphite, and one warm LED red.
-   Built on Material's own light (default) and dark (slate) schemes, so code,
-   callouts and search keep Material's tuned colors in both. */
+   Built on Material's light (default) and dark (slate) schemes, so search
+   and callouts keep Material's behavior in both. */
 
 /* Color ------------------------------------------------------------------ */
 
-[data-md-color-scheme="default"] {
+/* The light palette: the default scheme's, and every page's on paper. The
+   dark one below is for screens only, as Material's own is, so a page
+   printed in dark mode prints like any other. */
+[data-md-color-scheme] {
+    color-scheme: light;
+
     --adk-paper:      #fbfaf6;
     --adk-paper-deep: #f2efe7;
     --adk-ink:        #232220;
+    --adk-ink-soft:   #46443f;
     --adk-muted:      #5d5a54;
     --adk-rule:       #e2ddd1;
     --adk-red:        #b93a22;
     --adk-card:       #ffffff;
+    --adk-code-paper: #f3f0e8;
+    --adk-code-ink:   #36464e;
     --adk-shadow:     0 1px 2px rgb(40 35 25 / 6%), 0 4px 16px rgb(40 35 25 / 6%);
 
-    --md-default-bg-color:        var(--adk-paper);
-    --md-default-fg-color:        var(--adk-ink);
-    --md-default-fg-color--light: #46443f;
-    --md-primary-fg-color:        var(--adk-paper);
-    --md-primary-fg-color--light: var(--adk-paper);
-    --md-primary-fg-color--dark:  var(--adk-paper-deep);
-    --md-primary-bg-color:        var(--adk-ink);
-    --md-primary-bg-color--light: var(--adk-muted);
-    --md-accent-fg-color:         var(--adk-red);
-    --md-typeset-color:           var(--adk-ink);
-    --md-typeset-a-color:         var(--adk-red);
-    --md-code-bg-color:           #f3f0e8;
-    --md-footer-bg-color:         #2a2926;
-    --md-footer-bg-color--dark:   #211f1d;
+    --md-default-bg-color:          var(--adk-paper);
+    --md-default-fg-color:          var(--adk-ink);
+    --md-default-fg-color--light:   var(--adk-ink-soft);
+    --md-default-fg-color--lighter: color-mix(in srgb, var(--adk-ink) 34%, transparent);
+    --md-default-fg-color--lightest: color-mix(in srgb, var(--adk-ink) 7%, transparent);
+    --md-primary-fg-color:          var(--adk-paper);
+    --md-primary-fg-color--light:   var(--adk-paper);
+    --md-primary-fg-color--dark:    var(--adk-paper-deep);
+    --md-primary-bg-color:          var(--adk-ink);
+    --md-primary-bg-color--light:   var(--adk-muted);
+    --md-accent-fg-color:           var(--adk-red);
+    --md-typeset-color:             var(--adk-ink);
+    --md-typeset-a-color:           var(--adk-red);
+    --md-typeset-table-color:       var(--adk-rule);
+    --md-typeset-table-color--light: color-mix(in srgb, var(--adk-ink) 3%, transparent);
+    --md-admonition-fg-color:       var(--adk-ink);
+    --md-code-fg-color:             var(--adk-code-ink);
+    --md-code-bg-color:             var(--adk-code-paper);
+    --md-footer-bg-color:           #2a2926;
+    --md-footer-bg-color--dark:     #211f1d;
+    --md-footer-fg-color--lighter:  rgb(255 255 255 / 52%);
+
+    /* Material's code colors, a shade darker to read on the warm paper. */
+    --md-code-hl-name-color:        var(--md-code-fg-color);
+    --md-code-hl-comment-color:     var(--md-default-fg-color--light);
+    --md-code-hl-operator-color:    var(--md-default-fg-color--light);
+    --md-code-hl-punctuation-color: var(--md-default-fg-color--light);
+    --md-code-hl-generic-color:     var(--md-default-fg-color--light);
+    --md-code-hl-variable-color:    var(--md-default-fg-color--light);
+    --md-code-hl-number-color:   #b3261e;
+    --md-code-hl-special-color:  #b81048;
+    --md-code-hl-function-color: #8f3a9f;
+    --md-code-hl-constant-color: #5a45c4;
+    --md-code-hl-keyword-color:  #3461b0;
+    --md-code-hl-string-color:   #1d6b44;
 }
 
-[data-md-color-scheme="slate"] {
-    --md-hue: 35;
+@media screen {
+    [data-md-color-scheme="slate"] {
+        color-scheme: dark;
+        --md-hue: 35;
 
-    --adk-paper:      #1c1b19;
-    --adk-paper-deep: #24231f;
-    --adk-ink:        #ece8e0;
-    --adk-muted:      #b9b4aa;
-    --adk-rule:       #3a3833;
-    --adk-red:        #ff8f73;
-    --adk-card:       #24231f;
-    --adk-shadow:     0 1px 2px rgb(0 0 0 / 30%), 0 6px 20px rgb(0 0 0 / 30%);
+        --adk-paper:      #1c1b19;
+        --adk-paper-deep: #24231f;
+        --adk-ink:        #ece8e0;
+        --adk-ink-soft:   #d6d1c7;
+        --adk-muted:      #b9b4aa;
+        --adk-rule:       #3a3833;
+        --adk-red:        #ff8f73;
+        --adk-card:       #24231f;
+        --adk-code-paper: #262521;
+        --adk-code-ink:   #c9c4bb;
+        --adk-shadow:     0 1px 2px rgb(0 0 0 / 30%), 0 6px 20px rgb(0 0 0 / 30%);
 
-    --md-default-bg-color:        var(--adk-paper);
-    --md-default-fg-color:        var(--adk-ink);
-    --md-default-fg-color--light: #d6d1c7;
-    --md-primary-fg-color:        var(--adk-paper);
-    --md-primary-fg-color--light: var(--adk-paper);
-    --md-primary-fg-color--dark:  var(--adk-paper-deep);
-    --md-primary-bg-color:        var(--adk-ink);
-    --md-primary-bg-color--light: var(--adk-muted);
-    --md-accent-fg-color:         var(--adk-red);
-    --md-typeset-color:           var(--adk-ink);
-    --md-typeset-a-color:         var(--adk-red);
-    --md-code-bg-color:           #262521;
-    --md-footer-bg-color:         #151412;
-    --md-footer-bg-color--dark:   #0f0e0d;
+        --md-footer-bg-color:        #151412;
+        --md-footer-bg-color--dark:  #0f0e0d;
+
+        --md-code-hl-number-color:   #f07c6e;
+        --md-code-hl-special-color:  #f06090;
+        --md-code-hl-function-color: #c973d9;
+        --md-code-hl-constant-color: #a397ee;
+        --md-code-hl-keyword-color:  #7ba0ea;
+        --md-code-hl-string-color:   #2fb170;
+    }
 }
 
 /* Type ------------------------------------------------------------------- */
@@ -67,6 +97,9 @@
 }
 
 .md-typeset {
+    /* The longest comfortable line: about 70 characters. */
+    --adk-measure: 31em;
+
     font-size: 0.85rem;
     line-height: 1.65;
 }
@@ -77,16 +110,21 @@
     margin: 0 0 1em;
 }
 
-.md-typeset li {
-    margin-bottom: 0.35em;
-}
-
 .md-typeset h1,
 .md-typeset h2,
 .md-typeset h3 {
     font-family: var(--adk-display);
     color: var(--adk-ink);
     letter-spacing: -0.01em;
+    text-wrap: balance;
+}
+
+/* On screen, no word left alone on a paragraph's last line. (On paper the
+   lines stay as they fall, so the printed pages don't shift.) */
+@media screen {
+    .md-typeset p {
+        text-wrap: pretty;
+    }
 }
 
 .md-typeset h1 {
@@ -132,7 +170,7 @@
     border-color: var(--adk-rule);
 }
 
-/* Header and navigation -------------------------------------------------- */
+/* Header, navigation and footer ------------------------------------------ */
 
 .md-header {
     border-bottom: 1px solid var(--adk-rule);
@@ -161,29 +199,63 @@
     font-weight: 700;
 }
 
-/* Lesson layout: one reading column; the bench drawing may spread wider. */
-
-.lesson-header,
-.lesson-body {
-    max-width: 36rem;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 @media screen and (min-width: 60em) {
-    .md-typeset .lesson-body > .bench-bench {
-        width: min(100vw - 20rem, 54rem);
-        max-width: none;
-        margin-left: 50%;
-        transform: translateX(-50%);
+    .md-search__form {
+        border: 1px solid var(--adk-rule);
+        border-radius: 999px;
+        background: var(--adk-paper-deep);
     }
 
-    /* A sketch's lines run to 80 characters, a little wider than the text. */
-    .md-typeset .lesson-body > .highlight:has(> .filename) {
-        width: max(100%, min(100vw - 20rem, 40rem));
+    .md-search__form:hover {
+        background: var(--adk-card);
+    }
+}
+
+/* Reading column --------------------------------------------------------- */
+
+@media screen {
+    /* The page's column is a container, so wide things can size to it. */
+    .md-content__inner {
+        container-type: inline-size;
+    }
+
+    /* Running text keeps to the measure; tables and code may use the rest. */
+    .md-content__inner > :is(p, ul, ol, dl, blockquote, h1, h2, h3, h4, .admonition, details) {
+        max-width: var(--adk-measure);
+    }
+
+    /* A lesson is one column down the middle of the page. Its drawings,
+       sketch, meters and tables spread wider when they need to, each to its
+       own --adk-wide, centered on the column and never wider than the
+       page's. */
+    .lesson-header,
+    .lesson-body {
+        max-width: var(--adk-measure);
+        margin-inline: auto;
+    }
+
+    .md-typeset .lesson-body > :is(.bench-figure, .meters, .md-typeset__scrollwrap,
+                                   .highlight:has(> .filename)) {
+        width: var(--adk-wide);
         max-width: none;
-        margin-left: 50%;
-        transform: translateX(-50%);
+        margin-inline: calc((100% - var(--adk-wide)) / 2);
+    }
+
+    /* A sketch's lines run to 80 characters. */
+    .lesson-body > .highlight:has(> .filename) {
+        --adk-wide: min(100cqi, max(100%, 45em));
+    }
+
+    /* A table's box bleeds into the page margin, as Material's do, so the
+       table itself lines up with the text; a wide one is centered. */
+    .lesson-body > .md-typeset__scrollwrap {
+        --adk-wide: calc(100cqi + 1.6rem);
+        text-align: center;
+    }
+
+    .lesson-body > .md-typeset__scrollwrap > .md-typeset__table {
+        min-width: min(100%, var(--adk-measure) + 1.6rem);
+        text-align: left;
     }
 }
 
@@ -223,20 +295,21 @@
     font-size: 1.2em;
     font-weight: 500;
     line-height: 1.4;
-    color: var(--md-default-fg-color--light);
+    color: var(--adk-ink-soft);
+    text-wrap: balance;
 }
 
 .md-typeset ul.lesson-facts {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.4rem 1.2rem;
+    gap: 0.5rem 1.2rem;
     align-items: center;
     margin: 0 0 1rem;
     padding: 0;
     list-style: none;
 }
 
-[dir] .md-typeset ul.lesson-facts > li {
+.md-typeset ul.lesson-facts > li {
     display: flex;
     align-items: center;
     gap: 0.35rem;
@@ -269,20 +342,22 @@
     padding: 0.25rem 0.75rem;
     border: 1.5px solid var(--adk-red);
     border-radius: 999px;
+    font-size: 0.9em;
     font-weight: 700;
     text-decoration: none;
 }
 
-.md-typeset .lesson-pdf a:hover {
+.md-typeset .lesson-pdf a:is(:hover, :focus-visible) {
     color: var(--adk-paper);
     background: var(--adk-red);
 }
 
+/* The lesson's sections, after what it needs, lead into the lesson. */
 .lesson-sections {
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem;
-    margin: 0 0 1.25rem;
+    margin: 1.25rem 0 0;
 }
 
 .md-typeset .lesson-sections a {
@@ -294,15 +369,15 @@
     background: var(--adk-card);
 }
 
-.md-typeset .lesson-sections a:hover {
+.md-typeset .lesson-sections a:is(:hover, :focus-visible) {
     border-color: var(--adk-red);
     color: var(--adk-red);
 }
 
 .lesson-kit {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
-    gap: 0.5rem 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr));
+    gap: 0.5rem 1.75rem;
     padding: 1rem 1.25rem 0.5rem;
     border: 1px solid var(--adk-rule);
     border-radius: 0.5rem;
@@ -331,17 +406,17 @@
 
 /* Drawings --------------------------------------------------------------- */
 
+/* The build sets --drawing-width on each drawing's figure: the width of its
+   viewBox, in which a label is 5 to 9 units tall. Drawn at a fixed scale,
+   every lesson's breadboard is the same size on the page. Without it, a
+   close-up is at most 680 pixels wide and nothing scrolls. */
+
 .md-typeset .bench-figure {
     width: 100%;
     margin: 1.5rem 0;
 }
 
-.md-typeset .bench-closeup {
-    width: min(100%, 34rem);
-    margin: 1.25rem auto 1.5rem;
-}
-
-.bench-figure svg.pencil-drawing {
+.md-typeset svg.pencil-drawing {
     display: block;
     width: 100%;
     height: auto;
@@ -350,13 +425,116 @@
     box-shadow: var(--adk-shadow);
 }
 
-.md-typeset .bench-figure figcaption {
+.md-typeset :is(.bench-figure, .meter) figcaption {
     max-width: none;
     margin: 0.5rem 0 0;
     font-size: 0.72rem;
     font-style: italic;
     color: var(--adk-muted);
     text-align: center;
+}
+
+@media screen {
+    /* Two units to the pixel for a close-up, one and a half for the bench,
+       as far as the page's column allows. */
+    .lesson-body > .bench-closeup {
+        --adk-wide: min(100cqi, var(--drawing-width, 340) * 2px);
+    }
+
+    .lesson-body > .bench-bench {
+        --adk-wide: min(100cqi, var(--drawing-width, 10000) * 1.5px);
+    }
+}
+
+/* On a phone or small tablet, a drawing is never drawn so small that its
+   labels can't be read: it keeps its size and scrolls sideways instead. */
+@media screen and (max-width: 59.984375em) {
+    .md-typeset .lesson-body > .bench-figure {
+        --adk-wide: calc(100cqi + 1.6rem);
+        padding: 0 0.8rem 0.4rem;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+    }
+
+    .lesson-body > .bench-closeup svg.pencil-drawing {
+        min-width: calc(var(--drawing-width, 0) * 1.5px);
+    }
+
+    .lesson-body > .bench-bench svg.pencil-drawing {
+        min-width: calc(var(--drawing-width, 0) * 1.15px);
+    }
+
+    /* The caption stays in view while the drawing scrolls, and says to
+       swipe when there is more to see. */
+    .md-typeset .lesson-body > .bench-figure figcaption {
+        position: sticky;
+        left: 0;
+    }
+
+    @supports (animation-timeline: scroll()) {
+        .md-typeset .lesson-body > .bench-figure figcaption::before {
+            content: "⟷  Swipe sideways to see all of it";
+            display: block;
+            max-height: 0;
+            overflow: hidden;
+            visibility: hidden;
+            font-style: normal;
+            font-weight: 700;
+            color: var(--adk-ink-soft);
+            animation: adk-scrollable linear both;
+            animation-timeline: scroll(nearest inline);
+        }
+    }
+}
+
+/* Shown only while its figure can scroll: on a figure that fits, the
+   scroll timeline is inactive and the hint stays hidden. */
+@keyframes adk-scrollable {
+    from, to {
+        max-height: 3em;
+        margin-bottom: 0.15rem;
+        visibility: visible;
+    }
+}
+
+/* Measure it: one small drawing per reading, all the same width, their
+   captions in line beneath them: two to a row on a phone, and as many as
+   fit across the page's column on a wider screen. */
+.md-typeset .meters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 11rem);
+    justify-content: center;
+    gap: 0.4rem 1rem;
+    margin: 1.25rem 0 1.5rem;
+}
+
+@media screen {
+    .lesson-body > .meters {
+        --adk-wide: 100cqi;
+    }
+}
+
+@media screen and (max-width: 29.984375em) {
+    .md-typeset .meters {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.md-typeset .meter {
+    display: grid;
+    grid-row: span 2;
+    grid-template-rows: subgrid;
+    width: auto;
+    margin: 0;
+}
+
+.meter svg.pencil-drawing {
+    align-self: end;
+}
+
+.md-typeset .meter figcaption {
+    align-self: start;
+    margin: 0.1rem 0 0.6rem;
 }
 
 /* A worked formula, set like a sum on the page. */
@@ -388,14 +566,14 @@
     padding: 0;
 }
 
-[dir] .md-typeset .build-steps li {
+.md-typeset .build-steps ol > li {
     position: relative;
     margin: 0 0 0.45rem;
     padding: 0.05rem 0 0 2rem;
     counter-increment: step;
 }
 
-.md-typeset .build-steps li::before {
+.md-typeset .build-steps ol > li::before {
     content: counter(step);
     position: absolute;
     top: 0.1rem;
@@ -418,7 +596,7 @@
     border-top: 1px solid var(--adk-rule);
 }
 
-[dir] .md-typeset .connections li {
+.md-typeset .connections ul > li {
     margin: 0;
     padding: 0.35rem 0.1rem;
     border-bottom: 1px solid var(--adk-rule);
@@ -469,7 +647,8 @@
     --adk-callout: #4a78b8;
 }
 
-/* Material colors each callout type's border itself; use the palette. */
+/* Material colors each callout type's border, icon and chevron itself; use
+   the palette. */
 .md-typeset :is(.admonition, details):is(.note, .abstract, .info, .tip, .success, .question,
                                          .warning, .failure, .danger, .bug, .example, .quote) {
     border-color: var(--adk-callout);
@@ -484,6 +663,10 @@
     background-color: var(--adk-callout);
 }
 
+.md-typeset :is(.admonition, details) > :is(.admonition-title, summary)::after {
+    color: var(--adk-callout);
+}
+
 .md-typeset .highlight .filename {
     font-family: var(--md-code-font);
     font-weight: 600;
@@ -496,7 +679,7 @@
     grid-template-columns: 1.1fr 1fr;
     gap: 2.5rem;
     align-items: center;
-    margin: 0.5rem 0 1rem;
+    margin: 0.5rem 0 1.5rem;
 }
 
 .md-typeset .hero h1 {
@@ -505,25 +688,48 @@
 }
 
 .md-typeset .hero-lead {
+    max-width: calc(var(--adk-measure) / 1.1);
     font-size: 1.1em;
-    color: var(--md-default-fg-color--light);
+    color: var(--adk-ink-soft);
 }
 
 .md-typeset .hero .md-button {
     margin: 0.5rem 0.5rem 0 0;
-    border-radius: 999px;
+}
+
+.md-typeset .hero-aside {
+    margin: 1rem 0 0;
+    font-size: 0.9em;
+    color: var(--adk-muted);
 }
 
 .md-typeset .md-button {
+    border-radius: 999px;
     color: var(--adk-ink);
     border-color: var(--adk-ink);
 }
 
-.md-typeset .md-button:is(:hover, :focus),
+.md-typeset .md-button:is(:hover, :focus-visible),
 .md-typeset .md-button--primary {
     color: var(--adk-paper);
     background: var(--adk-red);
     border-color: var(--adk-red);
+}
+
+.md-typeset .md-button--primary:is(:hover, :focus-visible) {
+    background: color-mix(in srgb, var(--adk-red) 88%, var(--adk-ink));
+}
+
+/* The code beside what it means. */
+.split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 0.5rem 2.5rem;
+    align-items: start;
+}
+
+.md-typeset .split > .highlight {
+    margin: 0;
 }
 
 .arcs {
@@ -566,11 +772,95 @@
     font-weight: 700;
 }
 
-@media screen and (max-width: 60em) {
-    .hero {
-        grid-template-columns: 1fr;
+@media screen and (max-width: 59.984375em) {
+    .hero,
+    .split {
+        grid-template-columns: minmax(0, 1fr);
     }
 }
+
+@media screen and (max-width: 44.984375em) {
+    .md-typeset .hero h1 {
+        font-size: 2.3em;
+    }
+
+    .md-typeset .lesson-header h1 {
+        font-size: 2.4em;
+    }
+}
+
+/* The course and the kit ------------------------------------------------- */
+
+/* Each arc's table the full width, its columns in line with the others'. */
+.course-list .md-typeset__table {
+    display: block;
+}
+
+.md-typeset .course-list table:not([class]) {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.course-list th:first-child {
+    width: 3.2em;
+}
+
+.course-list th:nth-child(2) {
+    width: 38%;
+}
+
+.course-list td:first-child {
+    font-variant-numeric: tabular-nums;
+    color: var(--adk-muted);
+}
+
+/* The resistor color code: each band's color beside its digit. */
+.md-typeset ul.color-code {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+    gap: 0.4rem;
+    max-width: none;
+    margin: 0 0 1.25em;
+    padding: 0;
+    list-style: none;
+}
+
+.md-typeset ul.color-code > li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--adk-rule);
+    border-radius: 0.4rem;
+    background: var(--adk-card);
+}
+
+.color-code b {
+    min-width: 0.7em;
+    font-size: 1.1em;
+    font-variant-numeric: tabular-nums;
+}
+
+.color-code .band {
+    flex: none;
+    width: 0.8rem;
+    height: 1.4rem;
+    border-radius: 0.15rem;
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 25%);
+}
+
+.band.black  { background: #1d1c1a; }
+.band.brown  { background: #7a4a2b; }
+.band.red    { background: #c7301f; }
+.band.orange { background: #e8791c; }
+.band.yellow { background: #f2c417; }
+.band.green  { background: #2f8a3e; }
+.band.blue   { background: #2d5fbf; }
+.band.violet { background: #7d4bb3; }
+.band.gray   { background: #8c8a86; }
+.band.white  { background: #ffffff; }
 
 /* Print ------------------------------------------------------------------ */
 
@@ -614,11 +904,6 @@
         padding: 0;
     }
 
-    .lesson-header,
-    .lesson-body > * {
-        max-width: none;
-    }
-
     .md-typeset h2 {
         margin-top: 1.5em;
         clear: both;
@@ -631,6 +916,7 @@
     }
 
     .bench-figure,
+    .meter,
     .md-typeset table,
     .md-typeset .admonition,
     .md-typeset details,
@@ -658,7 +944,7 @@
         margin-left: auto;
     }
 
-    .bench-figure svg.pencil-drawing {
+    .md-typeset svg.pencil-drawing {
         box-shadow: none;
     }
 
