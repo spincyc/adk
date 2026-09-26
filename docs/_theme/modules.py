@@ -446,6 +446,34 @@ class IrReceiver (Kind):
         self.draw_header (pencil)
 
 
+class IrTransmitter (Kind):
+    # KY-005: a 5 mm infrared LED standing off the end of a small board,
+    # lit from S to −; the middle pin isn't needed.
+    title  = "IR LED"
+    pins   = ("S", "+", "−")
+    pin_modes = {"S": "output"}
+    width, height = 62, 96
+    TOP = 34                        # the board's top edge, below the LED
+
+    def draw (self, pencil):
+        top = self.TOP
+        board (pencil, 0, top, self.width, self.height - top, self.color, holes=[(10, top + 10)])
+        for x in (26, 36):
+            pencil.line ((x, 27), (x, top + 8), width=1.4, tone=0.6, layer="top", passes=1)
+            hole (pencil, x, top + 8, 2.6)
+        pencil.tint (rounded (21, 2, 20, 24, 9), "#c9d8ee")
+        pencil.rect (21, 2, 20, 24, width=1.0, radius=9, layer="top", passes=1)
+        pencil.tint ([(19, 22), (43, 22), (43, 27), (19, 27)], "#b7c9e4")
+        pencil.rect (19, 22, 24, 5, width=0.9, layer="top", passes=1)
+        pencil.line ((25, 7), (25, 18), width=1.2, tone=0.15, layer="top", passes=1)
+        smd (pencil, 44, top + 30)
+        level (pencil, self.width / 2, top + 40, "IR", 7, weight="bold")
+        # Level, so the names clear the header whichever way it lies.
+        self.draw_header (pencil, labels=False)
+        for pin in self.header ():
+            level (pencil, pin.x, pin.y - 14, pin.name, 7)
+
+
 class Rfid (Kind):
     # RC522: 40 x 60 mm, an antenna coil round most of the board.
     title  = "RFID reader"
@@ -1108,7 +1136,8 @@ class MeshBoard (Kind):
 
 KINDS = {
     "lcd": Lcd1602, "servo": Servo, "ultrasonic": Ultrasonic, "matrix": Matrix, "joystick": Joystick,
-    "keypad": Keypad, "ir_receiver": IrReceiver, "rfid": Rfid, "gy521": Gy521, "rtc": Rtc,
+    "keypad": Keypad, "ir_receiver": IrReceiver, "ir_transmitter": IrTransmitter, "rfid": Rfid,
+    "gy521": Gy521, "rtc": Rtc,
     "relay": Relay, "stepper": Stepper, "encoder": Encoder, "pir": Pir, "sensor": Sensor,
     "dht11": Dht11, "motor": Motor, "battery9v": Battery9V, "fm_radio": FmRadio,
     "rf_receiver": RfReceiver, "rf_transmitter": RfTransmitter, "lora_modem": LoraModem,
