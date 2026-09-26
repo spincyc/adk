@@ -1,11 +1,8 @@
 ---
 lesson: 32
-title: Real-Time Clock
-arc: Time
 promise: Build a clock that keeps the right time, even while it's unplugged.
 time: 45 minutes
 level: 2
-sketch: Lesson32RealTimeClock
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -51,8 +48,8 @@ That's less than a minute a month.
 
 The clock module talks over **I2C**, the same two wires, SDA on pin 20 and
 SCL on pin 21, that the accelerometer used in Lesson 28. Every chip on the bus
-has an address, and the clock answers to 0x68. So does the accelerometer, so
-unplug that if it's still wired.
+has an address, and the clock answers to 0x68. So does the accelerometer,
+so the two can only share the bus if one of them moves to another address.
 
 A brand-new clock chip sits **stopped**, with no idea what time it is, until
 something sets it. The sketch sets it once, to the moment you compiled the
@@ -100,7 +97,7 @@ When you are done, these are the connections your circuit makes:
 
 ## Code it
 
-Open the Arduino IDE and choose **File → Examples → Adk → Lesson32RealTimeClock**:
+Open **File → Examples → Adk → Lesson32RealTimeClock**:
 
 <!-- sketch -->
 
@@ -179,24 +176,29 @@ alone.
 
 This part is for anyone with a multimeter; there isn't one in the kit. Set
 it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
-the black lead in **COM**, the red one in **V**. The clock module takes its
-power from the top rails, like the screen, so the rails are where to
-measure it. The + and − holes are only 2.5 mm apart: push each probe tip
+the black lead in **COM**, the red one in **V**. The clock module has two
+supplies: the top rails, which it shares with the screen, and its own coin
+cell. The rails' + and − holes are only 2.5 mm apart: push each probe tip
 into its own hole, so neither slips across to the other rail.
 
 !!! question "Predict"
-    What will the meter read on the top rails with the USB cable unplugged?
-    And when you plug it back in, will the clock still know the time?
+    The top rails give the clock chip 5 V. Will its coin cell read more than
+    that, less, or the same?
 
 <!-- measure -->
 
+Then the coin cell, which has no hole of its own: keep the black probe in
+the top − rail, where the clock's GND is, and touch the red probe to the
+cell's flat top, the side marked **+**, and nothing else.
+
 What the numbers tell you:
 
-- **Plugged in**, the top rails carry the Mega's 5 V, from the red wire in
-  T+3 all the way along to the clock's VCC wire in T+30, and to the screen.
-- **Unplugged**, they read 0: the clock chip has lost its supply, and the
-  screen is dark. Plug back in, and the time is still right. While its
-  supply was gone, the DS1307 switched over to its coin cell, about 3 V, and
-  kept counting; when 5 V came back, it switched back by itself. The cell
-  only has to keep the counting going, which takes so little current that
-  it lasts for years.
+- **The clock's supply** is the Mega's 5 V, carried from the red wire in
+  T+3 all along the top + rail to the clock's VCC wire in T+30, and to the
+  screen.
+- **The coin cell** gives less: about 3 V, or a little more from a
+  rechargeable LIR2032. While the rails give more than the cell, the
+  DS1307 runs from them and leaves the cell alone. When the
+  5 V goes, as it did in your unplug test, the chip switches over to the
+  cell by itself and just keeps counting, which takes so little current
+  that a cell lasts for years.

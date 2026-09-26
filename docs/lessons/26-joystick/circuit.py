@@ -35,10 +35,3 @@ bench.wire ("5V.power", "joystick.+5V")
 bench.wire ("GND.long", "joystick.GND")
 bench.wire ("22", "joystick.SW")
 bench.closeup (1, 16)
-
-# Readings to take with a multimeter: the clear button's pin, held at 5 V by
-# the Mega's pull-up until the button joins it to GND. The stick's own switch
-# on 22 does the same inside the module.
-bench.measure ("Pin 23, released", red="23", black="GND", expect="about 5 V", when="button up")
-bench.measure ("Pin 23, held down", red="23", black="GND", expect="about 0 V",
-               when="button held down")

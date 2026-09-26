@@ -1,11 +1,8 @@
 ---
 lesson: 20
-title: Fan
-arc: Distance and motors
 promise: Spin a fan at any speed, either way round, with a driver chip doing the heavy lifting.
 time: 1 hour
 level: 2
-sketch: Lesson20Fan
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -14,7 +11,7 @@ parts:
   - DC motor with its fan blade
   - 10 kΩ potentiometer
   - Push button
-  - 12 jumper wires
+  - 13 jumper wires
 ideas:
   - Why a motor never runs from a pin
   - The H-bridge, which turns a motor either way
@@ -69,13 +66,15 @@ thousand times a second, and the motor's weight smooths that into half
 power. Below about 100 the kit's motor only hums: it hasn't enough push to
 get going.
 
-**Two supplies, one GND.** The chip's VCC2 pin takes the motor's power from
-the power module, so the big currents never go near the Mega. The Mega's
-GND is joined to the module's GND, or the Mega's "HIGH" would mean nothing
-to the chip. The chip keeps a volt or two for itself, so the motor sees
-about 3 V of the module's 5 V: plenty for this 3–6 V motor. The knob takes
-its 5 V from the module's rails too: close enough to the Mega's own 5 V
-that its reading still runs from 0 to 1023.
+**Two supplies, one GND.** The power module feeds only the bottom + rail,
+and the chip's VCC2 pin takes the motor's power from there, so the big
+currents never go near the Mega. The top + rail carries the Mega's own
+5 V: to the chip's VCC1, which powers the part of the chip that listens
+to the Mega, and to the knob, which reads from 0 to 1023 as it did in
+Lesson 7. The Mega's GND is joined to the module's GND, or the Mega's
+"HIGH" would mean nothing to the chip.
+The chip keeps a volt or two for itself, so the motor sees about 3 V of
+the module's 5 V: plenty for this 3–6 V motor.
 
 !!! question "Predict"
     The fan is spinning fast and you press the button. Does it flip round
@@ -85,10 +84,12 @@ that its reading still runs from 0 to 1023.
 
 !!! warning "Unplug first"
     Unplug the USB cable, unplug the power module's adapter and switch the
-    module off before you change any wiring. Set both of the module's
-    yellow jumpers to **5V**, never 3.3V. The chip's notch (the little half
-    moon at one end) faces left, towards the Mega. Keep fingers and hair
-    clear of the fan blade whenever the power is on.
+    module off before you change any wiring. Set the module's bottom yellow
+    jumper to **5V**, never 3.3V, and its top one to **OFF**: the Mega's 5V
+    feeds the top rails, and the two supplies must never be joined. The
+    chip's notch (the little half moon at one end) faces left, towards the
+    Mega. Keep fingers and hair clear of the fan blade whenever the power is
+    on.
 
 <!-- bench -->
 
@@ -102,16 +103,18 @@ that its reading still runs from 0 to 1023.
     | Pin | Name | Here | Pin | Name | Here |
     |---|---|---|---|---|---|
     | 1 | 1,2EN | not used | 16 | VCC1 | 5 V for the chip itself |
-    | 2 | 1A | not used | 15 | 4A | forward, from pin 8 |
+    | 2 | 1A | not used | 15 | 4A | backward, from pin 9 |
     | 3 | 1Y | not used | 14 | 4Y | the motor's black lead |
     | 4, 5 | GND | to the − rail | 13, 12 | GND | joined inside |
     | 6 | 2Y | not used | 11 | 3Y | the motor's red lead |
-    | 7 | 2A | not used | 10 | 3A | backward, from pin 9 |
+    | 7 | 2A | not used | 10 | 3A | forward, from pin 8 |
     | 8 | VCC2 | 5 V for the motor | 9 | 3,4EN | enable, from pin 4 |
 
     The four GND pins in the middle are joined inside the chip, and carry
-    its heat away, so one wire grounds them all. The library's reference
-    names the chip's other half (pins 1 to 7); either half works the same.
+    its heat away, so one wire grounds them all. A high on 3A puts the
+    supply on 3Y, so forward puts + on the motor's red lead. The library's
+    reference names the chip's other half (pins 1 to 7); either half works
+    the same.
 
 When you are done, these are the connections your circuit makes:
 
@@ -157,10 +160,10 @@ Switch the power module off when you finish, before you unplug the USB.
 
 | What you see | Try this |
 |---|---|
-| Nothing spins at all | Is the power module's LED on, with both jumpers on 5V? Check the red wire from a19 to the bottom + rail (the motor's supply) and the one from j12 to the top + rail (the chip's). |
+| Nothing spins at all | Is the power module's LED on, with its bottom jumper on 5V? Check the red wire from a19 to the bottom + rail (the motor's supply) and the one from j12 to the top + rail (the chip's). |
 | It hums but doesn't turn | The speed is too low: turn the knob further. A flick of the blade helps a sluggish motor start. |
-| It only ever spins one way | The wire from pin 8 or pin 9 is in the wrong hole: they go to j13 and j18. |
-| The Mega resets when the fan starts | Something is feeding the motor from the Mega's 5 V. Nothing here should use the Mega's 5V pin: the chip, the motor and the knob all take their 5 V from the power module's rails. |
+| It only ever spins one way | The wire from pin 8 or pin 9 is in the wrong hole: pin 8's goes to j18, pin 9's to j13. |
+| The Mega resets when the fan starts | The motor is taking power from the Mega. Its supply goes from a19 to the bottom + rail, which only the power module feeds; and the module's top jumper must be off, so its 5 V never meets the Mega's. |
 | The chip gets hot | Unplug everything at once and check the motor's leads go to j14 and j17, not straight to a rail. |
 | The button does nothing | The button straddles the middle gap; pin 22's wire goes in j2 and the black wire from a4 to the − rail. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |
@@ -229,8 +232,10 @@ What the numbers tell you:
   both read 0 for half a second while the fan coasts, then pin 9 reads 5 V
   and pin 8 stays at 0.
 - **Across the motor** needs the enable pin on all the time, so change
-  `128` to `255` for this one. The meter reads about 3 V, not 5: the chip
-  keeps a volt or two for itself. Now press the button. After the pause it
+  `128` to `255` for this one. The red probe goes beside the motor's red
+  lead and the black probe beside its black one. The meter reads about
+  3 V, not 5: the chip keeps a volt or two for itself, and forward puts +
+  on the red lead. Now press the button. After the pause it
   reads about −3 V. The minus sign means the chip has swapped which of the
   motor's leads gets the supply and which gets GND, so the current runs
   through the motor the other way: that is the H-bridge at work.

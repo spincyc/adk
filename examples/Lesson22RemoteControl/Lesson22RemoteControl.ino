@@ -39,12 +39,16 @@ void loop ()
 
     if (receiver.wasReceived ())
     {
-        if (!receiver.isRepeat ())
+        uint8_t button = receiver.command ();
+        bool    held   = receiver.isRepeat ();
+
+        if (!held)
         {
-            printCode (receiver.command ());
+            // Remote codes are usually written in hexadecimal, as 0x45.
+            adk::println (Serial, "Button code 0x", adk::hex (button, 2));
         }
 
-        obey (receiver.command (), receiver.isRepeat ());
+        obey (button, held);
         showLamp ();
     }
 }
@@ -83,11 +87,4 @@ void showLamp ()
     auto dimmed = adk::blend (adk::color::off, color, brightness, 8);
 
     lamp.fadeTo (lit ? dimmed : adk::color::off, 200);
-}
-
-// Codes are usually written in hexadecimal, so print them that way.
-void printCode (uint8_t button)
-{
-    Serial.print (button < 0x10 ? "Button code 0x0" : "Button code 0x");
-    Serial.println (button, HEX);
 }

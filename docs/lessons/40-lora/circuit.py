@@ -1,7 +1,8 @@
 # The course's screen at its home, and the button on 23 beside it in
-# columns 38-40. The power module at the right end feeds the top rails at
-# 5 V, for the screen, and the bottom rails at 3.3 V, for the modems; the
-# Mega's GND joins them at B-3. The modems stand below the board past the
+# columns 38-40. The Mega's 5V feeds the top rails, for the screen, as it
+# did in Lesson 39; the power module at the right end, its top jumper off,
+# feeds only the bottom rails, at 3.3 V for the modems. The Mega's GND
+# joins them all at B-3. The modems stand below the board past the
 # button, B on Serial3 (pins 14 and 15) first and A on Serial1 (18 and 19)
 # after it, as their pins lie along the Mega's header. Each takes two
 # columns and the one between: its TXD comes straight up into f and meets
@@ -13,7 +14,7 @@ bench = Bench ("Two LoRa modems: A on pins 18 and 19, B on pins 14 and 15, each 
                "the power module with its RXD through a 1 kΩ and 2 kΩ divider, a button on "
                "pin 23 and the LCD on pins 31 to 36", columns=(1, 63))
 
-bench.power_module ("right", top="5V", bottom="3.3V")
+bench.power_module ("right", top="off", bottom="3.3V")
 bench.screen (text=("Press 1", "-32 dBm  9 dB"))
 
 bench.wire ("23", "j38")

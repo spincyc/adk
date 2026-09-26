@@ -1,11 +1,8 @@
 ---
 lesson: 21
-title: Follow-Me Fan
-arc: Distance and motors
 promise: Build a little turret that looks around, finds the nearest person and turns a fan on them.
 time: 1½ hours
 level: 3
-sketch: Lesson21FollowMeFan
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -14,8 +11,8 @@ parts:
   - HC-SR04 ultrasonic sensor
   - L293D motor driver chip
   - DC motor with its fan blade
-  - 10 jumper wires
-  - 4 female-to-male jumper wires
+  - 11 jumper wires
+  - 6 female-to-male jumper wires
   - Sticky tape or putty, and a strip of card
 ideas:
   - Scanning with a sensor on a servo
@@ -66,10 +63,12 @@ So someone 40 cm away gets a speed of about 200. Closer than 15 cm the fan
 stops altogether: nobody wants a fan blade in their face.
 
 **One supply, two motors.** The servo and the fan both draw their power
-from the breadboard power module, which can give about 700 mA. A servo in
-motion can take several hundred milliamps, and so can a starting motor. So
-the fan rests whenever the turret turns, and the turret keeps still while
-the fan blows: the two never pull hard together.
+from the breadboard power module's bottom rails, while the Mega's own 5 V
+feeds the sensor and the chip's logic, as in Lesson 20. The module can
+give about 700 mA. A servo in motion can take several hundred milliamps,
+and so can a starting motor. So the fan rests whenever the turret turns,
+and the turret keeps still while the fan blows: the two never pull hard
+together.
 
 !!! question "Predict"
     Stand 40 cm in front of the turret, with a wall 60 cm from it off to
@@ -90,10 +89,11 @@ The sketch repeats three steps for as long as it runs:
 
 !!! warning "Unplug first"
     Unplug the USB cable, unplug the power module's adapter and switch the
-    module off before you change any wiring. Set both of its jumpers to
-    **5V**. The servo and the fan take their power only from the module,
-    never from the Mega. Keep fingers, hair and faces clear of the fan
-    blade whenever the power is on.
+    module off before you change any wiring. Keep its jumpers as in
+    Lesson 20: the bottom one on **5V**, the top one **OFF**. The servo and
+    the fan take their power only from the module, never from the Mega.
+    Keep fingers, hair and faces clear of the fan blade whenever the power
+    is on.
 
 This is Lesson 20's fan circuit without the knob and the button, plus the
 servo and the sensor. Build it on the breadboard first, then mount the
@@ -110,6 +110,11 @@ sensor and the fan on the servo.
     the motor beside it with the fan blade pointing the same way and clear
     of everything when it spins. Stand the servo on the desk with putty or
     tape so it can't walk.
+
+    The motor's own leads won't reach from the horn down to the
+    breadboard, so lengthen each one with a female-to-male jumper wire:
+    push the lead's end into the wire's female end, and the male end into
+    the hole the lead went in, black's in j14 and red's in j17.
 
     Leave the jumper wires slack, so the turret can swing all the way
     without tugging on them, and check the blade can't touch a wire. The
@@ -186,8 +191,8 @@ at the wall.
 | The servo doesn't move | Is the power module on? Check the servo's plug: brown to the − rail, red to the + rail, and orange straight to pin 44. |
 | It sweeps but never stops to blow | It never saw anything within 80 cm. Stand closer, or check the sensor still faces forwards on the horn. |
 | It turns to the wrong place | The sensor sees a wall, the desk or a wire that's nearer than you. Clear the space in front of it, or tilt the sensor up a little. |
-| The fan never spins | Check the power module's jumpers are on 5V and the motor's leads reach j14 and j17. Lesson 20's table has more. |
-| The Mega resets or the servo jerks when the fan starts | The supply is struggling: make sure the servo's red wire goes to the module's + rail, not the Mega's 5V, and that the Mega's GND is joined to the module's. |
+| The fan never spins | Check the power module's bottom jumper is on 5V, and that the motor's leads, through their extra wires, reach j14 and j17. Lesson 20's table has more. |
+| The Mega resets or the servo jerks when the fan starts | The supply is struggling: make sure the servo's red wire goes to the bottom + rail, which only the module feeds, and that the Mega's GND is joined to the module's. |
 | The turret twitches at the ends of its sweep | Some servos can't reach 30° or 150°. Try `leftmost = 40` and `rightmost = 140`. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |
 
@@ -214,7 +219,9 @@ at the wall.
    last target, and the target itself. The turret will track you as you
    walk slowly past.
 4. **Show off.** Add the LED gauge from Lesson 19 so the lights show how
-   close the target is while the fan blows.
+   close the target is while the fan blows. The chip sits in two of the
+   LEDs' home columns, so lay the three out past it, in columns 24, 30
+   and 36.
 
 ## Measure it
 

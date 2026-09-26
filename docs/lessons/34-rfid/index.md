@@ -1,11 +1,8 @@
 ---
 lesson: 34
-title: RFID
-arc: Keys you can't see
 promise: Read the secret number inside a plastic card, and teach the Mega which cards are yours.
 time: 45 minutes
 level: 2
-sketch: Lesson34Rfid
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -36,7 +33,7 @@ key fob, still a stranger, gets red.
 **RFID** stands for radio-frequency identification. The coil of copper around
 the edge of the reader board makes a radio field that swings back and forth
 13.56 million times a second. The card has a coil too, and a tiny chip, but no
-battery. Held within a few centimetres of the reader, its coil catches enough
+battery. Held within a few centimeters of the reader, its coil catches enough
 of the field to power the chip, which answers with its **UID**, its unique
 ID: a number no other card should have.
 
@@ -99,7 +96,7 @@ When you are done, these are the connections your circuit makes:
 
 ## Code it
 
-Open the Arduino IDE and choose **File → Examples → Adk → Lesson34Rfid**:
+Open **File → Examples → Adk → Lesson34Rfid**:
 
 <!-- sketch -->
 
@@ -117,7 +114,8 @@ What's new:
 - `reader.wasRead ()` is an event, like `wasPressed ()` in Lesson 2: true once
   each time a card arrives, not all the while it stays there.
 - `auto card = reader.uid ();` is the card's number, and
-  `Serial.println (card, HEX)` prints it in hexadecimal.
+  `adk::hex (card, 8)` prints it in hexadecimal, as eight digits, with
+  zeros in front when the number needs fewer.
 - `isKnown ()` goes through `knownCards` one card at a time with a
   range-`for`, and says `true` as soon as it finds this card, or `false` if
   none match.
@@ -137,7 +135,7 @@ What's new:
 
 Now try your prediction: lift the card slowly away from the reader, hold it
 still, and find the furthest it still makes a flash. You predicted 1, 5 or
-50 cm. Most readers manage a few centimetres, far nearer 5 than 50: further
+50 cm. Most readers manage a few centimeters, far nearer 5 than 50: further
 away, the card's coil can't catch enough of the field to power its chip.
 
 ## If it doesn't work
@@ -149,7 +147,7 @@ away, the card's coil can't catch enough of the field to power its chip.
 | A card from home is never read | The reader only reads cards with a 4-byte UID, like the kit's card and fob. Stickers, travel cards and phones often have 7-byte UIDs. |
 | The colors are wrong | Check the LED's legs: red in a6, the longest leg in B-7, green in a9 and blue in a11. |
 | The Serial Monitor shows nonsense | Set it to 9600 baud. |
-| A known card still flashes red | Check you copied every digit after `0x` exactly. A number shorter than eight digits is fine: the Serial Monitor leaves out leading zeros. |
+| A known card still flashes red | Check you copied all eight digits after `0x` exactly. |
 | The little **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"

@@ -1,11 +1,8 @@
 ---
 lesson: 41
-title: LoRa Link
-arc: Long range
 promise: Send the temperature and humidity by radio, as a line of text, from one LoRa module to another.
 time: 60 minutes
 level: 2
-sketch: Lesson41LoraLink
 parts:
   - Your circuit from Lesson 40, without its two modems
   - Two Ebyte E32-433T20D LoRa modules, with their aerials (add-on, not in the kit)
@@ -31,11 +28,11 @@ both modules hang below one breadboard; put module A and the DHT11 on a
 second Mega outdoors and you have a weather station that reports from the
 bottom of the garden.
 
-!!! danger "433 MHz needs a licence in the USA and Canada"
+!!! danger "433 MHz needs a license in the USA and Canada"
     These modules send on 434 MHz. In Europe, anyone may send there at up
     to 10 mW, which is how ADK sets them. **In the USA and Canada, 433 MHz
     is an amateur radio band: use these modules only if you, or the adult
-    you build with, hold an amateur radio licence.** Without one, read
+    you build with, hold an amateur radio license.** Without one, read
     this lesson but don't build it, and carry on to Lesson 42 from your
     Lesson 40 build: Lesson 40's modems do the same job on 915 MHz. Other
     countries have rules of their own, so check yours first.
@@ -69,7 +66,7 @@ The Mega reads it on pin 41, or 43, and waits for it before changing mode.
 **Channels and power, set by law.** Each module sends on a **channel**:
 410 MHz plus the channel's number. ADK chooses channel 24, which is 434 MHz,
 at the module's lowest power, 10 mW. It could do ten times that, 100 mW, the
-*20* in its name, but Europe allows 10 mW without a licence, from
+*20* in its name, but Europe allows 10 mW without a license, from
 433.05 MHz to 434.79 MHz. In dBm, from Lesson 40, 10 mW is 10 dBm and
 100 mW is 20 dBm.
 
@@ -97,14 +94,15 @@ puts it straight on the screen, and a computer could show it just as easily.
     Screw each module's aerial onto its gold socket before you power
     anything: sending into no aerial can damage a module. These modules
     take **5 V**, so move the power module's **bottom** jumper from 3.3V to
-    **5V**. Should you go back to Lesson 40's modems, set it back to 3.3V
-    first: 5 V would damage them.
+    **5V**, and leave its top jumper off. Should you go back to Lesson 40's
+    modems, set it back to 3.3V first: 5 V would damage them.
 
 Keep the screen, the button, both dividers and the Mega's wires to pins 14,
 15, 18 and 19 from Lesson 40 just as they are, and take out the two modems
 and their wires. The power module stays where it is: the steps list it
 again because its bottom jumper moves to **5V**. The DHT11 goes back to its
-home above the board, as in Lesson 15.
+home above the board, as in Lesson 15, on the top rails, which the Mega's
+5V feeds as it feeds the screen.
 
 The modules take the modems' places below the board, their aerials pointing
 down and away, module B first and then module A. Each module's wires go
@@ -149,7 +147,7 @@ When you are done, these are the connections your circuit makes:
 
 ## Code it
 
-Open the Arduino IDE and choose **File → Examples → Adk → Lesson41LoraLink**:
+Open **File → Examples → Adk → Lesson41LoraLink**:
 
 <!-- sketch -->
 
@@ -166,8 +164,9 @@ What's new:
 - `linkB.wasReceived ()` is true for one pass of `loop ()` when a whole line
   has arrived, and `linkB.text ()` is the line.
 - `(dht.measured () || button.wasPressed ()) && dht.ok ()` sends a report
-  when a new reading arrives or the button is pressed: `||` is *or*, and
-  `&&` is *and*, so only a good reading goes.
+  when a reading finishes or the button is pressed: `||` is *or*, and `&&`
+  is *and*. `dht.ok ()` says whether the latest reading came through
+  whole, so only a good one goes.
 - `adk::Text<32> report;` is text to print into, as in Lesson 40, and
   `adk::fixed (dht.temperature (), 0)` prints the temperature with no
   decimals, as in Lesson 15. `report.size ()` counts its characters.
@@ -178,8 +177,9 @@ What's new:
 
 ## Upload it
 
-1. Check both aerials are on and both jumpers are on 5V. Plug in the USB
-   cable, then the power module's adapter, and switch it on.
+1. Check both aerials are on, and the power module's bottom jumper is on
+   5V. Plug in the USB cable, then the power module's adapter, and switch
+   it on.
 2. Upload the sketch. The screen says `Module A ready` and
    `Module B ready`.
 3. Open the Serial Monitor at 9600 baud. A second or two later, and every
@@ -202,12 +202,11 @@ eight times the size of the two bytes here, but it needs no key to read it.
 
 | What you see | Try this |
 |---|---|
-| `No reply from A`, or from B | Is the power module on, with both jumpers on 5V? Check that module's VCC and GND, its M0 and M1 into f and g of column 57 (A) or 48 (B) with pin 40 or 42 in j above them, and its AUX into f52 (A) or f43 (B) with pin 41 or 43 in j above it. |
+| `No reply from A`, or from B | Is the power module on, with its bottom jumper on 5V? Check that module's VCC and GND, its M0 and M1 into f and g of column 57 (A) or 48 (B) with pin 40 or 42 in j above them, and its AUX into f52 (A) or f43 (B) with pin 41 or 43 in j above it. |
 | Still no reply | Check TXD and RXD aren't swapped: TXD goes up to f53 (A) or f44 (B), RXD to c55 (A) or c46 (B). Check the divider, as in Lesson 40. |
 | `A sends`, but B hears nothing | Check module B's TXD in f44 and pin 15's wire in j44, and that both aerials are on. |
 | Nothing is sent at all | The DHT11 hasn't given a good reading: check S goes to pin 16, + to the top + rail (T+36) and − to the top − rail (T-37). |
-| The report on the screen has a letter missing or wrong | A byte went astray; the next report puts it right. See *How it works*. |
-| A blank lit screen, or a row of blocks | Turn the contrast knob. The screen takes its power from the power module, so it must be switched on. |
+| A blank lit screen, or a row of blocks | Turn the contrast knob beside the LCD. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"
@@ -220,9 +219,10 @@ eight times the size of the two bytes here, but it needs no key to read it.
     ```
 
     `C0` means "keep these settings". `00 00` is the module's address, 0
-    for both, so they hear each other. `1A` sets 9,600 bits a second between the module and the
-    Mega, and 2,400 bits a second on the air. `18` is channel 24. `47`
-    chooses transparent sending, error correction, and 10 mW. The module
+    for both, so they hear each other. `1A` sets 9,600 bits a second
+    between the module and the Mega, and 2,400 bits a second on the air.
+    `18` is channel 24. `47` chooses transparent sending, error
+    correction, and 10 mW. The module
     answers with the same six bytes, and ADK checks them. Then it pulls M0
     and M1 low, waits for AUX again, and the module is in its normal mode.
     It all takes about a fifth of a second.
@@ -232,12 +232,11 @@ eight times the size of the two bytes here, but it needs no key to read it.
     bytes, which is why a line can be up to 56 characters: with its newline,
     it still goes as one.
 
-    The DHT11 holds the Mega for about 4 ms while a reading arrives, with
-    every other job paused, and a byte coming in from module B just then
-    could be lost. The sketch sends each report just after a reading, so it
-    arrives at module B long before the next reading starts. A button press
-    could, very rarely, land a report on a reading; then a letter goes
-    astray, and the next report puts it right.
+    The DHT11 holds up `loop ()` for about 4 ms while a reading arrives,
+    but not the serial ports: the Mega catches each byte from module B as
+    it comes in, between the DHT11's bits, and keeps it until ADK reads
+    it. So a report that lands in the middle of a reading still arrives
+    whole.
 
 ## Make it yours
 

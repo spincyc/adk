@@ -1,11 +1,8 @@
 ---
 lesson: 24
-title: Room Alarm
-arc: Invisible signals
 promise: Guard your room with an alarm you arm from the remote, which gives intruders ten seconds before the siren.
 time: 2 hours
 level: 3
-sketch: Lesson24RoomAlarm
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -34,8 +31,8 @@ screen says *Leave now...* and counts down from ten, beeping each second,
 while you slip out. Then it says *ARMED* and the light glows a dim red.
 When someone walks in, the PIR sensor sees them: the screen demands the
 code and counts down again. Key in the right four digits on the remote and
-it relaxes to *Disarmed*; get it wrong, or run out of time, and the siren
-wails while the light flashes red and blue.
+it relaxes to *Disarmed*. Get it wrong and it beeps; run out of time and
+the siren wails while the light flashes red and blue.
 
 ## The idea
 
@@ -57,9 +54,10 @@ multiplies what's there by ten and adds itself.
 <p class="formula">1 → 12 → 123 → 1234</p>
 
 After the fourth digit it compares the number with the secret one,
-`secretCode` in the sketch. Right, and the alarm disarms; wrong, and it gives a long beep
-and waits for four digits again. Each digit shows as a star, so someone
-looking over your shoulder learns nothing.
+`secretCode` in the sketch. Right, and the alarm disarms; wrong, and it
+gives a long beep and waits for four digits again, while the countdown
+carries on. Each digit shows as a star, so someone looking over your
+shoulder learns nothing.
 
 !!! question "Predict"
     You arm the alarm and walk out, but you're still in front of the PIR
@@ -165,7 +163,7 @@ few seconds after the last movement, so leave its view in good time.
 | The top row is solid blocks | The screen has power but isn't hearing the Mega: check pins 31 to 36 land in columns 12, 14 and 19 to 22. |
 | It arms and straight away asks for the code | The PIR still saw movement when the countdown ended; it stays on for a few seconds after the last movement. Leave sooner, or make `delaySeconds` longer. |
 | It never notices you | Give the PIR a minute after power-up, check its OUT pin goes to A12, and turn its time knob fully anticlockwise. |
-| The remote does nothing | Aim at the receiver's window. Upload Lesson 22's sketch to check your remote's codes, and change `digitButtons` if yours differ. |
+| The remote does nothing | Aim at the receiver's window, and upload Lesson 22's sketch to check your remote's codes. If POWER sends another code, put yours in place of `adk::remote::power`. If the number buttons do, `adk::remote::digitOf ()` won't know them: give the sketch an `adk::Array` of your ten codes, 0 to 9, and in `pressed ()` look through it for the button, as Lesson 22 looked through `choices`, in place of `digitOf ()`. |
 | No beeps | The buzzer's + leg goes in f51, under pin 12's wire in j51, and its other leg's column needs the black wire from a51 to the − rail. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |
 

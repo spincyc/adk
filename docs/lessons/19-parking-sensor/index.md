@@ -1,11 +1,8 @@
 ---
 lesson: 19
-title: Parking Sensor
-arc: Distance and motors
 promise: Measure distance with an echo, and turn it into lights and faster and faster beeps.
 time: 1 hour
 level: 2
-sketch: Lesson19ParkingSensor
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -82,13 +79,14 @@ zones, and makes the gap between beeps 10 ms for every centimeter:
 
 <!-- steps -->
 
-??? info "Seen before"
-    The long black wire at the far end, from B-60 to T-60, joins the top −
-    rail to the bottom one, as in Lesson 15, so the sensor on the top rail
-    and the LEDs and buzzer on the bottom one all share the Mega's GND. The
-    sensor's VCC wire takes a 5V pin of its own, the inner one at the top of
-    the long header, just along from Trig and Echo: it needs only about
-    15 mA.
+??? info "Joining the two − rails"
+    The long black wire at the far end, from B-60 to T-60, is new. The
+    Mega's GND comes into the bottom − rail at B-3, but the sensor's GND
+    goes into the top one, close to the sensor. The two rails aren't joined
+    inside the breadboard, so this wire joins them, and the sensor, the
+    LEDs and the buzzer all share the Mega's GND. The sensor's VCC wire
+    takes a 5V pin of its own, the inner one at the top of the long header,
+    just along from Trig and Echo: it needs only about 15 mA.
 
 When you are done, these are the connections your circuit makes:
 
@@ -106,9 +104,9 @@ What's new:
   first and its echo pin second. From then on ADK measures by itself,
   about sixteen times a second.
 - The four `constexpr` numbers are the table above: where the ticking
-  starts, and where the light turns yellow, then red, and the tone goes
-  steady. Each is used in more than one place, so a name keeps them in
-  step when you change one.
+  starts, where the light turns yellow, then red, and where the tone goes
+  steady. A name says what each number is for, and keeps the two places
+  that use `slowDown` or `danger` in step when you change it.
 - `sensor.distance ()` is the latest distance in centimeters, and
   `sensor.ok ()` says whether an echo came back at all. When nothing
   is within about 4 m, the `?:` from Lesson 7 counts it as 400 cm: plenty
@@ -118,8 +116,10 @@ What's new:
 - `soundWarning ()` changes the beat of an `adk::Every` from Lesson 11 on
   the fly: `beeps.period (cm * 10)` sets the time between beats, 300 ms at
   30 cm. On each beat, `buzzer.beep (50)` sounds the buzzer for 50 ms and
-  switches it off by itself; `buzzer.on ()` holds it on for the steady
-  tone.
+  switches it off by itself. Closer than 10 cm, `buzzer.beep (100)` is
+  asked for on every pass of `loop ()`: as each beep ends, the next pass
+  starts another, so they run together into one tone, and it stops by
+  itself within a tenth of a second of the hand moving back.
 
 ## Upload it
 
@@ -199,15 +199,15 @@ What the numbers tell you:
 - **The yellow light's pin** reads about 5 V with the book at 30 cm, and
   pins 26 and 28 read 0: 30 cm is in the yellow zone. Now slide the book
   slowly away along a ruler, with the probes still in place. The reading
-  drops to 0 as the book passes 50 cm, `slowDown` in the sketch, give or
-  take a centimeter. The distance the Mega worked out from echo times, at
-  58 µs for every centimeter, agrees with the ruler.
-- **Across the buzzer**, with the book 5 cm away, the buzzer is held on and
-  the meter settles at about 4.5 V. That is a little under 5 V because the
-  buzzer takes up to 30 mA, and a pin's voltage sags a little under that
-  much load. Move the book back to 30 cm and the number jumps about and
-  never settles: the pin is on for 50 ms in every 300, too quick for the
-  meter to follow.
+  should drop to 0 as the book passes 50 cm, `slowDown` in the sketch,
+  give or take a centimeter. If it does, the distance the Mega worked out
+  from echo times, at 58 µs for every centimeter, agrees with the ruler.
+- **Across the buzzer**, with the book 5 cm away, the buzzer sounds without
+  a break and the meter settles at about 4.5 V. That is a little under
+  5 V because the buzzer takes up to 30 mA, and a pin's voltage sags a
+  little under that much load. Move the book back to 30 cm and the number
+  jumps about and never settles: the pin is on for 50 ms in every 300, too
+  quick for the meter to follow.
 - **Across the green LED** is about 3.2 V, where the red LED in Lesson 1
   kept about 2 V. That leaves only 1.8 V for the green one's resistor, so
   it takes about 8 mA, against red's 14 mA. Measure the red LED here too,

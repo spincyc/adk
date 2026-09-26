@@ -1,11 +1,8 @@
 ---
 lesson: 30
-title: Tilt Maze
-arc: Tilt and turn
 promise: Roll a ball through a maze by tilting the breadboard, level after level.
 time: 1 hour
 level: 3
-sketch: Lesson30TiltMaze
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -82,14 +79,15 @@ buzzer knocks. The edges of the matrix are walls too.
 
 !!! warning "Unplug first"
     Unplug the USB cable before you wire. Keep the rotary encoder and its
-    five wires from Lesson 29 and take the rest off. The GY-521 goes back
-    in row j, columns 9 to 16, and the matrix back below the breadboard,
-    both wired as in Lesson 28, except that the matrix's VCC now takes the
-    5V pin on the power header, because the encoder uses the one at the top
-    of the long header. The passive buzzer goes through its 220 Ω resistor,
-    as in Lesson 27. You will pick up the breadboard to play, so use wires
-    long enough to let it move, and keep the Mega flat on the table beside
-    it.
+    five wires from Lesson 29, and the Mega's GND and 5V wires, and take
+    the rest off. The GY-521 and the matrix you put aside in Lesson 29 come
+    back: the GY-521 in row j, columns 9 to 16, and the matrix below the
+    breadboard, both wired as in Lesson 28, except that the matrix's VCC
+    now takes the 5V pin on the power header, because the encoder uses the
+    one at the top of the long header. The passive buzzer goes through its
+    220 Ω resistor, as in Lesson 27. You will pick up the breadboard to
+    play, so use wires long enough to let it move, and keep the Mega flat
+    on the table beside it.
 
 <!-- bench -->
 
@@ -129,9 +127,12 @@ What's new:
 - `loop ()` has the game's states: *NO SENSOR* if the accelerometer didn't
   answer, `chooseMaze ()` while not playing, and the game itself while
   playing.
-- `chooseMaze ()` moves through the mazes with `knob.turned ()` and `wrap ()`,
-  the same count-round-in-a-circle as Lesson 29's menu. The click resets the
-  ball and records `flatPitch` and `flatRoll`, the tilt that counts as flat.
+- `chooseMaze ()` moves through the mazes with `knob.turned ()`, counting
+  round in a circle with `%` as Lesson 25 counted its slides. A click back
+  from maze 0 would make −1, and `%` of a number below zero is below zero
+  too, so the sketch adds `mazes.size ()` first: 0 + 4 − 1 = 3, and 3 % 4
+  is 3, the last maze. The click resets the ball and records `flatPitch`
+  and `flatRoll`, the tilt that counts as flat.
 - `rollBall ()` runs once per reading. It updates the speed, then tries the
   move in x and in y separately, so a ball rolling along a wall keeps
   sliding the way it's free to go. When a wall is in the way, `bump ()`
@@ -195,7 +196,7 @@ seconds, where 10° took under two.
    `mazes.size ()`.
 2. **Against the clock.** Start an `adk::Stopwatch`, as in Lesson 3, when
    the maze starts. When the ball escapes, scroll the time in seconds,
-   written into text with `snprintf` as Lesson 27 wrote the score.
+   printed into an `adk::Text` as Lesson 27 printed the score.
 3. **Bouncy walls.** Instead of stopping dead, make the ball bounce back
    at half speed: have `bump ()` return `-speed * 0.5`.
 4. **Traps.** Add holes that send the ball back to the start: a second
@@ -234,7 +235,7 @@ What the numbers tell you:
 - **SDA on a tilted board** reads between 3.5 and 4 V, flat or tipped, just
   as it did in Lesson 28. Hold the probes in their holes and tip the
   breadboard gently, or have someone tip it for you: the number doesn't
-  follow. Tilt a joystick and its voltages follow the stick, as in
-  Lesson 26; tilt the accelerometer and the angle travels as numbers
+  follow. Tilt Lesson 26's joystick and its two knobs' voltages follow the
+  stick; tilt the accelerometer and the angle travels as numbers
   instead, a burst of bits every 20 ms, far too quick for the meter. All it
   sees is the bus resting high between them.

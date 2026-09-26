@@ -1,11 +1,8 @@
 ---
 lesson: 42
-title: Mesh Messenger
-arc: Long range
 promise: Text your Mega from your phone, across a mesh of LoRa radios, to switch its lamp, ask the temperature, or leave a message on its screen.
 time: 2 hours
 level: 3
-sketch: Lesson42MeshMessenger
 parts:
   - Your circuit from Lesson 41, without its LoRa modules, second divider and power module
   - Two Heltec WiFi LoRa 32 V3 boards, with their aerials (add-on, not in the kit)
@@ -155,12 +152,12 @@ pictures of each.
     read 3.3 V.
 
 Keep the screen, the button, the DHT11, module A's divider in column 55 and
-the Mega's wires to pins 18 and 19 from Lesson 41 just as they are. Take
-out both LoRa modules and their wires, module B's divider and the wires to
-pins 14, 15 and 40 to 43, and the power module: nothing here needs it, so
-the red wire from the Mega's 5V goes back into T+3. If you skipped building
-Lesson 41, start from Lesson 40 instead, and put the DHT11 at its home above
-the board as in Lesson 15.
+the Mega's wires to pins 18 and 19 from Lesson 41 just as they are, with
+the Mega's GND and 5V wires. Take out both LoRa modules and their wires,
+module B's divider and the wires to pins 14, 15 and 40 to 43, and the
+power module: nothing here needs it. If you skipped building Lesson 41,
+start from Lesson 40 instead, and put the DHT11 at its home above the board
+as in Lesson 15.
 
 The lamp is the RGB LED, at its home beside the screen in columns 41 to 46,
 as in Lesson 15: its longest leg in the − rail at B-42, a 220 Ω resistor
@@ -195,8 +192,7 @@ When you are done, these are the connections your circuit makes:
 
 ## Code it
 
-Open the Arduino IDE and choose
-**File → Examples → Adk → Lesson42MeshMessenger**:
+Open **File → Examples → Adk → Lesson42MeshMessenger**:
 
 <!-- sketch -->
 

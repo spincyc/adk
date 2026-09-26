@@ -36,19 +36,8 @@ void loop ()
 
     if (tick.ticked ())
     {
-        setVolume ();
+        radio.setVolume (volumeKnob.read (0, 15));
         showStation ();
-    }
-}
-
-// Only when the knob has moved: each change is a message to the radio.
-void setVolume ()
-{
-    int volume = volumeKnob.read (0, 15);
-
-    if (volume != radio.volume ())
-    {
-        radio.setVolume (volume);
     }
 }
 

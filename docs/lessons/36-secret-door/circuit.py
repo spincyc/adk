@@ -1,14 +1,15 @@
-# The Secret Door. The power module at the right end feeds both pairs of
-# rails with 5 V: the screen, at its home, takes its power from the top
-# rails, and the servo latch, at its home below the board, from B+53 and
-# B-54; the Mega's GND joins them at B-3. The RFID reader keeps its place
-# from Lesson 34 and the tap sensor its place from Lesson 35, below the
-# Mega, wired the same way. The active buzzer stands beside the screen in
-# column 51, pin 12's wire coming over the top.
+# The Secret Door. The power module at the right end feeds only the bottom
+# rails, its top jumper off: the servo latch, at its home below the board,
+# takes its 5 V from B+53 and B-54, while the screen, at its home, runs from
+# the Mega's 5V on the top rails; the Mega's GND joins them all at B-3. The
+# RFID reader comes back to its place from Lesson 34 and the tap sensor
+# keeps its place from Lesson 35, below the Mega, wired the same way. The
+# active buzzer stands beside the screen in column 51, pin 12's wire coming
+# over the top.
 bench = Bench ("The Secret Door: an LCD on pins 31 to 36, an RFID reader on the SPI pins and 45, "
                "a tap sensor on A12, a servo latch on 44 and an active buzzer on 12", columns=(1, 63))
 
-bench.power_module ("right", top="5V", bottom="5V")
+bench.power_module ("right", top="off", bottom="5V")
 bench.screen (text=("Secret Door", "Card or knock..."))
 
 bench.module ("rfid", at=(1.65, 4.17), facing="up")

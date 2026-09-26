@@ -88,7 +88,8 @@ void chooseMaze ()
 {
     if (knob.turned () != 0)
     {
-        maze = wrap (maze + knob.turned (), mazes.size ());
+        // Adding the count first keeps it from going below zero.
+        maze = (maze + mazes.size () + knob.turned ()) % mazes.size ();
         speaker.tone (adk::note::c6, 10);
     }
 
@@ -160,14 +161,6 @@ void celebrate ()
 {
     speaker.play (cheer);
     adk::wait (1500);
-    maze    = wrap (maze + 1, mazes.size ());
+    maze    = (maze + 1) % mazes.size ();
     playing = false;
-}
-
-// Count round in a circle: after the last comes the first, and before the
-// first comes the last.
-int wrap (int index, int count)
-{
-    index = index % count;
-    return index < 0 ? index + count : index;
 }

@@ -1,11 +1,8 @@
 ---
 lesson: 33
-title: Alarm Clock
-arc: Time
 promise: Build a bedside clock that wakes you with a tune and a flag, with a knob to set it and a snooze button.
 time: 90 minutes
 level: 3
-sketch: Lesson33AlarmClock
 parts:
   - Your clock from Lesson 32, still built
   - Rotary encoder module
@@ -13,7 +10,7 @@ parts:
   - Passive buzzer
   - 220 Ω resistor (red, red, black, black, brown)
   - 28BYJ-48 stepper and ULN2003 driver, from Lesson 31
-  - Power module and 9 V adapter
+  - Breadboard power module and its 9 V adapter
   - 11 female-to-male jumper wires
   - 3 jumper wires
   - A paper flag and sticky tape
@@ -97,30 +94,28 @@ alarm (or the end of a snooze), the clock goes from `Showing` to `Ringing`.
     Unplug the USB cable and switch the power module off before you change
     any wiring. The passive buzzer always goes through its 220 Ω resistor:
     its coil is only about 16 Ω, and on its own it would draw far more than
-    a pin should give. Set both of the power module's yellow jumpers to
-    **5V**, never 3.3V, and never power the stepper's driver from the Mega's
-    5V pin.
+    a pin should give. Set the power module's bottom yellow jumper to
+    **5V**, never 3.3V, and its top one **OFF**: the Mega's 5V already
+    feeds the top rails, and two supplies must never feed the same rail.
+    Never power the stepper's driver from the Mega's 5V pin.
 
-Keep your clock from Lesson 32 as it is, except for one wire. The new parts
-are the snooze button just past the LCD, in columns 38 to 40, the passive
-buzzer in column 51 with its resistor down to the − rail, the knob above
-the Mega on five wires, and the flag: the stepper's driver below the Mega,
-as in Lesson 31, with the power module at the right end of the board.
+Keep your clock from Lesson 32 just as it is. The new parts are the snooze
+button just past the LCD, in columns 38 to 40, the passive buzzer in column
+51 with its resistor down to the − rail, the knob above the Mega on five
+wires, and the flag: the stepper's driver below the Mega, as in Lesson 31,
+with the power module at the right end of the board.
 
-The power module now feeds both pairs of rails, so the screen and the clock
-take their 5 V from it too. That is why the red wire from the Mega's 5V pin
-to T+3 comes out: two supplies must never feed the same rail. The steps
-below say what to keep, what to take out and what to add.
+The power module feeds only the bottom rails, for the stepper's driver, as
+in Lesson 31. The screen and the clock keep the Mega's 5 V on the top rails,
+as in Lesson 32. The steps below say what to keep and what to add.
 
 <!-- bench -->
 
 <!-- steps -->
 
-Set both of the power module's yellow jumpers to **5V**: the top rails feed
-the screen and the clock, the bottom rails the stepper's driver. The
-driver's red and black wires go into B+4 and B-4, one column nearer the Mega
-than in Lesson 31, because the screen's black jumper takes column 5 and the
-LCD covers the rails from column 6.
+The driver's red and black wires go into B+4 and B-4, one column nearer
+the Mega than in Lesson 31, because the screen's black jumper takes column
+5 and the LCD covers the rails from column 6.
 
 Push the motor's white plug into the driver's socket. Tape a paper flag to
 the motor's shaft so that, looking at the end of the shaft, the flag lies
@@ -140,7 +135,7 @@ When you are done, these are the connections your circuit makes:
 
 ## Code it
 
-Open the Arduino IDE and choose **File → Examples → Adk → Lesson33AlarmClock**:
+Open **File → Examples → Adk → Lesson33AlarmClock**:
 
 <!-- sketch -->
 
@@ -175,16 +170,20 @@ Read it from the top:
 - `knobTurned ()` moves the alarm 60 minutes for each click while you set
   the hour, and 1 while you set the minutes. In the other two states the
   knob does nothing: a bare `return;` leaves the function at once. The last
-  line wraps the alarm round the day with `%`.
+  line wraps the alarm round the day with `%`, adding a whole day first, as
+  Lesson 30 added the count of mazes, so that turning back from 00:00 gives
+  23:00 rather than a time below zero.
 - `sleepUntil ()` stops the tune, sets when to ring next, and goes back to
   `Showing`. Snooze calls it with five minutes from now; the knob's button
   calls it with the alarm, which comes round again tomorrow.
 - `readTheClock ()` checks `rtc.ok ()` first, as in Lesson 32. It starts
   ringing only as a **new** minute begins (`time != clockTime`). Without that,
   stopping the alarm at 07:00 would set it off again a tenth of a second
-  later, because it would still be 07:00. While it rings, it starts the tune
-  again each time it ends. `speaker.play ()` never waits, so the clock keeps
-  ticking on the screen and the buttons still work while it plays.
+  later, because it would still be 07:00. While it rings, it asks for the
+  tune ten times a second: a tune that is already playing just carries on,
+  and one that has ended starts again. `speaker.play ()` never waits, so the
+  clock keeps ticking on the screen and the buttons still work while it
+  plays.
 - `showAlarm ()` fills the bottom row. `label` starts as `Alarm` or
   `Snooze`, and the `switch` changes it while you set the alarm. While the
   alarm rings, **Wake up!** shows when the seconds are even and a blank row
@@ -195,8 +194,9 @@ Read it from the top:
 
 ## Upload it
 
-Switch the power module on, then plug in the Mega and upload the sketch. The top row shows the time; the bottom row shows
-`Alarm 07:00`. Now set the alarm for two minutes from now:
+Switch the power module on, then plug in the Mega and upload the sketch.
+The top row shows the time; the bottom row shows `Alarm 07:00`. Now set the
+alarm for two minutes from now:
 
 1. Press the knob. The bottom row says `Hour?`. Turn the knob until the hour
    is right.
@@ -230,8 +230,7 @@ every step on the way up, it knows exactly how far back 0 is.
 | The screen flashes **Wake up!** but there's no sound | Check the buzzer's + leg, the one by its + mark, is in f51, in pin 10's column, that pin 10's wire is in j51, and that the resistor goes from a51 to the − rail. |
 | The snooze button does nothing | It must straddle the middle gap in columns 38 and 40, with pin 23's wire in j38 and the black wire from a40 to the − rail. |
 | The time is wrong | See Lesson 32: the clock module keeps whatever time it was set to. |
-| The screen is dark | The screen and the clock take their power from the power module now: switch it on. |
-| The flag never moves, and the driver's LEDs stay dark | Switch the power module on, with both jumpers on 5V, and check the driver's red and black wires go to B+4 and B-4. |
+| The flag never moves, and the driver's LEDs stay dark | Switch the power module on, with its bottom jumper on 5V, and check the driver's red and black wires go to B+4 and B-4. |
 | The flag hums or shakes but hardly turns | Check IN1 goes to A8, IN2 to A9, IN3 to A10 and IN4 to A11. |
 | The flag swings down instead of up | Your motor turns the other way: tape the flag on pointing right instead. |
 | The flag stands up while it's quiet, and lies flat when it rings | The Mega started while the flag was up, and counts from there. Unplug it, turn the flag flat by hand, and plug it in again. |
@@ -299,8 +298,7 @@ What the numbers tell you:
   number jumps about as the notes come and go, and drops to 0 in the pause
   at the end of the tune. Press snooze and it stays at 0: the pin shows the
   state as plainly as the flag does.
-- **The flag's supply** is the power module's 5 V on the bottom rails. The
-  top rails read the same: in this lesson the power module feeds the screen
-  and the clock too, and the Mega's 5 V stays off the rails. Watch the
-  reading while the flag moves: it hardly changes, because the module has
-  plenty to spare for the motor.
+- **The flag's supply** is the power module's 5 V on the bottom rails,
+  while the screen and the clock run from the Mega's 5 V on the top rails.
+  Watch the reading while the flag moves: it hardly changes, because the
+  module has plenty to spare for the motor.

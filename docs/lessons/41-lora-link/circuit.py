@@ -1,18 +1,19 @@
 # Lesson 40's screen, button and dividers stay where they were; the modems
 # go, and two LoRa modules take their places below the board, B on Serial3
 # first and A on Serial1 after it. The power module's bottom jumper moves
-# to 5V, for the modules. Each module's TXD still comes up into f to meet
-# its Mega RX pin's wire, and its RXD still comes up beside its divider;
-# new are its AUX, up into f beside its TXD to meet its Mega pin, and its
-# M0 and M1, up into f and g two columns past the divider, where a
-# single Mega pin's wire joins them. The DHT11 is at its home above the
-# board, as in Lesson 15.
+# to 5V, for the modules; its top jumper stays off, so the Mega's 5V still
+# feeds the top rails, for the screen and the DHT11. Each module's TXD
+# still comes up into f to meet its Mega RX pin's wire, and its RXD still
+# comes up beside its divider; new are its AUX, up into f beside its TXD
+# to meet its Mega pin, and its M0 and M1, up into f and g two columns
+# past the divider, where a single Mega pin's wire joins them. The DHT11
+# is at its home above the board, as in Lesson 15.
 bench = Bench ("Two LoRa modules: A on pins 18 and 19, its M0 and M1 on 40 and AUX on 41; B on "
                "pins 14 and 15, its M0 and M1 on 42 and AUX on 43; each RXD through a 1 kΩ and "
                "2 kΩ divider, and both on 5 V from the power module. The DHT11 on pin 16, the "
                "button on 23 and the LCD on 31 to 36", columns=(1, 63))
 
-bench.power_module ("right", top="5V", bottom="5V")
+bench.power_module ("right", top="off", bottom="5V")
 bench.screen (text=("Temp 23C Hum 45%", "1 s ago"), risers=(4.4, 0.1))
 
 bench.module ("dht11", "dht", at=(8.58, -1.27))
