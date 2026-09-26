@@ -9,25 +9,28 @@ namespace adk {
         // Half-stepping: one coil, then it and the next together, then the
         // next alone, so the rotor moves half a step at a time. Each entry is
         // IN1-IN4 as four bits, IN1 first: 0x8 is 1000, 0xC is 1100.
-        const uint8_t Phases [8] PROGMEM = {0x8, 0xC, 0x4, 0x6, 0x2, 0x3, 0x1, 0x9};
+        constexpr uint8_t Phases [8] PROGMEM = {0x8, 0xC, 0x4, 0x6, 0x2, 0x3, 0x1, 0x9};
 
         // Each millisecond earns the motor its speed in thousandths of a step.
-        const uint16_t StepCost = 1000;
-        const uint16_t MaxSpeed = 1000;
-    }
+        constexpr uint16_t StepCost = 1000;
 
-    const uint16_t Stepper::StepsPerRevolution;
+        // The 28BYJ-48's datasheet gives its pull-in rate, the fastest it can
+        // start from rest without a run-up, as over 600 half-steps a second
+        // unloaded. Staying below it, a move can start, stop and turn back at
+        // once, with no need to speed up and slow down gradually.
+        constexpr uint16_t MaxSpeed = 500;
+    }
 
     Stepper::Stepper (Pin in1, Pin in2, Pin in3, Pin in4)
         : position_  (0)
         , target_    (0)
         , then_      (0)
         , credit_    (StepCost)
-        , speed_     (500)
+        , speed_     (MaxSpeed)
         , pins_      {in1, in2, in3, in4}
         , holding_   (false)
         , energized_ (false)
-        , starting_  (false)
+        , resting_   (true)
     {
     }
 
@@ -48,11 +51,6 @@ namespace adk {
 
     void Stepper::moveTo (long position)
     {
-        if (!isMoving ())
-        {
-            starting_ = true;
-        }
-
         target_ = position;
     }
 
@@ -108,34 +106,27 @@ namespace adk {
         //
         // A motor at rest, or just setting off, holds one step at most: a move
         // starts at once, and time spent waiting never turns into a burst.
-        uint16_t most = (starting_ || !isMoving ()) ? StepCost : 2 * StepCost - 1;
+        uint16_t most = (resting_ || !isMoving ()) ? StepCost : 2 * StepCost - 1;
         Millis   gap  = now - then_;
         uint32_t sum  = credit_ + (gap < 1000 ? gap : 1000) * speed_;
 
-        credit_   = static_cast<uint16_t> (sum < most ? sum : most);
-        then_     = now;
-        starting_ = false;
+        credit_ = static_cast<uint16_t> (sum < most ? sum : most);
+        then_   = now;
 
-        if (!isMoving ())
+        if (isMoving () && credit_ >= StepCost)
+        {
+            credit_   -= StepCost;
+            position_ += target_ > position_ ? 1 : -1;
+            energize ();
+        }
+        else if (!isMoving () && credit_ == StepCost && energized_ && !holding_)
         {
             // A whole step in hand again means the last step has had its full
             // time, so the coils can be let go.
-            if (credit_ == StepCost && energized_ && !holding_)
-            {
-                release ();
-            }
-
-            return;
+            release ();
         }
 
-        if (credit_ < StepCost)
-        {
-            return;
-        }
-
-        credit_   -= StepCost;
-        position_ += target_ > position_ ? 1 : -1;
-        energize ();
+        resting_ = !isMoving ();
     }
 
     void Stepper::stop ()

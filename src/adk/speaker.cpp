@@ -5,15 +5,14 @@
 namespace adk {
 
     Speaker::Speaker (Pin pin)
-        : melody_    (nullptr)
-        , noteStart_ (0)
-        , note_      ({0, 0})
-        , length_    (0)
-        , next_      (0)
-        , pin_       (pin)
-        , playing_   (false)
-        , sounding_  (false)
-        , starting_  (false)
+        : melody_   (nullptr, 0)
+        , started_  ()
+        , length_   (0)
+        , next_     (0)
+        , hz_       (note::rest)
+        , pin_      (pin)
+        , playing_  (false)
+        , sounding_ (false)
     {
     }
 
@@ -27,33 +26,51 @@ namespace adk {
 
     void Speaker::tone (uint16_t hz, Millis duration)
     {
-        melody_ = nullptr;
-        length_ = 0;
-        start ({hz, static_cast<uint16_t> (duration)});
-    }
+        if (playing_ && melody_.empty () && hz == hz_ && duration == length_)
+        {
+            return;
+        }
 
-    void Speaker::play (Span<const Note> melody)
-    {
-        if (melody.empty ())
+        if (hz == note::rest && duration == 0)
         {
             stop ();
             return;
         }
 
-        melody_ = melody.begin ();
-        length_ = static_cast<uint8_t> (min (melody.size (), size_t {255}));
-        next_   = 1;
-        start (melody[0]);
+        melody_ = {nullptr, 0};
+        sound (hz, duration);
+        started_.restart ();
+    }
+
+    void Speaker::play (Span<const Note> melody)
+    {
+        bool same = !melody.empty () && melody.begin () == melody_.begin ()
+                 && melody.size () == melody_.size ();
+
+        if (playing_ && same)
+        {
+            return;
+        }
+
+        melody_ = melody;
+        next_   = 0;
+
+        if (nextNote ())
+        {
+            started_.restart ();
+        }
+        else
+        {
+            stop ();
+        }
     }
 
     void Speaker::stop ()
     {
         ::noTone (pin_);
-        melody_   = nullptr;
-        length_   = 0;
+        melody_   = {nullptr, 0};
         playing_  = false;
         sounding_ = false;
-        starting_ = false;
     }
 
     bool Speaker::isPlaying () const
@@ -63,36 +80,28 @@ namespace adk {
 
     void Speaker::update (Millis now)
     {
-        if (!playing_ || note_.ms == 0)
+        if (!playing_)
         {
             return;
         }
 
-        if (starting_)
-        {
-            noteStart_ = now;
-            starting_  = false;
-        }
-
-        Millis elapsed = now - noteStart_;
+        Millis elapsed = started_.elapsed (now);
 
         // A melody note falls silent for the last eighth of its length.
-        if (melody_ && sounding_ && elapsed >= note_.ms - note_.ms / 8u)
+        if (!melody_.empty () && sounding_ && elapsed >= length_ - length_ / 8)
         {
             ::noTone (pin_);
             sounding_ = false;
         }
 
-        if (elapsed < note_.ms)
+        if (length_ == 0 || elapsed < length_)
         {
             return;
         }
 
-        if (next_ < length_)
+        if (nextNote ())
         {
-            start (melody_[next_++]);
-            noteStart_ = now;
-            starting_  = false;
+            started_.restart (now);
         }
         else
         {
@@ -100,20 +109,37 @@ namespace adk {
         }
     }
 
-    void Speaker::start (Note note)
+    // Sound the melody's next note that has a length; false at its end.
+    bool Speaker::nextNote ()
     {
-        if (note.hz == note::rest)
+        while (next_ < melody_.size ())
+        {
+            Note note = melody_[next_++];
+
+            if (note.ms != 0)
+            {
+                sound (note.hz, note.ms);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    void Speaker::sound (uint16_t hz, Millis length)
+    {
+        if (hz == note::rest)
         {
             ::noTone (pin_);
         }
         else
         {
-            ::tone (pin_, note.hz);
+            ::tone (pin_, hz);
         }
 
-        note_     = note;
+        hz_       = hz;
+        length_   = length;
         playing_  = true;
-        sounding_ = note.hz != note::rest;
-        starting_ = true;
+        sounding_ = hz != note::rest;
     }
 }

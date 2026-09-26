@@ -4,15 +4,20 @@
 
 namespace adk {
 
+    namespace {
+
+        // A fade takes as many steps as a channel has levels.
+        constexpr uint16_t FadeSteps = 256;
+    }
+
     RgbLed::RgbLed (Pin red, Pin green, Pin blue, Polarity polarity)
         : shown_      (color::off)
         , from_       (color::off)
         , to_         (color::off)
-        , fadeStart_  (0)
+        , fade_       ()
         , fadeLength_ (0)
         , pins_       {red, green, blue}
         , polarity_   (polarity)
-        , starting_   (false)
     {
     }
 
@@ -39,15 +44,21 @@ namespace adk {
 
     void RgbLed::fadeTo (Color color, Millis duration)
     {
-        from_       = shown_;
-        to_         = color;
-        fadeLength_ = duration;
-        starting_   = true;
+        if (color == (isFading () ? to_ : shown_))
+        {
+            return;
+        }
 
         if (duration == 0)
         {
             show (color);
+            return;
         }
+
+        from_       = shown_;
+        to_         = color;
+        fadeLength_ = duration;
+        fade_.restart ();
     }
 
     bool RgbLed::isFading () const
@@ -67,13 +78,7 @@ namespace adk {
             return;
         }
 
-        if (starting_)
-        {
-            fadeStart_ = now;
-            starting_  = false;
-        }
-
-        Millis elapsed = now - fadeStart_;
+        Millis elapsed = fade_.elapsed (now);
 
         if (elapsed >= fadeLength_)
         {
@@ -81,7 +86,7 @@ namespace adk {
             return;
         }
 
-        write (blend (from_, to_, static_cast<uint16_t> (elapsed * 256 / fadeLength_), 256));
+        write (blend (from_, to_, interpolate (0, FadeSteps, elapsed, fadeLength_), FadeSteps));
     }
 
     void RgbLed::stop ()

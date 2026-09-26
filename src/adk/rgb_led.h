@@ -2,6 +2,7 @@
 
 #include "color.h"
 #include "digital.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -14,9 +15,15 @@ namespace adk {
 
         void  show     (Color color);
         void  off      ();
-        void  fadeTo   (Color color, Millis duration);
         bool  isFading () const;
         Color color    () const;
+
+        // Glide from the color shown now to another, arriving after
+        // duration, while the sketch carries on. Asking again for the color
+        // it is already fading to, or already shows, changes nothing, so
+        // fadeTo () can be called from every pass of loop (); a different
+        // color starts afresh from wherever the fade has got to.
+        void fadeTo (Color color, Millis duration);
 
       protected:
         void setup  () override;
@@ -26,13 +33,12 @@ namespace adk {
       private:
         void write (Color color);
 
-        Color    shown_;
-        Color    from_;
-        Color    to_;
-        Millis   fadeStart_;
-        Millis   fadeLength_;
-        Pin      pins_ [3];
-        Polarity polarity_;
-        bool     starting_;
+        Color     shown_;
+        Color     from_;
+        Color     to_;
+        StartTime fade_;
+        Millis    fadeLength_;
+        Pin       pins_ [3];
+        Polarity  polarity_;
     };
 }

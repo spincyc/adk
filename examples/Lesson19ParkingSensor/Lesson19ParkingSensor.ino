@@ -26,7 +26,7 @@ void loop ()
     adk::update ();
 
     // No echo means nothing within about 4 meters.
-    int distance = sensor.hasEcho () ? sensor.distance () : 400;
+    int distance = sensor.ok () ? sensor.distance () : 400;
 
     showGauge (distance);
     soundWarning (distance);

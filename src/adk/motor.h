@@ -1,6 +1,6 @@
 #pragma once
 
-#include "object.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -36,6 +36,8 @@ namespace adk {
         // From -255 (full speed backwards) to 255 (full speed forwards); 0
         // coasts. speed () is the speed asked for, even while a reversal
         // waits. A slow speed may only make the motor hum until it gets going.
+        // Asking again for the speed it already has changes nothing, so it
+        // can be set from every pass of loop ().
         void    speed (int16_t speed);
         int16_t speed () const;
 
@@ -53,13 +55,12 @@ namespace adk {
         void drive       ();
         void stopDriving (bool braking);
 
-        Millis  stoppedAt_;
-        int16_t speed_;
-        Pin     enable_;
-        Pin     forward_;
-        Pin     backward_;
-        int8_t  spin_;      // 1 or -1 while the motor may still turn that way
-        bool    driving_;
-        bool    starting_;
+        StartTime spinDown_;
+        int16_t   speed_;
+        Pin       enable_;
+        Pin       forward_;
+        Pin       backward_;
+        int8_t    spin_;      // 1 or -1 while the motor may still turn that way
+        bool      driving_;
     };
 }

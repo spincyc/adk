@@ -1,6 +1,6 @@
 #pragma once
 
-#include "object.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -15,15 +15,18 @@ namespace adk {
     {
         Ultrasonic (Pin trigger, Pin echo);
 
-        // Centimetres to the nearest object, from the latest reading.
+        // Centimeters to the nearest object, from the latest reading, or 0
+        // when that reading is not ok ().
         uint16_t distance () const;
 
-        // False when nothing answered within range; distance () is then 0.
-        bool hasEcho () const;
-
-        // A new reading arrived in this update. The first comes with the
-        // first update.
+        // A ping finished in this update, echo or not: an event. The first
+        // comes 60 ms after the first update.
         bool measured () const;
+
+        // Whether the latest ping's echo came back. Without one, nothing is
+        // within about 4 m (or closer than 2 cm), or the sensor is not
+        // answering.
+        bool ok () const;
 
       protected:
         void setup  () override;
@@ -32,11 +35,10 @@ namespace adk {
       private:
         void ping ();
 
-        Millis   pingedAt_;
-        uint16_t distance_;
-        Pin      trigger_;
-        Pin      echo_;
-        bool     measured_;
-        bool     starting_;
+        StartTime pinged_;
+        uint16_t  distance_;
+        Pin       trigger_;
+        Pin       echo_;
+        bool      measured_;
     };
 }

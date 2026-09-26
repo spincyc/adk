@@ -6,25 +6,34 @@ namespace adk {
 
     namespace {
 
-        const Millis Period = 2000;
-        const Millis WarmUp = 1000;
+        constexpr Millis Period = 2000;
+        constexpr Millis WarmUp  = 1000;
 
         // The datasheet asks for at least 18 ms. millis () sometimes counts
         // in steps of two, so 20 on its clock is sure to be 18 in fact.
-        const Millis StartSignal = 20;
+        constexpr Millis StartSignal = 20;
 
         // Every level of the reply lasts under 100 us, so one that lasts
         // 150 us means the sensor is missing or has stopped. A high longer
         // than 50 us is a 1.
-        const uint16_t Timeout  = 150;
-        const uint16_t OneAbove = 50;
+        constexpr uint16_t Timeout  = 150;
+        constexpr uint16_t OneAbove = 50;
 
-        // Microseconds since began. With interrupts off, micros () no longer
-        // counts overflows of Timer 0, but its low ten bits still tick every
-        // 4 us, and every wait here is far shorter than their 1024 us span.
+        // Microseconds since began, never more than a few hundred ago.
         uint16_t since (uint16_t began)
         {
-            return static_cast<uint16_t> ((static_cast<uint16_t> (micros ()) - began) & 1023);
+            return static_cast<uint16_t> (static_cast<uint16_t> (micros ()) - began);
+        }
+
+        // Interrupts that fell due while a bit was timed run here, at the
+        // start of the next bit's low: its 50 us leave them time to finish
+        // before the edge that is timed next. The AVR runs one more
+        // instruction after sei before it takes an interrupt, hence the nop.
+        void letInterruptsIn ()
+        {
+            interrupts ();
+            __asm__ __volatile__ ("nop");
+            noInterrupts ();
         }
 
         // How long the line stays at a level, or more than Timeout.
@@ -49,14 +58,22 @@ namespace adk {
         // bit is low for 50 us, then high for 26-28 us for a 0 or 70 us for a 1.
         bool listen (Pin pin, uint8_t (&bytes) [5])
         {
-            if (hold (pin, HIGH) > Timeout || hold (pin, LOW) > Timeout
-                || hold (pin, HIGH) > Timeout)
+            if (hold (pin, HIGH) > Timeout)
+            {
+                return false;
+            }
+
+            letInterruptsIn ();
+
+            if (hold (pin, LOW) > Timeout || hold (pin, HIGH) > Timeout)
             {
                 return false;
             }
 
             for (uint8_t bit = 0; bit < 40; ++bit)
             {
+                letInterruptsIn ();
+
                 if (hold (pin, LOW) > Timeout)
                 {
                     return false;
@@ -77,14 +94,14 @@ namespace adk {
     }
 
     Dht11::Dht11 (Pin pin)
-        : signalledAt_ (0)
+        : signalled_   ()
         , temperature_ (0)
         , humidity_    (0)
         , pin_         (pin)
         , signalling_  (false)
+        , warm_        (false)
         , ok_          (false)
         , measured_    (false)
-        , starting_    (true)
     {
     }
 
@@ -115,26 +132,23 @@ namespace adk {
 
     void Dht11::update (Millis now)
     {
+        Millis waited = signalled_.elapsed (now);
+
         measured_ = false;
 
-        // Count as if a reading began a second before the first update, so
-        // the first real one waits the second the sensor needs after power-up.
-        if (starting_)
-        {
-            signalledAt_ = now - (Period - WarmUp);
-            starting_    = false;
-        }
-
-        if (!signalling_ && now - signalledAt_ >= Period)
+        // The first reading waits only the second the sensor needs after
+        // power-up.
+        if (!signalling_ && waited >= (warm_ ? Period : WarmUp))
         {
             // The start signal holds the line low. Setting the level first
             // means the pin never drives it high.
             digitalWrite (pin_, LOW);
             pinMode      (pin_, OUTPUT);
-            signalledAt_ = now;
-            signalling_  = true;
+            signalled_.restart (now);
+            signalling_ = true;
+            warm_       = true;
         }
-        else if (signalling_ && now - signalledAt_ >= StartSignal)
+        else if (signalling_ && waited >= StartSignal)
         {
             receive ();
             signalling_ = false;

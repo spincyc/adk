@@ -348,7 +348,7 @@ TEST (ds18b20KeepsTheLastReadingOnACrcError)
     sensor.load (0x0200);
     sensor.scratchpad[8] ^= 0x01;
     adk::update (1500);
-    CHECK (!thermometer.measured ());
+    CHECK (thermometer.measured ());
     CHECK (!thermometer.ok ());
     CHECK (thermometer.celsius () == 25.0625f);
 
@@ -359,7 +359,7 @@ TEST (ds18b20KeepsTheLastReadingOnACrcError)
     CHECK (thermometer.celsius () == 32.0f);
 }
 
-TEST (ds18b20WithoutASensorIsNotOkUntilOneAnswers)
+TEST (ds18b20WithoutASensorFailsAReadingEvery750msUntilOneAnswers)
 {
     arduino::setCallCost (3);
     Sensor       sensor      {7};
@@ -369,7 +369,7 @@ TEST (ds18b20WithoutASensorIsNotOkUntilOneAnswers)
     sensor.connected = false;
     sensor.load (0x0191);
 
-    CHECK (readingsBetween (thermometer, 0, 1600).empty ());
+    CHECK (readingsBetween (thermometer, 0, 1600) == (std::vector<adk::Millis> {0, 750, 1500}));
     CHECK (!thermometer.ok ());
     CHECK (thermometer.celsius () == 0.0f);
     CHECK (sensor.received.empty ());
@@ -394,7 +394,7 @@ TEST (ds18b20KeepsTheLastReadingWhenTheSensorGoes)
     sensor.connected = false;
     adk::update (1500);
 
-    CHECK (!thermometer.measured ());
+    CHECK (thermometer.measured ());
     CHECK (!thermometer.ok ());
     CHECK (thermometer.celsius () == 25.0625f);
 }
@@ -408,11 +408,12 @@ TEST (ds18b20SkipsAFirstReadingOf85Degrees)
     adk::setup ();
     adk::update (0);
     adk::update (750);
-    CHECK (!thermometer.measured ());
+    CHECK (thermometer.measured ());
     CHECK (!thermometer.ok ());
 
     adk::update (1500);
     CHECK (thermometer.measured ());
+    CHECK (thermometer.ok ());
     CHECK (thermometer.celsius () == 85.0f);
 }
 
@@ -425,6 +426,6 @@ TEST (ds18b20RejectsALineHeldLow)
     adk::setup ();
     sensor.stuckLow = true;
 
-    CHECK (readingsBetween (thermometer, 0, 1600).empty ());
+    CHECK (readingsBetween (thermometer, 0, 1600) == (std::vector<adk::Millis> {750, 1500}));
     CHECK (!thermometer.ok ());
 }

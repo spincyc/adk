@@ -115,8 +115,8 @@ What's new:
   so the constant `quarterTurn` is 1024. It's a `long`, from Lesson 8,
   because the motor counts its steps in `long`s: an `int` stops at 32,767,
   only eight turns.
-- `motor.speed (500);` asks for 500 half-steps a second. The motor copes with
-  anything up to 1000; much faster and it just hums.
+- `motor.speed (500);` asks for 500 half-steps a second, the fastest ADK
+  turns it: much faster, and the motor can stall and just hum.
 - `motor.step (quarterTurn);` starts a move of 1024 half-steps on from
   wherever the last move ends. It doesn't wait: `adk::update ()` takes each
   step when its moment comes, so the button is still watched while the motor

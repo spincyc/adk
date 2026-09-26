@@ -56,7 +56,7 @@ TEST (joystickAxesCannotShareAPin)
     CHECK (check::halted.pin == A0);
 }
 
-TEST (joystickRestsAtZeroWhereverItsCentreIs)
+TEST (joystickRestsAtZeroWhereverItsCenterIs)
 {
     adk::Joystick joystick {A0, A1};
 
@@ -93,7 +93,7 @@ TEST (joystickScalesEachSideToItsFullTravel)
     CHECK (joystick.y () == -50);
 }
 
-TEST (joystickIgnoresSmallMovesNearTheCentre)
+TEST (joystickIgnoresSmallMovesNearTheCenter)
 {
     Stick stick;
 

@@ -6,15 +6,15 @@ namespace adk {
 
     namespace {
 
-        const uint8_t SkipRom        = 0xCC;
-        const uint8_t ConvertT       = 0x44;
-        const uint8_t ReadScratchpad = 0xBE;
+        constexpr uint8_t SkipRom        = 0xCC;
+        constexpr uint8_t ConvertT       = 0x44;
+        constexpr uint8_t ReadScratchpad = 0xBE;
 
         // A 12-bit conversion takes up to 750 ms.
-        const Millis ConversionTime = 750;
+        constexpr Millis ConversionTime = 750;
 
         // What the sensor holds from power-up until its first conversion.
-        const int16_t PowerOnValue = 85 * 16;
+        constexpr int16_t PowerOnValue = 85 * 16;
 
         // The Dallas CRC-8 (x^8 + x^5 + x^4 + 1), least significant bit first.
         uint8_t crc8 (const uint8_t* bytes, uint8_t length)
@@ -86,33 +86,32 @@ namespace adk {
 
         if (phase_ == Phase::Converting)
         {
-            collect ();
+            ok_       = collect ();
+            measured_ = true;
         }
 
         startedAt_ = now;
+        phase_     = command (ConvertT) ? Phase::Converting : Phase::Missing;
 
-        if (command (ConvertT))
+        // With no sensor to start one, a reading fails at once, unless one
+        // has just finished.
+        if (phase_ == Phase::Missing && !measured_)
         {
-            phase_ = Phase::Converting;
-        }
-        else
-        {
-            phase_ = Phase::Missing;
-            ok_    = false;
+            ok_       = false;
+            measured_ = true;
         }
     }
 
     // The scratchpad holds the temperature in sixteenths of a degree, least
     // significant byte first, and a CRC of its first eight bytes in the ninth.
-    void Ds18b20::collect ()
+    bool Ds18b20::collect ()
     {
         uint8_t scratchpad [9];
         uint8_t any = 0;
 
         if (!command (ReadScratchpad))
         {
-            ok_ = false;
-            return;
+            return false;
         }
 
         for (uint8_t index = 0; index < 9; ++index)
@@ -124,8 +123,7 @@ namespace adk {
         // Nine zero bytes pass the CRC too; they are a line held low.
         if (any == 0 || crc8 (scratchpad, 8) != scratchpad[8])
         {
-            ok_ = false;
-            return;
+            return false;
         }
 
         int16_t sixteenths = static_cast<int16_t> (scratchpad[1] << 8 | scratchpad[0]);
@@ -137,12 +135,11 @@ namespace adk {
 
         if (leftOver)
         {
-            return;
+            return false;
         }
 
         sixteenths_ = sixteenths;
-        ok_         = true;
-        measured_   = true;
+        return true;
     }
 
     // Reset the line and, if the sensor answers, give it a function command.

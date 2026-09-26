@@ -1,62 +1,57 @@
 #include "buzzer.h"
 
-#include <Arduino.h>
-
 namespace adk {
 
     Buzzer::Buzzer (Pin pin, Polarity polarity)
-        : beepStart_  (0)
-        , beepLength_ (0)
-        , pin_        (pin)
-        , polarity_   (polarity)
-        , on_         (false)
-        , starting_   (false)
+        : sound_  (pin, polarity)
+        , beep_   ()
+        , length_ (0)
     {
     }
 
     void Buzzer::setup ()
     {
-        claimOutput (pin_, polarity_ == ActiveLow);
+        sound_.claim ();
     }
 
     void Buzzer::on ()
     {
-        beepLength_ = 0;
-        sound (true);
+        length_ = 0;
+        sound_.set (true);
     }
 
     void Buzzer::off ()
     {
-        beepLength_ = 0;
-        sound (false);
-    }
-
-    void Buzzer::beep (Millis duration)
-    {
-        beepLength_ = duration;
-        starting_   = true;
-        sound (duration != 0);
+        length_ = 0;
+        sound_.set (false);
     }
 
     bool Buzzer::isOn () const
     {
-        return on_;
+        return sound_.isOn ();
     }
 
-    void Buzzer::update (Millis now)
+    void Buzzer::beep (Millis duration)
     {
-        if (beepLength_ == 0)
+        if (duration == 0)
+        {
+            off ();
+            return;
+        }
+
+        if (duration == length_)
         {
             return;
         }
 
-        if (starting_)
-        {
-            beepStart_ = now;
-            starting_  = false;
-        }
+        length_ = duration;
+        beep_.restart ();
+        sound_.set (true);
+    }
 
-        if (now - beepStart_ >= beepLength_)
+    void Buzzer::update (Millis now)
+    {
+        if (length_ != 0 && beep_.elapsed (now) >= length_)
         {
             off ();
         }
@@ -65,11 +60,5 @@ namespace adk {
     void Buzzer::stop ()
     {
         off ();
-    }
-
-    void Buzzer::sound (bool on)
-    {
-        digitalWrite (pin_, (on == (polarity_ == ActiveHigh)) ? HIGH : LOW);
-        on_ = on;
     }
 }

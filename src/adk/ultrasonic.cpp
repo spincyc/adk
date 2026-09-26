@@ -6,22 +6,21 @@ namespace adk {
 
     namespace {
 
-        const Millis PingPeriod = 60;
+        constexpr Millis PingPeriod = 60;
 
-        // Sound takes 58 us to reach something a centimetre away and come
+        // Sound takes 58 us to reach something a centimeter away and come
         // back. An echo takes 25 ms from 4.3 m, beyond which it is too faint
         // to trust.
-        const unsigned long UsPerCm     = 58;
-        const unsigned long EchoTimeout = 25000;
+        constexpr unsigned long UsPerCm     = 58;
+        constexpr unsigned long EchoTimeout = 25000;
     }
 
     Ultrasonic::Ultrasonic (Pin trigger, Pin echo)
-        : pingedAt_ (0)
+        : pinged_   ()
         , distance_ (0)
         , trigger_  (trigger)
         , echo_     (echo)
         , measured_ (false)
-        , starting_ (true)
     {
     }
 
@@ -38,25 +37,24 @@ namespace adk {
         return distance_;
     }
 
-    bool Ultrasonic::hasEcho () const
-    {
-        return distance_ != 0;
-    }
-
     bool Ultrasonic::measured () const
     {
         return measured_;
     }
 
+    bool Ultrasonic::ok () const
+    {
+        return distance_ != 0;
+    }
+
     void Ultrasonic::update (Millis now)
     {
-        measured_ = starting_ || now - pingedAt_ >= PingPeriod;
+        measured_ = pinged_.elapsed (now) >= PingPeriod;
 
         if (measured_)
         {
+            pinged_.restart (now);
             ping ();
-            pingedAt_ = now;
-            starting_ = false;
         }
     }
 

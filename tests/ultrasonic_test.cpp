@@ -86,6 +86,7 @@ TEST (ultrasonicTriggersForTenMicrosecondsThenTimesTheEcho)
     };
 
     adk::update (0);
+    adk::update (60);
 
     CHECK (rose == 1002);
     CHECK (fell == 1012);
@@ -96,20 +97,26 @@ TEST (ultrasonicTriggersForTenMicrosecondsThenTimesTheEcho)
     CHECK (arduino::pin (30).output == LOW);
 }
 
-TEST (ultrasonicMeasuresOnTheFirstUpdateForThatUpdateOnly)
+TEST (ultrasonicMeasuresAPeriodAfterTheFirstUpdateForThatUpdateOnly)
 {
     adk::Ultrasonic ranger {30, 31};
 
     adk::setup ();
     answerWithEcho (1166);
     CHECK (!ranger.measured ());
+    CHECK (!ranger.ok ());
 
     adk::update (5000);
+    adk::update (5059);
+    CHECK (!ranger.measured ());
+    CHECK (pings == 0);
+
+    adk::update (5060);
     CHECK (ranger.measured ());
-    CHECK (ranger.hasEcho ());
+    CHECK (ranger.ok ());
     CHECK (ranger.distance () == 20);
 
-    adk::update (5001);
+    adk::update (5061);
     CHECK (!ranger.measured ());
     CHECK (ranger.distance () == 20);
     CHECK (pings == 1);
@@ -123,55 +130,58 @@ TEST (ultrasonicPingsNoMoreOftenThanEverySixtyMilliseconds)
     answerWithEcho (580);
 
     adk::update (0);
-    adk::update (59);
+    adk::update (60);
+    adk::update (119);
     CHECK (!ranger.measured ());
     CHECK (pings == 1);
 
-    adk::update (60);
+    adk::update (120);
     CHECK (ranger.measured ());
     CHECK (pings == 2);
 
     // A late update pings at once, and the next ping waits a full period.
-    adk::update (130);
-    CHECK (ranger.measured ());
-    adk::update (189);
-    CHECK (!ranger.measured ());
     adk::update (190);
+    CHECK (ranger.measured ());
+    adk::update (249);
+    CHECK (!ranger.measured ());
+    adk::update (250);
     CHECK (ranger.measured ());
     CHECK (pings == 4);
 }
 
-TEST (ultrasonicRoundsToTheNearestCentimetre)
+TEST (ultrasonicRoundsToTheNearestCentimeter)
 {
     adk::Ultrasonic ranger {30, 31};
 
     adk::setup ();
     answerWithEcho (86);
     adk::update (0);
+    adk::update (60);
     CHECK (ranger.distance () == 1);
 
     echo = 87;
-    adk::update (60);
+    adk::update (120);
     CHECK (ranger.distance () == 2);
 
     echo = 25000;
-    adk::update (120);
+    adk::update (180);
     CHECK (ranger.distance () == 431);
 }
 
-TEST (ultrasonicWithoutAnEchoReportsNoDistance)
+TEST (ultrasonicWithoutAnEchoHasMeasuredButIsNotOk)
 {
     adk::Ultrasonic ranger {30, 31};
 
     adk::setup ();
     answerWithEcho (1166);
     adk::update (0);
-    CHECK (ranger.hasEcho ());
+    adk::update (60);
+    CHECK (ranger.ok ());
 
     echo = 0;
-    adk::update (60);
+    adk::update (120);
     CHECK (ranger.measured ());
-    CHECK (!ranger.hasEcho ());
+    CHECK (!ranger.ok ());
     CHECK (ranger.distance () == 0);
 }
 
@@ -182,20 +192,22 @@ TEST (ultrasonicIgnoresAnEchoLongerThanItsRange)
     adk::setup ();
     answerWithEcho (25001);
     adk::update (0);
+    adk::update (60);
 
     CHECK (ranger.measured ());
-    CHECK (!ranger.hasEcho ());
+    CHECK (!ranger.ok ());
     CHECK (ranger.distance () == 0);
 }
 
-TEST (ultrasonicTooCloseToMeasureHasNoEcho)
+TEST (ultrasonicTooCloseToMeasureIsNotOk)
 {
     adk::Ultrasonic ranger {30, 31};
 
     adk::setup ();
     answerWithEcho (28);
     adk::update (0);
+    adk::update (60);
 
-    CHECK (!ranger.hasEcho ());
+    CHECK (!ranger.ok ());
     CHECK (ranger.distance () == 0);
 }
