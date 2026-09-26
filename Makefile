@@ -421,6 +421,7 @@ boards: site
 	@for example in $(BOARDS_EXAMPLES); do                  \
 	    echo "  AVR  examples/$$example (adk:avr:mega)";    \
 	    log=$(BOARDS_DIR)/sketches/$$example.log;           \
+	    mkdir -p $(BOARDS_DIR)/sketches/$$example;          \
 	    $(BOARDS_CLI) compile                               \
 	        --fqbn adk:avr:mega                             \
 	        --library .                                     \
