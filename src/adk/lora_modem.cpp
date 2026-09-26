@@ -9,26 +9,25 @@ namespace adk {
 
     namespace {
 
-        const unsigned long Baud   = 115200;
-        const unsigned long Waking = 1000;      // for a modem still starting up
-        const unsigned long Answer = 200;       // for +OK to a command
-        const Millis        GiveUp = 3000;      // for +OK to a message
+        constexpr unsigned long Baud   = 115200;
+        constexpr unsigned long Waking = 1000;  // for a modem still starting up
+        constexpr unsigned long Answer = 200;   // for +OK to a command
+        constexpr Millis        GiveUp = 3000;  // for +OK to a message
 
-        // Spreading factor 10, 125 kHz, coding rate 4/5, preamble 7: REYAX's
-        // choice for up to 3 km.
-        const char Settings [] = "AT+PARAMETER=10,7,1,7";
+        // Spreading factor, bandwidth (7: 125 kHz), coding rate 4/5 and
+        // preamble. Far is REYAX's choice for up to 3 km.
+        constexpr const char* Speeds [] = {"AT+PARAMETER=10,7,1,7", "AT+PARAMETER=7,7,1,4"};
     }
 
-    LoraModem::LoraModem (HardwareSerial& port, uint16_t address, uint8_t network, uint32_t band)
+    LoraModem::LoraModem (HardwareSerial& port, uint16_t address, LoraSettings settings)
         : port_     (port)
         , text_     {}
-        , band_     (band)
+        , settings_ (settings)
         , sentAt_   (0)
         , address_  (address)
         , sender_   (0)
         , signal_   (0)
         , margin_   (0)
-        , network_  (network)
         , ok_       (false)
         , sending_  (false)
         , starting_ (false)
@@ -58,12 +57,15 @@ namespace adk {
         Text<32> address;
         Text<32> network;
         Text<32> band;
+        Text<32> power;
         print (address, "AT+ADDRESS=", address_);
-        print (network, "AT+NETWORKID=", network_);
-        print (band, "AT+BAND=", band_);
+        print (network, "AT+NETWORKID=", settings_.network);
+        print (band, "AT+BAND=", settings_.band);
+        print (power, "AT+CRFOP=", min (settings_.power, uint8_t {15}));
 
         ok_ = ok_ && command (address.c_str ()) && command (network.c_str ())
-                  && command (band.c_str ()) && command (Settings);
+                  && command (band.c_str ()) && command (power.c_str ())
+                  && command (Speeds[static_cast<uint8_t> (settings_.speed)]);
     }
 
     bool LoraModem::ok () const
@@ -84,6 +86,21 @@ namespace adk {
         sending_  = true;
         starting_ = true;
         return true;
+    }
+
+    bool LoraModem::send (const char* text)
+    {
+        return send (settings_.partner, text);
+    }
+
+    bool LoraModem::sendLine (const char* text)
+    {
+        return send (text);
+    }
+
+    const char* LoraModem::heardLine () const
+    {
+        return received_ ? text_ : nullptr;
     }
 
     bool LoraModem::isSending () const

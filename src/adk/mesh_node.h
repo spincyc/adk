@@ -1,5 +1,6 @@
 #pragma once
 
+#include "link.h"
 #include "object.h"
 #include "serial_port.h"
 
@@ -19,7 +20,7 @@ namespace adk {
     // Its pins take 3.3 V, so the Mega's TX is divided down. The node sends
     // what it has been given once the line has been quiet for a second, so
     // messages go at most one every 1.5 s.
-    struct MeshNode : Object
+    struct MeshNode : Object, Link
     {
         explicit MeshNode (HardwareSerial& port);
 
@@ -42,6 +43,9 @@ namespace adk {
         void update (Millis now) override;
 
       private:
+        bool        sendLine  (const char* text) override;
+        const char* heardLine () const override;
+
         HardwareSerial&       port_;
         LineReader<MaxLength> reader_;
         char                  sender_ [17];

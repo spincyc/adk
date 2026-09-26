@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <string>
+#include <utility>
+#include <vector>
 
 #define INPUT        0x0
 #define OUTPUT       0x1
@@ -128,6 +130,41 @@ constexpr auto constrain (auto value, auto low, auto high)
 {
     return value < low ? low : (value > high ? high : value);
 }
+
+namespace arduino {
+
+    // A register a test can watch: every value written to it, with the time
+    // in microseconds, so a test can time what a part switched on and off.
+    struct Register
+    {
+        Register& operator=  (uint8_t value);
+        Register& operator|= (uint8_t bits);
+        Register& operator&= (uint8_t bits);
+        operator  uint8_t    () const;
+
+        void clear ();
+
+        uint8_t                                         value = 0;
+        std::vector<std::pair<unsigned long, uint8_t>> history;
+    };
+}
+
+// Timer 3, which an IrTransmitter runs as its 38 kHz carrier. Writes to
+// TCCR3A, which connects the carrier to its pin, are watched.
+extern arduino::Register  TCCR3A;
+extern volatile uint8_t   TCCR3B;
+extern volatile uint16_t  ICR3;
+extern volatile uint16_t  OCR3A;
+extern volatile uint16_t  OCR3B;
+extern volatile uint16_t  OCR3C;
+
+#define COM3C1 3
+#define COM3B1 5
+#define COM3A1 7
+#define WGM31  1
+#define WGM32  3
+#define WGM33  4
+#define CS30   0
 
 // Timer 5, the 16-bit timer a Servo drives directly.
 extern volatile uint8_t  TCCR5A;

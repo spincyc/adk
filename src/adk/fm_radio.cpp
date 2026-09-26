@@ -7,54 +7,54 @@ namespace adk {
 
     namespace {
 
-        const uint8_t  Address  = 0x10;
-        const uint16_t Si4703Id = 0x1242;
+        constexpr uint8_t  Address  = 0x10;
+        constexpr uint16_t Si4703Id = 0x1242;
 
         // The chip's registers. Reads start at StatusRssi and wrap round;
         // writes start at PowerConfig.
-        const uint8_t DeviceId    = 0x00;
-        const uint8_t PowerConfig = 0x02;
-        const uint8_t Channel     = 0x03;
-        const uint8_t SysConfig1  = 0x04;
-        const uint8_t SysConfig2  = 0x05;
-        const uint8_t SysConfig3  = 0x06;
-        const uint8_t Test1       = 0x07;
-        const uint8_t StatusRssi  = 0x0A;
-        const uint8_t ReadChannel = 0x0B;
-        const uint8_t RdsB        = 0x0D;
-        const uint8_t RdsC        = 0x0E;
-        const uint8_t RdsD        = 0x0F;
-        const uint8_t Everything  = 16;
-        const uint8_t News        = RdsD - StatusRssi + 1;
-        const uint8_t Status      = 2;
+        constexpr uint8_t DeviceId    = 0x00;
+        constexpr uint8_t PowerConfig = 0x02;
+        constexpr uint8_t Channel     = 0x03;
+        constexpr uint8_t SysConfig1  = 0x04;
+        constexpr uint8_t SysConfig2  = 0x05;
+        constexpr uint8_t SysConfig3  = 0x06;
+        constexpr uint8_t Test1       = 0x07;
+        constexpr uint8_t StatusRssi  = 0x0A;
+        constexpr uint8_t ReadChannel = 0x0B;
+        constexpr uint8_t RdsB        = 0x0D;
+        constexpr uint8_t RdsC        = 0x0E;
+        constexpr uint8_t RdsD        = 0x0F;
+        constexpr uint8_t Everything  = 16;
+        constexpr uint8_t News        = RdsD - StatusRssi + 1;
+        constexpr uint8_t Status      = 2;
 
-        const uint16_t Unmute     = 1u << 14;    // PowerConfig: DMUTE
-        const uint16_t Verbose    = 1u << 11;    // RDSM: block errors reported
-        const uint16_t SeekUp     = 1u << 9;
-        const uint16_t Seek       = 1u << 8;
-        const uint16_t Enable     = 1u << 0;
-        const uint16_t Tune       = 1u << 15;    // Channel
-        const uint16_t Rds        = 1u << 12;    // SysConfig1
-        const uint16_t Europe     = 1u << 11;    // DE: 50 µs de-emphasis
-        const uint16_t Crystal    = 0x8100;      // Test1: XOSCEN, as AN230 gives it
-        const uint16_t RdsReady   = 1u << 15;    // StatusRssi
-        const uint16_t Complete   = 1u << 14;    // STC
-        const uint16_t Failed     = 1u << 13;    // SF/BL
-        const uint16_t Stereo     = 1u << 8;
+        constexpr uint16_t Unmute     = 1u << 14;    // PowerConfig: DMUTE
+        constexpr uint16_t Verbose    = 1u << 11;    // RDSM: block errors reported
+        constexpr uint16_t SeekUp     = 1u << 9;
+        constexpr uint16_t Seek       = 1u << 8;
+        constexpr uint16_t Enable     = 1u << 0;
+        constexpr uint16_t Tune       = 1u << 15;    // Channel
+        constexpr uint16_t Rds        = 1u << 12;    // SysConfig1
+        constexpr uint16_t Europe     = 1u << 11;    // DE: 50 µs de-emphasis
+        constexpr uint16_t Crystal    = 0x8100;      // Test1: XOSCEN, as AN230 gives it
+        constexpr uint16_t RdsReady   = 1u << 15;    // StatusRssi
+        constexpr uint16_t Complete   = 1u << 14;    // STC
+        constexpr uint16_t Failed     = 1u << 13;    // SF/BL
+        constexpr uint16_t Stereo     = 1u << 8;
 
         // AN230's recommended seek: a station must be 25 dBµV strong with a
         // signal-to-noise of 4 and at most 8 impulse counts.
-        const uint16_t SeekThreshold = 0x19u << 8;
-        const uint16_t SeekQuality   = 0x4u << 4 | 0x8u;
+        constexpr uint16_t SeekThreshold = 0x19u << 8;
+        constexpr uint16_t SeekQuality   = 0x4u << 4 | 0x8u;
 
-        const uint8_t  InitialVolume = 8;
-        const uint8_t  Loudest       = 15;
-        const Millis   Settle        = 500;      // the crystal, after XOSCEN
-        const Millis   PowerUp       = 110;
-        const Millis   Listening     = 40;       // between reads of the news
-        const Millis   Tuning        = 60;       // the longest a tune takes
-        const Millis   Seeking       = 100;      // between checks on a seek
-        const Millis   Clearing      = 10;       // for STC to clear
+        constexpr uint8_t  InitialVolume = 8;
+        constexpr uint8_t  Loudest       = 15;
+        constexpr Millis   Settle        = 500;      // the crystal, after XOSCEN
+        constexpr Millis   PowerUp       = 110;
+        constexpr Millis   Listening     = 40;       // between reads of the news
+        constexpr Millis   Tuning        = 60;       // the longest a tune takes
+        constexpr Millis   Seeking       = 100;      // between checks on a seek
+        constexpr Millis   Clearing      = 10;       // for STC to clear
 
         struct Band
         {
@@ -65,7 +65,7 @@ namespace adk {
             uint16_t emphasis;
         };
 
-        const Band Bands [] = {
+        constexpr Band Bands [] = {
             {875, 1080, 1, 0x0u << 6 | 0x1u << 4, Europe},
             {875, 1080, 2, 0x0u << 6 | 0x0u << 4, 0},
             {760,  900, 1, 0x2u << 6 | 0x1u << 4, Europe}};

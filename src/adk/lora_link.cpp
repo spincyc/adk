@@ -6,18 +6,18 @@ namespace adk {
 
     namespace {
 
-        const unsigned long Baud  = 9600;
-        const unsigned long Busy  = 1000;       // for AUX to rise
-        const unsigned long Reply = 200;        // for the settings to come back
-        const Millis        Calm  = 10;         // after AUX rises, before anything else
+        constexpr unsigned long Baud  = 9600;
+        constexpr unsigned long Busy  = 1000;   // for AUX to rise
+        constexpr unsigned long Reply = 200;    // for the settings to come back
+        constexpr Millis        Calm  = 10;     // after AUX rises, before anything else
 
         // Save these settings: address 0, 9600 baud and 2.4 kbit/s on the
         // air, then the channel, then transparent sending, push-pull pins,
         // error correction on, and 10 mW.
-        const uint8_t Save    = 0xC0;
-        const uint8_t Speeds  = 0x1A;
-        const uint8_t Options = 0x47;
-        const uint8_t Read [] = {0xC1, 0xC1, 0xC1};
+        constexpr uint8_t Save    = 0xC0;
+        constexpr uint8_t Speeds  = 0x1A;
+        constexpr uint8_t Options = 0x47;
+        constexpr uint8_t Read [] = {0xC1, 0xC1, 0xC1};
     }
 
     LoraLink::LoraLink (HardwareSerial& port, Pin mode, Pin aux, uint8_t channel)
@@ -86,6 +86,16 @@ namespace adk {
         port_.print (text);
         port_.print ('\n');
         return true;
+    }
+
+    bool LoraLink::sendLine (const char* text)
+    {
+        return send (text);
+    }
+
+    const char* LoraLink::heardLine () const
+    {
+        return received_ ? text_ : nullptr;
     }
 
     bool LoraLink::wasReceived () const

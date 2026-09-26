@@ -169,8 +169,8 @@ What's new:
 - `adk::LoraModem modemA {Serial1, 1};` is a modem on the serial port
   `Serial1`, pins 18 (TX1) and 19 (RX1), with address 1. Modem B is on
   `Serial3`, pins 14 (TX3) and 15 (RX3), with address 2. `Serial` itself
-  belongs to the USB cable and the Serial Monitor. A third number would
-  choose the network, 6 unless you say otherwise.
+  belongs to the USB cable and the Serial Monitor. Settings in braces
+  after the address could choose the network, 6 unless you say otherwise.
 - `modemA.ok ()` says whether the modem answered when the sketch started;
   the screen says which did.
 - `modemA.send (2, text)` sends the text to address 2. It comes straight
@@ -237,13 +237,14 @@ means everyone. Put the 2 back when you're done.
     AT+ADDRESS=1
     AT+NETWORKID=6
     AT+BAND=915000000
+    AT+CRFOP=15
     AT+PARAMETER=10,7,1,7
     ```
 
-    The first just checks it's there. The next three set its address, its
-    network and its band, 915,000,000 Hz. The last sets how it chirps:
-    REYAX's choice for up to 3 km. The modem forgets its band and settings
-    each time it loses power, so ADK sends them every time.
+    The first just checks it's there. The next four set its address, its
+    network, its band, 915,000,000 Hz, and its power, 15 dBm. The last sets
+    how it chirps: REYAX's choice for up to 3 km. The modem forgets its band
+    and settings each time it loses power, so ADK sends them every time.
 
     To send `Press 1` to modem B, ADK sends modem A this line:
 
@@ -280,9 +281,9 @@ means everyone. Put the 2 back when you're done.
    `Got it` back to address 1 with `modemB.send (1, "Got it")`, and show
    what modem A hears on the Serial Monitor with `modemA.wasReceived ()`
    and `modemA.text ()`. Now A knows it was heard.
-3. **Your own network.** Give both modems network 12 with a third number,
-   `adk::LoraModem modemA {Serial1, 1, 12};`, and the same for B. A pair
-   on network 6 next door won't hear you, nor you them.
+3. **Your own network.** Give both modems network 12 in their settings,
+   `adk::LoraModem modemA {Serial1, 1, {.network = 12}};`, and the same
+   for B. A pair on network 6 next door won't hear you, nor you them.
 4. **A signal bar.** Show the signal as a bar on the bottom row, as the
    light meter did in Lesson 8: no blocks at −120 dBm and sixteen at
    −24, with `(modemB.signal () + 120) / 6` blocks. The screen's own full

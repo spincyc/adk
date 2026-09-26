@@ -10,6 +10,12 @@ volatile uint16_t OCR5A  = 0;
 volatile uint16_t OCR5B  = 0;
 volatile uint16_t OCR5C  = 0;
 volatile uint16_t TCNT5  = 0;
+arduino::Register TCCR3A;
+volatile uint8_t  TCCR3B = 0;
+volatile uint16_t ICR3   = 0;
+volatile uint16_t OCR3A  = 0;
+volatile uint16_t OCR3B  = 0;
+volatile uint16_t OCR3C  = 0;
 volatile uint8_t  TCCR1A = 0;
 volatile uint8_t  TCCR1B = 0;
 volatile uint8_t  TIMSK1 = 0;
@@ -79,6 +85,12 @@ namespace arduino {
         TCNT5  = 0;
         TCCR1A = 0;
         TCCR1B = 0;
+        TCCR3A.clear ();
+        TCCR3B = 0;
+        ICR3   = 0;
+        OCR3A  = 0;
+        OCR3B  = 0;
+        OCR3C  = 0;
         TIMSK1 = 0;
         OCR1A  = 0;
         TCNT1  = 0;
@@ -139,6 +151,34 @@ namespace arduino {
     void setClockStep (unsigned long us)
     {
         step = us;
+    }
+
+    Register& Register::operator= (uint8_t next)
+    {
+        value = next;
+        history.emplace_back (nowUs, value);
+        return *this;
+    }
+
+    Register& Register::operator|= (uint8_t bits)
+    {
+        return *this = static_cast<uint8_t> (value | bits);
+    }
+
+    Register& Register::operator&= (uint8_t bits)
+    {
+        return *this = static_cast<uint8_t> (value & bits);
+    }
+
+    Register::operator uint8_t () const
+    {
+        return value;
+    }
+
+    void Register::clear ()
+    {
+        value = 0;
+        history.clear ();
     }
 
     size_t Log::write (uint8_t byte)

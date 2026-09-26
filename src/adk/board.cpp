@@ -271,6 +271,9 @@ namespace adk {
             case Fault::NotSerial:
                 log.println (F (" is not on a spare serial port; use Serial1, Serial2 or Serial3"));
                 break;
+            case Fault::NotInfrared:
+                log.println (F (" cannot send infrared; use 2, 3 or 5"));
+                break;
         }
     }
 

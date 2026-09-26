@@ -1,5 +1,6 @@
 #pragma once
 
+#include "link.h"
 #include "object.h"
 #include "serial_port.h"
 
@@ -26,7 +27,7 @@ namespace adk {
     // 434.79 MHz, so the channel is 24, 434 MHz, unless told otherwise; in
     // the USA, 433 MHz belongs to licensed radio amateurs. It then pulls
     // them low again for normal mode, taking about 0.2 s in all.
-    struct LoraLink : Object
+    struct LoraLink : Object, Link
     {
         LoraLink (HardwareSerial& port, Pin mode, Pin aux, uint8_t channel = 24);
 
@@ -50,6 +51,9 @@ namespace adk {
         void update (Millis now) override;
 
       private:
+        bool        sendLine  (const char* text) override;
+        const char* heardLine () const override;
+
         bool ready    () const;
         bool settings (const uint8_t* expected);
 

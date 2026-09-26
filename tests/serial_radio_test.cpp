@@ -103,18 +103,19 @@ TEST (loraModemIsSetUpEveryTime)
     adk::setup ();
     CHECK (lora.ok ());
     CHECK (Serial1.baud == 115200);
-    CHECK (modem.commands.size () == 5);
+    CHECK (modem.commands.size () == 6);
     CHECK (modem.commands[0] == "AT");
     CHECK (modem.commands[1] == "AT+ADDRESS=7");
     CHECK (modem.commands[2] == "AT+NETWORKID=6");
     CHECK (modem.commands[3] == "AT+BAND=915000000");
-    CHECK (modem.commands[4] == "AT+PARAMETER=10,7,1,7");
+    CHECK (modem.commands[4] == "AT+CRFOP=15");
+    CHECK (modem.commands[5] == "AT+PARAMETER=10,7,1,7");
 }
 
 TEST (loraModemThatNeverAnswersIsNotOk)
 {
     Modem          modem {Serial3, false};
-    adk::LoraModem lora  {Serial3, 1, 3, 868000000};
+    adk::LoraModem lora  {Serial3, 1, {.network = 3, .band = 868000000}};
 
     arduino::setClockStep (100);
     adk::setup ();

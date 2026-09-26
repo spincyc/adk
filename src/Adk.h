@@ -58,3 +58,7 @@
 #include "adk/lora_modem.h"
 #include "adk/lora_link.h"
 #include "adk/mesh_node.h"
+#include "adk/link.h"
+#include "adk/bridge.h"
+#include "adk/ir_transmitter.h"
+#include "adk/sound_sensor.h"

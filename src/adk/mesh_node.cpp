@@ -6,8 +6,8 @@ namespace adk {
 
     namespace {
 
-        const unsigned long Baud = 38400;
-        const Millis        Gap  = 1500;        // the node sends after 1 s of quiet
+        constexpr unsigned long Baud = 38400;
+        constexpr Millis        Gap  = 1500;    // the node sends after 1 s of quiet
     }
 
     MeshNode::MeshNode (HardwareSerial& port)
@@ -41,6 +41,16 @@ namespace adk {
         sentAt_ = now_;
         sent_   = true;
         return true;
+    }
+
+    bool MeshNode::sendLine (const char* text)
+    {
+        return send (text);
+    }
+
+    const char* MeshNode::heardLine () const
+    {
+        return received_ ? text_ : nullptr;
     }
 
     bool MeshNode::canSend () const

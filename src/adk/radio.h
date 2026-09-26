@@ -1,5 +1,6 @@
 #pragma once
 
+#include "link.h"
 #include "object.h"
 
 namespace adk {
@@ -31,7 +32,7 @@ namespace adk {
     // times a second, about a tenth of the processor's time, and steps the
     // transmitter along. A sketch has at most one of each, and while either
     // is declared pins 11 and 12 cannot do PWM.
-    struct RadioTransmitter : Object
+    struct RadioTransmitter : Object, Link
     {
         explicit RadioTransmitter (Pin data);
         ~RadioTransmitter ();
@@ -54,6 +55,9 @@ namespace adk {
       private:
         friend struct RadioClock;
 
+        bool        sendLine  (const char* text) override;
+        const char* heardLine () const override;
+
         void step ();
 
         uint8_t          frame_ [MaxLength + 7];   // count, header, message, checksum
@@ -67,7 +71,7 @@ namespace adk {
 
     // The receiver listens all the time, and hands the sketch each message
     // that arrives whole.
-    struct RadioReceiver : Object
+    struct RadioReceiver : Object, Link
     {
         explicit RadioReceiver (Pin data);
         ~RadioReceiver ();
@@ -86,6 +90,9 @@ namespace adk {
 
       private:
         friend struct RadioClock;
+
+        bool        sendLine  (const char* text) override;
+        const char* heardLine () const override;
 
         void sample ();
 

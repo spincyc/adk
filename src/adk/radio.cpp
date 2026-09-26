@@ -9,41 +9,41 @@ namespace adk {
 
         // Timer 1 counts at 2 MHz and interrupts every 125 counts: 16 kHz,
         // eight samples of each bit at 2000 bits a second.
-        const uint8_t  RadioTimer    = 1;
-        const uint8_t  RadioUser     = 1;
-        const uint16_t Compare       = 124;
-        const uint8_t  SamplesPerBit = 8;
+        constexpr uint8_t  RadioTimer    = 1;
+        constexpr uint8_t  RadioUser     = 1;
+        constexpr uint16_t Compare       = 124;
+        constexpr uint8_t  SamplesPerBit = 8;
 
         // The receiver keeps in step with the sender with a ramp that climbs
         // by 20 a sample and takes a bit each time it passes 160. An edge
         // before halfway means the ramp is ahead, so it climbs less that
         // sample; after halfway, behind, so more. These are RH_ASK's numbers.
-        const uint8_t RampLength     = 160;
-        const uint8_t RampStep       = RampLength / SamplesPerBit;
-        const uint8_t RampTransition = RampLength / 2;
-        const uint8_t RampAdjust     = 9;
-        const uint8_t RampRetard     = RampStep - RampAdjust;
-        const uint8_t RampAdvance    = RampStep + RampAdjust;
+        constexpr uint8_t RampLength     = 160;
+        constexpr uint8_t RampStep       = RampLength / SamplesPerBit;
+        constexpr uint8_t RampTransition = RampLength / 2;
+        constexpr uint8_t RampAdjust     = 9;
+        constexpr uint8_t RampRetard     = RampStep - RampAdjust;
+        constexpr uint8_t RampAdvance    = RampStep + RampAdjust;
 
         // Four bits as six, each with three ones and three zeros, so the
         // signal never stays high or low long enough for the receiver's
         // automatic gain to drift.
-        const uint8_t Symbols [16] PROGMEM = {
+        constexpr uint8_t Symbols [16] PROGMEM = {
             0x0D, 0x0E, 0x13, 0x15, 0x16, 0x19, 0x1A, 0x1C,
             0x23, 0x25, 0x26, 0x29, 0x2A, 0x2C, 0x32, 0x34};
 
         // Six symbols of alternating bits to lock onto, then the two that
         // mark where the message starts. Bits go out least significant first.
-        const uint8_t  Preamble [8] PROGMEM = {0x2A, 0x2A, 0x2A, 0x2A, 0x2A, 0x2A, 0x38, 0x2C};
-        const uint8_t  PreambleSymbols      = sizeof Preamble;
-        const uint16_t StartSymbol          = 0xB38;
+        constexpr uint8_t  Preamble [8] PROGMEM = {0x2A, 0x2A, 0x2A, 0x2A, 0x2A, 0x2A, 0x38, 0x2C};
+        constexpr uint8_t  PreambleSymbols      = sizeof Preamble;
+        constexpr uint16_t StartSymbol          = 0xB38;
 
         // A message is its length (counting everything), RH_ASK's four header
         // bytes (to, from, id and flags), the text, and a checksum.
-        const uint8_t  HeaderLength = 4;
-        const uint8_t  Overhead     = 1 + HeaderLength + 2;
-        const uint8_t  Everyone     = 0xFF;
-        const uint16_t Good         = 0xF0B8;   // what a message and its checksum add up to
+        constexpr uint8_t  HeaderLength = 4;
+        constexpr uint8_t  Overhead     = 1 + HeaderLength + 2;
+        constexpr uint8_t  Everyone     = 0xFF;
+        constexpr uint16_t Good         = 0xF0B8;   // what a message and its checksum add up to
 
         // The CCITT checksum, least significant bit first, as avr-libc's
         // _crc_ccitt_update () works it out.
@@ -194,6 +194,17 @@ namespace adk {
         return true;
     }
 
+    bool RadioTransmitter::sendLine (const char* text)
+    {
+        return send (text);
+    }
+
+    // A transmitter hears nothing.
+    const char* RadioTransmitter::heardLine () const
+    {
+        return nullptr;
+    }
+
     bool RadioTransmitter::isSending () const
     {
         return sending_;
@@ -292,6 +303,17 @@ namespace adk {
         {
             RadioClock::receiver = this;
         }
+    }
+
+    // A receiver sends nothing.
+    bool RadioReceiver::sendLine (const char*)
+    {
+        return false;
+    }
+
+    const char* RadioReceiver::heardLine () const
+    {
+        return received_ ? text_ : nullptr;
     }
 
     bool RadioReceiver::wasReceived () const
