@@ -96,7 +96,7 @@ not two, so that one lost message doesn't count as gone.
 is 1 and Board B's is 2, and each names the other as its **partner**,
 where its messages go. That is the only difference between the two
 boards' sketches. They send at the **Quick** speed: a message takes
-about 0.05 s on the air instead of 0.3 s, and reaches about a kilometre
+about 0.05 s on the air instead of 0.3 s, and reaches about a kilometer
 instead of a few, which is plenty across a house and makes the bridge
 answer quickly.
 

@@ -126,7 +126,7 @@ B-3, so every part agrees where 0 V is.
 <!-- steps B -->
 
 Push the motor's white plug into the driver's socket. Draw an arrow from
-the middle of the paper disc to its edge, push the disc's centre onto the
+the middle of the paper disc to its edge, push the disc's center onto the
 motor's shaft, and stand the motor with its shaft pointing up. Put a mark
 on the table beside the arrow and label it 0.
 

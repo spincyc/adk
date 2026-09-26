@@ -28,7 +28,7 @@ in at the top of your friend's, in another room. They get their paddle
 under it and send it back. Miss, and your buzzer groans while theirs
 cheers, and both matrices scroll the score. Every hit makes the ball a
 little faster. With nobody at the other end, the top of your matrix is a
-wall, so you can practise alone.
+wall, so you can practice alone.
 
 ## The idea
 

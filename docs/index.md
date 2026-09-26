@@ -11,10 +11,10 @@ hide:
 # Build real circuits. Understand every line.
 
 Thirty-six hands-on lessons for the Arduino Mega 2560 and the parts in the
-Elegoo starter and sensor kits, and six more with add-on radios. Start with
-one blinking LED; finish with games, musical instruments, a weather station,
-a tilt maze, a door that opens for the right card, and messages that cross a
-town.
+Elegoo starter and sensor kits, six more with add-on radios, and twelve that
+join two boards across a house. Start with one blinking LED; finish with
+games, musical instruments, a weather station, a door that opens for the
+right card, and a game of Pong played between two rooms.
 { .hero-lead }
 
 [Get set up](start.md){ .md-button .md-button--primary }
@@ -69,7 +69,7 @@ void loop ()
 
 </div>
 
-## Fourteen builds, three lessons each
+## Eighteen builds, three lessons each
 
 Two lessons each introduce a part; the third puts them together into
 something worth showing off.

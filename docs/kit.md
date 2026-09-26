@@ -37,6 +37,8 @@ Modules Kit**; those are marked below and in each lesson's parts list.
 | DS1307 real-time clock | Keeps time when unplugged | Lesson 32 |
 | RC522 RFID reader, card and fob | Knows which card is which | Lesson 34 |
 | Tap sensor and relay *(37 in 1)* | Knocks, and switching a separate circuit | Lesson 35 |
+| Sound sensor module and water level sensor | How loud it is, and water on the floor | Lesson 48 |
+| IR LED module (KY-005) *(37 in 1)* | Sends a remote's codes | Lesson 53 |
 
 ## Add-on radios
 
@@ -55,6 +57,22 @@ Their pins work at 3.3 V, so the Mega's signals reach them through a
 resistor divider, 1 kΩ and 2 kΩ; [Safety](safety.md#radios) explains why, and
 which bands you may send on where you live. If your resistor card has no
 2 kΩ, two 1 kΩ resistors in a row make one.
+
+## Two boards
+
+Lessons 43 to 54 join two boards over radio: a dial on one turns a servo on
+the other. Each board is a whole setup of its own, so besides the kit you
+need a second of each thing the other board uses:
+
+| Part | Why |
+|---|---|
+| A second Arduino Mega 2560, USB cable and breadboard | Board B |
+| Two REYAX RYLR896 LoRa modems, the pair from Lesson 40 | One on each board, the bridge between them |
+| A second breadboard power module, when both boards drive a motor or servo | Each motor's own supply |
+| Two USB power sources, or a long cable, if the boards are to be far apart | Each board runs on its own |
+
+Each board's page says what it needs. A second Elegoo kit covers all of
+Board B's parts.
 
 ## Home pins
 
@@ -89,13 +107,17 @@ circuit from an earlier lesson can often stay on the breadboard.
 | Photoresistor | A1 |
 | Thermistor | A2 |
 | Joystick: X, Y (its button on 22) | A3, A4 |
-| Sound or water sensor | A5 |
+| Sound sensor | A5 |
+| Water sensor: S, and + (powered only while it reads) | A6, A7 |
+| Obstacle and tap sensors, when they share a board with the bridge's modem and the PIR | 16, 17 |
 | Stepper driver: IN1 to IN4 | A8, A9, A10, A11 |
 | On/off sensor modules | A12, A13, A14, A15 |
 | FM radio: SDIO, SCLK, RST (lessons without the four-digit display) | 40, 41, 42 |
 | 433 MHz radio: receiver DATA, transmitter DAT | 43, 46 |
 | A serial radio (LoRa modem or module, Meshtastic board) on Serial1: TX1, RX1 (lessons without the rotary encoder) | 18, 19 |
 | A second serial radio, on Serial3: TX3, RX3 (lessons without the ultrasonic sensor) | 14, 15 |
+| A bridge board's LoRa modem, on Serial3: TX3, RX3 (on Serial2, 16 and 17, beside the ultrasonic sensor) | 14, 15 |
+| IR LED (KY-005), through 220 Ω (lessons without the dimmable LED) | 3 |
 | LoRa module: M0 and M1 joined, AUX; the second module's | 40, 41; 42, 43 |
 
 The passive buzzer sits on pin 10 because a sounding buzzer borrows the timer
@@ -141,13 +163,17 @@ outer pair feed the rails.
 |---|---|---|
 | Ultrasonic sensor | Above the Mega, just right of pins 14 and 15 | VCC from the inner 5V pin; GND into T-5 |
 | Motor (on the L293D) | Above the board, its leads straight down into j14 (black) and j17 (red) | From the chip |
-| Servo | Below the board, its plug under columns 52–54 | + into B+53, − into B-54 |
+| Servo | Below the board, its plug under columns 52–54; on a bridge board, lower down, below the modem, its signal wire running under it | + into B+53, − into B-54 |
 | Keypad | High above the gap between the Mega and the breadboard, its eight wires rising from pins 22–29 | — |
 | DHT11 | Above the board, its pins over columns 35–37 | + into T+36, − into T-37 |
 | 18B20 | Above the board, its pins over columns 26–28 | + into T+27, − into T-28 |
 | IR receiver | Above the gap between the Mega and the breadboard; beside the screen, above columns 28–30 | The inner 5V and GND pins; beside the screen, T+29 and T-30 |
 | PIR sensor | Below the Mega, under the power header | The power header's 5V and GND |
 | Obstacle and beam-break sensors | Below the board, under columns 45 and 36 | From the bottom rails beside them |
+| Obstacle sensor, beside the bridge's modem | Above the board, pins over columns 35–38 (the DHT11's place) | + into T+36, GND into T-35 |
+| Tap sensor, beside the PIR | Above the board, pins over columns 26–28 (the 18B20's place) | + into T+27, − into T-28 |
+| Sound sensor | Below the Mega, under the power header | + and G from the power header's 5V and GND |
+| Water sensor | Below the Mega, beside the sound sensor | + from A7, − into the power header's second GND |
 | LED matrix | Below the gap between the Mega and the breadboard, facing up | VCC from the inner 5V pin; GND into B-5 |
 | Joystick | Below the Mega, under pins A3 and A4 | The power header's 5V and the inner GND pin |
 | Rotary encoder | High above the Mega, over pins 18 and 19 | The inner 5V pin and the GND beside pin 13 |
@@ -155,10 +181,15 @@ outer pair feed the rails.
 | Stepper driver | Below the Mega, under pins A8–A11 | From the power module's bottom rails: + into B+5, − into B-6 |
 | RFID reader | Below the Mega, facing up | The Mega's 3.3V and the inner GND pin |
 | Tap sensor | Below the Mega, at its left end | The power header's 5V and GND |
-| Relay | Above the board, its terminals facing left | The inner 5V and GND pins |
+| Relay | Above the board, its pins toward the Mega and its screw terminals away from it | The inner 5V and GND pins |
 | LoRa modems (RYLR896) | Below the board past the button, aerials down: B (on Serial3) under columns 42–47, A (on Serial1) under columns 51–57. Each modem's TXD comes up into row f (44 for B, 53 for A), beside its RX pin in row j; its TX pin goes into j46 or j55, then 1 kΩ across the gap from g to e and 2 kΩ from a down to the − rail, and its RXD into row c of that column | The power module's bottom rails at 3.3 V: B's VDD into B+47 and GND into B-42, A's into B+57 and B-51 |
+| A bridge board's LoRa modem (Lessons 43–54) | Where Lesson 40's modem B lies: below the board under columns 42–47, aerial down, its TXD into f44 beside the RX pin in j44; the TX pin into j46, 1 kΩ from g46 to e46, 2 kΩ from a46 to B-46, and its RXD into c46 | Its VDD straight from the Mega's 3.3V pin, GND into B-42. Beside the RFID reader, which shares that pin, its VDD comes from the power module's bottom rails at 3.3 V, into B+47 (Lesson 51) |
+| IR LED (KY-005) | Below the board under columns 36–38, its LED pointing away: pin 3 into j38, 220 Ω from g38 across the gap to e38, S into a38 | − into B-36; its middle pin empty |
 | LoRa modules (E32) | The same places and dividers as the modems, aerials down. AUX comes up into f43 beside pin 43 (B) or f52 beside pin 41 (A); M0 and M1 into f and g of column 48 beside pin 42 (B) or column 57 beside pin 40 (A) | The power module's bottom rails at 5 V: B's VCC into B+42 and GND into B-41, A's into B+51 and B-49 |
 | Meshtastic board | In LoRa modem A's place below the board, its pins up: its 48 into f53, its 47 into c55 through A's divider, its GND into B-59 | Its own USB-C cable |
+
+The four-digit display, from column 51, covers columns 44 to 63 in rows d
+to h, so it can't share a board with the bridge's modem.
 
 Chips and parts that stand in the board without a home above keep one place
 too: the 74HC595 across the gap in columns 18–25, the one-digit display

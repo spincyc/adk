@@ -74,7 +74,7 @@ seconds after Board A goes quiet, the fan stops on its own.
 Radio-controlled models do the same, and call it a **failsafe**.
 
 **Sharing a reading sparingly.** The sensor measures about sixteen times
-a second, and each reading is a centimetre or so from the last. Shared
+a second, and each reading is a centimeter or so from the last. Shared
 straight away, it would keep the air busy with ten messages a second,
 and the stick's messages would often collide with them. So Board B
 shares the distance twice a second: plenty for you to read, and it

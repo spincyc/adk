@@ -148,7 +148,7 @@ When you are done, these are the connections Board B makes:
     18: tape it just below the rim so its arm swings out under the lid's
     edge, with the sketch holding it at 0° to lock and 90° to open. Board A
     sits outside the box: tape the reader where a card held against the
-    front is a centimetre or two from it, and the tap sensor to the lid, so
+    front is a centimeter or two from it, and the tap sensor to the lid, so
     it feels a knock. Keep Board A's buzzer off the tap sensor's board:
     Board A ignores knocks while it buzzes, but not after.
 

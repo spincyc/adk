@@ -192,7 +192,7 @@ flash, pale purple or white. Some phones' main cameras filter infrared
 out; the selfie camera often doesn't.
 
 To see it obeyed, point Board B's LED at something that listens, from a
-metre or so away:
+meter or so away:
 
 - **Another board.** If a friend has a third Mega running Lesson 22's
   sketch, point Board B's LED at its receiver and press **1** to **6** on
@@ -258,7 +258,7 @@ LED away and the echo stops.
     The LED lights for a third of each flicker, about 17 mA while it is
     on, through the 220 Ω resistor. A TV remote pushes far more through
     its LED, which is why it reaches across a room and Board B's LED
-    reaches a metre or two.
+    reaches a meter or two.
 
 ## Make it yours
 

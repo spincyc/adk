@@ -29,15 +29,18 @@ namespace adk {
     // Mega's spare serial ports. Each modem has an address, and modems with
     // the same network number hear each other.
     //
-    //   VDD  -> 3.3 V from the breadboard power module
+    //   VDD  -> 3.3 V from the breadboard power module, or from the Mega's
+    //           3.3V pin for a modem sending at 10 dBm or less
     //   GND  -> GND
     //   RXD  <- the Mega's TX pin, through 1 kΩ, with 2 kΩ from RXD to GND
     //   TXD  -> the Mega's RX pin
     //   NRST -> not connected
     //
-    // It draws 50 mA while it sends at full power, all the Mega's 3.3V pin
-    // can give, so it gets its own supply, and its pins take 3.3 V, so the
-    // Mega's TX is divided down. setup () gives it its address, network,
+    // It draws 43 to 50 mA while it sends at 14 to 15 dBm, all the Mega's
+    // 3.3V pin can give, so at full power it gets its own supply; at 10 dBm,
+    // as a Bridge's modems send, it draws less (REYAX doesn't say how much)
+    // and the 3.3V pin will do. Its pins take 3.3 V, so the Mega's TX is
+    // divided down. setup () gives it its address, network,
     // band, speed and power, taking about 60 ms: the modem forgets all but
     // its address and network when it restarts. At the Far speed, REYAX's
     // choice for up to 3 km, a short message takes about 0.3 s on the air;

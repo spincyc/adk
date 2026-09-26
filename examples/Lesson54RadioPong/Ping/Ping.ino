@@ -146,7 +146,7 @@ void moveBall ()
 }
 
 // Over the bridge, as a new count of crossings. With no one there, the
-// top is a wall to practise against.
+// top is a wall to practice against.
 void sendOver ()
 {
     if (!bridge.isConnected ())

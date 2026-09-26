@@ -38,13 +38,15 @@ alive.
 | RFID reader (RC522) | It runs on **3.3 V**. Power it from the Mega's 3.3V pin, never 5V. The Mega's 5 V signals on its SDA, SCK, MOSI and RST pins are above what the chip is rated for. It usually copes, and the lessons wire it that way; for a build that has to last, put a 1 kΩ and 2 kΩ divider on each of those four lines. |
 | Active buzzer | It draws up to about 30 mA: fine on its own pin (a Mega pin's limit is 40 mA), but give it a pin to itself. |
 | Passive buzzer | Always through its 220 Ω resistor: its coil is only about 16 Ω. |
+| IR LED module | Always through its 220 Ω resistor: on its own the LED would take more current than it or the pin should. |
+| Water sensor | Dip only its copper traces, never its parts or pins, and keep the water away from the boards. Current through wet traces corrodes them, so the lessons power it from a pin only while they read it. |
 | 9 V battery | Never let its two terminals touch each other or anything metal. |
 | Laser module | Not used in this course. A laser can damage eyes. |
 | Clock module | If yours charges its coin cell (see its lesson), use a rechargeable LIR2032, never a CR2032. |
 
 ## Radios
 
-The add-on radios in Lessons 37 to 42 need two kinds of care: their pins
+The add-on radios in Lessons 37 to 54 need two kinds of care: their pins
 work at 3.3 V, and a radio that sends is ruled by law.
 
 - **Never put 5 V on a 3.3 V pin.** The FM radio, the 433 MHz
@@ -56,10 +58,15 @@ work at 3.3 V, and a radio that sends is ruled by law.
   and M1), the radio's own resistors lift it to 3.3 V instead. Their
   outputs are safe for the Mega to read directly.
 - **Power them as the lesson says.** The FM radio and the 433 MHz
-  transmitter take little enough for the Mega's 3.3V pin. The LoRa modem
-  draws more than that pin can give when it sends, so it runs from the
-  breadboard power module set to 3.3 V. The Meshtastic board runs from its
-  own USB cable.
+  transmitter take little enough for the Mega's 3.3V pin. A LoRa modem
+  sending at full power draws more than that pin can give, so Lesson 40's
+  two run from the breadboard power module set to 3.3 V. In the two-board
+  lessons each board has one modem sending at 10 dBm, which draws less, so
+  its VDD goes to the Mega's 3.3V pin; a board that also has the RFID
+  reader, which shares that pin, powers its modem from the power module set
+  to 3.3 V instead. Label a power module set to 3.3 V: a 5 V one in its
+  place would ruin the modem. The Meshtastic board runs from its own USB
+  cable.
 - **Fit the aerial before powering a LoRa radio.** Sending into no aerial
   can damage it, and the Meshtastic board starts sending as soon as it is
   set up.
@@ -70,7 +77,7 @@ work at 3.3 V, and a radio that sends is ruled by law.
 |---|---|---|
 | FM radio | 87.5–108 MHz | Receive only, so anywhere |
 | 433 MHz modules, E32 LoRa module | 433 MHz | In Europe, 433.05–434.79 MHz at up to 10 mW, which is how ADK sets the E32. In the USA and Canada it is an amateur band: unlicensed transmitters there are limited to very weak, occasional signals, like a car key's, so use the E32 only with an amateur license, and keep the little transmitter's messages short and few. |
-| RYLR896 modem, Heltec board | 915 MHz | In the Americas and Australia, 902–928 MHz. Europe uses 868 MHz instead, with different modules and settings, at up to 25 mW for 1% of the time. |
+| RYLR896 modem, Heltec board | 915 MHz | In the Americas and Australia, 902–928 MHz. Europe uses 868 MHz instead, with modules sold for it and `.band` set to match: at 868.0–868.6 MHz, up to 25 mW for 1% of the time. A bridge sends more often than that, so in Europe give its modems `.band = 869525000`, in the 869.4–869.65 MHz band, where 10% of the time is allowed, and don't leave a knob turning for long. |
 
 - **Mesh messages are public.** Anyone nearby with Meshtastic can read
   the default channel. Lesson 42 sets up a private one; even so, never send

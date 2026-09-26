@@ -2,8 +2,9 @@
 
 **Build real circuits on an Arduino Mega 2560, and understand every line.**
 
-ADK is forty-two hands-on lessons, from a blinking LED to texting your Mega
-from a phone, and the small C++ library that makes them simple. Every lesson is a
+ADK is fifty-four hands-on lessons, from a blinking LED to a game of Pong
+played between two boards over radio, and the small C++ library that makes
+them simple. Every lesson is a
 web page and a printable PDF, with pencil drawings of the breadboard that
 match the code pin for pin.
 
@@ -39,7 +40,8 @@ void loop ()
   ultrasonic ranger, DHT11, DS18B20, IR remote, RFID reader, real-time clock
   and accelerometer: everything in the Elegoo Mega and sensor kits. And a
   few add-on radios: an FM radio, 433 MHz modules, and LoRa radios that
-  reach a kilometer or a phone.
+  reach a kilometer or a phone, with a bridge that keeps numbers the same
+  on two boards.
 - **Mistakes found early.** `adk::setup ()` checks that every pin exists, is
   used once, and can do what its part needs. If not, it stops and blinks the
   pin number on the Mega's own LED, or explains in words with
@@ -91,7 +93,7 @@ design, and [the style guide](docs/STYLE.md) the code.
 
 ## Status
 
-All forty-two lessons are written, each with its sketch, its build drawn
+All fifty-four lessons are written, each with its sketch, its build drawn
 from one description, and its PDF. The library is complete and host-tested,
 and every sketch compiles for the Mega. None of it has yet been built and
 checked on a real board, so treat a lesson's promises as what it is designed
