@@ -15,6 +15,7 @@ strict: true
 exclude_docs: |
   _theme/
   *.py
+  requirements.in
   requirements.txt
 
 theme:
