@@ -8,9 +8,9 @@ adk::Keypad keypad {{22, 23, 24, 25}, {26, 27, 28, 29}};
 
 constexpr adk::Array symbols {'+', '-', 'x', '/'};   // for A, B, C and D
 
-long first     = 0;
-long second    = 0;
-int  digits    = 0;        // typed so far in the number being typed
+long first     = 0;        // the number before the operation
+long number    = 0;        // the number being typed
+int  digits    = 0;        // its digits: four at most, so 9999 × 9999 fits
 char operation = 0;        // one of the symbols, once it's chosen
 bool answered  = false;
 
@@ -23,15 +23,28 @@ void loop ()
 {
     adk::update ();
 
-    char key = keypad.key ();
+    char key   = keypad.key ();
+    bool digit = key >= '0' && key <= '9';
 
-    if (key >= '0' && key <= '9')
+    // * clears, and so does a new number typed after an answer.
+    if (key == '*' || (digit && answered))
     {
-        typeDigit (key - '0');
+        clearAll ();
+    }
+
+    if (digit && digits < 4)
+    {
+        // Each digit shifts the number one place left and joins on the
+        // end: 4, then 2, makes 4 × 10 + 2 = 42.
+        number = number * 10 + (key - '0');
+        digits++;
+        lcd.print (key);
     }
     else if (key >= 'A' && key <= 'D' && operation == 0)
     {
         operation = symbols[key - 'A'];
+        first     = number;
+        number    = 0;
         digits    = 0;
         adk::print (lcd, ' ', operation, ' ');
     }
@@ -39,44 +52,15 @@ void loop ()
     {
         showAnswer ();
     }
-    else if (key == '*')
-    {
-        clearAll ();
-    }
-}
-
-// Each digit shifts the number one place left and joins on the end: typing
-// 4 then 2 makes 4, then 4 × 10 + 2 = 42. Four digits are plenty, and even
-// 9999 × 9999 fits in a long.
-void typeDigit (int digit)
-{
-    if (answered)
-    {
-        clearAll ();
-    }
-
-    if (digits < 4)
-    {
-        long& number = operation == 0 ? first : second;
-
-        number = number * 10 + digit;
-        ++digits;
-        lcd.print (digit);
-    }
 }
 
 void showAnswer ()
 {
     lcd.at (0, 1);
 
-    if (operation == '/' && second == 0)
+    if (operation == '/' && number == 0)
     {
         lcd.print ("Divide by 0? No!");
-    }
-    else if (operation == '/')
-    {
-        lcd.print ("= ");
-        lcd.print (float (first) / second, 3);
     }
     else
     {
@@ -86,20 +70,22 @@ void showAnswer ()
     answered = true;
 }
 
+// Whole numbers make a whole answer: 7 / 2 is 3, the remainder dropped.
 long calculate ()
 {
     switch (operation)
     {
-        case '+': return first + second;
-        case '-': return first - second;
-        default:  return first * second;
+        case '+': return first + number;
+        case '-': return first - number;
+        case 'x': return first * number;
+        default:  return first / number;
     }
 }
 
 void clearAll ()
 {
     first     = 0;
-    second    = 0;
+    number    = 0;
     digits    = 0;
     operation = 0;
     answered  = false;

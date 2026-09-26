@@ -7,10 +7,6 @@
 adk::AnalogInput knob {A0};
 adk::PwmOutput   led  {3};
 
-// Which way the knob turns the LED up depends on which outer leg has 5 V.
-// Make this true to turn it round without moving a wire.
-constexpr bool reversed = false;
-
 void setup ()
 {
     Serial.begin (9600);
@@ -21,8 +17,8 @@ void loop ()
 {
     adk::update ();
 
-    int reading    = knob.read ();
-    int brightness = reversed ? knob.read (255, 0) : knob.read (0, 255);
+    int reading    = knob.read ();      // 0 to 1023
+    int brightness = reading / 4;       // 0 to 255
     led.write (brightness);
 
     adk::println (Serial, "knob:", reading, " brightness:", brightness);

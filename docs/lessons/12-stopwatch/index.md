@@ -1,11 +1,8 @@
 ---
 lesson: 12
-title: Stopwatch
-arc: Digits
 promise: Build a stopwatch with laps, and a kitchen timer that beeps at zero.
 time: 1½ hours
 level: 3
-sketch: Lesson12Stopwatch
 parts:
   - Lesson 11's display circuit, built and working
   - 3 push buttons
@@ -17,6 +14,7 @@ ideas:
   - Start, stop, lap and reset on three buttons
   - Counting down, and a beep at zero
   - Splitting a time into seconds and tenths
+  - "Choosing between two values with ?:"
 ---
 
 ## What you'll build
@@ -105,7 +103,9 @@ the buzzer.
     own tone whenever pin 12 is high. The passive buzzer, with its green
     board, would only click. The buzzer stands across the middle gap, one
     leg on each side, so its + leg in f35 meets pin 12's wire and its other
-    leg in e35 meets the black wire to GND.
+    leg in e35 meets the black wire to GND. Its usual home is column 34, but
+    with the display's wiring it moves one column along, so its round body
+    stays clear of the wires that rise over the gap in column 32.
 
 When you are done, these are the connections your circuit makes:
 
@@ -142,15 +142,23 @@ What's new:
   `buzzer.beep (20)`. `(current + 1) % modes.size ()` steps to the next
   mode, and back to the first after the last.
 - `clockTime ()` turns the stopwatch into what the display shows: its time
-  for the stopwatch, or `total - time` for a kitchen timer.
-  `time < total ? total - time : 0` uses Lesson 7's `?:`, so a timer can
-  never show less than zero.
+  for the stopwatch, or `total - time` for a kitchen timer. Its last line
+  is a **conditional expression**, a question with two answers:
+  `question ? yes : no` is `yes` when the question is true and `no` when
+  it isn't. So `time < total ? total - time : 0` is the time left while
+  there is some, and 0 after that: a timer never shows less than zero. An
+  `if` and an `else` could do the same, but a `?:` is a value, so it can
+  go straight after `return`.
+- `showClock ()` chooses with another one:
+  `lapShown.isRunning () ? lap : clockTime ()` is the lap while it's held
+  on the display, and the clock the rest of the time.
 - `showTime ()` turns milliseconds into what the display shows. With
   Lesson 10's `/` and `%`, `ms / 100` is the time in whole tenths of a
   second, and `% 10000` makes the stopwatch start again from 0.0 after
-  999.9 seconds. `display.show (tenths, 1)` shows that number with one
-  decimal, the way `Serial.print ()` writes decimals: 123 tenths show as
-  `12.3`, with the dot lit after the seconds.
+  999.9 seconds; the sketch keeps the answer in `tenths`.
+  `display.show (tenths, 1)` shows that number with one decimal, the way
+  `Serial.print ()` writes decimals: 123 tenths show as `12.3`, with the
+  dot lit after the seconds.
 - `finish ()` uses `adk::wait ()` between beeps, so the display stays lit
   while the buzzer sounds.
 

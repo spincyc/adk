@@ -1,11 +1,8 @@
 ---
 lesson: 11
-title: Four Digits
-arc: Digits
 promise: Light four digits by flashing them one at a time, faster than your eye can follow.
 time: 1 hour
 level: 2
-sketch: Lesson11FourDigits
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -74,7 +71,7 @@ every 100 milliseconds, and the rest of the time `loop ()` just carries on.
 
 <!-- steps -->
 
-??? info "The display's pins, and the crossing legs"
+??? info "The display's pins, and how the wires reach them"
     The display's pin 1 is at the bottom left; pins 1 to 6 run along the
     bottom and 7 to 12 back along the top. The four digit pins are 12, 9, 8
     and 6, for digits 1 to 4. The other eight are the segment lines, which
@@ -108,9 +105,13 @@ What's new:
 - `adk::FourDigitDisplay display {37, 38, 39, 40, 41, 42, 43};` is the whole
   display: the 74HC595's data, clock and latch pins, then the pins for
   digits 1 to 4.
-- `display.show ("HI")` shows text, starting from the left. The display can
-  draw the digits and the letters that read clearly, such as A, b, C, d, E,
-  F, H, L, n, o, P, r, t and U; any other character is left blank.
+- `display.show ("HI")` shows text, starting from the left. Seven bars can't
+  draw every letter. The display draws the digits; the letters A to F,
+  with b and d always small, since B and D would look like 8 and 0; the
+  letters that still read clearly, G, H, I, J, L, N, O, P, Q, R, S, T, U
+  and Y; and `-`, `_` and a space. Letters work in either case, and a small
+  h, o or u gets a small shape of its own. Any other character is left
+  blank.
 - `display.show (count)` shows a number, lined up on the right.
 - `adk::Every tick {100};` beats every 100 milliseconds, and `tick.ticked ()`
   is true for one turn of `loop ()` on each beat. `count` goes up by one
@@ -160,9 +161,9 @@ challenge below lets you watch it happen.
 2. **Your name.** Show your name, or a four-letter word made from the
    letters above, before the count starts.
 3. **Countdown.** Count down from 100 instead, and show `End` at zero.
-4. **Tenths.** Count in tenths of a second with a dot: text such as `"12.3"`
-   lights the dot of the character before the `.`. Build the text with
-   `snprintf ()`, as Lesson 12 does.
+4. **Tenths.** Count in tenths of a second with a dot:
+   `display.show (count, 1)` puts the last digit after the dot, so a count
+   of 123 shows as `12.3`, as Lesson 12's stopwatch does.
 
 ## Measure it
 

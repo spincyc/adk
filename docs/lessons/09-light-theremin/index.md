@@ -1,11 +1,8 @@
 ---
 lesson: 9
-title: Light Theremin
-arc: The analog world
 promise: Play music by waving your hand through the air.
 time: 1 hour
 level: 2
-sketch: Lesson09LightTheremin
 parts:
   - Lesson 8's light meter, built and working
   - 10 kΩ potentiometer (the knob)
@@ -15,7 +12,7 @@ parts:
 ideas:
   - Turning a sensor reading into steps on a musical scale
   - The pentatonic scale, and octaves as doubling
-  - Changing a note only when it needs to change
+  - Asking for the same note again, which changes nothing
   - Growing a project from a circuit that already works
 ---
 
@@ -75,9 +72,10 @@ Each of the five note names has its own LED, so the lights show the tune:
 | 4 and 9 | G | blue |
 | 5 and 10 | A | white |
 
-A note that is already sounding is left alone. Restarting a tone a hundred
-times a second would make it click and buzz, so the sketch remembers the
-pitch it's playing and only calls the buzzer when the pitch changes.
+The sketch asks for its note on every pass, a hundred times a second.
+Starting a tone afresh that often would make it click and buzz, but it
+doesn't: asking a speaker for the tone it is already playing changes
+nothing, so a note sounds on smoothly until your hand moves to another.
 
 ## Build it
 
@@ -142,13 +140,18 @@ What's new:
   sets all five LEDs blinking while it learns.
 - `shadowSlice ()` uses `map ()` and `constrain ()` as the light meter did,
   to keep the answer between 0 and 10, even if the light goes brighter or
-  darker than anything the sketch learned.
-- `playNote ()` works out the pitch, and only if it differs from `playing`
-  does it call `speaker.tone (pitch)`. A tone with no length keeps sounding
-  until the next `tone ()` or `stop ()`.
+  darker than anything the sketch learned. They hand back a `long`, as in
+  Lesson 8, and `shadowSlice ()` hands it on as an `int`: `constrain ()` has
+  already made it 0 to 10, which an `int` holds with room to spare.
+- `playNote ()` works out the pitch and calls `speaker.tone ()` with it. A
+  tone with no length keeps sounding until the next `tone ()` or `stop ()`,
+  and asking again for the pitch already sounding changes nothing, so
+  `playNote ()` can run on every pass.
 - `note % 5` gives the note's place in the five note names, 0 to 4,
   whichever octave it is in: `%` is Lesson 4's remainder after dividing.
-- `fallSilent ()` stops the buzzer and darkens the LEDs, once.
+- `fallSilent ()` stops the buzzer and darkens the LEDs, once: `sounding`
+  remembers whether one of the theremin's notes is playing. Until the first
+  one, it isn't, so silence leaves the ready tune to play to its end.
 
 ## Upload it
 
@@ -187,7 +190,7 @@ jump down and up by an octave.
 
     `speaker.play (ready)` doesn't wait for the melody to finish. It starts
     the first note, and each `adk::update ()` checks whether it's time for
-    the next one, so the fanfare plays while `loop ()` is already running.
+    the next one, so the ready tune plays while `loop ()` is already running.
     Calling `tone ()` or `stop ()` ends the melody at once.
 
 ## Make it yours
@@ -202,13 +205,14 @@ jump down and up by an octave.
    pitch has changed by more than a few hertz. It sounds like a 1950s space
    film.
 3. **Stop droning.** If your hand holds still for three seconds, let the
-   note stop by itself: add an `adk::Timer`, start it for 3000 ms in
-   `playNote ()` whenever the note changes, and when it has `expired ()`,
-   keep the speaker quiet until your hand moves to another note.
-4. **Record and replay.** Keep the notes you play in an
-   `adk::Vector<adk::Note, 16>`, the growing list from Lesson 6, and
-   play them back with `speaker.play (tune.data (), tune.size ())` when you
-   hold the sensor covered for two seconds.
+   note stop by itself. Keep the pitch that is sounding in a variable, so
+   `playNote ()` can tell when the note changes; start an `adk::Timer` for
+   3000 ms each time it does, and once it has `expired ()`, keep the
+   speaker quiet until your hand moves to another note.
+4. **Record and replay.** Keep the notes you play in
+   `adk::Vector<adk::Note, 16> tune;`, the growing list from Lesson 6, and
+   play them back with `speaker.play (tune);` when you hold the sensor
+   covered for two seconds.
 
 ## Measure it
 

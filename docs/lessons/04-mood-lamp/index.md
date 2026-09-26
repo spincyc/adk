@@ -1,11 +1,8 @@
 ---
 lesson: 4
-title: Mood Lamp
-arc: Color and sound
 promise: Mix any color you like from red, green and blue light, and glide between them.
 time: 45 minutes
 level: 1
-sketch: Lesson04MoodLamp
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -84,8 +81,12 @@ time you choose.
     is made, but if your colors come out in the wrong places after you
     upload, you haven't damaged anything: see the table below.
 
-    The common leg is long enough to reach straight down into the − rail,
-    so it needs no wire of its own.
+    The legs come out of the LED a tenth of an inch apart, but their holes
+    are further apart than that: red in a6, green three columns on in a9,
+    blue in a11, and the common leg down in the − rail at B-7. Spread the
+    legs gently with your fingers until each lines up with its hole, then
+    push the LED in. The common leg is long enough to reach straight down
+    into the − rail, so it needs no wire of its own.
 
     The RGB LED takes the red LED's place from Lesson 3, so that LED's
     resistor, in g6 and e6, can stay where it is: it now feeds the red leg.
@@ -125,7 +126,7 @@ What's new:
   going. Each time one ends, `driftAroundTheWheel ()` starts the next, to a
   color a little further round the wheel.
 - `adk::wheel (hue)` turns a position round the color wheel into a color:
-  0 is red, 85 green, 170 blue, and on round towards red again. `hue` is a
+  0 is red, 85 green, 170 blue, and on round toward red again. `hue` is a
   **`uint8_t`**, a whole number from 0 to 255 that wraps back to 0 after
   255, just as a wheel comes back round. It takes one byte of memory, where
   an `int` takes two.

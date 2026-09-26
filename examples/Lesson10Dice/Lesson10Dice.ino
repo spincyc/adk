@@ -42,7 +42,7 @@ void loop ()
 // next segment.
 void spin ()
 {
-    for (int step = 0; step < 18; ++step)
+    for (int step = 0; step < 18; step++)
     {
         digit.write (1 << (step % 6));
         adk::wait (20 + step * 8);

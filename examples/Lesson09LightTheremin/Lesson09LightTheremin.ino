@@ -29,9 +29,9 @@ constexpr adk::Note ready [] {
     {adk::note::g5, 120}, {adk::note::c6, 360},
 };
 
-int      open    = 0;       // the reading with no hand near the sensor
-int      covered = 1023;    // the reading with the sensor covered
-uint16_t playing = 0;       // the pitch sounding now, or 0 for silence
+int  open     = 0;       // the reading with no hand near the sensor
+int  covered  = 1023;    // the reading with the sensor covered
+bool sounding = false;   // whether one of the theremin's notes is sounding
 
 void setup ()
 {
@@ -91,26 +91,23 @@ int shadowSlice (int level)
 }
 
 // Sound one note of the scale in one of three octaves (0, 1 or 2), and
-// light its LED. A note that is already sounding is left alone.
+// light its LED. Asking for the note that is already sounding changes
+// nothing, so this can run on every pass.
 void playNote (int note, int octave)
 {
-    uint16_t pitch = scale[note] * octaveUp[octave];
-
-    if (pitch != playing)
-    {
-        speaker.tone (pitch);
-        playing = pitch;
-        showNote (note % 5);
-    }
+    speaker.tone (scale[note] * octaveUp[octave]);
+    showNote (note % 5);
+    sounding = true;
 }
 
+// Stop the note, once: until the first note, the ready tune plays on.
 void fallSilent ()
 {
-    if (playing != 0)
+    if (sounding)
     {
         speaker.stop ();
-        playing = 0;
         showNote (-1);
+        sounding = false;
     }
 }
 
@@ -118,7 +115,7 @@ void fallSilent ()
 // for -1.
 void showNote (int name)
 {
-    for (int led = 0; led < 5; ++led)
+    for (int led = 0; led < 5; led++)
     {
         bar[led].set (led == name);
     }

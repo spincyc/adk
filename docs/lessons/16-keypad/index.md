@@ -1,11 +1,8 @@
 ---
 lesson: 16
-title: Keypad
-arc: Keys and motion
 promise: Read sixteen keys with eight wires, and turn the Mega into a calculator.
 time: 45 minutes
 level: 2
-sketch: Lesson16Keypad
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -100,28 +97,30 @@ What's new:
   another, so `key - '0'` turns `'7'` into the number 7. In the same way
   `key - 'A'` turns **A** to **D** into 0 to 3, the place of each one's
   symbol in `symbols`, an `adk::Array` of characters.
-- `typeDigit ()` builds the first number until an operation is chosen, then
-  the second. `long& number = operation == 0 ? first : second;` makes
-  `number` another name for whichever of the two is being typed. The `&`
-  works as it did for a player in Lesson 3: changing `number` changes
-  `first` or `second` itself.
+- `number` is the number being typed. Each digit shifts it one place left
+  and joins on the end, with `number * 10 + (key - '0')`. When you choose
+  an operation, `number` moves into `first`, and starts again from 0 for
+  the second number.
 - `digits` counts the digits typed into the number and stops at four, so even
   9999 × 9999 fits in a `long`. Counting them, rather than looking at how big
   the number is, stops a row of zeros at four too.
-- `showAnswer ()` works out the answer on the bottom row. Divide one whole
-  number by another and the answer is whole too: 7 / 2 would be 3. So
-  division turns `first` into a `float` first, with `float (first)`, and
-  7 / 2 shows 3.500. The other three stay whole numbers.
+- `answered` remembers that the answer is showing. While it is, a digit
+  clears the screen and starts a new sum, and **A** to **D** and **#** do
+  nothing.
+- `showAnswer ()` writes the answer on the bottom row, or a message instead
+  if you ask it to divide by zero, which has no answer.
 - `calculate ()` is a `switch` on the operation's symbol, like `colorOf ()`
-  in Lesson 15.
+  in Lesson 15. Divide one whole number by another and the answer is whole
+  too, the remainder dropped, as the octave knob's was in Lesson 9: 7 / 2
+  is 3.
 
 ## Upload it
 
 Upload the sketch; the screen starts blank. Type **12**, press **C**, type
 **34** and press **#**. The top row reads `12 x 34` and the bottom row
 `= 408`. Press any digit to start a new sum, or **\*** to clear. Try **7**,
-**D**, **2**, **#** for `= 3.500`, and **5**, **D**, **0**, **#** to see what
-the calculator thinks of dividing by zero.
+**D**, **2**, **#** for `= 3`, and **5**, **D**, **0**, **#** to see what the
+calculator thinks of dividing by zero.
 
 Then test your prediction: hold **1** and press **2**. Only **1** appears at
 first; **2** appears when you let **1** go. So the screen ends up showing 12,
@@ -154,12 +153,17 @@ but the 2 only arrives when you let go: the keypad counts one key at a time.
 
 1. **Keep going.** After an answer, make **A** to **D** carry on with the
    answer as the first number, so you can type **2 A 3 # C 4 #** and get 20.
-2. **Backspace.** Let **\*** delete the last digit instead of clearing
+2. **Decimals.** Make **7 D 2 #** show `= 3.500`. A whole number can't hold
+   the half, but a `float`, from Lesson 14, can. In `showAnswer ()`, for a
+   division, print `float (first) / number` with `lcd.print (value, 3)`:
+   `float (first)` turns `first` into a `float`, so the division keeps its
+   decimals.
+3. **Backspace.** Let **\*** delete the last digit instead of clearing
    everything: dividing a number by 10 drops its last digit. How will you
    rub it out on the screen?
-3. **Bigger numbers.** Allow six digits. What goes wrong with 999999 × 999999,
+4. **Bigger numbers.** Allow six digits. What goes wrong with 999999 × 999999,
    and why? (A `long` holds numbers up to about 2 billion.)
-4. **Hide it.** Print a `*` for each digit instead of the digit itself, like a
+5. **Hide it.** Print a `*` for each digit instead of the digit itself, like a
    password box. You'll need exactly that in
    [Lesson 18](../18-keypad-safe/index.md).
 

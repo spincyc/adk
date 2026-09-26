@@ -57,10 +57,10 @@ void loop ()
 }
 
 // The rules in the lesson's table: the mood changes only from where it is.
+// Asking the light for the color it already shows, or is already fading
+// to, changes nothing, so it only fades when the mood has changed.
 void judgeComfort (float celsius)
 {
-    auto was = comfort;
-
     if (comfort == Comfort::Comfy && celsius >= comfyHigh + margin)
     {
         comfort = Comfort::Hot;
@@ -78,10 +78,7 @@ void judgeComfort (float celsius)
         comfort = Comfort::Comfy;
     }
 
-    if (comfort != was)
-    {
-        light.fadeTo (colorOf (comfort), 1000);
-    }
+    light.fadeTo (colorOf (comfort), 1000);
 }
 
 // The alarm rings once it's as hot as the knob says, and stops once it's a
