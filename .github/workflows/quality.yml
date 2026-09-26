@@ -105,7 +105,10 @@ jobs:
             - name: Set up Python
               uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
               with:
-                  python-version: "3.13"
+                  # The Python that docs/requirements.txt is locked with.
+                  python-version: "3.14"
+                  cache: pip
+                  cache-dependency-path: docs/requirements.txt
 
             - name: Build the site and print every lesson
               run: make pdf CHROMIUM=google-chrome
@@ -122,10 +125,26 @@ jobs:
               with:
                   persist-credentials: false
 
+            # Learners keep a version once they install it, so a published
+            # version's line may never change or go: only new lines are added.
+            - name: Check published versions of ADK Boards are unchanged
+              if: github.event_name != 'workflow_dispatch'
+              env:
+                  BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+              run: |
+                  git fetch --quiet --depth=1 origin "${BASE}"
+                  if git diff --unified=0 FETCH_HEAD HEAD -- boards/published.txt | grep '^-[0-9]'; then
+                      echo "::error file=boards/published.txt::A published version changed; publish a new version instead."
+                      exit 1
+                  fi
+
             - name: Set up Python
               uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
               with:
-                  python-version: "3.13"
+                  # The Python that docs/requirements.txt is locked with.
+                  python-version: "3.14"
+                  cache: pip
+                  cache-dependency-path: docs/requirements.txt
 
             - name: Install Arduino CLI
               env:
