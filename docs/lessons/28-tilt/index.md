@@ -1,11 +1,8 @@
 ---
 lesson: 28
-title: Tilt
-arc: Tilt and turn
 promise: Sense which way is down, and turn the matrix into a spirit level.
 time: 45 minutes
 level: 2
-sketch: Lesson28Tilt
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -66,12 +63,12 @@ side the Y arrow points to. ADK works them out for you in degrees with
 
 !!! warning "Unplug first"
     Unplug the USB cable before you wire. Keep the LED matrix and its five
-    wires from the last three lessons; take the joystick, the buzzer and
-    everything else off. Push the GY-521's pins firmly into row j, in
-    columns 9 to 16: it should lie flat, parallel to the breadboard, over the
-    top rails. Its board hides the rail holes under it, so its 5V comes from
-    the top + rail at column 7, beside it, and its GND crosses the middle gap
-    in column 10 to reach the bottom − rail.
+    wires from the last three lessons, and the Mega's GND wire; take the
+    joystick, the buzzer and everything else off. Push the GY-521's pins
+    firmly into row j, in columns 9 to 16: it should lie flat, parallel to
+    the breadboard, over the top rails. Its board hides the rail holes under
+    it, so its 5V comes from the top + rail at column 7, beside it, and its
+    GND crosses the middle gap in column 10 to reach the bottom − rail.
 
 <!-- bench -->
 
@@ -89,6 +86,19 @@ side the Y arrow points to. ADK works them out for you in degrees with
     you. Modules differ, so check yours: the bubble test below tells you if
     the sketch needs turning round.
 
+??? info "A QMI8658 board in the GY-521's place"
+    Some kits have a board marked **ICM40607&QMI8658** where the GY-521
+    should be. It carries a different chip, the QMI8658, and ADK reads it
+    too, through the same calls: `adk::Mpu6050` looks for it first, at its
+    own address, `0x6B`. Its eight pins are named **5V**, **GND**, **SCL**,
+    **SDA**, **3V3**, **RST**, **SWDIO** and **SWCLK**, in their own order,
+    so stand it in the same holes, then move each of the four wires to the
+    column of the pin with its name: the red one from T+7 to **5V**'s
+    column, the two black ones that carry GND across the gap to **GND**'s,
+    pin 21's to **SCL**'s and pin 20's to **SDA**'s. Its other four pins
+    stay unconnected. Its axes should follow the arrows printed on it, but
+    that hasn't been checked on a real board: the bubble test tells you.
+
 When you are done, these are the connections your circuit makes:
 
 <!-- connections -->
@@ -103,10 +113,11 @@ What's new:
 
 - `adk::Mpu6050 tilt {0x68};` names the accelerometer and its address on the
   bus. It needs no pin numbers: I2C is always pins 20 and 21 on the Mega.
-- `tilt.measured ()` is an event: true in the update where a new reading
-  arrived, which happens every 20 ms.
-- `tilt.ok ()` is false if the chip didn't answer. Then the matrix scrolls
-  *NO SENSOR* instead of a bubble, so a loose wire is easy to spot.
+- `tilt.measured ()` is an event: true in the update where a reading
+  finished, which happens every 20 ms.
+- `tilt.ok ()` is false if the chip didn't answer that reading. Then the
+  matrix scrolls *NO SENSOR* instead of a bubble, so a loose wire is easy
+  to spot.
 - `tilt.pitch ()` and `tilt.roll ()` are `float`s, numbers with decimals, as
   in Lesson 14: 2.7 degrees, say.
 - `showBubble ()` turns degrees into dots. `degreesPerDot` is 3, and
@@ -187,7 +198,9 @@ The black probe stays in c10 for every reading: column 10 is the GY-521's
 GND, carried across the gap by its black jumper. The red probe goes in row
 f, below the module, where each column is joined to one of its pins. Hold
 the tip straight: f9 carries 5 V and f10, right beside it, is GND, so a tip
-that touched both would join them. Nothing needs slowing down.
+that touched both would join them. Nothing needs slowing down. On the
+QMI8658 board, use the columns of its GND, 5V and SDA pins instead; it has
+no AD0.
 
 !!! question "Predict"
     Between readings, nothing is being sent on SDA. Will it read 0 V, 5 V,

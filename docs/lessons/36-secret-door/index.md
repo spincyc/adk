@@ -1,11 +1,8 @@
 ---
 lesson: 36
-title: Secret Door
-arc: Keys you can't see
 promise: Build a door latch that opens for your card, or for anyone who knows the secret knock.
 time: 2 hours
 level: 3
-sketch: Lesson36SecretDoor
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard, power module and 9 V adapter
@@ -13,7 +10,7 @@ parts:
   - RC522 RFID reader, with its card and fob
   - Tap sensor module (37 in 1)
   - SG90 servo and active buzzer
-  - 10 female-to-male and 21 jumper wires
+  - 10 female-to-male and 22 jumper wires
   - A box with a lid, and sticky tape
 ideas:
   - Two different keys for one lock
@@ -88,21 +85,22 @@ can't knock on its own door.
 
 !!! warning "Unplug first"
     Unplug the USB cable and switch the power module off before you change
-    any wiring. Set both of the power module's yellow jumpers to **5V**,
-    never 3.3V. The screen and the servo take their power from the power
-    module, so switch it on whenever the Mega is running. The RFID reader
-    takes **3.3 V** from the Mega's 3.3V pin: never 5V. Its signal wires get
-    5 V from the Mega, more than its chip is rated for, as Lesson 34
-    explains; the [safety page](../../safety.md) says how to protect them in
-    a build that has to last.
+    any wiring. Set the power module's bottom yellow jumper to **5V**, never
+    3.3V, and its top one **OFF**: the module feeds only the servo, on the
+    bottom rails, and the screen runs from the Mega's 5V on the top rails,
+    as in Lesson 33. The RFID reader takes **3.3 V** from the Mega's 3.3V
+    pin: never 5V. Its signal wires get 5 V from the Mega, more than its
+    chip is rated for, as Lesson 34 explains; the
+    [safety page](../../safety.md) says how to protect them in a build that
+    has to last.
 
 <!-- bench -->
 
 <!-- steps -->
 
-Set both of the power module's yellow jumpers to **5V**: the top rails feed
-the screen and the bottom rails the servo. The RFID reader and the tap
-sensor stay where they were in Lessons 34 and 35, below the Mega.
+The tap sensor stays where it was in Lesson 35, below the Mega, and the
+RFID reader you kept from Lesson 34 goes back beside it, where it was
+then, on the same seven wires.
 
 ??? info "Making the latch"
     The servo's arm is the bolt. Tape the servo inside the box, near the top
@@ -111,7 +109,7 @@ sensor stay where they were in Lessons 34 and 35, below the Mega.
     it with the lid open first: if the arm swings the wrong way or not far
     enough, change `lockedAngle` and `openAngle`. Mount the reader just
     inside the front of the box, so a card held against the outside is a
-    centimetre or two away, and tape the tap sensor inside the lid.
+    centimeter or two away, and tape the tap sensor inside the lid.
 
 When you are done, these are the connections your circuit makes:
 
@@ -119,7 +117,7 @@ When you are done, these are the connections your circuit makes:
 
 ## Code it
 
-Open the Arduino IDE and choose **File → Examples → Adk → Lesson36SecretDoor**:
+Open **File → Examples → Adk → Lesson36SecretDoor**:
 
 <!-- sketch -->
 
@@ -177,10 +175,10 @@ then `lock ()` forgets them.
 
 | What you see | Try this |
 |---|---|
-| The servo twitches, buzzes, or the Mega resets when it moves | Switch the power module on, and check the servo's red wire goes to the power module's + rail and the Mega's GND to the − rail. |
-| A blank lit screen, or a row of blocks | Turn the contrast knob. The screen's power comes from the power module, so it must be switched on. |
+| The servo twitches, buzzes, or the Mega resets when it moves | Switch the power module on, and check the servo's red wire goes to the bottom + rail, which the module feeds, and the Mega's GND to the − rail. |
+| A blank lit screen, or a row of blocks | Turn the contrast knob. |
 | `No card reader!` when it starts | Check the reader's seven wires, as in Lesson 34, and that its 3.3V pin goes to the Mega's 3.3V. |
-| Your card always gets `Unknown card` | Copy its number from the Serial Monitor exactly, with `0x` in front. |
+| Your card always gets `Unknown card` | Copy all eight digits of its number from the Serial Monitor exactly, with `0x` in front. |
 | Knocks never make stars | Check the tap sensor's S goes to A12, + to 5V and − to GND, and knock close to it. |
 | Stars appear, but the knock is always wrong | Knock the gaps more clearly: quick knocks well under half a second apart, and a pause of about a second. |
 | The latch opens the wrong way | Swap `lockedAngle` and `openAngle`, or remount the servo. |
@@ -234,10 +232,10 @@ from the Mega to the reader, so its 3.3 V is out of reach here.
 
 What the numbers tell you:
 
-- **The latch's supply** is the power module's 5 V on the bottom rails; the
-  top rails, which feed the screen, read the same. Watch the reading while
-  the latch swings: it hardly moves, because the module has plenty to spare
-  for the servo.
+- **The latch's supply** is the power module's 5 V on the bottom rails,
+  while the top rails carry the Mega's own 5 V to the screen. Watch the
+  reading while the latch swings: it hardly moves, because the module has
+  plenty to spare for the servo.
 - **The buzzer's pin** reads nearly the full 5 V for the whole beep, and 0
   the rest of the time. The pin is simply switched on, and the buzzer makes
   its tone inside. It reads a little under 5 V because the buzzer draws

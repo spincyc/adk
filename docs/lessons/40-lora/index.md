@@ -1,11 +1,8 @@
 ---
 lesson: 40
-title: LoRa
-arc: Long range
 promise: Send messages from one LoRa modem to another, and see how strong each one arrives.
 time: 60 minutes
 level: 2
-sketch: Lesson40Lora
 parts:
   - The screen and button from Lesson 39, wired as before
   - Two REYAX RYLR896 LoRa modems (add-on, not in the kit)
@@ -31,7 +28,7 @@ radio; modem B hears it, and the screen shows the message with two numbers
 under it: how strong it arrived, and how far it stood above the hiss of
 radio noise. Type a line in the Serial Monitor and it goes the same way.
 Here the two modems are a hand's width apart, but LoRa is made to reach a
-kilometre or more.
+kilometer or more.
 
 !!! warning "915 MHz is for the Americas and Australia"
     These modems send on 915 MHz, which anyone may use in the Americas and
@@ -49,7 +46,7 @@ weaker than the hiss of noise all around it, the way you can hear your own
 name across a noisy room. The price is speed. The Mega talks to each modem
 at 115,200 bits a second, but the modems talk to each other at about 1,000,
 so a short message takes about a third of a second on the air. In return,
-it can cross a kilometre or more of open ground.
+it can cross a kilometer or more of open ground.
 
 **A link needs two ends.** A radio that sends needs another that listens,
 so this lesson uses two modems, and they come in pairs. Both are on one
@@ -105,17 +102,18 @@ did in Lesson 38:
     and check your work before you plug them back in.
 
 !!! danger "3.3 V for the modems"
-    Set the power module's **top** jumper to **5V**, for the screen, and its
-    **bottom** jumper to **3.3V**, for the modems, before you plug anything
-    in. The modems' VDD pins go to the bottom + rail, never 5 V: more than
-    3.6 V damages them. Their RXD pins only ever see the Mega's TX through
-    the 1 kΩ, with the 2 kΩ to GND.
+    Set the power module's **bottom** jumper to **3.3V**, for the modems,
+    and its **top** jumper **off**, before you plug anything in. The modems'
+    VDD pins go to the bottom + rail, never 5 V: more than 3.6 V damages
+    them. Their RXD pins only ever see the Mega's TX through the 1 kΩ, with
+    the 2 kΩ to GND.
 
-Keep the screen and the button from Lesson 39 just as they are, and take
-everything else off: the clock module, the rotary encoder, the FM radio and
-the volume knob, and the red wire from the Mega's 5V to the top + rail. The
-power module feeds both pairs of rails now; the black GND wire into B-3
-stays. The power module goes on the right end of the board.
+Keep the screen and the button from Lesson 39 just as they are, with the
+Mega's GND and 5V wires, and take everything else off: the clock module,
+the rotary encoder, the FM radio and the volume knob. The power module goes
+on the right end of the board, as in Lesson 36. Its top jumper is off, so
+the Mega's 5V still feeds the screen on the top rails; the module feeds
+only the bottom rails, at 3.3 V, for the modems.
 
 The modems stand below the board, past the button, their springs pointing
 down and away: modem B first, then modem A, so their wires meet the Mega's
@@ -160,7 +158,7 @@ When you are done, these are the connections your circuit makes:
 
 ## Code it
 
-Open the Arduino IDE and choose **File → Examples → Adk → Lesson40Lora**:
+Open **File → Examples → Adk → Lesson40Lora**:
 
 <!-- sketch -->
 
@@ -224,7 +222,7 @@ means everyone. Put the 2 back when you're done.
 | `A can't send just now: try again` | Wait a moment, and send again: the last message was still going. If it always says this, modem A didn't answer at the start. |
 | Typing does nothing | Set the Serial Monitor's line ending to **New Line**: the sketch waits for the end of the line. |
 | A modem gets warm | Unplug everything at once, and check the bottom jumper is on 3.3V, never 5V. |
-| A blank lit screen, or a row of blocks | Turn the contrast knob. The screen takes its power from the power module now, so it must be switched on. |
+| A blank lit screen, or a row of blocks | Turn the contrast knob beside the LCD. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"
@@ -270,13 +268,13 @@ means everyone. Put the 2 back when you're done.
 
 ## Make it yours
 
-1. **A kilometre.** The real test needs a second Mega, perhaps a friend's.
+1. **A kilometer.** The real test needs a second Mega, perhaps a friend's.
    Move modem B, its divider and the screen to it, with a power module of
    its own on a 9 V battery, set as this one is, and run this same sketch
    on both: each Mega ignores the modem it doesn't have. Power the far one
    from a USB power bank, and walk away with it, watching the signal fall.
    Near −120 dBm, with the margin near −15, the messages stop. Outdoors,
-   with nothing in the way, that can be a kilometre or more.
+   with nothing in the way, that can be a kilometer or more.
 2. **Got it.** Make modem B answer: when a message arrives, send
    `Got it` back to address 1 with `modemB.send (1, "Got it")`, and show
    what modem A hears on the Serial Monitor with `modemA.wasReceived ()`
@@ -284,10 +282,9 @@ means everyone. Put the 2 back when you're done.
 3. **Your own network.** Give both modems network 12 in their settings,
    `adk::LoraModem modemA {Serial1, 1, {.network = 12}};`, and the same
    for B. A pair on network 6 next door won't hear you, nor you them.
-4. **A signal bar.** Show the signal as a bar on the bottom row, as the
-   light meter did in Lesson 8: no blocks at −120 dBm and sixteen at
-   −24, with `(modemB.signal () + 120) / 6` blocks. The screen's own full
-   block is character 255: `lcd.write (255);`.
+4. **A signal bar.** Show the signal as a bar of blocks on the bottom row,
+   as the FM radio did in Lesson 37: none at −120 dBm and sixteen at −24,
+   with `(modemB.signal () + 120) / 6` blocks.
 
 ## Measure it
 
@@ -306,7 +303,8 @@ its own hole: the rails' + and − holes are only 2.5 mm apart.
 What the numbers tell you:
 
 - **The modems' supply** is the power module's 3.3 V on the bottom rails,
-  from its own regulator. The top rails, which feed the screen, read 5 V.
+  from its own regulator. The top rails, which carry the Mega's 5V to the
+  screen, read 5 V.
 - **Pin 18** reads about 5 V: the Mega's TX1 pin rests high between
   messages. While a message goes out, it flickers between 5 V and 0 V far
   too fast for the meter to follow.

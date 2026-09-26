@@ -1,15 +1,12 @@
 ---
 lesson: 31
-title: Stepper
-arc: Time
 promise: Turn a motor to an exact angle by counting its steps, a quarter turn at a time.
 time: 45 minutes
 level: 2
-sketch: Lesson31Stepper
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
-  - Power module and 9 V adapter
+  - Breadboard power module and its 9 V adapter
   - 28BYJ-48 stepper and ULN2003 driver
   - Push button
   - 6 female-to-male jumper wires
@@ -26,20 +23,21 @@ ideas:
 
 <!-- closeup -->
 
-A paper arrow taped to a small motor points straight up. Press the button and
-it swings round a quarter of a turn, then stops dead. Press again: right,
-down, left, and up again, back where it began. While it moves, the
-four red lights on the driver board flicker through a pattern, showing you
-which of the motor's coils are switched on.
+A paper arrow taped to a small motor points straight up. Press the button
+and it swings round a quarter of a turn, then stops dead. Motors differ:
+watch which way yours turns. Four presses bring it all the way round, back
+where it began. While it moves, the four red lights on the driver board
+flicker through a pattern, showing you which of the motor's coils are
+switched on.
 
 ## The idea
 
 The fan in Lesson 20 spun freely: you chose its speed, but never where it
-stopped. A **stepper motor** is different: it moves in small, exact jumps called **steps**, and it stops after
-each one. Inside the 28BYJ-48 are four coils of wire around a magnet. Switch
-one coil on and the magnet turns to face it; switch on the next and it turns
-on to that one. Your sketch switches the coils in order, and every switch is
-one step.
+stopped. A **stepper motor** is different: it moves in small, exact jumps
+called **steps**, and it stops after each one. Inside the 28BYJ-48 are four
+coils of wire around a magnet. Switch one coil on and the magnet turns to
+face it; switch on the next and it turns on to that one. Your sketch
+switches the coils in order, and every switch is one step.
 
 ADK uses **half-steps**: one coil, then that coil and the next together, then
 the next alone. That makes eight patterns for each round of the four coils,
@@ -77,8 +75,8 @@ module, just as the servo in Lesson 17 took its power from there.
 <!-- steps -->
 
 Set the power module's bottom yellow jumper to **5V**: it feeds the driver
-through the bottom rails. Nothing uses the top rails, so set the top jumper to
-**OFF**.
+through the bottom rails. Its top jumper is **OFF**, as in Lesson 20: the
+module never feeds the top rails, and nothing here uses them.
 
 Last, push the motor's white plug into the socket on the driver board. It only
 fits one way round. Plug the 9 V adapter into the power module's round socket,
@@ -89,8 +87,8 @@ the motor on the table with the shaft facing you.
     The black chip on the driver board, the ULN2003, holds seven electronic
     switches. A milliamp or so from a Mega pin into IN1 closes the switch for
     the first coil, and then up to 200 mA can flow through that coil from the
-    power module. The four LEDs, A to D, light
-    with IN1 to IN4, so they show you each coil switching.
+    power module. The four LEDs, A to D, light with IN1 to IN4, so they show
+    you each coil switching.
 
     The black wire from the Mega's GND to the − rail matters: the driver
     measures the Mega's signals against its own GND, so the two grounds have
@@ -102,7 +100,7 @@ When you are done, these are the connections your circuit makes:
 
 ## Code it
 
-Open the Arduino IDE and choose **File → Examples → Adk → Lesson31Stepper**:
+Open **File → Examples → Adk → Lesson31Stepper**:
 
 <!-- sketch -->
 
@@ -135,10 +133,10 @@ You predicted how long a press takes: 1024 half-steps at 500 a second is
 exactly 64 to 1, so 4096 half-steps are a little more than one real turn.
 You'll measure that in the third challenge below.
 
-Which way does it turn? ADK means positive steps to turn the shaft clockwise,
-seen from the shaft end, but that hasn't been checked on a real motor yet.
-Watch yours: if it goes anticlockwise, that's fine, and you now know which
-way positive means for your motor.
+Which way does it turn? Motors differ: watch which way yours turns. ADK
+means positive steps to turn the shaft clockwise, seen from the shaft end;
+if yours goes anticlockwise, that's fine, and you now know which way
+positive means for your motor.
 
 ## If it doesn't work
 

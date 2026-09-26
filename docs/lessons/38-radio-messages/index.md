@@ -1,11 +1,8 @@
 ---
 lesson: 38
-title: Radio Messages
-arc: On the air
 promise: Send short messages through the air at 433 MHz, from a button or the Serial Monitor, and see every one arrive on the screen.
 time: 1 hour
 level: 2
-sketch: Lesson38RadioMessages
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -30,7 +27,7 @@ ideas:
 Two little radio boards stand on the breadboard: a transmitter and a
 receiver. Press the button and the screen says **Message 1:** and, below it,
 **Hello!**. That message left the Mega through the transmitter, crossed a few
-centimetres of air as radio, and came back in through the receiver. Press
+centimeters of air as radio, and came back in through the receiver. Press
 again for the next message, or type your own in the Serial Monitor. With a
 second Mega, or a friend's, the same messages reach across a room.
 
@@ -79,7 +76,7 @@ other easily across a desk.
 !!! warning "Keep it short and few"
     Receiving is allowed anywhere, but sending is ruled by law. In Europe,
     433 MHz is free for small, low-power gadgets like this one. In the USA
-    and Canada it belongs to radio amateurs, and without a licence only very
+    and Canada it belongs to radio amateurs, and without a license only very
     weak, occasional signals, like a car key's, are allowed: keep your
     messages short and few. [Safety](../../safety.md#radios) has the details.
 
@@ -142,8 +139,7 @@ When you are done, these are the connections your circuit makes:
 
 ## Code it
 
-Open the Arduino IDE and choose
-**File → Examples → Adk → Lesson38RadioMessages**:
+Open **File → Examples → Adk → Lesson38RadioMessages**:
 
 <!-- sketch -->
 

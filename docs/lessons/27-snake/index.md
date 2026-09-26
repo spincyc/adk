@@ -1,11 +1,8 @@
 ---
 lesson: 27
-title: Snake
-arc: Pixels and games
 promise: Build the classic game, with a snake that grows, speeds up and sings.
 time: 1 hour
 level: 3
-sketch: Lesson27Snake
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard

@@ -1,11 +1,8 @@
 ---
 lesson: 25
-title: LED Matrix
-arc: Pixels and games
 promise: Draw pictures and scroll messages on 64 LEDs, all from three pins.
 time: 45 minutes
 level: 2
-sketch: Lesson25LedMatrix
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -37,15 +34,14 @@ The matrix is 64 LEDs in 8 rows and 8 columns. Each LED sits where a row
 wire crosses a column wire, so a row and a column together pick out one LED.
 Wiring 64 LEDs to 64 pins would use most of the Mega. Instead, a chip on the
 module, the **MAX7219**, does the work. It lights one row at a time, very
-quickly, and your eyes blend the rows into one picture: the same trick you
-played by hand with the four-digit display in
-Lesson 11, except the chip does it for you,
-about 800 times a second. It also sets the current for every LED, so none
-of them needs its own resistor.
+quickly, and your eyes blend the rows into one picture: the same trick
+the four-digit display played in Lesson 11, except that the chip does it by
+itself, about 800 times a second. It also sets the current for every LED,
+so none of them needs its own resistor.
 
 The Mega talks to the chip over three wires, much like the 74HC595 in
-Lesson 10: **DIN** carries the bits, **CLK** says when
-each bit is ready, and **CS** tells the chip to take them.
+Lesson 10: **DIN** carries the bits, **CLK** says when each bit is ready,
+and **CS** tells the chip to take them.
 
 Each LED is a **pixel**, a dot in a picture, with an address. **x** counts
 columns from 0 on the left to 7 on the right, and **y** counts rows from 0
@@ -174,43 +170,9 @@ from 0. They are the two bumps on top of the heart.
 2. **Your message.** Change `"HELLO!"` to your name. Scroll it faster with
    `matrix.scroll ("SAM", 40);`, where 40 is the milliseconds per step.
 3. **Brightness.** Add `matrix.brightness (1);` after `adk::setup ();`. Try
-   0 and 15. Then put a potentiometer on A0, as in
-   Lesson 7, and set the brightness with it.
+   0 and 15. Then put a potentiometer on A0, as in Lesson 7, and set the
+   brightness with it.
 4. **Animate.** Draw a second invader with its legs the other way and swap
    between the two on each tick of an `adk::Every` of 300 ms, so it walks.
    Or make a single dot bounce around the edges using `set (x, y)` and
    `set (x, y, false)`.
-
-## Measure it
-
-This part is for anyone with a multimeter; there isn't one in the kit. Set
-it up as in [Lesson 1](../01-blink/index.md#measure-it): DC volts (**V⎓**),
-the black lead in **COM** and the red one in **V**, never in **10A**. Keep
-each probe tip in its own hole, so it can't bridge two.
-
-The matrix's five wires run straight from the Mega's header to the module,
-where a probe can't reach them safely, so the readings here are on the one
-part on the breadboard: the button that changes the picture. Nothing needs
-slowing down; just keep the button still while the number settles.
-
-!!! question "Predict"
-    Pin 22 is an input: the Mega only listens to it, and nothing in your
-    circuit joins it to 5 V. What will it read with the button up? And held
-    down?
-
-<!-- measure -->
-
-What the numbers tell you:
-
-- **Released**, pin 22 reads about 5 V after all. The Mega does it inside
-  the chip: `adk::Button` switches on the pin's **pull-up**, a resistor of
-  20 to 50 kΩ from the pin to 5 V, as in Lesson 2. Almost no current flows
-  through it, so almost no voltage is lost across it, and the pin sits at
-  the full 5 V.
-- **Held down**, the button joins pin 22 to the − rail and the reading drops
-  to 0. Now the pull-up has the whole 5 V across it, and passes at most
-  0.25 mA: far too little to harm anything.
-- `button.wasPressed ()` is true in the one update where pin 22 falls from
-  5 V to 0 V, and each fall moves `slide` on by one. Letting go, back up to
-  5 V, changes nothing, which is why a long press still shows just one new
-  picture.

@@ -1,11 +1,8 @@
 ---
 lesson: 39
-title: Clock Radio
-arc: On the air
 promise: Build a bedside clock radio that wakes you with your favorite station, fading in gently.
 time: 90 minutes
 level: 3
-sketch: Lesson39ClockRadio
 parts:
   - Your circuit from Lesson 38, with its screen and button
   - The FM radio (add-on, not in the kit), earbuds, 1 kΩ resistor and volume knob from Lesson 37
@@ -124,7 +121,7 @@ When you are done, these are the connections your circuit makes:
 
 ## Code it
 
-Open the Arduino IDE and choose **File → Examples → Adk → Lesson39ClockRadio**:
+Open **File → Examples → Adk → Lesson39ClockRadio**:
 
 <!-- sketch -->
 
@@ -160,7 +157,8 @@ Read it from the top:
   minute is left, and 0 once it's over or when there's no fade at all, so
   `faded` is how much has gone by: all of it, except during a fade.
   `full * faded / fadeLength` is the formula from the idea. While the radio
-  is off, `full` is 0, and so is the volume.
+  is off, `full` is 0, and so is the volume. As in Lesson 37, the radio
+  only hears about a volume that has changed.
 
 ## Upload it
 

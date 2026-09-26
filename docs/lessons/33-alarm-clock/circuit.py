@@ -6,10 +6,11 @@
 # buzzer take their homes beside the screen, in columns 38 and 51, their pin
 # wires coming over the top. The flag is Lesson 31's stepper, its driver
 # below the Mega as it was there; the power module at the right end feeds
-# both pairs of rails, so the Mega's 5V leaves T+3 and the screen and clock
-# take the module's 5 V. The screen's knob jumper takes column 5 and the LCD
-# covers the bottom rails from column 6, so the driver's + and − come in
-# one column nearer the Mega than in Lesson 31, at B+4 and B-4.
+# only the bottom rails, for the driver, its top jumper off, so the screen
+# and clock keep the Mega's 5V on the top rails. The screen's knob jumper
+# takes column 5 and the LCD covers the bottom rails from column 6, so the
+# driver's + and − come in one column nearer the Mega than in Lesson 31, at
+# B+4 and B-4.
 bench = Bench ("Lesson 32's clock and LCD, with a knob on pins 18, 19 and 22, a snooze button on "
                "pin 23, a passive buzzer on pin 10, and a stepper flag on pins A8 to A11 powered "
                "from the power module", columns=(1, 63))
@@ -36,7 +37,7 @@ bench.wire ("10", "j51", via=[(1.9, -2.4), (10.4, -2.4)])
 bench.buzzer ("f51", "e51", kind="passive")
 bench.resistor ("220 Ω", "a51", "B-51")
 
-bench.power_module ("right", top="5V", bottom="5V")
+bench.power_module ("right", top="off", bottom="5V")
 bench.module ("stepper", at=(3.1, 4.5), facing="up")
 # The IN wires cross in Lesson 31's staircase; the + wire rises between
 # B-3 and B-4 to reach B+4.

@@ -1,11 +1,8 @@
 ---
 lesson: 29
-title: Menus
-arc: Tilt and turn
 promise: Turn and click a knob to move through a menu and change settings.
 time: 1 hour
 level: 2
-sketch: Lesson29Menus
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -27,12 +24,12 @@ ideas:
 
 <!-- closeup -->
 
-A lamp with a control panel. The screen shows a menu: **Level**, **Mode**
-and **Speed**. Turn the knob and the arrow moves through the items; click
-it and the arrow jumps across to the setting, so turning now changes it:
-brighter or dimmer, steady, blinking or slowly breathing, slow or fast.
-Click again to go back to the list. It is how the menus on cookers,
-printers and car radios work.
+A lamp with a control panel. The screen shows a menu of two items,
+**Level** and **Mode**. Turn the knob and the arrow moves from one to the
+other; click it and the arrow jumps across to the setting, so turning now
+changes it: brighter or dimmer, steady or blinking. Click again to go back
+to the items. It is how the menus on cookers, printers and car radios
+work.
 
 ## The idea
 
@@ -60,7 +57,7 @@ A **menu** needs two states, and the click swaps between them:
 
 | State | The arrow points at | Turning the knob |
 |---|---|---|
-| Browsing | The item's name, **>Level** | Moves to the next or previous item |
+| Browsing | The item's name, **>Level** | Moves the arrow to the next or previous item |
 | Editing | The item's setting, **>60%** | Changes that setting |
 
 Each item has a list of **choices**, and a **setting**: which choice it's
@@ -77,8 +74,10 @@ of 255 on its PWM pin, just as the dimmer's `write ()` set it in Lesson 7.
 
 !!! warning "Unplug first"
     Unplug the USB cable before you wire: this is a long build, so check
-    each wire against the list as you go. The LED gets its own 220 Ω
-    resistor, and so does the LCD's backlight.
+    each wire against the list as you go. The LED matrix and the GY-521
+    come off for this lesson: put them aside with their wires, because
+    Lesson 30 brings them back, in the same places. The LED gets its own
+    220 Ω resistor, and so does the LCD's backlight.
 
 <!-- bench -->
 
@@ -121,7 +120,7 @@ What's new:
 - `adk::RotaryEncoder knob {18, 19};` names the encoder's CLK and DT pins.
   `adk::Button click {22};` is its push switch, and `adk::PwmOutput lamp {3};`
   is the LED, dimmed with PWM.
-- `levels`, `modes` and `speeds` are the choices, as lists of text.
+- `levels` and `modes` are the choices, as lists of text.
 - `struct Item` is one line of the menu: its `name`, its `choices` and its
   `setting`. `adk::Span<const char* const> choices` is a view of a list kept
   somewhere else, as in Lesson 18, so every item can point at a list of a
@@ -131,28 +130,21 @@ What's new:
   structs as in Lesson 5. Writing `Item` in front of each one says what they
   are, so the array knows its type without being told.
 - `Item& level = menu[0];` makes `level` another name for the first item,
-  with `&` just as in Lesson 3. So `level.setting` in `brightness ()` says
+  with `&` just as in Lesson 3. So `level.setting` in `loop ()` says
   which setting it means, where `menu[0].setting` wouldn't.
-- `current` is the item on the top row, and `editing` says which state the
-  menu is in.
+- `current` is the item the arrow points at, and `editing` says which
+  state the menu is in.
 - `turnKnob ()` does the right thing for the state. Editing, it adds the
-  clicks to the setting, and `constrain` stops it at the first and last
-  choice. Browsing, `wrap ()` moves through the items and round from the last
-  to the first, and back.
-- `wrap ()` counts round in a circle. `%` gives the remainder, but for a
-  number below zero the remainder is below zero too: −1 % 3 is −1. So when
-  it is, `wrap ()` adds the count once more, and −1 becomes 2, the last item.
-- `showMenu ()` redraws the screen only when something changed: the current
-  item on the top row, the next one below it, then the arrow in front of
-  either the name or the setting. `lcd.at (9, row)` moves to column 9 of that
-  row and hands back the screen, so `.print ()` can follow straight on.
-- `brightness ()` turns the settings into a brightness for this moment.
-  `lampTime` is an `adk::Stopwatch`, started in `setup ()`, and
-  `lampTime.elapsed () % period` is how far through the current blink or
-  breath the lamp is. The `switch` picks by `mode.setting`: Blink is full
-  brightness for the first half and off for the second; Breathe rises
-  steadily through the first half and falls through the second; Steady,
-  the `default`, is always full.
+  clicks to the setting; browsing, it adds them to `current`. Either way
+  `constrain` stops it at the first and the last.
+- `showMenu ()` redraws the screen only when something changed: each item
+  on its own row with its setting beside it, then the arrow in front of
+  either the current item's name or its setting. `lcd.at (9, row)` moves to
+  column 9 of that row and hands back the screen, so `.print ()` can follow
+  straight on.
+- The last lines of `loop ()` light the lamp. `blink` flips `blinkOn` every
+  half second. The lamp is lit if the mode is Steady, choice 0, or if
+  `blinkOn` is true, and then it gets `level.setting * 255 / 10`.
 
 ## Upload it
 
@@ -160,10 +152,10 @@ Upload the sketch. The LCD shows `>Level   60%` on top and `Mode    Steady`
 below, and the LED glows at a bit over half brightness. If the text is faint
 or missing, turn the potentiometer until it's sharp.
 
-Turn the knob one click clockwise: `>Mode` moves to the top. Click the knob:
-the arrow jumps to `>Steady`. Turn it: `Blink`, `Breathe`. Click again, turn
-to `Speed`, click, and choose `Fast`: the LED now breathes quickly. Go back
-to `Level` and turn it down to 0%, or up to 100%.
+Turn the knob one click clockwise: the arrow moves down to `>Mode`. Click
+the knob: the arrow jumps to `>Steady`. Turn it to `Blink`, and the LED
+blinks, once a second. Click again, turn back up to `Level`, click, and
+turn it down to 0%, or up to 100%. It blinks at whatever level you set.
 
 You predicted how far to turn from 0% to 100%. That's 10 clicks, and with
 about 20 clicks in a turn it is about half a turn. Keep turning past 100%
@@ -178,7 +170,7 @@ first click back brings it straight down to 90%.
 | A row of solid blocks | The LCD has power but isn't hearing the Mega: check RS on 31 and E on 32. |
 | Strange characters | Check D4 to D7 go to pins 33 to 36, in order. |
 | Turning clockwise goes backwards | CLK and DT are swapped: CLK goes to 18, DT to 19. |
-| One click moves two items, or it takes two clicks to move one | Your encoder makes a different number of changes per click. Try `adk::RotaryEncoder knob {18, 19, 2};`. |
+| One click moves Level two steps, or it takes two clicks to move one | Your encoder makes a different number of changes per click. Try `adk::RotaryEncoder knob {18, 19, 2};`. |
 | Clicking does nothing | Press the shaft straight down until it clicks, and check SW goes to pin 22. |
 | The menu works but the LED never lights | Check pin 3's wire goes to j38, the resistor runs from g38 across the gap to e38, the LED's long leg is in b38 and its short leg in b39, and the black jumper runs from a39 to the − rail. |
 
@@ -197,17 +189,19 @@ first click back brings it straight down to 90%.
 
 ## Make it yours
 
-1. **A fourth item.** Add `Color` with the choices `Red`, `Green` and
-   `Blue`: a list of its own, and one more `Item` in `menu`. The menu shows
-   it with no other change. Then wire the RGB LED from Lesson 4 on pins 5, 6
-   and 7 instead of the single LED, and light it in the chosen color.
-2. **Finer steps.** Let Level go from 0% to 100% in steps of 5%: give
-   `levels` 21 choices, and divide by 20 instead of 10 in `brightness ()`.
-3. **Remember.** Save each item's `setting` in EEPROM, as the safe in
+1. **Breathe.** Add a third mode, `Breathe`, in which the lamp rises and
+   falls smoothly. Time it with an `adk::Stopwatch`, as in Lesson 3:
+   `elapsed () % 2000` counts from 0 to 1999 and starts again, so it says
+   how far through a two-second breath the lamp is. Rise through the first
+   second and fall through the next.
+2. **A third item.** Add `Speed`, with the choices `Slow` and `Fast`, and
+   set the blink's beat from it with `blink.period ()`. The screen has only
+   two rows, so make the menu scroll: the current item on the top row, the
+   next one below it.
+3. **Finer steps.** Let Level go from 0% to 100% in steps of 5%: give
+   `levels` 21 choices, and divide by 20 instead of 10 in `loop ()`.
+4. **Remember.** Save each item's `setting` in EEPROM, as the safe in
    Lesson 18 saved its code, so the lamp wakes up the way you left it.
-4. **Long press.** Hold the knob down for two seconds to put every setting
-   back to its starting value. `click.isPressed ()` and an `adk::Stopwatch`,
-   as in Lesson 3, will tell you how long it has been held.
 
 ## Measure it
 
@@ -243,6 +237,5 @@ What the numbers tell you:
   really at 2 V for 60% of the time and at 0 V for the rest, and 60% of 2 V
   is 1.2 V. PWM never dims the LED's voltage; it switches the LED fully on
   and off, and your eye, like the meter, sees the average.
-- Now try **Blink** on **Slow**, with Level back at 60%: the meter swings
-  between 3 V and 0 V, a second each. On **Breathe** it rises and falls, a
-  little behind the LED.
+- Now try **Blink**, with Level back at 60%: the meter jumps between
+  about 3 V and 0 V, half a second each, too quick for it to settle.

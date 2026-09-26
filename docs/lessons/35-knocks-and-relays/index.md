@@ -1,11 +1,8 @@
 ---
 lesson: 35
-title: Knocks and Relays
-arc: Keys you can't see
 promise: Knock a secret rhythm on the table and make a relay click a lamp on.
 time: 60 minutes
 level: 2
-sketch: Lesson35KnocksAndRelays
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -40,9 +37,10 @@ The **tap sensor** is a tiny spring inside a metal tube. A knock nearby makes
 the spring shake and touch the tube for a few milliseconds. On most tap
 modules, the S pin drops to 0 V while it touches: it's active low, like the
 sensors in Lesson 23. (If yours is the other way round, the table below
-says what to change.) Each touch is far too short for a button's 20 ms debounce, so
-this sketch reads the sensor with no debouncing, counts the first touch as the
-knock, and ignores the next 80 ms while the spring rattles.
+says what to change.) Each touch is far too short for a button's 20 ms
+debounce, so this sketch reads the sensor with no debouncing, counts the
+first touch as the knock, and ignores the next 80 ms while the spring
+rattles.
 
 A secret knock is a **rhythm**: what matters is the gaps between knocks. The
 sketch times each gap with a stopwatch and writes it as a letter: **S** for
@@ -74,6 +72,10 @@ battery, a 1 kΩ resistor and a red LED. The LED keeps about 2 V, so:
     any wiring. Never let the battery's two terminals touch each other or
     anything metal.
 
+Nothing from Lesson 34 stays on the breadboard, but keep its RFID reader,
+with its card and fob, somewhere safe: it comes back in Lesson 36, wired
+just as it was, to join this lesson's tap sensor.
+
 !!! danger "Never mains electricity"
     The relay's label says it can switch 250 V. That is exactly why it is
     only ever used here with a battery and an LED. Never connect it to
@@ -104,7 +106,7 @@ When you are done, these are the connections your circuit makes:
 
 ## Code it
 
-Open the Arduino IDE and choose **File → Examples → Adk → Lesson35KnocksAndRelays**:
+Open **File → Examples → Adk → Lesson35KnocksAndRelays**:
 
 <!-- sketch -->
 

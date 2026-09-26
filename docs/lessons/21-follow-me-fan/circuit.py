@@ -1,15 +1,16 @@
-# Lesson 20's fan stays as it was: the power module on the right end, the
-# L293D in columns 12-19 and the motor above the board, with the same wires
-# from 4, 8 and 9; the knob and the button come out. The ultrasonic sensor
-# comes back from Lesson 19 to the same place above the Mega, the wires
-# from 4, 8 and 9 passing over it, and the servo goes in at its home below
-# the board, its plug on the power module's bottom rails and its signal
-# from pin 44.
+# Lesson 20's fan stays as it was: the power module on the right end, its
+# top jumper off, the L293D in columns 12-19 and the motor above the board,
+# with the same wires from 4, 8 and 9; the knob and the button come out.
+# The ultrasonic sensor comes back from Lesson 19 to the same place above
+# the Mega, the wires from 4, 8 and 9 passing over it, and the servo goes in
+# at its home below the board, its plug on the power module's bottom rails
+# and its signal from pin 44. On the real bench the motor rides on the
+# servo's horn, its leads lengthened with female-to-male jumpers.
 bench = Bench ("A servo on pin 44 carrying an ultrasonic sensor on 14 and 15 and a fan on an "
                "L293D (4, 8, 9), the servo and the fan powered from the breadboard power module",
                columns=(1, 63))
 
-bench.power_module ("right", top="5V", bottom="5V")
+bench.power_module ("right", top="off", bottom="5V")
 
 bench.module ("ultrasonic", name="sensor", at=(2.715, -1.2))
 bench.wire ("14", "sensor.Trig")
@@ -21,8 +22,8 @@ bench.chip ("L293D", first=12)
 bench.wire ("j12", "T+12")
 bench.wire ("a15", "B-15")
 bench.wire ("a19", "B+19")
-bench.wire ("8", "j13", via=[(2.09, -1.47), (4.6, -1.47), (4.6, 0.35), (6.6, 0.35)])
-bench.wire ("9", "j18", via=[(1.99, -1.57), (7.1, -1.57)])
+bench.wire ("9", "j13", via=[(1.99, -1.47), (4.6, -1.47), (4.6, 0.35), (6.6, 0.35)])
+bench.wire ("8", "j18", via=[(2.09, -1.57), (7.1, -1.57)])
 bench.wire ("4", "j19", via=[(2.55, -1.67), (7.2, -1.67)])
 bench.module ("motor", name="motor", at=(4.7, -1.25), facing="down")
 bench.wire ("motor.−", "j14", via=[(6.7, -0.41)])

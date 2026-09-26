@@ -1,11 +1,8 @@
 ---
 lesson: 37
-title: FM Radio
-arc: On the air
 promise: Build a real FM radio, tune it with the rotary knob, and see each station's name on the screen.
 time: 1 hour
 level: 2
-sketch: Lesson37FmRadio
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -102,9 +99,8 @@ RST down to 0 V, which beats both.
     and the sketch never drives them high: see
     [Safety](../../safety.md#radios).
 
-Keep the screen from Lesson 36 as it is, and take everything else off. The
-power module comes out too, so the red wire from the Mega's 5V goes back
-into T+3.
+Keep the screen from Lesson 36 as it is, with the Mega's GND and 5V wires,
+and take everything else off, the power module too: nothing here needs it.
 
 Most of these radio boards come with their row of eight pins loose, and the
 pins have to be soldered on before the board can stand in the breadboard.
@@ -143,7 +139,7 @@ When you are done, these are the connections your circuit makes:
 
 ## Code it
 
-Open the Arduino IDE and choose **File → Examples → Adk → Lesson37FmRadio**:
+Open **File → Examples → Adk → Lesson37FmRadio**:
 
 <!-- sketch -->
 
@@ -165,9 +161,10 @@ What's new:
 - Tuning takes about 60 ms, and a seek up to a few seconds, but neither
   stops the sketch: the radio gets on with it while `loop ()` carries on.
   `radio.isTuning ()` is true meanwhile, and the screen says `Tuning`.
-- `setVolume ()` turns the knob's 0 to 1023 into the radio's volumes, 0 for
-  silent to 15, with `read (0, 15)` as in Lesson 7. It only tells the radio
-  when the number changes, since each change is a message on the wires.
+- `radio.setVolume (volumeKnob.read (0, 15))` turns the knob's 0 to 1023
+  into the radio's volumes, 0 for silent to 15, with `read (0, 15)` as in
+  Lesson 7. Each change is a message on the wires, so ADK only sends one
+  when the number changes: the sketch can ask five times a second.
 - `radio.frequency ()` is in tenths of a megahertz: 988 means 98.8 MHz.
   Dividing by `10.0`, with its decimal point, keeps the tenths, and
   `adk::fixed (..., 1)` prints the number with one decimal place. A
@@ -212,7 +209,7 @@ of the wave.
 | Turning skips stations you know are there | Check `band`: only in the Americas should it be `Americas`, whose steps are 0.2 MHz. |
 | The volume knob does nothing | Check A0's wire goes to a58, the red jumper from d59 to T+61, and the black one from a57 to the − rail. |
 | Turning the rotary knob goes the wrong way | Swap its CLK and DT wires, on pins 18 and 19. |
-| One click moves two steps, or two clicks one | Give the encoder a third number, as in Lesson 29: `adk::RotaryEncoder dial {18, 19, 2};`. |
+| It takes two clicks to move one step | Your encoder steps differently: give it a third number, as in Lesson 29, `adk::RotaryEncoder dial {18, 19, 2};`, and try 2 or 1. |
 | The name never appears | Not every station sends one. Try a strong, big station. |
 | A row of solid blocks, or a blank lit screen | Turn the contrast knob, the one beside the LCD. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |

@@ -1,11 +1,8 @@
 ---
 lesson: 22
-title: Remote Control
-arc: Invisible signals
 promise: Read the kit's remote control, and use it to run a colored lamp from across the room.
 time: 45 minutes
 level: 2
-sketch: Lesson22RemoteControl
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -127,9 +124,8 @@ What's new:
 - `showLamp ()` uses `adk::blend ()` to find the color some eighths of the
   way up from off, and `lamp.fadeTo ()` from Lesson 4 glides to it, or to
   off, in 200 ms.
-- `printCode ()` prints each new code in hexadecimal: the `HEX` in
-  `Serial.println (button, HEX)` asks for it. `adk::println ()` can't do
-  that, so this is one place for `Serial.print ()` a piece at a time.
+- `adk::hex (button, 2)` prints each new code in hexadecimal, with at
+  least two digits, so 0x0C keeps the 0 in front.
 
 ## Upload it
 

@@ -1,11 +1,8 @@
 ---
 lesson: 23
-title: Tripwires
-arc: Invisible signals
 promise: Set four invisible tripwires that notice movement, an obstacle, a tilt and a broken beam.
 time: 1 hour
 level: 2
-sketch: Lesson23Tripwires
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -31,9 +28,9 @@ ideas:
 Four guards, each with its own light. Walk past the PIR sensor and the red
 LED comes on. Put your hand in front of the obstacle sensor and the yellow
 one lights. Tip the tilt switch over and green shows. Slide a piece of card
-through the slot of the beam-break sensor and blue flashes. They make the
-tripwires for next lesson's room alarm, and each one teaches you something
-about how a sensor says "yes".
+into the slot of the beam-break sensor and blue lights while it's there.
+They make the tripwires for next lesson's room alarm, and each one teaches
+you something about how a sensor says "yes".
 
 ## The idea
 

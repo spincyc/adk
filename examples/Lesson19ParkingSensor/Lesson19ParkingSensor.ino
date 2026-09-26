@@ -48,13 +48,9 @@ void soundWarning (int cm)
 
     if (cm < touching)
     {
-        buzzer.on ();
+        buzzer.beep (100);  // asked for on every pass: one unbroken tone
     }
-    else if (cm >= ticking)
-    {
-        buzzer.off ();
-    }
-    else if (beeps.ticked ())
+    else if (cm < ticking && beeps.ticked ())
     {
         buzzer.beep (50);
     }

@@ -126,8 +126,9 @@ void readTheClock ()
         state = State::Ringing;
     }
 
-    // The tune starts again each time it ends, until someone stops it.
-    if (state == State::Ringing && !speaker.isPlaying ())
+    // Asked for again while it plays, the tune carries on; once it has
+    // ended, it starts again, until someone stops it.
+    if (state == State::Ringing)
     {
         speaker.play (wakeUp);
     }

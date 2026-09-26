@@ -35,8 +35,7 @@ void loop ()
     {
         auto card = reader.uid ();
 
-        Serial.print ("Card 0x");
-        Serial.println (card, HEX);
+        adk::println (Serial, "Card 0x", adk::hex (card, 8));
 
         light.show (isKnown (card) ? adk::color::green : adk::color::red);
         light.fadeTo (quietBlue, 2000);

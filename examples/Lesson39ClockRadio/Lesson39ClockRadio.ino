@@ -153,14 +153,10 @@ void showBottomRow ()
 // climbs to the knob's volume as the half minute of the fade goes by.
 void setVolume ()
 {
-    int         full   = playing ? volumeKnob.read (0, 15) : 0;
-    adk::Millis faded  = fadeLength - fade.remaining ();
-    int         volume = full * faded / fadeLength;
+    int         full  = playing ? volumeKnob.read (0, 15) : 0;
+    adk::Millis faded = fadeLength - fade.remaining ();
 
-    if (volume != radio.volume ())
-    {
-        radio.setVolume (volume);
-    }
+    radio.setVolume (full * faded / fadeLength);
 }
 
 // A time of day, in minutes after midnight, as hours and minutes: 07:05.
