@@ -168,10 +168,16 @@ the far end are played by `tests/fake_i2c.cpp` and `tests/fake_spi.cpp`, and
 `S 68w+ 00+ Sr 68r+ 12- P`.
 
 `make examples` compiles every example for the Mega with all warnings, and
-fails on any warning from the library or an example. `make pins` then runs
-each example's `setup ()` on the host and checks, with `adk::isClaimed ()`,
-that the pins it claims are exactly the pins its lesson's `circuit.py` wires.
-None of these replaces trying a circuit on a real board.
+fails on any warning from the library or an example. `make pins` first
+tests the circuit model on made-up circuits (`tests/circuits.py`), then runs
+each example's `setup ()` on the host and holds it to its lesson's
+`circuit.py`, or in a two-board lesson to its board's. The pins it claims
+must be exactly the Mega pins the circuit wires. Wherever the circuit shows
+what a pin does, driving an LED or a module's input, or reading a button, a
+knob or a sensor, the sketch must claim it the same way, as an output or an
+input. That catches a wire in the wrong hole, a pin left out, or an LED
+swapped with a button, but not two pins wired to parts of one kind swapped
+with each other. None of these replaces trying a circuit on a real board.
 
 ## Adding a device
 

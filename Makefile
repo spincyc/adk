@@ -445,8 +445,8 @@ serve: $(VENV)/.installed
 	$(VENV)/bin/mkdocs serve
 
 $(VENV)/.installed: docs/requirements.txt
-	$(PYTHON) -m venv $(VENV)
-	$(VENV)/bin/pip install --quiet --disable-pip-version-check -r $<
+	$(PYTHON) -m venv --clear $(VENV)
+	$(VENV)/bin/pip install --quiet --disable-pip-version-check --require-hashes -r $<
 	@touch $@
 
 ## style           check the mechanical rules of docs/STYLE.md

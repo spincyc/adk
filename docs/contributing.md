@@ -13,7 +13,7 @@ repository. Everything builds with `make`, and everything it builds goes in
 | `tests/` | Host tests, a fake Arduino core, the pins check, the circuit model's tests and the style check |
 | `docs/` | This website: pages in Markdown, lessons in `docs/lessons/` |
 | `docs/_theme/` | The site's theme, build hook, circuit model (`bench.py`), drawing engine and course list |
-| `boards/` | ADK Boards, the Arduino IDE board package: `avr/` is the platform, `toolchain.json` its compiler downloads |
+| `boards/` | ADK Boards, the Arduino IDE board package: `avr/` is the platform, `toolchain.json` its compiler downloads, `published.txt` every version the site has published |
 
 ## Commands
 
@@ -36,8 +36,10 @@ repository. Everything builds with `make`, and everything it builds goes in
 | `make check` | All of the above, as CI runs it |
 | `make upload EXAMPLE=… PORT=…` | Upload one example, by its folder in `examples/` |
 
-The website needs Python 3; `make site` creates a virtual environment in
-`build/venv` the first time. The PDFs need Chromium.
+The website needs Python 3: `make site` creates `build/venv` from
+`docs/requirements.txt`, a hashed lock that pip-compile makes from
+`docs/requirements.in` (the command is at its top). The PDFs need Chromium.
+`make deps` installs all of it.
 
 ## Adding a part
 
@@ -204,3 +206,11 @@ into the site. The package takes the library's version: when
 match, or the site will not build. To add a compiler for another computer,
 run the Toolchain workflow and add the entries it prints to
 `boards/toolchain.json`; `make toolchain` reads it too.
+
+The site goes live from main, and Boards Manager never fetches a version it
+already has, so a published version must never change. `boards/published.txt`
+records each one's archive checksum and compiler, and `make site` fails if
+the version it builds differs from its record. To change `boards/avr` or the
+compiler, raise the version in `library.properties` and `platform.txt`, run
+`make site`, and add the line it prints. The archive holds only files git
+tracks.
