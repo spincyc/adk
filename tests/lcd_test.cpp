@@ -10,9 +10,9 @@
 namespace {
 
     // The wiring of the Elegoo LCD1602 lesson: RS 7, E 8, D4-D7 on 9-12.
-    const adk::Pin Rs     = 7;
-    const adk::Pin Enable = 8;
-    const adk::Pin D4     = 9;
+    constexpr adk::Pin Rs     = 7;
+    constexpr adk::Pin Enable = 8;
+    constexpr adk::Pin D4     = 9;
 
     // One nibble the controller latched as E fell, when E rose and fell, and
     // whether RS and D4-D7 held still while E was high.
@@ -215,7 +215,7 @@ TEST (lcdClearAndHomeWaitForTheController)
 
 TEST (lcdCreateCharFillsASlotAndPutsTheCursorBack)
 {
-    const uint8_t heart [8] = {0x00, 0x0A, 0x1F, 0x1F, 0x0E, 0x04, 0x00, 0x00};
+    constexpr uint8_t heart [8] = {0x00, 0x0A, 0x1F, 0x1F, 0x0E, 0x04, 0x00, 0x00};
     adk::Lcd      lcd {Rs, Enable, 9, 10, 11, 12};
 
     adk::setup ();
@@ -234,7 +234,7 @@ TEST (lcdCreateCharFillsASlotAndPutsTheCursorBack)
 
 TEST (lcdCursorRunsOnThroughTheHiddenColumns)
 {
-    const uint8_t blank [8] = {};
+    constexpr uint8_t blank [8] = {};
     adk::Lcd      lcd {Rs, Enable, 9, 10, 11, 12};
 
     adk::setup ();

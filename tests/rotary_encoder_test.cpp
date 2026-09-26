@@ -5,8 +5,8 @@
 
 namespace {
 
-    const char* const Clockwise        = "01 00 10 11";
-    const char* const CounterClockwise = "10 00 01 11";
+    constexpr const char* Clockwise        = "01 00 10 11";
+    constexpr const char* CounterClockwise = "10 00 01 11";
 
     // Move the contacts through readings such as "01 00", CLK then DT, and
     // update after each. A detent rests at "11".
@@ -151,4 +151,101 @@ TEST (resetCountsOnFromANewPosition)
 
     knob.reset ();
     CHECK (knob.position () == 0);
+}
+
+TEST (aMissedStepMidDetentStillCountsTheDetent)
+{
+    adk::RotaryEncoder knob {30, 31};
+
+    adk::setup ();
+
+    contacts ("01 10 11");
+    CHECK (knob.position () == 1);
+    CHECK (knob.turned () == 1);
+}
+
+TEST (aMissedStepNeverThrowsLaterReversalsOut)
+{
+    adk::RotaryEncoder knob {30, 31};
+
+    adk::setup ();
+    contacts ("01 10 11");
+
+    long before = knob.position ();
+
+    contacts (Clockwise);
+    CHECK (knob.position () == before + 1);
+
+    contacts (CounterClockwise);
+    CHECK (knob.position () == before);
+
+    contacts (Clockwise);
+    CHECK (knob.position () == before + 1);
+
+    contacts (CounterClockwise);
+    CHECK (knob.position () == before);
+}
+
+TEST (aFastSpinCountsEveryDetentThoughStepsAreMissed)
+{
+    adk::RotaryEncoder knob {30, 31};
+
+    adk::setup ();
+
+    // Ten detents each way, every one read with a step missed, as a loop
+    // only just too slow for the knob would see them.
+    for (int detent = 0; detent < 10; ++detent)
+    {
+        contacts ("01 10 11");
+    }
+
+    CHECK (knob.position () == 10);
+
+    for (int detent = 0; detent < 10; ++detent)
+    {
+        contacts ("10 01 11");
+    }
+
+    CHECK (knob.position () == 0);
+}
+
+TEST (twoDetentsReadWithoutTheRestBetweenThemCountAsTwo)
+{
+    adk::RotaryEncoder knob {30, 31};
+
+    adk::setup ();
+
+    contacts ("01 00 10 01 00 10 11");
+    CHECK (knob.turned () == 2);
+    CHECK (knob.position () == 2);
+}
+
+TEST (anEncoderWithTwoStepsPerDetentRestsOpenOrClosed)
+{
+    adk::RotaryEncoder knob {30, 31, 2};
+
+    adk::setup ();
+
+    contacts ("01 00 01 11");
+    CHECK (knob.position () == 0);
+
+    contacts ("10 00");
+    CHECK (knob.position () == -1);
+
+    contacts ("01 11");
+    CHECK (knob.position () == -2);
+}
+
+TEST (anEncoderWithOneStepPerDetentCountsEveryStep)
+{
+    adk::RotaryEncoder knob {30, 31, 1};
+
+    adk::setup ();
+
+    contacts ("01 00 10");
+    CHECK (knob.position () == 3);
+    CHECK (knob.turned () == 1);
+
+    contacts ("00");
+    CHECK (knob.position () == 2);
 }

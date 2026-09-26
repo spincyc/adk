@@ -2,6 +2,40 @@
 
 #include <Arduino.h>
 
+namespace {
+
+    // The built-in LED as blinkPin () flashes a pin number: L for a long
+    // flash, S for a short one, then how long the LED stayed dark after the
+    // last, in milliseconds.
+    std::string blinked (adk::Pin pin)
+    {
+        std::string   seen;
+        unsigned long changed = 0;
+
+        arduino::onDigitalWrite = [&] (uint8_t written, uint8_t level)
+        {
+            if (written != LED_BUILTIN)
+            {
+                return;
+            }
+
+            unsigned long lit = (arduino::now () - changed) / 1000;
+
+            if (level == LOW)
+            {
+                seen += lit == 800 ? "L" : lit == 200 ? "S" : "?";
+            }
+
+            changed = arduino::now ();
+        };
+
+        adk::blinkPin (pin);
+        arduino::onDigitalWrite = nullptr;
+
+        return seen + " " + std::to_string ((arduino::now () - changed) / 1000);
+    }
+}
+
 TEST (setupConfiguresObjectsInDeclarationOrder)
 {
     adk::DigitalOutput output {8};
@@ -299,6 +333,15 @@ TEST (debouncerWaitsForAQuietWindow)
     CHECK (!debouncer.sample (true, 29, 20));
 }
 
+TEST (debouncerSettlesAcrossTheWrapOfMillis)
+{
+    adk::Debouncer debouncer;
+
+    CHECK (!debouncer.sample (true, 0xFFFFFFF0, 20));
+    CHECK (!debouncer.sample (true, 0x03, 20));
+    CHECK (debouncer.sample (true, 0x04, 20));
+}
+
 TEST (devicesOfOneKindCanShareATimer)
 {
     CHECK (adk::claimTimer (5, 44, 7));
@@ -327,17 +370,68 @@ TEST (timerOfNamesThePwmTimer)
     CHECK (adk::timerOf (22) == 0xFF);
 }
 
-TEST (aTimerFaultNamesThePartsThatShareTheTimer)
+TEST (timerOfAPinPastTheLastIsNone)
+{
+    CHECK (adk::timerOf (NUM_DIGITAL_PINS) == 0xFF);
+    CHECK (adk::timerOf (200) == 0xFF);
+}
+
+TEST (aTimerFaultNamesOnlyThePartsThatTakeThatTimer)
 {
     arduino::Log speaker;
     adk::explain (speaker, adk::Fault::TimerInUse, 9);
-    CHECK (speaker.text.find ("Speaker") != std::string::npos);
-    CHECK (speaker.text.find ("Servo") == std::string::npos);
+    CHECK (speaker.text == "adk: pin 9 needs a timer that is already in use\r\n"
+                           "adk: a Speaker stops PWM on pins 9 and 10\r\n");
 
     arduino::Log servo;
     adk::explain (servo, adk::Fault::TimerInUse, 45);
     CHECK (servo.text.find ("Servo") != std::string::npos);
     CHECK (servo.text.find ("Speaker") == std::string::npos);
+    CHECK (servo.text.find ("radio") == std::string::npos);
+
+    arduino::Log radio;
+    adk::explain (radio, adk::Fault::TimerInUse, 11);
+    CHECK (radio.text.find ("radio") != std::string::npos);
+    CHECK (radio.text.find ("Speaker") == std::string::npos);
+    CHECK (radio.text.find ("Servo") == std::string::npos);
+
+    arduino::Log untaken;
+    adk::explain (untaken, adk::Fault::TimerInUse, 3);
+    CHECK (untaken.text == "adk: pin 3 needs a timer that is already in use\r\n");
+}
+
+TEST (aTimerFaultOnAPinWithoutATimerNamesEveryPartThatTakesOne)
+{
+    arduino::Log log;
+    adk::explain (log, adk::Fault::TimerInUse, 30);
+
+    CHECK (log.text.find ("Speaker") != std::string::npos);
+    CHECK (log.text.find ("Servo") != std::string::npos);
+    CHECK (log.text.find ("radio") != std::string::npos);
+}
+
+TEST (aHaltedBoardBlinksTensLongAndOnesShort)
+{
+    CHECK (blinked (22) == "LLSS 2300");
+    CHECK (blinked (9) == "SSSSSSSSS 2300");
+    CHECK (blinked (10) == "L 2300");
+    CHECK (blinked (69) == "LLLLLLSSSSSSSSS 2300");
+}
+
+TEST (aHaltedBoardBlinksPinZeroAsTenShortFlashes)
+{
+    CHECK (blinked (0) == "SSSSSSSSSS 2300");
+    CHECK (arduino::pin (LED_BUILTIN).output == LOW);
+}
+
+TEST (colorsAreEqualWhenEveryChannelIs)
+{
+    constexpr adk::Color warm {255, 64, 0};
+
+    static_assert (warm == adk::color::orange);
+    CHECK (warm == adk::color::orange);
+    CHECK (warm != adk::color::red);
+    CHECK ((adk::Color {255, 64, 1}) != warm);
 }
 
 TEST (partsCanBeDeclaredInArrays)

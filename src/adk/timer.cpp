@@ -12,18 +12,18 @@ namespace adk {
     {
     }
 
+    // Neither start () nor stop () clears expired (): an event lasts until
+    // the next update, whatever the sketch does after reading it.
     void Timer::start (Millis duration)
     {
         duration_ = duration;
         running_  = true;
         starting_ = true;
-        expired_  = false;
     }
 
     void Timer::stop ()
     {
         running_ = false;
-        expired_ = false;
     }
 
     bool Timer::isRunning () const

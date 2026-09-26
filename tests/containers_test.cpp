@@ -144,3 +144,24 @@ TEST (fixedPrintsASetCountOfDecimals)
     adk::print (log, adk::fixed (21.46, 1), "C ", adk::fixed (54.0, 0), '%');
     CHECK (log.text == "21.5C 54%");
 }
+
+TEST (hexPrintsCapitalDigitsPaddedWithZeros)
+{
+    arduino::Log log;
+
+    adk::print (log, adk::hex (0x0C, 2), ' ', adk::hex (0x1A2B3C4D, 8), ' ', adk::hex (0xBEEF, 2));
+    CHECK (log.text == "0C 1A2B3C4D BEEF");
+
+    arduino::Log bare;
+
+    adk::print (bare, adk::hex (0), ' ', adk::hex (255), ' ', adk::hex (0x5, 4));
+    CHECK (bare.text == "0 FF 0005");
+}
+
+TEST (hexPrintsIntoText)
+{
+    adk::Text<16> card;
+
+    adk::print (card, "Card 0x", adk::hex (0xAB, 4));
+    CHECK (card == "Card 0x00AB");
+}

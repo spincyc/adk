@@ -18,6 +18,9 @@ volatile uint16_t TCNT1  = 0;
 
 namespace arduino {
 
+    // The TWI and SPI unit start afresh too (buses.cpp).
+    void resetBuses ();
+
     std::function<int (uint8_t pin)>                                         onDigitalRead;
     std::function<void (uint8_t pin, uint8_t value)>                         onDigitalWrite;
     std::function<void (uint8_t pin, uint8_t mode)>                          onPinMode;
@@ -87,6 +90,8 @@ namespace arduino {
         {
             port->clear ();
         }
+
+        resetBuses ();
     }
 
     PinState& pin (uint8_t pin)
@@ -150,14 +155,22 @@ namespace arduino {
 
 uint8_t digitalPinToTimer (uint8_t pin)
 {
-    static const uint8_t timers [NUM_DIGITAL_PINS] = {
+    static constexpr uint8_t timers [NUM_DIGITAL_PINS] = {
         NOT_ON_TIMER, NOT_ON_TIMER, TIMER3B, TIMER3C, TIMER0B, TIMER3A, TIMER4A,
         TIMER4B,      TIMER4C,      TIMER2B, TIMER2A, TIMER1A, TIMER1B, TIMER0A,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         TIMER5C, TIMER5B, TIMER5A};
 
-    return pin < NUM_DIGITAL_PINS ? timers[pin] : NOT_ON_TIMER;
+    // The core reads its table in flash without checking the pin, and gets
+    // whatever lies past the end. Stop the tests rather than pretend.
+    if (pin >= NUM_DIGITAL_PINS)
+    {
+        fprintf (stderr, "digitalPinToTimer (%d): there is no such pin\n", pin);
+        abort ();
+    }
+
+    return timers[pin];
 }
 
 void pinMode (uint8_t pin, uint8_t mode)

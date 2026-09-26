@@ -10,16 +10,16 @@ namespace adk {
     namespace {
 
         // MAX7219 registers. Rows 0-7 are the digit registers 0x01-0x08.
-        const uint8_t DecodeMode  = 0x09;
-        const uint8_t Intensity   = 0x0A;
-        const uint8_t ScanLimit   = 0x0B;
-        const uint8_t Shutdown    = 0x0C;
-        const uint8_t DisplayTest = 0x0F;
+        constexpr uint8_t DecodeMode  = 0x09;
+        constexpr uint8_t Intensity   = 0x0A;
+        constexpr uint8_t ScanLimit   = 0x0B;
+        constexpr uint8_t Shutdown    = 0x0C;
+        constexpr uint8_t DisplayTest = 0x0F;
 
-        const uint8_t Size           = 8;
-        const uint8_t FontHeight     = 7;
-        const uint8_t CharacterWidth = 6;   // five font columns and a gap
-        const uint8_t MaxLevel       = 15;
+        constexpr uint8_t Size           = 8;
+        constexpr uint8_t FontHeight     = 7;
+        constexpr uint8_t CharacterWidth = 6;   // five font columns and a gap
+        constexpr uint8_t MaxLevel       = 15;
     }
 
     LedMatrix::LedMatrix (Pin data, Pin clock, Pin load)

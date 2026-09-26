@@ -15,10 +15,10 @@ namespace adk {
         return ticked_;
     }
 
+    // A beat already reported stays reported until the next update.
     void Every::restart ()
     {
         starting_ = true;
-        ticked_   = false;
     }
 
     void Every::period (Millis period)

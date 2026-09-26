@@ -59,13 +59,29 @@ TEST (shiftRegisterLatchesOnlyOnceAllEightBitsAreIn)
     CHECK (outputs.bits () == 0xA5);
 }
 
-TEST (shiftByteLatchesWithoutAnObject)
+TEST (shiftPinsClaimAndLatchWithoutAnObject)
 {
-    adk::shiftByte (40, 41, 42, 0x3C);
+    constexpr adk::ShiftPins pins {40, 41, 42};
 
+    CHECK (pins.claim ());
+    CHECK (arduino::pin (40).mode == OUTPUT);
+    CHECK (arduino::pin (41).mode == OUTPUT);
+    CHECK (arduino::pin (42).mode == OUTPUT);
+
+    pins.write (0x3C);
     CHECK (arduino::shifted.size () == 1);
     CHECK (lastShifted () == 0x3C);
     CHECK (arduino::pin (42).output == HIGH);
+}
+
+TEST (shiftPinsRefuseAPinInUse)
+{
+    constexpr adk::ShiftPins pins {40, 41, 42};
+
+    CHECK (adk::claimOutput (41));
+    CHECK (!pins.claim ());
+    CHECK (adk::fault () == adk::Fault::PinInUse);
+    CHECK (adk::faultPin () == 41);
 }
 
 TEST (stoppedShiftRegisterTurnsEveryOutputOff)

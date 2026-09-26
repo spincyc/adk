@@ -6,8 +6,8 @@
 
 namespace {
 
-    const uint8_t Latch      = 32;
-    const uint8_t Digits [4] = {22, 23, 24, 25};
+    constexpr uint8_t Latch      = 32;
+    constexpr uint8_t Digits [4] = {22, 23, 24, 25};
 
     // The digits whose pins are low, such as "2", or "" when all are dark.
     std::string lit ()
@@ -71,7 +71,7 @@ namespace {
 TEST (fourDigitDisplayClaimsItsPinsAndStartsDark)
 {
     adk::FourDigitDisplay display {30, 31, 32, 22, 23, 24, 25};
-    const uint8_t         pins [] = {30, 31, 32, 22, 23, 24, 25};
+    constexpr uint8_t     pins [] = {30, 31, 32, 22, 23, 24, 25};
 
     adk::setup ();
 
@@ -141,6 +141,24 @@ TEST (fourDigitDisplayTimesEachDigitFromTheLastSwitch)
     CHECK (lit () == "2");
 
     adk::update (5);
+    CHECK (lit () == "3");
+}
+
+TEST (fourDigitDisplayKeepsScanningAcrossTheWrapOfMillis)
+{
+    adk::FourDigitDisplay display {30, 31, 32, 22, 23, 24, 25};
+
+    adk::setup ();
+    adk::update (0xFFFFFFFE);
+    CHECK (lit () == "1");
+
+    adk::update (0xFFFFFFFF);
+    CHECK (lit () == "1");
+
+    adk::update (0);
+    CHECK (lit () == "2");
+
+    adk::update (2);
     CHECK (lit () == "3");
 }
 
@@ -231,6 +249,46 @@ TEST (fourDigitDisplayShowsDashesOutOfRange)
     CHECK (scan (now) == glyphs ("----"));
 
     display.show (-1000);
+    CHECK (scan (now) == glyphs ("----"));
+}
+
+TEST (fourDigitDisplayShowsAnyWholeNumberType)
+{
+    adk::FourDigitDisplay display {30, 31, 32, 22, 23, 24, 25};
+    adk::Millis           now = 0;
+
+    adk::setup ();
+
+    display.show (uint8_t {7});
+    CHECK (scan (now) == glyphs ("   7"));
+
+    display.show (-42L);
+    CHECK (scan (now) == glyphs (" -42"));
+
+    display.show (adk::Millis {98765} / 100 % 10000, 1);
+    CHECK (scan (now) == dotted (glyphs (" 987"), 2));
+}
+
+// A number too big for the display must show dashes, not whatever is left
+// once it is cut down to an int: on the Mega, 70000 would show 4464 and
+// 65535 would show -1. The host's int is wider, so wider numbers show it.
+TEST (fourDigitDisplayChecksTheRangeBeforeNarrowing)
+{
+    adk::FourDigitDisplay display {30, 31, 32, 22, 23, 24, 25};
+    adk::Millis           now = 0;
+
+    adk::setup ();
+
+    display.show (70000L);
+    CHECK (scan (now) == glyphs ("----"));
+
+    display.show (65535U);
+    CHECK (scan (now) == glyphs ("----"));
+
+    display.show (0x100000005LL);
+    CHECK (scan (now) == glyphs ("----"));
+
+    display.show (0xFFFFFFFFUL);
     CHECK (scan (now) == glyphs ("----"));
 }
 

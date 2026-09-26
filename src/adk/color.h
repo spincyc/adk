@@ -10,17 +10,15 @@ namespace adk {
         uint8_t red;
         uint8_t green;
         uint8_t blue;
-    };
 
-    bool operator== (Color left, Color right);
-    bool operator!= (Color left, Color right);
+        constexpr bool operator== (const Color&) const = default;
+    };
 
     // The color step/steps of the way from one color to another.
     Color blend (Color from, Color to, uint16_t step, uint16_t steps);
 
     // A color around the color wheel: 0 is red, 85 green, 170 blue.
     Color wheel (uint8_t position);
-
 }
 
 namespace adk::color {

@@ -1,11 +1,10 @@
 #pragma once
 
-// A host stand-in for the SPI unit. adk::spi::begin () claims and configures
-// the bus pins as the real one does, and adk::spi::transfer () hands each
-// byte to the chip whose select pin is a low output, as the wires would.
+// Chips on the SPI bus, for host tests. src/adk/spi.cpp drives the fake
+// core's model of the SPI unit, and each byte it sends goes to the chip
+// whose select pin is a low output, as the wires would take it.
 
 #include <adk/board.h>
-#include <adk/spi.h>
 
 namespace fake {
 
@@ -31,7 +30,7 @@ namespace fake {
     // What the bus saw since the first chip of the test was made.
     struct SpiLog
     {
-        int begins;
+        int begins;    // the unit set up as master, once by each device
         int bytes;
         int strays;    // sent with no chip selected
         int clashes;   // sent with two chips selected at once

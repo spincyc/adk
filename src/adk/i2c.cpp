@@ -1,5 +1,3 @@
-#ifdef __AVR__
-
 #include "i2c.h"
 
 #include "board.h"
@@ -11,18 +9,18 @@ namespace adk::i2c {
     namespace {
 
         // TWSR status codes, with the prescaler bits masked off.
-        const uint8_t Started      = 0x08;
-        const uint8_t Restarted    = 0x10;
-        const uint8_t WriteAcked   = 0x18;
-        const uint8_t ByteAcked    = 0x28;
-        const uint8_t ReadAcked    = 0x40;
-        const uint8_t ByteReceived = 0x50;
-        const uint8_t LastReceived = 0x58;
+        constexpr uint8_t Started      = 0x08;
+        constexpr uint8_t Restarted    = 0x10;
+        constexpr uint8_t WriteAcked   = 0x18;
+        constexpr uint8_t ByteAcked    = 0x28;
+        constexpr uint8_t ReadAcked    = 0x40;
+        constexpr uint8_t ByteReceived = 0x50;
+        constexpr uint8_t LastReceived = 0x58;
 
         // How many times a step polls for the TWI to finish: about 1 ms at
         // 16 MHz, ten byte times at 100 kHz. A bus with no pull-ups or a
         // line held low never finishes, and the transfer fails instead.
-        const uint16_t Patience = 2000;
+        constexpr uint16_t Patience = 2000;
 
         // Start one step on the bus (a start, a byte, or a stop) and wait for
         // it. The status is 0 if the TWI never finished.
@@ -150,5 +148,3 @@ namespace adk::i2c {
         return write (address, bytes, sizeof bytes);
     }
 }
-
-#endif

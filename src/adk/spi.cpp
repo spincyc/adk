@@ -1,15 +1,43 @@
-#ifdef __AVR__
-
 #include "spi.h"
-
-#include "board.h"
 
 #include <Arduino.h>
 
 namespace adk::spi {
 
-    bool begin ()
+    namespace {
+
+        // Whether a chip already selects with SS. Claims start afresh with
+        // every adk::setup (), so this starts afresh with the first device
+        // to find the bus pins unclaimed.
+        bool ssSelects = false;
+
+        // A chip's select pin starts high, leaving the chip deselected. SS
+        // is already a high output, but two chips selected with it would
+        // both answer, so only one may.
+        bool claimSelect (Pin select)
+        {
+            if (select != SS)
+            {
+                return claimOutput (select, true);
+            }
+
+            if (ssSelects)
+            {
+                return refuse (Fault::PinInUse, select);
+            }
+
+            ssSelects = true;
+            return true;
+        }
+    }
+
+    bool begin (Pin select)
     {
+        if (!isClaimed (SS))
+        {
+            ssSelects = false;
+        }
+
         if (!claimShared (MISO) || !claimShared (MOSI) || !claimShared (SCK) || !claimShared (SS))
         {
             return false;
@@ -26,8 +54,7 @@ namespace adk::spi {
 
         pinMode (SCK,  OUTPUT);
         pinMode (MOSI, OUTPUT);
-        pinMode (MISO, INPUT);
-        return true;
+        return claimSelect (select);
     }
 
     uint8_t transfer (uint8_t byte)
@@ -41,5 +68,3 @@ namespace adk::spi {
         return SPDR;
     }
 }
-
-#endif

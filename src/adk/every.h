@@ -10,8 +10,12 @@ namespace adk {
     {
         explicit Every (Millis period);
 
-        bool   ticked () const;
-        void   restart ();
+        bool ticked () const;
+
+        // Begin the beat again, the next tick one period after the next
+        // update. A tick already reported stays reported until then.
+        void restart ();
+
         void   period (Millis period);
         Millis period () const;
 

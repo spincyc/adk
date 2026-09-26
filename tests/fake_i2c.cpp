@@ -1,8 +1,5 @@
 #include "fake_i2c.h"
 
-#include <adk/board.h>
-#include <adk/i2c.h>
-
 #include <Arduino.h>
 
 namespace fake_i2c {
@@ -10,6 +7,76 @@ namespace fake_i2c {
     namespace {
 
         Chip* first = nullptr;
+
+        // The chip taking part in the transfer under way, and whether its
+        // next byte written sets its register pointer. A transfer runs from
+        // its first address to its stop, across any repeated start.
+        Chip* talking  = nullptr;
+        bool  underWay = false;
+        bool  pointing = false;
+
+        bool hearAddress (uint8_t at, bool reading)
+        {
+            Chip* chip = find (at);
+
+            if (!underWay)
+            {
+                underWay = true;
+                talking  = nullptr;
+
+                if (chip)
+                {
+                    ++chip->transfers;
+                }
+
+                if (!chip || !chip->present)
+                {
+                    return false;
+                }
+
+                if (chip->failures > 0)
+                {
+                    --chip->failures;
+                    return false;
+                }
+
+                talking = chip;
+            }
+
+            pointing = !reading;
+            return talking && chip == talking;
+        }
+
+        bool hearByte (uint8_t byte)
+        {
+            if (!talking)
+            {
+                return false;
+            }
+
+            if (pointing)
+            {
+                talking->pointer = byte;
+                pointing         = false;
+            }
+            else
+            {
+                talking->registers[talking->pointer++] = byte;
+            }
+
+            return true;
+        }
+
+        uint8_t sendByte (bool)
+        {
+            return talking ? talking->registers[talking->pointer++] : 0xFF;
+        }
+
+        void endTransfer ()
+        {
+            talking  = nullptr;
+            underWay = false;
+        }
     }
 
     Chip::Chip (uint8_t at)
@@ -21,11 +88,28 @@ namespace fake_i2c {
         , registers ()
         , next_     (first)
     {
+        // The first chip of a test finds the bus idle, and answers for
+        // every chip there.
+        if (!first)
+        {
+            endTransfer ();
+
+            arduino::twi.onAddress = hearAddress;
+            arduino::twi.onWrite   = hearByte;
+            arduino::twi.onRead    = sendByte;
+            arduino::twi.onStop    = endTransfer;
+        }
+
         first = this;
     }
 
     Chip::~Chip ()
     {
+        if (talking == this)
+        {
+            endTransfer ();
+        }
+
         for (Chip** link = &first; *link; link = &(*link)->next_)
         {
             if (*link == this)
@@ -55,97 +139,5 @@ namespace fake_i2c {
         }
 
         return nullptr;
-    }
-}
-
-namespace adk::i2c {
-
-    namespace {
-
-        // The chip that acknowledges a transfer to an address, if any.
-        fake_i2c::Chip* reach (uint8_t address)
-        {
-            fake_i2c::Chip* chip = fake_i2c::find (address);
-
-            if (!chip)
-            {
-                return nullptr;
-            }
-
-            ++chip->transfers;
-
-            if (!chip->present)
-            {
-                return nullptr;
-            }
-
-            if (chip->failures > 0)
-            {
-                --chip->failures;
-                return nullptr;
-            }
-
-            return chip;
-        }
-    }
-
-    bool begin ()
-    {
-        return claimShared (SDA) && claimShared (SCL);
-    }
-
-    bool present (uint8_t address)
-    {
-        return reach (address) != nullptr;
-    }
-
-    bool write (uint8_t address, const uint8_t* data, uint8_t length)
-    {
-        fake_i2c::Chip* chip = reach (address);
-
-        if (!chip)
-        {
-            return false;
-        }
-
-        for (uint8_t index = 0; index < length; ++index)
-        {
-            if (index == 0)
-            {
-                chip->pointer = data[index];
-            }
-            else
-            {
-                chip->registers[chip->pointer++] = data[index];
-            }
-        }
-
-        return true;
-    }
-
-    bool read (uint8_t address, uint8_t reg, uint8_t* data, uint8_t length)
-    {
-        fake_i2c::Chip* chip = reach (address);
-
-        if (!chip)
-        {
-            return false;
-        }
-
-        chip->pointer = reg;
-
-        for (uint8_t index = 0; index < length; ++index)
-        {
-            data[index] = chip->registers[chip->pointer++];
-        }
-
-        return true;
-    }
-
-    bool writeRegister (uint8_t address, uint8_t reg, uint8_t value)
-    {
-        const uint8_t bytes [] = {reg, value};
-
-        return write (address, bytes, sizeof bytes);
     }
 }
