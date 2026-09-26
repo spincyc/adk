@@ -90,6 +90,7 @@ adk: a Speaker stops PWM on pins 9 and 10
 | Active buzzer | [`Buzzer`](outputs.md#buzzer) | on, off, beep |
 | Passive buzzer | [`Speaker`](outputs.md#speaker) | notes and whole melodies |
 | Relay | [`Relay`](outputs.md#relay) | switching a separate low-voltage circuit |
+| IR LED | [`IrTransmitter`](outputs.md#irtransmitter) | a remote control's codes, sent |
 | Push button | [`Button`](inputs.md#button) | pressed, released, held |
 | On/off sensor or switch | [`Switch`](inputs.md#switch) | PIR, tilt, reed, obstacle, flame, sound, touch |
 | Potentiometer, light sensor | [`AnalogInput`](core.md#analoginput) | 0 to 1023, or scaled to any range |
@@ -111,10 +112,12 @@ adk: a Speaker stops PWM on pins 9 and 10
 | 18B20 thermometer | [`Ds18b20`](sensors.md#ds18b20) | a precise temperature |
 | RFID reader | [`Rfid`](sensors.md#rfid) | the card held to it |
 | Real-time clock | [`Rtc`](sensors.md#rtc) | the date and time |
-| Accelerometer | [`Mpu6050`](sensors.md#mpu6050) | tilt, acceleration and rotation |
+| Accelerometer | [`Mpu6050`](sensors.md#mpu6050) | tilt, acceleration and rotation, from a GY-521 or its QMI8658 twin |
+| Sound sensor | [`SoundSensor`](sensors.md#soundsensor) | how loud it is |
 | FM radio *(add-on)* | [`FmRadio`](radio.md#fmradio) | stations, their names, and the volume |
 | 433 MHz radio *(add-on)* | [`RadioTransmitter`](radio.md#radiotransmitter), [`RadioReceiver`](radio.md#radioreceiver) | short messages across a house |
 | LoRa radio *(add-on)* | [`LoraModem`](radio.md#loramodem), [`LoraLink`](radio.md#loralink), [`MeshNode`](radio.md#meshnode) | messages across a town, or to a phone |
+| Two boards | [`Bridge`](radio.md#bridge) | numbers kept the same on two boards, over a radio |
 | Plain pins | [`DigitalOutput`](core.md#digitaloutput), [`DigitalInput`](core.md#digitalinput), [`PwmOutput`](core.md#pwmoutput) | anything else |
 | Helpers | [`Every`](core.md#every), [`Smoother`](core.md#smoother), [`Debouncer`](core.md#debouncer), [`Color`](outputs.md#color) | beats, smoothing and colors |
 

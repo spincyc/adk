@@ -13,6 +13,8 @@ sensor answered, and its reading arrived whole.
 
 <!-- api ultrasonic.h Ultrasonic -->
 
+<!-- api sound_sensor.h SoundSensor -->
+
 <!-- api ir_receiver.h IrReceiver -->
 
 The kit remote's buttons are named in `adk::remote`: `power`, `volumeUp`,

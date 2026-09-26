@@ -25,3 +25,5 @@ Note names run from `adk::note::c2` to `adk::note::c8`, with `s` for sharp:
 a silence.
 
 <!-- api relay.h Relay -->
+
+<!-- api ir_transmitter.h IrTransmitter -->
