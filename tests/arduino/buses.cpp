@@ -37,7 +37,7 @@ namespace arduino {
         constexpr uint8_t Idle         = 0xF8;
 
         // What a write of TWINT sets going, and what the next byte is.
-        enum struct Step : uint8_t
+        enum class Step : uint8_t
         {
             None,
             Start,
@@ -45,7 +45,7 @@ namespace arduino {
             Stop
         };
 
-        enum struct Next : uint8_t
+        enum class Next : uint8_t
         {
             Nothing,
             Address,

@@ -1,12 +1,13 @@
 #pragma once
 
 #include "object.h"
+#include "timing.h"
 
 namespace adk {
 
     // Where the radio is listened to: the band it tunes, how far apart
     // the stations are, and the treble cut broadcasters there expect.
-    enum struct FmBand : uint8_t
+    enum class FmBand : uint8_t
     {
         World,      // 87.5 to 108 MHz, stations 0.1 MHz apart
         Americas,   // 87.5 to 108 MHz, stations 0.2 MHz apart: 88.1, 88.3 ...
@@ -90,7 +91,7 @@ namespace adk {
         void stop   () override;
 
       private:
-        enum struct State : uint8_t { Off, Idle, Tuning, Settling };
+        enum class State : uint8_t { Off, Idle, Tuning, Settling };
 
         void     startTune  ();
         void     startSeek  (bool up);
@@ -110,25 +111,24 @@ namespace adk {
         bool send    (uint8_t byte);
         uint8_t take (bool more);
 
-        uint16_t registers_ [16];
-        char     name_      [9];
-        char     nextName_  [8];
-        char     text_      [65];
-        Millis   polled_;
-        uint16_t wanted_;
-        uint16_t channel_;
-        Pin      sdio_;
-        Pin      sclk_;
-        Pin      reset_;
-        FmBand   band_;
-        State    state_;
-        uint8_t  segments_;
-        uint8_t  textFlag_;
-        int8_t   seek_;
-        bool     ok_;
-        bool     starting_;
-        bool     tuned_;
-        bool     named_;
-        bool     texted_;
+        uint16_t  registers_ [16];
+        char      name_      [9];
+        char      nextName_  [8];
+        char      text_      [65];
+        StartTime polled_;
+        uint16_t  wanted_;
+        uint16_t  channel_;
+        Pin       sdio_;
+        Pin       sclk_;
+        Pin       reset_;
+        FmBand    band_;
+        State     state_;
+        uint8_t   segments_;
+        uint8_t   textFlag_;
+        int8_t    seek_;
+        bool      ok_;
+        bool      tuned_;
+        bool      named_;
+        bool      texted_;
     };
 }

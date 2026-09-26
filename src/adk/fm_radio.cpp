@@ -93,7 +93,6 @@ namespace adk {
         , name_      {}
         , nextName_  {}
         , text_      {}
-        , polled_    (0)
         , wanted_    (0)
         , channel_   (0)
         , sdio_      (sdio)
@@ -105,7 +104,6 @@ namespace adk {
         , textFlag_  (0)
         , seek_      (0)
         , ok_        (false)
-        , starting_  (false)
         , tuned_     (false)
         , named_     (false)
         , texted_    (false)
@@ -284,23 +282,17 @@ namespace adk {
             return;
         }
 
-        if (starting_)
-        {
-            polled_   = now;
-            starting_ = false;
-        }
-
         Millis wait = state_ == State::Idle     ? Listening
                     : state_ == State::Settling ? Clearing
                     : seek_ != 0                ? Seeking
                                                 : Tuning;
 
-        if (now - polled_ < wait)
+        if (polled_.elapsed (now) < wait)
         {
             return;
         }
 
-        polled_ = now;
+        polled_.restart (now);
 
         if (state_ == State::Idle)
         {
@@ -354,9 +346,9 @@ namespace adk {
         clearRds ();
         registers_[Channel] = Tune | wanted_;
         write (Channel);
-        seek_     = 0;
-        starting_ = true;
-        state_    = State::Tuning;
+        seek_  = 0;
+        state_ = State::Tuning;
+        polled_.restart ();
     }
 
     void FmRadio::startSeek (bool up)
@@ -370,9 +362,9 @@ namespace adk {
         registers_[PowerConfig] = static_cast<uint16_t> ((registers_[PowerConfig] & ~SeekUp)
                                                          | Seek | (up ? SeekUp : 0));
         write (PowerConfig);
-        seek_     = up ? 1 : -1;
-        starting_ = true;
-        state_    = State::Tuning;
+        seek_  = up ? 1 : -1;
+        state_ = State::Tuning;
+        polled_.restart ();
     }
 
     // Tuned. If the knob has moved on meanwhile, tune again.

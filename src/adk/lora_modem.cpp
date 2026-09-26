@@ -23,14 +23,12 @@ namespace adk {
         : port_     (port)
         , text_     {}
         , settings_ (settings)
-        , sentAt_   (0)
         , address_  (address)
         , sender_   (0)
         , signal_   (0)
         , margin_   (0)
         , ok_       (false)
         , sending_  (false)
-        , starting_ (false)
         , received_ (false)
     {
     }
@@ -83,8 +81,8 @@ namespace adk {
         }
 
         print (port_, "AT+SEND=", to, ',', length, ',', text, "\r\n");
-        sending_  = true;
-        starting_ = true;
+        sending_ = true;
+        sent_.restart ();
         return true;
     }
 
@@ -137,13 +135,7 @@ namespace adk {
     {
         received_ = false;
 
-        if (starting_)
-        {
-            sentAt_   = now;
-            starting_ = false;
-        }
-
-        if (sending_ && now - sentAt_ >= GiveUp)
+        if (sending_ && sent_.elapsed (now) >= GiveUp)
         {
             sending_ = false;
         }

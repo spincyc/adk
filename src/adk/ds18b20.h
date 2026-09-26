@@ -42,7 +42,7 @@ namespace adk {
         void update (Millis now) override;
 
       private:
-        enum struct Phase : uint8_t
+        enum class Phase : uint8_t
         {
             Starting,
             Converting,

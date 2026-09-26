@@ -25,7 +25,7 @@ namespace adk {
       private:
         bool read () const;
 
-        Debouncer debouncer_;
+        Debouncer<> debouncer_;
         Pin       pin_;
         uint8_t   debounce_;
         Polarity  polarity_;

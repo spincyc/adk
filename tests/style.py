@@ -15,9 +15,9 @@ and braces out of place:
   the line below; a do loop's while (...); follows its closing brace.
 
 Braces opened and closed on one line, such as an initializer, an enum's
-names or a one-line accessor, are left alone. Once CONSTEXPR_IN_LIBRARY is
-True, a file-scope constant in src/adk/*.cpp spelled const is reported too.
-Alignment and naming are for people to judge.
+names or a one-line accessor, are left alone. A file-scope constant in
+src/adk/*.cpp must be constexpr, not const. Alignment and naming are for
+people to judge.
 """
 
 import os
@@ -36,10 +36,8 @@ CONTROL     = re.compile (r"(?:else\s+)?(if|for|while|switch)\s*\(")
 BLOCK_AFTER = re.compile (r"(\)(\s*(const|noexcept|override|final|mutable))*|\belse|\bdo)$")
 TYPE_BODY   = re.compile (r"^(struct|class|union|enum)\b[^=]*$")
 
-# STYLE.md: constants are constexpr. The library's .cpp files still spell
-# their file-scope constants const; once they are all constexpr, set this
-# to True so that make style keeps them that way.
-CONSTEXPR_IN_LIBRARY = False
+# STYLE.md: constants are constexpr.
+CONSTEXPR_IN_LIBRARY = True
 LIBRARY_SOURCE       = re.compile (r"(^|/)src/adk/[^/]+\.cpp$")
 CONSTANT             = re.compile (r"^(static\s+)?const\s[^(=;{]*[=;{]")
 

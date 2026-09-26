@@ -47,7 +47,7 @@ namespace {
     // ISO 14443-A: a tag starts idle, a request or wake-up makes it ready,
     // and anything out of turn while it is ready drops it back to idle.
     // Only a wake-up reaches a halted tag.
-    enum struct Tag
+    enum class Tag
     {
         Idle,
         Ready,

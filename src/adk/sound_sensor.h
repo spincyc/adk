@@ -1,6 +1,7 @@
 #pragma once
 
 #include "object.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -31,12 +32,11 @@ namespace adk {
         void update (Millis now) override;
 
       private:
-        Millis   windowAt_;
-        uint16_t level_;
-        uint16_t lowest_;
-        uint16_t highest_;
-        Pin      pin_;
-        bool     starting_;
-        bool     measured_;
+        StartTime window_;
+        uint16_t  level_;
+        uint16_t  lowest_;
+        uint16_t  highest_;
+        Pin       pin_;
+        bool      measured_;
     };
 }

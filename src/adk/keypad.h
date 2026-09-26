@@ -1,5 +1,6 @@
 #pragma once
 
+#include "debouncer.h"
 #include "object.h"
 
 namespace adk {
@@ -33,11 +34,9 @@ namespace adk {
       private:
         uint8_t read () const;
 
-        Millis  changedAt_;
-        Pin     rows_    [4];
-        Pin     columns_ [4];
-        uint8_t scanned_;
-        uint8_t held_;
-        bool    pressed_;
+        Debouncer<uint8_t> held_;
+        Pin                rows_    [4];
+        Pin                columns_ [4];
+        bool               pressed_;
     };
 }

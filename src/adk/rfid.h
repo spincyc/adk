@@ -60,7 +60,7 @@ namespace adk {
         void stop () override;
 
       private:
-        enum struct Step : uint8_t
+        enum class Step : uint8_t
         {
             Off,
             Due,

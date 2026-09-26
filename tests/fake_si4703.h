@@ -47,7 +47,7 @@ namespace fake {
         bool                 drivenHigh;       // the Mega put 5 V on one of its pins
 
       private:
-        enum struct Phase : uint8_t { Idle, Address, Write, Read, Ignore };
+        enum class Phase : uint8_t { Idle, Address, Write, Read, Ignore };
 
         bool mine        (uint8_t pin) const;
         bool pulled      (uint8_t pin) const;

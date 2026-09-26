@@ -11,12 +11,10 @@ namespace adk {
     }
 
     SoundSensor::SoundSensor (Pin pin)
-        : windowAt_ (0)
-        , level_    (0)
+        : level_    (0)
         , lowest_   (1023)
         , highest_  (0)
         , pin_      (pin)
-        , starting_ (true)
         , measured_ (false)
     {
     }
@@ -24,7 +22,7 @@ namespace adk {
     void SoundSensor::setup ()
     {
         claimAnalog (pin_);
-        starting_ = true;
+        window_.restart ();
     }
 
     uint16_t SoundSensor::level () const
@@ -41,12 +39,6 @@ namespace adk {
     {
         measured_ = false;
 
-        if (starting_)
-        {
-            windowAt_ = now;
-            starting_ = false;
-        }
-
         for (uint8_t sample = 0; sample < Samples; ++sample)
         {
             uint16_t reading = static_cast<uint16_t> (analogRead (pin_));
@@ -54,13 +46,13 @@ namespace adk {
             highest_         = max (highest_, reading);
         }
 
-        if (now - windowAt_ >= Window)
+        if (window_.elapsed (now) >= Window)
         {
             level_    = highest_ >= lowest_ ? static_cast<uint16_t> (highest_ - lowest_) : 0;
             lowest_   = 1023;
             highest_  = 0;
-            windowAt_ = now;
             measured_ = true;
+            window_.restart (now);
         }
     }
 }

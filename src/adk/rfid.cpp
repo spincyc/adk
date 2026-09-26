@@ -9,48 +9,48 @@ namespace adk {
     namespace {
 
         // MFRC522 registers.
-        const uint8_t CommandReg    = 0x01;
-        const uint8_t ComIrqReg     = 0x04;
-        const uint8_t ErrorReg      = 0x06;
-        const uint8_t FifoDataReg   = 0x09;
-        const uint8_t FifoLevelReg  = 0x0A;
-        const uint8_t BitFramingReg = 0x0D;
-        const uint8_t ModeReg       = 0x11;
-        const uint8_t TxControlReg  = 0x14;
-        const uint8_t TxAskReg      = 0x15;
-        const uint8_t TModeReg      = 0x2A;
-        const uint8_t TPrescalerReg = 0x2B;
-        const uint8_t TReloadRegH   = 0x2C;
-        const uint8_t TReloadRegL   = 0x2D;
-        const uint8_t VersionReg    = 0x37;
+        constexpr uint8_t CommandReg    = 0x01;
+        constexpr uint8_t ComIrqReg     = 0x04;
+        constexpr uint8_t ErrorReg      = 0x06;
+        constexpr uint8_t FifoDataReg   = 0x09;
+        constexpr uint8_t FifoLevelReg  = 0x0A;
+        constexpr uint8_t BitFramingReg = 0x0D;
+        constexpr uint8_t ModeReg       = 0x11;
+        constexpr uint8_t TxControlReg  = 0x14;
+        constexpr uint8_t TxAskReg      = 0x15;
+        constexpr uint8_t TModeReg      = 0x2A;
+        constexpr uint8_t TPrescalerReg = 0x2B;
+        constexpr uint8_t TReloadRegH   = 0x2C;
+        constexpr uint8_t TReloadRegL   = 0x2D;
+        constexpr uint8_t VersionReg    = 0x37;
 
         // Its commands, and the register bits this driver uses.
-        const uint8_t Idle       = 0x00;
-        const uint8_t Transmit   = 0x04;
-        const uint8_t Transceive = 0x0C;
-        const uint8_t SoftReset  = 0x0F;
+        constexpr uint8_t Idle       = 0x00;
+        constexpr uint8_t Transmit   = 0x04;
+        constexpr uint8_t Transceive = 0x0C;
+        constexpr uint8_t SoftReset  = 0x0F;
 
-        const uint8_t StartSend   = 0x80;   // BitFramingReg
-        const uint8_t FlushBuffer = 0x80;   // FifoLevelReg
-        const uint8_t FifoLevel   = 0x7F;   // FifoLevelReg
-        const uint8_t AntennaOn   = 0x03;   // TxControlReg: Tx1RFEn, Tx2RFEn
-        const uint8_t AllIrqs     = 0x7F;   // ComIrqReg, written to clear them
-        const uint8_t Received    = 0x30;   // ComIrqReg: RxIRq, IdleIRq
-        const uint8_t TimedOut    = 0x01;   // ComIrqReg: TimerIRq
-        const uint8_t Garbled     = 0x1B;   // ErrorReg: overflow, collision, parity, protocol
+        constexpr uint8_t StartSend   = 0x80;   // BitFramingReg
+        constexpr uint8_t FlushBuffer = 0x80;   // FifoLevelReg
+        constexpr uint8_t FifoLevel   = 0x7F;   // FifoLevelReg
+        constexpr uint8_t AntennaOn   = 0x03;   // TxControlReg: Tx1RFEn, Tx2RFEn
+        constexpr uint8_t AllIrqs     = 0x7F;   // ComIrqReg, written to clear them
+        constexpr uint8_t Received    = 0x30;   // ComIrqReg: RxIRq, IdleIRq
+        constexpr uint8_t TimedOut    = 0x01;   // ComIrqReg: TimerIRq
+        constexpr uint8_t Garbled     = 0x1B;   // ErrorReg: overflow, collision, parity, protocol
 
         // ISO 14443-A frames. WUPA wakes a tag whether it is idle or halted,
         // the anticollision command asks it for its UID, and HLTA (with its
         // CRC) halts it.
-        const uint8_t Wupa []          PROGMEM = {0x52};
-        const uint8_t Anticollision [] PROGMEM = {0x93, 0x20};
-        const uint8_t Halt []          PROGMEM = {0x50, 0x00, 0x57, 0xCD};
+        constexpr uint8_t Wupa []          PROGMEM = {0x52};
+        constexpr uint8_t Anticollision [] PROGMEM = {0x93, 0x20};
+        constexpr uint8_t Halt []          PROGMEM = {0x50, 0x00, 0x57, 0xCD};
 
         // The first byte of a 7-byte UID's first part.
-        const uint8_t CascadeTag = 0x88;
+        constexpr uint8_t CascadeTag = 0x88;
 
-        const Millis  LookPeriod = 100;
-        const uint8_t Pending    = 0xFF;
+        constexpr Millis  LookPeriod = 100;
+        constexpr uint8_t Pending    = 0xFF;
     }
 
     Rfid::Rfid (Pin select, Pin reset)

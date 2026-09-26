@@ -180,7 +180,7 @@ namespace {
             }
         }
 
-        enum struct Phase
+        enum class Phase
         {
             Idle,
             Rom,

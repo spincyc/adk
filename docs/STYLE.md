@@ -2,8 +2,9 @@
 
 One style across the library, tests, and examples. `make style` checks
 tabs, trailing spaces, the final newline, line lengths, the space before
-each parenthesis, and where a block's braces go; alignment, naming and the
-language rules are for people to judge.
+each parenthesis, where a block's braces go, and that the library's
+constants are `constexpr`; alignment, naming and the other language rules
+are for people to judge.
 
 ## Layout
 

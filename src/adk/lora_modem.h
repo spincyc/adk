@@ -3,10 +3,11 @@
 #include "link.h"
 #include "object.h"
 #include "serial_port.h"
+#include "timing.h"
 
 namespace adk {
 
-    enum struct LoraSpeed : uint8_t
+    enum class LoraSpeed : uint8_t
     {
         Far,        // spreading factor 10: about 0.3 s a message, a few km
         Quick       // spreading factor 7: about 0.05 s a message, about a km
@@ -86,14 +87,13 @@ namespace adk {
         LineReader<100> reader_;
         char            text_ [MaxLength + 1];
         LoraSettings    settings_;
-        Millis          sentAt_;
+        StartTime       sent_;
         uint16_t        address_;
         uint16_t        sender_;
         int16_t         signal_;
         int8_t          margin_;
         bool            ok_;
         bool            sending_;
-        bool            starting_;
         bool            received_;
     };
 }

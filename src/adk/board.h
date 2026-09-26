@@ -8,7 +8,7 @@ namespace adk {
 
     using Pin = uint8_t;
 
-    enum struct Fault : uint8_t
+    enum class Fault : uint8_t
     {
         None,
         NoSuchPin,

@@ -15,12 +15,10 @@ namespace adk {
     }
 
     Keypad::Keypad (const Pin (&rows) [4], const Pin (&columns) [4])
-        : changedAt_ (0)
-        , rows_      {rows[0], rows[1], rows[2], rows[3]}
-        , columns_   {columns[0], columns[1], columns[2], columns[3]}
-        , scanned_   (NoKey)
-        , held_      (NoKey)
-        , pressed_   (false)
+        : held_    (NoKey)
+        , rows_    {rows[0], rows[1], rows[2], rows[3]}
+        , columns_ {columns[0], columns[1], columns[2], columns[3]}
+        , pressed_ (false)
     {
     }
 
@@ -44,31 +42,14 @@ namespace adk {
         }
 
         // A key held while the sketch starts is held, but was never pressed.
-        held_    = NoKey;
-        scanned_ = read ();
-        held_    = scanned_;
+        held_    = Debouncer<uint8_t> {read ()};
         pressed_ = false;
     }
 
     void Keypad::update (Millis now)
     {
-        uint8_t code = read ();
-        pressed_     = false;
-
-        // Debounced as a Debouncer does it: a new key counts once it has read
-        // the same for a whole window.
-        if (code != scanned_)
-        {
-            scanned_   = code;
-            changedAt_ = now;
-            return;
-        }
-
-        if (code != held_ && now - changedAt_ >= Debounce)
-        {
-            held_    = code;
-            pressed_ = code != NoKey;
-        }
+        // A new key counts once it has read the same for a whole window.
+        pressed_ = held_.sample (read (), now, Debounce) && held_.stable () != NoKey;
     }
 
     char Keypad::key () const
@@ -78,7 +59,7 @@ namespace adk {
 
     char Keypad::heldKey () const
     {
-        return static_cast<char> (pgm_read_byte (&Keys[held_]));
+        return static_cast<char> (pgm_read_byte (&Keys[held_.stable ()]));
     }
 
     bool Keypad::isPressed (char key) const
@@ -105,7 +86,7 @@ namespace adk {
                 {
                     uint8_t code = static_cast<uint8_t> (row * 4 + column);
 
-                    heldDown = heldDown || code == held_;
+                    heldDown = heldDown || code == held_.stable ();
                     first    = (first == NoKey) ? code : first;
                 }
             }
@@ -114,6 +95,6 @@ namespace adk {
         }
 
         // The key already held keeps its place while it stays down.
-        return heldDown ? held_ : first;
+        return heldDown ? held_.stable () : first;
     }
 }
