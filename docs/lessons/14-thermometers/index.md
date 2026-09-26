@@ -1,11 +1,8 @@
 ---
 lesson: 14
-title: Thermometers
-arc: Words and weather
 promise: Measure the temperature three different ways, and see which thermometer you trust.
 time: 60 minutes
 level: 2
-sketch: Lesson14Thermometers
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -126,8 +123,9 @@ What's new:
 - `lcd.print (value, 1)` prints a `float` with one digit after the point,
   rounding the rest, so 23.46 shows as 23.5. With 0 it shows whole numbers.
 - `dht.ok ()` and `probe.ok ()` say whether the latest reading arrived whole.
-  Until the first one, or if the sensor is missing, they are false and
-  `showReading ()` shows `--` instead of a number.
+  Until the first one, if the sensor is missing, or if the latest reading
+  came garbled, they are false and `showReading ()` shows `--` instead of a
+  number.
 - `char (223)` is the character with code 223, which on this screen is a
   little degree sign, and `constexpr char degree` gives it a name. A `char`
   is one character; `const char*`, from Lesson 3, is a whole piece of text.
@@ -171,23 +169,28 @@ settles over the next minute; its temperature moves much less.
     - **DHT11:** every two seconds ADK holds pin 16 low for 20 ms, then listens
       for the 40 bits, timing each high pulse. Listening takes about 4 ms with
       interrupts switched off, because the pulses are too short to risk
-      missing. A reading whose checksum doesn't add up is thrown away, and the
-      last good one is kept.
+      missing. A reading whose checksum doesn't add up is thrown away:
+      `dht.ok ()` turns false, so the screen shows `--` until the next good
+      reading two seconds later, while `dht.temperature ()` still holds the
+      last good one.
     - **Thermistor:** A2 is read every 100 ms and smoothed with a Smoother, as
       in Lesson 8, so the number doesn't flicker.
     - **18B20:** ADK asks it to measure, comes back 750 ms later, reads nine
       bytes from it and checks their code, then asks for the next reading.
-      Collecting a reading takes about 10 ms.
+      Collecting a reading takes about 10 ms. A reading whose code doesn't
+      match, or one from a sensor that isn't there, makes `probe.ok ()`
+      false, and the screen shows `--`.
 
 ## Make it yours
 
 1. **Fahrenheit.** Show the thermistor in °F with `thermistor.fahrenheit ()`.
    For the others, °F = °C × 9 / 5 + 32. Keep it all in `float`s: in whole
    numbers, 9 / 5 is just 1.
-2. **A race on the Serial Plotter.** Every second, print the three
+2. **A race on the Serial Plotter.** Add `Serial.begin (9600);` at the start
+   of `setup ()`, as in Lesson 2. Then every second, print the three
    temperatures on one line with one `adk::println (Serial, ...)`, separated
-   by spaces, and open **Tools → Serial Plotter**. Pinch, breathe and blow,
-   and watch which line reacts first.
+   by spaces, and open **Tools → Serial Plotter** at 9600 baud. Pinch,
+   breathe and blow, and watch which line reacts first.
 3. **Highs and lows.** Keep the lowest and highest thermistor temperatures
    since the Mega started, in two `float` variables, and show them on the
    bottom row instead.

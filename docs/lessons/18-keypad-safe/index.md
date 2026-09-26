@@ -1,20 +1,15 @@
 ---
 lesson: 18
-title: Keypad Safe
-arc: Keys and motion
 promise: Build a safe that opens only for your secret code, and remembers the code even when it's unplugged.
 time: 120 minutes
 level: 3
-sketch: Lesson18KeypadSafe
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
-  - The LCD, knob and 220 Ω resistor from Lesson 13
+  - Lesson 17's screen, servo and power module (with its 9 V adapter), wired as before
   - The 4×4 keypad from Lesson 16
-  - SG90 servo
-  - Breadboard power module and its 9 V adapter
   - Active buzzer
-  - 29 jumper wires
+  - 10 more jumper wires
   - A small cardboard box and some tape, if you want a real safe
 ideas:
   - A lock as a set of states
@@ -98,16 +93,14 @@ always does the same thing: it locks the safe and rubs out what you typed.
 
 !!! warning "Unplug first"
     Unplug the USB cable and the power module's adapter before you wire.
-    Keep Lesson 17's power module, servo and black GND wire just as they
-    are, and take out the knob with its three wires. Put the screen and the
-    keypad back where they were in Lesson 16, and add the buzzer past the
-    screen. In this build the power module powers everything on the
-    breadboard, the screen included: with its top jumper on **5V** it feeds
-    the top + rail, where the screen's VDD takes its 5 V, and with its
-    bottom jumper on **5V** it feeds the servo. So **nothing** connects to
-    any of the Mega's 5V pins: the knob's red wire from the power header
-    goes with the knob, and the red wire from 5V to the top + rail that
-    Lesson 16 had stays out. Keep fingers clear of the servo's arm.
+    Keep Lesson 17's power module, screen and servo just as they are, with
+    their wires and the Mega's GND and 5V wires, and take out the angle
+    knob in e45–e47 with its three wires. Put the keypad back where it was in
+    Lesson 16, and add the buzzer past the screen. The power module's
+    jumpers stay as Lesson 17 set them: the top one **OFF**, so the Mega's
+    5V feeds the top rails for the screen, and the bottom one on **5V** for
+    the servo. Never connect the servo's red wire to the Mega's 5V or the
+    top + rail. Keep fingers clear of the servo's arm.
 
 <!-- bench -->
 
@@ -167,10 +160,10 @@ What's new:
   list of characters kept somewhere else: not a copy, but a way to see the
   list's `size ()` and its items. A Span can be handed an Array or a Vector
   alike, so `saveCode (typed)` takes the Vector of keys you typed straight
-  in. The `const` means `saveCode ()` may look at the keys but not change
-  them.
+  in, and its loop runs to `keys.size ()`, however many that is. The
+  `const` means `saveCode ()` may look at the keys but not change them.
 - `size_t` is the type that sizes and places in a list come in, a whole
-  number that is never negative, so the loops over the code count with a
+  number that is never negative, so the loops over the keys count with a
   `size_t i`.
 
 ## Upload it
@@ -200,14 +193,14 @@ locks, and the old code still opens it.
 
 | What you see | Try this |
 |---|---|
-| The servo never moves | Is the power module on, with its LED lit and both jumpers on 5V? Check the servo's red and black wires reach the bottom rails (B+53, B-54) and its orange wire pin 44. |
-| The screen is dark and nothing works | The screen now takes its power from the power module: switch it on, and check its top jumper is on 5V. |
+| The servo never moves | Is the power module on, with its LED lit and its bottom jumper on 5V? Check the servo's red and black wires reach the bottom rails (B+53, B-54) and its orange wire pin 44. |
+| The screen is dark | It runs on the Mega's 5 V, as in Lesson 17: check the red wire from the Mega's 5V into the top + rail (T+3). |
 | The screen is blank, but the backlight is on | Turn the contrast knob. |
 | Keys come out wrong | See Lesson 16's "Which way round is the ribbon?" |
 | The right code says `Wrong!` | You may have saved a different code. If you've forgotten it, change `savedMark` to 43 and upload: the sketch then ignores the saved code and starts again from 1234. |
 | No clicks or beeps | Check the buzzer's + leg is in f51 with pin 12's wire in j51, and the black wire from a51 goes to the − rail. |
 | The servo buzzes when locked | It's pressing against its stop or the lid. Try a `lockedAngle` of 10. |
-| The Mega resets when the servo moves | Something takes power from the Mega's 5V pin. Nothing should in this build. |
+| The Mega resets when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail (B+53), which only the power module feeds. |
 
 ??? note "How it works"
     The Mega 2560's EEPROM is 4,096 bytes inside the chip, separate from the
@@ -260,9 +253,10 @@ measure it again.
 
 What the numbers tell you:
 
-- **The screen's 5 V** comes from the power module now, down the top + rail:
-  the same supply as the servo's. The whole breadboard runs on it, and the
-  Mega sends only signals and GND.
+- **The screen's 5 V** comes from the Mega, down the top + rail, as in
+  Lesson 17: switch the power module off and it stays, though the servo
+  goes limp. The screen's signals come from the Mega too, so screen and
+  signals share one supply, and only the servo runs on the module's.
 - **D4 after a star** reads 0 V whatever digit you typed, and the other
   three wires don't change with the digit either: the answer is no. The
   star is character 42, `0010 1010`, and its second half, `1010`, leaves D4

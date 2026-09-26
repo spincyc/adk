@@ -1,11 +1,8 @@
 ---
 lesson: 1
-title: Blink
-arc: First light
 promise: Make a light blink, and write the program that tells it to.
 time: 30 minutes
 level: 1
-sketch: Lesson01Blink
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -26,7 +23,7 @@ ideas:
 A red LED on your breadboard flashes on for half a second, off for half a
 second, for as long as the Mega has power. It is the "hello, world" of
 electronics: once it blinks, you have wired a working circuit, written a
-program, and sent it to a computer the size of a biscuit.
+program, and sent it to a computer the size of a candy bar.
 
 ## The idea
 

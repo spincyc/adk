@@ -1,11 +1,8 @@
 ---
 lesson: 3
-title: Reaction Duel
-arc: First light
 promise: Build a two-player reflex game, and find out who in your house is fastest.
 time: 1 hour
 level: 2
-sketch: Lesson03ReactionDuel
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -18,7 +15,7 @@ ideas:
   - Random numbers, and a random seed
   - Measuring time with a timer and a stopwatch
   - A game as a set of states
-  - Grouping parts that belong together
+  - A player's parts grouped together, and handed to a function
   - The active buzzer
 ---
 
@@ -79,10 +76,9 @@ pass of `loop ()`, only does what the current state allows.
 
 | State | What you see | What moves it on |
 |---|---|---|
-| **Waiting** | The yellow light blinks slowly | Either button: *Ready* |
-| **Ready** | All dark, for a random 2 to 5 seconds | Time's up: *Go*. A press: a **false start**, and the other player wins |
-| **Go** | Yellow on, and a beep | The first press wins: *Over* |
-| **Over** | The winner's light flashes | Either button: a new round, *Ready* |
+| **Waiting** | The yellow light blinks slowly, or, after a round, the winner's light flashes | Either button: *Ready* |
+| **Ready** | All dark, for a random 2 to 5 seconds | Time's up: *Go*. A press: a **false start**, the other player wins, and back to *Waiting* |
+| **Go** | Yellow on, and a beep | The first press wins: back to *Waiting* |
 
 A false start is only possible because the game knows it is in *Ready*: the
 same press in *Go* would win.
@@ -128,40 +124,32 @@ Open **File → Examples → Adk → Lesson03ReactionDuel**:
 What's new:
 
 - `struct Player` makes a new type that bundles what belongs together: a
-  player's name, button and light. `Player red {"Red", 22, 26};` fills them
-  in, in order: the name, the button's pin, the light's pin. Then
-  `red.button` and `red.light` reach inside, so the red player's button and
-  light can never get mixed up with green's.
-- `const char* name` holds a piece of text, such as `"Red"`.
-- `enum class State { Waiting, Ready, Go, Over };` makes a new kind of value
-  with four names, one for each state, and `State state` is a variable that
-  holds one of them. `state == State::Go` says what it means, which a number
-  never would.
+  player's name, button and light. `const char* name` holds a piece of
+  text, such as `"Red"`. `Player red {"Red", 22, 26};` fills them in, in
+  order: the name, the button's pin, the light's pin. Then `red.button` and
+  `red.light` reach inside, so the red player's button and light can never
+  get mixed up with green's.
+- `pressed (red, green)` hands `pressed ()` two players: the one who
+  pressed, and the one they are up against. In
+  `void pressed (Player& player, Player& rival)`, the `&` means the
+  function works on those very players, not copies of them, so
+  `winner.light.blink (200)` flashes the real light.
+- `enum class State { Waiting, Ready, Go };` makes a new kind of value with
+  three names, one for each state, and `State state` is a variable that
+  holds one of them. `state == State::Go` says what it means, which a
+  number never would.
+- `switch (state)` jumps to the `case` for the current state and runs it,
+  up to its `break`. Those three lines are the whole game.
 - `adk::Timer suspense;` counts down. `suspense.start (random (2000, 5000))`
   sets it going, and `suspense.expired ()` is true for the one update in
   which it runs out, just as a button's `wasPressed ()` is true once per
-  press. Nothing stops to wait, so a false start is still noticed.
-- `adk::Stopwatch reaction;` counts up. `reaction.restart ()` sets it back to
-  zero and running as the light comes on; `reaction.elapsed ()` reads it.
+  press. `adk::Stopwatch reaction;` counts up: `reaction.restart ()` sets
+  it to zero and running as the light comes on, and `reaction.elapsed ()`
+  reads it. Neither stops the sketch to wait, so a false start is still
+  noticed.
 - `randomSeed (analogRead (A7));` plants the seed, once, in `setup ()`.
-- `loop ()` hands every press to `pressed ()`, saying who pressed and who
-  they are up against: `pressed (red, green)`.
-- `switch (state)` jumps to the `case` for the current state and runs it, up
-  to its `break`. Two labels in a row share their code: a press while
-  *Waiting* or when the round is *Over* both start a new round. Those five
-  lines are the whole game.
-- `Player& player`: the `&` means the function works on that very player,
-  not a copy, so `winner.light.blink (200)` flashes the real light.
-- `auto time = reaction.elapsed ();` keeps the reaction time in a variable.
-  `auto` tells the compiler to give `time` whatever type `elapsed ()` hands
-  back, so you don't have to spell it out.
-- `adk::println (Serial, winner.name, " wins in ", time, " ms!");` prints a
-  line from its pieces, as in Lesson 2.
 - `adk::Buzzer buzzer {12};` and `buzzer.beep (200);` sound the buzzer for
   200 ms and carry straight on; ADK switches it off by itself.
-- `adk::wait (1000);` in `celebrate ()` gives the loser a second to finish
-  their too-late press. Presses during `adk::wait ()` still update the
-  buttons, but no `loop ()` is looking, so they are simply let go by.
 
 ## Upload it
 
@@ -204,6 +192,11 @@ are faster to a sound, try the first challenge below.
     The times include the 20 ms ADK waits for a button to settle, so your
     real reaction is about 20 ms quicker than the number on screen. Both
     players get the same 20 ms, so the duel stays fair.
+
+    `celebrate ()` ends with `adk::wait (1000)`, which gives the loser a
+    second to finish their too-late press. A press during `adk::wait ()`
+    still updates its button, but no `loop ()` is looking, so it is simply
+    let go by instead of starting the next round.
 
     `millis ()` counts up for about 49.7 days and then starts again from 0.
     The timer and the stopwatch only ever take the difference of two

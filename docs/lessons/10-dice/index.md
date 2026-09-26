@@ -1,11 +1,8 @@
 ---
 lesson: 10
-title: Dice
-arc: Digits
 promise: Build an electronic die that spins, slows and lands on a number.
 time: 1 hour
 level: 2
-sketch: Lesson10Dice
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -233,7 +230,7 @@ What the numbers tell you:
 - **Q5** reads 0 V, because bit 5 is a 0. Every 1 in the byte is an output
   at 5 V, and every 0 an output at 0 V. Roll a 4, `0b01100110`, and Q1,
   Q2, Q5 and Q6 read 5 V while the others read 0 V. The chip in the
-  drawings is labelled, so you can find each output's column.
+  drawings is labeled, so you can find each output's column.
 - **Across segment g's resistor** is about 3 V. The red segment keeps about
   2 V of the 5 V for itself, and the resistor takes the rest. By Ohm's law,
   3 V across 1 kΩ is 3 mA: the current worked out in the idea above.

@@ -3,7 +3,8 @@
 
 #include <Adk.h>
 
-// Each player has a button to press and a light that shows when they win.
+// Each player has a name, a button to press and a light that shows when
+// they win.
 struct Player
 {
     const char* name;
@@ -16,7 +17,7 @@ Player      green  {"Green", 23, 28};
 adk::Led    yellow {27};
 adk::Buzzer buzzer {12};
 
-enum class State { Waiting, Ready, Go, Over };
+enum class State { Waiting, Ready, Go };
 
 State          state = State::Waiting;
 adk::Timer     suspense;    // the random wait before the light
@@ -57,10 +58,9 @@ void pressed (Player& player, Player& rival)
 {
     switch (state)
     {
-        case State::Waiting:
-        case State::Over:  getReady ();                break;
-        case State::Ready: falseStart (player, rival); break;
-        case State::Go:    win (player);               break;
+        case State::Waiting: getReady ();                break;
+        case State::Ready:   falseStart (player, rival); break;
+        case State::Go:      win (player);               break;
     }
 }
 
@@ -85,9 +85,8 @@ void go ()
 
 void win (Player& winner)
 {
-    auto time = reaction.elapsed ();
-
-    adk::println (Serial, winner.name, " wins in ", time, " ms!");
+    adk::println (Serial, winner.name, " wins in ", reaction.elapsed (),
+                  " ms!");
     celebrate (winner);
 }
 
@@ -100,11 +99,12 @@ void falseStart (Player& early, Player& winner)
     celebrate (winner);
 }
 
+// The winner's light flashes until the next round starts.
 void celebrate (Player& winner)
 {
     yellow.off ();
     winner.light.blink (200);
-    state = State::Over;
+    state = State::Waiting;
 
     // Let the loser's late press go by before a new round can start.
     adk::wait (1000);

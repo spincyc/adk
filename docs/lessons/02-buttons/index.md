@@ -1,11 +1,8 @@
 ---
 lesson: 2
-title: Buttons
-arc: First light
 promise: Make the Mega listen to your finger, and count every press.
 time: 45 minutes
 level: 1
-sketch: Lesson02Buttons
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -227,9 +224,14 @@ long it lasts.
    `yellow.blink (200);` when the button is pressed, `yellow.off ();` when it
    is not. Asking for the same blink again on every pass is fine: ADK only
    starts it once.
-3. **Every fifth press.** Light the yellow LED for a moment on every fifth
-   press of the left button. `presses % 5` is the remainder when `presses` is
-   divided by 5, so it is `0` on presses 5, 10, 15, and so on.
+3. **Every fifth press.** Make the yellow LED mark every fifth press of the
+   left button instead of following the right one. Take out the
+   `yellow.set` line first: it copies the right button on every pass, so it
+   would undo anything else you did to the yellow LED at once. Then, after
+   `countPress ();`, write `yellow.set (presses % 5 == 0);`. `presses % 5` is
+   the remainder when `presses` is divided by 5, so it is `0` on presses 5,
+   10, 15, and so on, and `==` asks whether two numbers are equal: the LED
+   lights on those presses and goes out on the next.
 4. **See the bounce.** Change the first button to `adk::Button leftButton
    {22, 0};`. The second number is how long ADK waits for a button to settle,
    in milliseconds, and 0 turns debouncing off. Tap the button many times and

@@ -46,7 +46,8 @@ void loop ()
 
     if (state == State::Idle && pressed >= 0)
     {
-        newGame ();
+        sequence.clear ();
+        nextRound ();
     }
     else if (state == State::YourTurn)
     {
@@ -54,6 +55,7 @@ void loop ()
     }
 }
 
+// All four lights blink until somebody presses a button.
 void waitForPlayer ()
 {
     for (auto& key : keys)
@@ -65,17 +67,16 @@ void waitForPlayer ()
     Serial.println ("Press any button to play.");
 }
 
-void newGame ()
-{
-    lightAll (false);
-    sequence.clear ();
-    adk::wait (1000);
-    nextRound ();
-}
-
-// Simon's turn: add one random key, then show the whole sequence.
+// Simon's turn: after a pause with the lights out, add one random key, then
+// show the whole sequence.
 void nextRound ()
 {
+    for (auto& key : keys)
+    {
+        key.light.off ();
+    }
+
+    adk::wait (1000);
     sequence.push_back (random (4));
 
     for (auto number : sequence)
@@ -135,14 +136,13 @@ void check (int answer)
     }
     else
     {
-        adk::wait (800);
         nextRound ();
     }
 }
 
+// A low buzz, a fanfare for a new best, and the lights blink again.
 void gameOver (int score)
 {
-    lightAll (true);
     speaker.tone (adk::note::c3, 1000);
     adk::wait (1500);
 
@@ -169,12 +169,4 @@ int pressedKey ()
     }
 
     return -1;
-}
-
-void lightAll (bool lit)
-{
-    for (auto& key : keys)
-    {
-        key.light.set (lit);
-    }
 }

@@ -91,7 +91,7 @@ void pressEnter ()
 // adk::wait () counts down are never read.
 void refuse ()
 {
-    ++wrong;
+    wrong++;
     buzzer.beep (600);
 
     if (wrong < maxTries)
@@ -102,7 +102,7 @@ void refuse ()
 
     enter (State::Locked, "Too many tries");
 
-    for (int left = lockoutTime; left > 0; --left)
+    for (int left = lockoutTime; left > 0; left--)
     {
         adk::print (lcd.at (0, 1), "Wait ", left, " s ");
         adk::wait (1000);
@@ -136,19 +136,20 @@ void loadCode ()
 {
     if (EEPROM.read (0) == savedMark)
     {
-        for (size_t i = 0; i < code.size (); ++i)
+        for (size_t i = 0; i < code.size (); i++)
         {
             code[i] = EEPROM.read (1 + i);
         }
     }
 }
 
+// The keys become the code, here and in EEPROM.
 void saveCode (adk::Span<const char> keys)
 {
-    for (size_t i = 0; i < code.size (); ++i)
+    for (size_t i = 0; i < keys.size (); i++)
     {
         code[i] = keys[i];
-        EEPROM.update (1 + i, code[i]);
+        EEPROM.update (1 + i, keys[i]);
     }
 
     EEPROM.update (0, savedMark);

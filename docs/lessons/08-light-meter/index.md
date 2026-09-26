@@ -1,11 +1,8 @@
 ---
 lesson: 8
-title: Light Meter
-arc: The analog world
 promise: Measure the light around you and show it as a glowing bar.
 time: 45 minutes
 level: 2
-sketch: Lesson08LightMeter
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -92,8 +89,8 @@ itself, so a single odd reading barely nudges the bar.
     Swap them and nothing breaks, but a 10 kΩ on an LED makes it very dim,
     and a 220 Ω in the divider squashes all the readings up near 1023.
 
-The steps begin by taking out Lesson 7's LED and knob; the Mega's two
-power wires stay. Each LED of the bar is built the way you built Lesson 7's,
+The steps begin by taking out everything from Lesson 7 except the Mega's
+GND and 5V wires. Each LED of the bar is built the way you built Lesson 7's,
 in its own home, columns 6, 12, 18, 24 and 30: its pin's wire comes into
 row j, its resistor crosses the middle gap to the long leg, and the short
 leg's column has a short black wire down to the − rail. The red LED takes
@@ -136,17 +133,20 @@ What's new:
 - `min (darkest, reading)` gives the smaller of two numbers, and `max ()`
   the larger. So `darkest` can only go down, and `brightest` only up.
 - `map (level, darkest, brightest, 0, 6)` is Arduino's scaling function: it
-  does for any range what `knob.read (0, 255)` did in Lesson 7. The bar can
+  does for a number you already have what `knob.read (low, high)` does for
+  a knob in Lesson 7, and for any range. The bar can
   show six things, from none to five LEDs lit, so the range is cut into six
   slices, 0 to 5. Only a level at the very top, or brighter than anything
   the meter learned, would come out as 6 or more, and a darker one below 0.
   `constrain (number, 0, 5)` keeps the answer between 0 and 5: below 0
   becomes 0, and above 5 becomes 5.
-- `long lit` holds what `map ()` gives back: a `long`, a whole number with
-  far more room than an `int`. An `int` on the Mega stops at 32 767; a
-  `long` goes past two billion. `map ()` needs the room because it
-  multiplies before it divides: scaling a reading of 1023 to 0 to 255 goes
-  through 1023 × 255 = 260 865 on the way.
+- `long lit` is a **`long`**, a whole number with far more room than an
+  `int`: an `int` on the Mega stops at 32 767, and a `long` goes past two
+  billion. `lit` is a `long` because that is what `map ()` hands back.
+  `map ()` works in `long`s because it multiplies before it divides:
+  scaling a reading of 1023 to 0 to 255 goes through 1023 × 255 = 260 865
+  on the way. Here the answer is only 0 to 5, which an `int` would hold
+  too.
 - The counting `for` loop, as in Lesson 6, visits each LED in turn, and
   `bar[led].set (led < lit)` lights it if it is below the top of the bar
   and turns it off otherwise. With `lit` at 2, `bar[0]` and `bar[1]`, red

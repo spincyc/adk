@@ -1,11 +1,8 @@
 ---
 lesson: 6
-title: Simon
-arc: Color and sound
 promise: Build the classic memory game of lights and tones, and try to beat your best.
 time: 1½ hours
 level: 3
-sketch: Lesson06Simon
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -77,7 +74,7 @@ Simon and the player take **turns**, and the game is always in one state:
 | **Idle** | All four lights blink slowly | Any button starts a new game |
 | **Simon's turn** | Simon adds a random step, then shows the whole sequence | Your presses are ignored |
 | **Your turn** | Each light and its note follow its button while you hold it | Letting go is your answer. Right: the next step. Last step right: Simon's turn again, one step longer. Wrong: game over |
-| **Game over** | All four lights on and a low buzz, then a fanfare if you beat your best | Back to *Idle* |
+| **Game over** | A low buzz, then a fanfare if you beat your best | Back to *Idle* |
 
 Simon's turn is so short and simple, just show and wait, that the sketch
 does it all in one go, inside `nextRound ()`, and game over is just as
@@ -103,9 +100,10 @@ the Mega has power.
     Only one light is on at a time, so it's tempting to share a single
     resistor. But the colors keep different voltages for themselves: red
     about 2 V, blue about 3.2 V. Through a shared resistor each color would
-    shine at a different brightness, and when all four light together at
-    game over, the red one would take nearly all the current and the blue
-    one would barely glow. A resistor each keeps every color steady.
+    shine at a different brightness, and when all four light together,
+    blinking while Simon waits for a player, the red one would take nearly
+    all the current and the blue one would barely glow. A resistor each
+    keeps every color steady.
 
     Lesson 5's four buttons, on pins 22 to 25, and its buzzer stay just
     where they are. Each LED goes in beside its own button: red, on pin 26,
@@ -152,10 +150,12 @@ What's new:
 - `check ()` compares your answer with `sequence[step]`. Wrong ends the
   game. Right moves `step` on, until the last step: steps are numbered
   from 0, so the last is `sequence.size () - 1`. Then Simon takes its turn
-  with `nextRound ()`, unless `sequence.full ()` says all 100 steps are
+  with `nextRound ()`, which puts the lights out, pauses for a second and
+  adds the next step, unless `sequence.full ()` says all 100 steps are
   used: then you've beaten Simon.
 - `best` holds the high score. `speaker.play (fanfare);` celebrates a new
-  one and returns at once, so the lights start blinking while it plays.
+  one and returns at once, so `waitForPlayer ()` sets the lights blinking
+  while it plays.
 
 ## Upload it
 
@@ -167,8 +167,8 @@ see your scores. All four lights blink together.
 2. Press that light's button. The light and its note stay on while you
    hold it; let go.
 3. After a short pause Simon shows two steps. Repeat them, and keep going.
-4. Make a mistake on purpose. All four lights come on with a low buzz for a
-   second. The Serial Monitor says *You remembered 3 steps. Best so far: 3*,
+4. Make a mistake on purpose. A low buzz sounds for a second. The Serial
+   Monitor says *You remembered 3 steps. Best so far: 3*,
    and if that's a new best, you hear a fanfare. The lights blink again,
    ready for the next game.
 
@@ -206,9 +206,9 @@ sequences. More than a million.
 ## Make it yours
 
 1. **Faster and faster.** Real Simon speeds up. Keep the time each step is
-   shown in an `int` variable: set it to 400 in `newGame ()`, use it in
-   `flash ()`, and take 10 off in `nextRound ()` as long as it is still
-   over 150.
+   shown in an `int` variable: set it to 400 where `loop ()` starts a new
+   game, use it in `flash ()`, and take 10 off in `nextRound ()` as long as
+   it is still over 150.
 2. **Your score in lights.** After a game, blink the blue light once for each
    step you remembered, with a counting loop, so you don't need the Serial
    Monitor.
@@ -237,7 +237,7 @@ for as long as you hold its button, right or wrong; letting go is your
 answer. So start a game, and when it is your turn, hold a button, read its
 LED, and let go. Ask a helper to hold the button while you hold the probes,
 or hold both probes in one hand like chopsticks. The two legs of an LED are
-in neighbouring holes, so keep each tip on its own leg.
+in neighboring holes, so keep each tip on its own leg.
 
 !!! question "Predict"
     In Lesson 4, the RGB LED's red kept about 2 V for itself, and its green
@@ -255,7 +255,7 @@ What the numbers tell you:
   (5 V − 2 V) ÷ 220 Ω ≈ 14 mA for red and yellow, and
   (5 V − 3.2 V) ÷ 220 Ω ≈ 8 mA for green and blue. Each resistor sets its
   own LED's current, whatever the others do.
-- That is why the LEDs don't share one resistor. With all four on at game
-  over, through one resistor, the red LED would let current through as soon
+- That is why the LEDs don't share one resistor. With all four on
+  together, through one resistor, the red LED would let current through as soon
   as it had 2 V across it, and hold every LED near 2 V: too little for green
   and blue, which need about 3.2 V, so they would stay nearly dark.

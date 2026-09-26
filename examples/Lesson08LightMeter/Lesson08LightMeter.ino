@@ -57,7 +57,7 @@ void showBar (int level)
 {
     long lit = constrain (map (level, darkest, brightest, 0, 6), 0, 5);
 
-    for (int led = 0; led < 5; ++led)
+    for (int led = 0; led < 5; led++)
     {
         bar[led].set (led < lit);
     }

@@ -1,11 +1,8 @@
 ---
 lesson: 15
-title: Weather Station
-arc: Words and weather
 promise: Build a desk weather station with a comfort light and a heat alarm you set with a knob.
 time: 90 minutes
 level: 2
-sketch: Lesson15WeatherStation
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -51,9 +48,10 @@ wobble of one degree can no longer cross both lines. A home heating
 thermostat works exactly like this, so the boiler doesn't click on and off all
 day.
 
-The alarm knob uses the same trick you met with the dimmer: `knob.read (10, 40)`
-turns the knob's 0 to 1023 into a temperature from 10 to 40 °C. Halfway round,
-511 becomes 10 + 30 × 511 / 1023, which is 24 °C (the Mega drops the fraction).
+The alarm knob is read with `knob.read (low, high)`, which you met with the
+dimmer in Lesson 7: `knob.read (10, 40)` turns the knob's 0 to 1023 into a
+temperature from 10 to 40 °C. Halfway round, 511 becomes
+10 + 30 × 511 / 1023, which is 24 °C (the Mega drops the fraction).
 
 !!! question "Predict"
     Once it's running, you'll warm the DHT11 by cupping your hands round it and
@@ -127,9 +125,10 @@ What's new:
   decides the mood. Four times a second it reads the knob, checks the alarm
   and redraws the screen. And while the alarm rings, it beeps once a second.
 - `judgeComfort ()` is the first table above, written in C++. The mood
-  changes only from where it is now. `auto was = comfort;` remembers the mood
-  it had, so the light only fades when the mood really changes, and
-  `light.fadeTo ()` takes a second to glide to the new color.
+  changes only from where it is now. Then `light.fadeTo ()` takes a second
+  to glide to the mood's color. It runs after every good reading, but
+  asking the light for the color it already shows, or is already fading
+  to, changes nothing, so the light only fades when the mood changes.
 - `checkAlarm ()` has the same kind of gap: it starts ringing at the setting,
   and stops a degree below it. `beat.restart ()` starts the once-a-second
   beeps from that moment.
@@ -179,12 +178,17 @@ both ways, which is the gap doing its job.
 ??? note "How it works"
     Nothing in `loop ()` ever waits. The DHT11 takes a reading every two
     seconds by itself, and `dht.measured ()` is true for just the one pass of
-    `loop ()` in which a new reading arrives, so the mood is judged once per
-    reading. `refresh` and `beat` are `adk::Every` beats from Lesson 11. The
-    buzzer's `beep (150)` switches it on and lets `adk::update ()` switch it
-    off 150 ms later, while everything else carries on. The RGB LED's fade is
-    worked out in steps inside `adk::update ()` too, so the colors glide even
-    while the screen is being redrawn.
+    `loop ()` in which a reading finishes, good or not. `dht.ok ()` says
+    whether it was good, so the mood is judged once per good reading. Until
+    the first good one, and for the two seconds after one that arrives
+    garbled, `dht.ok ()` is false and the top row says `Measuring...`
+    rather than show an old number; the alarm keeps using the last good
+    temperature. `refresh` and `beat` are `adk::Every` beats from
+    Lesson 11. The buzzer's `beep (150)` switches it on and lets
+    `adk::update ()` switch it off 150 ms later, while everything else
+    carries on. The RGB LED's fade is worked out in steps inside
+    `adk::update ()` too, so the colors glide even while the screen is being
+    redrawn.
 
 ## Make it yours
 

@@ -118,7 +118,7 @@ void finish ()
     state = State::Done;
     display.show ("donE");
 
-    for (int beep = 0; beep < 3; ++beep)
+    for (int beep = 0; beep < 3; beep++)
     {
         buzzer.beep (250);
         adk::wait (500);
@@ -147,8 +147,10 @@ void showClock ()
     }
 }
 
-// Seconds and tenths, such as 12.3: the time in tenths, with one decimal.
+// Seconds and tenths, such as 12.3: the time in tenths, with one decimal,
+// back to 0.0 after 999.9 seconds.
 void showTime (adk::Millis ms)
 {
-    display.show (ms / 100 % 10000, 1);
+    adk::Millis tenths = ms / 100 % 10000;
+    display.show (tenths, 1);
 }

@@ -1,11 +1,8 @@
 ---
 lesson: 13
-title: Hello, LCD
-arc: Words and weather
 promise: Put words on a real screen, and draw your own little characters.
 time: 60 minutes
 level: 2
-sketch: Lesson13HelloLcd
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -137,8 +134,8 @@ What's new:
 - `lcd.createChar (1, heart);` stores the picture in slot 1, and
   `lcd.write (1);` shows it. The sketch uses slots 1 to 3.
 - `lcd.print ("Hello, LCD! ");` writes text where the cursor is, and moves
-  the cursor along. It works just like `Serial.println ()`, numbers
-  included, except that it doesn't end the line.
+  the cursor along. It works just like `Serial.print ()`, numbers
+  included.
 - `lcd.at (column, 1)` moves the cursor. Columns count from 0 to 15 and rows
   from 0 to 1, so `(0, 0)` is the top-left corner. It hands back the screen
   itself, so `lcd.at (column, 1).print (' ');` prints a space right there.
@@ -146,8 +143,8 @@ What's new:
   too.)
 - `takeStep ()` rubs out the figure with a space, moves one column right (the
   `% 16` wraps 16 back round to 0), and draws it again.
-  `column % 2 == 0 ? 2 : 3` picks slot 2, standing, on even columns and
-  slot 3, striding, on odd ones.
+  `column % 2 == 0 ? 2 : 3`, a `?:` as in Lesson 12, picks slot 2,
+  standing, on even columns and slot 3, striding, on odd ones.
 
 ## Upload it
 

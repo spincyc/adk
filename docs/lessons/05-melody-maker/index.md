@@ -1,11 +1,8 @@
 ---
 lesson: 5
-title: Melody Maker
-arc: Color and sound
 promise: Turn four buttons into a keyboard, and teach the Mega a tune.
 time: 45 minutes
 level: 2
-sketch: Lesson05MelodyMaker
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -203,13 +200,16 @@ takes over. That's the sketch carrying on while the tune plays.
    for the A, and `adk::note::rest` makes a silence.
 3. **Higher and lower.** Move all four keys up an octave, to `c5`, `d5`,
    `e5` and `g5`, by changing their pitches in `keys`. Then try other notes
-   altogether: which sets make tunes you recognise?
-4. **Echo.** Keep each note you play in a list, `adk::Note recording [50];`,
-   with how long you held it: an `adk::Stopwatch`, as in Lesson 3, can
-   `restart ()` when a key goes down and give its `elapsed ()` time when it
-   comes up. Five seconds after your last note, play it all back with
-   `speaker.play (recording, count);`, where `count` is how many notes you
-   recorded.
+   altogether: which sets make tunes you recognize?
+4. **Echo.** Record what you play, and play it back. Keep the notes in
+   `adk::Vector<adk::Note, 50> recording;`, a list with room for 50 notes
+   that starts empty and grows as you add them (Lesson 6 says more about
+   it). An `adk::Stopwatch`, as in Lesson 3, can `restart ()` when a key
+   goes down and tell you how long it was held when it comes up: keep that
+   in a `uint16_t ms`, and add the note with
+   `recording.push_back ({key.pitch, ms});`. Start an `adk::Timer` for
+   5000 ms each time a key comes up, and when it `expired ()`, play the
+   whole recording back with `speaker.play (recording);`.
 
 ## Measure it
 
