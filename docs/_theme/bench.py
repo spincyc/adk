@@ -454,10 +454,9 @@ class Bench:
             self.gap = GAP + 1.3
         part = PowerModule (end, columns, top, bottom)
         self._add (part)
-        setting = lambda value: {"5V": "5 V", "3.3V": "3.3 V", "off": "off"}[value]
-        jumpers = f"both jumpers on {setting (top)}" if top == bottom else \
-            f"the top jumper on {setting (top)} and the bottom one {setting (bottom)}"
-        jumpers = jumpers.replace ("on off", "off")
+        setting = lambda value: {"5V": "on 5 V", "3.3V": "on 3.3 V", "off": "off"}[value]
+        jumpers = f"both jumpers {setting (top)}" if top == bottom else \
+            f"the top jumper {setting (top)} and the bottom one {setting (bottom)}"
         holes = ", ".join (unbroken (f"{rail}{columns[0]}") for rail in ("T+", "T-", "B+"))
         self._step (
             f"The power module on the {end} end of the board, its pins in both pairs of rails "

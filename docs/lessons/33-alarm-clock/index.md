@@ -159,7 +159,7 @@ Read it from the top:
   own, lets snooze stop the alarm while it rings, and reads the clock ten
   times a second, when `tick` ticks.
 - Its last line says where the flag should be, with the conditional from
-  Lesson 7: `flagUp` while the state is `Ringing`, and 0, flat, in every
+  Lesson 12: `flagUp` while the state is `Ringing`, and 0, flat, in every
   other state. `moveTo ()` only sets where the motor is heading and never
   waits, so the tune, the knob and the screen carry on while the flag
   moves. Asked again for the place it is already heading to, it just

@@ -109,7 +109,7 @@ What's new:
   that use `slowDown` or `danger` in step when you change it.
 - `sensor.distance ()` is the latest distance in centimeters, and
   `sensor.ok ()` says whether an echo came back at all. When nothing
-  is within about 4 m, the `?:` from Lesson 7 counts it as 400 cm: plenty
+  is within about 4 m, the `?:` from Lesson 12 counts it as 400 cm: plenty
   of room.
 - `showGauge ()` switches each LED with `set ()`, which takes true or false,
   so each light is simply on in its own zone.
