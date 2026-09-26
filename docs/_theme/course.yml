@@ -1,8 +1,9 @@
-# The course: fourteen arcs of three lessons. Two lessons each teach a part;
+# The course: eighteen arcs of three lessons. Two lessons each teach a part;
 # the third is a project that puts them together. The first twelve use the
-# kits' parts; the last two, add-on radios. This file is the one list of
-# lessons: the navigation, the course map and the home page are built from
-# it, and a lesson appears as a link once its page exists.
+# kits' parts; the next two add radios; the last four join two boards over
+# a LoRa bridge (boards: 2). This file is the one list of lessons: the
+# navigation, the course map and the home page are built from it, and a
+# lesson appears as a link once its page exists.
 
 - arc: First light
   lessons:
@@ -87,3 +88,31 @@
     - {slug: 40-lora, title: LoRa, builds: Messages that reach a kilometre}
     - {slug: 41-lora-link, title: LoRa Link, builds: A weather report sent by radio}
     - {slug: 42-mesh-messenger, title: Mesh Messenger, builds: Texts from your phone to your Mega, project: true}
+
+- arc: Two boards
+  boards: 2
+  lessons:
+    - {slug: 43-the-bridge, title: The Bridge, builds: Two boards that light each other's LEDs across a house}
+    - {slug: 44-remote-dial, title: Remote Dial, builds: A dial on one board that turns a servo on the other}
+    - {slug: 45-remote-turret, title: Remote Turret, builds: A fan across the room you aim with a joystick, project: true}
+
+- arc: Far senses
+  boards: 2
+  lessons:
+    - {slug: 46-remote-weather, title: Remote Weather, builds: The garden's weather, read indoors}
+    - {slug: 47-remote-alarm, title: Remote Alarm, builds: Sensors by the door and the siren where you are}
+    - {slug: 48-baby-monitor, title: Baby Monitor, builds: A room's sound and a leak alarm, heard from afar, project: true}
+
+- arc: Far hands
+  boards: 2
+  lessons:
+    - {slug: 49-remote-keypad, title: Remote Keypad, builds: A keypad by the door that opens a latch inside}
+    - {slug: 50-tilt-pilot, title: Tilt Pilot, builds: Tilt one board to roll a ball across the other}
+    - {slug: 51-doorbell-and-door, title: Doorbell and Door, builds: A doorbell that says who's there and lets them in, project: true}
+
+- arc: Far machines
+  boards: 2
+  lessons:
+    - {slug: 52-remote-stepper, title: Remote Stepper, builds: A turntable set to any angle from across the room}
+    - {slug: 53-remote-lamp, title: Remote Lamp, builds: A remote control that works through walls}
+    - {slug: 54-radio-pong, title: Radio Pong, builds: Pong played between two rooms, project: true}
