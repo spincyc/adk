@@ -9,3 +9,23 @@ updates:
           time: "06:00"
           timezone: America/Chicago
       open-pull-requests-limit: 5
+
+    # The site's packages: docs/requirements.in, and the lock pip-compile
+    # makes from it, updated together in one pull request a week.
+    - package-ecosystem: pip
+      directory: /docs
+      schedule:
+          interval: weekly
+          day: monday
+          time: "06:00"
+          timezone: America/Chicago
+      open-pull-requests-limit: 5
+      groups:
+          site:
+              patterns:
+                  - "*"
+      ignore:
+          # Material for MkDocs does not support MkDocs 2.
+          - dependency-name: mkdocs
+            update-types:
+                - version-update:semver-major

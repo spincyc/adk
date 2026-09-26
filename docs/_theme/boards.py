@@ -10,6 +10,11 @@ avr-gcc 16. When the site builds, this writes into its root:
 The platform's name and boards come from boards/avr, its version from
 library.properties, and its compiler from boards/toolchain.json. Its core,
 variant and avrdude are Arduino AVR Boards' own, used by reference.
+
+Boards Manager installs a version once and never fetches it again, so a
+version, once published, must always pack to the same bytes and ask for the
+same compiler. boards/published.txt records each one, and the build fails
+unless the version being built matches its record there.
 """
 
 import hashlib
@@ -17,14 +22,16 @@ import io
 import json
 import os
 import re
+import subprocess
 import tarfile
 
 from mkdocs.exceptions import PluginError
 
-ROOT     = os.path.dirname (os.path.dirname (os.path.dirname (os.path.abspath (__file__))))
-PLATFORM = os.path.join (ROOT, "boards", "avr")
-TOOL     = os.path.join (ROOT, "boards", "toolchain.json")
-INDEX    = "package_adk_index.json"
+ROOT      = os.path.dirname (os.path.dirname (os.path.dirname (os.path.abspath (__file__))))
+PLATFORM  = os.path.join (ROOT, "boards", "avr")
+TOOL      = os.path.join (ROOT, "boards", "toolchain.json")
+PUBLISHED = os.path.join (ROOT, "boards", "published.txt")
+INDEX     = "package_adk_index.json"
 
 # Uploads run avrdude through Arduino AVR Boards' recipes; this is the
 # version its 1.8.8 release installs.
@@ -42,9 +49,12 @@ def on_post_build (config):
     tool     = json.load (open (TOOL, encoding="utf-8"))
     check (library, platform, tool)
 
-    site    = config["site_url"]
-    archive = f"adk-avr-{library['version']}.tar.bz2"
-    packed  = pack (PLATFORM, archive.removesuffix (".tar.bz2"))
+    site     = config["site_url"]
+    version  = library["version"]
+    archive  = f"adk-avr-{version}.tar.bz2"
+    packed   = pack (PLATFORM, archive.removesuffix (".tar.bz2"))
+    checksum = hashlib.sha256 (packed).hexdigest ()
+    published (version, checksum, f"{tool['name']}@{tool['version']}")
     with open (os.path.join (config["site_dir"], archive), "wb") as out:
         out.write (packed)
 
@@ -56,12 +66,12 @@ def on_post_build (config):
         "platforms":  [{
             "name":            platform["name"],
             "architecture":    "avr",
-            "version":         library["version"],
+            "version":         version,
             "category":        "Contributed",
             "help":            {"online": site + "start/"},
             "url":             site + archive,
             "archiveFileName": archive,
-            "checksum":        "SHA-256:" + hashlib.sha256 (packed).hexdigest (),
+            "checksum":        "SHA-256:" + checksum,
             "size":            str (len (packed)),
             "boards":          [{"name": value} for key, value in boards.items ()
                                 if re.fullmatch (r"\w+\.name", key)],
@@ -98,21 +108,55 @@ def check (library, platform, tool):
                            f"{tool['name']} tool from boards/toolchain.json")
 
 
+# The site goes live from main, so whatever this builds is what learners
+# install as this version; boards/published.txt says how to publish another.
+def published (version, checksum, compiler):
+    records = {}
+    for line in open (PUBLISHED, encoding="utf-8"):
+        fields = line.split ("#", 1)[0].split ()
+        if fields:
+            records[fields[0]] = fields[1:]
+    if version not in records:
+        raise PluginError (f"ADK Boards {version} is not in boards/published.txt. It is "
+                           f"published once it reaches main, so add its line there:\n"
+                           f"    {version:<11}{checksum}  {compiler}")
+    if records[version] != [checksum, compiler]:
+        raise PluginError (f"ADK Boards {version} has changed since it was published:\n"
+                           f"    published  {'  '.join (records[version])}\n"
+                           f"    now        {checksum}  {compiler}\n"
+                           f"Learners who installed {version} would never get the change. "
+                           f"Raise the version in library.properties and "
+                           f"boards/avr/platform.txt, then add the new version's line to "
+                           f"boards/published.txt.")
+
+
 # A tar.bz2 with one top-level folder, as Boards Manager expects, and
-# nothing in it that depends on who packed it, or when.
+# nothing in it that depends on who packed it, or when. It holds only the
+# files git tracks, so a platform.local.txt or an editor's backup never
+# ships.
 def pack (folder, top):
-    paths = sorted (os.path.join (path, name) for path, directories, files in os.walk (folder)
-                    for name in directories + files)
+    try:
+        listed = subprocess.run (["git", "ls-files", "-z"], cwd=folder, check=True,
+                                 capture_output=True, text=True).stdout
+    except (OSError, subprocess.CalledProcessError) as error:
+        detail = (getattr (error, "stderr", None) or str (error)).strip ()
+        raise PluginError (f"ADK Boards is packed from the files git tracks in boards/avr, "
+                           f"and git could not list them: {detail}") from error
+    files = {name for name in listed.split ("\0")
+             if name and os.path.isfile (os.path.join (folder, name))}
+    folders = set ()
+    for name in files:
+        while name := os.path.dirname (name):
+            folders.add (name)
     buffer = io.BytesIO ()
     with tarfile.open (fileobj=buffer, mode="w:bz2", format=tarfile.USTAR_FORMAT) as tar:
         tar.addfile (entry (top, None))
-        for path in paths:
-            name = os.path.join (top, os.path.relpath (path, folder))
-            if os.path.isdir (path):
-                tar.addfile (entry (name, None))
+        for name in sorted (folders | files):
+            if name in folders:
+                tar.addfile (entry (f"{top}/{name}", None))
                 continue
-            data = open (path, "rb").read ()
-            tar.addfile (entry (name, data), io.BytesIO (data))
+            data = open (os.path.join (folder, name), "rb").read ()
+            tar.addfile (entry (f"{top}/{name}", data), io.BytesIO (data))
     return buffer.getvalue ()
 
 

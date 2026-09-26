@@ -1,18 +1,24 @@
 # C++ style
 
-One style across the library, tests, and examples. `make style` checks the
-mechanical rules; alignment and naming are for people to judge.
+One style across the library, tests, and examples. `make style` checks
+tabs, trailing spaces, the final newline, line lengths, the space before
+each parenthesis, and where a block's braces go; alignment, naming and the
+language rules are for people to judge.
 
 ## Layout
 
 - Four spaces, no tabs, lines of at most 100 characters.
 - A space before every call or declaration parenthesis: `led.on ()`,
   `void setup ()`.
-- Every brace on its own line, except namespace braces and the one-line
-  accessors of a template, such as `size () const { return size_; }`. Nested
-  namespaces share one line, and their contents are indented once.
-- Braces around every `if`, `else`, and loop body. A one-line `case` may sit on
-  its label line.
+- The braces of a block (a function, a type, a lambda or a statement's
+  body) go on lines of their own, except namespace braces and a body short
+  enough for one line: a template's accessors, such as
+  `size () const { return size_; }`, and a small lambda. Braces that hold
+  values, such as an initializer or an enum's names, stay with their code.
+  Nested namespaces share one line, and their contents are indented once.
+- Braces around every `if`, `else`, `switch` and loop body. A `do` loop's
+  `while (...);` goes on the line after its closing brace. A one-line `case`
+  may sit on its label line.
 - Align related names, types, `=` signs, and call parentheses when that makes a
   group easier to scan. Alignment stays within one group; it does not cross a
   blank line.

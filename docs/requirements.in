@@ -1,0 +1,12 @@
+# The Python packages the site is built with. make site installs
+# docs/requirements.txt, which pins these and everything they need, each
+# with its hashes. After changing this file, regenerate that one with
+# pip-tools, from the top of the repository:
+#
+#     pip-compile --generate-hashes --strip-extras docs/requirements.in
+#
+# MkDocs stays at 1.6: Material for MkDocs does not support MkDocs 2.
+mkdocs==1.6.1
+mkdocs-material==9.7.7
+pymdown-extensions==12.1
+pyyaml==6.0.3

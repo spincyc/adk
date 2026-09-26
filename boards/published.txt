@@ -1,0 +1,23 @@
+# Every version of ADK Boards the site has published.
+#
+# The site goes live from main, so a version is published as soon as it
+# reaches main. Boards Manager installs a version once and never fetches it
+# again: if the same version later packed to different bytes, or asked for
+# a different compiler, learners who had installed it would never get the
+# change. So when the site builds, docs/_theme/boards.py packs boards/avr
+# and fails unless its version is listed here with the same archive
+# checksum and compiler.
+#
+# To publish a change to boards/avr, or a new compiler in toolchain.json:
+#
+#   1. Raise the version in library.properties and boards/avr/platform.txt.
+#   2. Run make site. It stops and prints the new version's line.
+#   3. Add that line below, and commit it with the change.
+#
+# A new library version needs a line too, since platform.txt carries it.
+# Never change a line once it is on main. A compiler version's downloads
+# are fixed in the same way: toolchain.json may gain computers, but a new
+# build for a computer it already lists is a new compiler version.
+#
+# version  archive SHA-256                                                   compiler
+0.4.0      bf312259f39514d17b0c5a1b7af8629aa9bc1389d6b3f246b5ee1961aa9b3c5e  adk-avr-gcc@16.1.0-1
