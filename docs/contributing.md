@@ -133,8 +133,11 @@ lessons alike. [The kit page](kit.md#breadboard-homes) gives each part's home.
   into B-3 and the outer 5V at its top into T+3, and joins the other rail of
   a pair at the far end (B-60 to T-60, T+61 to B+61) only when a part uses
   it. Those two header pins are kept for the rails. With the power module,
-  which sits at the right end, the Mega's GND still joins the rails at B-3
-  and its 5V stays off them.
+  which sits at the right end, set its top jumper off: the Mega's 5V then
+  feeds the top rails, for the screen and the sensors, whose signals come
+  from the Mega too, so nothing is ever powered backwards through its
+  inputs; the module feeds only the bottom rails, for motors and servos (or
+  3.3 V for LoRa modems); and the Mega's GND joins them all at B-3.
 - **An LED and its resistor.** The pin's wire into row j of column *c*, the
   resistor standing across the middle gap from g*c* to e*c*, the LED's long
   leg in b*c* and its short leg in b*c+1*, and a black jumper from a*c+1*

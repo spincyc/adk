@@ -249,9 +249,12 @@ def previous (number, letter=""):
     return None
 
 
+# The drawing's own width, in drawing units, lets the page size it so its
+# labels stay legible: on a phone it scrolls sideways rather than shrink.
 def figure (svg, caption, kind):
-    return (f'<figure class="bench-figure bench-{kind}" markdown="0">\n{svg}\n'
-            f'<figcaption>{caption}</figcaption>\n</figure>')
+    width = re.search (r'viewBox="\S+ \S+ (\S+)', svg).group (1)
+    return (f'<figure class="bench-figure bench-{kind}" style="--drawing-width: {width}" '
+            f'markdown="0">\n{svg}\n<figcaption>{caption}</figcaption>\n</figure>')
 
 
 # Each measurement drawn small, side by side, numbered as the table below

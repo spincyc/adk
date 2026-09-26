@@ -548,7 +548,12 @@ class Bench:
         if not used:
             return
         power = [self._power_wire (("GND.long2", "GND.long"), "B-3")]
-        if not module and used & {"T+", "B+"}:
+        # The Mega's 5V feeds the top rails unless the power module does:
+        # with the module's top jumper off, the screen and sensors run from
+        # the Mega, as their signals do, and the module feeds only the
+        # bottom rails, for motors.
+        if (not module and used & {"T+", "B+"}) or \
+                (module and module.top == "off" and "T+" in used):
             power.append (self._power_wire (("5V.long2", "5V.long"), "T+3"))
         links = []
         for rail, source, a, b in (("T-", "GND", "B-60", "T-60"), ("B+", "5V", "T+61", "B+61"),
