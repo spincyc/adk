@@ -1,7 +1,8 @@
 # The course: eighteen arcs of three lessons. Two lessons each teach a part;
 # the third is a project that puts them together. The first twelve use the
-# kits' parts; the next two add radios; the last four join two boards over
-# a LoRa bridge (boards: 2). This file is the one list of lessons: the
+# kits' parts; the next two add radios; the next four join two boards over
+# a LoRa bridge (boards: 2). Extras, at the end, are lessons that stand on
+# their own, on one board. This file is the one list of lessons: the
 # navigation, the course map and the home page are built from it, and a
 # lesson appears as a link once its page exists.
 
@@ -116,3 +117,7 @@
     - {slug: 052-remote-stepper, title: Remote Stepper, builds: A turntable set to any angle from across the room}
     - {slug: 053-remote-lamp, title: Remote Lamp, builds: A remote control that works through walls}
     - {slug: 054-radio-pong, title: Radio Pong, builds: Pong played between two rooms, project: true}
+
+- arc: Extras
+  lessons:
+    - {slug: 055-reliability-meter, title: Reliability Meter, builds: A meter that counts how many radio messages get through}

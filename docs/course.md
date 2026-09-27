@@ -8,6 +8,7 @@ The first twelve arcs use only the parts in the kits. The next two need
 [add-on radios](kit.md#add-on-radios), a few dollars each. The last four
 join [two boards](kit.md#two-boards): two Megas that share what their sensors
 see over a LoRa radio, so a dial in one room turns a servo in another.
+Extras, at the end, stand on their own.
 
 <div class="course-list" markdown>
 

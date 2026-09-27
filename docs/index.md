@@ -72,7 +72,7 @@ void loop ()
 ## Eighteen builds, three lessons each
 
 Two lessons each introduce a part; the third puts them together into
-something worth showing off.
+something worth showing off. Extras, at the end, stand on their own.
 
 <!-- arcs -->
 

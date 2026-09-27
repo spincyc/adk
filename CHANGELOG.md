@@ -38,14 +38,15 @@ A new start, built on the library's original 2021 design.
   C++17). `adk::Array`, `Vector`, `Deque` and `Span` give sketches the
   standard containers' shape without the heap; `adk::Timer` and
   `adk::Stopwatch` keep time; `adk::println` prints a line in one call.
-- **Course.** Fifty-four lessons in eighteen arcs, from Blink to Pong played
-  between two rooms, each a component lesson or a project that combines
+- **Course.** Fifty-five lessons: eighteen arcs of three, from Blink to Pong
+  played between two rooms, each a component lesson or a project that combines
   them, with a sketch that compiles for the Mega. Arcs 13 and 14 use add-on
   radios: an FM clock radio, 433 MHz messages, and LoRa. Arcs 15 to 18 join
   two boards over a LoRa bridge, carrying every sensor in the kits across a
   house: a dial that turns a servo, a garden's weather read indoors, a baby
-  monitor, a keypad by the door, a doorbell that says who's there. Each
-  lesson is NNN-name, the same in docs/lessons and examples/lessons.
+  monitor, a keypad by the door, a doorbell that says who's there. An extra,
+  the Reliability Meter, tests a 433 MHz link on one board. Each lesson is
+  NNN-name, the same in docs/lessons and examples/lessons.
 - **Website.** A new design where each lesson is both a web page and a PDF,
   with pencil drawings generated from one description of the build and
   checked against the lesson's code. Wires route round parts and labels;

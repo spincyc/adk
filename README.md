@@ -2,7 +2,7 @@
 
 **Build real circuits on an Arduino Mega 2560, and understand every line.**
 
-ADK is fifty-four hands-on lessons, from a blinking LED to a game of Pong
+ADK is fifty-five hands-on lessons, from a blinking LED to a game of Pong
 played between two boards over radio, and the small C++ library that makes
 them simple. Every lesson is a
 web page and a printable PDF, with pencil drawings of the breadboard that
@@ -96,7 +96,7 @@ design, and [the style guide](docs/STYLE.md) the code.
 
 ## Status
 
-All fifty-four lessons are written, each with its sketch, its build drawn
+All fifty-five lessons are written, each with its sketch, its build drawn
 from one description, and its PDF. The library is complete and host-tested,
 and every sketch compiles for the Mega. None of it has yet been built and
 checked on a real board, so treat a lesson's promises as what it is designed
