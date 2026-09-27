@@ -1,9 +1,7 @@
 # Lesson 8's light meter, kept exactly as it was: the five LEDs on pins 26
-# to 30 at their homes in columns 6 to 30, and the light sensor's divider on
-# A1 in column 40. Added at their homes: the passive buzzer on pin 10 across
-# the middle gap in column 34, between the white LED and the divider, with
-# its 220 Ω from a34 into the − rail; and the knob on A0 in e45 to e47, its
-# left leg to the − rail and its right leg up to the top + rail.
+# to 30 and the light sensor's divider on A1, at their homes. Added at their
+# homes: the passive buzzer on pin 10, between the white LED and the
+# divider, and the knob on A0.
 bench = Bench ("Lesson 8's light meter, a passive buzzer on pin 10 and a knob on A0",
                columns=(1, 50))
 

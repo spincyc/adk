@@ -1,12 +1,10 @@
-# Lesson 5's build stays as it is: the buttons on 22 to 25 across the middle
-# gap in columns 2-4, 8-10, 14-16 and 20-22, and the passive buzzer on 10 in
-# column 34 with its 220 Ω resistor into the bottom − rail. The LEDs on 26 to
-# 29 stand at their homes in columns 6, 12, 18 and 24, each beside its button.
-# Eight wires from the double header into interleaved columns can't all nest,
-# so the buttons' wires fan out over the top of the board and drop straight
-# into their columns through the gaps in the top rails, crossing the lanes of
-# the ones going further; 26 comes in just above row j, and 27 to 29 in
-# nested lanes just below it.
+# Lesson 5's build stays as it is: the buttons on 22 to 25 and the passive
+# buzzer on 10. The LEDs on 26 to 29 stand at their homes, each beside its
+# button. Eight wires from the double header into interleaved columns can't
+# all nest, so the buttons' wires fan out over the top of the board and drop
+# straight into their columns through the gaps in the top rails, crossing
+# the lanes of the ones going further; 26 comes in just above row j, and 27
+# to 29 in nested lanes just below it.
 bench = Bench ("Simon: buttons on pins 22 to 25, LEDs on 26 to 29, and a passive buzzer on 10",
                columns=(1, 40))
 

@@ -1,12 +1,7 @@
 # The screen at its home, its contrast knob across the middle gap, and the
-# rotary encoder at its home above the Mega, wired as in Lesson 29: CLK and
-# DT from 18 and 19, SW from 22, + from the inner 5V pin at the top of the
-# long header and GND from the GND beside pin 13. The 433 MHz receiver and
-# transmitter stand at their homes from Lesson 38, in row j past the
-# screen, with every wire coming up from below, round the bottom of the
-# screen: the receiver in columns 48 to 51 with 5 V from the power header
-# and pin 43 into DATA's column; the transmitter in columns 56 to 59 with
-# the Mega's 3.3V, its DAT the middle of a divider from pin 46.
+# rotary encoder at its home, wired as in Lesson 29, on 18 and 19 with its
+# switch on 22. The 433 MHz receiver on pin 43 and transmitter on pin 46
+# stand at their homes from Lesson 38.
 bench = Bench ("A 433 MHz receiver on pin 43 and transmitter on pin 46, the rotary encoder on 18 "
                "and 19 with its switch on 22, and the LCD on pins 31 to 36", columns=(1, 62))
 

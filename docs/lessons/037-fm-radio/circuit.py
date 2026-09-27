@@ -1,13 +1,9 @@
 # The screen at its home, as in Lesson 13, and the rotary encoder at its home
-# above the Mega, wired as in Lesson 29. The FM radio stands in row j,
-# columns 45 to 52, its board over the top rails and its headphone socket
-# to the left. Its wires come up from below, round the bottom of the
-# screen: pins 42, 41 and 40 into RST, SCLK and SDIO, and the Mega's 3.3V
-# into the radio's 3.3V column, 52. The 1 kΩ from RST to 3.3 V lies along
-# row h, and a black jumper takes GND down to the bottom − rail. The volume
-# knob stands across the middle gap beside the screen, its outer legs in f57
-# and f59 with jumpers up to the top − and + rails, and its wiper in d58,
-# A0's wire coming round the bottom of the screen too into a58.
+# above the Mega, wired as in Lesson 29. The FM radio stands at its home,
+# its headphone socket to the left, on pins 42, 41 and 40 (RST, SCLK and
+# SDIO) and the Mega's 3.3V. The volume knob stands at its home past the
+# radio, across the middle gap, A0's wire coming round the bottom of the
+# screen as the radio's wires do.
 bench = Bench ("An FM radio on pins 40, 41 and 42, the rotary encoder on 18, 19 and 22, a volume "
                "knob on A0, and the LCD on pins 31 to 36", columns=(1, 62))
 

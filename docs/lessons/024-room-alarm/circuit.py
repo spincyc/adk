@@ -1,9 +1,9 @@
-# The course's screen at its home, from column 5, as in Lesson 13. Past it,
-# the parts that share a lesson with the screen stand at their second
-# homes: the RGB LED in columns 41-46 and the active buzzer on 12 in column
-# 51. The IR receiver sits above the board between the screen's wires and
-# the LED's, taking its power from the top rails below it; the PIR sits
-# below the Mega, as in Lesson 23, powered from the Mega's own 5V and GND.
+# The course's screen at its home, as in Lesson 13. Past it, the parts that
+# share a lesson with the screen stand at their second homes: the RGB LED
+# on 5, 6 and 7 and the active buzzer on 12. The IR receiver sits above the
+# board between the screen's wires and the LED's, taking its power from the
+# top rails below it; the PIR sits at its home below the Mega, as in
+# Lesson 23.
 bench = Bench ("A room alarm: an LCD on 31 to 36, a PIR sensor on A12, an IR receiver on 2, an "
                "active buzzer on 12 and an RGB LED on 5, 6 and 7", columns=(1, 55))
 

@@ -1,9 +1,6 @@
 # Every part at its home, left to right: the five LEDs of the bar on pins 26
-# to 30 in columns 6 to 30, each from its pin into row j, through its 220 Ω
-# across the middle gap, the LED, and a black jumper to the − rail; then the
-# light sensor's divider in column 40, from the top + rail down through the
-# photoresistor across the gap to the point A1 reads, and on through 10 kΩ
-# to the − rail. Of Lesson 7's dimmer, only the Mega's power wires stay.
+# to 30, then the light sensor's divider on A1. Of Lesson 7's dimmer, only
+# the Mega's power wires stay.
 bench = Bench ("A photoresistor divider on A1, and five LEDs on pins 26 to 30", columns=(1, 50))
 
 # The five wires leave the double header as a ribbon and spread onto their

@@ -1,8 +1,8 @@
-# The course's screen at its home, and the button on 23 beside it in
-# columns 38-40. The Mega's 5V feeds the top rails, for the screen, as it
-# did in Lesson 39; the power module at the right end, its top jumper off,
-# feeds only the bottom rails, at 3.3 V for the modems. The Mega's GND
-# joins them all at B-3. The modems stand below the board past the
+# The course's screen at its home, and the button on 23 at its home beside
+# it. The Mega's 5V feeds the top rails, for the screen, as it did in
+# Lesson 39; the power module at the right end, its top jumper off, feeds
+# only the bottom rails, at 3.3 V for the modems. The Mega's GND joins
+# them all at B-3. The modems stand below the board past the
 # button, B on Serial3 (pins 14 and 15) first and A on Serial1 (18 and 19)
 # after it, as their pins lie along the Mega's header. Each takes two
 # columns and the one between: its TXD comes straight up into f and meets

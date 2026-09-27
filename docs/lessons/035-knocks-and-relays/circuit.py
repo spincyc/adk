@@ -1,13 +1,11 @@
-# The tap sensor lies below the left end of the Mega, where it stays in
-# Lesson 36 beside the RFID reader: + and − from the power header's 5V and
-# GND, S from A12. The relay lies on its side above the board, its pins
-# facing the Mega: S from pin 11 over the Mega, + and − from the long
-# header's inner 5V and GND. The lamp is a circuit of its own, laid out like
-# any LED: NO into j13, the 1 kΩ resistor across the gap, the red LED in
-# b13-b14, and the battery's black lead into a14. The battery stands beside
-# the board, its terminals up: the black lead runs in just below row a, so
-# the close-up shows where it goes, and the red lead rises to COM. Nothing
-# in the lamp's circuit touches the rails.
+# The tap sensor lies at its home below the left end of the Mega, where it
+# stays in Lesson 36 beside the RFID reader, S on A12. The relay lies at its
+# home above the board, S on pin 11. The lamp is a circuit of its own, laid
+# out like any LED: NO into j13, the 1 kΩ resistor across the gap, the red
+# LED in b13-b14, and the battery's black lead into a14. The battery stands
+# beside the board, its terminals up: the black lead runs in just below row
+# a, so the close-up shows where it goes, and the red lead rises to COM.
+# Nothing in the lamp's circuit touches the rails.
 bench = Bench ("A relay on pin 11 switching a 9 V battery, 1 kΩ resistor and LED, and a tap "
                "sensor on pin A12", columns=(1, 24))
 

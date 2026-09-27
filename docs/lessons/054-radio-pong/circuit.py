@@ -1,17 +1,10 @@
 # Two boards built the same: Lesson 27's game on each, and the LoRa modem
-# at the bridge's home. The LED matrix lies below the gap between the Mega
-# and the breadboard, input pins up, its GND from B-5 and VCC from the
-# inner 5V pin; the joystick lies below the Mega under A3 and A4, powered
-# from the power header's 5V and the inner GND pin, its switch on 22; the
-# passive buzzer stands across the gap in column 34, pin 10 into j34 and
-# its 220 Ω from a34 to the − rail.
+# at the bridge's home. The LED matrix, the joystick on A3 and A4 and the
+# passive buzzer on pin 10 lie at their homes.
 #
-# The modem lies below the board under columns 42-47, aerial down, its
-# TXD up into f44 beside RX3 (pin 15) in j44, TX3 (pin 14) into j46 and
-# down through 1 kΩ and 2 kΩ to the − rail, the modem's RXD into c46
-# between them, its GND into B-42 and its VDD from the Mega's 3.3V pin.
-# Pins 10, 14 and 15 cross over the top in lanes, 10 highest, so its wire
-# crosses the other two just once each, over the board's end.
+# The modem is on Serial3 (pins 14 and 15), its VDD from the Mega's 3.3V
+# pin. Pins 10, 14 and 15 cross over the top in lanes, 10 highest, so its
+# wire crosses the other two just once each, over the board's end.
 
 # The matrix is drawn turned half round, so its picture is given upside
 # down: the paddle on the bottom row, the ball on its way up.

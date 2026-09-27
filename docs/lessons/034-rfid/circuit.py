@@ -1,10 +1,7 @@
-# The RGB LED stands at its home, as in Lesson 4: pins 5, 6 and 7 into j6,
-# j9 and j11, a 220 Ω resistor across the gap above each colored leg, its
-# common leg in B-7. The RFID reader lies below the middle of the Mega (its
-# place in Lesson 36 too, leaving room on the left for the tap sensor): 3.3V
-# comes across from the power header, and GND, 45 and the SPI pins drop
-# beside the long header, nested, then run under the Mega and step down
-# onto the reader's pins.
+# The RGB LED stands at its home, as in Lesson 4, on pins 5, 6 and 7. The
+# RFID reader lies at its home below the middle of the Mega (its place in
+# Lesson 36 too, leaving room on the left for the tap sensor), on the
+# Mega's 3.3V, pin 45 and the SPI pins.
 bench = Bench ("An RC522 RFID reader on the SPI pins 50 to 53 and pin 45, powered from 3.3 V, "
                "and an RGB LED on pins 5, 6 and 7", columns=(1, 30))
 

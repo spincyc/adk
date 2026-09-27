@@ -1,9 +1,9 @@
 # Lesson 17's power module, screen and servo stay as they are; its knob
 # goes. The keypad comes back from Lesson 16, in the same place, and the
-# active buzzer stands beside the screen at its home in column 51. As in
-# Lesson 17, the module's top jumper is off, so the Mega's 5V feeds the top
-# rails for the screen, and the module feeds only the bottom rails, for the
-# servo; the Mega's GND joins them all at B-3.
+# active buzzer stands at its home beside the screen. As in Lesson 17, the
+# module's top jumper is off, so the Mega's 5V feeds the top rails for the
+# screen, and the module feeds only the bottom rails, for the servo; the
+# Mega's GND joins them all at B-3.
 bench = Bench ("A keypad safe: the keypad on pins 22 to 29, the screen on 31 to 36, a servo latch "
                "on 44 powered by the power module, and the buzzer on 12", columns=(1, 63))
 

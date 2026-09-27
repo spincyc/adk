@@ -1,9 +1,8 @@
 # Lesson 14's screen and DHT11 stay exactly where they were; the thermistor
 # and the 18B20 go. Past the screen, at their homes beside it: the RGB LED
-# in columns 41-46, its resistors across the gap and its common leg in the
-# bottom − rail; the active buzzer across the gap in column 51; and the
-# alarm knob in e57-e59, its wiper reached by A0's wire round the bottom
-# of the screen. The wires from the top header pass over the DHT11.
+# on pins 5 to 7, the active buzzer on 12, and the alarm knob, its wiper
+# reached by A0's wire round the bottom of the screen. The wires from the
+# top header pass over the DHT11.
 bench = Bench ("A weather station: the DHT11 on pin 16, the RGB LED on pins 5 to 7, the knob on A0 "
                "and the buzzer on pin 12, with the screen from Lesson 13", columns=(1, 62))
 

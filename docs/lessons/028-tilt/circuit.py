@@ -1,8 +1,6 @@
 # The matrix of Lessons 25 to 27 stays as it was; the joystick and buzzer
-# go. The GY-521 stands in row j, columns 9 to 16, its board over the top
-# rails: a red jumper from T+7, just beside it, feeds VCC, and two black
-# jumpers carry GND across the gap to the bottom − rail. Pins 20 and 21 come
-# over the top header and down onto the board beside it, clear of the rest.
+# go. The GY-521 stands at its home, on pins 20 and 21, which come over the
+# top header and down onto the board beside it, clear of the rest.
 bench = Bench ("A GY-521 accelerometer on the I2C pins 20 and 21, and the LED matrix")
 
 # The matrix is drawn turned half round, so its picture is given upside down.

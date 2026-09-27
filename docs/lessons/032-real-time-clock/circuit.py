@@ -1,8 +1,7 @@
-# The course's screen at its home, as in Lesson 13. The clock module lies on
-# its side above the board, clear of the screen's signal wires, where it
-# stays in Lesson 33, whose knob sits above the Mega: GND and VCC drop
-# straight into T-29 and T+30, and SDA and SCL come over the top from pins
-# 20 and 21 and in from the module's right.
+# The course's screen at its home, as in Lesson 13. The clock module lies at
+# its home above the board, clear of the screen's signal wires, where it
+# stays in Lesson 33, whose knob sits above the Mega; SDA and SCL come from
+# pins 20 and 21.
 bench = Bench ("A clock module on pins 20 and 21, and the LCD on pins 31 to 36", columns=(1, 35))
 
 bench.screen (text=("Date  2026-09-24", "Time    20:30:05"))

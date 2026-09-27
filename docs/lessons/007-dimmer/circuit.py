@@ -1,8 +1,6 @@
-# Both parts at their homes. The white LED, the one that dims, in column 38:
-# pin 3 into j38, its 220 Ω across the middle gap, the LED, and a black
-# jumper to the − rail. Then the knob in e45 to e47: its left leg to the −
-# rail, its wiper on A0, and its right leg up to the top + rail. Lesson 8
-# takes both out; Lesson 9 brings the knob back to the same holes.
+# Both parts at their homes: the white LED on pin 3, the one that dims, and
+# the knob, its wiper on A0. Lesson 8 takes both out; Lesson 9 brings the
+# knob back to the same holes.
 bench = Bench ("A white LED on pin 3 through 220 Ω, and a knob on A0 between GND and 5 V",
                columns=(1, 50))
 

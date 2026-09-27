@@ -1,14 +1,11 @@
-# Each board keeps its LoRa modem at the bridge home, as in Lesson 45:
-# below the board under columns 42-47, aerial down, its TXD up into f44
-# beside RX3 (pin 15) in j44, TX3 (pin 14) reaching its RXD in c46 through
-# 1 kΩ across the gap and 2 kΩ down to the − rail, its GND in B-42, and its
-# VDD on the Mega's own 3.3V pin.
+# Each board keeps its LoRa modem at the bridge home, as in Lesson 45, on
+# Serial3 (pins 14 and 15), its VDD on the Mega's own 3.3V pin.
 #
-# Board A, the garden: Lesson 14's thermometers at their homes, the DHT11
-# and the 18B20 above the board and the thermistor's divider on A2, here in
-# column 33 because the light sensor's divider takes its home in column 40;
-# A1's wire runs outside A2's, so they never cross. The green LED on 28 at
-# its home in column 18 shows the link.
+# Board A, the garden: Lesson 14's thermometers, the DHT11 and the 18B20
+# at their homes and the thermistor's divider on A2, here in column 33
+# because the light sensor's divider on A1 takes the home they share; A1's
+# wire runs outside A2's, so they never cross. The green LED on 28 at its
+# home shows the link.
 garden = Bench ("Board A, the garden: a DHT11 on pin 16, an 18B20 on pin 17, a thermistor "
                 "divider on A2, a light divider on A1, a green LED on pin 28 and a LoRa modem on "
                 "pins 14 and 15", columns=(1, 50), sketch="Garden")
@@ -42,9 +39,9 @@ garden.measure ("The light divider's middle, on A1", red="A1", black="GND", expe
 garden.measure ("The light divider's middle, covered", red="A1", black="GND",
                 expect="about 0.5 V", when="a finger over the photoresistor")
 
-# Board B, indoors: the course's screen at its home, and the clock module on
-# its side above it, as in Lesson 32. The RGB LED has the same shape as at
-# its home beside the screen, but the modem has columns 42-47, so it stands
+# Board B, indoors: the course's screen and the clock module at their
+# homes, as in Lesson 32. The RGB LED has the same shape as at its home
+# beside the screen, but the modem's home takes those columns, so it stands
 # just past them: its legs in a48, a51 and a53, its common leg in B-49.
 indoors = Bench ("Board B, indoors: the LCD on pins 31 to 36, a clock module on 20 and 21, an RGB "
                  "LED on 5, 6 and 7 and a LoRa modem on pins 14 and 15", columns=(1, 56),

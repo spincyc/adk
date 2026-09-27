@@ -1,13 +1,8 @@
-# The screen at its home, and the push button on 23 at its home beside it,
-# in columns 38 to 40. The 433 MHz receiver and transmitter stand in row j
-# past it, their boards over the top rails and their springs pointing up,
-# with every wire coming up from below, round the bottom of the screen.
-# The receiver, in columns 48 to 51, takes 5 V from the Mega's power header
-# into VCC's column, pin 43 into DATA's, and a black jumper takes GND down
-# to the bottom − rail. The transmitter, in columns 56 to 59, takes the
-# Mega's 3.3V into its + column and GND the same way; its DAT is the middle
-# of a divider: pin 46 into f54, 1 kΩ along row h to DAT's column, and
-# 2 kΩ across the gap and down to the − rail.
+# The screen at its home, and the push button on 23 at its home beside it.
+# The 433 MHz receiver and transmitter stand at their homes past it, their
+# springs pointing up. The receiver, on pin 43, runs from 5 V; the
+# transmitter runs from the Mega's 3.3V, and its DAT is the middle of a
+# divider from pin 46.
 bench = Bench ("A 433 MHz receiver on pin 43 and transmitter on pin 46, a button on pin 23, and "
                "the LCD on pins 31 to 36", columns=(1, 62))
 

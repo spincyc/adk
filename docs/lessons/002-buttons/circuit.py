@@ -1,9 +1,8 @@
-# Lesson 1's red LED stays at its home in column 6. The buttons on 22 and 23
-# join it at their homes, across the middle gap in columns 2-4 and 8-10, and
-# the yellow LED on 27 stands at its home in column 12. Each signal comes in
-# at row j, crosses the gap through its part, and returns by the bottom
-# − rail, which the Mega's GND feeds at B-3. The buttons' wires reach row j
-# from above and the LEDs' from lanes just below it, nested so none cross.
+# Lesson 1's red LED stays at its home. The buttons on 22 and 23 join it at
+# their homes, and the yellow LED on 27 stands at its home. Each returns to
+# GND by the bottom − rail, which the Mega's GND feeds at B-3. The buttons'
+# wires reach row j from above and the LEDs' from lanes just below it,
+# nested so none cross.
 bench = Bench ("Two buttons on pins 22 and 23, and two LEDs on pins 26 and 27", columns=(1, 20))
 
 bench.home_button ("22")

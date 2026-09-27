@@ -1,14 +1,13 @@
 # The power module at its home on the right end feeds only the bottom rails,
 # for the motor (its top jumper off); the Mega's 5V feeds the top rails, for
 # the chip's logic and the knob, and the Mega's GND joins them all at B-3.
-# The reverse button on 22 and the knob on A0 stand at their homes, in
-# columns 2 and 45. The L293D's upper half drives the motor: the chip across
-# the gap in columns 12-19, its logic power from the top + rail, its GND and
-# the motor's power from the bottom rails. Forward, pin 8, drives 3A and so
-# 3Y, which takes the motor's red lead, so forward puts + on the red lead.
-# The motor lies above the board with its leads straight down into the
-# chip's outputs, the wire from 9 passing under it and those from 8 and 4
-# over it.
+# The reverse button on 22 and the knob on A0 stand at their homes. The
+# L293D's upper half drives the motor: the chip across the gap in columns
+# 12-19, its logic power from the top + rail, its GND and the motor's power
+# from the bottom rails. Forward, pin 8, drives 3A and so 3Y, which takes
+# the motor's red lead, so forward puts + on the red lead. The motor lies
+# at its home above the board, the wire from 9 passing under it and those
+# from 8 and 4 over it.
 bench = Bench ("A DC motor on an L293D (enable 4, forward 8, backward 9), powered from the "
                "breadboard power module, with a button on 22 and a knob on A0", columns=(1, 63))
 

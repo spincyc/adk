@@ -1,7 +1,5 @@
-# The RGB LED at its home, as in Lesson 4: its legs in row a of columns 6, 9
-# and 11, its longest leg in the − rail, and a 220 Ω resistor across the
-# middle gap above each colored leg, fed from pins 5, 6 and 7. The IR
-# receiver sits above the gap between the Mega and the breadboard, under
+# The RGB LED stands at its home, as in Lesson 4, on pins 5, 6 and 7. The
+# IR receiver sits above the gap between the Mega and the breadboard, under
 # the LED's wires: its signal to pin 2, its power from the Mega's 5V and GND
 # at the ends of the long header.
 bench = Bench ("An IR receiver on pin 2, and an RGB LED on pins 5, 6 and 7, each color through "

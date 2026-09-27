@@ -1,10 +1,8 @@
 # Lesson 11's display circuit, kept hole for hole (the rails joined in
 # column 6, the 74HC595 in columns 18-25, the resistors, and the four-digit
-# display in columns 51-56), with the controls added: the buttons on pins 22,
-# 23 and 24 at their homes in columns 2-4, 8-10 and 14-16, each with its
-# black jumper to the − rail, and the active buzzer on pin 12 across the
-# middle gap in column 35, one column past its home at 34, where it would
-# sit on the wires rising over the gap.
+# display in columns 51-56), with the controls added: the buttons on pins
+# 22, 23 and 24 at their homes, and the active buzzer on pin 12 at its home
+# beside the four-digit display, clear of the wires rising over the gap.
 X = lambda column: round (5.30 + 0.1 * column, 3)    # inches, as bench.py draws
 Y = lambda row: round (0.55 + row, 3)               # row offsets from the board's top
 
@@ -75,7 +73,7 @@ bench.wire ("41", "j54", via=[(4.85, 1.75), (4.85, 0.25), (X (54), 0.25)])
 bench.wire ("42", "j55", via=[(4.20, 1.80), (4.80, 1.80), (4.80, 0.20), (X (55), 0.20)])
 bench.wire ("43", "a56")
 
-# The active buzzer on pin 12, across the gap in column 35.
+# The active buzzer on pin 12, at its home beside the four-digit display.
 bench.home_buzzer ("active")
 
 # Readings to take with a multimeter: the dot's segment line, high only

@@ -2,11 +2,11 @@
 #
 # Board A, in the nursery: Lesson 47's tripwires and red LED go, and the
 # green LED on 28 stays to show the link. The light sensor's divider comes
-# back to its home in column 40 on A1, as in Lesson 46. The sound sensor
-# lies below the Mega where the PIR was, powered from the power header, its
-# AO on A5; its DO stays unconnected. The water sensor lies beside it, its S
-# on A6 and its + on A7, the pin beside it, which powers it only while it
-# is read; its − goes to the power header's other GND.
+# back to its home on A1, as in Lesson 46. The sound sensor lies below the
+# Mega where the PIR was, powered from the power header, its AO on A5; its
+# DO stays unconnected. The water sensor lies beside it, its S on A6 and
+# its + on A7, the pin beside it, which powers it only while it is read;
+# its − goes to the power header's other GND.
 nursery = Bench ("Board A, in the nursery: a sound sensor on A5, a water sensor on A6 powered "
                  "from A7, a light divider on A1, a green LED on pin 28 and a LoRa modem on "
                  "pins 14 and 15", columns=(1, 50), sketch="Nursery")
@@ -36,10 +36,9 @@ nursery.wire ("GND.power2", "water.−")
 nursery.home_divider ("photoresistor", via=[(2.29, 2.95), (9.25, 2.95)])
 
 # Board B, with the parent: Lesson 47's screen and clock module stay, and the
-# IR receiver stays to hush the alarm. The passive buzzer takes the active
-# buzzer's place in column 51, on pin 10, with its 220 Ω resistor down to
-# the − rail. The LED matrix lies at its home below the gap between the
-# Mega and the board, but the screen's contrast knob has B-5, so its GND
+# IR receiver stays to hush the alarm. The passive buzzer on pin 10 takes
+# the active buzzer's place, at its home beside the screen. The LED matrix
+# lies at its home, but the screen's contrast knob has B-5, so its GND
 # comes one hole nearer the Mega, into B-4.
 parent = Bench ("Board B, with the parent: the LCD on pins 31 to 36, a clock module on 20 and 21, "
                 "an IR receiver on pin 2, a passive buzzer on pin 10, an LED matrix on pins 47 "

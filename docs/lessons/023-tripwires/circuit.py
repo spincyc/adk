@@ -1,9 +1,9 @@
-# The four LEDs at their homes: red on 26 in column 6, yellow on 27 in 12,
-# green on 28 in 18 and blue on 29 in 24. The tilt switch follows them in
-# columns 32 and 33, its wire from A14 coming up from below, and the
-# beam-break and obstacle sensors lie below the board past it, each
-# powered from the bottom rails above it. The PIR sits below the Mega at
-# the place it keeps in Lesson 24, powered from the Mega's own 5V and GND.
+# The four LEDs stand at their homes: red on 26, yellow on 27, green on 28
+# and blue on 29. The tilt switch follows them in columns 32 and 33, its
+# wire from A14 coming up from below. Past it, below the board, the
+# beam-break sensor lies at its home and the obstacle sensor beside it,
+# powered from the bottom rails above it. The PIR sits at its home below
+# the Mega, the place it keeps in Lesson 24.
 bench = Bench ("A PIR sensor on A12, an obstacle sensor on A13, a tilt switch on A14 and a "
                "beam-break sensor on A15, lighting the red, yellow, green and blue LEDs on 26 "
                "to 29", columns=(1, 63))

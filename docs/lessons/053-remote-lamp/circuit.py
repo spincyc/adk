@@ -1,18 +1,15 @@
-# Two boards, each with its LoRa modem at the bridge's home: below the
-# board under columns 42-47, aerial down, its TXD up into f44 beside RX3
-# (pin 15) in j44, TX3 (pin 14) into j46 and down through 1 kΩ and 2 kΩ
-# to the − rail, the modem's RXD into c46 between them, its GND into B-42
-# and its VDD from the Mega's 3.3V pin.
+# Two boards, each with its LoRa modem at the bridge's home, on Serial3
+# (pins 14 and 15), its VDD from the Mega's 3.3V pin.
 #
 # Board A: Lesson 52's screen stays at its home and the knob goes. The IR
 # receiver sits at its home beside the screen, above the board over
 # columns 28-30, as in Lesson 24: its signal to pin 2, its power from the
 # top rails below it.
 #
-# Board B: the relay above the board and its lamp, laid out as in Lesson
-# 35: NO into j13, the 1 kΩ across the gap, the red LED in b13-b14. The
-# 9 V battery stands below the board under the lamp, its black lead into
-# a14 and its red lead round to COM. The IR LED module's home is pin 3's,
+# Board B: the relay at its home and its lamp, laid out as in Lesson 35:
+# NO into j13, the 1 kΩ across the gap, the red LED in b13-b14. The 9 V
+# battery stands below the board under the lamp, its black lead into a14
+# and its red lead round to COM. The IR LED module's home is pin 3's,
 # column 38: pin 3 into j38, 220 Ω across the gap to e38, and the module
 # below the board, its LED pointing away, S into a38 and − into B-36; its
 # middle pin stays empty. Nothing here needs the power module: the relay's

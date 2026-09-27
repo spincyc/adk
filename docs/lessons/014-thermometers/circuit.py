@@ -1,9 +1,8 @@
 # Lesson 13's screen stays exactly where it was. The thermistor's divider
-# takes its home in column 40, just past the screen, and A2's wire reaches
-# it round the bottom of the screen. The two sensor modules sit above the
-# board, powered from the top rails: the 18B20 nearer the Mega and the
-# DHT11 after it, so that pin 16's wire can pass over the 18B20 and no
-# wire crosses another.
+# takes its home just past the screen, and A2's wire reaches it round the
+# bottom of the screen. The two sensor modules sit at their homes above the
+# board: the 18B20 nearer the Mega and the DHT11 after it, so that pin 16's
+# wire can pass over the 18B20 and no wire crosses another.
 bench = Bench ("A DHT11 on pin 16, a thermistor divider on A2 and an 18B20 on pin 17, "
                "with the screen from Lesson 13", columns=(1, 45))
 

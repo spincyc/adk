@@ -1,16 +1,14 @@
-# Lesson 32's clock, unchanged: the screen at its home and the clock module
-# on its side above the board, SDA and SCL now stepping right round the
-# knob. The knob, the rotary encoder, sits at its home above the Mega: CLK
-# and DT from 18 and 19, SW and + from the long header (22 and its inner
-# 5V), GND from the GND beside pin 13. The snooze button and the passive
-# buzzer take their homes beside the screen, in columns 38 and 51, their pin
-# wires coming over the top. The flag is Lesson 31's stepper, its driver
-# below the Mega as it was there; the power module at the right end feeds
-# only the bottom rails, for the driver, its top jumper off, so the screen
-# and clock keep the Mega's 5V on the top rails. The screen's knob jumper
-# takes column 5 and the LCD covers the bottom rails from column 6, so the
-# driver's + and − come in one column nearer the Mega than in Lesson 31, at
-# B+4 and B-4.
+# Lesson 32's clock, unchanged: the screen and the clock module at their
+# homes, SDA and SCL now stepping right round the knob. The knob, the
+# rotary encoder, sits at its home above the Mega, on 18, 19 and 22. The
+# snooze button and the passive buzzer take their homes beside the screen,
+# their pin wires coming over the top. The flag is Lesson 31's stepper, its
+# driver at its home as it was there; the power module at the right end
+# feeds only the bottom rails, for the driver, its top jumper off, so the
+# screen and clock keep the Mega's 5V on the top rails. The screen's knob
+# jumper takes column 5 and the LCD covers the bottom rails from column 6,
+# so the driver's + and − come in one column nearer the Mega than in
+# Lesson 31, at B+4 and B-4.
 bench = Bench ("Lesson 32's clock and LCD, with a knob on pins 18, 19 and 22, a snooze button on "
                "pin 23, a passive buzzer on pin 10, and a stepper flag on pins A8 to A11 powered "
                "from the power module", columns=(1, 63))
@@ -26,8 +24,8 @@ bench.home_button ("23", via=[(4.4, 0.85), (4.4, -1.7), (9.1, -1.7)])
 bench.home_buzzer ("passive", via=[(1.9, -2.4), (10.4, -2.4)])
 
 bench.power_module ("right", top="off", bottom="5V")
-# The IN wires cross in Lesson 31's staircase; the + wire rises between
-# B-3 and B-4 to reach B+4.
+# The driver without its usual + and − wires, which come in below; the +
+# wire rises between B-3 and B-4 to reach B+4.
 bench.home_stepper (powered=False)
 bench.wire ("stepper.+", "B+4", via=[(3.56, 3.65), (5.65, 3.65), (5.65, 2.5)])
 bench.wire ("stepper.−", "B-4", via=[(3.66, 3.75), (5.7, 3.75)])

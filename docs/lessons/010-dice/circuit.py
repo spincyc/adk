@@ -1,5 +1,5 @@
-# From the end nearest the Mega: the button on pin 22 at its home (columns
-# 2-4); a black jumper joins the top − rail to the bottom one in column 6;
+# From the end nearest the Mega: the button on pin 22 at its home; a
+# black jumper joins the top − rail to the bottom one in column 6;
 # the 74HC595 in e18-e25/f18-f25, VCC and MR to the top + rail, OE to the
 # top − rail, GND to the bottom one, pins 37, 39 and 38 dropping into its
 # data, latch and clock columns. Each output then meets its own 1 kΩ: Q0 (a)

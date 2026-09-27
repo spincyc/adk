@@ -1,17 +1,14 @@
-# Two boards, each with its LoRa modem at the bridge's home: below the
-# board under columns 42-47, aerial down, its TXD up into f44 beside RX3
-# (pin 15) in j44, TX3 (pin 14) into j46 and down through 1 kΩ and 2 kΩ
-# to the − rail, the modem's RXD into c46 between them, its GND into B-42
-# and its VDD from the Mega's 3.3V pin.
+# Two boards, each with its LoRa modem at the bridge's home, on Serial3
+# (pins 14 and 15), its VDD from the Mega's 3.3V pin.
 #
 # Board A: the screen at its home, as in Lesson 13, and the knob on A0 at
-# its home beside the screen, e57 to e59, A0's wire coming round below
-# the modem. The four-digit display would cover the modem's divider, so
-# the screen shows the angles.
+# its home beside the screen, A0's wire coming round below the modem. The
+# four-digit display would cover the modem's divider, so the screen shows
+# the angles.
 #
-# Board B: the stepper's driver below the Mega, as in Lesson 31, on the
-# power module's bottom rails at 5 V; the top jumper is off, as nothing
-# uses the top rails.
+# Board B: the stepper's driver at its home, as in Lesson 31, on the power
+# module's bottom rails at 5 V; the top jumper is off, as nothing uses the
+# top rails.
 knob = Bench ("Board A: a knob on A0, the LCD on pins 31 to 36, and a LoRa modem on pins 14 "
               "and 15, its VDD from the Mega's 3.3V pin", columns=(1, 62), sketch="Knob")
 

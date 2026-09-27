@@ -1,10 +1,7 @@
-# Lesson 2's build stays as it is: the buttons on 22 and 23 across the middle
-# gap in columns 2-4 and 8-10, the red LED on 26 in column 6 and the yellow
-# LED on 27 in column 12. The green LED on 28 joins them at its home in
-# column 18, and the active buzzer on 12 stands across the gap at its home in
-# column 34, its − leg returning to the bottom − rail by a black jumper. The
-# LEDs' wires reach row j from nested lanes just below it; pin 12's comes
-# over the top of the board.
+# Lesson 2's build stays as it is: the buttons on 22 and 23 and the red and
+# yellow LEDs on 26 and 27. The green LED on 28 and the active buzzer on 12
+# join them at their homes. The LEDs' wires reach row j from nested lanes
+# just below it; pin 12's comes over the top of the board.
 bench = Bench ("A two-player reaction game: buttons on 22 and 23, LEDs on 26 to 28, "
                "and an active buzzer on 12", columns=(1, 40))
 

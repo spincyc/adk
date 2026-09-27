@@ -1,8 +1,6 @@
-# The button on 22 stays at its home across the middle gap in columns 2-4,
-# with its wires, as in Lessons 2 to 4. The buttons on 23, 24 and 25 join it
-# at their homes in columns 8-10, 14-16 and 20-22, and the passive buzzer on
-# 10 stands across the gap at its home in column 34, its 220 Ω resistor from
-# a34 down into the bottom − rail. Pin 22's wire reaches row j from above,
+# The button on 22 stays at its home, with its wires, as in Lessons 2 to 4.
+# The buttons on 23, 24 and 25 join it at their homes, and the passive
+# buzzer on 10 stands at its home. Pin 22's wire reaches row j from above,
 # 23 to 25 from nested lanes just below it, and pin 10's over the top of the
 # board, so no two cross.
 bench = Bench ("A four-key keyboard: buttons on pins 22 to 25, and a passive buzzer on pin 10 "

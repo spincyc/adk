@@ -1,8 +1,8 @@
 # Lesson 29's rotary encoder stays as it was; the screen and LED go. The
 # GY-521 and the matrix come back as in Lesson 28, except that the matrix's
 # VCC takes the power header's 5V, since the encoder has the long header's
-# inner 5V pin. The passive buzzer stands at its home in column 34, pin 10's
-# wire going over the encoder, its 220 Ω resistor down to the − rail.
+# inner 5V pin. The passive buzzer stands at its home, pin 10's wire going
+# over the encoder.
 bench = Bench ("The GY-521 and LED matrix of Lesson 28, the rotary encoder of Lesson 29, and a "
                "passive buzzer on pin 10", columns=(1, 40))
 

@@ -5,7 +5,7 @@
 # and its own cable powering it: its GPIO48 comes up into f53, where pin
 # 19's wire still waits, its GPIO47 up beside the divider into c55, and
 # its GND to the − rail past the divider. The RGB LED is the lamp, at its
-# home beside the screen in columns 41-46, as in Lesson 15.
+# home beside the screen, as in Lesson 15.
 bench = Bench ("A Meshtastic board on pins 18 and 19, its GPIO47 through a 1 kΩ and 2 kΩ divider "
                "and powered from its own USB cable; the RGB LED lamp on pins 5 to 7, the DHT11 on "
                "pin 16, a button on 23 and the LCD on pins 31 to 36", columns=(1, 63))

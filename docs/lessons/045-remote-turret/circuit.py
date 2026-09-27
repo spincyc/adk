@@ -1,8 +1,6 @@
 # Board A, the joystick: Lesson 44's screen and LoRa modem stay where they
-# were; the rotary encoder comes out, and the joystick lies at its home
-# below the Mega under A3 and A4, as in Lesson 26: its +5V from the power
-# header, its GND from the inner GND pin at the end of the long header, and
-# its switch on 22.
+# were; the rotary encoder comes out, and the joystick goes in at its home
+# on A3 and A4, as in Lesson 26, its switch on 22.
 stick = Bench ("Board A: the LCD on pins 31 to 36, a joystick on A3 and A4 with its switch on "
                "22, and the LoRa modem on Serial3 (pins 14 and 15)", columns=(1, 50),
                sketch="Joystick")
@@ -16,13 +14,12 @@ stick.home_modem ()
 # Board B, the turret: Lesson 44's power module, modem and servo stay, and
 # the yellow LED comes out, as the L293D takes its column; the Mega's own
 # L LED on pin 13 shows the link instead. The ultrasonic sensor takes
-# pins 14 and 15, so the modem moves to Serial2: TX2 (pin 16) into j46 and
-# RX2 (pin 17) into j44, the holes 14 and 15 had. Lesson 21's turret goes
-# in as it was there: the sensor above the Mega, its VCC on the inner 5V
-# pin and its GND in T-5; the L293D across the gap from column 12, its
-# logic on the Mega's 5 V from the top rails and the motor's supply from
-# the power module's bottom rails; the motor above the board with its
-# leads down into j14 and j17.
+# pins 14 and 15, so the modem moves to Serial2, TX2 (pin 16) and RX2
+# (pin 17), in the holes 14 and 15 had. Lesson 21's turret goes in as it
+# was there: the sensor at its home; the L293D across the gap from column
+# 12, its logic on the Mega's 5 V from the top rails and the motor's
+# supply from the power module's bottom rails; the motor at its home, on
+# the L293D's outputs.
 turret = Bench ("Board B: a servo on pin 44 carrying an ultrasonic sensor on 14 and 15 and a fan on "
                 "an L293D (4, 8, 9), both powered from the breadboard power module, and the LoRa "
                 "modem on Serial2 (pins 16 and 17)", columns=(1, 63), sketch="Turret")

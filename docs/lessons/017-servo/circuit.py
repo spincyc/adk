@@ -2,10 +2,9 @@
 # plugs into all four rails at the far end, its top jumper off and its
 # bottom one on 5 V: the Mega's 5V feeds the top rails, for the screen and
 # the knob, and the module feeds only the bottom rails, for the servo. The
-# Mega's GND joins them all at B-3. The knob stands at its home in e45-e47,
-# its left leg to the − rail, its wiper on A0 and its right leg up to the
-# top + rail. The servo lies below the board at its home, its plug under
-# columns 52-54: power from the bottom rails, and its signal from pin 44.
+# Mega's GND joins them all at B-3. The knob stands at its home, its wiper
+# on A0, and the servo lies at its home below the board, its signal from
+# pin 44.
 bench = Bench ("A servo on pin 44 powered by the breadboard power module, a knob on A0, and the "
                "screen from Lesson 13", columns=(1, 63))
 

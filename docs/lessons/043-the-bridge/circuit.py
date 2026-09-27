@@ -1,13 +1,10 @@
 # Two boards built the same way, each on a Mega of its own. The button on
-# 22 and the LEDs on 26 (red) and 27 (yellow) stand at their homes in
-# columns 2-4, 6 and 12, their wires nested as in Lesson 2. The LoRa modem
-# lies at its bridge home below the board, aerial down, under columns
-# 42-47, where it stays in every lesson of the two-board arcs: its TXD up
-# into f44 beside the wire from RX3 (pin 15) in j44; TX3 (pin 14) into
-# j46, through 1 kΩ across the gap and 2 kΩ down to the − rail, and its
-# RXD into c46, the divider's middle; its GND into B-42. Its VDD takes the
-# Mega's own 3.3V pin, straight from the power header: at 10 dBm the modem
-# stays within what that pin can give, so the board needs no power module.
+# 22 and the LEDs on 26 (red) and 27 (yellow) stand at their homes, their
+# wires nested as in Lesson 2. The LoRa modem lies at its bridge home below
+# the board, where it stays in every lesson of the two-board arcs, on
+# Serial3 (pins 14 and 15), its RXD the middle of a divider. Its VDD takes
+# the Mega's own 3.3V pin: at 10 dBm the modem stays within what that pin
+# can give, so the board needs no power module.
 def board (letter, sketch):
     bench = Bench (f"Board {letter}: a button on pin 22, a red LED on 26, a yellow LED on 27, and "
                    f"a LoRa modem on Serial3 (pins 14 and 15), its RXD through a 1 kΩ and 2 kΩ "

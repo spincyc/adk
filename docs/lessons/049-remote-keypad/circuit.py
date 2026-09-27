@@ -1,13 +1,9 @@
 # Each board has its LoRa modem at its bridge home, as in every two-board
-# lesson: below the board under columns 42-47, aerial down; its TXD up into
-# f44 beside the wire from RX3 (pin 15) in j44; TX3 (pin 14) into j46,
-# through 1 kΩ across the gap and 2 kΩ down to the − rail, and its RXD into
-# c46, the divider's middle; its GND into B-42 and its VDD on the Mega's
-# 3.3V pin.
+# lesson, on Serial3 (pins 14 and 15), its VDD on the Mega's 3.3V pin.
 #
-# Board A, the door: the screen at its home, and the keypad high above the
-# gap between the Mega and the breadboard, its eight wires rising from pins
-# 22-29 as in Lesson 16. Pins 14 and 15 cross them just below its plug.
+# Board A, the door: the screen and the keypad at their homes, the
+# keypad's eight wires from pins 22-29 as in Lesson 16. Pins 14 and 15
+# cross them just below its plug.
 door = Bench ("Board A: the keypad on pins 22 to 29, the screen on 31 to 36, and the LoRa modem "
               "on Serial3 (pins 14 and 15)", columns=(1, 50), sketch="Door")
 
@@ -19,12 +15,10 @@ door.home_modem (tx=[(3.15, -0.35), (9.9, -0.35)], rx=[(3.25, -0.25), (9.7, -0.2
 
 # Board B, inside: the power module at the right end, its top jumper off
 # and its bottom one on 5 V for the servo; the Mega's GND joins the rails
-# at B-3. The RGB LED at its home, as in Lesson 34: pins 5, 6 and 7 into
-# j6, j9 and j11, a 220 Ω resistor across the gap above each colored leg,
-# the common leg in B-7. The servo's plug is under columns 52-54, + into
-# B+53 and − into B-54 as at its home, but it lies lower than in Lesson 17,
-# below the modem, whose place overlaps its old one; pin 44's wire drops
-# beside the board and runs under the modem to it.
+# at B-3. The RGB LED at its home on pins 5, 6 and 7, as in Lesson 34.
+# The servo at its home beside the modem, lower than in Lesson 17, as the
+# modem's place overlaps its old one; pin 44's wire drops beside the board
+# and runs under the modem to it.
 inside = Bench ("Board B: a servo latch on pin 44 powered by the power module, the RGB LED on "
                 "pins 5, 6 and 7, and the LoRa modem on Serial3 (pins 14 and 15)",
                 columns=(1, 63), sketch="Inside")

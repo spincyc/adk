@@ -1,7 +1,6 @@
-# The red LED at its home in column 6, where it stays for the lessons that
-# follow: from pin 26 into the top half, through the resistor across the
-# middle gap, the LED, and back to GND by the bottom − rail, which the
-# Mega's GND feeds at B-3.
+# The red LED on pin 26 at its home, where it stays for the lessons that
+# follow. Its current returns to GND by the bottom − rail, which the Mega's
+# GND feeds at B-3.
 bench = Bench ("A red LED on pin 26, through a 220 Ω resistor to GND", columns=(1, 20))
 
 bench.home_led ("26", "red")

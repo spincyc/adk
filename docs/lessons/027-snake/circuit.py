@@ -1,6 +1,6 @@
 # Lesson 26's matrix and joystick stay as they were; the button goes. The
-# passive buzzer stands at its home in column 34, pin 10's wire coming over
-# the top of the board and its 220 Ω resistor going down to the bottom − rail.
+# passive buzzer stands at its home, pin 10's wire coming over the top of
+# the board.
 bench = Bench ("The joystick and LED matrix of Lesson 26, and a passive buzzer on pin 10 "
                "through 220 Ω", columns=(1, 40))
 
