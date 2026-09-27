@@ -105,9 +105,11 @@ PIN_COLORS = {
     "A8": "green", "A9": "blue", "A10": "purple", "A11": "white",
     "A12": "purple", "A13": "white", "A14": "brown", "A15": "grey",
 }
+# Each pair of rails reads − then + from top to bottom, as the kit's 830-hole
+# board is printed: − at the top edge, + at the bottom one.
 ROWS = {"j": 0.55, "i": 0.65, "h": 0.75, "g": 0.85, "f": 0.95,
         "e": 1.25, "d": 1.35, "c": 1.45, "b": 1.55, "a": 1.65,
-        "T+": 0.15, "T-": 0.25, "B+": 1.95, "B-": 2.05}
+        "T-": 0.15, "T+": 0.25, "B-": 1.95, "B+": 2.05}
 FACING = {"down": 0, "left": 90, "up": 180, "right": 270}
 
 # Chips' pins by datasheet name, pin 1 first.

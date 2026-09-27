@@ -862,7 +862,7 @@ class Drawing:
         pencil.fill ([(x + 6, y + 1.05 * DPI), (x + w - 6, y + 1.05 * DPI),
                       (x + w - 6, y + 1.15 * DPI), (x + 6, y + 1.15 * DPI)], tone=0.07)
         board = dict (kind="silk", halo="#ffffff", layer="crisp")
-        for rail, offset in (("T+", 0.06), ("T-", 0.34), ("B+", 1.86), ("B-", 2.14)):
+        for rail, offset in (("T-", 0.06), ("T+", 0.34), ("B-", 1.86), ("B+", 2.14)):
             color = "#c0564e" if rail.endswith ("+") else "#4f74ad"
             pencil.stripe ((x + 14, y + offset * DPI), (x + w - 14, y + offset * DPI), color)
             sign = "+" if rail.endswith ("+") else "−"
