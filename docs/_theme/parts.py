@@ -415,49 +415,59 @@ class Buzzer (Part):
 
 
 class Potentiometer (Part):
-    # The kit's 10 kΩ knob: three legs in a row, the wiper in the middle, its
-    # body standing behind them.
+    # The kit's 10 kΩ knob, a square body with the knob on top. Across the
+    # middle gap, as the kit's knob stands, the body sits over the gap
+    # between its outer legs and the wiper; its legs in one row, as the
+    # older drawings have it, the body stands behind them.
     mode = "input"
 
     def __init__ (self, left, wiper, right, value):
         self.holes = [left, wiper, right]
         self.value = value
         self.name = "potentiometer"
+        self.across = left[0] != wiper[0]
 
     def legs (self):
-        return list (zip (("left leg", "wiper, middle leg", "right leg"), self.holes))
+        middle = "wiper, the leg on its own" if self.across else "wiper, middle leg"
+        return list (zip (("left leg", middle, "right leg"), self.holes))
 
+    # The body's box, and where each leg meets it.
     def body (self, bench):
         points = [bench.hole_xy (hole) for hole in self.holes]
+        if self.across:
+            cx = points[1][0]
+            cy = (points[0][1] + points[1][1]) / 2
+            half = 17
+            box = (cx - half, cy - half, cx + half, cy + half)
+            ends = [(x, cy - half if y < cy else cy + half) for x, y in points]
+            return box, ends
         cx = sum (x for x, _ in points) / 3
         y = min (y for _, y in points)
         half = max (21, (points[2][0] - points[0][0]) / 2 + 6)
-        return cx, y, half
+        box = (cx - half, y - 2 * half - 4, cx + half, y - 4)
+        return box, [(x, y - 5) for x, _ in points]
 
     def footprint (self, bench):
-        cx, y, half = self.body (bench)
-        return [("rect", cx - half, y - 2 * half - 4, cx + half, y - 4)]
+        return [("rect",) + self.body (bench)[0]]
 
     def shapes (self, bench):
-        cx, y, half = self.body (bench)
-        legs = [lead_shape (bench.hole_xy (hole), (bench.hole_xy (hole)[0], y - 5))
-                for hole in self.holes]
-        return [("rect", cx - half, y - 2 * half - 4, cx + half, y - 4)] + legs
+        box, ends = self.body (bench)
+        return [("rect",) + box] + [lead_shape (bench.hole_xy (hole), end)
+                                    for hole, end in zip (self.holes, ends)]
 
     def labels (self, bench):
-        cx, y, half = self.body (bench)
-        box = (cx - half, y - 2 * half - 4, cx + half, y - 4)
-        return [Label (self.value, spots_round (box, self.value, bench.label_size), (cx, box[1]))]
+        box, _ = self.body (bench)
+        return [Label (self.value, spots_round (box, self.value, bench.label_size),
+                       ((box[0] + box[2]) / 2, box[1]))]
 
     def draw (self, pencil, bench):
-        cx, y, half = self.body (bench)
-        for hole in self.holes:
-            hx, hy = bench.hole_xy (hole)
-            pencil.lead ((hx, hy), (hx, y - 5))
-        top = y - 2 * half - 4
-        pencil.tint (rounded (cx - half, top, 2 * half, 2 * half, 3), "#7fa6d9")
-        pencil.rect (cx - half, top, 2 * half, 2 * half, width=1.0, radius=3, layer="top")
-        kx, ky, kr = cx, top + half, half * 0.72
+        (x0, y0, x1, y1), ends = self.body (bench)
+        for hole, end in zip (self.holes, ends):
+            pencil.lead (bench.hole_xy (hole), end)
+        side = x1 - x0
+        pencil.tint (rounded (x0, y0, side, side, 3), "#7fa6d9")
+        pencil.rect (x0, y0, side, side, width=1.0, radius=3, layer="top")
+        kx, ky, kr = (x0 + x1) / 2, (y0 + y1) / 2, side * 0.36
         pencil.spot (kx, ky, kr, "#efeae0")
         pencil.circle (kx, ky, kr, width=1.0, layer="top")
         for index in range (18):

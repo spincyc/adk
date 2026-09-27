@@ -86,6 +86,10 @@ animation, exactly like a flip book.
     rest the part of the screen that hangs off the breadboard on something the
     same height, such as the kit's box, so it can't lever its pins out.
 
+The knob's three legs aren't in a line: two stand side by side and the
+third, the wiper, stands on its own opposite them. It fits across the
+middle gap, the two legs in row f and the wiper in row d.
+
 <!-- bench -->
 
 <!-- steps -->
@@ -93,9 +97,9 @@ animation, exactly like a flip book.
 ??? info "What each of the LCD's sixteen pins does"
     | Pin | Name | Job | Goes to |
     |--:|---|---|---|
-    | 1 | VSS | Ground | GND, from the knob's left-leg column |
+    | 1 | VSS | Ground | GND, from the bottom − rail |
     | 2 | VDD | Power for the chip | 5 V |
-    | 3 | V0 | Contrast | The knob's middle leg |
+    | 3 | V0 | Contrast | The knob's wiper |
     | 4 | RS | Character or command? | Pin 31 |
     | 5 | RW | Read or write? Tied to GND: the Mega only writes | GND |
     | 6 | E | "Read it now" | Pin 32 |
@@ -104,11 +108,11 @@ animation, exactly like a flip book.
     | 15 | A | Backlight + | 5 V through 220 Ω |
     | 16 | K | Backlight − | GND |
 
-    GND reaches the knob's left leg from the bottom − rail, and the short
-    black jumper carries it on to VSS; the short red jumper brings 5 V from
-    VDD's column to the knob's right leg. The brown one joins the knob's
-    middle leg to V0. VDD takes its 5 V from the top + rail, and VSS joins
-    the top − rail, so that rail is GND too: the backlight's K and RW use it.
+    GND comes up from the bottom − rail into column 5, and the short black
+    jumper carries it on to VSS. VSS joins the top − rail, so that rail is
+    GND too: the backlight's K, RW and the knob's left leg use it. VDD and
+    the knob's right leg take 5 V from the top + rail. The brown jumper
+    joins the knob's wiper to V0.
 
     This is the course's screen. It sits in the same holes, wired the same
     way, in every lesson that uses it, so you can leave it on the breadboard
@@ -167,7 +171,7 @@ last column it starts again at the left.
 | What you see | Try this |
 |---|---|
 | No light at all | Check the red wire from the Mega's 5V to the top + rail (T+3), the resistor from e23 across the gap to f23, and the wires from j23 to + and e24 to −. |
-| The backlight glows, but the screen is blank | Turn the contrast knob, slowly, all the way through. If nothing ever appears, check the brown wire from c6 to c11 and the black one from a5 to the bottom − rail. |
+| The backlight glows, but the screen is blank | Turn the contrast knob, slowly, all the way through. If nothing ever appears, check the brown wire from c6 to c11, the black one from a5 to the bottom − rail, and the knob's jumpers from j5 to − and j7 to +. |
 | A row of solid blocks on top, nothing below | The screen has power but isn't hearing the Mega. Check pins 31 and 32 go to e12 (RS) and e14 (E), and that the upload finished. |
 | Strange symbols instead of letters | Two data wires are swapped: pins 33, 34, 35 and 36 go to e19, e20, e21 and e22, in that order. Check too that RW (e13) goes to −. |
 | Text appears, then scrambles when you touch a wire | A loose wire. Push each one in firmly. |

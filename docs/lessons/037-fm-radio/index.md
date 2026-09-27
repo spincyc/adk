@@ -110,8 +110,9 @@ with its pins already fitted.
 The radio stands in row j, columns 45 to 52, its board lying back over the
 top rails, like the accelerometer in Lesson 28. Its three signal wires, and
 its 3.3 V, come round the bottom of the screen and up into row f. The volume
-knob stands at its home beside the screen, and the rotary encoder sits at
-its home above the Mega, as in Lesson 29.
+knob stands across the middle gap beside the screen, as the contrast knob
+does: its two outer legs in row f, its wiper on its own in row d. The rotary
+encoder sits at its home above the Mega, as in Lesson 29.
 
 <!-- bench -->
 
@@ -207,7 +208,7 @@ of the wave.
 | The screen says **No radio found!** | Check pins 40, 41 and 42 go to f50, f49 and f47, and that the radio's 3.3V and GND are wired. The 1 kΩ must join h47 to h52: without it the chip never wakes. |
 | Seek finds nothing, or only hiss | Plug the earbuds in all the way: they are the aerial. Try by a window, away from the computer. |
 | Turning skips stations you know are there | Check `band`: only in the Americas should it be `Americas`, whose steps are 0.2 MHz. |
-| The volume knob does nothing | Check A0's wire goes to a58, the red jumper from d59 to T+61, and the black one from a57 to the − rail. |
+| The volume knob does nothing | Check A0's wire goes to a58, in the wiper's column, and the knob's jumpers from j57 to the top − rail and j59 to the top + rail. |
 | Turning the rotary knob goes the wrong way | Swap its CLK and DT wires, on pins 18 and 19. |
 | It takes two clicks to move one step | Your encoder steps differently: give it a third number, as in Lesson 29, `adk::RotaryEncoder dial {18, 19, 2};`, and try 2 or 1. |
 | The name never appears | Not every station sends one. Try a strong, big station. |

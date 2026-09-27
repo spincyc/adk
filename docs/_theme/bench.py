@@ -291,14 +291,27 @@ class Bench:
                     f"{negative}.")
         return self
 
+    # The kit's knob stands across the middle gap: its outer legs two
+    # columns apart in row e or f, the wiper in the column between them
+    # 0.4 inch away across the gap, in row g or d. The older drawings still
+    # stand its legs in one row.
     def potentiometer (self, left, wiper, right, value="10 kΩ"):
         spots = [parse_hole (hole) for hole in (left, wiper, right)]
-        steps = {spots[1][1] - spots[0][1], spots[2][1] - spots[1][1]}
-        if len ({row for _, _, row in spots}) != 1 or len (steps) != 1 or steps - {1, 2}:
-            raise ValueError ("a potentiometer's three legs stand in one row, evenly spaced")
+        columns = [column for _, column, _ in spots]
+        rows = [row for _, _, row in spots]
+        steps = {columns[1] - columns[0], columns[2] - columns[1]}
+        across = rows[0] == rows[2] and (rows[0], rows[1]) in (("e", "g"), ("f", "d")) \
+            and steps == {1}
+        if not across and (len (set (rows)) != 1 or len (steps) != 1 or steps - {1, 2}):
+            raise ValueError ("a potentiometer's outer legs stand two columns apart in row e or "
+                              "f, its wiper between them across the gap in row g or d")
         self._add (Potentiometer (left, wiper, right, value))
-        self._step (f"The {value} potentiometer, legs in {left}, {wiper} and {right}: the "
-                           f"middle one is the wiper.")
+        if across:
+            self._step (f"The {value} potentiometer across the middle gap: its two outer legs "
+                               f"in {left} and {right}, the wiper, on its own, in {wiper}.")
+        else:
+            self._step (f"The {value} potentiometer, legs in {left}, {wiper} and {right}: the "
+                               f"middle one is the wiper.")
         return self
 
     def photoresistor (self, a, b):
@@ -381,16 +394,27 @@ class Bench:
     # pin's column; the backlight's 220 Ω resistor stands across the gap at
     # the far end. lanes lifts the signal wires' lanes by that many steps,
     # and risers gives where the first rises and how far apart they stand,
-    # in inches, to make room for other wires from the header.
-    def screen (self, first=5, text=None, lanes=0, risers=(4.45, 0.1)):
+    # in inches, to make room for other wires from the header. across
+    # stands the knob as the kit's does, across the middle gap: its wiper
+    # in row d, its outer legs in row f, each with a jumper up to a top
+    # rail, and column first only carries GND from the bottom − rail to
+    # VSS.
+    def screen (self, first=5, text=None, lanes=0, risers=(4.45, 0.1), across=False):
         knob, lcd = first, first + 4
         column = lambda offset: lcd + offset
-        self.potentiometer (f"e{knob}", f"e{knob + 1}", f"e{knob + 2}")
+        if across:
+            self.potentiometer (f"f{knob}", f"d{knob + 1}", f"f{knob + 2}")
+        else:
+            self.potentiometer (f"e{knob}", f"e{knob + 1}", f"e{knob + 2}")
         self.lcd (lcd, row="a", text=text)
         self.wire (f"a{knob}", self._rail ("B-", knob))
         self.wire (f"b{knob}", f"b{lcd}", color="black")
         self.wire (f"c{knob + 1}", f"c{column (2)}", color="brown")
-        self.wire (f"d{knob + 2}", f"d{column (1)}", color="red")
+        if across:
+            self.wire (f"j{knob}", self._rail ("T-", knob))
+            self.wire (f"j{knob + 2}", self._rail ("T+", knob + 2))
+        else:
+            self.wire (f"d{knob + 2}", f"d{column (1)}", color="red")
         self.wire (f"e{lcd}", self._rail ("T-", lcd))
         self.wire (f"e{column (1)}", self._rail ("T+", column (1)))
         self.wire (f"e{column (4)}", self._rail ("T-", column (4)))

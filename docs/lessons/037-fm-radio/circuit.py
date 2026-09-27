@@ -5,12 +5,13 @@
 # screen: pins 42, 41 and 40 into RST, SCLK and SDIO, and the Mega's 3.3V
 # into the radio's 3.3V column, 52. The 1 kΩ from RST to 3.3 V lies along
 # row h, and a black jumper takes GND down to the bottom − rail. The volume
-# knob stands at its home beside the screen, e57 to e59, A0's wire coming
-# round the bottom of the screen too.
+# knob stands across the middle gap beside the screen, its outer legs in f57
+# and f59 with jumpers up to the top − and + rails, and its wiper in d58,
+# A0's wire coming round the bottom of the screen too into a58.
 bench = Bench ("An FM radio on pins 40, 41 and 42, the rotary encoder on 18, 19 and 22, a volume "
                "knob on A0, and the LCD on pins 31 to 36", columns=(1, 62))
 
-bench.screen (text=(" 98.8 MHz Stereo", "CITY FM  ████"))
+bench.screen (text=(" 98.8 MHz Stereo", "CITY FM  ████"), across=True)
 
 bench.module ("encoder", at=(3.0, -2.1))
 bench.wire ("18", "encoder.CLK", via=[(3.55, 0.55), (3.2, 0.55)])
@@ -27,10 +28,10 @@ bench.wire ("3.3V", "f52", via=[(1.59, 3.95), (10.5, 3.95)])
 bench.wire ("f51", "B-51")
 bench.resistor ("1 kΩ", "h47", "h52")
 
-bench.potentiometer ("e57", "e58", "e59")
-bench.wire ("a57", "B-57")
+bench.potentiometer ("f57", "d58", "f59")
+bench.wire ("j57", "T-57")
+bench.wire ("j59", "T+59")
 bench.wire ("A0", "a58", via=[(2.19, 4.05), (11.1, 4.05)])
-bench.wire ("d59", "T+61")
 
 bench.closeup (23, 62)
 
