@@ -98,7 +98,7 @@ PIN_COLORS = {
     "26": "orange", "27": "yellow", "28": "green", "29": "blue", "30": "white",
     "31": "white", "32": "orange", "33": "yellow", "34": "green", "35": "blue", "36": "white",
     "37": "yellow", "38": "green", "39": "blue", "40": "orange", "41": "green", "42": "white",
-    "43": "brown", "44": "orange", "45": "yellow", "46": "orange", "47": "green", "48": "blue", "49": "purple",
+    "43": "yellow", "44": "orange", "45": "yellow", "46": "orange", "47": "green", "48": "blue", "49": "purple",
     "50": "purple", "51": "white", "52": "brown", "53": "grey",
     "2": "white", "3": "orange", "4": "yellow", "5": "orange", "6": "green", "7": "blue",
     "8": "blue", "9": "white", "10": "grey", "11": "green", "12": "white", "14": "grey",
