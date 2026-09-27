@@ -9,21 +9,11 @@ bench = Bench ("A DHT11 on pin 16, a thermistor divider on A2 and an 18B20 on pi
 
 bench.screen (text=("DHT11 23°C  45%", "NTC 23.4 DS 23.1"))
 
-bench.module ("dht11", "dht", at=(8.58, -1.27))
-bench.wire ("16", "dht.S")
-bench.wire ("dht.+", "T+36")
-bench.wire ("dht.−", "T-37")
+bench.home_dht11 ()
 
-bench.wire ("j40", "T+40")
-bench.thermistor ("f40", "e40")
-bench.wire ("A2", "a40")
-bench.resistor ("10 kΩ", "c40", "c43")
-bench.wire ("a43", "B-43")
+bench.home_divider ("thermistor")
 
-bench.module ("sensor", "probe", at=(7.68, -1.15), label="18B20")
-bench.wire ("17", "probe.S")
-bench.wire ("probe.+", "T+27")
-bench.wire ("probe.−", "T-28")
+bench.home_ds18b20 ()
 
 # Readings to take with a multimeter: the thermistor divider's middle point
 # on A2, at room temperature and warmed, and the thermistor's own share.

@@ -15,18 +15,10 @@ lanes = {26: [(4.10, 1.00), (4.50, 1.00), (4.50, 1.05), (5.90, 1.05)],
          28: [(4.10, 1.10), (4.40, 1.10), (4.40, 1.15), (7.10, 1.15)],
          29: [(4.30, 1.15), (4.30, 1.25), (7.70, 1.25)],
          30: [(4.10, 1.30), (4.20, 1.30), (4.20, 1.35), (8.30, 1.35)]}
-for pin, color, column in ((26, "red", 6), (27, "yellow", 12), (28, "green", 18),
-                           (29, "blue", 24), (30, "white", 30)):
-    bench.wire (str (pin), f"j{column}", via=lanes[pin])
-    bench.resistor ("220 Ω", f"g{column}", f"e{column}")
-    bench.led (color, anode=f"b{column}", cathode=f"b{column + 1}")
-    bench.wire (f"a{column + 1}", f"B-{column + 1}")
+for pin, color in ((26, "red"), (27, "yellow"), (28, "green"), (29, "blue"), (30, "white")):
+    bench.home_led (str (pin), color, via=lanes[pin])
 
-bench.wire ("j40", "T+40")
-bench.photoresistor ("f40", "e40")
-bench.wire ("A1", "a40", via=[(2.30, 2.85), (9.25, 2.85)])
-bench.resistor ("10 kΩ", "c40", "c43")
-bench.wire ("a43", "B-43")
+bench.home_divider ("photoresistor", via=[(2.30, 2.85), (9.25, 2.85)])
 
 # Readings to take with a multimeter: the divider's middle in room light and
 # with the sensor covered, and the photoresistor's own share of the 5 V.

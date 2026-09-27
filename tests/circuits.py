@@ -120,5 +120,35 @@ for boards, error in (('{"A": a, "B": b}', None), ('{"B": b, "A": a}', "in order
     finally:
         os.unlink (file.name)
 
+# Parts at their homes: a home_* call builds just what the lesson wrote out
+# by hand, and takes a part's second home where the kit page gives one.
+def finished (bench):
+    bench.finish ()
+    return bench
+
+
+by_hand = finished (button (blink (Bench ("test", columns=(1, 20)))))
+at_home = finished (Bench ("test", columns=(1, 20)).home_led ("26", "red").home_button ("22"))
+expect ("parts at their homes", at_home.used, by_hand.used)
+expect ("their connections", at_home.connections (), by_hand.connections ())
+
+beside = Bench ("test", columns=(1, 62)).screen ()
+beside.home_button ("23").home_buzzer ("active").home_rgb_led ().home_knob ()
+beside = finished (beside)
+for hole, what in (("j38", "the button on 23"), ("f51", "the buzzer"), ("a41", "the RGB LED"),
+                   ("e57", "the knob")):
+    expect (f"{what} beside the screen, in {hole}", hole in beside.used, True)
+
+plain = Bench ("test", columns=(1, 63)).power_module ("right", top="off", bottom="5V")
+bridged = Bench ("test", columns=(1, 63)).power_module ("right", top="off", bottom="5V")
+plain.home_servo ()
+bridged.home_modem ().home_servo ()
+expect ("the servo lower beside the modem",
+        bridged.modules["servo"].y > plain.modules["servo"].y, True)
+
+sensing = finished (Bench ("test", columns=(1, 50)).home_ultrasonic ().home_modem ())
+expect ("the modem on Serial2 beside the ultrasonic sensor",
+        {"14", "15", "16", "17"} <= sensing.signal_pins (), True)
+
 if failures:
     sys.exit ("tests/circuits.py:\n  " + "\n  ".join (failures))

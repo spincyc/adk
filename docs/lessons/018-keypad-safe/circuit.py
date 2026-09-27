@@ -11,24 +11,11 @@ bench.power_module ("right", top="off", bottom="5V")
 
 bench.screen (text=("Locked. Code?", "****"), risers=(4.8, 0.05))
 
-bench.module ("keypad", "keypad", at=(3.04, -4.95))
-turns = (0.5, 0.45, 0.4, 0.35, None, 0.4, 0.45, 0.5)
-for index, name in enumerate (("R1", "R2", "R3", "R4", "C1", "C2", "C3", "C4")):
-    riser, height = 4.25 + 0.05 * index, 0.8 + 0.05 * index
-    socket = 4.05 + 0.1 * index
-    via = [(riser, height)]
-    if turns[index]:
-        via += [(riser, turns[index]), (socket, turns[index])]
-    bench.wire (str (22 + index), f"keypad.{name}", via=via)
+bench.home_keypad ()
 
-bench.wire ("12", "j51", via=[(1.7, -0.25), (10.4, -0.25)])
-bench.buzzer ("f51", "e51", kind="active")
-bench.wire ("a51", "B-51")
+bench.home_buzzer ("active", via=[(1.7, -0.25), (10.4, -0.25)])
 
-bench.module ("servo", "servo", at=(9.85, 3.45), facing="up")
-bench.wire ("servo.+", "B+53")
-bench.wire ("servo.−", "B-54")
-bench.wire ("44", "servo.signal", via=[(4.55, 1.95), (4.55, 3.01), (10.5, 3.01)])
+bench.home_servo (via=[(4.55, 1.95), (4.55, 3.01), (10.5, 3.01)])
 
 # Readings to take with a multimeter: the screen's VDD, which takes the
 # Mega's 5 V from the top + rail, and its D4 wire, which shows a star's

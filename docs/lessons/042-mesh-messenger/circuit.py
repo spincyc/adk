@@ -12,18 +12,11 @@ bench = Bench ("A Meshtastic board on pins 18 and 19, its GPIO47 through a 1 kΩ
 
 bench.screen (text=("4f2a says:", "Hi Mega!"))
 
-bench.module ("dht11", "dht", at=(8.58, -1.27))
-bench.wire ("16", "dht.S")
-bench.wire ("dht.+", "T+36")
-bench.wire ("dht.−", "T-37")
+bench.home_dht11 ()
 
-bench.wire ("5", "j41", via=[(2.45, -1.55), (9.4, -1.55)])
-bench.wire ("6", "j44", via=[(2.35, -1.65), (9.7, -1.65)])
-bench.wire ("7", "j46", via=[(2.25, -1.75), (9.9, -1.75)])
-bench.resistor ("220 Ω", "g41", "e41")
-bench.resistor ("220 Ω", "g44", "e44")
-bench.resistor ("220 Ω", "g46", "e46")
-bench.rgb_led (red="a41", common="B-42", green="a44", blue="a46")
+bench.home_rgb_led (via=([(2.45, -1.55), (9.4, -1.55)],
+                          [(2.35, -1.65), (9.7, -1.65)],
+                          [(2.25, -1.75), (9.9, -1.75)]))
 
 bench.module ("mesh_board", "node", at=(9.2, 3.75), facing="up")
 bench.wire ("18", "j55", via=[(3.55, -2.35), (10.8, -2.35)])
@@ -34,9 +27,7 @@ bench.wire ("node.48", "f53", color="grey")
 bench.wire ("19", "j53", via=[(3.65, -2.25), (10.6, -2.25)])
 bench.wire ("node.GND", "B-59")
 
-bench.wire ("23", "j38", via=[(8.45, 0.95), (9.1, 0.95)])
-bench.button (38)
-bench.wire ("a40", "B-40")
+bench.home_button ("23", via=[(8.45, 0.95), (9.1, 0.95)])
 
 bench.closeup (33, 63)
 

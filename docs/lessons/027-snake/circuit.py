@@ -14,24 +14,11 @@ SNAKE = ["........",
          "..#.....",
          "........"]
 
-bench.module ("matrix", at=(4.22, 3.9), facing="up",
-              pixels=[row[::-1] for row in reversed (SNAKE)])
-bench.wire ("48", "matrix.CLK")
-bench.wire ("49", "matrix.CS")
-bench.wire ("47", "matrix.DIN")
-bench.wire ("B-5", "matrix.GND")
-bench.wire ("5V.long", "matrix.VCC")
+bench.home_matrix (pixels=[row[::-1] for row in reversed (SNAKE)])
 
-bench.module ("joystick", at=(2.08, 3.9), facing="up")
-bench.wire ("A3", "joystick.VRx")
-bench.wire ("A4", "joystick.VRy")
-bench.wire ("5V.power", "joystick.+5V")
-bench.wire ("GND.long", "joystick.GND")
-bench.wire ("22", "joystick.SW")
+bench.home_joystick ()
 
-bench.wire ("10", "j34")
-bench.buzzer ("f34", "e34", kind="passive")
-bench.resistor ("220 Ω", "a34", "B-34")
+bench.home_buzzer ("passive")
 bench.closeup (1, 40)
 
 # Readings to take with a multimeter while a long note plays: the pin's

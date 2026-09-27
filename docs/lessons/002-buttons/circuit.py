@@ -6,23 +6,13 @@
 # from above and the LEDs' from lanes just below it, nested so none cross.
 bench = Bench ("Two buttons on pins 22 and 23, and two LEDs on pins 26 and 27", columns=(1, 20))
 
-bench.wire ("22", "j2")
-bench.button (2)
-bench.wire ("a4", "B-4")
+bench.home_button ("22")
 
-bench.wire ("23", "j8")
-bench.button (8)
-bench.wire ("a10", "B-10")
+bench.home_button ("23")
 
-bench.wire ("26", "j6", via=[(4.45, 1.0), (4.45, 1.15)])
-bench.resistor ("220 Ω", "g6", "e6")
-bench.led ("red", anode="b6", cathode="b7")
-bench.wire ("a7", "B-7")
+bench.home_led ("26", "red", via=[(4.45, 1.0), (4.45, 1.15)])
 
-bench.wire ("27", "j12", via=[(4.35, 1.05), (4.35, 1.25)])
-bench.resistor ("220 Ω", "g12", "e12")
-bench.led ("yellow", anode="b12", cathode="b13")
-bench.wire ("a13", "B-13")
+bench.home_led ("27", "yellow", via=[(4.35, 1.05), (4.35, 1.25)])
 
 # Readings to take with a multimeter: the left button's pin up and pressed,
 # and the yellow LED's pin while the right button is held.

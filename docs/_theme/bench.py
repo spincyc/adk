@@ -11,7 +11,19 @@ A lesson describes its build once, in circuit.py beside its page:
     bench.wire ("a7", "B-7")
 
 Each part stands in its breadboard home, the holes it has in every lesson
-(docs/kit.md lists them), so one build carries on into the next. The
+(docs/kit.md lists them), so one build carries on into the next. A part
+with a home goes in with its home_* call, which lays the part and its fixed
+wires there, the same in every lesson: bench.home_led ("26", "red") builds
+all four lines above. The home_* calls are home_led, home_button,
+home_buzzer, home_rgb_led, home_divider, home_knob, home_encoder,
+home_servo, home_modem, home_fm_radio, home_rf_receiver and
+home_rf_transmitter on and beside the breadboard; home_matrix,
+home_joystick, home_gy521, home_rtc, home_dht11, home_ds18b20,
+home_ultrasonic, home_motor, home_relay, home_keypad, home_stepper,
+home_rfid, home_pir, home_tap and home_beam for modules; and screen (). A
+call takes a part's second home by itself where it has one (beside the
+screen, say), and via, as in wire (), routes a wire from the Mega round the
+lesson's other parts. The
 Mega's power is wired by the bench itself, the same way every time: once
 circuit.py has run, finish () brings GND from the outer pin at the end of
 the long header into B-3 and 5V from the outer pin at its top into T+3,
@@ -108,6 +120,10 @@ PIN_COLORS = {
     "A8": "green", "A9": "blue", "A10": "purple", "A11": "white",
     "A12": "purple", "A13": "white", "A14": "brown", "A15": "grey",
 }
+# The holes of the parts that have a breadboard home, by pin: an LED's column
+# (its resistor's and long leg's) and a button's left column.
+LED_HOMES = {"26": 6, "27": 12, "28": 18, "29": 24, "30": 30, "3": 38}
+BUTTON_HOMES = {"22": 2, "23": 8, "24": 14, "25": 20}
 # Each pair of rails reads − then + from top to bottom, as the kit's 830-hole
 # board is printed: − at the top edge, + at the bottom one.
 ROWS = {"j": 0.55, "i": 0.65, "h": 0.75, "g": 0.85, "f": 0.95,
@@ -206,6 +222,7 @@ class Bench:
         self._finished = False
         self._powering = False
         self.measurements = []
+        self.screened = False           # the course's screen is on the board
 
     def _step (self, text):
         kind, thing = self._last
@@ -403,6 +420,7 @@ class Bench:
     # rail, and column first only carries GND from the bottom − rail to
     # VSS.
     def screen (self, first=5, text=None, lanes=0, risers=(4.45, 0.1), across=False):
+        self.screened = True
         knob, lcd = first, first + 4
         column = lambda offset: lcd + offset
         if across:
@@ -448,6 +466,337 @@ class Bench:
         while not rail_column (column) or f"{rail}{column}" in self.used:
             column += 1
         return f"{rail}{column}"
+
+    # Parts at their homes -----------------------------------------------
+    #
+    # A part the course uses again and again has a home: the same holes, or
+    # the same place beside the board, in every lesson that uses it
+    # (docs/kit.md#breadboard-homes), so a build carries on from one lesson
+    # to the next. Each of these lays a part at its home with its fixed
+    # wires. The holes never change; via, as in wire (), routes a wire from
+    # the Mega round the lesson's other parts. Beside the screen, a part
+    # that would lie under it has a second home past it.
+
+    # An LED on 26 to 30, or the dimmable one on 3: the pin into j, 220 Ω
+    # from g across the gap to e, the long leg in b, the short leg in b of
+    # the next column, and a black jumper from a there to the − rail.
+    def home_led (self, pin, color, via=None):
+        column = LED_HOMES[pin]
+        self.wire (pin, f"j{column}", via=via)
+        self.resistor ("220 Ω", f"g{column}", f"e{column}")
+        self.led (color, anode=f"b{column}", cathode=f"b{column + 1}")
+        self.wire (f"a{column + 1}", f"B-{column + 1}")
+        return self
+
+    # A button on 22 to 25 across the gap, the pin into j of its left
+    # column and a black jumper from a of its right column to the − rail.
+    # Beside the screen, the button on 23 stands past it, in column 38.
+    def home_button (self, pin, via=None):
+        column = 38 if pin == "23" and self.screened else BUTTON_HOMES[pin]
+        self.wire (pin, f"j{column}", via=via)
+        self.button (column)
+        self.wire (f"a{column + 2}", f"B-{column + 2}")
+        return self
+
+    # The active buzzer on 12, or the passive one on 10, across the gap in
+    # column 34: + in f, − in e, the pin into j, and from a to the − rail a
+    # black jumper (active) or 220 Ω (passive). Beside the four-digit
+    # display it stands in column 35, clear of the wires that rise over the
+    # gap in column 32; beside the screen, in column 51.
+    def home_buzzer (self, kind, via=None):
+        column = 51 if self.screened else 35 if self._has ("four-digit display") else 34
+        self.wire ({"active": "12", "passive": "10"}[kind], f"j{column}", via=via)
+        self.buzzer (f"f{column}", f"e{column}", kind=kind)
+        if kind == "active":
+            self.wire (f"a{column}", f"B-{column}")
+        else:
+            self.resistor ("220 Ω", f"a{column}", f"B-{column}")
+        return self
+
+    # The RGB LED on 5, 6 and 7: its red, green and blue legs in a6, a9 and
+    # a11, its common leg in the − rail beside the red, and 220 Ω across the
+    # gap above each colored leg, its pin into j. Beside the screen it takes
+    # columns 41 to 46, the same shape. via routes the three pins' wires.
+    def home_rgb_led (self, via=(None, None, None)):
+        columns = (41, 44, 46) if self.screened else (6, 9, 11)
+        for pin, column, route in zip (("5", "6", "7"), columns, via):
+            self.wire (pin, f"j{column}", via=route)
+        for column in columns:
+            self.resistor ("220 Ω", f"g{column}", f"e{column}")
+        red, green, blue = columns
+        return self.rgb_led (red=f"a{red}", common=f"B-{red + 1}", green=f"a{green}",
+                             blue=f"a{blue}")
+
+    # A light or temperature divider in column 40: a red jumper from j40 to
+    # the top + rail, the photoresistor (on A1) or thermistor (on A2) across
+    # the gap in f40 and e40, the pin into a40, 10 kΩ from c40 to c43, and
+    # a black jumper from a43 to the − rail.
+    def home_divider (self, sensor, via=None):
+        self.wire ("j40", "T+40")
+        if sensor == "photoresistor":
+            self.photoresistor ("f40", "e40")
+        else:
+            self.thermistor ("f40", "e40")
+        self.wire ({"photoresistor": "A1", "thermistor": "A2"}[sensor], "a40", via=via)
+        self.resistor ("10 kΩ", "c40", "c43")
+        return self.wire ("a43", "B-43")
+
+    # The knob on A0: legs in e45 to e47, a black jumper from a45 to the −
+    # rail, A0 into a46, and a red jumper from d47 up to the top + rail,
+    # routed by supply. Where the RGB LED or the FM radio takes those
+    # columns, it stands in e57 to e59 instead. across stands it as the
+    # kit's knob stands, across the middle gap: outer legs in row f with
+    # jumpers up to the top − and + rails, the wiper in row d.
+    def home_knob (self, via=None, supply=None, across=False):
+        first = 57 if any (hole in self.used for hole in ("e46", "j45")) else 45
+        if across:
+            self.potentiometer (f"f{first}", f"d{first + 1}", f"f{first + 2}")
+            self.wire (f"j{first}", f"T-{first}")
+            self.wire (f"j{first + 2}", f"T+{first + 2}")
+            return self.wire ("A0", f"a{first + 1}", via=via)
+        self.potentiometer (f"e{first}", f"e{first + 1}", f"e{first + 2}")
+        self.wire (f"a{first}", f"B-{first}")
+        self.wire ("A0", f"a{first + 1}", via=via)
+        return self.wire (f"d{first + 2}", f"T+{first + 4}", via=supply)
+
+    # The rotary encoder above the Mega, its wires rising from 18 (CLK), 19
+    # (DT), 22 (SW), the inner 5V at the top of the long header and the GND
+    # beside pin 13, each in a lane of its own. lift raises the lanes, in
+    # inches, above other wires from the top header.
+    def home_encoder (self, lift=0.0):
+        lane = lambda y: round (y - lift, 2)
+        self.module ("encoder", at=(3.0, -2.1))
+        self.wire ("18", "encoder.CLK", via=[(3.55, lane (0.55)), (3.2, lane (0.55))])
+        self.wire ("19", "encoder.DT", via=[(3.65, lane (0.45)), (3.3, lane (0.45))])
+        self.wire ("22", "encoder.SW", via=[(4.3, 0.8), (4.3, lane (0.35)), (3.4, lane (0.35))])
+        self.wire ("5V.long", "encoder.+",
+                   via=[(4.25, 0.7), (4.25, lane (0.25)), (3.5, lane (0.25))])
+        return self.wire ("GND.top", "encoder.GND", via=[(1.5, lane (0.15)), (3.6, lane (0.15))])
+
+    # The servo below the board, its plug under columns 52 to 54: + into
+    # B+53 and − into B-54, fed by the power module's bottom rails, and its
+    # signal from pin 44. On a board with the LoRa modem, whose place its
+    # own overlaps, it lies lower.
+    def home_servo (self, via=None):
+        self.module ("servo", at=(9.85, 5.7 if "modem" in self.modules else 3.45), facing="up")
+        self.wire ("servo.+", "B+53")
+        self.wire ("servo.−", "B-54")
+        return self.wire ("44", "servo.signal", via=via)
+
+    # The LoRa modem below the board under columns 42 to 47, aerial down:
+    # its GND into B-42, TX3 (pin 14) into j46 and down through 1 kΩ and
+    # 2 kΩ to the − rail, the modem's RXD into c46 between them, and its
+    # TXD into f44 beside RX3 (pin 15) in j44. Beside the ultrasonic
+    # sensor, which has 14 and 15, it takes Serial2 instead: TX2 (16) and
+    # RX2 (17). Its VDD takes 3.3 V from power: the Mega's 3.3V pin, or a
+    # rail the power module sets to 3.3 V. tx, rx, txd and supply route the
+    # wires from the two pins, TXD and power.
+    def home_modem (self, tx=None, rx=None, txd=None, power="3.3V", supply=None):
+        send, hear = ("16", "17") if "14" in self.taken else ("14", "15")
+        self.module ("lora_modem", "modem", at=(9.415, 3.45), facing="up")
+        self.wire ("modem.GND", "B-42")
+        self.wire (power, "modem.VDD", via=supply)
+        self.wire (send, "j46", via=tx)
+        self.resistor ("1 kΩ", "g46", "e46")
+        self.resistor ("2 kΩ", "a46", "B-46")
+        self.wire ("modem.RXD", "c46", color="grey")
+        self.wire ("modem.TXD", "f44", color="purple", via=txd)
+        return self.wire (hear, "j44", via=rx)
+
+    # The FM radio standing in row j, columns 45 to 52, its board over the
+    # top rails: pins 42, 41 and 40 up from below, round the bottom of the
+    # screen, into RST, SCLK and SDIO, the Mega's 3.3V into its 3.3V
+    # column, a black jumper from its GND column to the − rail, and 1 kΩ
+    # from RST to 3.3 V along row h.
+    def home_fm_radio (self):
+        self.header_module ("fm_radio", first=45, row="j")
+        self.wire ("42", "f47", via=[(4.45, 1.85), (4.45, 3.65), (10.0, 3.65)])
+        self.wire ("41", "f49", via=[(4.55, 1.75), (4.55, 3.75), (10.2, 3.75)])
+        self.wire ("40", "f50", via=[(4.25, 1.7), (4.65, 1.7), (4.65, 3.85), (10.3, 3.85)])
+        self.wire ("3.3V", "f52", via=[(1.59, 3.95), (10.5, 3.95)])
+        self.wire ("f51", "B-51")
+        return self.resistor ("1 kΩ", "h47", "h52")
+
+    # The 433 MHz receiver standing in row j, columns 48 to 51, its board
+    # over the top rails: 5 V from the power header into VCC's column, pin
+    # 43 into DATA's, both up from below round the bottom of the screen,
+    # and a black jumper from its GND column to the − rail.
+    def home_rf_receiver (self):
+        self.header_module ("rf_receiver", first=48, row="j")
+        self.wire ("5V.power", "f48", via=[(1.69, 3.65), (10.1, 3.65)])
+        self.wire ("43", "f49", via=[(4.45, 1.85), (4.45, 3.75), (10.2, 3.75)])
+        return self.wire ("f51", "B-51")
+
+    # The 433 MHz transmitter standing in row j, columns 56 to 59: its DAT
+    # the middle of a divider, pin 46 into f54, 1 kΩ along row h to DAT's
+    # column and 2 kΩ across the gap and down to the − rail; the Mega's
+    # 3.3V into its + column, and a black jumper from its − column.
+    def home_rf_transmitter (self):
+        self.header_module ("rf_transmitter", first=56, row="j")
+        self.wire ("46", "f54", via=[(4.25, 2.0), (4.55, 2.0), (4.55, 3.85), (10.7, 3.85)])
+        self.resistor ("1 kΩ", "h54", "h57")
+        self.resistor ("2 kΩ", "g57", "e57")
+        self.wire ("a57", "B-57")
+        self.wire ("3.3V", "f58", via=[(1.59, 3.95), (11.1, 3.95)])
+        return self.wire ("f59", "B-59")
+
+    # Modules at their homes beside the board.
+
+    # The LED matrix below the gap between the Mega and the breadboard,
+    # input pins up: CLK from 48, CS from 49, DIN from 47, GND from the −
+    # rail at ground, and VCC from the inner 5V pin, or vcc. options, such
+    # as pixels, are the matrix's own.
+    def home_matrix (self, vcc="5V.long", ground="B-5", **options):
+        self.module ("matrix", at=(4.22, 3.9), facing="up", **options)
+        self.wire ("48", "matrix.CLK")
+        self.wire ("49", "matrix.CS")
+        self.wire ("47", "matrix.DIN")
+        self.wire (ground, "matrix.GND")
+        return self.wire (vcc, "matrix.VCC")
+
+    # The joystick below the Mega, under A3 and A4: VRx and VRy on them, +5V
+    # from the power header's 5V, GND from the inner GND at the end of the
+    # long header, and its switch on 22.
+    def home_joystick (self):
+        self.module ("joystick", at=(2.08, 3.9), facing="up")
+        self.wire ("A3", "joystick.VRx")
+        self.wire ("A4", "joystick.VRy")
+        self.wire ("5V.power", "joystick.+5V")
+        self.wire ("GND.long", "joystick.GND")
+        return self.wire ("22", "joystick.SW")
+
+    # The GY-521 standing in row j, columns 9 to 16, its board over the top
+    # rails: VCC from the top + rail, GND down across the gap to the − rail,
+    # and SCL and SDA from 21 and 20 over the top of the board.
+    def home_gy521 (self):
+        self.header_module ("gy521", first=9, row="j")
+        self.wire ("T+7", "i9")
+        self.wire ("f10", "e10", color="black")
+        self.wire ("a10", "B-10")
+        self.wire ("21", "g11", via=[(3.85, 0.55), (5.75, 0.55), (5.75, 1.35)])
+        return self.wire ("20", "h12", via=[(3.75, 0.5), (5.85, 0.5), (5.85, 1.25)])
+
+    # The DS1307 clock above the board, facing right: GND and VCC from the
+    # top rails in columns 29 and 30, SDA and SCL from 20 and 21 over the
+    # top. sda and scl route those two round anything else up there.
+    def home_rtc (self, sda=None, scl=None):
+        self.module ("rtc", at=(6.5, -1.4), facing="right")
+        self.wire ("rtc.GND", "T-29")
+        self.wire ("rtc.VCC", "T+30")
+        self.wire ("20", "rtc.SDA", via=sda or [(3.75, -1.6), (8.5, -1.6), (8.5, -0.8)])
+        return self.wire ("21", "rtc.SCL", via=scl or [(3.85, -1.5), (8.4, -1.5), (8.4, -0.9)])
+
+    # The DHT11 above the board: S from 16, + and − from the top rails in
+    # columns 36 and 37.
+    def home_dht11 (self):
+        self.module ("dht11", "dht", at=(8.58, -1.27))
+        self.wire ("16", "dht.S")
+        self.wire ("dht.+", "T+36")
+        return self.wire ("dht.−", "T-37")
+
+    # The 18B20 temperature module above the board: S from 17, + and − from
+    # the top rails in columns 27 and 28.
+    def home_ds18b20 (self):
+        self.module ("sensor", "probe", at=(7.68, -1.15), label="18B20")
+        self.wire ("17", "probe.S")
+        self.wire ("probe.+", "T+27")
+        return self.wire ("probe.−", "T-28")
+
+    # The ultrasonic sensor above the Mega, facing away: Trig and Echo from
+    # 14 and 15, VCC from the inner 5V pin, GND to the top − rail.
+    def home_ultrasonic (self):
+        self.module ("ultrasonic", name="sensor", at=(2.715, -1.2))
+        self.wire ("14", "sensor.Trig")
+        self.wire ("15", "sensor.Echo")
+        self.wire ("sensor.VCC", "5V.long")
+        return self.wire ("sensor.GND", "T-5")
+
+    # The DC motor above the board, its leads down into j14 and j17, the
+    # L293D's outputs.
+    def home_motor (self):
+        self.module ("motor", name="motor", at=(4.7, -1.25), facing="down")
+        self.wire ("motor.−", "j14", via=[(6.7, -0.41)])
+        return self.wire ("motor.+", "j17", via=[(7.0, -0.59)])
+
+    # The relay above the Mega: S from 11, + from the inner 5V pin and −
+    # from the inner GND, both over the top.
+    def home_relay (self):
+        self.module ("relay", at=(5.05, -0.75), facing="left")
+        self.wire ("11", "relay.S", via=[(1.8, -0.35)])
+        self.wire ("5V.long", "relay.+", via=[(4.25, 0.7), (4.25, -0.25)])
+        return self.wire ("GND.long", "relay.−", via=[(4.35, 2.4), (4.35, -0.15)])
+
+    # The keypad above the Mega, its eight wires R1 to C4 from 22 to 29,
+    # each rising past the header in a lane of its own.
+    def home_keypad (self):
+        self.module ("keypad", "keypad", at=(3.04, -4.95))
+        turns = (0.5, 0.45, 0.4, 0.35, None, 0.4, 0.45, 0.5)
+        for index, name in enumerate (("R1", "R2", "R3", "R4", "C1", "C2", "C3", "C4")):
+            riser, height = 4.25 + 0.05 * index, 0.8 + 0.05 * index
+            socket = 4.05 + 0.1 * index
+            via = [(riser, height)]
+            if turns[index]:
+                via += [(riser, turns[index]), (socket, turns[index])]
+            self.wire (str (22 + index), f"keypad.{name}", via=via)
+        return self
+
+    # The stepper's driver below the Mega, its IN1 to IN4 from A8 to A11,
+    # each stepping down and across to its pin, A11 highest, so the four
+    # cross square on in a tidy staircase; and its + and − from the bottom
+    # rails, unless the lesson powers it some other way.
+    def home_stepper (self, powered=True):
+        self.module ("stepper", at=(3.1, 4.5), facing="up")
+        self.wire ("A8", "stepper.IN1", via=[(3.09, 3.5), (4.45, 3.5)])
+        self.wire ("A9", "stepper.IN2", via=[(3.19, 3.3), (4.35, 3.3)])
+        self.wire ("A10", "stepper.IN3", via=[(3.29, 3.1), (4.25, 3.1)])
+        self.wire ("A11", "stepper.IN4", via=[(3.39, 2.9), (4.15, 2.9)])
+        if powered:
+            self.wire ("stepper.+", "B+5", via=[(3.56, 3.65), (5.8, 3.65)])
+            self.wire ("stepper.−", "B-6", via=[(3.66, 3.75), (5.9, 3.75)])
+        return self
+
+    # The RFID reader below the Mega: 3.3V from the Mega's 3.3V pin, GND
+    # from the inner GND, and SDA, SCK, MOSI, MISO and RST from 53, 52, 51,
+    # 50 and 45, down past the double header in lanes.
+    def home_rfid (self):
+        self.module ("rfid", at=(1.65, 4.17), facing="up")
+        self.wire ("3.3V", "rfid.3.3V", via=[(1.6, 2.8), (2.1, 2.8)])
+        self.wire ("GND.long", "rfid.GND", via=[(4.25, 2.4), (4.25, 3.0), (2.3, 3.0)])
+        self.wire ("53", "rfid.SDA", via=[(4.35, 3.1), (2.8, 3.1)])
+        self.wire ("52", "rfid.SCK", via=[(4.45, 3.2), (2.7, 3.2)])
+        self.wire ("51", "rfid.MOSI", via=[(4.55, 3.3), (2.6, 3.3)])
+        self.wire ("50", "rfid.MISO", via=[(4.65, 3.4), (2.5, 3.4)])
+        return self.wire ("45", "rfid.RST", via=[(4.75, 3.5), (2.2, 3.5)])
+
+    # The PIR sensor below the Mega: OUT on A12, VCC and GND from the power
+    # header.
+    def home_pir (self):
+        self.module ("pir", name="pir", at=(1.26, 3.8), facing="up")
+        self.wire ("A12", "pir.OUT", via=[(3.49, 3.05), (1.89, 3.05)])
+        self.wire ("5V.power", "pir.VCC", via=[(1.69, 2.9), (1.99, 2.9)])
+        return self.wire ("GND.power", "pir.GND")
+
+    # The tap sensor below the Mega's left end: S on A12, + and − from the
+    # power header.
+    def home_tap (self):
+        self.module ("sensor", name="tap", at=(0.43, 3.62), pins=["S", "+", "−"],
+                     label="tap sensor", facing="up")
+        self.wire ("A12", "tap.S", via=[(3.5, 2.95), (0.85, 2.95)])
+        self.wire ("5V.power", "tap.+", via=[(1.7, 2.9), (0.75, 2.9)])
+        return self.wire ("GND.power", "tap.−", via=[(1.8, 2.85), (0.65, 2.85)])
+
+    # The beam-break sensor below the board: S on A15, + and − from the
+    # bottom rails in columns 36 and 37.
+    def home_beam (self):
+        self.module ("sensor", name="beam", at=(8.58, 3.45), label="beam-break sensor",
+                     pins=("−", "+", "S"), facing="up")
+        self.wire ("A15", "beam.S")
+        self.wire ("beam.+", "B+36")
+        return self.wire ("beam.−", "B-37")
+
+    # Whether a part of this name is on the bench.
+    def _has (self, name):
+        return any (part.name == name for part in self.parts)
 
     # A module standing in one row on its own header, pins listed left to
     # right as they meet the columns.

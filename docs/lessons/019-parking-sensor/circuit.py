@@ -7,21 +7,12 @@
 bench = Bench ("An ultrasonic sensor on pins 14 and 15, red, yellow and green LEDs on 26, 27 "
                "and 28, and an active buzzer on 12", columns=(1, 63))
 
-bench.module ("ultrasonic", name="sensor", at=(2.715, -1.2))
-bench.wire ("14", "sensor.Trig")
-bench.wire ("15", "sensor.Echo")
-bench.wire ("sensor.VCC", "5V.long")
-bench.wire ("sensor.GND", "T-5")
+bench.home_ultrasonic ()
 
-for pin, color, column in (("26", "red", 6), ("27", "yellow", 12), ("28", "green", 18)):
-    bench.wire (pin, f"j{column}")
-    bench.resistor ("220 Ω", f"g{column}", f"e{column}")
-    bench.led (color, anode=f"b{column}", cathode=f"b{column + 1}")
-    bench.wire (f"a{column + 1}", f"B-{column + 1}")
+for pin, color in (("26", "red"), ("27", "yellow"), ("28", "green")):
+    bench.home_led (pin, color)
 
-bench.wire ("12", "j34", via=[(1.69, -1.47), (8.7, -1.47)])
-bench.buzzer ("f34", "e34", kind="active")
-bench.wire ("a34", "B-34")
+bench.home_buzzer ("active", via=[(1.69, -1.47), (8.7, -1.47)])
 
 bench.closeup (1, 37)
 

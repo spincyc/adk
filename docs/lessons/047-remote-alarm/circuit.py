@@ -17,29 +17,16 @@ door = Bench ("Board A, by the door: a PIR on A12, a tilt switch on A14, a beam-
 
 
 def bridge_home (bench, power=((1.59, 5.3), (10.3, 5.3), (10.3, 2.8))):
-    bench.module ("lora_modem", "modem", at=(9.415, 3.45), facing="up")
-    bench.wire ("modem.GND", "B-42")
-    bench.wire ("3.3V", "modem.VDD", via=list (power))
-    bench.wire ("14", "j46", via=[(3.15, -1.95), (9.9, -1.95)])
-    bench.resistor ("1 kΩ", "g46", "e46")
-    bench.resistor ("2 kΩ", "a46", "B-46")
-    bench.wire ("modem.RXD", "c46", color="grey")
-    bench.wire ("modem.TXD", "f44", color="purple", via=[(9.7, 2.0)])
-    bench.wire ("15", "j44", via=[(3.25, -1.85), (9.7, -1.85)])
+    bench.home_modem (tx=[(3.15, -1.95), (9.9, -1.95)], rx=[(3.25, -1.85), (9.7, -1.85)],
+                      txd=[(9.7, 2.0)], supply=list (power))
 
 
 bridge_home (door, power=((1.59, 2.9), (1.1, 2.9), (1.1, 5.3), (10.3, 5.3), (10.3, 2.8)))
 
-for pin, color, column in (("26", "red", 6), ("28", "green", 18)):
-    door.wire (pin, f"j{column}")
-    door.resistor ("220 Ω", f"g{column}", f"e{column}")
-    door.led (color, anode=f"b{column}", cathode=f"b{column + 1}")
-    door.wire (f"a{column + 1}", f"B-{column + 1}")
+for pin, color in (("26", "red"), ("28", "green")):
+    door.home_led (pin, color)
 
-door.module ("pir", name="pir", at=(1.26, 3.8), facing="up")
-door.wire ("A12", "pir.OUT", via=[(3.49, 3.05), (1.89, 3.05)])
-door.wire ("5V.power", "pir.VCC", via=[(1.69, 2.9), (1.99, 2.9)])
-door.wire ("GND.power", "pir.GND")
+door.home_pir ()
 
 door.module ("sensor", name="tap", at=(7.68, -1.15), pins=["S", "+", "−"], label="tap sensor")
 door.wire ("17", "tap.S")
@@ -50,11 +37,7 @@ door.tilt_switch ("c32", "c33")
 door.wire ("A14", "a32")
 door.wire ("a33", "B-33")
 
-door.module ("sensor", name="beam", at=(8.58, 3.45), label="beam-break sensor",
-             pins=("−", "+", "S"), facing="up")
-door.wire ("A15", "beam.S")
-door.wire ("beam.+", "B+36")
-door.wire ("beam.−", "B-37")
+door.home_beam ()
 
 door.module ("sensor", name="obstacle", at=(8.63, -1.15), label="obstacle sensor",
              pins=("GND", "+", "OUT", "EN"))
@@ -83,19 +66,13 @@ den = Bench ("Board B, in the den: the LCD on pins 31 to 36, a clock module on 2
 bridge_home (den)
 
 den.screen (text=("Armed   Door ok", "Motion  21:07:43"))
-den.module ("rtc", at=(6.5, -1.4), facing="right")
-den.wire ("rtc.GND", "T-29")
-den.wire ("rtc.VCC", "T+30")
-den.wire ("20", "rtc.SDA", via=[(3.75, -1.6), (8.5, -1.6), (8.5, -0.8)])
-den.wire ("21", "rtc.SCL", via=[(3.85, -1.5), (8.4, -1.5), (8.4, -0.9)])
+den.home_rtc ()
 
 den.module ("ir_receiver", name="receiver", at=(8.89, -1.7))
 den.wire ("2", "receiver.S")
 den.wire ("receiver.+", "T+39")
 den.wire ("receiver.−", "T-40")
 
-den.wire ("12", "j51", via=[(1.69, -2.3), (10.4, -2.3)])
-den.buzzer ("f51", "e51", kind="active")
-den.wire ("a51", "B-51")
+den.home_buzzer ("active", via=[(1.69, -2.3), (10.4, -2.3)])
 
 boards = {"A": door, "B": den}

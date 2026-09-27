@@ -16,27 +16,14 @@ lanes = {26: [(4.10, 1.00), (4.50, 1.00), (4.50, 1.05), (5.90, 1.05)],
          28: [(4.10, 1.10), (4.40, 1.10), (4.40, 1.15), (7.10, 1.15)],
          29: [(4.30, 1.15), (4.30, 1.25), (7.70, 1.25)],
          30: [(4.10, 1.30), (4.20, 1.30), (4.20, 1.35), (8.30, 1.35)]}
-for pin, color, column in ((26, "red", 6), (27, "yellow", 12), (28, "green", 18),
-                           (29, "blue", 24), (30, "white", 30)):
-    bench.wire (str (pin), f"j{column}", via=lanes[pin])
-    bench.resistor ("220 Ω", f"g{column}", f"e{column}")
-    bench.led (color, anode=f"b{column}", cathode=f"b{column + 1}")
-    bench.wire (f"a{column + 1}", f"B-{column + 1}")
+for pin, color in ((26, "red"), (27, "yellow"), (28, "green"), (29, "blue"), (30, "white")):
+    bench.home_led (str (pin), color, via=lanes[pin])
 
-bench.wire ("j40", "T+40")
-bench.photoresistor ("f40", "e40")
-bench.wire ("A1", "a40", via=[(2.30, 2.85), (9.25, 2.85)])
-bench.resistor ("10 kΩ", "c40", "c43")
-bench.wire ("a43", "B-43")
+bench.home_divider ("photoresistor", via=[(2.30, 2.85), (9.25, 2.85)])
 
-bench.wire ("10", "j34", via=[(1.90, 0.45), (8.65, 0.45)])
-bench.buzzer ("f34", "e34", kind="passive")
-bench.resistor ("220 Ω", "a34", "B-34")
+bench.home_buzzer ("passive", via=[(1.90, 0.45), (8.65, 0.45)])
 
-bench.potentiometer ("e45", "e46", "e47")
-bench.wire ("a45", "B-45")
-bench.wire ("A0", "a46")
-bench.wire ("d47", "T+49", via=[(10.05, 1.85), (10.25, 1.85), (10.25, 0.75)])
+bench.home_knob (supply=[(10.05, 1.85), (10.25, 1.85), (10.25, 0.75)])
 
 # Readings to take with a multimeter, with the sensor covered so that one
 # note keeps sounding: pin 10's average, and the knob's wiper where the

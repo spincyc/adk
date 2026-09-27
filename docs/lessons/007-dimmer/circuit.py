@@ -6,15 +6,10 @@
 bench = Bench ("A white LED on pin 3 through 220 Ω, and a knob on A0 between GND and 5 V",
                columns=(1, 50))
 
-bench.wire ("3", "j38", via=[(2.65, 0.45), (9.10, 0.45)])
-bench.resistor ("220 Ω", "g38", "e38")
-bench.led ("white", anode="b38", cathode="b39")
-bench.wire ("a39", "B-39")
+bench.home_led ("3", "white", via=[(2.65, 0.45), (9.10, 0.45)])
 
-bench.potentiometer ("e45", "e46", "e47")
-bench.wire ("a45", "B-45")
-bench.wire ("A0", "a46", via=[(2.20, 2.85), (9.95, 2.85)])
-bench.wire ("d47", "T+49", via=[(10.05, 1.85), (10.25, 1.85), (10.25, 0.75)])
+bench.home_knob (via=[(2.20, 2.85), (9.95, 2.85)],
+                 supply=[(10.05, 1.85), (10.25, 1.85), (10.25, 0.75)])
 
 # Readings to take with a multimeter, with the knob turned until the sketch
 # reads about 256: a quarter of the way from the GND end.

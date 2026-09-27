@@ -8,27 +8,16 @@ bench = Bench ("A PIR sensor on A12, an obstacle sensor on A13, a tilt switch on
                "beam-break sensor on A15, lighting the red, yellow, green and blue LEDs on 26 "
                "to 29", columns=(1, 63))
 
-for pin, color, column in (("26", "red", 6), ("27", "yellow", 12), ("28", "green", 18),
-                           ("29", "blue", 24)):
-    bench.wire (pin, f"j{column}")
-    bench.resistor ("220 Ω", f"g{column}", f"e{column}")
-    bench.led (color, anode=f"b{column}", cathode=f"b{column + 1}")
-    bench.wire (f"a{column + 1}", f"B-{column + 1}")
+for pin, color in (("26", "red"), ("27", "yellow"), ("28", "green"), ("29", "blue")):
+    bench.home_led (pin, color)
 
-bench.module ("pir", name="pir", at=(1.26, 3.8), facing="up")
-bench.wire ("A12", "pir.OUT", via=[(3.49, 3.05), (1.89, 3.05)])
-bench.wire ("5V.power", "pir.VCC", via=[(1.69, 2.9), (1.99, 2.9)])
-bench.wire ("GND.power", "pir.GND")
+bench.home_pir ()
 
 bench.tilt_switch ("c32", "c33")
 bench.wire ("A14", "a32")
 bench.wire ("a33", "B-33")
 
-bench.module ("sensor", name="beam", at=(8.58, 3.45), label="beam-break sensor",
-              pins=("−", "+", "S"), facing="up")
-bench.wire ("A15", "beam.S")
-bench.wire ("beam.+", "B+36")
-bench.wire ("beam.−", "B-37")
+bench.home_beam ()
 
 bench.module ("sensor", name="obstacle", at=(9.43, 3.45), label="obstacle sensor",
               pins=("GND", "+", "OUT", "EN"), facing="up")

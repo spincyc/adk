@@ -10,45 +10,23 @@
 bench = Bench ("Simon: buttons on pins 22 to 25, LEDs on 26 to 29, and a passive buzzer on 10",
                columns=(1, 40))
 
-bench.wire ("22", "j2", via=[(4.15, 0.8), (4.25, 0.8), (4.25, 0.15), (5.5, 0.15)])
-bench.button (2)
-bench.wire ("a4", "B-4")
+bench.home_button ("22", via=[(4.15, 0.8), (4.25, 0.8), (4.25, 0.15), (5.5, 0.15)])
 
-bench.wire ("23", "j8", via=[(4.35, 0.85), (4.35, 0.25), (6.1, 0.25)])
-bench.button (8)
-bench.wire ("a10", "B-10")
+bench.home_button ("23", via=[(4.35, 0.85), (4.35, 0.25), (6.1, 0.25)])
 
-bench.wire ("24", "j14", via=[(4.15, 0.9), (4.45, 0.9), (4.45, 0.35), (6.7, 0.35)])
-bench.button (14)
-bench.wire ("a16", "B-16")
+bench.home_button ("24", via=[(4.15, 0.9), (4.45, 0.9), (4.45, 0.35), (6.7, 0.35)])
 
-bench.wire ("25", "j20", via=[(4.55, 0.95), (4.55, 0.45), (7.3, 0.45)])
-bench.button (20)
-bench.wire ("a22", "B-22")
+bench.home_button ("25", via=[(4.55, 0.95), (4.55, 0.45), (7.3, 0.45)])
 
-bench.wire ("26", "j6", via=[(4.15, 1.0), (4.65, 1.0), (4.65, 0.9), (5.9, 0.9)])
-bench.resistor ("220 Ω", "g6", "e6")
-bench.led ("red", anode="b6", cathode="b7")
-bench.wire ("a7", "B-7")
+bench.home_led ("26", "red", via=[(4.15, 1.0), (4.65, 1.0), (4.65, 0.9), (5.9, 0.9)])
 
-bench.wire ("27", "j12", via=[(4.45, 1.05), (4.45, 1.15), (6.4, 1.15)])
-bench.resistor ("220 Ω", "g12", "e12")
-bench.led ("yellow", anode="b12", cathode="b13")
-bench.wire ("a13", "B-13")
+bench.home_led ("27", "yellow", via=[(4.45, 1.05), (4.45, 1.15), (6.4, 1.15)])
 
-bench.wire ("28", "j18", via=[(4.15, 1.1), (4.35, 1.1), (4.35, 1.25), (7.0, 1.25)])
-bench.resistor ("220 Ω", "g18", "e18")
-bench.led ("green", anode="b18", cathode="b19")
-bench.wire ("a19", "B-19")
+bench.home_led ("28", "green", via=[(4.15, 1.1), (4.35, 1.1), (4.35, 1.25), (7.0, 1.25)])
 
-bench.wire ("29", "j24", via=[(4.25, 1.15), (4.25, 1.35), (7.6, 1.35)])
-bench.resistor ("220 Ω", "g24", "e24")
-bench.led ("blue", anode="b24", cathode="b25")
-bench.wire ("a25", "B-25")
+bench.home_led ("29", "blue", via=[(4.25, 1.15), (4.25, 1.35), (7.6, 1.35)])
 
-bench.wire ("10", "j34", via=[(1.9, 0.05), (8.65, 0.05)])
-bench.buzzer ("f34", "e34", kind="passive")
-bench.resistor ("220 Ω", "a34", "B-34")
+bench.home_buzzer ("passive", via=[(1.9, 0.05), (8.65, 0.05)])
 
 # Readings to take with a multimeter in your turn, while a button is held
 # and its light stays on: each color keeps its own voltage.

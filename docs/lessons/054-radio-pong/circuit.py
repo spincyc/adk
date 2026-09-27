@@ -28,34 +28,13 @@ COURT = ["........",
 def player (title, sketch):
     bench = Bench (title, columns=(1, 50), sketch=sketch)
 
-    bench.module ("lora_modem", "modem", at=(9.415, 3.45), facing="up")
-    bench.wire ("modem.GND", "B-42")
-    bench.wire ("3.3V", "modem.VDD")
-    bench.wire ("14", "j46", via=[(3.15, 0.35), (9.9, 0.35)])
-    bench.resistor ("1 kΩ", "g46", "e46")
-    bench.resistor ("2 kΩ", "a46", "B-46")
-    bench.wire ("modem.RXD", "c46", color="grey")
-    bench.wire ("modem.TXD", "f44", color="purple")
-    bench.wire ("15", "j44", via=[(3.25, 0.45), (9.7, 0.45)])
+    bench.home_modem (tx=[(3.15, 0.35), (9.9, 0.35)], rx=[(3.25, 0.45), (9.7, 0.45)])
 
-    bench.module ("matrix", at=(4.22, 3.9), facing="up",
-                  pixels=[row[::-1] for row in reversed (COURT)])
-    bench.wire ("48", "matrix.CLK")
-    bench.wire ("49", "matrix.CS")
-    bench.wire ("47", "matrix.DIN")
-    bench.wire ("B-5", "matrix.GND")
-    bench.wire ("5V.long", "matrix.VCC")
+    bench.home_matrix (pixels=[row[::-1] for row in reversed (COURT)])
 
-    bench.module ("joystick", at=(2.08, 3.9), facing="up")
-    bench.wire ("A3", "joystick.VRx")
-    bench.wire ("A4", "joystick.VRy")
-    bench.wire ("5V.power", "joystick.+5V")
-    bench.wire ("GND.long", "joystick.GND")
-    bench.wire ("22", "joystick.SW")
+    bench.home_joystick ()
 
-    bench.wire ("10", "j34", via=[(1.89, 0.25), (8.7, 0.25)])
-    bench.buzzer ("f34", "e34", kind="passive")
-    bench.resistor ("220 Ω", "a34", "B-34")
+    bench.home_buzzer ("passive", via=[(1.89, 0.25), (8.7, 0.25)])
     bench.closeup (1, 50)
 
     # Readings to take with a multimeter, before anyone serves: TX3

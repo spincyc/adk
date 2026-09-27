@@ -15,20 +15,9 @@ LEVEL = ["########",
          "#......#",
          "########"]
 
-bench.module ("matrix", at=(4.22, 3.9), facing="up",
-              pixels=[row[::-1] for row in reversed (LEVEL)])
-bench.wire ("48", "matrix.CLK")
-bench.wire ("49", "matrix.CS")
-bench.wire ("47", "matrix.DIN")
-bench.wire ("B-5", "matrix.GND")
-bench.wire ("5V.long", "matrix.VCC")
+bench.home_matrix (pixels=[row[::-1] for row in reversed (LEVEL)])
 
-bench.header_module ("gy521", first=9, row="j")
-bench.wire ("T+7", "i9")
-bench.wire ("f10", "e10", color="black")
-bench.wire ("a10", "B-10")
-bench.wire ("21", "g11", via=[(3.85, 0.55), (5.75, 0.55), (5.75, 1.35)])
-bench.wire ("20", "h12", via=[(3.75, 0.5), (5.85, 0.5), (5.85, 1.25)])
+bench.home_gy521 ()
 bench.closeup (1, 16)
 
 # Readings to take with a multimeter, the black probe in the GY-521's GND

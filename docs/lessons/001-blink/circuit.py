@@ -4,10 +4,7 @@
 # Mega's GND feeds at B-3.
 bench = Bench ("A red LED on pin 26, through a 220 Ω resistor to GND", columns=(1, 20))
 
-bench.wire ("26", "j6")
-bench.resistor ("220 Ω", "g6", "e6")
-bench.led ("red", anode="b6", cathode="b7")
-bench.wire ("a7", "B-7")
+bench.home_led ("26", "red")
 
 # Readings to take with a multimeter while the LED is on.
 bench.measure ("The pin's 5 V, from pin 26 to GND", red="26", black="GND", expect="about 5 V",

@@ -57,11 +57,11 @@ that starts with how to wire the part, its source, host tests, and a line in
    lessons sort in order however many there are.
 3. Describe the build in `docs/lessons/NNN-name/circuit.py`: every part in its
    holes, every wire from pin to hole. The site draws the bench from it. Put
-   each part in its [breadboard home](kit.md#breadboard-homes) and on its
-   home pins, so the build carries on from the lesson before; keep every
-   part and wire the lesson before already has just where it was. A part
-   with no home goes where a tidy builder would put it: in the next free
-   columns, in the order the current meets it.
+   each part at its [breadboard home](kit.md#breadboard-homes) with its
+   `home_*` call, which lays it and its fixed wires in the same holes, on
+   the same pins, in every lesson, so the build carries on from the lesson
+   before. A part with no home goes where a tidy builder would put it: in
+   the next free columns, in the order the current meets it.
 4. Write `docs/lessons/NNN-name/index.md` from Lesson 1's shape, with the
    markers `<!-- bench -->`, `<!-- closeup -->`, `<!-- steps -->`,
    `<!-- connections -->` and `<!-- sketch -->` where those belong. Its front
@@ -130,6 +130,15 @@ Mega, and carries on from the lesson before; Board B is a second one.
 `docs/_theme/bench.py` explains every call; these are the ones that keep
 lessons alike. [The kit page](kit.md#breadboard-homes) gives each part's home.
 
+- **Parts at their homes.** A part the course uses again and again goes in
+  with its `home_*` call, which owns the part's holes and fixed wires:
+  `bench.home_led ("26", "red")`, `bench.home_button ("22")`,
+  `bench.home_buzzer ("passive")`, `bench.home_knob ()`,
+  `bench.home_encoder ()`, `bench.home_modem ()`, `bench.home_matrix ()`
+  and the rest, each described where `bench.py` defines it. A call picks a
+  part's second home by itself where the kit page gives one, beside the
+  screen, say. `via=` routes a wire from the Mega round the lesson's other
+  parts; the holes never change, so a lesson never repeats them.
 - **Power.** Never wire the Mega's 5V or GND to a rail: the site does it the
   same way in every lesson, from the outer GND at the end of the long header
   into B-3 and the outer 5V at its top into T+3, and joins the other rail of
@@ -140,12 +149,13 @@ lessons alike. [The kit page](kit.md#breadboard-homes) gives each part's home.
   from the Mega too, so nothing is ever powered backwards through its
   inputs; the module feeds only the bottom rails, for motors and servos (or
   3.3 V for LoRa modems); and the Mega's GND joins them all at B-3.
-- **An LED and its resistor.** The pin's wire into row j of column *c*, the
-  resistor standing across the middle gap from g*c* to e*c*, the LED's long
-  leg in b*c* and its short leg in b*c+1*, and a black jumper from a*c+1*
-  to the bottom − rail: `bench.wire ("26", "j6")`,
+- **An LED and its resistor** away from a home: the pin's wire into row j
+  of column *c*, the resistor standing across the middle gap from g*c* to
+  e*c*, the LED's long leg in b*c* and its short leg in b*c+1*, and a black
+  jumper from a*c+1* to the bottom − rail: `bench.wire ("26", "j6")`,
   `bench.resistor ("220 Ω", "g6", "e6")`,
   `bench.led ("red", anode="b6", cathode="b7")`, `bench.wire ("a7", "B-7")`.
+  `bench.home_led ()` builds exactly this at the LED's home.
 - **A button** across the middle gap, fed from row j of its left column,
   its right column to the − rail.
 - **The screen.** `bench.screen ()` builds the LCD at its home with its

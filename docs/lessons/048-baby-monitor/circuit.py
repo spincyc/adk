@@ -13,23 +13,13 @@ nursery = Bench ("Board A, in the nursery: a sound sensor on A5, a water sensor 
 
 
 def bridge_home (bench, power=((1.59, 5.3), (10.3, 5.3), (10.3, 2.8))):
-    bench.module ("lora_modem", "modem", at=(9.415, 3.45), facing="up")
-    bench.wire ("modem.GND", "B-42")
-    bench.wire ("3.3V", "modem.VDD", via=list (power))
-    bench.wire ("14", "j46", via=[(3.15, -1.95), (9.9, -1.95)])
-    bench.resistor ("1 kΩ", "g46", "e46")
-    bench.resistor ("2 kΩ", "a46", "B-46")
-    bench.wire ("modem.RXD", "c46", color="grey")
-    bench.wire ("modem.TXD", "f44", color="purple", via=[(9.7, 2.0)])
-    bench.wire ("15", "j44", via=[(3.25, -1.85), (9.7, -1.85)])
+    bench.home_modem (tx=[(3.15, -1.95), (9.9, -1.95)], rx=[(3.25, -1.85), (9.7, -1.85)],
+                      txd=[(9.7, 2.0)], supply=list (power))
 
 
 bridge_home (nursery, power=((1.59, 2.9), (1.1, 2.9), (1.1, 5.3), (10.3, 5.3), (10.3, 2.8)))
 
-nursery.wire ("28", "j18")
-nursery.resistor ("220 Ω", "g18", "e18")
-nursery.led ("green", anode="b18", cathode="b19")
-nursery.wire ("a19", "B-19")
+nursery.home_led ("28", "green")
 
 nursery.module ("sensor", name="sound", at=(1.42, 3.8), pins=("AO", "G", "+", "DO"),
                 label="sound sensor", facing="up")
@@ -43,11 +33,7 @@ nursery.wire ("A6", "water.S")
 nursery.wire ("A7", "water.+")
 nursery.wire ("GND.power2", "water.−")
 
-nursery.wire ("j40", "T+40")
-nursery.photoresistor ("f40", "e40")
-nursery.wire ("A1", "a40", via=[(2.29, 2.95), (9.25, 2.95)])
-nursery.resistor ("10 kΩ", "c40", "c43")
-nursery.wire ("a43", "B-43")
+nursery.home_divider ("photoresistor", via=[(2.29, 2.95), (9.25, 2.95)])
 
 # Board B, with the parent: Lesson 47's screen and clock module stay, and the
 # IR receiver stays to hush the alarm. The passive buzzer takes the active
@@ -62,20 +48,14 @@ parent = Bench ("Board B, with the parent: the LCD on pins 31 to 36, a clock mod
 bridge_home (parent, power=((1.59, 6.35), (10.3, 6.35), (10.3, 2.8)))
 
 parent.screen (text=("Quiet  Lit  Dry", "Cried   02:14:07"))
-parent.module ("rtc", at=(6.5, -1.4), facing="right")
-parent.wire ("rtc.GND", "T-29")
-parent.wire ("rtc.VCC", "T+30")
-parent.wire ("20", "rtc.SDA", via=[(3.75, -1.6), (8.5, -1.6), (8.5, -0.8)])
-parent.wire ("21", "rtc.SCL", via=[(3.85, -1.5), (8.4, -1.5), (8.4, -0.9)])
+parent.home_rtc ()
 
 parent.module ("ir_receiver", name="receiver", at=(8.89, -1.7))
 parent.wire ("2", "receiver.S")
 parent.wire ("receiver.+", "T+39")
 parent.wire ("receiver.−", "T-40")
 
-parent.wire ("10", "j51", via=[(1.9, -2.3), (10.4, -2.3)])
-parent.buzzer ("f51", "e51", kind="passive")
-parent.resistor ("220 Ω", "a51", "B-51")
+parent.home_buzzer ("passive", via=[(1.9, -2.3), (10.4, -2.3)])
 
 # The matrix is drawn turned half round, so its picture is given upside
 # down: a bar graph of the last eight half seconds' sound.
@@ -87,13 +67,7 @@ BARS = ["........",
         "..##..##",
         ".####.##",
         "########"]
-parent.module ("matrix", at=(4.22, 3.9), facing="up",
-               pixels=[row[::-1] for row in reversed (BARS)])
-parent.wire ("48", "matrix.CLK")
-parent.wire ("49", "matrix.CS")
-parent.wire ("47", "matrix.DIN")
-parent.wire ("B-4", "matrix.GND")
-parent.wire ("5V.long", "matrix.VCC")
+parent.home_matrix (ground="B-4", pixels=[row[::-1] for row in reversed (BARS)])
 
 # Readings to take with a multimeter on Board B: the buzzer's pin while the
 # leak alarm sounds, and once POWER has hushed it.

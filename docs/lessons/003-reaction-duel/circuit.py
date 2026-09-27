@@ -8,32 +8,17 @@
 bench = Bench ("A two-player reaction game: buttons on 22 and 23, LEDs on 26 to 28, "
                "and an active buzzer on 12", columns=(1, 40))
 
-bench.wire ("22", "j2")
-bench.button (2)
-bench.wire ("a4", "B-4")
+bench.home_button ("22")
 
-bench.wire ("23", "j8")
-bench.button (8)
-bench.wire ("a10", "B-10")
+bench.home_button ("23")
 
-bench.wire ("26", "j6", via=[(4.45, 1.0), (4.45, 1.15)])
-bench.resistor ("220 Ω", "g6", "e6")
-bench.led ("red", anode="b6", cathode="b7")
-bench.wire ("a7", "B-7")
+bench.home_led ("26", "red", via=[(4.45, 1.0), (4.45, 1.15)])
 
-bench.wire ("27", "j12", via=[(4.35, 1.05), (4.35, 1.25)])
-bench.resistor ("220 Ω", "g12", "e12")
-bench.led ("yellow", anode="b12", cathode="b13")
-bench.wire ("a13", "B-13")
+bench.home_led ("27", "yellow", via=[(4.35, 1.05), (4.35, 1.25)])
 
-bench.wire ("28", "j18", via=[(4.25, 1.2), (4.25, 1.35), (7.05, 1.35)])
-bench.resistor ("220 Ω", "g18", "e18")
-bench.led ("green", anode="b18", cathode="b19")
-bench.wire ("a19", "B-19")
+bench.home_led ("28", "green", via=[(4.25, 1.2), (4.25, 1.35), (7.05, 1.35)])
 
-bench.wire ("12", "j34", via=[(1.7, 0.45), (8.65, 0.45)])
-bench.buzzer ("f34", "e34", kind="active")
-bench.wire ("a34", "B-34")
+bench.home_buzzer ("active", via=[(1.7, 0.45), (8.65, 0.45)])
 
 # Readings to take with a multimeter at Go, while the yellow light is on and
 # the buzzer sounds: the LED shares the pin's 5 V with its resistor, the

@@ -6,11 +6,7 @@
 bench = Bench ("A clock module on pins 20 and 21, and the LCD on pins 31 to 36", columns=(1, 35))
 
 bench.screen (text=("Date  2026-09-24", "Time    20:30:05"))
-bench.module ("rtc", at=(6.5, -1.4), facing="right")
-bench.wire ("rtc.GND", "T-29")
-bench.wire ("rtc.VCC", "T+30")
-bench.wire ("20", "rtc.SDA", via=[(3.75, -1.6), (8.5, -1.6), (8.5, -0.8)])
-bench.wire ("21", "rtc.SCL", via=[(3.85, -1.5), (8.4, -1.5), (8.4, -0.9)])
+bench.home_rtc ()
 
 # A reading to take with a multimeter: the top rails, which carry the
 # Mega's 5 V to the clock and the screen. The probes go at the Mega's end,

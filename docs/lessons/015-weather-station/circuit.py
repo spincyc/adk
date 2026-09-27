@@ -9,27 +9,15 @@ bench = Bench ("A weather station: the DHT11 on pin 16, the RGB LED on pins 5 to
 
 bench.screen (text=("23°C 45% Comfy", "Alarm at 30°C"))
 
-bench.module ("dht11", "dht", at=(8.58, -1.27))
-bench.wire ("16", "dht.S")
-bench.wire ("dht.+", "T+36")
-bench.wire ("dht.−", "T-37")
+bench.home_dht11 ()
 
-bench.wire ("5", "j41", via=[(2.45, -1.55), (9.4, -1.55)])
-bench.wire ("6", "j44", via=[(2.35, -1.65), (9.7, -1.65)])
-bench.wire ("7", "j46", via=[(2.25, -1.75), (9.9, -1.75)])
-bench.resistor ("220 Ω", "g41", "e41")
-bench.resistor ("220 Ω", "g44", "e44")
-bench.resistor ("220 Ω", "g46", "e46")
-bench.rgb_led (red="a41", common="B-42", green="a44", blue="a46")
+bench.home_rgb_led (via=([(2.45, -1.55), (9.4, -1.55)],
+                          [(2.35, -1.65), (9.7, -1.65)],
+                          [(2.25, -1.75), (9.9, -1.75)]))
 
-bench.wire ("12", "j51", via=[(1.7, -1.85), (10.4, -1.85)])
-bench.buzzer ("f51", "e51", kind="active")
-bench.wire ("a51", "B-51")
+bench.home_buzzer ("active", via=[(1.7, -1.85), (10.4, -1.85)])
 
-bench.potentiometer ("e57", "e58", "e59")
-bench.wire ("a57", "B-57")
-bench.wire ("A0", "a58")
-bench.wire ("d59", "T+61")
+bench.home_knob ()
 
 bench.closeup (21, 62)
 

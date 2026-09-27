@@ -15,33 +15,17 @@ garden = Bench ("Board A, the garden: a DHT11 on pin 16, an 18B20 on pin 17, a t
 
 
 def bridge_home (bench):
-    bench.module ("lora_modem", "modem", at=(9.415, 3.45), facing="up")
-    bench.wire ("modem.GND", "B-42")
-    bench.wire ("3.3V", "modem.VDD", via=[(1.59, 5.3), (10.3, 5.3), (10.3, 2.8)])
-    bench.wire ("14", "j46", via=[(3.15, -1.95), (9.9, -1.95)])
-    bench.resistor ("1 kΩ", "g46", "e46")
-    bench.resistor ("2 kΩ", "a46", "B-46")
-    bench.wire ("modem.RXD", "c46", color="grey")
-    bench.wire ("modem.TXD", "f44", color="purple", via=[(9.7, 2.0)])
-    bench.wire ("15", "j44", via=[(3.25, -1.85), (9.7, -1.85)])
+    bench.home_modem (tx=[(3.15, -1.95), (9.9, -1.95)], rx=[(3.25, -1.85), (9.7, -1.85)],
+                      txd=[(9.7, 2.0)], supply=[(1.59, 5.3), (10.3, 5.3), (10.3, 2.8)])
 
 
 bridge_home (garden)
 
-garden.wire ("28", "j18")
-garden.resistor ("220 Ω", "g18", "e18")
-garden.led ("green", anode="b18", cathode="b19")
-garden.wire ("a19", "B-19")
+garden.home_led ("28", "green")
 
-garden.module ("sensor", "probe", at=(7.68, -1.15), label="18B20")
-garden.wire ("17", "probe.S")
-garden.wire ("probe.+", "T+27")
-garden.wire ("probe.−", "T-28")
+garden.home_ds18b20 ()
 
-garden.module ("dht11", "dht", at=(8.58, -1.27))
-garden.wire ("16", "dht.S")
-garden.wire ("dht.+", "T+36")
-garden.wire ("dht.−", "T-37")
+garden.home_dht11 ()
 
 garden.wire ("j33", "T+33")
 garden.thermistor ("f33", "e33")
@@ -49,11 +33,7 @@ garden.wire ("A2", "a33", via=[(2.39, 2.85), (8.55, 2.85)])
 garden.resistor ("10 kΩ", "c33", "c36")
 garden.wire ("a36", "B-36")
 
-garden.wire ("j40", "T+40")
-garden.photoresistor ("f40", "e40")
-garden.wire ("A1", "a40", via=[(2.29, 2.95), (9.25, 2.95)])
-garden.resistor ("10 kΩ", "c40", "c43")
-garden.wire ("a43", "B-43")
+garden.home_divider ("photoresistor", via=[(2.29, 2.95), (9.25, 2.95)])
 
 # Readings to take with a multimeter on Board A: the light divider's middle,
 # which Board B shows as a percentage, in room light and covered.
@@ -73,11 +53,7 @@ indoors = Bench ("Board B, indoors: the LCD on pins 31 to 36, a clock module on 
 bridge_home (indoors)
 
 indoors.screen (text=("Air 21.5°C  45%", "Heard   14:32:05"))
-indoors.module ("rtc", at=(6.5, -1.4), facing="right")
-indoors.wire ("rtc.GND", "T-29")
-indoors.wire ("rtc.VCC", "T+30")
-indoors.wire ("20", "rtc.SDA", via=[(3.75, -1.6), (8.5, -1.6), (8.5, -0.8)])
-indoors.wire ("21", "rtc.SCL", via=[(3.85, -1.5), (8.4, -1.5), (8.4, -0.9)])
+indoors.home_rtc ()
 
 indoors.wire ("5", "j48", via=[(2.45, -2.05), (10.1, -2.05)])
 indoors.wire ("6", "j51", via=[(2.35, -2.15), (10.4, -2.15)])

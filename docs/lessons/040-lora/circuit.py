@@ -17,9 +17,7 @@ bench = Bench ("Two LoRa modems: A on pins 18 and 19, B on pins 14 and 15, each 
 bench.power_module ("right", top="off", bottom="3.3V")
 bench.screen (text=("Press 1", "-32 dBm  9 dB"))
 
-bench.wire ("23", "j38")
-bench.button (38)
-bench.wire ("a40", "B-40")
+bench.home_button ("23")
 
 bench.module ("lora_modem", "modemB", at=(9.415, 3.45), label="LoRa modem B", facing="up")
 bench.wire ("modemB.GND", "B-42")

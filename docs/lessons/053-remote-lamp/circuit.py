@@ -19,16 +19,9 @@
 # coil runs from the Mega's inner 5V pin, as in Lesson 35.
 # Over the top, above the IR receiver or the relay: 14 in the higher lane, so the
 # two nest rather than cross.
-def modem (bench, lanes=None):
-    bench.module ("lora_modem", "modem", at=(9.415, 3.45), facing="up")
-    bench.wire ("modem.GND", "B-42")
-    bench.wire ("3.3V", "modem.VDD")
-    bench.wire ("14", "j46", via=lanes and [(3.15, lanes[0]), (9.9, lanes[0])])
-    bench.resistor ("1 kΩ", "g46", "e46")
-    bench.resistor ("2 kΩ", "a46", "B-46")
-    bench.wire ("modem.RXD", "c46", color="grey")
-    bench.wire ("modem.TXD", "f44", color="purple")
-    bench.wire ("15", "j44", via=lanes and [(3.25, lanes[1]), (9.7, lanes[1])])
+def modem (bench, lanes):
+    bench.home_modem (tx=[(3.15, lanes[0]), (9.9, lanes[0])],
+                      rx=[(3.25, lanes[1]), (9.7, lanes[1])])
 
 
 receiver = Bench ("Board A: an IR receiver on pin 2, the LCD on pins 31 to 36, and a LoRa modem "
@@ -49,10 +42,7 @@ repeater = Bench ("Board B: a relay on pin 11 switching a 9 V battery, 1 kΩ res
 
 modem (repeater, lanes=(-1.05, -0.95))
 
-repeater.module ("relay", at=(5.05, -0.75), facing="left")
-repeater.wire ("11", "relay.S", via=[(1.8, -0.35)])
-repeater.wire ("5V.long", "relay.+", via=[(4.25, 0.7), (4.25, -0.25)])
-repeater.wire ("GND.long", "relay.−", via=[(4.35, 2.4), (4.35, -0.15)])
+repeater.home_relay ()
 
 repeater.wire ("relay.NO", "j13", via=[(6.6, -0.45)])
 repeater.resistor ("1 kΩ", "g13", "e13")

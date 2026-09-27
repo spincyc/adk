@@ -12,11 +12,7 @@ bench = Bench ("A servo on pin 44 carrying an ultrasonic sensor on 14 and 15 and
 
 bench.power_module ("right", top="off", bottom="5V")
 
-bench.module ("ultrasonic", name="sensor", at=(2.715, -1.2))
-bench.wire ("14", "sensor.Trig")
-bench.wire ("15", "sensor.Echo")
-bench.wire ("sensor.VCC", "5V.long")
-bench.wire ("sensor.GND", "T-5")
+bench.home_ultrasonic ()
 
 bench.chip ("L293D", first=12)
 bench.wire ("j12", "T+12")
@@ -25,14 +21,9 @@ bench.wire ("a19", "B+19")
 bench.wire ("9", "j13", via=[(1.99, -1.47), (4.6, -1.47), (4.6, 0.35), (6.6, 0.35)])
 bench.wire ("8", "j18", via=[(2.09, -1.57), (7.1, -1.57)])
 bench.wire ("4", "j19", via=[(2.55, -1.67), (7.2, -1.67)])
-bench.module ("motor", name="motor", at=(4.7, -1.25), facing="down")
-bench.wire ("motor.−", "j14", via=[(6.7, -0.41)])
-bench.wire ("motor.+", "j17", via=[(7.0, -0.59)])
+bench.home_motor ()
 
-bench.module ("servo", name="servo", at=(9.85, 3.45), facing="up")
-bench.wire ("servo.+", "B+53")
-bench.wire ("servo.−", "B-54")
-bench.wire ("44", "servo.signal")
+bench.home_servo ()
 bench.note ("tape the sensor and the fan to the horn", "servo.signal", offset=(-1.6, 1.2))
 
 bench.closeup (1, 32)

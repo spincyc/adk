@@ -13,29 +13,13 @@ def board (letter, sketch):
                    f"a LoRa modem on Serial3 (pins 14 and 15), its RXD through a 1 kΩ and 2 kΩ "
                    f"divider and its VDD on the Mega's 3.3V pin", columns=(1, 50), sketch=sketch)
 
-    bench.wire ("22", "j2")
-    bench.button (2)
-    bench.wire ("a4", "B-4")
+    bench.home_button ("22")
 
-    bench.wire ("26", "j6", via=[(4.45, 1.0), (4.45, 1.15)])
-    bench.resistor ("220 Ω", "g6", "e6")
-    bench.led ("red", anode="b6", cathode="b7")
-    bench.wire ("a7", "B-7")
+    bench.home_led ("26", "red", via=[(4.45, 1.0), (4.45, 1.15)])
 
-    bench.wire ("27", "j12", via=[(4.35, 1.05), (4.35, 1.25)])
-    bench.resistor ("220 Ω", "g12", "e12")
-    bench.led ("yellow", anode="b12", cathode="b13")
-    bench.wire ("a13", "B-13")
+    bench.home_led ("27", "yellow", via=[(4.35, 1.05), (4.35, 1.25)])
 
-    bench.module ("lora_modem", "modem", at=(9.415, 3.45), facing="up")
-    bench.wire ("modem.GND", "B-42")
-    bench.wire ("modem.VDD", "3.3V")
-    bench.wire ("14", "j46")
-    bench.resistor ("1 kΩ", "g46", "e46")
-    bench.resistor ("2 kΩ", "a46", "B-46")
-    bench.wire ("modem.RXD", "c46", color="grey")
-    bench.wire ("modem.TXD", "f44", color="purple")
-    bench.wire ("15", "j44")
+    bench.home_modem ()
     return bench
 
 

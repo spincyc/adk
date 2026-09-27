@@ -8,25 +8,15 @@
 bench = Bench ("A four-key keyboard: buttons on pins 22 to 25, and a passive buzzer on pin 10 "
                "through 220 Ω", columns=(1, 40))
 
-bench.wire ("22", "j2", via=[(4.15, 0.8), (5.5, 0.8)])
-bench.button (2)
-bench.wire ("a4", "B-4")
+bench.home_button ("22", via=[(4.15, 0.8), (5.5, 0.8)])
 
-bench.wire ("23", "j8", via=[(4.65, 0.85), (4.65, 1.15), (5.95, 1.15)])
-bench.button (8)
-bench.wire ("a10", "B-10")
+bench.home_button ("23", via=[(4.65, 0.85), (4.65, 1.15), (5.95, 1.15)])
 
-bench.wire ("24", "j14", via=[(4.15, 0.9), (4.55, 0.9), (4.55, 1.25), (6.55, 1.25)])
-bench.button (14)
-bench.wire ("a16", "B-16")
+bench.home_button ("24", via=[(4.15, 0.9), (4.55, 0.9), (4.55, 1.25), (6.55, 1.25)])
 
-bench.wire ("25", "j20", via=[(4.45, 0.95), (4.45, 1.35), (7.15, 1.35)])
-bench.button (20)
-bench.wire ("a22", "B-22")
+bench.home_button ("25", via=[(4.45, 0.95), (4.45, 1.35), (7.15, 1.35)])
 
-bench.wire ("10", "j34", via=[(1.9, 0.45), (8.65, 0.45)])
-bench.buzzer ("f34", "e34", kind="passive")
-bench.resistor ("220 Ω", "a34", "B-34")
+bench.home_buzzer ("passive", via=[(1.9, 0.45), (8.65, 0.45)])
 
 # Readings to take with a multimeter while a key is held and its note
 # sounds: pin 10 switches between 5 V and 0 V, so the meter shows about half,

@@ -16,10 +16,7 @@ bench = Bench ("Two LoRa modules: A on pins 18 and 19, its M0 and M1 on 40 and A
 bench.power_module ("right", top="off", bottom="5V")
 bench.screen (text=("Temp 23C Hum 45%", "1 s ago"), risers=(4.4, 0.1))
 
-bench.module ("dht11", "dht", at=(8.58, -1.27))
-bench.wire ("16", "dht.S")
-bench.wire ("dht.+", "T+36")
-bench.wire ("dht.−", "T-37")
+bench.home_dht11 ()
 
 bench.module ("lora_module", "linkB", at=(9.308, 3.75), label="LoRa module B", facing="up")
 bench.wire ("linkB.GND", "B-41")
@@ -51,9 +48,7 @@ bench.wire ("linkA.M1", "g57", color="orange", via=[(10.9, 3.0), (10.95, 3.0), (
 bench.wire ("linkA.M0", "f57", color="orange")
 bench.wire ("40", "j57", via=[(4.3, 1.7), (4.95, 1.7), (4.95, -2.45), (11.0, -2.45)])
 
-bench.wire ("23", "j38", via=[(8.45, 0.95), (9.1, 0.95)])
-bench.button (38)
-bench.wire ("a40", "B-40")
+bench.home_button ("23", via=[(8.45, 0.95), (9.1, 0.95)])
 
 bench.closeup (33, 63)
 

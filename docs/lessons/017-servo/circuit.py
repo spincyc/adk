@@ -13,15 +13,10 @@ bench.power_module ("right", top="off", bottom="5V")
 
 bench.screen (text=("Knob   90°", "Needle 90°"), risers=(4.8, 0.05))
 
-bench.potentiometer ("e45", "e46", "e47")
-bench.wire ("a45", "B-45")
-bench.wire ("A0", "a46", via=[(2.2, 2.85), (9.9, 2.85)])
-bench.wire ("d47", "T+49", via=[(10.05, 1.85), (10.25, 1.85), (10.25, 0.75)])
+bench.home_knob (via=[(2.2, 2.85), (9.9, 2.85)],
+                 supply=[(10.05, 1.85), (10.25, 1.85), (10.25, 0.75)])
 
-bench.module ("servo", "servo", at=(9.85, 3.45), facing="up")
-bench.wire ("servo.+", "B+53")
-bench.wire ("servo.−", "B-54")
-bench.wire ("44", "servo.signal", via=[(4.55, 1.95), (4.55, 3.01), (10.5, 3.01)])
+bench.home_servo (via=[(4.55, 1.95), (4.55, 3.01), (10.5, 3.01)])
 
 # Readings to take with a multimeter: the two 5 Vs, the power module's on
 # the bottom rails for the servo and the Mega's on the top rails for the

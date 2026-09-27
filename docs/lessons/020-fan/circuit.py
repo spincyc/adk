@@ -14,9 +14,7 @@ bench = Bench ("A DC motor on an L293D (enable 4, forward 8, backward 9), powere
 
 bench.power_module ("right", top="off", bottom="5V")
 
-bench.wire ("22", "j2")
-bench.button (2)
-bench.wire ("a4", "B-4")
+bench.home_button ("22")
 
 bench.chip ("L293D", first=12)
 bench.wire ("j12", "T+12")
@@ -25,14 +23,9 @@ bench.wire ("a19", "B+19")
 bench.wire ("9", "j13", via=[(6.6, 0.35)])
 bench.wire ("8", "j18", via=[(2.09, -1.57), (7.1, -1.57)])
 bench.wire ("4", "j19", via=[(2.55, -1.67), (7.2, -1.67)])
-bench.module ("motor", name="motor", at=(4.7, -1.25), facing="down")
-bench.wire ("motor.−", "j14", via=[(6.7, -0.41)])
-bench.wire ("motor.+", "j17", via=[(7.0, -0.59)])
+bench.home_motor ()
 
-bench.potentiometer ("e45", "e46", "e47")
-bench.wire ("a45", "B-45")
-bench.wire ("A0", "a46")
-bench.wire ("d47", "T+49")
+bench.home_knob ()
 
 bench.closeup (1, 50)
 

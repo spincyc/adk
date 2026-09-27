@@ -16,10 +16,8 @@ bench = Bench ("Lesson 11's display, three buttons on pins 22 to 24 and a buzzer
 # rails and across the ribbon of wires to the chip and the display.
 for pin, column, exit, rise, lane in ((22, 2, 0.80, 4.45, -0.20), (23, 8, 0.85, 4.55, -0.15),
                                       (24, 14, 0.90, 4.65, -0.10)):
-    bench.wire (str (pin), f"j{column}",
-                via=[(4.20, exit), (rise, exit), (rise, lane), (X (column), lane)])
-    bench.button (column)
-    bench.wire (f"a{column + 2}", f"B-{column + 2}")
+    bench.home_button (str (pin),
+                       via=[(4.20, exit), (rise, exit), (rise, lane), (X (column), lane)])
 
 bench.wire ("T-6", "B-6")
 
@@ -78,9 +76,7 @@ bench.wire ("42", "j55", via=[(4.20, 1.80), (4.80, 1.80), (4.80, 0.20), (X (55),
 bench.wire ("43", "a56")
 
 # The active buzzer on pin 12, across the gap in column 35.
-bench.wire ("12", "j35")
-bench.buzzer ("f35", "e35")
-bench.wire ("a35", "B-35")
+bench.home_buzzer ("active")
 
 # Readings to take with a multimeter: the dot's segment line, high only
 # while digit 3 has its turn, and the start/stop button's pin.

@@ -14,9 +14,7 @@ Y = lambda row: round (0.55 + row, 3)               # row offsets from the board
 bench = Bench ("A button on pin 22, and a digit behind a 74HC595 on pins 37, 38 and 39",
                columns=(1, 52))
 
-bench.wire ("22", "j2")
-bench.button (2)
-bench.wire ("a4", "B-4")
+bench.home_button ("22")
 
 bench.wire ("T-6", "B-6")
 
