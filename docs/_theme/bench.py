@@ -84,6 +84,8 @@ Geometry is in inches on the real 0.1-inch grid: holes, header pins and leg
 spacing are where they really are.
 """
 
+import functools
+import hashlib
 import math
 import re
 from typing import NamedTuple
@@ -206,6 +208,7 @@ class Bench:
         self.title = title
         self.sketch = sketch            # a board's own sketch, in a two-board lesson
         self.board = ""                 # its letter there: "A", "B"
+        self.source = None              # its circuit.py's digest and letter, which load () gives
         self.first, self.last = columns
         self.seed = seed
         self.taken = set ()
@@ -1492,7 +1495,8 @@ class Bench:
 # lesson's board is "".
 def load (path):
     scope = {"Bench": Bench, "HC595": HC595, "L293D": L293D}
-    exec (compile (open (path, encoding="utf-8").read (), path, "exec"), scope)
+    text = open (path, encoding="utf-8").read ()
+    exec (compile (text, path, "exec"), scope)
     if ("bench" in scope) == ("boards" in scope):
         raise ValueError ('a circuit makes one Bench called bench, or one for each board in '
                           'boards = {"A": ..., "B": ...}')
@@ -1510,8 +1514,10 @@ def load (path):
         if not all (names) or len (set (names)) != len (names):
             raise ValueError ("each board names its own sketch, as Bench (..., sketch=\"Dial\") "
                               "for examples/lessons/NNN-name/Dial/Dial.ino")
+    digest = hashlib.sha256 (text.encode ()).hexdigest ()[:16]
     for letter, bench in boards.items ():
         bench.board = letter
+        bench.source = digest + letter
         bench.finish ()
     return boards
 
@@ -1523,6 +1529,9 @@ def example (slug):
     return f"lessons/{slug}"
 
 
+# Called for every hole a drawing or a probe looks at, so each name is read
+# once.
+@functools.lru_cache (maxsize=None)
 def parse_hole (hole):
     match = re.fullmatch (r"([a-j])(\d{1,2})", hole)
     if match and 1 <= int (match.group (2)) <= 63:

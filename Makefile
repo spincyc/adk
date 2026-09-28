@@ -156,13 +156,14 @@ BOARDS_CLI       := ARDUINO_CONFIG_FILE=$(BOARDS_HOME)/arduino-cli.yaml     \
 
 # The website ------------------------------------------------------------------
 #
-# Python keeps its caches, and the drawing engine the wires it has routed, in
-# the build directory, so a rebuild only routes what has changed. The pinned
-# MkDocs 1.6 builds the site; skip Material's notice about MkDocs 2.0.
+# Python keeps its caches, and the drawing engine the wires it has routed and
+# the drawings it has made, in the build directory, so a rebuild only draws
+# what has changed. The pinned MkDocs 1.6 builds the site; skip Material's
+# notice about MkDocs 2.0.
 
 VENV                       := $(BUILD_DIR)/venv
 export PYTHONPYCACHEPREFIX := $(abspath $(BUILD_DIR))/pycache
-export ADK_ROUTES          := $(abspath $(BUILD_DIR))/routes
+export ADK_DRAWINGS        := $(abspath $(BUILD_DIR))/drawings
 export NO_MKDOCS_2_WARNING := 1
 
 # What the build needs ---------------------------------------------------------

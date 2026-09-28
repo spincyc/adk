@@ -10,20 +10,30 @@ lesson's circuit.py describes (bench.py).
 Every wire is routed once for all of them (route.py): round parts, modules
 and labels, the jumpers that can lie straight first and the rest in rounds
 of negotiation until no two share a stretch of grid. Labels go where they
-cover nothing they shouldn't, and a label with no room is an error. Routes
-are kept in the folder ADK_ROUTES names, the Makefile's build/routes.
+cover nothing they shouldn't, and a label with no room is an error.
+
+Routes, and the finished drawings of a circuit read from a lesson's
+circuit.py, are kept in the folder ADK_DRAWINGS names, the Makefile's
+build/drawings, so a rebuild draws again only what has changed. A site
+build draws every lesson at once before it starts, a process to a core
+(draw_all).
 """
 
+import concurrent.futures
+import functools
 import hashlib
+import inspect
 import json
+import logging
 import math
 import os
 import shutil
+import sys
 
 import meter
 
 from bench import (BOARD_HEIGHT, MARGIN, MEGA_HEIGHT, MEGA_PINS, MEGA_WIDTH, ROWS, canonical,
-                   numbered, parse_hole, rail_column)
+                   load, numbered, parse_hole, rail_column)
 from modules import HOUSING
 from parts import HeaderModule, Label, Led, Resistor, spots_round
 from pencil import DPI, WIRES, Pencil
@@ -38,13 +48,97 @@ ROUNDS = 6                          # of negotiation between the wires
 # little either side, to fan out from its neighbors.
 LEAVING = {"top": (6, 5, 7), "bottom": (2, 1, 3), "double": (0, 7, 1)}
 
-# Where routes are kept, if anywhere, and this version of the engine: a
-# digest of the theme's Python.
-ROUTES = os.environ.get ("ADK_ROUTES")
+# Where routes and drawings are kept, if anywhere, and this version of the
+# engine: a digest of the theme's Python.
+KEPT = os.environ.get ("ADK_DRAWINGS")
 THEME = os.path.dirname (os.path.abspath (__file__))
 ENGINE = hashlib.sha256 (b"".join (open (os.path.join (THEME, name), "rb").read ()
                                    for name in sorted (os.listdir (THEME))
                                    if name.endswith (".py"))).hexdigest ()[:16]
+# The drawings this process has made, read or been handed, by key.
+DRAWN = {}
+
+
+# What this version of the engine kept under a name, or None.
+def recall (name):
+    if not KEPT:
+        return None
+    try:
+        with open (os.path.join (KEPT, ENGINE, name), encoding="utf-8") as file:
+            return file.read ()
+    except OSError:
+        return None
+
+
+# Keep text under a name. Each version of the engine keeps its own folder,
+# and the first thing it keeps clears the other versions' away. A file is
+# written whole and then renamed, so a build drawing in parallel never
+# reads half of one.
+def keep (name, text):
+    if not KEPT:
+        return
+    folder = os.path.join (KEPT, ENGINE)
+    if not os.path.isdir (folder):
+        for old in set (os.listdir (KEPT) if os.path.isdir (KEPT) else ()) - {ENGINE}:
+            shutil.rmtree (os.path.join (KEPT, old), ignore_errors=True)
+        os.makedirs (folder, exist_ok=True)
+    part = os.path.join (folder, f"{name}.{os.getpid ()}")
+    with open (part, "w", encoding="utf-8") as file:
+        file.write (text)
+    os.replace (part, os.path.join (folder, name))
+
+
+# A drawing is kept by the circuit it draws (the bench's source: its
+# circuit.py's digest and its board's letter) and what was asked of it. A
+# bench made any other way, as the tests make theirs, is drawn every time.
+def kept (draw):
+    signature = inspect.signature (draw)
+
+    @functools.wraps (draw)
+    def drawing (self, *args, **options):
+        if self.bench.source is None:
+            return draw (self, *args, **options)
+        asked = signature.bind (self, *args, **options)
+        asked.apply_defaults ()
+        wanted = (self.bench.source, draw.__name__, list (asked.arguments.values ())[1:])
+        key = hashlib.sha256 (repr (wanted).encode ()).hexdigest () + ".svg"
+        if key not in DRAWN:
+            DRAWN[key] = recall (key)
+            if DRAWN[key] is None:
+                DRAWN[key] = draw (self, *args, **options)
+                keep (key, DRAWN[key])
+        return DRAWN[key]
+    return drawing
+
+
+# Drawing is nearly all of a site build's time, so the build draws every
+# lesson at once before it starts, a process to a core, and keeps what they
+# drew in DRAWN for the pages to find. A circuit that fails is left to its
+# page, which says why; so is everything, where processes can't be had. The
+# biggest circuits, the two-board lessons, start first so none is left to
+# finish alone. The processes import this module from the theme's folder,
+# which MkDocs takes off the path once the hooks are loaded.
+def draw_all (paths):
+    DRAWN.clear ()
+    if THEME not in sys.path:
+        sys.path.insert (0, THEME)
+    try:
+        with concurrent.futures.ProcessPoolExecutor () as pool:
+            for drawn in pool.map (_draw_circuit, sorted (paths, key=os.path.getsize,
+                                                          reverse=True)):
+                DRAWN.update (drawn)
+    except (OSError, NotImplementedError, concurrent.futures.process.BrokenProcessPool) as error:
+        logging.getLogger ("mkdocs").info (f"Drawing the lessons one at a time: {error}")
+
+
+def _draw_circuit (path):
+    DRAWN.clear ()
+    try:
+        for letter, bench in load (path).items ():
+            Drawing (bench).page (letter)
+    except Exception:  # noqa: BLE001 - the page draws it again, and says what failed
+        pass
+    return dict (DRAWN)
 
 
 class Drawing:
@@ -123,11 +217,8 @@ class Drawing:
                     router.claim (paths[index], index)
         return paths
 
-    # Routes worked out before are kept in the folder the environment's
-    # ADK_ROUTES names (the Makefile's build/routes), by everything the
-    # router is given, so a rebuild only routes what has changed. Each
-    # version of the drawing engine keeps its own folder, and the first
-    # routes it keeps clear the other versions' away.
+    # Routes worked out before are kept (keep) by everything the router is
+    # given, so a rebuild only routes what has changed.
     def _fingerprint (self, plans):
         bench = self.bench
         text = repr ((bench.first, bench.last, bench.gap, sorted (bench.used), sorted (bench.taken),
@@ -140,25 +231,14 @@ class Drawing:
         return hashlib.sha256 (text.encode ()).hexdigest ()
 
     def _recall (self, plans):
-        if not ROUTES:
-            return None
         try:
-            with open (os.path.join (ROUTES, ENGINE, self._fingerprint (plans) + ".json")) as file:
-                kept = json.load (file)
-        except (OSError, ValueError):
+            paths = json.loads (recall (self._fingerprint (plans) + ".json") or "")
+        except ValueError:
             return None
-        return {int (index): [tuple (n) for n in path] for index, path in kept.items ()}
+        return {int (index): [tuple (n) for n in path] for index, path in paths.items ()}
 
     def _remember (self, plans, paths):
-        if not ROUTES:
-            return
-        folder = os.path.join (ROUTES, ENGINE)
-        if not os.path.isdir (folder):
-            for old in set (os.listdir (ROUTES) if os.path.isdir (ROUTES) else ()) - {ENGINE}:
-                shutil.rmtree (os.path.join (ROUTES, old), ignore_errors=True)
-            os.makedirs (folder, exist_ok=True)
-        with open (os.path.join (folder, self._fingerprint (plans) + ".json"), "w") as file:
-            json.dump ({index: path for index, path in paths.items ()}, file)
+        keep (self._fingerprint (plans) + ".json", json.dumps (paths))
 
     # How a wire is to be routed: its ends in routing order, where each is
     # drawn, the grid points it passes, and its path when it lies straight.
@@ -325,7 +405,15 @@ class Drawing:
 
     # Drawing ------------------------------------------------------------
 
+    # Everything a lesson's page shows of a board, by the names the page
+    # gives its drawings: the bench, the close-up, and each measurement.
+    def page (self, letter=""):
+        return (self.svg ("bench", "bench" + letter), self.svg ("closeup", "closeup" + letter),
+                [self.measure_svg (index, "measure" + letter)
+                 for index in range (len (self.bench.measurements))])
+
     # The whole bench, or a close-up of the breadboard where the parts are.
+    @kept
     def svg (self, view="bench", prefix="bench"):
         bench = self.bench
         routes = self._layout ()
@@ -357,6 +445,7 @@ class Drawing:
     # A measurement: the breadboard round its two probe points, the meter
     # below the board reading what is expected, and its leads rising to the
     # probes. Labels are left to the caption and the table.
+    @kept
     def measure_svg (self, index, prefix="measure"):
         bench = self.bench
         routes = self._layout ()

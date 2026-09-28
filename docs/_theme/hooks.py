@@ -36,6 +36,7 @@ again; when only the Mega's power wires carry over, they say to take out
 everything else.
 """
 
+import hashlib
 import os
 import re
 import sys
@@ -48,7 +49,7 @@ sys.path.insert (0, os.path.dirname (__file__))
 
 from api import document  # noqa: E402
 from bench import canonical, example, load, unbroken  # noqa: E402
-from drawing import Drawing  # noqa: E402
+from drawing import Drawing, draw_all  # noqa: E402
 
 ROOT = os.path.dirname (os.path.dirname (os.path.dirname (os.path.abspath (__file__))))
 
@@ -59,6 +60,9 @@ LESSONS = [dict (lesson, arc=arc["arc"], boards=arc.get ("boards", 1))
 for number, lesson in enumerate (LESSONS, 1):
     lesson["number"] = number
 MARKERS = ("bench", "closeup", "steps", "connections", "sketch", "measure")
+CIRCUITS = {}                       # each circuit.py this build has read, by path
+DRAWINGS = {}                       # each drawing in a page, by its digest
+DRAWN_HERE = re.compile (r"<!-- drawn ([0-9a-f]{40}) -->")
 NBSP = "\u00a0"
 
 
@@ -93,6 +97,23 @@ def arc_title (arc, lessons):
 # "delay" at the end of one line and "()" at the start of the next. Each
 # name is held to its opening parenthesis; code blocks are left alone, and
 # the text copied from the page is unchanged.
+# Drawing is nearly all of the build's time, so every lesson is drawn at
+# once before the pages are built, and each page finds its drawings ready.
+# Each build reads each circuit once, for its page and the next lesson's.
+def on_pre_build (config):
+    CIRCUITS.clear ()
+    DRAWINGS.clear ()
+    draw_all ([os.path.join (ROOT, "docs", "lessons", lesson["slug"], "circuit.py")
+               for lesson in LESSONS if written (lesson)])
+
+
+# A drawing's thousands of elements would cost Markdown, and then the search
+# index, far more than the rest of its page; each stands in the page as a
+# comment until the page is built, and then takes its place.
+def on_post_page (output, page, config):
+    return DRAWN_HERE.sub (lambda match: DRAWINGS[match.group (1)], output)
+
+
 def on_page_content (html, page, config, files):
     def hold (code):
         text = re.sub (r"([\w:.\]]+) \(", r'<span class="call">\1 (</span>', code.group (1))
@@ -165,17 +186,16 @@ def board_pieces (lesson, letter, bench):
                            f"{os.path.relpath (path, ROOT)}") from error
     whose = f"Board {letter}'s breadboard" if letter else "the breadboard"
     try:
-        drawn = Drawing (bench)
-        drawings = drawn.svg ("bench", "bench" + letter), drawn.svg ("closeup", "closeup" + letter)
+        whole, closeup, measured = Drawing (bench).page (letter)
         return {
-            "bench": figure (drawings[0], bench.title, "bench"),
-            "closeup": figure (drawings[1],
+            "bench": figure (whole, bench.title, "bench"),
+            "closeup": figure (closeup,
                                f"Close-up of {whose}. Letters name the rows, numbers the columns.",
                                "closeup"),
             "steps": steps (bench, previous (lesson["number"], letter)),
             "connections": connections (bench),
             "sketch": f'```cpp title="{name}.ino" linenums="1"\n{sketch.rstrip ()}\n```',
-            "measure": measurements (bench, drawn, "measure" + letter),
+            "measure": measurements (bench, measured),
         }
     except ValueError as error:
         raise PluginError (f"{lesson['slug']}: {error}") from error
@@ -241,10 +261,12 @@ def lesson_drawing (match):
 
 def load_circuit (lesson):
     path = os.path.join (ROOT, "docs", "lessons", lesson["slug"], "circuit.py")
-    try:
-        return load (path)
-    except Exception as error:
-        raise PluginError (f"{path}: {error}") from error
+    if path not in CIRCUITS:
+        try:
+            CIRCUITS[path] = load (path)
+        except Exception as error:
+            raise PluginError (f"{path}: {error}") from error
+    return CIRCUITS[path]
 
 
 # The build a board carries on from: the same board in the lesson before,
@@ -268,20 +290,27 @@ def previous (number, letter=""):
 def figure (svg, caption, kind):
     width = re.search (r'viewBox="\S+ \S+ (\S+)', svg).group (1)
     return (f'<figure class="bench-figure bench-{kind}" style="--drawing-width: {width}" '
-            f'markdown="0">\n{svg}\n<figcaption>{caption}</figcaption>\n</figure>')
+            f'markdown="0">\n{held (svg)}\n<figcaption>{caption}</figcaption>\n</figure>')
+
+
+# The comment a drawing stands as until its page is built (on_post_page).
+def held (svg):
+    digest = hashlib.sha1 (svg.encode ()).hexdigest ()
+    DRAWINGS[digest] = svg
+    return f"<!-- drawn {digest} -->"
 
 
 # Each measurement drawn small, side by side, numbered as the table below
 # them lists them: what to measure, what to expect, where the probes go and
 # when.
-def measurements (bench, drawn, prefix="measure"):
+def measurements (bench, drawn):
     if not bench.measurements:
         return ""
     figures, rows = [], []
-    for index, taken in enumerate (bench.measurements, 1):
+    for index, (taken, svg) in enumerate (zip (bench.measurements, drawn), 1):
         (_, red), (_, black) = bench.probes (index - 1)
         figures.append (
-            f'<figure class="meter">\n{drawn.measure_svg (index - 1, prefix)}\n'
+            f'<figure class="meter">\n{held (svg)}\n'
             f'<figcaption>{index}. {escape (taken["label"])}</figcaption>\n</figure>')
         rows.append (f"| {index}. {taken['label']} | {taken['expect']} | {red} | {black} | "
                      f"{taken['when'] or ''} |")
