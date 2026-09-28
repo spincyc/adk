@@ -37,10 +37,9 @@ turret.wire ("9", "j18", via=[(1.89, -1.57), (7.1, -1.57)])
 turret.wire ("4", "j19", via=[(2.45, -1.67), (7.2, -1.67)])
 turret.home_motor ()
 
-turret.home_modem (tx=[(3.25, 0.45), (2.6, 0.45), (2.6, -1.85), (9.65, -1.85)],
-                   rx=[(3.35, 0.4), (2.65, 0.4), (2.65, -1.8), (9.45, -1.8)])
+turret.home_modem ()
 
-turret.home_servo (via=[(4.55, 1.90), (4.55, 5.45), (10.5, 5.45)])
+turret.home_servo ()
 turret.note ("tape the sensor and the fan to the horn", "servo.signal", offset=(-1.6, 1.2))
 
 boards = {"A": stick, "B": turret}

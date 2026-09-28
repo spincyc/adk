@@ -83,11 +83,11 @@ times a second, so it answers the knob straight away.
 !!! warning "Unplug first"
     Unplug the USB cable before you wire. Keep Lesson 14's screen and DHT11
     as they are, take out the thermistor, its 10 kΩ resistor and the 18B20
-    with their wires, and add the rest past the screen. Two things to check
-    twice: the RGB LED's longest leg is the common one and goes straight
-    into the bottom − rail by column 42, and the buzzer's + mark goes in f51,
-    above the gap. The wire from A0 runs round below the screen to the alarm
-    knob.
+    with their wires, and add the rest to the left of the screen. Two things
+    to check twice: the RGB LED's longest leg is the common one and goes straight
+    into the bottom − rail by column 7, and the buzzer's + mark goes in f33,
+    above the gap. The alarm knob stands in columns 39 to 41, just left of
+    the contrast knob.
 
 <!-- bench -->
 
@@ -97,9 +97,9 @@ times a second, so it answers the knob straight away.
     The LCD's contrast knob and the alarm knob are both 10 kΩ potentiometers;
     the Mega kit comes with two. If one has gone missing, use the one you
     have for the alarm, and give the screen a fixed contrast instead: take
-    out the contrast knob, its two wires from j5 and j7, and the yellow wire
-    from c6 to c11, and put a 1 kΩ resistor (brown, black, black, brown,
-    brown) from c9 to c11, between the LCD's VSS and V0. Many screens read
+    out the contrast knob, its two wires from j43 and j45, and the yellow wire
+    from c44 to c49, and put a 1 kΩ resistor (brown, black, black, brown,
+    brown) from c47 to c49, between the LCD's VSS and V0. Many screens read
     well like that; if yours is too faint or too dark, you'll need a second
     knob after all.
 
@@ -170,12 +170,12 @@ both ways, which is the gap doing its job.
 | What you see | Try this |
 |---|---|
 | `Measuring...` never goes away | The DHT11 isn't answering: check S to pin 16, + to the top + rail by column 36 and − to the top − rail by column 37. |
-| The light stays off | Check the RGB LED's longest leg is in the bottom − rail by column 42. |
-| One color is missing | Follow that color's pin: pin 5 to j41 and the resistor g41–e41 (red), pin 6 to j44 and g44–e44 (green), pin 7 to j46 and g46–e46 (blue). |
+| The light stays off | Check the RGB LED's longest leg is in the bottom − rail by column 7. |
+| One color is missing | Follow that color's pin: pin 5 to j6 and the resistor g6–e6 (red), pin 6 to j9 and g9–e9 (green), pin 7 to j11 and g11–e11 (blue). |
 | The light shows the wrong colors | The LED is in back to front, or the pin wires are swapped. |
-| The alarm setting is stuck at 10 or 40 | The knob has no power: check the red wire from j59 to the top + rail by column 59, and the black one from j57 to the top − rail by column 57. |
+| The alarm setting is stuck at 10 or 40 | The knob has no power: check the red wire from j41 to the top + rail by column 41, and the black one from j39 to the top − rail by column 39. |
 | The setting runs backwards | That's fine, or swap the red and black wires on the knob's outer legs. |
-| No beep when it says **TOO HOT!** | Check the buzzer's + leg is in f51 with pin 12's wire in j51, and the black wire from a51 goes to the − rail. |
+| No beep when it says **TOO HOT!** | Check the buzzer's + leg is in f33 with pin 12's wire in j33, and the black wire from a33 goes to the − rail. |
 
 ??? note "How it works"
     Nothing in `loop ()` ever waits. The DHT11 takes a reading every two

@@ -105,7 +105,7 @@ about 21 mA through the chip, comfortably under the 70 mA it can handle. With
     across the middle gap in columns 27, 28 and 30, so each signal crosses
     over through its resistor; and the three for the bottom row (e, d and c)
     stand across the gap in columns 39 to 41, just before the digit, fed from
-    above by wires that step up over the gap. The black jumper in column 6
+    above by wires that step up over the gap. The black jumper in column 41
     joins the two − rails, so OE can take GND from the top one. Follow the
     steps, which give every hole.
 
@@ -163,7 +163,7 @@ right, along the bottom and up the left.
 
 | What you see | Try this |
 |---|---|
-| Nothing lights at all | Check the chip's notch is on the left, the red wires from j18 and j24 reach the top + rail, the black wires from j21 and a25 reach the top and bottom − rails, and the black jumper in column 6 joins the two − rails. |
+| Nothing lights at all | Check the chip's notch is on the left, the red wires from j18 and j24 reach the top + rail, the black wires from j21 and a25 reach the top and bottom − rails, and the black jumper in column 41 joins the two − rails. |
 | The chip gets warm | Unplug now. The chip is in backwards, or a 5 V wire is on a GND pin. |
 | The numbers look scrambled | A resistor is in the wrong column, so a Q output lights the wrong segment. Check each one against the connections list. |
 | One segment never lights | Its resistor or wire is loose, or one column out. |

@@ -1,5 +1,5 @@
 # Lesson 20's fan stays as it was: the power module beside the board, its
-# wires in B+61 and B-61, the L293D in columns 12-19 and the motor above
+# wires in B+42 and B-42, the L293D in columns 12-19 and the motor above
 # the board, with the same wires from 4, 8 and 9; the knob and the button
 # come out.
 # The ultrasonic sensor comes back from Lesson 19 to the same place above

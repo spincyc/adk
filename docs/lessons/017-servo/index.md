@@ -85,8 +85,8 @@ the same GND.
     nothing in those pins, and both its yellow jumpers **off**, each parked
     on one pin, where it joins nothing. Its power comes from the header in
     its middle instead: a red wire from its **5V** pin to the bottom + rail
-    by column 61, and a black wire from its **GND** pin to the bottom − rail
-    by column 61.
+    by column 42, and a black wire from its **GND** pin to the bottom − rail
+    by column 42.
 
 <!-- bench -->
 
@@ -104,7 +104,7 @@ the same GND.
     socket too; in this course, always power it through the barrel socket
     with the kit's adapter.
 
-    The knob stands at its home, as in Lesson 7, its red wire from j47 up to
+    The knob stands at its home, as in Lesson 7, its red wire from j41 up to
     the top + rail. That rail carries the Mega's own 5 V, from the red wire
     into the top + rail by column 3, and so does the screen's VDD: the Mega
     measures A0 against that 5 V, so a knob fed from it reads from 0 to 1023
@@ -166,11 +166,11 @@ module back on and the servo snaps to wherever the knob now points.
 
 | What you see | Try this |
 |---|---|
-| The servo never moves, though the screen shows the angles | Is the power module's LED on? Check the adapter and the button, then the module's two wires: red from its 5V pin to the bottom + rail by column 61, black from its GND pin to the bottom − rail by column 61. Then check the black wire from the Mega's GND to the bottom − rail by column 3: without it the servo can't read the signal. |
-| The power module gets hot | Unplug its adapter and the USB cable at once. The module must lie beside the breadboard, never plugged into it, and its red wire must go to the bottom + rail by column 61 and its black one to the bottom − rail by column 61, never the other way round. |
+| The servo never moves, though the screen shows the angles | Is the power module's LED on? Check the adapter and the button, then the module's two wires: red from its 5V pin to the bottom + rail by column 42, black from its GND pin to the bottom − rail by column 42. Then check the black wire from the Mega's GND to the bottom − rail by column 3: without it the servo can't read the signal. |
+| The power module gets hot | Unplug its adapter and the USB cable at once. The module must lie beside the breadboard, never plugged into it, and its red wire must go to the bottom + rail by column 42 and its black one to the bottom − rail by column 42, never the other way round. |
 | The screen is dark | It runs on the Mega's 5 V, not the module's: check the red wire from the Mega's 5V into the top + rail by column 3. |
-| It moves, but not with the knob | Check the servo's orange wire goes to pin 44, the knob's middle leg to A0, and the red wire from j47 up to the top + rail by column 47. |
-| The Mega resets or the USB disconnects when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail by column 53, fed by the power module. |
+| It moves, but not with the knob | Check the servo's orange wire goes to pin 44, the knob's middle leg to A0, and the red wire from j41 up to the top + rail by column 41. |
+| The Mega resets or the USB disconnects when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail by column 35, fed by the power module. |
 | The needle turns the opposite way to the knob | Nothing is wrong. To swap it, change `knob.read (0, 180)` to `knob.read (180, 0)`. |
 | The servo hums or twitches when it should be still | The knob's reading wobbles by one step, and the servo chases it. See the second challenge below. |
 | It buzzes at one end of its travel | It's pushing against its end stop. Use `adk::Servo needle {44, 600, 2300};` to narrow the pulses a little. |

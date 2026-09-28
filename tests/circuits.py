@@ -126,7 +126,7 @@ for boards, error in (('{"A": a, "B": b}', None), ('{"B": b, "A": a}', "in order
         os.unlink (file.name)
 
 # Parts at their homes: a home_* call builds just what the lesson wrote out
-# by hand, and takes a part's second home where the kit page gives one.
+# by hand. Adding the screen must not move a recurring part or its wires.
 def finished (bench):
     bench.finish ()
     return bench
@@ -138,18 +138,73 @@ expect ("parts at their homes", at_home.used, by_hand.used)
 expect ("their connections", at_home.connections (), by_hand.connections ())
 
 beside = Bench ("test", columns=(1, 62)).screen ()
-beside.home_button ("23").home_buzzer ("active").home_rgb_led ().home_knob ()
+beside.home_button ("23").home_buzzer ("active").home_rgb_led (green_resistor=13).home_knob ()
 beside = finished (beside)
-for hole, what in (("j38", "the button on 23"), ("f51", "the buzzer"), ("a41", "the RGB LED"),
-                   ("f57", "the knob")):
+for hole, what in (("j8", "the button on 23"), ("f33", "the buzzer"), ("a6", "the RGB LED"),
+                   ("f39", "the knob"), ("a47", "the LCD's first pin"),
+                   ("a62", "the LCD's last pin")):
     expect (f"{what} beside the screen, in {hole}", hole in beside.used, True)
+
+# Compare the complete home, including its power jumpers, on both boards.
+for home, args in (("home_button", ("23",)), ("home_rgb_led", ()),
+                    ("home_buzzer", ("passive",)), ("home_knob", ()),
+                    ("home_divider", ("photoresistor",)), ("home_encoder", ()),
+                    ("home_modem", ()), ("home_servo", ())):
+    homes = []
+    for screen in (False, True):
+        bench = Bench ("test", columns=(1, 63))
+        if screen:
+            bench.screen ()
+        before, wires = set (bench.used), len (bench.wires)
+        getattr (bench, home) (*args)
+        homes.append ((set (bench.used) - before, bench.wires[wires:]))
+    expect (f"{home} keeps its holes and wires with the screen", homes[1], homes[0])
 
 plain = Bench ("test", columns=(1, 63)).power_module ()
 bridged = Bench ("test", columns=(1, 63)).power_module ()
 plain.home_servo ()
 bridged.home_modem ().home_servo ()
-expect ("the servo lower beside the modem",
-        bridged.modules["servo"].y > plain.modules["servo"].y, True)
+expect ("the servo stays put beside the modem",
+        bridged.modules["servo"].reach_box (), plain.modules["servo"].reach_box ())
+finished (bridged)
+
+# These combinations used to force parts to move or cover their power holes.
+analog = Bench ("test", columns=(1, 63))
+for pin in ("26", "27", "28", "29", "30"):
+    analog.home_led (pin, "red")
+finished (analog.home_buzzer ("passive").home_divider ("photoresistor").home_knob ())
+tilting = finished (Bench ("test", columns=(1, 63)).home_encoder ().home_gy521 ())
+expect ("the encoder's power holes stay clear of the accelerometer",
+        {"T-18", "T+19"} & tilting._covered (), set ())
+check ("a button covers the RGB LED's normal green resistor",
+       lambda b: b.home_rgb_led ().home_button ("23"), "would cover e9")
+rgb_button = finished (Bench ("test", columns=(1, 63)).home_rgb_led (green_resistor=13)
+                       .home_button ("23"))
+expect ("moving the green resistor preserves all three LED signals",
+        {pin: mode for pin, (mode, _) in rgb_button.pin_modes ().items ()},
+        {"5": "output", "6": "output", "7": "output", "23": "input"})
+# The green jumper and button ground crowd all three adjacent G-label
+# positions. The close-up must still label that leg, using a leader.
+Drawing (rgb_button).svg ("closeup")
+
+# Automatic links are left of the LCD's body and remain standard wires
+# for the generated carry-over steps and the close-up's extent.
+links = finished (Bench ("test", columns=(1, 63)).home_knob ())
+ground_link = next (wire for wire in links.wires
+                    if {end[1] for end in wire[:2]} == {"B-41", "T-41"})
+expect ("the new rail link is standard", links.is_standard (ground_link), True)
+bottom = finished (Bench ("test", columns=(1, 63)).home_beam ())
+positive_link = next (wire for wire in bottom.wires
+                      if {end[1] for end in wire[:2]} == {"T+42", "B+42"})
+expect ("the new positive rail link is standard", bottom.is_standard (positive_link), True)
+lcd = finished (Bench ("test", columns=(1, 63)).screen ())
+expect ("the rail links and power feed stay clear of the LCD",
+        {"B-41", "T-41", "B-42", "B+42", "T+42"} & lcd._covered (), set ())
+separate = finished (Bench ("test", columns=(1, 63)).power_module ("3.3V").screen ()
+                     .home_modem (power="B+29"))
+expect ("the screen keeps the Mega's 5 V", separate._powered ("T+", "5V"), True)
+expect ("the modem keeps the power module's 3.3 V", separate._powered ("B+", "3.3V"), True)
+expect ("the two positive rails are separate", separate._powered ("B+", "5V"), False)
 
 sensing = finished (Bench ("test", columns=(1, 50)).home_ultrasonic ().home_modem ())
 expect ("the modem on Serial2 beside the ultrasonic sensor",

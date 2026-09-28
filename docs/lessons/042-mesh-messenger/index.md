@@ -11,7 +11,7 @@ parts:
   - RGB LED
   - 3 × 220 Ω resistors (red, red, black, black, brown)
   - 3 more female-to-male jumper wires
-  - 3 more jumper wires
+  - 4 more jumper wires
   - A soldering iron and an adult to help, unless your boards come with their pins soldered
 ideas:
   - A mesh, where radios pass messages on for each other
@@ -152,7 +152,7 @@ pictures of each.
     had in Lesson 41. GPIO48 goes straight to pin 19; the Mega is happy to
     read 3.3 V.
 
-Keep the screen, the button, the DHT11, module A's divider in column 55 and
+Keep the screen, the button, the DHT11, module A's divider in column 37 and
 the Mega's wires to pins 18 and 19 from Lesson 41 just as they are, with
 the Mega's GND and 5V wires. Take out both LoRa modules and their wires,
 module B's divider and the wires to pins 14, 15 and 40 to 43, and the
@@ -160,15 +160,17 @@ power module with its two wires: nothing here needs it. If you skipped
 building Lesson 41, start from Lesson 40 instead, and put the DHT11 at its
 home above the board as in Lesson 15.
 
-The lamp is the RGB LED, at its home beside the screen in columns 41 to 46,
-as in Lesson 15: its longest leg in the bottom − rail by column 42, a 220 Ω
-resistor across the gap above each colored leg, and pins 5, 6 and 7 into row
-j.
+The lamp is the RGB LED, with its colored legs in a6, a9 and a11 and its
+longest leg in the bottom − rail by column 7, as in Lesson 15. The button
+also keeps its home in columns 8 to 10, so its body covers the green LED's
+usual resistor hole. Put that 220 Ω resistor across the gap from g13 to
+e13, pin 6's wire into j13, and a short jumper from b13 to b9. Red and blue
+keep their resistors above their legs.
 
 Board 1 lies below the breadboard in module A's place, its pins toward the
-board, with three wires: **48** up into f53, where pin 19's wire waits in
-j53; **47** up into c55, the middle of the divider; and **GND** to the
-bottom − rail by column 59.
+board, with three wires: **48** up into f35, where pin 19's wire waits in
+j35; **47** up into c37, the middle of the divider; and **GND** to the
+bottom − rail by column 41.
 
 <!-- bench -->
 
@@ -181,8 +183,8 @@ bottom − rail by column 59.
 
     | Pin | Job | Goes to |
     |---|---|---|
-    | 47 | Listens to the Mega (the Serial module's RX) | The middle of the divider, c55 |
-    | 48 | Talks to the Mega (the Serial module's TX) | Pin 19, through f53 and j53 |
+    | 47 | Listens to the Mega (the Serial module's RX) | The middle of the divider, c37 |
+    | 48 | Talks to the Mega (the Serial module's TX) | Pin 19, through f35 and j35 |
     | GND | Ground | The bottom − rail |
 
     The Mega's GND and the board's GND must be joined, or the two can't
@@ -255,13 +257,13 @@ shows it on the screen as a message instead.
 
 | What you see | Try this |
 |---|---|
-| The screen stays on `Waiting...` | Check board 1's Serial settings: enabled, TEXTMSG, RX 47, TX 48, 38400. Check its 48 goes to f53, with pin 19's wire in j53, and its GND to the − rail. |
+| The screen stays on `Waiting...` | Check board 1's Serial settings: enabled, TEXTMSG, RX 47, TX 48, 38400. Check its 48 goes to f35, with pin 19's wire in j35, and its GND to the − rail. |
 | Still nothing arrives | Send in the channel's chat, not as a direct message to board 1. Check both boards have the same region and the same private channel. |
-| Messages arrive, but the phone never gets a reply | Check board 1's 47 goes to c55, pin 18's wire is in j55, and the divider's 1 kΩ is from g55 to e55 and 2 kΩ from a55 to the − rail. |
+| Messages arrive, but the phone never gets a reply | Check board 1's 47 goes to c37, pin 18's wire is in j37, and the divider's 1 kΩ is from g37 to e37 and 2 kΩ from a37 to the − rail. |
 | `Too soon to send` on the Serial Monitor | The node takes a message at most every 1.5 seconds: press the button more slowly. |
 | The Mega shows a command instead of obeying it | A command must be the whole message, with nothing after it: no full stop, no space. Some keyboards add a space after a word they finish for you. |
 | The reply to `temp?` is `No reading yet` | Wait a few seconds after starting. If it stays, check the DHT11: S to pin 16, + to the top + rail by column 36, − to the top − rail by column 37. |
-| The lamp stays dark, or a color is missing | Check the RGB LED's longest leg is in the bottom − rail by column 42, and follow each color from its pin: 5 to j41, 6 to j44, 7 to j46, each through its resistor. |
+| The lamp stays dark, or a color is missing | Check the RGB LED's longest leg is in the bottom − rail by column 7. Red is pin 5 through j6 and its resistor; blue is pin 7 through j11 and its resistor. Green takes pin 6 through j13, the resistor from g13 to e13, and the jumper from b13 to b9. |
 | The app can't find board 2 | Make sure it has power, and that Bluetooth is on. Only one phone at a time can pair with a board. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 

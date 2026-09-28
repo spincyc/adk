@@ -107,6 +107,8 @@ When you are done, these are the connections Board A makes:
 Build Board B just like Board A, with its matrix, joystick and buzzer in
 the same places. These steps start from Lesson 53's Board B:
 
+<!-- bench B -->
+
 <!-- steps B -->
 
 ## Code it
@@ -199,7 +201,7 @@ again with its next check. That's the radio, not you.
 | Two balls at once | You both served at the start. When one crosses over, the board it lands on drops its own, and there is one ball again. |
 | The score looks wrong after a board was reset | Each board counts its own misses from when it started. Press both reset buttons together for a new game. |
 | The ball never comes back, and your board's **L** LED is dark | The other board was switched off with the ball on its side. Press your board's reset button. |
-| No sound | Check the buzzer's + leg is in f34, beside pin 10's wire in j34, and its 220 Ω from a34 to the − rail. |
+| No sound | Check the buzzer's + leg is in f33, beside pin 10's wire in j33, and its 220 Ω from a33 to the − rail. |
 | The matrix shows junk | Check its wires, especially CLK on 48 and CS on 49. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 

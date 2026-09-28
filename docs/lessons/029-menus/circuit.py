@@ -1,6 +1,7 @@
-# The screen at its home, and the red LED on 3 at its home. The rotary
-# encoder stands at its home in row a, columns 45 to 49, its knob toward
-# you, on 18, 19 and 22.
+# The screen at the far end, and the red LED on 3 at its home. The rotary
+# encoder stands in row a, columns 15 to 19, its knob toward you, on 18,
+# 19 and 22. Its power jumpers use top-rail holes 18 and 19, which stay
+# clear when Lesson 30 adds the GY-521.
 bench = Bench ("An LCD on pins 31 to 36, a rotary encoder on 18 and 19 with its switch "
                "on 22, and a lamp on pin 3", columns=(1, 50))
 

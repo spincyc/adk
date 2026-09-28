@@ -27,5 +27,5 @@ boards = {"A": board ("A", "BoardA"), "B": board ("B", "BoardB")}
 # middle of its divider, at two thirds of that.
 boards["A"].measure ("Pin 14, TX3, resting", red="14", black="GND", expect="about 5 V",
                      when="between messages")
-boards["A"].measure ("The modem's RXD, the middle of its divider", red="d46", black="GND",
+boards["A"].measure ("The modem's RXD, the middle of its divider", red="d28", black="GND",
                      expect="about 3.3 V", when="between messages")

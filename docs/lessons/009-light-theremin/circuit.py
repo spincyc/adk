@@ -17,9 +17,9 @@ lanes = {26: [(4.10, 0.95), (4.50, 0.95), (4.50, 1.05), (5.90, 1.05)],
 for pin, color in ((26, "red"), (27, "yellow"), (28, "green"), (29, "blue"), (30, "white")):
     bench.home_led (str (pin), color, via=lanes[pin])
 
-bench.home_divider ("photoresistor", via=[(2.46, 2.85), (9.25, 2.85)])
+bench.home_divider ("photoresistor")
 
-bench.home_buzzer ("passive", via=[(1.80, 0.45), (8.65, 0.45)])
+bench.home_buzzer ("passive")
 
 bench.home_knob ()
 
@@ -28,5 +28,5 @@ bench.home_knob ()
 # octave changes.
 bench.measure ("Pin 10, playing a note", red="10", black="GND", expect="about 2.5 V",
                when="A note sounding")
-bench.measure ("The knob's wiper, where the octave jumps", red="d46", black="GND",
+bench.measure ("The knob's wiper, where the octave jumps", red="d40", black="GND",
                expect="about 1.7 V", when="The note just jumping up an octave")

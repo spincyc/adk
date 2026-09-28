@@ -13,18 +13,18 @@ bench.screen (text=("Locked. Code?", "****"), risers=(4.8, 0.05))
 
 bench.home_keypad ()
 
-bench.home_buzzer ("active", via=[(1.60, -0.25), (10.4, -0.25)])
+bench.home_buzzer ("active")
 
-bench.home_servo (via=[(4.55, 1.90), (4.55, 3.01), (10.5, 3.01)])
+bench.home_servo ()
 
 # Readings to take with a multimeter: the screen's VDD, which takes the
 # Mega's 5 V from the top + rail, and its D4 wire, which shows a star's
 # code while the safe is locked and the digit's own while choosing. The
 # bottom − rail lies under the screen, so the black probe goes in a column
 # the screen joins to GND: RW's, then the backlight's K.
-bench.measure ("The screen's 5 V, from the Mega", red="b10", black="c13",
+bench.measure ("The screen's 5 V, from the Mega", red="b48", black="c51",
                expect="about 5 V", when="power module on or off")
-bench.measure ("D4 after a star", red="33", black="c24", expect="0 V",
+bench.measure ("D4 after a star", red="33", black="c62", expect="0 V",
                when="locked, just after typing any digit")
-bench.measure ("D4 after a 5", red="33", black="c24", expect="about 5 V",
+bench.measure ("D4 after a 5", red="33", black="c62", expect="about 5 V",
                when="choosing a code, just after typing 5")

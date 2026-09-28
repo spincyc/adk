@@ -109,24 +109,24 @@ messages down. A word takes about a tenth of a second, so its rest is
     GND. The receiver's VCC takes 5 V.
 
 Keep the screen from Lesson 37 as it is, and one of the short black
-jumpers down to the − rail: the radio's, from f51, which now takes the
-receiver's GND. Take everything else off. The button goes at its home beside the
-screen, in columns 38 to 40.
+jumpers down to the − rail: the radio's, from f33, which now takes the
+receiver's GND. Take everything else off. The button goes at its home near
+the Mega, in columns 8 to 10.
 
 The receiver and the transmitter stand in row j, their boards lying back
-over the top rails like the FM radio's in Lesson 37. Their wires come round
-the bottom of the screen and up into row f.
+over the top rails like the FM radio's in Lesson 37. Their wires come up
+into row f, below each radio. The screen stays at the far right.
 
 <!-- bench -->
 
 <!-- steps -->
 
 ??? info "The divider, and the two modules' pins"
-    The divider is two resistors in a row. From pin 46's wire in f54, the
-    1 kΩ lies along row h into h57, DAT's column. The 2 kΩ stands across the
-    middle gap from g57 to e57, and the black jumper from a57 takes it to
-    the − rail. If you have no 2 kΩ, put a 1 kΩ from g57 to e57 in its
-    place, and another 1 kΩ from a57 to the − rail instead of the black
+    The divider is two resistors in a row. From pin 46's wire in f36, the
+    1 kΩ lies along row h into h39, DAT's column. The 2 kΩ stands across the
+    middle gap from g39 to e39, and the black jumper from a39 takes it to
+    the − rail. If you have no 2 kΩ, put a 1 kΩ from g39 to e39 in its
+    place, and another 1 kΩ from a39 to the − rail instead of the black
     jumper: two 1 kΩ in a row make 2 kΩ.
 
     | Module | Pin | Goes to |
@@ -211,7 +211,7 @@ the noise doesn't get through.
 | What you see | Try this |
 |---|---|
 | `Sent:` appears, but nothing is heard | Check the receiver's DATA goes to pin 43, its VCC to 5V and its GND to the − rail. Check the transmitter's + goes to 3.3V and its − to the − rail. |
-| Still nothing is heard | Check the divider: pin 46's wire in f54, the 1 kΩ from h54 to h57, the 2 kΩ from g57 to e57, and the black jumper from a57 to the − rail. |
+| Still nothing is heard | Check the divider: pin 46's wire in f36, the 1 kΩ from h36 to h39, the 2 kΩ from g39 to e39, and the black jumper from a39 to the − rail. |
 | Typing does nothing | Set the Serial Monitor's line ending to **New Line**: the sketch waits for the end of the line. |
 | `Resting...` and `Wait` on the screen | The transmitter rests after every message, and when the sketch starts. Wait as long as it says, then send again. |
 | Some messages go missing | Turn one module round, and keep them away from the computer and its cable. |

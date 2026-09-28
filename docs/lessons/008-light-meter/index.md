@@ -10,7 +10,7 @@ parts:
   - 10 kΩ resistor (brown, black, black, red, brown)
   - Red, yellow, green, blue and white LEDs
   - 5 × 220 Ω resistors (red, red, black, black, brown)
-  - 15 jumper wires
+  - 14 jumper wires
 ideas:
   - The photoresistor, a resistor that light controls
   - A divider that turns resistance into a voltage
@@ -70,7 +70,7 @@ itself, so a single odd reading barely nudges the bar.
     Unplug the USB cable before you change any wiring. This build uses two
     rails: the Mega's red wire makes the top + rail 5 V, and its black wire
     makes the bottom − rail GND. Every short black wire from row a goes to
-    the bottom − rail, and the short red wire from j40 to the top + rail; no
+    the bottom − rail, and the short red wire from j37 to the top + rail; no
     wire should ever join a + rail straight to a − rail.
 
 <!-- bench -->
@@ -97,11 +97,11 @@ leg's column has a short black wire down to the − rail. The red LED takes
 about 14 mA and the white one about 8 mA; all five together are well within
 what the Mega can supply.
 
-The light sensor's divider stands in column 40, in the order the current
-flows through it: a red wire brings 5 V down from the top + rail into j40,
-the photoresistor stands across the middle gap in f40 and e40, A1's wire
-comes into a40, the point between the two halves, and the 10 kΩ lies along
-row c from c40 to c43, where a black wire takes it down to the − rail.
+The light sensor's divider stands in column 37, in the order the current
+flows through it: a red wire brings 5 V down from the top + rail into j37,
+the photoresistor stands across the middle gap in f37 and e37, and A1's
+wire comes into c37, the point between the two halves. The 10 kΩ runs from
+a37 down to the bottom − rail by column 37.
 
 When you are done, these are the connections your circuit makes:
 
@@ -177,10 +177,10 @@ challenge below lets you check.
 | What you see | Try this |
 |---|---|
 | The bar is always empty, or always full | The light didn't change during the first five seconds. Press the Mega's reset button and cover, then light, the sensor while the white LED blinks. |
-| The bar is full in the dark and empty in the light | The photoresistor and the 10 kΩ have swapped places. The photoresistor goes across the gap in f40 and e40, the 10 kΩ from c40 to c43. |
+| The bar is full in the dark and empty in the light | The photoresistor and the 10 kΩ have swapped places. The photoresistor goes across the gap in f37 and e37, the 10 kΩ from a37 to the bottom − rail by column 37. |
 | One LED never lights | Turn it round: its long leg goes in the column of its pin's wire. Check its resistor crosses the gap and its black wire reaches the − rail. |
 | No LED ever lights | The black wires from row a must go to the − rail, the one with the blue line. |
-| The level stays near 0 or near 1023 | Check A1's wire is in a40, the red wire joins j40 to the top + rail, the black one joins a43 to the − rail, and the Mega's red and black wires reach the top + rail by column 3 and the bottom − rail by column 3. |
+| The level stays near 0 or near 1023 | Check A1's wire is in c37, the red wire joins j37 to the top + rail, the 10 kΩ joins a37 to the bottom − rail, and the Mega's red and black wires reach the top + rail by column 3 and the bottom − rail by column 3. |
 | The top LED flickers on and off | The light is right at the edge of a slice. Try `adk::Smoother light {5};` for a calmer bar. |
 
 ??? note "How it works"
@@ -207,8 +207,11 @@ challenge below lets you check.
 3. **One dot.** Light just the LED at the top of the bar, like a needle:
    `bar[led].set (led == lit - 1);`. What does the needle do in the
    darkest slice?
-4. **Automatic lamp.** Add Lesson 7's white LED on pin 3, back in its home
-   in column 38, as an `adk::PwmOutput`, and make it brighter the darker the
+4. **Automatic lamp.** Add Lesson 7's white LED on pin 3 as an
+   `adk::PwmOutput`. For this extra build, use column 34 to leave room
+   beside the light sensor: pin 3 into j34, 220 Ω from g34 to e34, the
+   LED's long leg in b34 and short leg in b35, and a black jumper from
+   a35 to the bottom − rail by column 35. Make it brighter the darker the
    room gets, with `map (level, darkest, brightest, 255, 0)`. Keep the
    result between 0 and 255 with `constrain ()`, as `showBar ()` does.
 

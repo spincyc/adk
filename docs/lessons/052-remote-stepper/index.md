@@ -85,14 +85,14 @@ degrees from it. Between those points, a tiny wobble changes nothing.
     Unplug both boards' USB cables, and Board B's power module adapter,
     before you change any wiring. Board B's power module stays beside the
     board as in Lesson 51, never plugged into it, both its jumpers **off**,
-    its red wire from **5V** to the bottom + rail by column 61, for the
+    its red wire from **5V** to the bottom + rail by column 42, for the
     motor, and its black wire from **GND** to the bottom − rail by column
-    61.
+    42.
 
 Each board keeps its LoRa modem at the bridge's home: lying below the
-breadboard under columns 42 to 47, its spring pointing down, its divider in
-column 46 and its VDD fed from the Mega's 3.3V pin. On Board A, the power
-module and the modem's red wire to the bottom + rail by column 47 come off,
+breadboard under columns 24 to 29, its spring pointing down, its divider in
+column 28 and its VDD fed from the Mega's 3.3V pin. On Board A, the power
+module and the modem's red wire to the bottom + rail by column 29 come off,
 and the modem's VDD goes back to the Mega's 3.3V pin, as in Lesson 50:
 without the card reader, that pin has enough for it. The steps begin with
 what to keep from Lesson 51 and what to take out.
@@ -105,12 +105,10 @@ what to keep from Lesson 51 and what to take out.
 
 ### Board A: the knob
 
-The screen goes at its home, from column 5, exactly as in Lesson 13. The
-knob can't stand at its usual home in columns 45 to 47, because the
-modem's divider is in column 46, so it takes its home beside the screen,
-columns 57 to 59; A0's wire comes round below the modem. The four-digit
-display of Lesson 11 would cover the modem's divider too, which is why the
-screen shows the angles here.
+The screen goes at its far-right home, exactly as in Lesson 13, and the
+knob stands in columns 39 to 41, as in Lesson 7. Both leave the modem and
+its divider in place. The screen shows the angle you ask for and the angle
+the turntable has reached.
 
 <!-- bench A -->
 
@@ -214,13 +212,13 @@ good.
 
 | What you see | Try this |
 |---|---|
-| **No word from B** | Is Board B powered and running **Turntable**? Its **L** LED lights when it hears Board A. Check both modems' wiring against the steps: TXD into f44, RXD into c46, pin 14 into j46, pin 15 into j44, and VDD to the Mega's 3.3V pin. |
-| The screen counts, but the turntable doesn't move | Is Board B's power module on, with its LED lit? Check its red wire goes from its **5V** pin to the bottom + rail and its black one from GND to the bottom − rail, both by column 61. Push the motor's white plug fully into its socket. |
+| **No word from B** | Is Board B powered and running **Turntable**? Its **L** LED lights when it hears Board A. Check both modems' wiring against the steps: TXD into f26, RXD into c28, pin 14 into j28, pin 15 into j26, and VDD to the Mega's 3.3V pin. |
+| The screen counts, but the turntable doesn't move | Is Board B's power module on, with its LED lit? Check its red wire goes from its **5V** pin to the bottom + rail and its black one from GND to the bottom − rail, both by column 42. Push the motor's white plug fully into its socket. |
 | The motor hums or shakes but hardly turns | Two of Board B's IN wires are swapped: IN1 to A8, IN2 to A9, IN3 to A10, IN4 to A11. |
 | **Arrived** shows the wrong place on the table | Board B counts from where the arrow was when it started. Point the arrow at 0 and press Board B's reset button. |
 | The turntable goes anticlockwise | That's fine: it is the way positive steps turn your motor. Lesson 31 says more. |
 | The count stops for a moment, then catches up | A message was lost, and the bridge sent it again. If it happens all the time, move the boards closer, or keep their aerials upright. |
-| A blank lit screen, or a row of blocks | Turn the screen's contrast knob, the one in columns 5 to 7. |
+| A blank lit screen, or a row of blocks | Turn the screen's contrast knob, the one in columns 43 to 45. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"
@@ -251,8 +249,8 @@ good.
 
 ## Make it yours
 
-1. **Home.** Put a button on Board A's pin 23, at its home beside the
-   screen in columns 38 to 40, and make it send the turntable to 0 with
+1. **Home.** Put a button on Board A's pin 23, at its home near the
+   Mega, in columns 8 to 10, and make it send the turntable to 0 with
    `angle = 0;`. Try it: why does nothing happen? Make the knob take over
    again only once it moves.
 2. **Slow and steady.** Change Board B's `motor.speed (500)` to

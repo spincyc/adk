@@ -15,16 +15,16 @@ lanes = {26: [(4.10, 0.95), (4.50, 0.95), (4.50, 1.05), (5.90, 1.05)],
 for pin, color in ((26, "red"), (27, "yellow"), (28, "green"), (29, "blue"), (30, "white")):
     bench.home_led (str (pin), color, via=lanes[pin])
 
-bench.home_divider ("photoresistor", via=[(2.46, 2.85), (9.25, 2.85)])
+bench.home_divider ("photoresistor")
 
 # The close-up starts at column 1, so its row letters stand clear of the bar.
 bench.closeup (1, 46)
 
 # Readings to take with a multimeter: the divider's middle in room light and
 # with the sensor covered, and the photoresistor's own share of the 5 V.
-bench.measure ("The divider's middle, in room light", red="d40", black="GND",
+bench.measure ("The divider's middle, in room light", red="d37", black="GND",
                expect="about 2.5 V", when="Room light")
-bench.measure ("The divider's middle, covered", red="d40", black="GND",
+bench.measure ("The divider's middle, covered", red="d37", black="GND",
                expect="about 0.5 V", when="Sensor covered")
-bench.measure ("Across the photoresistor, covered", red="h40", black="d40",
+bench.measure ("Across the photoresistor, covered", red="h37", black="d37",
                expect="about 4.5 V", when="Sensor covered")

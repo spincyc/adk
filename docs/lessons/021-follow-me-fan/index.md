@@ -92,7 +92,7 @@ The sketch repeats three steps for as long as it runs:
     module off before you change any wiring. Keep the module as in Lesson
     20: beside the board, never plugged into it, both its jumpers **off**,
     its red wire from **5V** to the bottom + rail and its black wire from
-    **GND** to the bottom − rail, both by column 61. The servo and the fan
+    **GND** to the bottom − rail, both by column 42. The servo and the fan
     take their power only from the module, never from the Mega. Keep
     fingers, hair and faces clear of the fan blade whenever the power is on.
 
@@ -191,10 +191,10 @@ at the wall.
 
 | What you see | Try this |
 |---|---|
-| The servo doesn't move | Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 61, then the servo's plug: brown to the − rail, red to the + rail, and orange straight to pin 44. |
+| The servo doesn't move | Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 42, then the servo's plug: brown to the − rail, red to the + rail, and orange straight to pin 44. |
 | It sweeps but never stops to blow | It never saw anything within 80 cm. Stand closer, or check the sensor still faces forwards on the horn. |
 | It turns to the wrong place | The sensor sees a wall, the desk or a wire that's nearer than you. Clear the space in front of it, or tilt the sensor up a little. |
-| The fan never spins | Check the power module's red wire goes from its 5V pin to the bottom + rail by column 61, and that the motor's leads, through their extra wires, reach j14 and j17. Lesson 20's table has more. |
+| The fan never spins | Check the power module's red wire goes from its 5V pin to the bottom + rail by column 42, and that the motor's leads, through their extra wires, reach j14 and j17. Lesson 20's table has more. |
 | The Mega resets or the servo jerks when the fan starts | The supply is struggling: make sure the servo's red wire goes to the bottom + rail, which only the module feeds, and that the Mega's GND is joined to the module's. |
 | The turret twitches at the ends of its sweep | Some servos can't reach 30° or 150°. Try `leftmost = 40` and `rightmost = 140`. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |

@@ -185,7 +185,7 @@ sequences. More than a million.
 | One light never lights | Turn that LED round: long leg in row b, on the left. Check its resistor runs from row g, across the gap, to row e. |
 | A light and its button don't match | The signal wires are out of order. Buttons: pins 22 to 25 into j2, j8, j14 and j20. Lights: pins 26 to 29 into j6, j12, j18 and j24. |
 | The lights blink, but one button never starts a game | Push that button firmly in, all four legs, and check its black wire from row a to the − rail. |
-| No sound | Follow pin 10: j34, the buzzer's **+** leg in f34 and its other leg in e34, and the resistor from a34 down into the − rail. |
+| No sound | Follow pin 10: j33, the buzzer's **+** leg in f33 and its other leg in e33, and the resistor from a33 down into the − rail. |
 | Every game starts with the same steps | Leave A7 unconnected: the random seed comes from it floating. |
 | The Mega's **L** LED blinks long and short flashes | A pin in the sketch is wrong. The Serial Monitor says which. |
 

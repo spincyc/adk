@@ -1,7 +1,7 @@
-# Lesson 38's screen and button stay where they were; the 433 MHz modules
-# go. The clock module comes back to its home from Lessons 32 and 33, and
-# the rotary encoder to its home above the Mega, wired as in Lesson 33. The
-# FM radio and the volume knob come back to their homes from Lesson 37.
+# Lesson 38's screen and button stay; its radios go. The clock module
+# returns above the board, and the rotary encoder returns to row a,
+# columns 15 to 19. The FM radio and volume knob keep their Lesson 37
+# homes, so the encoder needs no wires or mounting above the Mega.
 bench = Bench ("A clock radio: the FM radio on pins 40 to 42, the clock module on 20 and 21, the "
                "rotary encoder on 18, 19 and 22, a button on 23, a volume knob on A0, and the LCD "
                "on pins 31 to 36", columns=(1, 62))
@@ -12,13 +12,13 @@ bench.home_rtc (sda=[(3.75, 0.35), (3.95, 0.35), (3.95, -1.6), (8.5, -1.6), (8.5
 
 bench.home_encoder ()
 
-bench.home_button ("23", via=[(4.4, 0.80), (4.4, -1.7), (9.1, -1.7)])
+bench.home_button ("23")
 
 bench.home_fm_radio ()
 
-bench.home_knob (via=[(2.35, 4.05), (11.1, 4.05)])
+bench.home_knob ()
 
-bench.closeup (23, 62)
+bench.closeup (1, 63)
 
 # Readings to take with a multimeter: the volume knob's wiper, which the
 # sketch turns into the radio's volume, halfway and a quarter of the way.

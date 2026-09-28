@@ -3,8 +3,8 @@
 # passive buzzer on pin 10 lie at their homes.
 #
 # The modem is on Serial3 (pins 14 and 15), its VDD from the Mega's 3.3V
-# pin. Pins 10, 14 and 15 cross over the top in lanes, 10 highest, so its
-# wire crosses the other two just once each, over the board's end.
+# pin. The modem stays below columns 24 to 29, clear of the joystick
+# and the buzzer in column 33.
 
 # The matrix is drawn turned half round, so its picture is given upside
 # down: the paddle on the bottom row, the ball on its way up.
@@ -21,20 +21,20 @@ COURT = ["........",
 def player (title, sketch):
     bench = Bench (title, columns=(1, 50), sketch=sketch)
 
-    bench.home_modem (tx=[(3.05, 0.35), (9.9, 0.35)], rx=[(3.15, 0.45), (9.7, 0.45)])
+    bench.home_modem ()
 
     bench.home_matrix (pixels=[row[::-1] for row in reversed (COURT)])
 
     bench.home_joystick ()
 
-    bench.home_buzzer ("passive", via=[(1.79, 0.25), (8.7, 0.25)])
+    bench.home_buzzer ("passive")
     bench.closeup (1, 50)
 
     # Readings to take with a multimeter, before anyone serves: TX3
     # resting at 5 V, and the modem's RXD, where the divider makes it 3.3 V.
     bench.measure ("TX3, pin 14, resting", red="14", black="GND", expect="about 5 V",
                    when="no ball in play")
-    bench.measure ("The modem's RXD, resting", red="d46", black="GND", expect="about 3.3 V",
+    bench.measure ("The modem's RXD, resting", red="d28", black="GND", expect="about 3.3 V",
                    when="no ball in play")
     return bench
 

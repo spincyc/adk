@@ -86,10 +86,10 @@ keeps counting behind it; after three seconds the display catches up.
     up to about 30 mA, which a pin can give, as long as it has the pin to
     itself.
 
-<!-- bench -->
-
 Everything from Lesson 11 stays as it is; the steps only add the buttons and
 the buzzer.
+
+<!-- bench -->
 
 <!-- steps -->
 
@@ -103,8 +103,8 @@ the buzzer.
     own tone whenever pin 12 is high. The passive buzzer, with its green
     board, would only click. The buzzer stands across the middle gap, one
     leg on each side, so its + leg in f35 meets pin 12's wire and its other
-    leg in e35 meets the black wire to GND. Its usual home is column 34, but
-    with the display's wiring it moves one column along, so its round body
+    leg in e35 meets the black wire to GND. Its usual home is column 33, but
+    with the display's wiring it moves two columns along, so its round body
     stays clear of the wires that rise over the gap in column 32.
 
 When you are done, these are the connections your circuit makes:

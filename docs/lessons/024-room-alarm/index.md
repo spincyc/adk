@@ -83,7 +83,7 @@ while you're leaving.
     build so far: take it a step at a time, and check each step against the
     picture before moving on. Match the IR receiver's and the PIR's pins by
     their printed names (the PIR's are under its dome). The buzzer's longer
-    leg, under the **+** on its top, goes in the top half, in f51.
+    leg, under the **+** on its top, goes in the top half, in f33.
 
 <!-- bench -->
 
@@ -91,10 +91,9 @@ while you're leaving.
 
 ??? info "Where everything goes"
     The screen, its contrast knob and their short wires stand exactly as in
-    Lesson 13, in the same holes. The screen's body covers the bottom rails
-    from column 6 to 37, so the RGB LED and the buzzer use the places they
-    have beside the screen: the LED in columns 41 to 46 and the buzzer in
-    column 51.
+    Lesson 13, at the far right. The RGB LED keeps its home near the Mega,
+    its colored legs in columns 6, 9 and 11. The buzzer keeps column 33,
+    to the left of the contrast knob.
 
     The IR receiver takes 5 V and GND from the top rails below it. The
     PIR takes them straight from the Mega's power header, as in Lesson 23.
@@ -163,11 +162,11 @@ few seconds after the last movement, so leave its view in good time.
 | What you see | Try this |
 |---|---|
 | The screen is lit but blank | The contrast is too faint: turn the contrast knob slowly until the letters appear. |
-| The top row is solid blocks | The screen has power but isn't hearing the Mega: check pins 31 to 36 land in columns 12, 14 and 19 to 22. |
+| The top row is solid blocks | The screen has power but isn't hearing the Mega: check pins 31 to 36 land in columns 50, 52 and 57 to 60. |
 | It arms and straight away asks for the code | The PIR still saw movement when the countdown ended; it stays on for a few seconds after the last movement. Leave sooner, or make `delaySeconds` longer. |
 | It never notices you | Give the PIR a minute after power-up, check its OUT pin goes to A12, and turn its sensitivity knob (Sx) up a little. |
 | The remote does nothing | Aim at the receiver's window, and upload Lesson 22's sketch to check your remote's codes. If POWER sends another code, put yours in place of `adk::remote::power`. If the number buttons do, `adk::remote::digitOf ()` won't know them: give the sketch an `adk::Array` of your ten codes, 0 to 9, and in `pressed ()` look through it for the button, as Lesson 22 looked through `choices`, in place of `digitOf ()`. |
-| No beeps | The buzzer's + leg goes in f51, under pin 12's wire in j51, and its other leg's column needs the black wire from a51 to the − rail. |
+| No beeps | The buzzer's + leg goes in f33, under pin 12's wire in j33, and its other leg's column needs the black wire from a33 to the − rail. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"

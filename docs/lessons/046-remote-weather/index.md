@@ -6,7 +6,7 @@ level: 3
 parts:
   - "Board A, the garden: Lesson 45's Board A, with its LoRa modem and divider"
   - "Board A: the DHT11 module, the 18B20 module (37 in 1 kit), the 10 kΩ thermistor and the photoresistor"
-  - "Board A: 2 × 10 kΩ resistors (brown, black, black, red, brown), a green LED, a 220 Ω resistor, 9 jumper wires and 6 female-to-male jumper wires"
+  - "Board A: 2 × 10 kΩ resistors (brown, black, black, red, brown), a green LED, a 220 Ω resistor, 8 jumper wires and 6 female-to-male jumper wires"
   - "Board B, indoors: Lesson 45's Board B, with its LoRa modem and divider (a second Mega and breadboard aren't in one kit, and the modems are an add-on)"
   - "Board B: the LCD, its contrast knob and 220 Ω resistor, as in Lesson 13, and the DS1307 clock module from Lesson 32"
   - "Board B: the RGB LED, 3 × 220 Ω resistors (red, red, black, black, brown), 21 jumper wires and 4 female-to-male jumper wires"
@@ -88,9 +88,9 @@ last reading can't pass for today's weather.
 
 The garden's sensors go where Lesson 14 put them. The DHT11 and the 18B20
 sit above the board at their homes. The light sensor's divider takes its
-home in column 40, as in Lesson 8, so the thermistor's divider, built the
-same way, stands in column 33 instead. The green LED on pin 28, at its
-home in column 18, shows the link. Check each module's **S**, **+** and
+home in column 37, as in Lesson 8. The thermistor needs a second divider
+in column 33, with its 10 kΩ resistor along row c from c33 to c36. The green
+LED on pin 28, at its home in column 18, shows the link. Check each module's **S**, **+** and
 **−** before you plug it in.
 
 <!-- bench A -->
@@ -104,12 +104,11 @@ When you are done, these are the connections Board A makes:
 ### Board B, indoors
 
 Its modem goes back to Serial3: take out the wires from pins 16 and 17, and
-put pins 14 and 15 into j46 and j44 again. The screen goes at its home, as
+put pins 14 and 15 into j28 and j26 again. The screen goes at its home, as
 in Lesson 13, and the clock module on its side above it, as in Lesson 32.
-The RGB LED has the same shape as beside the screen in Lesson 15, but the
-modem has those columns now, so it stands just past the modem: its longest
-leg in the bottom − rail by column 49, red in a48, green in a51 and blue in
-a53, each color's resistor across the gap above it.
+The RGB LED keeps its home from Lesson 15: its longest leg in the bottom
+− rail by column 7, red in a6, green in a9 and blue in a11, each color's
+resistor across the gap above it.
 
 <!-- bench B -->
 
@@ -199,14 +198,14 @@ everything back.
 
 | What you see | Try this |
 |---|---|
-| Board B always says `No news` and Board A's green LED stays off | The boards don't hear each other. Check each modem as in Lesson 43: TXD into f44, pin 15 into j44, pin 14 into j46 with the 1 kΩ and 2 kΩ, RXD into c46, GND into the bottom − rail by column 42 and VDD on the 3.3V pin. |
+| Board B always says `No news` and Board A's green LED stays off | The boards don't hear each other. Check each modem as in Lesson 43: TXD into f26, pin 15 into j26, pin 14 into j28 with the 1 kΩ and 2 kΩ, RXD into c28, GND into the bottom − rail by column 24 and VDD on the 3.3V pin. |
 | Board A's green LED is on, but Board B says `No news` | Board B hears nothing, but Board A hears Board B: check Board B's TXD and pin 15, and Board A's RXD and its divider. |
 | `Air 0.0°C  0%` | The DHT11 on Board A isn't answering: check S to pin 16, + to the top + rail by column 36, − to the top − rail by column 37, and wait two seconds. |
 | `DS 0.0` | Check the 18B20's Y pin (the signal) goes to pin 17, its R to the top + rail and its G to the top − rail. |
 | `NTC` shows about −77 or hundreds | As in Lesson 14: the thermistor's legs in f33 and e33, the red wire from j33 to the top + rail, the 10 kΩ from c33 to c36. |
-| `Light` stays at 0 or 100 | Check the photoresistor in f40 and e40, the red wire from j40 to the top + rail by column 40, the 10 kΩ from c40 to c43, and A1's wire in a40. |
+| `Light` stays at 0 or 100 | Check the photoresistor in f37 and e37, the red wire from j37 to the top + rail by column 37, the 10 kΩ from a37 to the bottom − rail, and A1's wire in c37. |
 | The time stays `00:00:00` after reports arrive, or is wrong | Check the clock module's SDA on pin 20 and SCL on 21. Lesson 32 shows how to set it. |
-| The light never comes on | Check its longest leg is in the bottom − rail by column 49, and each color's wire: pin 5 to j48, pin 6 to j51, pin 7 to j53. |
+| The light never comes on | Check its longest leg is in the bottom − rail by column 7, and each color's wire: pin 5 to j6, pin 6 to j9, pin 7 to j11. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"

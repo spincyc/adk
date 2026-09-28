@@ -73,7 +73,7 @@ while your sketch carries on with other things.
     buzzer's 220 Ω resistor**, here or in any lesson: without it, the buzzer
     would draw far more current than pin 10 can safely give. Use the passive
     buzzer, with the green board showing underneath. It has a **+** marked on
-    top beside one leg: follow the mark, and put that leg in f34, on pin
+    top beside one leg: follow the mark, and put that leg in f33, on pin
     10's side of the gap.
 
 <!-- bench -->
@@ -81,10 +81,10 @@ while your sketch carries on with other things.
 <!-- steps -->
 
 ??? info "The signal's path through the buzzer"
-    Follow pin 10's wire into j34. The buzzer stands across the middle gap,
-    its **+** leg in f34 and its other leg in e34: they are 0.3 inch apart,
+    Follow pin 10's wire into j33. The buzzer stands across the middle gap,
+    its **+** leg in f33 and its other leg in e33: they are 0.3 inch apart,
     just as far as the gap is wide. Below it, the 220 Ω resistor runs from
-    a34 down into the − rail.
+    a33 down into the − rail.
 
     For an LED the resistor came first, between the pin and the LED. Here it
     comes after the buzzer, between it and GND, and that works just as well.
@@ -158,7 +158,7 @@ takes over. That's the sketch carrying on while the tune plays.
 
 | What you see | Try this |
 |---|---|
-| Silence, from the tune and the keys | Follow pin 10's path: j34, the buzzer's **+** leg in f34 and its other leg in e34, and the resistor from a34 down into the − rail. |
+| Silence, from the tune and the keys | Follow pin 10's path: j33, the buzzer's **+** leg in f33 and its other leg in e33, and the resistor from a33 down into the − rail. |
 | Every key makes the same harsh buzz, or no sound at all | You may have the active buzzer. Unplug, and swap in the passive one, with the green board underneath. |
 | The tune plays, but a key does nothing | Push that button firmly into the board, all four legs in, and check its black wire from row a to the − rail. |
 | Two keys play the same note, or the wrong ones | The signal wires may be in the wrong holes: pins 22, 23, 24 and 25 go to j2, j8, j14 and j20. |

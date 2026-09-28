@@ -98,8 +98,7 @@ level that is, and `activated ()` is true for the one moment it changes.
     The PIR sits below the Mega and takes its 5 V and GND straight from the
     Mega's power header. The beam-break and obstacle sensors take theirs
     from the bottom rails beside them. The bottom + rail gets its 5 V from
-    the top one, through the red wire between them at the far end, by column
-    61.
+    the top one, through the red wire between them by column 42.
 
 ??? info "Setting up the PIR and the obstacle module"
     The PIR has two orange knobs. Turn the **time** knob (often marked Tx)
@@ -227,6 +226,5 @@ What the numbers tell you:
   the pull-up holds it up. So for this switch 0 V means active (upright)
   and 5 V means not active: that is what active low means.
 - **The bottom rails** read about 5 V, though the Mega's 5 V goes only into
-  the top + rail by column 3. The red wire between the + rails at the far
-  end, by column 61, carries it round to the bottom rails, where the
+  the top + rail by column 3. The red wire between the + rails by column 42, carries it round to the bottom rails, where the
   beam-break and obstacle sensors take their power.

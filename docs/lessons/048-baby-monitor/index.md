@@ -6,7 +6,7 @@ level: 3
 parts:
   - "Board A, the nursery: Lesson 47's Board A, with its LoRa modem, divider and green LED"
   - "Board A: the sound sensor module and the water level sensor, both from the Mega kit, and the photoresistor and a 10 kΩ resistor, as in Lesson 46"
-  - "Board A: 3 jumper wires, 6 female-to-male jumper wires, and a small cup of water"
+  - "Board A: 2 jumper wires, 6 female-to-male jumper wires, and a small cup of water"
   - "Board B, the parent: Lesson 47's Board B, with its LoRa modem, screen, clock module and IR receiver, and the kit's remote"
   - "Board B: the LED matrix, the passive buzzer and a 220 Ω resistor, 1 jumper wire and 5 female-to-male jumper wires"
 ideas:
@@ -96,7 +96,7 @@ beeps every five seconds until the nursery is heard again.
 
 Keep the modem, its divider and the green LED from Lesson 47, and take out
 the five tripwires, the red LED and their wires. The light sensor's
-divider comes back to its home in column 40, as in Lesson 46. The sound
+divider comes back to its home in column 37, as in Lesson 46. The sound
 sensor lies below the Mega where the PIR was, its **+** and **G** on the
 power header's 5V and GND and its **AO** on A5; its **DO** stays
 unconnected. The water sensor lies beside it: **S** to A6, **+** to A7, and
@@ -114,13 +114,11 @@ When you are done, these are the connections Board A makes:
 ### Board B, the parent
 
 Keep the modem, the screen, the clock module and the IR receiver from
-Lesson 47. The passive buzzer takes the active buzzer's place in column 51,
-on pin 10 now, with its 220 Ω resistor from a51 down to the − rail, as in
+Lesson 47. The passive buzzer takes the active buzzer's place in column 33,
+on pin 10 now, with its 220 Ω resistor from a33 down to the − rail, as in
 Lesson 33. The LED matrix lies at its home below the gap between the Mega
-and the board, as in Lesson 25, but the screen's contrast knob already has
-the bottom − rail's hole by column 5, so the matrix's GND goes one hole
-nearer the Mega, by column 4. The
-modem's 3.3 V wire runs below the matrix.
+and the board, as in Lesson 25, with its GND in the bottom − rail by
+column 5. The modem's 3.3 V wire runs below the matrix.
 
 <!-- bench B -->
 
@@ -208,11 +206,11 @@ What's new:
 | `No news!` all the time | The boards don't hear each other: check each modem as in Lesson 43. |
 | The bars never move | Check the sound sensor's AO goes to A5, + to 5V and G to GND on the power header. Clap right beside it. If they still don't move, make `perDot` smaller. |
 | The matrix is full all the time | The room is louder than you think, or `perDot` is too small: make it bigger. |
-| The matrix stays dark, even when the screen shows sound | Check pins 47, 48 and 49 go to DIN, CLK and CS, VCC to the inner 5V pin and GND to the bottom − rail by column 4. |
+| The matrix stays dark, even when the screen shows sound | Check pins 47, 48 and 49 go to DIN, CLK and CS, VCC to the inner 5V pin and GND to the bottom − rail by column 5. |
 | The graph runs the wrong way, or upside down | The matrix is turned: turn it round, as Lesson 25 explains. |
 | Never `WET!` | Check the water sensor's S goes to A6, + to A7, which powers it, and − to GND. Dip deeper, or make `wetAbove` smaller. |
 | `WET!` when dry | Dry the traces well, or make `wetAbove` bigger. |
-| No sound at all | Check the passive buzzer's + in f51, pin 10's wire in j51, and the 220 Ω from a51 to the − rail. |
+| No sound at all | Check the passive buzzer's + in f33, pin 10's wire in j33, and the 220 Ω from a33 to the − rail. |
 | POWER doesn't hush | Aim the remote at the receiver, as in Lesson 47. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 

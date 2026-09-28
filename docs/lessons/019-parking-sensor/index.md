@@ -73,15 +73,15 @@ zones, and makes the gap between beeps 10 ms for every centimeter:
     wiring before you plug it back in. The sensor's four pins are printed
     VCC, Trig, Echo and GND on its front: match them by name. VCC wired to
     GND the wrong way round can ruin the sensor. The buzzer's longer leg,
-    under the **+** on its top, goes in the top half, in f34.
+    under the **+** on its top, goes in the top half, in f33.
 
 <!-- bench -->
 
 <!-- steps -->
 
 ??? info "Joining the two − rails"
-    The long black wire at the far end, from the bottom − rail to the
-    top − rail, by column 60, is new. The Mega's GND comes into the
+    The black link by column 41, from the bottom − rail to the top − rail,
+    is new. The Mega's GND comes into the
     bottom − rail by column 3, but the sensor's GND goes into the top one,
     close to the sensor. The two rails aren't joined inside the breadboard,
     so this wire joins them, and the sensor, the LEDs and the buzzer all
@@ -145,7 +145,7 @@ every 30 × 10 = 300 ms, a little over three a second.
 | Stuck on red with a steady tone | Something is very close to the sensor, or it sees the edge of the breadboard or a wire: point it clear of the desk. |
 | The lights jump about | Soft things like a jumper or a curtain soak up sound, and slanted ones bounce it away. Try a book held square to the sensor. |
 | Closer than about 2 cm it goes green | That is a real limit: the sensor can't hear an echo that comes back while it is still sending. |
-| The lights work but there's no sound | Check the buzzer's + leg is in f34, under pin 12's wire in j34, and that the black wire from a34 reaches the bottom − rail. |
+| The lights work but there's no sound | Check the buzzer's + leg is in f33, under pin 12's wire in j33, and that the black wire from a33 reaches the bottom − rail. |
 | An LED never lights | Its long leg goes in row b of its resistor's column (b6, b12 or b18), its short leg just to the right, where the black wire from row a runs to the − rail. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |
 

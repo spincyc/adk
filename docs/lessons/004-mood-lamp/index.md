@@ -153,7 +153,7 @@ brighter to your eye than the red one.
 | Nothing lights at all | Check the longest leg is in the bottom − rail by column 7, and the black wire from the Mega's GND reaches the bottom − rail by column 3. |
 | One color never appears | Follow that color from its pin: pin 5 to j6, the resistor from g6 across the gap to e6, the red leg in a6. Green is pin 6 and column 9, blue pin 7 and column 11. |
 | The colors are in the wrong places | Your LED's legs are in a different order. Swap the numbers in `adk::RgbLed lamp {5, 6, 7};` until orange looks orange, or swap the wires. |
-| Still nothing, and the longest leg is in the − rail | You may have a common-anode LED, whose longest leg is +. Move that leg into the bottom + rail by column 7, and bring that rail 5 V: a red wire from the Mega's 5V pin to the top + rail by column 3, and another from the top + rail to the bottom + rail at the far end, by column 61. Then write `adk::RgbLed lamp {5, 6, 7, adk::ActiveLow};`. |
+| Still nothing, and the longest leg is in the − rail | You may have a common-anode LED, whose longest leg is +. Move that leg into the bottom + rail by column 7, and bring that rail 5 V: a red wire from the Mega's 5V pin to the top + rail by column 3, and another from the top + rail to the bottom + rail by column 42. Then write `adk::RgbLed lamp {5, 6, 7, adk::ActiveLow};`. |
 | White looks a little pink or blue | That's normal: the three tiny LEDs are not exactly equally bright. |
 | The button does nothing | Push it firmly into the board, and check the black wire from a4 to the − rail. |
 

@@ -79,7 +79,7 @@ of 255 on its PWM pin, just as the dimmer's `write ()` set it in Lesson 7.
     220 Ω resistor, and so does the LCD's backlight.
 
 The rotary encoder plugs into the breadboard. Its pins bend at a right
-angle, so it stands upright in row a, columns 45 to 49, with its knob
+angle, so it stands upright in row a, columns 15 to 19, with its knob
 toward you. From the left, as you face the knob, its pins are **GND**,
 **+**, **SW**, **DT** and **CLK**: check the names printed beside yours;
 if they're in another order, keep the knob toward you and move each wire
@@ -109,7 +109,7 @@ read its pins; on your breadboard it stands upright.
     | 16 | K | GND: the backlight's − |
 
     As in Lesson 13, the potentiometer stands across the middle gap in
-    columns 5 to 7, just left of the LCD's first pins: short jumpers take
+    columns 43 to 45, just left of the LCD's first pins: short jumpers take
     its outer legs up to the top − and + rails, and its wiper to V0.
 
 When you are done, these are the connections your circuit makes:
@@ -220,7 +220,7 @@ each probe tip in its own hole, so it can't bridge two.
 
 These readings are on the lamp, where the menu's settings end up. Leave Mode on **Steady**, so the brightness holds still, and set
 Level with the knob before each reading. The black probe goes in the bottom
-− rail at column 40, just past the end of the LCD.
+− rail at column 40, to the left of the LCD.
 
 !!! question "Predict"
     At 60% the lamp gets 153 out of 255: as in Lesson 7, pin 3 switches

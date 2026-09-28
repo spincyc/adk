@@ -21,16 +21,16 @@ home_rf_transmitter on and beside the breadboard; home_matrix,
 home_joystick, home_gy521, home_rtc, home_dht11, home_ds18b20,
 home_ultrasonic, home_motor, home_relay, home_keypad, home_stepper,
 home_rfid, home_pir, home_tap and home_beam for modules; and screen (). A
-call takes a part's second home by itself where it has one (beside the
-screen, say), and via, as in wire (), routes a wire from the Mega round the
-lesson's other parts. The
+call keeps its home when the screen is added or removed. The buzzer alone
+uses a second home beside the four-digit display's wiring. via, as in
+wire (), routes a wire from the Mega round the lesson's other parts. The
 Mega's power is wired by the bench itself, the same way every time: once
 circuit.py has run, finish () brings GND from the outer pin at the end of
 the long header into B-3 and 5V from the outer pin at its top into T+3,
-when anything uses the rails, and joins a rail pair at the far end (B-60 to
-T-60, T+61 to B+61) when a part uses the other rail and nothing else feeds
+when anything uses the rails, and joins a rail pair just before the LCD
+(B-41 to T-41, T+42 to B+42) when a part uses the other rail and nothing else feeds
 it. With the power module, which lies beside the far end and feeds the
-bottom rails from B+61 and B-61 (power_module ("5V") or ("3.3V")), the
+bottom rails from B+42 and B-42 (power_module ("5V") or ("3.3V")), the
 Mega's 5V feeds only the top rails. Wiring the Mega's GND or 5V to a rail,
 or using those two pins, is an error.
 
@@ -38,8 +38,8 @@ Parts stand in the breadboard: resistor, led, button, rgb_led, buzzer,
 potentiometer, photoresistor, thermistor, tilt_switch, chip (a DIP chip
 across the middle gap), digit and four_digits (seven-segment displays), lcd
 and header_module (a module standing in one row). screen () builds the
-course's LCD at its home: its contrast knob across the gap in f5, d6 and
-f7, the LCD's pins in a9-a24, power, and pins 31 to 36, wired the same in
+course's LCD at its home: its contrast knob across the gap in f43, d44 and
+f45, the LCD's pins in a47-a62, power, and pins 31 to 36, wired the same in
 every lesson.
 
 Modules sit beside the board, placed in inches in the drawing's own
@@ -488,7 +488,7 @@ class Bench:
 
     # The course's screen, at its home and wired the same in every lesson so
     # it can stay on the breadboard from one to the next. From column first
-    # (5): the contrast knob across the middle gap, its outer legs in row f
+    # (43): the contrast knob across the middle gap, its outer legs in row f
     # with a jumper from each up to a top rail and its wiper in row d, and
     # the LCD four columns on, in row a, its screen over the bottom edge. A
     # jumper takes the wiper's column to V0, and column first carries GND
@@ -557,8 +557,8 @@ class Bench:
     # (docs/kit.md#breadboard-homes), so a build carries on from one lesson
     # to the next. Each of these lays a part at its home with its fixed
     # wires. The holes never change; via, as in wire (), routes a wire from
-    # the Mega round the lesson's other parts. Beside the screen, a part
-    # that would lie under it has a second home past it.
+    # the Mega round the lesson's other parts. The screen occupies the far
+    # end, leaving these homes unchanged when it is added or removed.
 
     # An LED on 26 to 30, or the dimmable one on 3: the pin into j, 220 Ω
     # from g across the gap to e, the long leg in b, the short leg in b of
@@ -574,7 +574,6 @@ class Bench:
 
     # A button on 22 to 25 across the gap, the pin into j of its left
     # column and a black jumper from a of its right column to the − rail.
-    # Beside the screen, the button on 23 stands past it, in column 38.
     @staged ("the button")
     def home_button (self, pin, via=None):
         column = BUTTON_HOMES[pin]
@@ -584,13 +583,13 @@ class Bench:
         return self
 
     # The active buzzer on 12, or the passive one on 10, across the gap in
-    # column 34: + in f, − in e, the pin into j, and from a to the − rail a
+    # column 33: + in f, − in e, the pin into j, and from a to the − rail a
     # black jumper (active) or 220 Ω (passive). Beside the four-digit
     # display it stands in column 35, clear of the wires that rise over the
-    # gap in column 32; beside the screen, in column 51.
+    # gap in column 32 and the segment circuit that occupies column 33.
     @staged ("the {kind} buzzer")
     def home_buzzer (self, kind, via=None):
-        column = 35 if self._has ("four-digit display") else 34
+        column = 35 if self._has ("four-digit display") else 33
         self.wire ({"active": "12", "passive": "10"}[kind], f"j{column}", via=via)
         self.buzzer (f"f{column}", f"e{column}", kind=kind)
         if kind == "active":
@@ -601,93 +600,72 @@ class Bench:
 
     # The RGB LED on 5, 6 and 7: its red, green and blue legs in a6, a9 and
     # a11, its common leg in the − rail beside the red, and 220 Ω across the
-    # gap above each colored leg, its pin into j. Beside the screen it takes
-    # columns 41 to 46, the same shape. via routes the three pins' wires.
+    # gap above each colored leg, its pin into j. A button on 23 covers e9:
+    # green_resistor=13 moves just that resistor, with a jumper back to b9,
+    # leaving the LED and button at their homes. via routes the pin wires.
     @staged ("the RGB LED")
-    def home_rgb_led (self, via=(None, None, None)):
-        columns = (6, 9, 11)
+    def home_rgb_led (self, via=(None, None, None), green_resistor=9):
+        columns = (6, green_resistor, 11)
         for pin, column, route in zip (("5", "6", "7"), columns, via):
             self.wire (pin, f"j{column}", via=route)
         for column in columns:
             self.resistor ("220 Ω", f"g{column}", f"e{column}")
-        red, green, blue = columns
-        return self.rgb_led (red=f"a{red}", common=f"B-{red + 1}", green=f"a{green}",
-                             blue=f"a{blue}")
+        if green_resistor != 9:
+            self.wire (f"b{green_resistor}", "b9", color="green")
+        return self.rgb_led (red="a6", common="B-7", green="a9", blue="a11")
 
-    # A light or temperature divider in column 40: a red jumper from j40 to
-    # the top + rail, the photoresistor (on A1) or thermistor (on A2) across
-    # the gap in f40 and e40, the pin into a40, 10 kΩ from c40 to c43, and
-    # a black jumper from a43 to the − rail.
+    # A light or temperature divider in column 37, between the buzzer and
+    # the knob: 5 V from the top + rail, the sensor across the gap, A1 or
+    # A2 into c37, and 10 kΩ from a37 down to the bottom − rail. Keeping
+    # the resistor in its column leaves the knob's wiper clear.
     @staged ("the {sensor}")
     def home_divider (self, sensor, via=None):
-        c = 39 if self.screened else 40
-        self.wire (f"j{c}", f"T+{c}")
+        self.wire ("j37", "T+37")
         if sensor == "photoresistor":
-            self.photoresistor (f"f{c}", f"e{c}")
+            self.photoresistor ("f37", "e37")
         else:
-            self.thermistor (f"f{c}", f"e{c}")
-        self.wire ({"photoresistor": "A1", "thermistor": "A2"}[sensor], f"a{c}", via=via)
-        self.resistor ("10 kΩ", f"c{c}", f"c{c + 3}")
-        return self.wire (f"a{c + 3}", f"B-{c + 3}")
+            self.thermistor ("f37", "e37")
+        self.wire ({"photoresistor": "A1", "thermistor": "A2"}[sensor], "c37", via=via)
+        return self.resistor ("10 kΩ", "a37", "B-37")
 
-    # The knob on A0, across the middle gap: its outer legs in f45 and f47,
-    # with jumpers from j45 and j47 up to the top − and + rails, its wiper
-    # in d46, and A0 into a46. Where the RGB LED or the FM radio takes those
-    # columns, it stands in columns 57 to 59 instead.
+    # The knob on A0, across the middle gap in columns 39 to 41: its outer
+    # legs in f39 and f41, jumpers from j to the top − and + rails, its
+    # wiper in d40, and A0 into a40. It keeps these holes beside the screen.
     @staged ("the knob")
     def home_knob (self, via=None):
-        first = 39 if self.screened else 57 if any (hole in self.used for hole in ("e46", "j45")) else 45
-        self.potentiometer (f"f{first}", f"d{first + 1}", f"f{first + 2}")
-        self.wire (f"j{first}", f"T-{first}")
-        self.wire (f"j{first + 2}", f"T+{first + 2}")
-        return self.wire ("A0", f"a{first + 1}", via=via)
+        self.potentiometer ("f39", "d40", "f41")
+        self.wire ("j39", "T-39")
+        self.wire ("j41", "T+41")
+        return self.wire ("A0", "a40", via=via)
 
-    # The rotary encoder standing in row a, columns 45 to 49, its knob toward
-    # you: its pins, GND, +, SW, DT and CLK from the left, as they read from
-    # the knob's side, and its board drawn lying over the bottom rails. Short
-    # jumpers take its GND and + up to the top rails, which the Mega's 5V
-    # feeds, and 22 (SW), 19 (DT) and 18 (CLK) come down into row e above
-    # their pins. Where the board is full, as beside the radios whose wires
-    # come up from below there, above sits it high above the Mega instead,
-    # its five wires rising from 18, 19, 22, the inner 5V at the top of the
-    # long header and the GND beside pin 13, each in a lane of its own; lift
-    # raises the lanes, in inches, above other wires from the top header.
+    # The rotary encoder stands in row a, columns 15 to 19, its knob
+    # toward you. GND and + reach the top rails by 18 and 19, beyond the
+    # GY-521's board but before the radio receiver's, so the encoder stays
+    # here when either is added. Pins 22, 19 and 18 reach SW, DT and CLK.
     @staged ("the rotary encoder")
-    def home_encoder (self, above=False, lift=0.0, first=45):
-        if self.screened:
-            above, first = False, 15
-        if not above:
-            self.header_module ("encoder", pins=("GND", "+", "SW", "DT", "CLK"), first=first,
-                                row="a")
-            self.wire (f"e{first}", f"T-{first}")
-            self.wire (f"e{first + 1}", f"T+{first + 1}")
-            for offset, pin in ((2, "22"), (3, "19"), (4, "18")):
-                self.wire (pin, f"e{first + offset}")
-            return self
-        lane = lambda y: round (y - lift, 2)
-        self.module ("encoder", at=(3.0, -2.1))
-        self.wire ("18", "encoder.CLK", via=[(3.55, lane (0.25)), (3.6, lane (0.25))])
-        self.wire ("19", "encoder.DT", via=[(3.65, lane (0.35)), (3.5, lane (0.35))])
-        self.wire ("22", "encoder.SW", via=[(4.3, 0.8), (4.3, lane (0.45)), (3.4, lane (0.45))])
-        self.wire ("5V.long", "encoder.+",
-                   via=[(4.25, 0.7), (4.25, lane (0.55)), (3.3, lane (0.55))])
-        return self.wire ("GND.top", "encoder.GND", via=[(1.5, lane (0.15)), (3.2, lane (0.15))])
+    def home_encoder (self):
+        self.header_module ("encoder", pins=("GND", "+", "SW", "DT", "CLK"), first=15,
+                            row="a")
+        self.wire ("e15", "T-18")
+        self.wire ("e16", "T+19")
+        for hole, pin in (("e17", "22"), ("e18", "19"), ("e19", "18")):
+            self.wire (pin, hole)
+        return self
 
-    # The servo below the board, its plug under columns 52 to 54: + into
-    # B+53 and − into B-54, fed by the power module's bottom rails, and its
-    # signal from pin 44. On a board with the LoRa modem, whose place its
-    # own overlaps, it lies lower.
+    # The servo below the board and the modem, its plug under columns 34
+    # to 36: + into B+35 and − into B-36, fed by the power module, and its
+    # signal from pin 44. The same space stays free with or without a modem.
     @staged ("the servo")
     def home_servo (self, via=None):
-        self.module ("servo", at=(8.05, 3.45), facing="up")
+        self.module ("servo", at=(8.05, 5.35), facing="up")
         self.wire ("servo.+", "B+35")
         self.wire ("servo.−", "B-36")
         return self.wire ("44", "servo.signal", via=via)
 
-    # The LoRa modem below the board under columns 42 to 47, aerial down:
-    # its GND into B-42, TX3 (pin 14) into j46 and down through 1 kΩ and
-    # 2 kΩ to the − rail, the modem's RXD into c46 between them, and its
-    # TXD into f44 beside RX3 (pin 15) in j44. Beside the ultrasonic
+    # The LoRa modem below the board under columns 24 to 29, aerial down:
+    # its GND into B-24, TX3 (pin 14) into j28 and down through 1 kΩ and
+    # 2 kΩ to the − rail, the modem's RXD into c28 between them, and its
+    # TXD into f26 beside RX3 (pin 15) in j26. Beside the ultrasonic
     # sensor, which has 14 and 15, it takes Serial2 instead: TX2 (16) and
     # RX2 (17). Its VDD takes 3.3 V from power: the Mega's 3.3V pin, or a
     # rail the power module sets to 3.3 V. tx, rx, txd and supply route the
@@ -705,10 +683,9 @@ class Bench:
         self.wire ("modem.TXD", "f26", color="purple", via=txd)
         return self.wire (hear, "j26", via=rx)
 
-    # The FM radio standing in row j, columns 45 to 52, its board over the
-    # top rails: pins 42, 41 and 40 up from below, round the bottom of the
-    # screen, into RST, SCLK and SDIO, the Mega's 3.3V into its 3.3V
-    # column, a black jumper from its GND column to the − rail, and 1 kΩ
+    # The FM radio standing in row j, columns 27 to 34, its board over the
+    # top rails: pins 42, 41 and 40 into RST, SCLK and SDIO, the Mega's
+    # 3.3V into its 3.3V column, a black jumper from its GND column to the − rail, and 1 kΩ
     # from RST to 3.3 V along row h.
     @staged ("the FM radio")
     def home_fm_radio (self):
@@ -720,10 +697,9 @@ class Bench:
         self.wire ("f33", "B-33")
         return self.resistor ("1 kΩ", "h29", "h34")
 
-    # The 433 MHz receiver standing in row j, columns 48 to 51, its board
+    # The 433 MHz receiver standing in row j, columns 30 to 33, its board
     # over the top rails: 5 V from the power header into VCC's column, pin
-    # 43 into DATA's, both up from below round the bottom of the screen,
-    # and a black jumper from its GND column to the − rail.
+    # 43 into DATA's, and a black jumper from its GND column to the − rail.
     @staged ("the radio receiver")
     def home_rf_receiver (self):
         self.header_module ("rf_receiver", first=30, row="j")
@@ -731,8 +707,8 @@ class Bench:
         self.wire ("43", "f31")
         return self.wire ("f33", "B-33")
 
-    # The 433 MHz transmitter standing in row j, columns 56 to 59: its DAT
-    # the middle of a divider, pin 46 into f54, 1 kΩ along row h to DAT's
+    # The 433 MHz transmitter standing in row j, columns 38 to 41: its DAT
+    # the middle of a divider, pin 46 into f36, 1 kΩ along row h to DAT's
     # column and 2 kΩ across the gap and down to the − rail; the Mega's
     # 3.3V into its + column, and a black jumper from its − column.
     @staged ("the radio transmitter")
@@ -785,7 +761,7 @@ class Bench:
         return self.wire ("20", "h12", via=[(3.65, 0.5), (5.85, 0.5), (5.85, 1.25)])
 
     # The DS1307 clock above the board, facing right: GND and VCC from the
-    # top rails in columns 29 and 30, SDA and SCL from 20 and 21 over the
+    # top rails in columns 13 and 15, SDA and SCL from 20 and 21 over the
     # top. sda and scl route those two round anything else up there.
     @staged ("the clock module")
     def home_rtc (self, sda=None, scl=None):
@@ -947,8 +923,9 @@ class Bench:
     # need; turned round for the far end, its supply would meet the Mega's
     # GND. So it lies beside the far end instead, both its jumpers off so
     # those pins carry nothing, and two wires from the header in its middle
-    # feed the bottom rails: supply ("5V" or "3.3V") into B+61, GND into
-    # B-61. The Mega's 5V feeds the top rails, for the screen and sensors.
+    # feed the bottom rails: supply ("5V" or "3.3V") into B+42, GND into
+    # B-42. Its board sits above the LCD's overhang. The Mega's 5V feeds
+    # the top rails, for the screen and sensors.
     @staged ("the power module")
     def power_module (self, supply="5V"):
         if supply not in ("5V", "3.3V"):
@@ -1061,10 +1038,10 @@ class Bench:
         if "T+" in used or ("B+" in used and not module):
             power.append (self._power_wire (("5V.long2", "5V.long"), "T+3"))
         links = []
-        far = 42 if self.screened else 60
-        for rail, source, a, b in (("T-", "GND", f"B-{far}", f"T-{far}"),
-                                   ("B+", "5V", f"T+{far + 1 if far == 60 else far}",
-                                    f"B+{far + 1 if far == 60 else far}"),
+        # The links stay just left of the LCD, clear of the power module's
+        # feed at B-42. They keep their holes when a screen is added.
+        for rail, source, a, b in (("T-", "GND", "B-41", "T-41"),
+                                   ("B+", "5V", "T+42", "B+42"),
                                    ("T+", "5V", None, None), ("B-", "GND", None, None)):
             if rail not in used or self._powered (rail, source) \
                     or (source == "5V" and self._powered (rail, "3.3V")):
@@ -1178,7 +1155,7 @@ class Bench:
         holes = {name for kind, name in wire[:2] if kind == "hole"}
         pins = {name for kind, name in wire[:2] if kind == "pin"}
         return bool (pins & set (RAIL_PINS)) and holes <= set (RAIL_PINS.values ()) \
-            or holes in ({"B-60", "T-60"}, {"T+61", "B+61"})
+            or holes in ({"B-41", "T-41"}, {"T+42", "B+42"})
 
     # What a wire's end is fixed to, in terms that hold from one lesson's
     # bench to the next: a module's pin by the module's title and the pin.

@@ -179,7 +179,7 @@ more than three times the 2½ steps a second it starts with.
 |---|---|
 | The snake turns the wrong way | Hold the joystick with its pins pointing to your left. |
 | The snake ignores some pushes | It won't reverse into its own neck, and a push has to go more than halfway to count. Push firmly, one way at a time. |
-| No sound | Check the buzzer's + leg is in f34, in the column of pin 10's wire at j34, and its other leg in e34. The resistor runs from a34 to the bottom − rail, which needs its GND wire. |
+| No sound | Check the buzzer's + leg is in f33, in the column of pin 10's wire at j33, and its other leg in e33. The resistor runs from a33 to the bottom − rail, which needs its GND wire. |
 | A click starts nothing | The stick's switch is on pin 22: press straight down until it clicks. |
 | The snake dies at once | The first step comes 400 ms after the click: be ready to steer. |
 | The matrix shows junk | Check the matrix's wires, especially CLK on 48 and CS on 49. |

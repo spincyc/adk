@@ -11,7 +11,7 @@ bench.home_ultrasonic ()
 for pin, color in (("26", "red"), ("27", "yellow"), ("28", "green")):
     bench.home_led (pin, color)
 
-bench.home_buzzer ("active", via=[(1.59, -1.47), (8.7, -1.47)])
+bench.home_buzzer ("active")
 
 bench.closeup (1, 37)
 
@@ -19,7 +19,7 @@ bench.closeup (1, 37)
 # the sensor, or nothing there at all.
 bench.measure ("The yellow light's pin", red="27", black="GND", expect="about 5 V",
                when="a book 30 cm away")
-bench.measure ("Across the buzzer", red="i34", black="b34", expect="about 4.5 V",
+bench.measure ("Across the buzzer", red="i33", black="b33", expect="about 4.5 V",
                when="a book 5 cm away")
 bench.measure ("Across the green LED", red="b18", black="b19", expect="about 3.2 V",
                when="nothing within 50 cm")

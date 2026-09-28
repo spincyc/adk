@@ -115,7 +115,7 @@ of these are true:
     Board B's power module stays beside its breadboard as in Lesson 44,
     never plugged into it, both its jumpers **off**, its red wire from
     **5V** to the bottom + rail and its black wire from **GND** to the
-    bottom − rail, both by column 61. The servo and the motor take their
+    bottom − rail, both by column 42. The servo and the motor take their
     power from the bottom rails, never from the Mega; the L293D's logic and
     the sensor run on the Mega's own 5 V, from the top rails and the inner
     5V pin. The modem stays on the Mega's 3.3V pin.
@@ -146,9 +146,9 @@ wire at all.
 
 The ultrasonic sensor needs pins 14 and 15, its homes, so the modem
 moves to the Mega's other spare serial port, **Serial2**, on pins 16
-(TX2) and 17 (RX2). Take out the wires from pins 14 and 15 to j46 and
-j44, and put wires from pins 16 and 17 into those same holes: 16 into
-j46, the divider's top, and 17 into j44, beside the modem's TXD.
+(TX2) and 17 (RX2). Take out the wires from pins 14 and 15 to j28 and
+j26, and put wires from pins 16 and 17 into those same holes: 16 into
+j28, the divider's top, and 17 into j26, beside the modem's TXD.
 
 Then build Lesson 21's turret, just as it was there: the sensor above the
 Mega, its VCC on the inner 5V pin at the top of the long header and its GND
@@ -157,7 +157,7 @@ in the top − rail by column 5; the L293D across the middle gap from column
 and the motor above the board, its leads down into j14 and j17. The wires
 from pins 16 and 17 go up past the sensor's left end and over the motor, to
 reach the modem's holes from above. As in Lesson 21, a black wire at the far
-end, by column 60, joins the top − rail, where the sensor's GND goes, to the
+end, by column 41, joins the top − rail, where the sensor's GND goes, to the
 bottom one: the power module feeds only the bottom rails.
 
 <!-- bench B -->
@@ -268,8 +268,8 @@ the middle, and the fan stays still until you press the stick.
 
 | What you see | Try this |
 |---|---|
-| `Not connected` stays on the screen, and the **L** LED stays dark | Check Board A runs **Joystick** and Board B runs **Turret**. Check Board B's modem wires now come from pins 16 and 17: 16 into j46, 17 into j44. |
-| The turret never moves | Hold the joystick with its pins pointing left, as in Lesson 26: held another way round, pushing left or right may do nothing. Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 61, then the servo's plug: brown to the bottom − rail by column 54, red to the bottom + rail by column 53, orange to pin 44. |
+| `Not connected` stays on the screen, and the **L** LED stays dark | Check Board A runs **Joystick** and Board B runs **Turret**. Check Board B's modem wires now come from pins 16 and 17: 16 into j28, 17 into j26. |
+| The turret never moves | Hold the joystick with its pins pointing left, as in Lesson 26: held another way round, pushing left or right may do nothing. Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 42, then the servo's plug: brown to the bottom − rail by column 36, red to the bottom + rail by column 35, orange to pin 44. |
 | The turret turns the wrong way | Change `aim - stick.x () / 25` to `aim + stick.x () / 25` in **Joystick**. |
 | The turret creeps when nobody touches the stick | The stick moved while the sketch started. Press Board A's reset button with your hands off the stick. |
 | `Fan on`, but the fan never spins | Is anything closer than 15 cm, or the sensor facing a wire or the desk? Then check the L293D as in Lesson 20: pin 4 in j19, 8 in j13, 9 in j18, the motor's leads in j14 and j17, j12 to the top + rail by column 12, a15 to the − rail and a19 to the bottom + rail by column 19. |
@@ -300,8 +300,8 @@ the middle, and the fan stays still until you press the stick.
    `map (distance, tooClose, 80, 255, 110)`, and stop it beyond 80 cm, as
    Lesson 21 did: past 80, `map ()` gives less than 110, and then
    negative numbers, which run the motor backwards.
-2. **A beep.** Put the active buzzer on Board A at its home beside the
-   screen, in column 51 on pin 12, and beep while the screen says
+2. **A beep.** Put the active buzzer on Board A at its home in column 33
+   on pin 12, and beep while the screen says
    `CLOSE!`.
 3. **Look around.** Push the stick up to make Board B sweep, as the
    turret did in Lesson 21, and turn to the nearest thing it finds. A

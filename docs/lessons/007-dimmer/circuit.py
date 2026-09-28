@@ -6,13 +6,13 @@ bench = Bench ("A white LED on pin 3 through 220 Ω, and a knob on A0 between GN
 
 bench.home_led ("3", "white", via=[(2.55, 0.45), (9.10, 0.45)])
 
-bench.home_knob (via=[(2.36, 2.85), (9.95, 2.85)])
+bench.home_knob ()
 
 # Readings to take with a multimeter, with the knob turned until the sketch
 # reads about 256: a quarter of the way from the GND end.
-bench.measure ("The knob's wiper", red="d46", black="GND", expect="about 1.25 V",
+bench.measure ("The knob's wiper", red="d40", black="GND", expect="about 1.25 V",
                when="Knob reading about 256")
-bench.measure ("From 5 V down to the wiper", red="5V", black="c46", expect="about 3.75 V",
+bench.measure ("From 5 V down to the wiper", red="5V", black="c40", expect="about 3.75 V",
                when="Knob reading about 256")
 bench.measure ("Pin 3, averaged", red="3", black="GND", expect="about 1.25 V",
                when="Knob reading about 256")

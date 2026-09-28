@@ -11,7 +11,7 @@ parts:
   - 10 kΩ thermistor
   - 10 kΩ resistor (brown, black, black, red, brown)
   - 18B20 temperature module (from the 37-in-1 kit; optional)
-  - 6 female-to-male jumper wires and 3 more jumper wires
+  - 6 female-to-male jumper wires and 2 more jumper wires
 ideas:
   - A sensor that talks in timed pulses
   - Resistance that changes with heat
@@ -76,10 +76,9 @@ reading and is good to ±0.5 °C, the best of the three.
 
 !!! warning "Unplug first"
     Unplug the USB cable before you wire. Keep Lesson 13's circuit as it is:
-    the thermistor goes just past the screen, in column 40, built like
-    Lesson 8's light sensor, and its wire from A2 runs round below the
-    screen. The two modules sit above the board and take their power from
-    the top rails. The DHT11's pins are marked **S**, **+** and **−**; the
+    the thermistor goes to the left of the screen, in column 37, built like
+    Lesson 8's light sensor, with A2 in c37. The two modules sit above the
+    board and take their power from the top rails. The DHT11's pins are marked **S**, **+** and **−**; the
     18B20's are printed **G**, **R** and **Y** (Y is the signal, R is +, G
     is −). Check the marks on yours before you wire it, because a module
     wired backwards can get hot; if one does, unplug at once.
@@ -158,8 +157,8 @@ settles over the next minute; its temperature moves much less.
 | What you see | Try this |
 |---|---|
 | `DHT11 --` never changes to a number | Check the DHT11's S goes to pin 16, + to the + rail and − to the − rail. It needs a second after power-up, so wait two. |
-| `NTC` shows about −77 | A2 reads 0: the thermistor isn't connected. Check its legs are in f40 and e40, and the red wire from j40 to the top + rail. |
-| `NTC` shows hundreds of degrees | A2 reads 1023: the thermistor is shorted, or the 10 kΩ resistor isn't connected to the − rail. Check it goes from c40 to c43, and the black wire from a43 to the bottom − rail. |
+| `NTC` shows about −77 | A2 reads 0: the thermistor isn't connected. Check its legs are in f37 and e37, and the red wire from j37 to the top + rail. |
+| `NTC` shows hundreds of degrees | A2 reads 1023: the thermistor is shorted, or the 10 kΩ resistor isn't connected to the − rail. Check it goes from a37 to the bottom − rail by column 37. |
 | `NTC` is ten degrees or more away from the others | Check the resistor is 10 kΩ (brown, black, black, red, brown), not 1 kΩ. |
 | `DS --` with the 18B20 fitted | Its pins are printed **Y**, **R** and **G**: check Y (the signal) goes to pin 17, R to the top + rail and G to the top − rail. |
 | The screen is blank or shows blocks | Go back to Lesson 13's table: the LCD wiring or the contrast knob. |

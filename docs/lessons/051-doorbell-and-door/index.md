@@ -102,20 +102,20 @@ Board A's **L** LED is lit while it can hear Board B.
 
 !!! danger "Two power modules, wired differently"
     - **Board A:** the red wire from the module's **3.3V** pin to the
-      bottom + rail by column 61, for the modem. Never 5V: more than 3.6 V
+      bottom + rail by column 42, for the modem. Never 5V: more than 3.6 V
       damages the modem.
     - **Board B:** the red wire from the module's **5V** pin to the
-      bottom + rail by column 61, for the servo.
+      bottom + rail by column 42, for the servo.
 
     On both boards the module lies beside the breadboard, never plugged into
     it, both its jumpers **off**, and its black wire goes from its **GND**
-    pin to the bottom − rail by column 61. Label the two boards, so their
+    pin to the bottom − rail by column 42. Label the two boards, so their
     power modules never swap. The RFID reader takes **3.3 V** from Board A's
     own 3.3V pin, never 5V; Lesson 34 explains its signal wires.
 
 Both boards keep their LoRa modems where they were, with the same
 dividers and wires, but for one change on Board A: its modem's VDD moves
-from the Mega's 3.3V pin to the bottom + rail by column 47, right above it.
+from the Mega's 3.3V pin to the bottom + rail by column 29, right above it.
 
 ### Board A: the door
 
@@ -123,9 +123,9 @@ The GY-521 comes off, and with it the red wire from the Mega's 5V to the top
 rails: nothing on Board A uses the top rails now. A power module of its own
 lies to the right of the board, its red wire from **3.3V** to the
 bottom + rail and its black wire from **GND** to the bottom − rail, both by
-column 61. The reader and the tap sensor lie below the Mega in their places
+column 42. The reader and the tap sensor lie below the Mega in their places
 from Lesson 36, wired the same way. The doorbell is the button on pin 22 at
-its home, and the active buzzer stands at its home in column 34.
+its home, and the active buzzer stands at its home in column 33.
 
 <!-- bench A -->
 
@@ -139,8 +139,8 @@ When you are done, these are the connections Board A makes:
 
 The LED matrix comes off; the power module, the latch and the modem stay.
 The screen goes back to its home, taking 5 V from the Mega on the top
-rails. Beside it stand the button on pin 23, in columns 38 to 40, and the
-passive buzzer on pin 10, in column 51, with its 220 Ω resistor.
+rails. The button on pin 23 stands in columns 8 to 10, and the
+passive buzzer on pin 10 stands in column 33 with its 220 Ω resistor.
 
 <!-- bench B -->
 
@@ -244,14 +244,14 @@ news.
 
 | What you see | Try this |
 |---|---|
-| Board B says `Can't hear it` | Is Board A's power module on, with its LED lit? If you switched the module on after Board A started, press Board A's **RESET** button. Its modem runs from the bottom rails now: check the module's red wire from its 3.3V pin to the bottom + rail and its black wire from GND to the bottom − rail, both by column 61. Check the modem's VDD wire goes to the bottom + rail by column 47, and each modem's wires as in Lesson 49. |
+| Board B says `Can't hear it` | Is Board A's power module on, with its LED lit? If you switched the module on after Board A started, press Board A's **RESET** button. Its modem runs from the bottom rails now: check the module's red wire from its 3.3V pin to the bottom + rail and its black wire from GND to the bottom − rail, both by column 42. Check the modem's VDD wire goes to the bottom + rail by column 29, and each modem's wires as in Lesson 49. |
 | Board A's modem gets warm | Unplug everything at once, and check the red wire of Board A's power module comes from its **3.3V** pin, never 5V. |
 | Board A's Serial Monitor says `No card reader` | Check the reader's seven wires as in Lesson 34, and that its 3.3V pin goes to the Mega's 3.3V. |
 | Your card always gets `Unknown card` | Copy its number from Board B's Serial Monitor exactly, with `0x` in front, into **Inside**, and upload it to Board B. |
 | Knocks never reach Board B | Check the tap sensor's S goes to A12, + to the power header's 5V and − to its GND, and knock close to it. |
 | The doorbell does nothing | Check pin 22's wire in j2, the button across the gap in columns 2 to 4, and the black wire from a4 to the − rail. |
-| The latch doesn't move | Is Board B's power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 61, then the servo's wires in the bottom + rail by column 53 and the bottom − rail by column 54, and pin 44's to its orange. |
-| No chime | Check the passive buzzer's + in f51 with pin 10's wire in j51, and the 220 Ω from a51 to the − rail. |
+| The latch doesn't move | Is Board B's power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 42, then the servo's wires in the bottom + rail by column 35 and the bottom − rail by column 36, and pin 44's to its orange. |
+| No chime | Check the passive buzzer's + in f33 with pin 10's wire in j33, and the 220 Ω from a33 to the − rail. |
 | A blank lit screen, or a row of blocks | Turn the contrast knob. |
 
 ??? note "How it works"

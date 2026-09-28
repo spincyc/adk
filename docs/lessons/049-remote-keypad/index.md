@@ -91,7 +91,7 @@ Board A at all.
     GND. On Board B, the power module lies beside the board as in Lesson 17,
     never plugged into it, both its jumpers **off**, its red wire from
     **5V** to the bottom + rail and its black wire from **GND** to the
-    bottom − rail, both by column 61: the servo takes its power from the
+    bottom − rail, both by column 42: the servo takes its power from the
     bottom rails, never from the Mega.
 
 Each board keeps its LoRa modem from Lesson 48 where it is, below the
@@ -118,7 +118,7 @@ When you are done, these are the connections Board A makes:
 
 Board B carries the RGB LED at its home, as in Lesson 34, and the servo
 below the board, powered from the bottom rails as in Lesson 17. The servo
-lies a little lower than it did then, below the modem, and pin 44's wire
+keeps its Lesson 17 home below the modem, and pin 44's wire
 runs down beside the board and under the modem to reach it.
 
 <!-- bench B -->
@@ -213,11 +213,11 @@ never shows a key that Board B hasn't taken.
 
 | What you see | Try this |
 |---|---|
-| Board A always says `Calling B...` | Is Board B's sketch running, with its light on? Check each modem as Lesson 43 did: VDD on the 3.3V pin, GND in the bottom − rail by column 42, TXD in f44 beside pin 15's wire in j44, RXD in c46, and the divider in column 46. |
+| Board A always says `Calling B...` | Is Board B's sketch running, with its light on? Check each modem as Lesson 43 did: VDD on the 3.3V pin, GND in the bottom − rail by column 24, TXD in f26 beside pin 15's wire in j26, RXD in c28, and the divider in column 28. |
 | Board B's light stays dim orange | Board B can't hear Board A. The same checks, on Board A's modem; and are both sketches from this lesson, with addresses 1 and 2? |
 | Keys don't make stars | Check the keypad as in Lesson 16: its ribbon on pins 22 to 29, in order. A key pressed while the boards can't hear each other is lost; press it again. |
 | A key is sometimes missed | Two keys pressed within a tenth of a second can share a message, and Board B skips a jump in the count. Type at a steady pace; a missed key means a wrong code, never a wrong opening. |
-| The servo doesn't move | Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 61, then the servo's red wire in the bottom + rail by column 53, its brown in the bottom − rail by column 54, and pin 44's wire to its orange. |
+| The servo doesn't move | Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 42, then the servo's red wire in the bottom + rail by column 35, its brown in the bottom − rail by column 36, and pin 44's wire to its orange. |
 | A blank lit screen, or a row of blocks | Turn the contrast knob. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 

@@ -95,11 +95,11 @@ always does the same thing: it locks the safe and rubs out what you typed.
     Unplug the USB cable and the power module's adapter before you wire.
     Keep Lesson 17's power module, screen and servo just as they are, with
     their wires and the Mega's GND and 5V wires, and take out the angle knob
-    in columns 45 to 47 with its three wires. Put the keypad back where it
-    was in Lesson 16, and add the buzzer past the screen. The power module
+    in columns 39 to 41 with its three wires. Put the keypad back where it
+    was in Lesson 16, and add the buzzer in column 33. The power module
     stays beside the board as in Lesson 17, never plugged into it, both its
     jumpers **off**, its red wire from **5V** to the bottom + rail and its
-    black wire from **GND** to the bottom − rail, both by column 61: it
+    black wire from **GND** to the bottom − rail, both by column 42: it
     feeds only the bottom rails, for the servo, and the Mega's 5V feeds the
     top rails, for the screen. Never connect the servo's red wire to the
     Mega's 5V or the top + rail. Keep fingers clear of the servo's arm.
@@ -195,14 +195,14 @@ locks, and the old code still opens it.
 
 | What you see | Try this |
 |---|---|
-| The servo never moves | Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 61, then that the servo's red and black wires reach the bottom rails, red by column 53 and black by column 54, and its orange wire pin 44. |
+| The servo never moves | Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 42, then that the servo's red and black wires reach the bottom rails, red by column 35 and black by column 36, and its orange wire pin 44. |
 | The screen is dark | It runs on the Mega's 5 V, as in Lesson 17: check the red wire from the Mega's 5V into the top + rail by column 3. |
 | The screen is blank, but the backlight is on | Turn the contrast knob. |
 | Keys come out wrong | See [Lesson 16](../016-keypad/index.md#build-it)'s "Which way round is the ribbon?" |
 | The right code says `Wrong!` | You may have saved a different code. If you've forgotten it, change `savedMark` to 43 and upload: the sketch then ignores the saved code and starts again from 1234. |
-| No clicks or beeps | Check the buzzer's + leg is in f51 with pin 12's wire in j51, and the black wire from a51 goes to the − rail. |
+| No clicks or beeps | Check the buzzer's + leg is in f33 with pin 12's wire in j33, and the black wire from a33 goes to the − rail. |
 | The servo buzzes when locked | It's pressing against its stop or the lid. Try a `lockedAngle` of 10. |
-| The Mega resets when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail by column 53, which only the power module feeds. |
+| The Mega resets when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail by column 35, which only the power module feeds. |
 
 ??? note "How it works"
     The Mega 2560's EEPROM is 4,096 bytes inside the chip, separate from the
@@ -248,8 +248,8 @@ fingers clear of the servo's arm while you work.
 <!-- measure -->
 
 The bottom − rail is under the screen, so the black probe goes in a column
-the screen joins to GND: RW's, c13, for the first reading, and the
-backlight's K, c24, for D4, as in Lesson 16. Type any digit while the safe
+the screen joins to GND: RW's, c51, for the first reading, and the
+backlight's K, c62, for D4, as in Lesson 16. Type any digit while the safe
 is locked and measure D4; then open the safe, press **A**, type **5** and
 measure it again.
 

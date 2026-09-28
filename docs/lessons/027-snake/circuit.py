@@ -1,6 +1,5 @@
-# Lesson 26's matrix and joystick stay as they were; the button goes. The
-# passive buzzer stands at its home, pin 10's wire coming over the top of
-# the board.
+# Lesson 26's matrix and joystick stay where they were, and the passive
+# buzzer joins them at its home in column 33.
 bench = Bench ("The joystick and LED matrix of Lesson 26, and a passive buzzer on pin 10 "
                "through 220 Ω", columns=(1, 40))
 
@@ -25,7 +24,7 @@ bench.closeup (1, 40)
 # average, and how the buzzer and the resistor share it.
 bench.measure ("Pin 10 during a note", red="10", black="GND", expect="about 2.5 V",
                when="a long note")
-bench.measure ("Across the buzzer", red="i34", black="b34", expect="about 0.2 V",
+bench.measure ("Across the buzzer", red="i33", black="b33", expect="about 0.2 V",
                when="a long note")
-bench.measure ("Across the resistor", red="b34", black="GND", expect="about 2.3 V",
+bench.measure ("Across the resistor", red="b33", black="GND", expect="about 2.3 V",
                when="a long note")

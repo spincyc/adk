@@ -385,8 +385,13 @@ size: $(ARDUINO_LOGS)
 	done
 
 ## site            build the website into build/site
-site: $(VENV)/.installed
+site: $(VENV)/.installed $(BUILD_DIR)/steps.ok
 	$(VENV)/bin/mkdocs build --strict --site-dir $(abspath $(BUILD_DIR))/site
+
+$(BUILD_DIR)/steps.ok: tests/build_steps.py $(wildcard docs/_theme/*.py) \
+                     $(wildcard docs/lessons/*/index.md) $(VENV)/.installed
+	$(VENV)/bin/python tests/build_steps.py
+	@touch $@
 
 ## pdf             print every lesson page to build/site/pdf
 pdf: site

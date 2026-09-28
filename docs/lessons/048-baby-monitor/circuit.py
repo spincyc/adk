@@ -11,13 +11,7 @@ nursery = Bench ("Board A, in the nursery: a sound sensor on A5, a water sensor 
                  "from A7, a light divider on A1, a green LED on pin 28 and a LoRa modem on "
                  "pins 14 and 15", columns=(1, 50), sketch="Nursery")
 
-
-def bridge_home (bench, power=((1.59, 5.3), (10.3, 5.3), (10.3, 2.8))):
-    bench.home_modem (tx=[(3.05, -1.95), (9.9, -1.95)], rx=[(3.15, -1.85), (9.7, -1.85)],
-                      txd=[(9.7, 2.0)], supply=list (power))
-
-
-bridge_home (nursery, power=((1.59, 2.9), (1.1, 2.9), (1.1, 5.3), (10.3, 5.3), (10.3, 2.8)))
+nursery.home_modem ()
 
 nursery.home_led ("28", "green")
 
@@ -33,18 +27,17 @@ nursery.wire ("A6", "water.S")
 nursery.wire ("A7", "water.+")
 nursery.wire ("GND.power2", "water.−")
 
-nursery.home_divider ("photoresistor", via=[(2.45, 2.95), (9.25, 2.95)])
+nursery.home_divider ("photoresistor")
 
 # Board B, with the parent: Lesson 47's screen and clock module stay, and the
 # IR receiver stays to hush the alarm. The passive buzzer on pin 10 takes
-# the active buzzer's place, at its home beside the screen. The LED matrix
-# lies at its home, but the screen's contrast knob has B-5, so its GND
-# comes one hole nearer the Mega, into B-4.
+# the active buzzer's place in column 33. The LED matrix returns to its
+# home, with its usual GND wire into B-5.
 parent = Bench ("Board B, with the parent: the LCD on pins 31 to 36, a clock module on 20 and 21, "
                 "an IR receiver on pin 2, a passive buzzer on pin 10, an LED matrix on pins 47 "
                 "to 49 and a LoRa modem on pins 14 and 15", columns=(1, 56), sketch="Parent")
 
-bridge_home (parent, power=((1.59, 6.35), (10.3, 6.35), (10.3, 2.8)))
+parent.home_modem ()
 
 parent.screen (text=("Quiet  Lit  Dry", "Cried   02:14:07"))
 parent.home_rtc ()
@@ -54,7 +47,7 @@ parent.wire ("2", "receiver.S")
 parent.wire ("receiver.+", "T+39")
 parent.wire ("receiver.−", "T-37")
 
-parent.home_buzzer ("passive", via=[(1.80, -2.3), (10.4, -2.3)])
+parent.home_buzzer ("passive")
 
 # The matrix is drawn turned half round, so its picture is given upside
 # down: a bar graph of the last eight half seconds' sound.
@@ -66,7 +59,7 @@ BARS = ["........",
         "..##..##",
         ".####.##",
         "########"]
-parent.home_matrix (ground="B-4", pixels=[row[::-1] for row in reversed (BARS)])
+parent.home_matrix (pixels=[row[::-1] for row in reversed (BARS)])
 
 # Readings to take with a multimeter on Board B: the buzzer's pin while the
 # leak alarm sounds, and once POWER has hushed it.

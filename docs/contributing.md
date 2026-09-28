@@ -100,9 +100,29 @@ resistor, and a module placed there starts a stage of its own; where that
 reads badly, as with a chip and its resistors, `bench.stage ("the 74HC595")`
 names the steps that follow, up to the next `home_*` call or `stage ()`. A
 stage built just the same way in an earlier lesson starts folded, pointing
-back to it. On the page, a learner can tick each step off, and choose one
-to light its part up in the drawing; once they have begun, the next step
-lights up by itself.
+back to it. Keep the bench and steps markers together: they generate both
+the article's complete drawing and tables, and its **Build along** view.
+
+Build along opens a separate dialog for each board. It gives the current
+step a large close-up with marked endpoints and a smaller whole-board map,
+so the learner can read the instruction and find its holes without scrolling
+between them. Long connections show both ends. The map can be enlarged;
+stage buttons and **All steps** let the learner jump around. **Previous**
+and **Next** only browse; **Done & next** records completion. Progress is
+saved per lesson and board, and a change to the generated build instructions
+starts a fresh record instead of applying old ticks to different steps.
+
+The dialog includes the build's safety and keep/take-out instructions.
+Removing a part is described in words, without highlighting an unrelated
+part in the new drawing. **Back to lesson** or Escape returns to the article.
+Without JavaScript the complete article and step tables remain available;
+printing uses those tables and the complete drawings, with no dimmed steps
+or interactive controls.
+
+The dialog's instructions, geometry and endpoints come from `circuit.py`
+through the same build hook as the static steps. Do not maintain a separate
+set of UI coordinates or wiring instructions. `make site` checks this
+metadata before building the pages.
 
 ## Two-board lessons
 
@@ -150,14 +170,16 @@ lessons alike. [The kit page](kit.md#breadboard-homes) gives each part's home.
   `bench.home_led ("26", "red")`, `bench.home_button ("22")`,
   `bench.home_buzzer ("passive")`, `bench.home_knob ()`,
   `bench.home_encoder ()`, `bench.home_modem ()`, `bench.home_matrix ()`
-  and the rest, each described where `bench.py` defines it. A call picks a
-  part's second home by itself where the kit page gives one, beside the
-  screen, say. `via=` routes a wire from the Mega round the lesson's other
-  parts; the holes never change, so a lesson never repeats them.
+  and the rest, each described where `bench.py` defines it. Homes remain the
+  same when a screen is added. The kit page records the few exceptions:
+  for example, Lesson 42 uses `home_rgb_led (green_resistor=13)` to keep
+  the LED and button in their homes while moving the green resistor clear
+  of the button. `via=` routes a wire from the Mega round the lesson's
+  other parts; it does not change the holes.
 - **Power.** Never wire the Mega's 5V or GND to a rail: the site does it the
   same way in every lesson, from the outer GND at the end of the long header
   into `B-3` and the outer 5V at its top into `T+3`, and joins the other
-  rail of a pair at the far end (`B-60` to `T-60`, `T+61` to `B+61`) only
+  rail of a pair (`B-41` to `T-41`, `T+42` to `B+42`) only
   when a part uses it. Those two header pins are kept for the rails. With the power module,
   the Mega's 5V still feeds the top rails, for the screen and the sensors,
   whose signals come from the Mega too, so nothing is ever powered
@@ -174,11 +196,14 @@ lessons alike. [The kit page](kit.md#breadboard-homes) gives each part's home.
 - **A button** across the middle gap, fed from row j of its left column,
   its right column to the − rail.
 - **The screen.** `bench.screen ()` builds the LCD at its home with its
-  contrast knob, power, and pins 31 to 36, wired the same in every lesson,
-  so it can stay on the breadboard from one lesson to the next.
+  contrast knob, power, and pins 31 to 36. Its header occupies a47–a62,
+  its contrast knob columns 43–45, and its body hangs beyond the far-right
+  end. This gives the encoder and other recurring parts room to keep
+  their homes. Keep the LCD there in every lesson; support its overhang
+  rather than moving it back over the rest of the board.
 - **Rails.** In `circuit.py` a rail's hole is named for its rail and the
-  column beside it: `B-3` is the bottom − rail by column 3, and `T+61` the
-  top + rail by column 61. A page never uses those names, whose B and T
+  column beside it: `B-3` is the bottom − rail by column 3, and `T+42` the
+  top + rail by column 42. A page never uses those names, whose B and T
   read as rows b and t: it says "the bottom − rail by column 3", as the
   build steps do, and `make site` fails on a rail's name in a page's text
   outside code.
@@ -209,10 +234,11 @@ lessons alike. [The kit page](kit.md#breadboard-homes) gives each part's home.
   which the Mega's own wires need; turned round for the far end, its supply
   pins would land in the − rails, with the Mega's GND, and short the two
   supplies. So `bench.power_module ()` lays it to the right of the
-  breadboard with both jumpers off, and wires the header in its middle,
-  which gives 5 V and 3.3 V whatever the jumpers say, to the bottom rails:
-  a red wire from its 5V pin into `B+61` and a black wire from its GND into
-  `B-61`. `bench.power_module ("3.3V")` takes the red wire from its 3.3V pin
+  breadboard, above the LCD's overhang, with both jumpers off. It wires the
+  header in its middle, which gives 5 V and 3.3 V whatever the jumpers say,
+  to the bottom rails:
+  a red wire from its 5V pin into `B+42` and a black wire from its GND into
+  `B-42`. `bench.power_module ("3.3V")` takes the red wire from its 3.3V pin
   instead, for LoRa modems.
 
 A circuit that could never work stops the site: a Mega pin whose wire

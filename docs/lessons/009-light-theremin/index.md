@@ -86,14 +86,13 @@ nothing, so a note sounds on smoothly until your hand moves to another.
     Lesson 7, the knob's middle leg goes only to A0.
 
 Leave Lesson 8's light meter exactly as it is. The buzzer goes into its
-home in column 34, between the white LED and the light sensor, and the knob
-into its home after the sensor, in the same holes as in Lesson 7. The whole
-build looks like this:
-
-<!-- bench -->
+home in column 33, between the white LED and the light sensor, and the knob
+into its home after the sensor, in the same holes as in Lesson 7.
 
 The steps start from your light meter: keep everything in it, and add the
 buzzer and the knob.
+
+<!-- bench -->
 
 <!-- steps -->
 
@@ -105,9 +104,9 @@ buzzer and the knob.
     own single tone; the passive one plays whatever note the Mega sends it.
 
     The buzzer stands across the middle gap. It has a **+** marked on top
-    beside one leg: follow the mark, and put that leg in f34, on pin 10's
-    side of the gap, where pin 10's wire comes into j34. Its other leg goes
-    in e34 in the bottom half, where the 220 Ω resistor takes it from a34
+    beside one leg: follow the mark, and put that leg in f33, on pin 10's
+    side of the gap, where pin 10's wire comes into j33. Its other leg goes
+    in e33 in the bottom half, where the 220 Ω resistor takes it from a33
     down to the − rail. Its legs are 0.3 inch apart, exactly the width of
     the gap.
 
@@ -175,11 +174,11 @@ jump an octave at a time, two octaves from end to end.
 
 | What you see or hear | Try this |
 |---|---|
-| The LEDs follow your hand, but no sound | Check the wire from pin 10 is in j34, the buzzer's **+** leg in f34 and its other leg in e34, and the resistor goes from a34 into the − rail. Make sure it's the passive buzzer. |
+| The LEDs follow your hand, but no sound | Check the wire from pin 10 is in j33, the buzzer's **+** leg in f33 and its other leg in e33, and the resistor goes from a33 into the − rail. Make sure it's the passive buzzer. |
 | The slightest shadow plays the top note | The sketch never saw the sensor covered. Press the Mega's reset button and cover the sensor fully while the LEDs blink. |
 | It never goes quiet | The room is darker than when the sketch learned it: a light went off, or your own shadow falls on the sensor. Press reset and let it learn again in the light you'll play in. |
 | Notes flutter between two neighbors | Your hand is at the edge of a slice, or the lamp above you flickers. Move a little, or try a steadier light. |
-| The knob changes nothing | Check A0's wire is in a46 and the knob's outer legs reach both rails: the black wire from j45 to the top − rail, the red one from j47 to the top + rail, and the black one from the bottom − rail to the top − rail, by column 60. The octave only changes at a third and two thirds of the way round. |
+| The knob changes nothing | Check A0's wire is in a40 and the knob's outer legs reach both rails: the black wire from j39 to the top − rail, the red one from j41 to the top + rail, and the black one from the bottom − rail to the top − rail, by column 41. The octave only changes at a third and two thirds of the way round. |
 | No LEDs light at all | Upload Lesson 8's sketch again: if the light meter doesn't work either, fix it first using its table. |
 
 ??? note "How it works"

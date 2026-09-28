@@ -14,30 +14,23 @@
 # below the board, its LED pointing away, S into a38 and − into B-36; its
 # middle pin stays empty. Nothing here needs the power module: the relay's
 # coil runs from the Mega's inner 5V pin, as in Lesson 35.
-# Over the top, above the IR receiver or the relay: 14 in the higher lane, so the
-# two nest rather than cross.
-def modem (bench, lanes):
-    bench.home_modem (tx=[(3.05, lanes[0]), (9.9, lanes[0])],
-                      rx=[(3.15, lanes[1]), (9.7, lanes[1])])
-
-
 receiver = Bench ("Board A: an IR receiver on pin 2, the LCD on pins 31 to 36, and a LoRa modem "
                   "on pins 14 and 15, its VDD from the Mega's 3.3V pin", columns=(1, 50),
                   sketch="Receiver")
 
 receiver.screen (text=("Sent 0x0C, #3", "Lamp is on"))
-modem (receiver, lanes=(-2.15, -2.05))
+receiver.home_modem ()
 receiver.module ("ir_receiver", name="eye", at=(7.89, -1.7))
 receiver.wire ("2", "eye.S", via=[(2.65, -0.2), (8.3, -0.2)])
 receiver.wire ("eye.+", "T+29")
 receiver.wire ("eye.−", "T-28")
-receiver.closeup (26, 50)
+receiver.closeup (1, 63)
 
 repeater = Bench ("Board B: a relay on pin 11 switching a 9 V battery, 1 kΩ resistor and LED; an "
                   "IR LED on pin 3 through 220 Ω; and a LoRa modem on pins 14 and 15, its VDD from "
                   "the Mega's 3.3V pin", columns=(1, 50), sketch="Repeater")
 
-modem (repeater, lanes=(-1.05, -0.95))
+repeater.home_modem ()
 
 repeater.home_relay ()
 

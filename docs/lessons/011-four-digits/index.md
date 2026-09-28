@@ -134,7 +134,7 @@ challenge below lets you watch it happen.
 
 | What you see | Try this |
 |---|---|
-| Nothing lights at all | Check the chip's notch is on the left and its supply: red wires from j18 and j24 to the top + rail, black from j21 to the top − rail and from a25 to the bottom − rail, and the black jumper in column 6 between the two − rails. |
+| Nothing lights at all | Check the chip's notch is on the left and its supply: red wires from j18 and j24 to the top + rail, black from j21 to the top − rail and from a25 to the bottom − rail, and the black jumper in column 41 between the two − rails. |
 | One digit stays dark | Its digit wire: pin 40 to j51 for digit 1, 41 to j54, 42 to j55, and 43 to a56. |
 | The same segment is missing on every digit | That segment's resistor is loose or one column out: every digit shares it. |
 | The numbers look scrambled | Two segment resistors are swapped. Check each against the table above. |

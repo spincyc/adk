@@ -13,8 +13,8 @@ parts:
   - 433 MHz receiver, RX470C, and transmitter, WL102-341, from Lesson 38 (add-ons, not in the kit)
   - 1 kΩ resistor (brown, black, black, brown, brown)
   - 2 kΩ resistor (red, black, black, brown, brown), or two more 1 kΩ
-  - 5 female-to-male jumper wires, and 3 more for the last experiment
-  - 25 jumper wires
+  - For the last experiment, three female-to-male jumper wires
+  - 30 jumper wires
   - For the last experiment, a small metal tin with a lid, and a plastic bag
 ideas:
   - The time every message costs, however short
@@ -87,9 +87,10 @@ and [Safety](../../safety.md#radios) have the details.
     stay silent.
 
 Everything goes back to a home it has had before: the screen at its home
-from Lesson 13, the rotary encoder above the Mega as in Lesson 37, and the
-receiver and transmitter in row j past the screen, as in Lesson 38, with
-their wires coming round the bottom of the screen and up into row f.
+from Lesson 13, the rotary encoder in row a, columns 15 to 19, as in
+Lesson 29, and the receiver and transmitter in row j, as in Lesson 38,
+with their wires coming up into row f. The screen stays at the far right;
+the encoder and the radios stand nearer the Mega.
 None of Lesson 54's parts stay, so take its Board A apart first, all but
 the Mega's GND wire, and build this one from the start. Leave the aerials
 off: in the USA and Canada they must stay off, and the two modules hear
@@ -105,8 +106,8 @@ each other easily across the board without them, as in Lesson 38.
     | Encoder | CLK | Pin 18 |
     | Encoder | DT | Pin 19 |
     | Encoder | SW | Pin 22 |
-    | Encoder | + | The inner 5V pin at the top of the long header |
-    | Encoder | GND | The GND beside pin 13 |
+    | Encoder | + | e16 to the top + rail by column 19 |
+    | Encoder | GND | e15 to the top − rail by column 18 |
     | Receiver | VCC | 5V, on the power header |
     | Receiver | DATA | Pin 43 |
     | Receiver | GND | The bottom − rail |
@@ -188,7 +189,7 @@ With the two modules a few centimeters apart, every test should say
 
 1. Unplug the USB cable. Take the receiver out of the breadboard, and join
    its pins to the holes it came out of with three female-to-male jumper
-   wires: **VCC** to j48, **DATA** to j49, **GND** to j51.
+   wires: **VCC** to j30, **DATA** to j31, **GND** to j33.
 2. Plug in, and test 5 letters and then 60 letters with the receiver lying
    beside the board. Both should still say 5/5. Each test takes most of a
    minute, so let the countdown run.
@@ -215,9 +216,9 @@ missing. Then the experiment waits for a second Mega: see
 
 | What you see | Try this |
 |---|---|
-| Pressing the knob does nothing | Check the encoder's SW goes to pin 22, its + to the inner 5V pin, and its GND to the GND beside pin 13. |
+| Pressing the knob does nothing | Check the encoder's SW goes to pin 22, its + through e16 to the top + rail by column 19, and its GND through e15 to the top − rail by column 18. |
 | Turning the knob does nothing | Check CLK goes to pin 18 and DT to pin 19. If it counts the wrong way, swap those two wires. |
-| `Heard 0/5` | Check the receiver's DATA goes to pin 43, its VCC to 5V and its GND to the − rail; then the transmitter's + to 3.3V, its − to the − rail, and the divider: pin 46's wire in f54, the 1 kΩ from h54 to h57, the 2 kΩ from g57 to e57, and the black jumper from a57 to the − rail. |
+| `Heard 0/5` | Check the receiver's DATA goes to pin 43, its VCC to 5V and its GND to the − rail; then the transmitter's + to 3.3V, its − to the − rail, and the divider: pin 46's wire in f36, the 1 kΩ from h36 to h39, the 2 kΩ from g39 to e39, and the black jumper from a39 to the − rail. |
 | Still `Heard 0/5` | Check the modules' pins are soldered to their boards, not just pushed through. |
 | The test seems stuck on `Next in` | It isn't: the transmitter rests 10 seconds or more after every message, so a test of five takes most of a minute. |
 | Fewer than 5 heard with both modules on the board | Keep them away from the computer and its cable, and from other 433 MHz gadgets: a doorbell or weather station sending at the same moment spoils a message. |

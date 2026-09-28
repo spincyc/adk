@@ -57,20 +57,29 @@ A new start, built on the library's original 2021 design.
   come in stages, a part and its wires under a heading naming the pins
   they use, with each wire, resistor and LED drawn between the holes it
   joins, lined up from step to step; a stage built before folds away. A
-  learner can tick steps off, and point at one to light its part up in
-  the drawing, which stays in sight above the steps on a large screen;
-  once they begin, the next step's part glows. Pages name a rail's hole in
+  learner can tick steps off, or open **Build along** for a large close-up
+  of the current step beside its instruction, with the whole board below.
+  Rings mark the exact holes and pins; a long wire shows its two ends in
+  separate close-ups. Progress is saved separately for each board and
+  starts fresh when its instructions change. The full steps remain on the
+  page and in print. Pages name a rail's hole in
   words, "the bottom − rail by column 3", never as B-3, whose B reads as
   row b. The
   drawings follow the kit: the Mega's headers and the breadboard at their
   real sizes, modules with their pins in their real order, every wire a
   color the kit has, the potentiometers across the middle gap, the rotary
-  encoder standing in the breadboard where there's room, and the power
+  encoder standing in its home in columns 15–19, and the power
   module beside the board, since its pins fit the kit's breadboard the
   right way round only at the Mega's end. Each parts list counts the
   wires its build needs. On a phone the drawings scroll sideways at a
   legible size; lines stay near seventy characters; printing works in
   either theme. A rebuild draws only what changed, every lesson at once.
+- **Screen at the far right.** The LCD's sixteen pins stand in a47–a62,
+  with its contrast knob in columns 43–45 and its body overhanging the end.
+  Shared homes, wires, probe points and lesson instructions follow that
+  layout throughout the course. Adding or removing the screen leaves the
+  other controls at their homes; the kit page records the few exceptions
+  needed when other parts occupy the same holes.
 - **Measure it.** Every lesson ends with readings to take with a
   multimeter, each drawn with the probes on the exact holes and the reading
   expected, to turn the lesson's idea into something you can see.

@@ -6,7 +6,7 @@ level: 3
 parts:
   - "Board A: Lesson 43's Board A, with its LoRa modem and divider"
   - "Board A: LCD1602 display, 10 kΩ potentiometer, 220 Ω resistor (red, red, black, black, brown) and rotary encoder module"
-  - "Board A: 5 female-to-male jumper wires and 17 jumper wires"
+  - "Board A: 22 more jumper wires"
   - "Board B: Lesson 43's Board B, with its LoRa modem, divider and yellow LED"
   - "Board B: SG90 servo, and the breadboard power module with its 9 V adapter"
   - "Board B: 2 female-to-male jumper wires and 3 jumper wires, and a piece of card and some tape for the dial"
@@ -91,7 +91,7 @@ nothing tells Board B.
     Board B's power module lies beside its breadboard as in Lesson 17, never
     plugged into it, both its jumpers **off**, its red wire from **5V** to
     the bottom + rail and its black wire from **GND** to the bottom − rail,
-    both by column 61. The servo takes its power from the bottom rails; its
+    both by column 42. The servo takes its power from the bottom rails; its
     red wire never goes to the Mega's 5V, and the modem stays on the Mega's
     3.3V pin. The Mega's GND at the bottom − rail by column 3 joins the
     module's GND, so that the servo can read the pulses on pin 44.
@@ -104,12 +104,10 @@ them.
 
 Take out the button, the two LEDs and their wires. The screen goes in at
 its home, as in Lesson 13, with its red wire from the Mega's 5V to the
-top + rail. The rotary encoder sits above the Mega on its five wires, as
-in Lesson 37, since the modem now lies where the encoder stood in Lesson
-29: CLK and DT on pins 18 and 19, its switch, SW, on 22, its + on the
-inner 5V pin at the top of the long header and its GND on the GND pin
-beside pin 13. The wires from pins 14 and 15 rise past the encoder's on
-their way to the modem.
+top + rail. The rotary encoder stands in row a, columns 15 to 19, as
+in Lesson 29: CLK and DT on pins 18 and 19, its switch, SW, on 22. Its
+GND jumper runs from e15 to the top − rail by column 18, and its + jumper
+from e16 to the top + rail by column 19.
 
 <!-- bench A -->
 
@@ -119,10 +117,11 @@ their way to the modem.
 
 Take out the button, the red LED and their wires; the yellow LED stays, to
 show the link. The power module lies to the right of the board, wired to the
-bottom rails by column 61. The servo lies below the board with its plug
-under columns 52 to 54, its + into the bottom + rail by column 53 and
-its − into the bottom − rail by column 54, as in Lesson 17. It lies lower
-than it did there, below the modem, which now takes the servo's old place.
+bottom rails by column 42. The servo lies below the board with its plug
+under columns 34 to 36, its + into the bottom + rail by column 35 and
+its − into the bottom − rail by column 36, as in Lesson 17. Its body stays
+below the modem, leaving room for both without moving the servo between
+lessons.
 
 <!-- bench B -->
 
@@ -217,8 +216,8 @@ the module back on, and the servo jumps to the angle it was sent.
 | What you see | Try this |
 |---|---|
 | `Not connected` stays on the screen, and Board B's yellow LED stays dark | Check Board A runs **Dial** and Board B runs **Servo**. Then upload Lesson 43's sketches to both boards: if their yellow LEDs light there, the modems are fine, and the trouble is in this lesson's wiring or sketches. |
-| The screen shows the angles, but the servo never moves | Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 61, then the servo's plug: brown to the bottom − rail by column 54, red to the bottom + rail by column 53, orange to pin 44. |
-| The Mega resets, or the USB disconnects, when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail by column 53, fed by the power module. |
+| The screen shows the angles, but the servo never moves | Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 42, then the servo's plug: brown to the bottom − rail by column 36, red to the bottom + rail by column 35, orange to pin 44. |
+| The Mega resets, or the USB disconnects, when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail by column 35, fed by the power module. |
 | The servo turns the opposite way to the knob | Nothing is wrong. To swap it, change `knob.turned () * step` to `-knob.turned () * step` in **Dial**. |
 | It takes two clicks to move 5° | Your encoder steps differently: try `adk::RotaryEncoder knob {18, 19, 2};`, as in Lesson 29, or 1 if it takes four clicks. |
 | It buzzes at one end of its travel | It's pushing against its end stop. Use `adk::Servo servo {44, 600, 2300};` to narrow the pulses a little. |
@@ -250,7 +249,7 @@ the module back on, and the servo jumps to the angle it was sent.
    glide the servo slowly back to 90° with
    `servo.moveTo (90, 1000)` while `!bridge.isConnected ()`.
 2. **A gauge across the house.** Take the knob away, put the thermistor
-   from Lesson 14 on Board A's A2 at its home in column 40, and share the
+   from Lesson 14 on Board A's A2 at its home in column 37, and share the
    temperature instead of the angle. On Board B, turn the needle to it on
    a dial from 15 °C to 35 °C, as Lesson 17 suggested.
 3. **Coarse and fine.** Make a press of the knob switch between steps of

@@ -30,8 +30,10 @@ how): the pins it claims must be the pins the circuit wires, each claimed
 as an output or an input as the parts on it need.
 
 Where a board's steps follow its bench drawing straight away, the two
-share a box, so on a large screen the drawing stays in sight while the
-steps scroll, and a step chosen lights its part up in it (steps.js).
+share a box. The Build along view (steps.js) pairs each instruction with
+an enlarged crop and a whole-board map, using the circuit's coordinates.
+The complete drawing and staged steps remain available without JavaScript
+and in print.
 
 When a lesson shares parts in the same holes, or wires between the same
 points, with the lesson before it, its steps say what to keep, what to take
@@ -41,10 +43,11 @@ everything else.
 """
 
 import hashlib
+import json
 import os
 import re
 import sys
-from xml.sax.saxutils import escape
+from xml.sax.saxutils import escape, quoteattr
 
 import yaml
 from mkdocs.exceptions import PluginError
@@ -224,7 +227,8 @@ def board_pieces (lesson, letter, bench):
             "closeup": figure (closeup,
                                f"Close-up of {whose}. Letters name the rows, numbers the columns.",
                                "closeup", letter),
-            "steps": steps (bench, previous (lesson["number"], letter), lesson["number"], letter),
+            "steps": steps (bench, previous (lesson["number"], letter), lesson["number"], letter,
+                            f"Board {letter} · {bench.sketch}" if letter else lesson["title"]),
             "connections": connections (bench),
             "sketch": f'```cpp title="{name}.ino" linenums="1"\n{sketch.rstrip ()}\n```',
             "measure": measurements (bench, measured),
@@ -359,7 +363,7 @@ def measurements (bench, drawn):
 # carries on from and what to take out of it. When no part or module
 # carries over, the learner takes out everything but the Mega's power
 # wires, and builds the rest.
-def steps (bench, before=None, number=1, letter=""):
+def steps (bench, before=None, number=1, letter="", title=None):
     kept, gone, new = continuity (bench, before[2]) if before else ([], [], bench.items)
     head, out = [], []
     if before:
@@ -382,9 +386,10 @@ def steps (bench, before=None, number=1, letter=""):
             new = added (bench, before)
         if not new:
             head.append ("Nothing else to add.")
-    if out or new:
-        head.append (step_stages (bench, out, new, number, letter))
-    return "\n\n".join (head)
+    context = ('<div class="build-context" markdown>\n\n' + "\n\n".join (head) + "\n\n</div>") \
+        if head else ""
+    return context + ("\n\n" + step_stages (bench, out, new, number, letter, title)
+                      if out or new else "")
 
 
 # The steps in stages, each a part and its wires under a heading that names
@@ -393,10 +398,10 @@ def steps (bench, before=None, number=1, letter=""):
 # columns as the others, so the holes and pins line up all the way down. A
 # stage built just this way in an earlier lesson starts folded, pointing
 # back to it; everything taken out comes first.
-def step_stages (bench, out, new, number, letter):
+def step_stages (bench, out, new, number, letter, title=None):
     blocks = []
     if out:
-        rows = [step_row (f"t{index}", "−", item, label="Taken out")
+        rows = [step_row (f"t{index}", "−", item, label=f"Take-out step {index} done")
                 for index, item in enumerate (out, 1)]
         blocks.append (stage_block ("Take out", rows, kind="out"))
     count = 0
@@ -412,7 +417,11 @@ def step_stages (bench, out, new, number, letter):
         blocks.append (stage_block (capital (bench.stage_title (stage)), rows,
                                     f"{len (rows)} step{'s' if len (rows) > 1 else ''}{where}",
                                     "again" if earlier else ""))
-    return (f'<div class="build-steps" data-board="{letter}">\n' + "\n".join (blocks) +
+    content = "\n".join (blocks)
+    revision = hashlib.sha256 (content.encode ()).hexdigest ()[:16]
+    title = title or (f"Board {letter} · {bench.sketch}" if letter else bench.title)
+    return (f'<div class="build-steps" data-board="{letter}" data-title={quoteattr (title)} '
+            f'data-revision="{revision}">\n' + content +
             "\n</div>")
 
 
@@ -433,6 +442,21 @@ def stage_block (title, rows, count="", kind=""):
 def step_row (key, mark, item, bench=None, label=None):
     kind, thing, step = item
     lit = f' data-item="{bench.items.index (item)}"' if bench else ""
+    points = step_points (bench, item) if bench else []
+    action = step_action (item, bench)
+    # Saved progress must follow the actual connection, not its row number.
+    # Include physical placement: moving a module can leave its sentence
+    # ("below the breadboard") unchanged while every wire must be checked again.
+    physical = (thing.x, thing.y, thing.angle) if kind == "module" else \
+        thing[:3] if kind == "wire" else thing.legs ()
+    signature = (kind, physical, step.what, step.places, step.note, step.colors, bool (bench))
+    key = hashlib.sha256 (json.dumps (signature, ensure_ascii=False).encode ()).hexdigest ()[:16]
+    metadata = (f' data-kind="{kind}" data-action={quoteattr (action)}'
+                f' data-points={quoteattr (json.dumps (points))}')
+    if step.what == "LCD" and bench:
+        care = ("Support the overhanging screen at breadboard height, for example on the kit's "
+                "box, so it cannot pull its pins out.")
+        metadata += f' data-care={quoteattr (care)}'
     places = [f'<span class="place">{escape (where)}{detail (how)}</span>'
               for where, how in step.places]
     if len (places) == 2 and not step.spread:
@@ -440,9 +464,63 @@ def step_row (key, mark, item, bench=None, label=None):
                 f'<td class="link">{picture (kind, thing, step)}</td><td>{places[1]}</td>')
     else:
         ends = f'<td colspan="3"><div class="places">{"".join (places)}</div></td>'
-    return (f'<tr data-step="{key}"{lit}><td class="step"><button type="button" class="tick" '
+    return (f'<tr data-step="{key}"{lit}{metadata}><td class="step">'
+            '<button type="button" class="tick" '
             f'aria-pressed="false" aria-label="{label or f"Step {mark} done"}">{mark}</button></td>'
             f'<td class="what">{capital (step.what)}{detail (step.note)}</td>{ends}</tr>')
+
+
+# Coordinates come from the same model as the drawing, including the exact
+# ground pin and the turned header of a module. Keep them in the order the
+# endpoint labels use, which need not be the part's electrical leg order.
+# Chips name a whole row of pins at once; highlight every leg in that case.
+def step_points (bench, item):
+    kind, thing, step = item
+    if kind == "module":
+        return []
+    if kind == "wire":
+        points = [bench.xy (end) for end in thing[:2]]
+        if step.what == "lead" and bench.style (thing[1]) == "lead":
+            points.reverse ()
+    else:
+        points = []
+        for where, detail in step.places:
+            for _, hole in thing.legs ():
+                place, column = bench.place (("hole", hole))
+                if place == where and detail.startswith (column):
+                    points.append (bench.hole_xy (hole))
+                    break
+            else:
+                points = [bench.hole_xy (hole) for _, hole in thing.legs ()]
+                break
+    return [[round (x, 2), round (y, 2)] for x, y in points]
+
+
+# A short instruction for the guided view. The table below it remains the
+# complete list of legs, colors and placement notes, for reading and print.
+def step_action (item, bench=None):
+    kind, thing, step = item
+    if bench is None:
+        places = join ([where + (f" ({how})" if how else "") for where, how in step.places])
+        if kind == "wire":
+            return f"Disconnect the {step.colors[0]} {step.what} between {places}."
+        return f"Take out the {step.what} from {places}."
+    if kind == "wire":
+        start, end = thing[:2]
+        if step.what == "lead" and bench.style (end) == "lead":
+            start, end = end, start
+        if step.what == "lead":
+            return f"Connect {bench.describe (start)} to {bench.describe (end)}."
+        color = step.colors[0]
+        return f"Connect {bench.describe (start)} to {bench.describe (end)} with the {color} " \
+            f"{step.what}."
+    if kind == "module":
+        return f"Place the {step.what} {step.places[0][0]}."
+    holes = [hole_words (hole) for _, hole in thing.legs ()]
+    if step.what == "LCD":
+        return f"Put the LCD's sixteen pins in {holes[0]} through {holes[-1]}. " \
+            "Its screen faces you and hangs past the right end of the breadboard."
+    return f"Place the {step.what} in {join ([where for where, _ in step.places])}."
 
 
 # The steps grouped by stage, in order: (stage, items).

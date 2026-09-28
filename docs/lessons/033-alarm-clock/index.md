@@ -11,8 +11,8 @@ parts:
   - 220 Ω resistor (red, red, black, black, brown)
   - 28BYJ-48 stepper and ULN2003 driver, from Lesson 31
   - Breadboard power module and its 9 V adapter
-  - 13 more female-to-male jumper wires
-  - 3 more jumper wires
+  - 8 more female-to-male jumper wires
+  - 8 more jumper wires
   - A paper flag and sticky tape
 ideas:
   - A device as a set of states
@@ -97,14 +97,14 @@ alarm (or the end of a snooze), the clock goes from `Showing` to `Ringing`.
     a pin should give. The power module lies beside the board as in Lesson
     31, never plugged into it, both its jumpers **off**, its red wire from
     **5V** to the bottom + rail and its black wire from **GND** to the
-    bottom − rail, both by column 61: the Mega's 5V already feeds the top
+    bottom − rail, both by column 42: the Mega's 5V already feeds the top
     rails, and two supplies must never feed the same rail. Never power the
     stepper's driver from the Mega's 5V pin.
 
 Keep your clock from Lesson 32 just as it is. The new parts are the snooze
-button just past the LCD, in columns 38 to 40, the passive buzzer in column
-51 with its resistor down to the − rail, the knob above the Mega on five
-wires, and the flag: the stepper's driver below the Mega, as in Lesson 31,
+button in columns 8 to 10, the passive buzzer in column 33 with its
+resistor down to the − rail, the rotary encoder in row a, columns 15 to
+19, and the flag: the stepper's driver below the Mega, as in Lesson 31,
 with the power module lying to the right of the board.
 
 The power module feeds only the bottom rails, for the stepper's driver, as
@@ -115,9 +115,8 @@ as in Lesson 32. The steps below say what to keep and what to add.
 
 <!-- steps -->
 
-The driver's red and black wires go into the bottom rails by column 4,
-nearer the Mega than Lesson 31's columns 5 and 6, because the screen's black
-jumper takes column 5 and the LCD covers the rails from column 6.
+The driver's red wire goes into the bottom + rail by column 5, and its
+black wire into the bottom − rail by column 6, just as in Lesson 31.
 
 Push the motor's white plug into the driver's socket. Tape a paper flag to
 the motor's shaft so that, looking at the end of the shaft, the flag lies
@@ -126,12 +125,11 @@ the flag's steps from wherever it is when the Mega starts.
 
 ??? info "The knob's wires"
     The knob is the rotary encoder from Lesson 29. Its CLK and DT pins go to
-    18 and 19, its push switch SW to pin 22, and it takes 5 V from the inner
-    5V pin at the top of the long header and GND from the GND pin beside
-    pin 13. If yours has its pins in a different order, go by the
-    printed names, not their places. Here it sits above the Mega on its
-    five wires, rather than standing in the breadboard as in Lesson 29: the
-    passive buzzer beside the screen takes the holes it stood in there.
+    18 and 19, its push switch SW to pin 22, and its power comes from the
+    top rails: GND from e15 to the − rail by column 18, and + from e16 to
+    the + rail by column 19. It stands in the same holes as in Lesson 29.
+    If yours has its pins in a different order, go by the printed names,
+    not their places.
 
 When you are done, these are the connections your circuit makes:
 
@@ -231,10 +229,10 @@ every step on the way up, it knows exactly how far back 0 is.
 | One click of the knob moves two minutes, or two clicks move one | Your encoder steps differently: give it a third number, as in `adk::RotaryEncoder knob {18, 19, 2};`, and try 2 or 1. |
 | Pressing the knob does nothing | Check SW goes to pin 22. The knob's + and GND must be wired too. |
 | The alarm never rings | It only rings as a new minute begins, so set it at least a minute ahead. Check the bottom row says `Alarm` and not `Hour?` or `Minute?`. |
-| The screen flashes **Wake up!** but there's no sound | Check the buzzer's + leg, the one by its + mark, is in f51, in pin 10's column, that pin 10's wire is in j51, and that the resistor goes from a51 to the − rail. |
-| The snooze button does nothing | It must straddle the middle gap in columns 38 and 40, with pin 23's wire in j38 and the black wire from a40 to the − rail. |
+| The screen flashes **Wake up!** but there's no sound | Check the buzzer's + leg, the one by its + mark, is in f33, in pin 10's column, that pin 10's wire is in j33, and that the resistor goes from a33 to the − rail. |
+| The snooze button does nothing | It must straddle the middle gap in columns 8 and 10, with pin 23's wire in j8 and the black wire from a10 to the − rail. |
 | The time is wrong | See Lesson 32: the clock module keeps whatever time it was set to. |
-| The flag never moves, and the driver's LEDs stay dark | Switch the power module on and check its LED is lit, its red wire goes from 5V to the bottom + rail and its black one from GND to the bottom − rail, both by column 61, and the driver's red and black wires go to the bottom + and − rails by column 4. |
+| The flag never moves, and the driver's LEDs stay dark | Switch the power module on and check its LED is lit, its red wire goes from 5V to the bottom + rail and its black one from GND to the bottom − rail, both by column 42, and the driver's red wire goes to the bottom + rail by column 5 and its black wire to the bottom − rail by column 6. |
 | The flag hums or shakes but hardly turns | Check IN1 goes to A8, IN2 to A9, IN3 to A10 and IN4 to A11. |
 | The flag swings down instead of up | Your motor turns the other way: tape the flag on pointing right instead. |
 | The flag stands up while it's quiet, and lies flat when it rings | The Mega started while the flag was up, and counts from there. Unplug it, turn the flag flat by hand, and plug it in again. |

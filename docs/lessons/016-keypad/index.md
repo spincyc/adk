@@ -186,7 +186,7 @@ key presses and the sketch needs no change.
 <!-- measure -->
 
 Press **\*** to clear, type **5**, and measure each wire in turn. The black
-probe stays in c24, in the column of the backlight's K, which is GND: the
+probe stays in c62, in the column of the backlight's K, which is GND: the
 bottom − rail is under the screen. The data wires stand side by side, so
 keep the red tip in its own hole.
 

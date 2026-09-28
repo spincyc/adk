@@ -11,14 +11,13 @@ door.screen (text=("Locked. Code?", "**"), risers=(4.8, 0.05))
 
 door.home_keypad ()
 
-door.home_modem (tx=[(3.05, -0.35), (9.9, -0.35)], rx=[(3.15, -0.25), (9.7, -0.25)])
+door.home_modem (tx=[(3.05, -0.35), (8.1, -0.35)],
+                 rx=[(3.15, -0.25), (7.9, -0.25)])
 
 # Board B, inside: the power module beside the board, its 5V and GND
-# wired to B+61 and B-61 for the servo; the Mega's GND joins the rails at
+# wired to B+42 and B-42 for the servo; the Mega's GND joins the rails at
 # B-3. The RGB LED at its home on pins 5, 6 and 7, as in Lesson 34.
-# The servo at its home beside the modem, lower than in Lesson 17, as the
-# modem's place overlaps its old one; pin 44's wire drops beside the board
-# and runs under the modem to it.
+# The servo keeps its Lesson 17 home below the modem.
 inside = Bench ("Board B: a servo latch on pin 44 powered by the power module, the RGB LED on "
                 "pins 5, 6 and 7, and the LoRa modem on Serial3 (pins 14 and 15)",
                 columns=(1, 63), sketch="Inside")
@@ -29,7 +28,7 @@ inside.home_rgb_led ()
 
 inside.home_modem ()
 
-inside.home_servo (via=[(4.85, 1.90), (4.85, 5.55), (10.5, 5.55)])
+inside.home_servo ()
 
 boards = {"A": door, "B": inside}
 

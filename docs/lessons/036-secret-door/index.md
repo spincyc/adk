@@ -88,7 +88,7 @@ can't knock on its own door.
     any wiring. The power module lies beside the board as in Lesson 17,
     never plugged into it, both its jumpers **off**, its red wire from
     **5V** to the bottom + rail and its black wire from **GND** to the
-    bottom − rail, both by column 61: it feeds only the servo, on the bottom
+    bottom − rail, both by column 42: it feeds only the servo, on the bottom
     rails, and the screen runs from the Mega's 5V on the top rails, as in
     Lesson 33. The RFID reader takes **3.3 V** from the Mega's 3.3V pin:
     never 5V. Its signal wires get 5 V from the Mega, more than its chip is
@@ -176,14 +176,14 @@ then `lock ()` forgets them.
 
 | What you see | Try this |
 |---|---|
-| The servo twitches, buzzes, or the Mega resets when it moves | Switch the power module on, and check its red wire goes from 5V to the bottom + rail and its black one from GND to the bottom − rail, both by column 61, the servo's red wire to the bottom + rail, which the module feeds, and the Mega's GND to the − rail. |
+| The servo twitches, buzzes, or the Mega resets when it moves | Switch the power module on, and check its red wire goes from 5V to the bottom + rail and its black one from GND to the bottom − rail, both by column 42, the servo's red wire to the bottom + rail, which the module feeds, and the Mega's GND to the − rail. |
 | A blank lit screen, or a row of blocks | Turn the contrast knob. |
 | `No card reader!` when it starts | Check the reader's seven wires, as in Lesson 34, and that its 3.3V pin goes to the Mega's 3.3V. |
 | Your card always gets `Unknown card` | Copy all eight digits of its number from the Serial Monitor exactly, with `0x` in front. |
 | Knocks never make stars | Check the tap sensor's S goes to A12, + to 5V and − to GND, and knock close to it. |
 | Stars appear, but the knock is always wrong | Knock the gaps more clearly: quick knocks well under half a second apart, and a pause of about a second. |
 | The latch opens the wrong way | Swap `lockedAngle` and `openAngle`, or remount the servo. |
-| No beeps | Check the buzzer's + leg, the longer one, is in f51, and the black wire goes from a51 to the − rail. |
+| No beeps | Check the buzzer's + leg, the longer one, is in f33, and the black wire goes from a33 to the − rail. |
 
 ??? note "How it works"
     While the door is open, `openFor ()` waits five seconds with

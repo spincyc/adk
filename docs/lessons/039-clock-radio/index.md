@@ -8,8 +8,8 @@ parts:
   - The FM radio (add-on, not in the kit), earbuds, 1 kΩ resistor and volume knob from Lesson 37
   - DS1307 clock module with its coin cell, from Lesson 32
   - Rotary encoder module
-  - 9 more female-to-male jumper wires
-  - 7 more jumper wires
+  - 4 more female-to-male jumper wires
+  - 12 more jumper wires
 ideas:
   - Putting a radio, a clock and two knobs together
   - A device as a set of states, again
@@ -82,20 +82,20 @@ begins.
     a CR2032.
 
 Keep the screen and the button from Lesson 38 just where they are, with the
-short black jumper from f51 to the − rail: the FM radio uses it again. Take
+short black jumper from f33 to the − rail: the FM radio uses it again. Take
 out the 433 MHz modules, their 1 kΩ and 2 kΩ resistors, and the rest of
 their wires. Then everything comes back to
 its home:
 
 - the **clock module** lies on its side above the board, as in Lessons 32
-  and 33, its GND and VCC dropping into the top − and + rails by columns 29
-  and 30;
-- the **rotary encoder** sits above the Mega on five wires, as in
-  Lesson 33;
-- the **FM radio** stands in row j, columns 45 to 52, as in Lesson 37, with
+  and 33, its GND and VCC dropping into the top − and + rails by columns 13
+  and 15;
+- the **rotary encoder** stands in row a, columns 15 to 19, as in
+  Lesson 29;
+- the **FM radio** stands in row j, columns 27 to 34, as in Lesson 37, with
   its 1 kΩ along row h and its four wires coming up from below;
-- the **volume knob** stands across the middle gap in columns 57 to 59, as
-  in Lesson 37, its A0 wire also coming round the bottom of the screen.
+- the **volume knob** stands across the middle gap in columns 39 to 41, as
+  in Lesson 37, just to the left of the contrast knob.
 
 <!-- bench -->
 
@@ -106,8 +106,8 @@ loose rather than coiled up.
 
 ??? info "The knobs, the button and the modules"
     The rotary knob is the encoder: CLK and DT on 18 and 19, its push switch
-    on 22, + from the inner 5V pin at the top of the long header, GND from
-    the GND pin beside pin 13. The volume knob is the potentiometer on A0;
+    on 22, + from the top + rail by column 19 and GND from the top − rail
+    by column 18. The volume knob is the potentiometer on A0;
     the one beside the LCD only sets the contrast. The button on 23 is the
     radio's on and off switch.
 
@@ -191,10 +191,10 @@ and the time gone by, so the whole fade shrinks to fit.
 |---|---|
 | The screen says **No clock found!** | Check the clock's SDA goes to pin 20 and SCL to pin 21, as in Lesson 32. |
 | The time is wrong | The clock keeps whatever time it was set to: see Lesson 32. |
-| The bottom row stays at ` 87.5` with no name, and the radio is silent | Try Lesson 37's sketch: it says whether the radio answers. Check pins 40, 41 and 42, the 1 kΩ from h47 to h52, and the radio's 3.3V. |
+| The bottom row stays at ` 87.5` with no name, and the radio is silent | Try Lesson 37's sketch: it says whether the radio answers. Check pins 40, 41 and 42, the 1 kΩ from h29 to h34, and the radio's 3.3V. |
 | The radio never comes on by itself | The alarm only starts as a new minute begins, so set it at least a minute ahead, and press the rotary knob until the bottom row shows the station again. It won't start if the radio is already on. |
 | It comes on, but stays silent | Turn the volume knob up: the fade climbs to the knob's volume, and 0 is silent. |
-| The button does nothing | It must straddle the gap in columns 38 to 40, with pin 23's wire in j38 and the black jumper from a40 to the − rail. |
+| The button does nothing | It must straddle the gap in columns 8 to 10, with pin 23's wire in j8 and the black jumper from a10 to the − rail. |
 | Turning the rotary knob goes the wrong way | Swap its CLK and DT wires, on pins 18 and 19. |
 | A row of solid blocks, or a blank lit screen | Turn the contrast knob beside the LCD, not the volume knob. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |

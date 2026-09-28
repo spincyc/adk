@@ -1,5 +1,5 @@
 # Lesson 11's display circuit, kept hole for hole (the rails joined in
-# column 6, the 74HC595 in columns 18-25, the resistors, and the four-digit
+# column 41, the 74HC595 in columns 18-25, the resistors, and the four-digit
 # display in columns 51-56), with the controls added: the buttons on pins
 # 22, 23 and 24 at their homes, and the active buzzer on pin 12 at its home
 # beside the four-digit display, clear of the wires rising over the gap.
@@ -18,8 +18,6 @@ for pin, column, exit, rise, lane in ((22, 2, 0.80, 4.45, -0.20), (23, 8, 0.85, 
                        via=[(4.20, exit), (rise, exit), (rise, lane), (X (column), lane)])
 
 bench.stage ("the 74HC595")
-bench.wire ("T-6", "B-6")
-
 bench.chip ("74HC595", first=18)
 bench.wire ("j18", "T+18")
 bench.wire ("37", "j20", via=[(4.95, 1.50), (4.95, 0.45), (X (20), 0.45)])
@@ -81,8 +79,8 @@ bench.wire ("41", "j54", via=[(4.85, 1.70), (4.85, 0.25), (X (54), 0.25)])
 bench.wire ("42", "j55", via=[(4.20, 1.75), (4.80, 1.75), (4.80, 0.20), (X (55), 0.20)])
 bench.wire ("43", "a56")
 
-# The active buzzer on pin 12, at its home beside the four-digit display.
-bench.home_buzzer ("active")
+# Pin 12 crosses above the display's wires, leaving room for the buzzer's label.
+bench.home_buzzer ("active", via=[(1.6, -0.4), (8.8, -0.4)])
 
 # Readings to take with a multimeter: the dot's segment line, high only
 # while digit 3 has its turn, and the start/stop button's pin.

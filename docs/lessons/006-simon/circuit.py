@@ -24,7 +24,7 @@ bench.home_led ("28", "green", via=[(4.15, 1.05), (4.35, 1.05), (4.35, 1.25), (7
 
 bench.home_led ("29", "blue", via=[(4.25, 1.10), (4.25, 1.35), (7.6, 1.35)])
 
-bench.home_buzzer ("passive", via=[(1.80, 0.05), (8.65, 0.05)])
+bench.home_buzzer ("passive")
 
 # Readings to take with a multimeter in your turn, while a button is held
 # and its light stays on: each color keeps its own voltage.

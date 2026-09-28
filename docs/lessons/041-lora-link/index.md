@@ -213,10 +213,10 @@ eight times the size of the two bytes here, but it needs no key to read it.
 
 | What you see | Try this |
 |---|---|
-| `No reply from A`, or from B | Is the power module on, with its LED lit? Check its red wire goes from its 5V pin to the bottom + rail and its black one from GND to the bottom − rail, both by column 61. Check that module's VCC and GND, its M0 and M1 into f and g of column 57 (A) or 48 (B) with pin 40 or 42 in j above them, and its AUX into f52 (A) or f43 (B) with pin 41 or 43 in j above it. |
-| Still no reply | Check TXD and RXD aren't swapped: TXD goes up to f53 (A) or f44 (B), RXD to c55 (A) or c46 (B). Check the divider, as in Lesson 40. |
-| Still no reply, though every wire is right | That module's own pull-ups may be too weak to lift M0 and M1 when the Mega lets them go. Unplug, then add a 10 kΩ resistor (brown, black, black, red, brown) from h57 to h60 for module A, or from h48 to h51 for B, and a wire from the Mega's 3.3V pin to j60 or j51. It holds M0 and M1 firmly at 3.3 V, and the Mega can still pull them low. |
-| `A sends`, but B hears nothing | Check module B's TXD in f44 and pin 15's wire in j44, and that both aerials are on. |
+| `No reply from A`, or from B | Is the power module on, with its LED lit? Check its red wire goes from its 5V pin to the bottom + rail and its black one from GND to the bottom − rail, both by column 42. Check that module's VCC and GND, its M0 and M1 into f and g of column 39 (A) or 30 (B) with pin 40 or 42 in j above them, and its AUX into f34 (A) or f25 (B) with pin 41 or 43 in j above it. |
+| Still no reply | Check TXD and RXD aren't swapped: TXD goes up to f35 (A) or f26 (B), RXD to c37 (A) or c28 (B). Check the divider, as in Lesson 40. |
+| Still no reply, though every wire is right | That module's own pull-ups may be too weak to lift M0 and M1 when the Mega lets them go. Unplug, then add a 10 kΩ resistor (brown, black, black, red, brown) from h39 to h42 for module A, or from h30 to h33 for B, and a wire from the Mega's 3.3V pin to j42 or j33. It holds M0 and M1 firmly at 3.3 V, and the Mega can still pull them low. |
+| `A sends`, but B hears nothing | Check module B's TXD in f26 and pin 15's wire in j26, and that both aerials are on. |
 | Nothing is sent at all | The DHT11 hasn't given a good reading: check S goes to pin 16, + to the top + rail by column 36 and − to the top − rail by column 37. |
 | A blank lit screen, or a row of blocks | Turn the contrast knob beside the LCD. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |

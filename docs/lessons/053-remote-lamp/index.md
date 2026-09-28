@@ -102,7 +102,7 @@ bridge's home, just as in Lesson 52.
 ### Board A: the eye
 
 Keep the screen. Take the knob out, with its three wires. The IR receiver
-sits at its home beside the screen, above the board over columns 28 to 30,
+sits above the board over columns 28 to 30, to the left of the screen,
 as in Lesson 24, and takes its power from the top rails below it. The
 wires from pins 14 and 15 go over the top of it.
 

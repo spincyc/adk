@@ -84,10 +84,10 @@ wires, so its GND and VCC wires drop straight into the top rails. Its SDA and
 SCL wires come over the top from pins 20 and 21.
 
 ??? info "How the LCD is wired"
-    The LCD is the one from Lesson 13, lying off the bottom edge of the board
-    so its screen reads the right way up. That puts it over the bottom rails,
-    so its power comes from the top rails, carried down by the red and black
-    wires in columns 9, 10 and 13. The knob's outer legs go to the top
+    The LCD is the one from Lesson 13, at the far right, with its body off the
+    bottom edge and beyond the end of the board. It covers the bottom rails
+    beneath its header, so its power comes from the top rails, carried down
+    by the red and black wires in columns 47, 48 and 51. The knob's outer legs go to the top
     − and + rails, and its middle leg sets the contrast on pin 3, V0.
     The backlight, pins 15 and 16, gets 5 V through the 220 Ω resistor that
     bridges the middle gap.
@@ -195,7 +195,7 @@ cell's flat top, the side marked **+**, and nothing else.
 What the numbers tell you:
 
 - **The clock's supply** is the Mega's 5 V, carried along the top + rail
-  from the red wire by column 3 to the clock's VCC wire by column 30, and to
+  from the red wire by column 3 to the clock's VCC wire by column 15, and to
   the screen.
 - **The coin cell** gives less: about 3 V, or a little more from a
   rechargeable LIR2032. While the rails give more than the cell, the

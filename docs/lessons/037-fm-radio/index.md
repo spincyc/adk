@@ -12,8 +12,7 @@ parts:
   - Rotary encoder module
   - The kit's second 10 kΩ potentiometer, for the volume
   - 1 kΩ resistor (brown, black, black, brown, brown)
-  - 5 more female-to-male jumper wires
-  - 8 more jumper wires
+  - 13 more jumper wires
 ideas:
   - How an FM station sends sound, and its name
   - Tuning, and seeking the next station
@@ -115,13 +114,13 @@ pins have to be soldered on before the board can stand in the breadboard.
 If you haven't learned to solder yet, ask someone who has, or buy a board
 with its pins already fitted.
 
-The radio stands in row j, columns 45 to 52, its board lying back over the
+The radio stands in row j, columns 27 to 34, its board lying back over the
 top rails, like the accelerometer in Lesson 28. Its three signal wires, and
-its 3.3 V, come round the bottom of the screen and up into row f. The volume
-knob stands across the middle gap beside the screen, as the contrast knob
-does: its two outer legs in row f, its wiper on its own in row d. The rotary
-encoder sits above the Mega on its five wires, as in Lesson 33: the radio's
-wires, coming up into row f, need the columns where it stood in Lesson 29.
+its 3.3 V, come up into row f below the radio. The volume knob stands
+across the middle gap in columns 39 to 41, just left of the contrast knob:
+its two outer legs in row f, its wiper on its own in row d. The rotary
+encoder stands in row a, columns 15 to 19, as in Lesson 29, with its power
+jumpers reaching the top rails.
 
 <!-- bench -->
 
@@ -140,7 +139,7 @@ wires, coming up into row f, need the columns where it stood in Lesson 29.
     | GND | Ground | The bottom − rail |
     | 3.3V | Power | The Mega's 3.3V pin |
 
-    The 1 kΩ lies along row h, from h47 in RST's column to h52 in the
+    The 1 kΩ lies along row h, from h29 in RST's column to h34 in the
     3.3V column. Plug the earbuds into the socket on the side of the board.
 
 When you are done, these are the connections your circuit makes:
@@ -214,10 +213,10 @@ of the wave.
 
 | What you see | Try this |
 |---|---|
-| The screen says **No radio found!** | Check pins 40, 41 and 42 go to f50, f49 and f47, and that the radio's 3.3V and GND are wired. The 1 kΩ must join h47 to h52: without it the chip never wakes. |
+| The screen says **No radio found!** | Check pins 40, 41 and 42 go to f32, f31 and f29, and that the radio's 3.3V and GND are wired. The 1 kΩ must join h29 to h34: without it the chip never wakes. |
 | Seek finds nothing, or only hiss | Plug the earbuds in all the way: they are the aerial. Try by a window, away from the computer. |
 | Turning skips stations you know are there | Check `band`: only in the Americas should it be `Americas`, whose steps are 0.2 MHz. |
-| The volume knob does nothing | Check A0's wire goes to a58, in the wiper's column, and the knob's jumpers from j57 to the top − rail and j59 to the top + rail. |
+| The volume knob does nothing | Check A0's wire goes to a40, in the wiper's column, and the knob's jumpers from j39 to the top − rail and j41 to the top + rail. |
 | Turning the rotary knob goes the wrong way | Swap its CLK and DT wires, on pins 18 and 19. |
 | It takes two clicks to move one step | Your encoder steps differently: give it a third number, as in Lesson 29, `adk::RotaryEncoder dial {18, 19, 2};`, and try 2 or 1. |
 | The name never appears | Not every station sends one. Try a strong, big station. |
@@ -251,8 +250,8 @@ of the wave.
 
 ## Make it yours
 
-1. **Seek down.** Wire a push button on pin 23, at its home beside the
-   screen in columns 38 to 40, and make it call `radio.seekDown ()`.
+1. **Seek down.** Wire a push button on pin 23, at its home near the
+   Mega, in columns 8 to 10, and make it call `radio.seekDown ()`.
 2. **Favorites.** Make an `adk::Array` of your three favorite stations, in
    tenths of a megahertz, such as `988`. Make pressing the rotary knob go to
    the next one with `radio.tune ()`, instead of seeking.

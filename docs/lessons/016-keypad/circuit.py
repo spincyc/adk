@@ -12,9 +12,9 @@ bench.home_keypad ()
 # D4, which keep the second half of the last character sent. The black
 # probe goes in the column of the backlight's K, which is GND, since the
 # bottom − rail lies under the screen.
-bench.measure ("D7, from pin 36", red="36", black="c24", expect="0 V", when="just after typing 5")
-bench.measure ("D6, from pin 35", red="35", black="c24", expect="about 5 V",
+bench.measure ("D7, from pin 36", red="36", black="c62", expect="0 V", when="just after typing 5")
+bench.measure ("D6, from pin 35", red="35", black="c62", expect="about 5 V",
                when="just after typing 5")
-bench.measure ("D5, from pin 34", red="34", black="c24", expect="0 V", when="just after typing 5")
-bench.measure ("D4, from pin 33", red="33", black="c24", expect="about 5 V",
+bench.measure ("D5, from pin 34", red="34", black="c62", expect="0 V", when="just after typing 5")
+bench.measure ("D4, from pin 33", red="33", black="c62", expect="about 5 V",
                when="just after typing 5")
