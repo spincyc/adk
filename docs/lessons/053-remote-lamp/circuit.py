@@ -28,9 +28,9 @@ receiver = Bench ("Board A: an IR receiver on pin 2, the LCD on pins 31 to 36, a
 receiver.screen (text=("Sent 0x0C, #3", "Lamp is on"))
 modem (receiver, lanes=(-2.15, -2.05))
 receiver.module ("ir_receiver", name="eye", at=(7.89, -1.7))
-receiver.wire ("2", "eye.S", via=[(2.75, -0.2), (8.1, -0.2)])
+receiver.wire ("2", "eye.S", via=[(2.75, -0.2), (8.3, -0.2)])
 receiver.wire ("eye.+", "T+29")
-receiver.wire ("eye.−", "T-30")
+receiver.wire ("eye.−", "T-28")
 receiver.closeup (26, 50)
 
 repeater = Bench ("Board B: a relay on pin 11 switching a 9 V battery, 1 kΩ resistor and LED; an "

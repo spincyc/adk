@@ -10,9 +10,9 @@ bench = Bench ("A room alarm: an LCD on 31 to 36, a PIR sensor on A12, an IR rec
 bench.screen (text=("ARMED", "Code:"))
 
 bench.module ("ir_receiver", name="receiver", at=(7.89, -1.7))
-bench.wire ("2", "receiver.S", via=[(2.75, -0.2), (8.1, -0.2)])
+bench.wire ("2", "receiver.S", via=[(2.75, -0.2), (8.3, -0.2)])
 bench.wire ("receiver.+", "T+29")
-bench.wire ("receiver.−", "T-30")
+bench.wire ("receiver.−", "T-28")
 
 bench.home_rgb_led (via=([(2.45, -2.0), (9.4, -2.0)],
                           [(2.35, -2.1), (9.7, -2.1)],

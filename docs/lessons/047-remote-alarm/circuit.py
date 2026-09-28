@@ -71,7 +71,7 @@ den.home_rtc ()
 den.module ("ir_receiver", name="receiver", at=(8.89, -1.7))
 den.wire ("2", "receiver.S")
 den.wire ("receiver.+", "T+39")
-den.wire ("receiver.−", "T-40")
+den.wire ("receiver.−", "T-37")
 
 den.home_buzzer ("active", via=[(1.69, -2.3), (10.4, -2.3)])
 

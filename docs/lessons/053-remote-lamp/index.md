@@ -228,7 +228,7 @@ LED away and the echo stops.
 | What you see | Try this |
 |---|---|
 | **No word from B** | Is Board B powered and running **Repeater**? Its **L** LED lights when it hears Board A. Check both modems' wiring against the steps. |
-| Pressing buttons changes nothing on Board A's screen | Check the receiver's S goes to pin 2, its + to the top + rail (T+29) and its − to the top − rail (T-30). Aim at its dark window, from closer. |
+| Pressing buttons changes nothing on Board A's screen | Check the receiver's Y pin (the signal) goes to pin 2, its R to the top + rail (T+29) and its G to the top − rail (T-28). Aim at its dark window, from closer. |
 | **Lamp is on**, but the lamp is dark | Check the battery's red lead is tight in COM, the wire from NO goes to j13, the LED's long leg is in b13, and the battery's black lead is in a14. Is the battery flat? |
 | The relay never clicks | Check S goes to pin 11, + to the inner 5V pin at the top of the long header, and − to the inner GND pin at its other end. |
 | The lamp is on while the relay is off | The wire is in NC. Move it to NO. |

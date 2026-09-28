@@ -6,7 +6,8 @@ namespace adk {
 
     // An infrared receiver module (KY-022, or a bare VS1838B) and the kit's
     // remote control, which sends NEC codes. Wire S to an interrupt pin (2,
-    // 3, 18, 19, 20 or 21), + to 5 V and - to GND.
+    // 3, 18, 19, 20 or 21), + to 5 V and - to GND. The kit's module prints
+    // them Y, R and G, in the order G, R, Y from the left.
     //
     // The module's output is low while infrared arrives. An interrupt times
     // every edge and decodes the code as it comes, so the sketch never waits

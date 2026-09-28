@@ -9,9 +9,11 @@ namespace adk {
     // steps of 1/16 degree, and takes 750 ms over each reading.
     //
     //   Module  Mega
-    //   S       the pin
-    //   +       5V
-    //   -       GND
+    //   Y       the pin
+    //   R       5V
+    //   G       GND
+    //
+    // The module prints its pins G, R, Y, from the left, as they stand.
     //
     // The module carries the 4.7 kohm pull-up resistor the data line needs. A
     // bare sensor or probe needs one fitted from its data wire to 5 V, and

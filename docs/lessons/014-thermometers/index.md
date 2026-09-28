@@ -96,7 +96,7 @@ reading and is good to ±0.5 °C, the best of the three.
     The DHT11 and the 18B20 never push their data wire high. They only pull it
     low, or let go. Something has to bring it back up when they let go, and
     that is a **pull-up resistor** from the data wire to 5 V. Each module has
-    one soldered on its little board, so S, + and − are all it needs. A bare
+    one soldered on its little board, so its three pins are all it needs. A bare
     DHT11 or 18B20, without the board, needs a 10 kΩ or 4.7 kΩ resistor added
     from its data pin to 5 V.
 
@@ -160,7 +160,7 @@ settles over the next minute; its temperature moves much less.
 | `NTC` shows about −77 | A2 reads 0: the thermistor isn't connected. Check its legs are in f40 and e40, and the red wire from j40 to the top + rail. |
 | `NTC` shows hundreds of degrees | A2 reads 1023: the thermistor is shorted, or the 10 kΩ resistor isn't connected to the − rail. Check it goes from c40 to c43, and the black wire from a43 to the bottom − rail. |
 | `NTC` is ten degrees or more away from the others | Check the resistor is 10 kΩ (brown, black, black, red, brown), not 1 kΩ. |
-| `DS --` with the 18B20 fitted | Check its S goes to pin 17, and its + and − aren't swapped. |
+| `DS --` with the 18B20 fitted | Its pins are printed **Y**, **R** and **G**: check Y (the signal) goes to pin 17, R to the top + rail and G to the top − rail. |
 | The screen is blank or shows blocks | Go back to Lesson 13's table: the LCD wiring or the contrast knob. |
 
 ??? note "How it works"

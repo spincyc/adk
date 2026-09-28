@@ -550,12 +550,12 @@ class Bench:
     def home_encoder (self, lift=0.0):
         lane = lambda y: round (y - lift, 2)
         self.module ("encoder", at=(3.0, -2.1))
-        self.wire ("18", "encoder.CLK", via=[(3.55, lane (0.55)), (3.2, lane (0.55))])
-        self.wire ("19", "encoder.DT", via=[(3.65, lane (0.45)), (3.3, lane (0.45))])
-        self.wire ("22", "encoder.SW", via=[(4.3, 0.8), (4.3, lane (0.35)), (3.4, lane (0.35))])
+        self.wire ("18", "encoder.CLK", via=[(3.55, lane (0.25)), (3.6, lane (0.25))])
+        self.wire ("19", "encoder.DT", via=[(3.65, lane (0.35)), (3.5, lane (0.35))])
+        self.wire ("22", "encoder.SW", via=[(4.3, 0.8), (4.3, lane (0.45)), (3.4, lane (0.45))])
         self.wire ("5V.long", "encoder.+",
-                   via=[(4.25, 0.7), (4.25, lane (0.25)), (3.5, lane (0.25))])
-        return self.wire ("GND.top", "encoder.GND", via=[(1.5, lane (0.15)), (3.6, lane (0.15))])
+                   via=[(4.25, 0.7), (4.25, lane (0.55)), (3.3, lane (0.55))])
+        return self.wire ("GND.top", "encoder.GND", via=[(1.5, lane (0.15)), (3.2, lane (0.15))])
 
     # The servo below the board, its plug under columns 52 to 54: + into
     # B+53 and − into B-54, fed by the power module's bottom rails, and its
@@ -681,10 +681,10 @@ class Bench:
     # The 18B20 temperature module above the board: S from 17, + and − from
     # the top rails in columns 27 and 28.
     def home_ds18b20 (self):
-        self.module ("sensor", "probe", at=(7.68, -1.15), label="18B20")
+        self.module ("sensor", "probe", at=(7.68, -1.15), label="18B20", pins=("G", "R", "Y"))
         self.wire ("17", "probe.S")
         self.wire ("probe.+", "T+27")
-        return self.wire ("probe.−", "T-28")
+        return self.wire ("probe.−", "T-25")
 
     # The ultrasonic sensor above the Mega, facing away: Trig and Echo from
     # 14 and 15, VCC from the inner 5V pin, GND to the top − rail.
@@ -757,7 +757,7 @@ class Bench:
     def home_pir (self):
         self.module ("pir", name="pir", at=(1.26, 3.8), facing="up")
         self.wire ("A12", "pir.OUT", via=[(3.49, 3.05), (1.89, 3.05)])
-        self.wire ("5V.power", "pir.VCC", via=[(1.69, 2.9), (1.99, 2.9)])
+        self.wire ("5V.power", "pir.VCC", via=[(1.69, 2.9), (1.79, 2.9)])
         return self.wire ("GND.power", "pir.GND")
 
     # The tap sensor below the Mega's left end: S on A12, + and − from the
@@ -1206,7 +1206,7 @@ class Bench:
         pin = self.module_pin (name)[1].name.upper ()
         if pin in ("−", "-", "GND", "G", "VSS"):
             return "ground"
-        if pin in ("+", "VCC", "5V", "+5V", "3.3V", "VDD"):
+        if pin in ("+", "VCC", "5V", "+5V", "3.3V", "VDD", "R"):
             return "power"
         return None
 

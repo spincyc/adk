@@ -166,8 +166,8 @@ outer pair feed the rails.
 | Servo | Below the board, its plug under columns 52–54; on a bridge board, lower down, below the modem, its signal wire running under it | + into B+53, − into B-54 |
 | Keypad | High above the gap between the Mega and the breadboard, its eight wires rising from pins 22–29 | — |
 | DHT11 | Above the board, its pins over columns 35–37 | + into T+36, − into T-37 |
-| 18B20 | Above the board, its pins over columns 26–28 | + into T+27, − into T-28 |
-| IR receiver | Above the gap between the Mega and the breadboard; beside the screen, above columns 28–30 | The inner 5V and GND pins; beside the screen, T+29 and T-30 |
+| 18B20 | Above the board, its pins (printed G, R, Y) over columns 26–28 | R (+) into T+27, G (−) into T-25 |
+| IR receiver | Above the gap between the Mega and the breadboard; beside the screen, above columns 28–30 (its pins printed G, R, Y) | The inner 5V and GND pins; beside the screen, R into T+29 and G into T-28 |
 | PIR sensor | Below the Mega, under the power header | The power header's 5V and GND |
 | Obstacle and beam-break sensors | Below the board, under columns 45 and 36 | From the bottom rails beside them |
 | Obstacle sensor, beside the bridge's modem | Above the board, pins over columns 35–38 (the DHT11's place) | + into T+36, GND into T-35 |

@@ -433,10 +433,12 @@ class Keypad (Kind):
 
 
 class IrReceiver (Kind):
-    # KY-022: a VS1838B receiver on a small board.
+    # KY-022: a VS1838B receiver on a small board, its pins printed G, R, Y
+    # from the left, the receiver facing you: Y is the signal, R the +.
     title  = "IR receiver"
-    pins   = ("S", "+", "−")
-    pin_modes = {"S": "input"}
+    pins   = ("G", "R", "Y")
+    notes  = {"G": "−", "R": "+", "Y": "signal"}
+    pin_modes = {"Y": "input"}
     width, height = 62, 80
 
     def draw (self, pencil):
@@ -623,9 +625,12 @@ class Stepper (Kind):
 
 
 class Encoder (Kind):
-    # KY-040: a rotary encoder with a knurled shaft, 19 x 32 mm.
+    # KY-040: a rotary encoder with a knurled shaft, 19 x 32 mm. Its pins,
+    # seen from the knob's side with the pins down, run GND, +, SW, DT, CLK
+    # from the left: the board prints them CLK to GND reading down beside
+    # the header.
     title  = "rotary encoder"
-    pins   = ("CLK", "DT", "SW", "+", "GND")
+    pins   = ("GND", "+", "SW", "DT", "CLK")
     pin_modes = {"CLK": "input", "DT": "input", "SW": "input"}
     width, height = 75, 126
 
@@ -648,9 +653,11 @@ class Encoder (Kind):
 
 
 class Pir (Kind):
-    # HC-SR501: 32 x 24 mm under a 23 mm Fresnel dome.
+    # HC-SR501: 32 x 24 mm under a 23 mm Fresnel dome. Seen from the dome's
+    # side, pins down, they run GND, OUT, VCC; their names are printed
+    # under the dome.
     title  = "PIR sensor"
-    pins   = ("VCC", "OUT", "GND")
+    pins   = ("GND", "OUT", "VCC")
     pin_modes = {"OUT": "input"}
     width, height = 126, 96
 
@@ -679,7 +686,8 @@ class Sensor (Kind):
     # four-pin ones a comparator with its sensitivity trimmer.
     title  = "sensor"
     pins   = ("S", "+", "−")
-    pin_modes = {"S": "input", "OUT": "input", "DO": "input", "AO": "input"}
+    notes  = {"G": "−", "R": "+", "Y": "signal"}
+    pin_modes = {"S": "input", "Y": "input", "OUT": "input", "DO": "input", "AO": "input"}
     width, height = 64, 100
     flexible = True
 
@@ -1216,12 +1224,13 @@ KINDS = {
 }
 
 # Other names a wire may use for a pin, when the module has no pin by that
-# name: GND for −, S for OUT, VCC for + or VDD. A voltage names a supply pin
-# only of a module that runs on it: 5V finds the servo's +, but no pin of
-# the LoRa modem, whose VDD takes 3.3 V.
+# name: GND for −, S for OUT, VCC for + or VDD. Some boards print their
+# pins G, R and Y: GND, +, and the signal. A voltage names a supply pin only
+# of a module that runs on it: 5V finds the servo's +, but no pin of the
+# LoRa modem, whose VDD takes 3.3 V.
 GROUND  = {"−", "-", "GND", "G"}
-SIGNAL  = {"S", "SIG", "SIGNAL", "OUT"}
-SUPPLY  = {"+", "VCC", "VDD"}
+SIGNAL  = {"S", "SIG", "SIGNAL", "OUT", "Y"}
+SUPPLY  = {"+", "VCC", "VDD", "R"}
 VOLTAGE = {"5V": {"5V", "+5V"}, "3.3V": {"3.3V", "3V3", "+3.3V"}}
 
 

@@ -27,7 +27,7 @@ nursery.wire ("5V.power", "sound.+")
 nursery.wire ("GND.power", "sound.G")
 nursery.wire ("A5", "sound.AO")
 
-nursery.module ("sensor", name="water", at=(2.35, 3.8), pins=("S", "+", "−"),
+nursery.module ("sensor", name="water", at=(2.35, 3.8), pins=("−", "+", "S"),
                 label="water sensor", facing="up")
 nursery.wire ("A6", "water.S")
 nursery.wire ("A7", "water.+")
@@ -52,7 +52,7 @@ parent.home_rtc ()
 parent.module ("ir_receiver", name="receiver", at=(8.89, -1.7))
 parent.wire ("2", "receiver.S")
 parent.wire ("receiver.+", "T+39")
-parent.wire ("receiver.−", "T-40")
+parent.wire ("receiver.−", "T-37")
 
 parent.home_buzzer ("passive", via=[(1.9, -2.3), (10.4, -2.3)])
 

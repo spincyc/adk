@@ -194,7 +194,7 @@ everything back.
 | Board B always says `No news` and Board A's green LED stays off | The boards don't hear each other. Check each modem as in Lesson 43: TXD into f44, pin 15 into j44, pin 14 into j46 with the 1 kΩ and 2 kΩ, RXD into c46, GND into B-42 and VDD on the 3.3V pin. |
 | Board A's green LED is on, but Board B says `No news` | Board B hears nothing, but Board A hears Board B: check Board B's TXD and pin 15, and Board A's RXD and its divider. |
 | `Air 0.0°C  0%` | The DHT11 on Board A isn't answering: check S to pin 16, + to T+36, − to T-37, and wait two seconds. |
-| `DS 0.0` | Check the 18B20's S goes to pin 17, and its + and − aren't swapped. |
+| `DS 0.0` | Check the 18B20's Y pin (the signal) goes to pin 17, its R to the top + rail and its G to the top − rail. |
 | `NTC` shows about −77 or hundreds | As in Lesson 14: the thermistor's legs in f33 and e33, the red wire from j33 to the top + rail, the 10 kΩ from c33 to c36. |
 | `Light` stays at 0 or 100 | Check the photoresistor in f40 and e40, the red wire from j40 to T+40, the 10 kΩ from c40 to c43, and A1's wire in a40. |
 | The time is `00:00:00`, or wrong | Check the clock module's SDA on pin 20 and SCL on 21. Lesson 32 shows how to set it. |
