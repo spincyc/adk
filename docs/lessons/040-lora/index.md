@@ -31,9 +31,13 @@ Here the two modems are a hand's width apart, but LoRa is made to reach a
 kilometer or more.
 
 !!! warning "915 MHz is for the Americas and Australia"
-    These modems send on 915 MHz, which anyone may use in the Americas and
-    Australia. Europe and many other countries use 868 MHz instead, with
-    rules of their own. Receiving is fine anywhere; before you send, read
+    These modems send on 915 MHz, which anyone may use in the USA and
+    Canada. Australia's band starts at 915 MHz, so there move both modems
+    to its middle: `adk::LoraModem modemA {Serial1, 1, {.band = 921500000}};`,
+    and the same for B. Europe uses 868 MHz instead, at lower power and
+    for 1% of the time at most: give both modems
+    `{.band = 868100000, .power = 14}`. Other countries have rules of their
+    own. Receiving is fine anywhere; before you send, read
     [Radios](../../safety.md#radios) on the safety page.
 
 ## The idea
@@ -81,9 +85,10 @@ dB. Most radios need a margin well above 0; LoRa's chirps can still be heard
 down to about −15.
 
 **3.3 V.** The modems work on 3.3 V, like the FM radio and the little
-transmitter in Lessons 37 and 38. Each draws about 50 mA while it sends,
-about as much as the Mega's 3.3V pin can give at all, so the modems take
-their power from the power module, with its bottom jumper set to **3.3V**.
+transmitter in Lessons 37 and 38. Each draws up to about 50 mA while it
+sends, by REYAX's datasheet, about as much as the Mega's 3.3V pin can give
+at all, so the modems take their power from the power module, with its
+bottom jumper set to **3.3V**.
 The Mega's TX pins reach them through a divider, as the transmitter's DAT
 did in Lesson 38:
 

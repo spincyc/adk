@@ -1,7 +1,8 @@
 // Lesson 55: Reliability Meter
 // Turn the dial to choose how many letters each message carries, and press
-// it to send ten such messages through the air. The screen shows how long
-// one message takes to send, and how many of the ten came back whole.
+// it to send five such messages through the air, each after the
+// transmitter's rest. The screen shows how long one message takes to send,
+// and how many of the five came back whole.
 
 #include <Adk.h>
 
@@ -11,9 +12,10 @@ adk::RadioTransmitter transmitter {46};
 adk::RotaryEncoder    dial        {18, 19};
 adk::Button           click       {22};
 adk::Stopwatch        onAir;          // how long the latest message took
-adk::Timer            pause;          // a breath between messages
+adk::Timer            pause;          // a breath after the last message
+adk::Every            refresh {250};  // the countdown on the screen
 
-constexpr int tries = 10;    // messages in one test: 5 seconds at most
+constexpr int tries = 5;     // messages in one test
 
 int  length  = 20;       // letters in each message, from 5 to 60
 int  sent    = 0;        // messages sent in this test
@@ -45,7 +47,6 @@ void loop ()
         testing = true;
         sent    = 0;
         heard   = 0;
-        sendMessage ();
     }
 
     if (receiver.wasReceived () && message == receiver.text ())
@@ -53,30 +54,43 @@ void loop ()
         ++heard;
     }
 
-    // The message has gone: wait a moment for the receiver, then go on.
+    // Each message goes as soon as the transmitter has rested. Until then,
+    // the screen counts down.
+    if (testing && sent < tries)
+    {
+        if (transmitter.isReady ())
+        {
+            sendMessage ();
+        }
+        else if (refresh.ticked ())
+        {
+            showRest ();
+        }
+    }
+
+    // The message has gone: hold its time. After the last one, wait a
+    // moment for the receiver, then show what came back.
     if (onAir.isRunning () && !transmitter.isSending ())
     {
         onAir.stop ();
-        pause.start (50);
+
+        if (sent == tries)
+        {
+            pause.start (50);
+        }
     }
 
     if (pause.expired ())
     {
-        if (sent < tries)
-        {
-            sendMessage ();
-        }
-        else
-        {
-            testing = false;
-            tested  = true;
-            showLength ();
-        }
+        testing = false;
+        tested  = true;
+        showLength ();
     }
 }
 
-// A numbered message, #1 to #10, filled out with letters to its length,
-// so each one is different and exactly as long as the dial says.
+// A numbered message, #1 to #5, filled out with letters to its length, so
+// each one is different and exactly as long as the dial says. The screen
+// goes first, so the stopwatch times only the message.
 void sendMessage ()
 {
     ++sent;
@@ -88,9 +102,18 @@ void sendMessage ()
         adk::print (message, char ('a' + message.size () % 26));
     }
 
+    lcd.clear ();
+    adk::print (lcd, "Sent ", sent, " of ", tries);
     transmitter.send (message.c_str ());
     onAir.restart ();
-    adk::print (lcd.at (0, 1), "Sending ", sent, " of ", tries, "   ");
+}
+
+// The seconds left of the transmitter's rest, rounded up: when the next
+// message can go.
+void showRest ()
+{
+    long wait = (transmitter.restLeft () + 999) / 1000;
+    adk::print (lcd.at (0, 1), "Next in ", wait, " s   ");
 }
 
 // The length, how long one message took, and the last test's result.

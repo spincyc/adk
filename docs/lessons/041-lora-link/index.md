@@ -29,13 +29,15 @@ second Mega outdoors and you have a weather station that reports from the
 bottom of the garden.
 
 !!! danger "433 MHz needs a license in the USA and Canada"
-    These modules send on 434 MHz. In Europe, anyone may send there at up
-    to 10 mW, which is how ADK sets them. **In the USA and Canada, 433 MHz
-    is an amateur radio band: use these modules only if you, or the adult
-    you build with, hold an amateur radio license.** Without one, read
-    this lesson but don't build it, and carry on to Lesson 42 from your
-    Lesson 40 build: Lesson 40's modems do the same job on 915 MHz. Other
-    countries have rules of their own, so check yours first.
+    These modules send on 434 MHz. In Europe, anyone may send there for at
+    most a tenth of the time, at up to 10 mW, which is how ADK sets them.
+    **In the USA and Canada, 433 MHz is an amateur radio band: use these
+    modules only if you, or the adult you build with, hold an amateur
+    radio license.** The license holder must then send their call sign at
+    least every 10 minutes, so put it in the reports. Without a license,
+    read this lesson but don't build it, and carry on to Lesson 42 from
+    your Lesson 40 build: Lesson 40's modems do the same job on 915 MHz.
+    Other countries have rules of their own, so check yours first.
     [Radios](../../safety.md#radios) on the safety page has the details.
 
 ## The idea
@@ -67,8 +69,10 @@ The Mega reads it on pin 41, or 43, and waits for it before changing mode.
 410 MHz plus the channel's number. ADK chooses channel 24, which is 434 MHz,
 at the module's lowest power, 10 mW. It could do ten times that, 100 mW, the
 *20* in its name, but Europe allows 10 mW without a license, from
-433.05 MHz to 434.79 MHz. In dBm, from Lesson 40, 10 mW is 10 dBm and
-100 mW is 20 dBm.
+433.05 MHz to 434.79 MHz, sending for at most a tenth of the time. That
+10 mW counts what the aerial sends out, so keep to the aerials the
+modules come with. In dBm, from Lesson 40, 10 mW is 10 dBm and 100 mW is
+20 dBm.
 
 **Numbers as text.** The DHT11 gives two numbers, but the report goes as
 text: every digit, letter and space is one character, and each character is

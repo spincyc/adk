@@ -45,6 +45,22 @@ namespace adk {
         constexpr uint8_t  Everyone     = 0xFF;
         constexpr uint16_t Good         = 0xF0B8;   // what a message and its checksum add up to
 
+        // A symbol is six bits at 2000 bits a second. After each message the
+        // transmitter rests 30 times as long as the message took, and never
+        // less than 10 s, as 47 CFR 15.231(e) requires of a transmitter that
+        // sends data. After it starts, it rests as long as the longest
+        // message would need, 12.78 s.
+        constexpr Millis SymbolTime   = 3;
+        constexpr Millis ShortestRest = 10000;
+        constexpr Millis RestTimes    = 30;
+
+        constexpr Millis restAfter (uint8_t frameLength)
+        {
+            return max (ShortestRest, RestTimes * SymbolTime * (PreambleSymbols + 2 * frameLength));
+        }
+
+        constexpr Millis LongestRest = restAfter (RadioTransmitter::MaxLength + Overhead);
+
         // The CCITT checksum, least significant bit first, as avr-libc's
         // _crc_ccitt_update () works it out.
         uint16_t checksum (uint16_t crc, uint8_t data)
@@ -114,13 +130,17 @@ namespace adk {
     RadioReceiver*    RadioClock::receiver    = nullptr;
 
     RadioTransmitter::RadioTransmitter (Pin data)
-        : frame_   {}
-        , length_  (0)
-        , symbol_  (0)
-        , bit_     (0)
-        , tick_    (0)
-        , pin_     (data)
-        , sending_ (false)
+        : frame_      {}
+        , restLength_ (LongestRest)
+        , restStart_  (0)
+        , now_        (0)
+        , length_     (0)
+        , symbol_     (0)
+        , bit_        (0)
+        , tick_       (0)
+        , pin_        (data)
+        , rest_       (Rest::Due)
+        , sending_    (false)
     {
     }
 
@@ -155,7 +175,7 @@ namespace adk {
 
     bool RadioTransmitter::send (const uint8_t* bytes, uint8_t length)
     {
-        if (sending_ || length > MaxLength)
+        if (rest_ != Rest::Over || length > MaxLength)
         {
             return false;
         }
@@ -185,10 +205,12 @@ namespace adk {
         frame_[size++] = static_cast<uint8_t> (crc);
         frame_[size++] = static_cast<uint8_t> (crc >> 8);
 
-        length_ = size;
-        symbol_ = 0;
-        bit_    = 0;
-        tick_   = 0;
+        restLength_ = restAfter (size);
+        rest_       = Rest::Due;
+        length_     = size;
+        symbol_     = 0;
+        bit_        = 0;
+        tick_       = 0;
         barrier ();
         sending_ = true;
         return true;
@@ -208,6 +230,43 @@ namespace adk {
     bool RadioTransmitter::isSending () const
     {
         return sending_;
+    }
+
+    bool RadioTransmitter::isReady () const
+    {
+        return rest_ == Rest::Over;
+    }
+
+    Millis RadioTransmitter::restLeft () const
+    {
+        switch (rest_)
+        {
+            case Rest::Due:     return restLength_;
+            case Rest::Running: return restLength_ - (now_ - restStart_);
+            case Rest::Over:    return 0;
+        }
+
+        return 0;
+    }
+
+    // The rest counts from the first update that finds the message gone,
+    // never before it went, however long the sketch took to look. A new
+    // transmitter rests from its first update for as long as any message
+    // needs, so a reset straight after a message can't cut its rest short.
+    void RadioTransmitter::update (Millis now)
+    {
+        now_ = now;
+
+        if (rest_ == Rest::Due && !sending_)
+        {
+            restStart_ = now;
+            rest_      = Rest::Running;
+        }
+
+        if (rest_ == Rest::Running && now - restStart_ >= restLength_)
+        {
+            rest_ = Rest::Over;
+        }
     }
 
     // Every sample; a new bit every eighth. Each byte goes out as two
@@ -259,6 +318,7 @@ namespace adk {
         }
     }
 
+    // A message cut short still rests as long as a whole one would have.
     void RadioTransmitter::stop ()
     {
         sending_ = false;

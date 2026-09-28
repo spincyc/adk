@@ -18,8 +18,9 @@ namespace adk {
     //   GND -> GND; the board runs from its own USB cable
     //
     // Its pins take 3.3 V, so the Mega's TX is divided down. The node sends
-    // what it has been given once the line has been quiet for a second, so
-    // messages go at most one every 1.5 s.
+    // what it has been given once the line has been quiet for its serial
+    // timeout, 250 ms when that is left at 0, so a message goes at most
+    // every 1.5 s, which leaves plenty of room between them.
     struct MeshNode : Object, Link
     {
         explicit MeshNode (HardwareSerial& port);

@@ -1,7 +1,8 @@
 // Lesson 38: Radio Messages
 // Press the button, or type a line in the Serial Monitor, and the
 // transmitter sends it at 433 MHz. Every message the receiver hears shows
-// on the LCD, with a count.
+// on the LCD, with a count. After each message the transmitter rests for
+// at least 10 seconds, because the law lets it send only now and then.
 
 #include <Adk.h>
 
@@ -29,9 +30,8 @@ void loop ()
 {
     adk::update ();
 
-    if (button.wasPressed ())
+    if (button.wasPressed () && send (messages[next]))
     {
-        send (messages[next]);
         next = (next + 1) % messages.size ();
     }
 
@@ -46,18 +46,24 @@ void loop ()
     }
 }
 
-// The transmitter turns a message down while the last one is still going
-// out, so say which happened.
-void send (const char* text)
+// Send a message, and say whether it went. The transmitter turns one down
+// while the last is going out and during the rest after it, so then say
+// how long until it can send again, in whole seconds, rounded up.
+bool send (const char* text)
 {
     if (transmitter.send (text))
     {
         adk::println (Serial, "Sent: ", text);
+        return true;
     }
-    else
-    {
-        adk::println (Serial, "Still sending, try again");
-    }
+
+    long wait = (transmitter.restLeft () + 999) / 1000;
+
+    lcd.clear ();
+    lcd.print ("Resting...");
+    adk::print (lcd.at (0, 1), "Wait ", wait, " s");
+    adk::println (Serial, "Resting: send again in ", wait, " s");
+    return false;
 }
 
 // The count on the top row and the message below it. The screen has room

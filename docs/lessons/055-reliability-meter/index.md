@@ -1,7 +1,7 @@
 ---
 lesson: 55
-promise: Measure a radio link. Choose how long each message is, send ten, and see how long each took and how many got through.
-time: 45 minutes
+promise: Measure a radio link. Choose how long each message is, send five, and see how long each took and how many got through.
+time: 1 hour
 level: 2
 parts:
   - Arduino Mega 2560 and its USB cable
@@ -27,11 +27,12 @@ ideas:
 <!-- closeup -->
 
 A meter for a radio link. Turn the rotary knob to choose how many letters
-each message carries, from 5 to 60, and press it. The Mega sends ten
+each message carries, from 5 to 60, and press it. The Mega sends five
 messages through the transmitter and listens for them with the receiver,
-as in [Lesson 38](../038-radio-messages/index.md). Then the top row shows
-how long one message took to send, and the bottom row how many of the ten
-came back whole: **Heard 10/10 100%**.
+as in [Lesson 38](../038-radio-messages/index.md), and while the
+transmitter rests between them, the screen counts down to the next. Then
+the top row shows how long one message took to send, and the bottom row
+how many of the five came back whole: **Heard 5/5 100%**.
 
 Then you make the radio struggle, and find out which messages it loses
 first.
@@ -52,18 +53,21 @@ or sixty:
 and count the ones that come back. The checksum from Lesson 38 makes the
 count honest: a message that noise got into is thrown away, so every
 message arrives whole or not at all. Each of the meter's messages carries
-its number, `#1` to `#10`, so one that turns up late can't be counted as
+its number, `#1` to `#5`, so one that turns up late can't be counted as
 the next.
 
-**Short and few.** In the USA and Canada, a transmitter like this one may
-only send weak, occasional signals, so the meter only sends when you press
-the knob, and a test is over in 5 seconds at most. [Lesson 38](../038-radio-messages/index.md#the-idea)
+**A rest after every message.** As in Lesson 38, the transmitter rests
+after each message, because the law lets it send only now and then: 30
+times as long as the message took, and never less than 10 seconds. So
+the meter sends only when you press the knob, and only five messages,
+one each time the rest is over. [Lesson 38](../038-radio-messages/index.md#the-idea)
 and [Safety](../../safety.md#radios) have the details.
 
 !!! question "Predict"
     Use the toll to work it out before you build: how long will one
-    20-letter message take to send? And a 60-letter one? Write down your
-    answers.
+    20-letter message take to send? And a 60-letter one? Then use the
+    rest: about how long will a whole test of five 20-letter messages
+    take? Write down your answers.
 
 ## Build it
 
@@ -126,14 +130,22 @@ What's new:
   reactions in Lesson 3. `onAir.restart ()` starts it from zero as a
   message goes out, and once `transmitter.isSending ()` turns false the
   message has gone, so `onAir.stop ()` holds the time: `onAir.elapsed ()`.
-- `adk::Timer pause;` waits 50 ms after each message before the next.
-  `pause.start (50)` sets it going, and `pause.expired ()` is true once,
-  when the time is up. The pause lets the receiver finish with one message
-  before the next begins.
+- `transmitter.isReady ()` is true when the transmitter will take a
+  message: nothing is going out, and its rest is over. The sketch sends
+  the next message as soon as it is.
+- `adk::Every refresh {250};` beats four times a second, as `tick` beat in
+  Lesson 11, and on each beat `showRest ()` shows how much of the rest is
+  left: `transmitter.restLeft ()`, rounded up to whole seconds as in
+  Lesson 38.
+- `adk::Timer pause;` waits 50 ms after the last message before the
+  result shows. `pause.start (50)` sets it going, and `pause.expired ()`
+  is true once, when the time is up. The pause lets the receiver finish
+  with the last message.
 - `sendMessage ()` builds each message in an `adk::Text<60>`, as Snake's
   message was built in Lesson 27: its number, such as `#3 `, and then
   letters `a` to `z` over and over, until it is exactly as long as the dial
-  says. `message.size ()` is how many letters it has so far.
+  says. `message.size ()` is how many letters it has so far. It shows
+  `Sent 3 of 5` before it sends, so the stopwatch times only the message.
 - `message == receiver.text ()` is true when what arrived is exactly what
   went out. Only then does `heard` count it.
 - While `testing` is true the knob is ignored, so the length can't change
@@ -143,20 +155,26 @@ What's new:
 ## Upload it
 
 1. Upload the sketch. The screen says `20 letters` and `Press to test`.
-2. Press the knob. The bottom row counts `Sending 1 of 10` up to 10, in
-   about 2 seconds.
-3. The screen shows the result: `20 letters 186ms`, or a millisecond
-   either side, and `Heard 10/10 100%`.
-4. Turn the knob to 60 and press again. The test takes longer this time,
-   and the top row says about `426ms`.
+2. Press the knob. The top row says `Sent 1 of 5`, and the bottom row
+   counts down to the next message: `Next in 10 s`. If the transmitter
+   is still resting, from its last message or from when the sketch
+   started, the countdown comes first.
+3. After the fifth message, about 41 seconds in all, the screen shows the
+   result: `20 letters 186ms`, or a millisecond either side, and
+   `Heard 5/5 100%`.
+4. Turn the knob to 60 and press again. Each rest is longer this time,
+   `Next in 13 s`, and the top row says about `426ms`.
 
 Did you predict 186 ms and 426 ms? A 60-letter message carries twelve
 times the letters of a 5-letter one, but takes less than five times as
 long, because the 66 ms toll is paid either way. Long messages carry
-letters more cheaply.
+letters more cheaply. And the whole test? Four rests of 10 seconds, and
+five messages of 186 ms: about 41 seconds. From 45 letters up, the rest
+is 30 times the message instead, 12.78 seconds after a 60-letter one, so
+that test takes about 53 seconds.
 
 With the two modules a few centimeters apart, every test should say
-10/10. The signal is far stronger than the noise, so nothing goes missing.
+5/5. The signal is far stronger than the noise, so nothing goes missing.
 
 ## Make it struggle
 
@@ -169,7 +187,8 @@ With the two modules a few centimeters apart, every test should say
    its pins to the holes it came out of with three female-to-male jumper
    wires: **VCC** to j48, **DATA** to j49, **GND** to j51.
 2. Plug in, and test 5 letters and then 60 letters with the receiver lying
-   beside the board. Both should still say 10/10.
+   beside the board. Both should still say 5/5. Each test takes most of a
+   minute, so let the countdown run.
 3. Put the receiver in the plastic bag, so none of its pins can touch
    metal, and shut it in the tin, its wires coming out under the lid.
    Metal all round stops most of a radio wave. Test 5 and 60 letters again.
@@ -181,6 +200,8 @@ Where the signal is weak, the 60-letter messages go missing first. Each
 has more than four times the bits of a 5-letter one, so noise has more
 than four times the chances to spoil it. That is why radios that must get
 through, such as the LoRa radios in Lessons 40 to 54, send short messages.
+With only five messages a test, one lost message is 20%, so test each
+length twice or more in one place before you compare them.
 
 How much the tin holds back depends on the tin, and these modules hear
 each other easily, so on one board you may never see a message go
@@ -193,24 +214,27 @@ missing. Then the experiment waits for a second Mega: see
 |---|---|
 | Pressing the knob does nothing | Check the encoder's SW goes to pin 22, its + to the inner 5V pin, and its GND to the GND beside pin 13. |
 | Turning the knob does nothing | Check CLK goes to pin 18 and DT to pin 19. If it counts the wrong way, swap those two wires. |
-| `Heard 0/10` | Check the receiver's DATA goes to pin 43, its VCC to 5V and its GND to the − rail; then the transmitter's + to 3.3V, its − to the − rail, and the divider: pin 46's wire in f54, the 1 kΩ from h54 to h57, the 2 kΩ from g57 to e57, and the black jumper from a57 to the − rail. |
-| Still `Heard 0/10` | Check the modules' pins are soldered to their boards, not just pushed through. |
-| Fewer than 10 heard with both modules on the board | Keep them away from the computer and its cable, and from other 433 MHz gadgets: a doorbell or weather station sending at the same moment spoils a message. |
+| `Heard 0/5` | Check the receiver's DATA goes to pin 43, its VCC to 5V and its GND to the − rail; then the transmitter's + to 3.3V, its − to the − rail, and the divider: pin 46's wire in f54, the 1 kΩ from h54 to h57, the 2 kΩ from g57 to e57, and the black jumper from a57 to the − rail. |
+| Still `Heard 0/5` | Check the modules' pins are soldered to their boards, not just pushed through. |
+| The test seems stuck on `Next in` | It isn't: the transmitter rests 10 seconds or more after every message, so a test of five takes most of a minute. |
+| Fewer than 5 heard with both modules on the board | Keep them away from the computer and its cable, and from other 433 MHz gadgets: a doorbell or weather station sending at the same moment spoils a message. |
 | Nothing on the screen, or a row of blocks | Turn the contrast knob beside the LCD. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 
 ## Make it yours
 
-1. **Across the house.** Build Lesson 38's circuit on a second Mega, and
-   make it send ten numbered messages when its button is pressed. Change
-   this sketch to count what arrives without sending, and carry one Mega
-   further away between tests. With 17 cm wires on both modules' ANT
-   holes, you should reach tens of meters before messages go missing.
+1. **Two boards.** Build Lesson 38's circuit on a second Mega, and make
+   it send five numbered messages when its button is pressed, each one as
+   soon as `transmitter.isReady ()`. Change this sketch to count what
+   arrives without sending. Where the rules allow aerials and distance, in
+   Europe or with an amateur radio license and your call sign in the
+   messages, fit 17 cm wires to both modules' ANT holes and carry one Mega
+   further away between tests, to find how far the link reaches.
 2. **Letters a second.** Add a line that shows how many letters a second
    each length carries: `length * 1000 / onAir.elapsed ()`. Which length
    carries the most?
 3. **Your own toll.** Work out the time for every length from 5 to 60 from
-   the formula, and check each against the meter.
+   the formula, and the rest after it, and check each against the meter.
 
 ## Measure it
 
@@ -221,23 +245,22 @@ its own hole.
 
 !!! question "Predict"
     While a message goes out, the transmitter's radio is on for half of its
-    bits and off for the other half. What will the meter read on DAT during
-    a test of 60-letter messages: 0 V, 3.3 V, or something between?
+    bits and off for the other half. But a message lasts less than half a
+    second, and then the transmitter rests for 10 seconds or more. What
+    will the meter read on DAT through a test of 60-letter messages?
 
 <!-- measure -->
 
-A test lasts only a few seconds, so press the knob with the probes already
-in place, and read the meter while the bottom row counts.
+Press the knob with the probes already in place, and watch the meter
+while the bottom row counts down.
 
 What the numbers tell you:
 
-- **The transmitter's DAT, resting** reads 0 V: pin 46 is low, and the
-  radio is off.
-- **During a test** it reads about 1.5 V. Each message is on half the
-  time, and 3.3 V on for half the time averages about 1.65 V; the 50 ms
-  pauses between messages, radio off, pull it a little lower. Test 5
-  letters and it reads lower still, because the pauses are then a bigger
-  share of the time.
-- **The receiver's DATA** reads about 2.5 V between tests, as it did in
+- **The transmitter's DAT** reads 0 V between messages, which is nearly
+  all of a test: pin 46 is low, and the radio is off. A 60-letter message
+  is on the air for 0.43 seconds in every 13, about 3% of the time, so as
+  one goes out the meter may twitch, or may not move at all: it is too
+  quick for the meter to settle on.
+- **The receiver's DATA** reads about 2.5 V between messages, as it did in
   Lesson 38: with nothing to hear, it turns itself up until noise sets it
   high about half the time.

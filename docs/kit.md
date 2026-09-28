@@ -48,15 +48,17 @@ dollars; the LoRa radios come in pairs, because it takes two to talk.
 | Part | What it does | First used |
 |---|---|---|
 | Si4703 FM radio board (CJMCU-470) and wired earbuds | FM stations, their names and songs | Lesson 37 |
-| 433 MHz transmitter (WL102-341) and receiver (RX470C) | Short messages across a house | Lesson 38 |
+| 433 MHz transmitter (WL102-341) and receiver (RX470C) | Short messages, one every 10 seconds at most | Lesson 38 |
 | Two REYAX RYLR896 LoRa modems | Messages across a kilometer or more, on 915 MHz | Lesson 40 |
 | Two Ebyte E32-433T20D LoRa modules | A 433 MHz link that passes on lines of text | Lesson 41 |
-| Two Heltec WiFi LoRa 32 V3 boards running Meshtastic, and a phone | Text messages from a phone, across a mesh | Lesson 42 |
+| Two Heltec WiFi LoRa 32 V3 boards, the 863–928 MHz version, running Meshtastic, and a phone | Text messages from a phone, across a mesh | Lesson 42 |
 
 Their pins work at 3.3 V, so the Mega's signals reach them through a
 resistor divider, 1 kΩ and 2 kΩ; [Safety](safety.md#radios) explains why, and
 which bands you may send on where you live. If your resistor card has no
-2 kΩ, two 1 kΩ resistors in a row make one.
+2 kΩ, two 1 kΩ resistors in a row make one. Heltec's shop lists the
+863–928 MHz boards by band: 902–928 MHz for the Americas and Australia,
+863–870 MHz for Europe. Its 433 MHz and 470–510 MHz boards won't do.
 
 ## Two boards
 

@@ -17,6 +17,7 @@ ideas:
   - A radio switched on and off to send bits
   - Noise, and a warm-up the receiver can lock onto
   - A checksum that throws damaged messages away
+  - A rest after every message, set by law
   - A divider that turns 5 V into 3.3 V
 ---
 
@@ -27,9 +28,10 @@ ideas:
 Two little radio boards stand on the breadboard: a transmitter and a
 receiver. Press the button and the screen says **Message 1:** and, below it,
 **Hello!**. That message left the Mega through the transmitter, crossed a few
-centimeters of air as radio, and came back in through the receiver. Press
-again for the next message, or type your own in the Serial Monitor. With a
-second Mega, or a friend's, the same messages reach across a room.
+centimeters of air as radio, and came back in through the receiver. Ten
+seconds later, press again for the next message, or type your own in the
+Serial Monitor. Press sooner and the screen tells you how long to wait:
+after every message, the transmitter rests.
 
 ## The idea
 
@@ -70,15 +72,24 @@ When pin 46 is at 0 V, so is DAT.
 **An aerial.** A 433 MHz wave is 69 cm long, and a straight wire a quarter
 of that, 17 cm, soldered to a module's **ANT** hole makes a good aerial. The
 modules often come with little coil springs that do the same job in less
-space; they need soldering too. Without either, the two still hear each
-other easily across a desk.
+space; they need soldering too. You don't need either here: without them,
+the two still hear each other easily across a desk.
 
-!!! warning "Keep it short and few"
-    Receiving is allowed anywhere, but sending is ruled by law. In Europe,
-    433 MHz is free for small, low-power gadgets like this one. In the USA
-    and Canada it belongs to radio amateurs, and without a license only very
-    weak, occasional signals, like a car key's, are allowed: keep your
-    messages short and few. [Safety](../../safety.md#radios) has the details.
+**A rest after every message.** The law lets a gadget like this send
+messages only now and then. In the USA and Canada, each message may last
+at most a second, and must be followed by a rest 30 times as long, and
+never shorter than 10 seconds. ADK keeps that rule for you: after each
+message the transmitter rests, and until the rest is over it turns new
+messages down. A word takes about a tenth of a second, so its rest is
+10 seconds.
+
+!!! warning "Sending is ruled by law"
+    Receiving is allowed anywhere, but sending is not. In Europe, 433 MHz
+    is free for small gadgets like this one, up to 10 mW. In the USA and
+    Canada it belongs to radio amateurs, and without a license a gadget
+    that sends messages must be very weak, much weaker than this
+    transmitter with an aerial: leave the aerials off, and keep both
+    modules on one desk. [Safety](../../safety.md#radios) has the details.
 
 !!! question "Predict"
     The receiver's DATA flickers with noise the whole time nothing is being
@@ -149,8 +160,9 @@ What's new:
   them they borrow one of the Mega's timers, which looks at the receiver
   16,000 times a second; while they do, pins 11 and 12 can't dim anything.
 - `messages` is a list of texts, as the menu's choices were in Lesson 29,
-  and `next` says which one the button sends next. `% messages.size ()`
-  takes it back to the first after the last, as `% 16` did in Lesson 13.
+  and `next` says which one the button sends next. It moves on only when
+  `send ()` says the message went. `% messages.size ()` takes it back to
+  the first after the last, as `% 16` did in Lesson 13.
 - `adk::LineReader<60> typed;` gathers what you type in the Serial Monitor.
   `typed.read (Serial)` takes whatever has arrived so far, never waiting,
   and is true once a whole line is in, when you press Enter; `typed.line ()`
@@ -158,8 +170,14 @@ What's new:
   carry.
 - `transmitter.send (text)` starts a message going and comes straight back,
   while the message goes out in the background: about a tenth of a second
-  for a word. It says `false`, and sends nothing, if the last message is
-  still going.
+  for a word. It says `false`, and sends nothing, while the transmitter
+  rests: while the last message is still going, and for 10 seconds or
+  more after it. It rests for about 13 seconds after the sketch starts,
+  too, the longest rest any message needs, so pressing reset can't cut a
+  rest short.
+- `transmitter.restLeft ()` is how much of the rest is left, in
+  milliseconds. Adding 999 and dividing by 1000 turns it into whole
+  seconds, rounded up, so the screen never says `Wait 0 s`.
 - `receiver.wasReceived ()` is true for one pass of `loop ()` when a whole,
   unbroken message has arrived, and `receiver.text ()` is what it said.
 - `adk::Text<16> start` is text you print into, as Snake's message was in
@@ -170,10 +188,14 @@ What's new:
 
 1. Upload the sketch. The screen says `Listening...`.
 2. Open the Serial Monitor at 9600 baud, and set the menu beside the baud
-   rate to **New Line**, so pressing Enter ends your line.
+   rate to **New Line**, so pressing Enter ends your line. Opening it
+   restarts the Mega, and the transmitter rests for its first 13 seconds.
 3. Press the button. The screen shows `Message 1:` and `Hello!`, and the
-   Serial Monitor says `Sent: Hello!` and then `Heard: Hello!`.
-4. Press it again for the next message, and the next.
+   Serial Monitor says `Sent: Hello!` and then `Heard: Hello!`. If the
+   screen says `Resting...` and `Wait 4 s` instead, wait, and press again.
+4. Press it again at once. The screen says `Resting...` and how long to
+   wait, such as `Wait 9 s`, and nothing is sent. Wait that long, and
+   press again for the next message.
 5. Type a line of your own in the Serial Monitor and press Enter. It goes
    out and comes back the same way. A long one shows its first 16 letters
    on the screen; the Serial Monitor shows it all.
@@ -191,8 +213,8 @@ the noise doesn't get through.
 | `Sent:` appears, but nothing is heard | Check the receiver's DATA goes to pin 43, its VCC to 5V and its GND to the − rail. Check the transmitter's + goes to 3.3V and its − to the − rail. |
 | Still nothing is heard | Check the divider: pin 46's wire in f54, the 1 kΩ from h54 to h57, the 2 kΩ from g57 to e57, and the black jumper from a57 to the − rail. |
 | Typing does nothing | Set the Serial Monitor's line ending to **New Line**: the sketch waits for the end of the line. |
-| `Still sending, try again` | Wait a moment: the last message was still going out. |
-| Some messages go missing | Try a 17 cm wire on each module's ANT hole, or turn one module round. Keep them away from the computer and its cable. |
+| `Resting...` and `Wait` on the screen | The transmitter rests after every message, and when the sketch starts. Wait as long as it says, then send again. |
+| Some messages go missing | Turn one module round, and keep them away from the computer and its cable. |
 | Nothing on the screen, or a row of blocks | Turn the contrast knob beside the LCD. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 
@@ -216,22 +238,29 @@ the noise doesn't get through.
     All this takes about a tenth of the Mega's time, which is why the
     receiver and transmitter keep the timer for themselves.
 
+    The rest starts when ADK sees the message has gone, and lasts 30 times
+    as long as the message took, or 10 seconds if that is longer. A
+    message takes 66 ms and 6 ms more a letter, so up to 44 letters rest
+    for 10 seconds, and 60 letters, the most, rest for 12.78 seconds.
+
 ## Make it yours
 
-1. **Across the house.** Build the same circuit on a second Mega, or ask a
-   friend with the kit, and send messages between two rooms. Any Arduino
-   running RadioHead's RH_ASK at its usual 2000 bits a second, with a
-   receiver on its data pin, can listen too.
-2. **An aerial.** Solder a 17 cm wire to each module's ANT hole, keep them
-   straight, and see how far apart the two Megas can go.
+1. **Two boards.** Build the same circuit on a second Mega, or ask a
+   friend with the kit, and send messages from one to the other. Any
+   Arduino running RadioHead's RH_ASK at its usual 2000 bits a second,
+   with a receiver on its data pin, can listen too.
+2. **An aerial.** Only where the rules allow it: in Europe, or with an
+   amateur radio license and your call sign in the messages. Solder a
+   17 cm wire to each module's ANT hole, keep them straight, and see how
+   far apart the two Megas can go.
 3. **A doorbell.** Make the second Mega beep, with the active buzzer from
    Lesson 3, whenever a message says `Ding dong`. Compare the text with
    `strcmp (receiver.text (), "Ding dong") == 0`.
 4. **Your own messages.** Change the list in `messages`, or add more. Each
    can be up to 60 letters, but only 16 fit on the screen.
 5. **Lost and found.** Number each message, such as `#12 Hello!`, with an
-   `adk::Text<60>`, and on the second Mega count how many go missing as you
-   move further away.
+   `adk::Text<60>`, and on the second Mega count how many go missing.
+   Lesson 55 builds a meter from this idea.
 
 ## Measure it
 

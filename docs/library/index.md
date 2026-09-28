@@ -115,7 +115,7 @@ adk: a Speaker stops PWM on pins 9 and 10
 | Accelerometer | [`Mpu6050`](sensors.md#mpu6050) | tilt, acceleration and rotation, from a GY-521 or its QMI8658 twin |
 | Sound sensor | [`SoundSensor`](sensors.md#soundsensor) | how loud it is |
 | FM radio *(add-on)* | [`FmRadio`](radio.md#fmradio) | stations, their names, and the volume |
-| 433 MHz radio *(add-on)* | [`RadioTransmitter`](radio.md#radiotransmitter), [`RadioReceiver`](radio.md#radioreceiver) | short messages across a house |
+| 433 MHz radio *(add-on)* | [`RadioTransmitter`](radio.md#radiotransmitter), [`RadioReceiver`](radio.md#radioreceiver) | short messages, one every 10 s at most |
 | LoRa radio *(add-on)* | [`LoraModem`](radio.md#loramodem), [`LoraLink`](radio.md#loralink), [`MeshNode`](radio.md#meshnode) | messages across a town, or to a phone |
 | Two boards | [`Bridge`](radio.md#bridge) | numbers kept the same on two boards, over a radio |
 | Plain pins | [`DigitalOutput`](core.md#digitaloutput), [`DigitalInput`](core.md#digitalinput), [`PwmOutput`](core.md#pwmoutput) | anything else |

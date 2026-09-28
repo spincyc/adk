@@ -15,19 +15,28 @@ namespace adk {
 
     // How a modem is set up. Name only what differs, as in
     // {.partner = 2, .speed = adk::LoraSpeed::Quick}.
+    //
+    // The band suits the USA and Canada, 902 to 928 MHz. Australia's is 915
+    // to 928 MHz, and a signal on 915 MHz spills below it, so there choose
+    // one inside, such as 921500000. In Europe, 868.0 to 868.6 MHz allows
+    // 25 mW for 1% of the time: band 868100000, with power 14 at most, as
+    // 15 dBm is over 25 mW. A Bridge sends more than 1% of the time, so in
+    // Europe its modems take 869525000, in 869.4 to 869.65 MHz, which
+    // allows 10%.
     struct LoraSettings
     {
         uint16_t  partner = 0;              // where send (text) goes; 0 for every modem
         LoraSpeed speed   = LoraSpeed::Far;
-        uint8_t   power   = 15;             // dBm, from 0 to 15
+        uint8_t   power   = 15;             // dBm, from 0 to 15; 14 at most in Europe
         uint8_t   network = 6;              // 1 to 15: modems hear only their own
-        uint32_t  band    = 915000000;      // Hz: 915 MHz in the Americas
+        uint32_t  band    = 915000000;      // Hz: 915 MHz, for the USA and Canada
     };
 
-    // A REYAX RYLR896 LoRa modem: a radio on 915 MHz (868 in Europe) that
-    // reaches a kilometer or more, commanded in words over one of the
-    // Mega's spare serial ports. Each modem has an address, and modems with
-    // the same network number hear each other.
+    // A REYAX RYLR896 LoRa modem: a radio for 862 to 1020 MHz, on 915 MHz
+    // unless its settings say otherwise (868 in Europe), that reaches a
+    // kilometer or more, commanded in words over one of the Mega's spare
+    // serial ports. Each modem has an address, and modems with the same
+    // network number hear each other.
     //
     //   VDD  -> 3.3 V from the breadboard power module, or from the Mega's
     //           3.3V pin for a modem sending at 10 dBm or less
@@ -36,15 +45,17 @@ namespace adk {
     //   TXD  -> the Mega's RX pin
     //   NRST -> not connected
     //
-    // It draws 43 to 50 mA while it sends at 14 to 15 dBm, all the Mega's
-    // 3.3V pin can give, so at full power it gets its own supply; at 10 dBm,
-    // as a Bridge's modems send, it draws less (REYAX doesn't say how much)
-    // and the 3.3V pin will do. Its pins take 3.3 V, so the Mega's TX is
-    // divided down. setup () gives it its address, network,
-    // band, speed and power, taking about 60 ms: the modem forgets all but
-    // its address and network when it restarts. At the Far speed, REYAX's
-    // choice for up to 3 km, a short message takes about 0.3 s on the air;
-    // Quick trades range for about 0.05 s, for a Bridge that steers things.
+    // REYAX's datasheet gives 49.7 mA while it sends at 14 dBm (an older
+    // one, 43 mA at 15 dBm): all the Mega's 3.3V pin can give, so at full
+    // power it gets its own supply. It gives no figure for 10 dBm, as a
+    // Bridge's modems send, but the SX1276 radio chip inside draws about
+    // 29 mA at 13 dBm by Semtech's datasheet, so the 3.3V pin will do. Its
+    // pins take 3.3 V, so the Mega's TX is divided down. setup () gives it
+    // its address, network, band, speed and power, taking about 60 ms: the
+    // modem forgets all but its address and network when it restarts. At
+    // the Far speed, REYAX's choice for up to 3 km, a short message takes
+    // about 0.3 s on the air; Quick trades range for about 0.05 s, for a
+    // Bridge that steers things.
     struct LoraModem : Object, Link
     {
         LoraModem (HardwareSerial& port, uint16_t address, LoraSettings settings = {});

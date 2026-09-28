@@ -26,7 +26,18 @@ namespace adk {
     // sends them at its default 2000 bits a second, so a sketch can talk to
     // any Arduino running RadioHead. Each character becomes two 6-bit
     // symbols with as many ones as zeros, after a warm-up the receiver
-    // locks onto, and a checksum rejects a message the noise got into.
+    // locks onto, and a checksum rejects a message the noise got into. A
+    // message is on the air for 66 ms and 6 ms more a character: 426 ms at
+    // the most.
+    //
+    // The law lets a gadget like this send data only now and then. In the
+    // USA and Canada, each message may last at most a second and must be
+    // followed by a silence 30 times as long, and never less than 10 s
+    // (47 CFR 15.231(e), RSS-210 A.1.5), which also keeps well within
+    // Europe's tenth of the time. So the transmitter rests after every
+    // message, from the update that finds it gone, and for 12.78 s after it
+    // starts, the longest rest a message needs, so that a reset can't cut a
+    // rest short. Until the rest is over, send () turns a message down.
     //
     // Both parts borrow Timer 1, whose interrupt samples the receiver 16,000
     // times a second, about a tenth of the processor's time, and steps the
@@ -39,21 +50,39 @@ namespace adk {
 
         // Start sending a message, which goes out while the sketch carries
         // on: about 100 ms for a word. False, and nothing sent, while the
-        // last message is still going or if this one is over 60 characters.
+        // last message is still going or resting, or if this one is over
+        // 60 characters.
         bool send (const char* text);
         bool send (const uint8_t* bytes, uint8_t length);
 
+        // A message is going out.
         bool isSending () const;
+
+        // send () will take a message: nothing is going out, and the rest
+        // is over.
+        bool isReady () const;
+
+        // How much of the rest is left, as of the latest update, in ms: all
+        // of it while the message is still going out, and 0 once isReady ().
+        Millis restLeft () const;
 
         // The longest message, in characters.
         static constexpr uint8_t MaxLength = 60;
 
       protected:
-        void setup () override;
-        void stop  () override;
+        void setup  () override;
+        void update (Millis now) override;
+        void stop   () override;
 
       private:
         friend struct RadioClock;
+
+        enum class Rest : uint8_t
+        {
+            Due,        // after this message, or at the first update
+            Running,    // counting from restStart_
+            Over
+        };
 
         bool        sendLine  (const char* text) override;
         const char* heardLine () const override;
@@ -61,11 +90,15 @@ namespace adk {
         void step ();
 
         uint8_t          frame_ [MaxLength + 7];   // count, header, message, checksum
+        Millis           restLength_;
+        Millis           restStart_;
+        Millis           now_;
         uint8_t          length_;
         uint8_t          symbol_;
         uint8_t          bit_;
         uint8_t          tick_;
         Pin              pin_;
+        Rest             rest_;
         volatile bool    sending_;
     };
 

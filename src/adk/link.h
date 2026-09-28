@@ -4,7 +4,10 @@ namespace adk {
 
     // A radio that carries lines of text between two boards, which is all a
     // Bridge needs: a LoraModem, LoraLink or MeshNode both ways, or a
-    // RadioTransmitter one way and a RadioReceiver the other.
+    // RadioTransmitter one way and a RadioReceiver the other. The 433 MHz
+    // transmitter rests at least 10 s after each message, longer than a
+    // Bridge waits to hear from the other board, so a Bridge over it is slow
+    // and often shows the other board as gone.
     struct Link
     {
         // Send a line of text. False, and nothing sent, if the radio is busy

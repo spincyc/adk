@@ -99,6 +99,14 @@ RST down to 0 V, which beats both.
     and the sketch never drives them high: see
     [Safety](../../safety.md#radios).
 
+!!! danger "Check the pin names first"
+    Before you wire the radio, read the names printed beside its pins.
+    Some of these boards have **3.3V** and **GND** the other way round from
+    the drawing, and wired like that, the radio gets its power backwards,
+    which can ruin it. If yours differ, go by the names, not by where the
+    pins sit: the Mega's 3.3V, and the 1 kΩ from RST, go to the pin marked
+    3.3V, and the − rail to the pin marked GND.
+
 Keep the screen from Lesson 36 as it is, with the Mega's GND and 5V wires,
 and take everything else off, the power module too: nothing here needs it.
 

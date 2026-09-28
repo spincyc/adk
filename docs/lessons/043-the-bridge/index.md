@@ -35,12 +35,13 @@ split between two Megas, **Board A** and **Board B**, that talk by radio.
 Board A is the Mega you have used all along; Board B is a second one.
 
 !!! warning "915 MHz is for the Americas and Australia"
-    The RYLR896 modems send on 915 MHz, which anyone may use in the
-    Americas and Australia. Europe uses 868 MHz instead: use modems sold
-    for Europe, and add `.band = 868000000` to the settings on both
-    boards. Europe also limits how much of the time a radio may send, and
-    a bridge sends often. Receiving is fine anywhere; before you send,
-    read [Radios](../../safety.md#radios) on the safety page.
+    The RYLR896 modems send on 915 MHz, which anyone may use in the USA
+    and Canada. In Australia, add `.band = 921500000` to the settings on
+    both boards, to keep inside Australia's 915–928 MHz. Europe limits how
+    much of the time a radio may send, and a bridge sends often, so there
+    add `.band = 869525000` on both boards: that band allows a tenth of the
+    time. Receiving is fine anywhere; before you send, read
+    [Radios](../../safety.md#radios) on the safety page.
 
 ## The idea
 
@@ -102,10 +103,11 @@ answer quickly.
 
 **One modem on the Mega's 3.3 V.** In Lesson 40 the two modems ran from
 the power module, because a modem sending at its full power, 15 dBm,
-draws 43 to 50 mA by REYAX's datasheet: as much as the Mega's 3.3V pin
-can give. Here each board has one modem, set to send at 10 dBm, about a
-third of that power. REYAX doesn't say how much current it draws then,
-only that it's less, so the modem's VDD goes straight to the Mega's own
+draws up to about 50 mA by REYAX's datasheet: as much as the Mega's 3.3V
+pin can give. Here each board has one modem, set to send at 10 dBm,
+about a third of that power. REYAX gives no figure for that, but the
+radio chip inside the modem draws about 29 mA even at 13 dBm, by its
+maker's datasheet, so the modem's VDD goes straight to the Mega's own
 3.3V pin and neither board needs a power module. The Mega's TX3 pin
 still reaches the modem's RXD through a divider, as in Lesson 40.
 

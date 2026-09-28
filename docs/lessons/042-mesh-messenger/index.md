@@ -5,7 +5,7 @@ time: 2 hours
 level: 3
 parts:
   - Your circuit from Lesson 41, without its LoRa modules, second divider and power module
-  - Two Heltec WiFi LoRa 32 V3 boards, with their aerials (add-on, not in the kit)
+  - Two Heltec WiFi LoRa 32 V3 boards, the 863–928 MHz version, with their aerials (add-on, not in the kit)
   - A USB-C cable and a USB charger or port for each board
   - A phone with the Meshtastic app, and a computer with Chrome or Edge
   - RGB LED
@@ -108,8 +108,9 @@ pictures of each.
    1 from a USB charger, and add it in the app over Bluetooth. The board's
    screen shows a six-digit PIN; type it into the phone.
 5. **Region.** In the app's LoRa settings, set the **Region** to where you
-   are: **US** in the USA and Canada, **EU_868** in Europe. Until the
-   region is set, the board won't send at all.
+   are: **US** in the USA and Canada, **ANZ** in Australia and New
+   Zealand, **EU_868** in Europe. Until the region is set, the board
+   won't send at all.
 6. **Serial.** In the app's module settings, under **Serial**, set:
    **enabled** on, **echo** off, **RX** 47, **TX** 48, **baud** 38400 and
    **mode** TEXTMSG, and save. The board may restart to take them.
@@ -264,10 +265,11 @@ shows it on the screen as a message instead.
 ??? note "How it works"
     The Mega talks to board 1 at 38,400 bits a second. When the sketch
     sends `The lamp is on`, ADK writes just those letters, with no newline:
-    the Serial module waits until the Mega has been quiet for a second,
-    then sends everything it got as one text to the private channel. A
-    newline would go out as part of the message. That second of quiet is
-    why ADK allows a message only every 1.5 seconds.
+    the Serial module waits until the Mega has been quiet for a quarter of
+    a second, then sends everything it got as one text to the private
+    channel. A newline would go out as part of the message. ADK allows a
+    message only every 1.5 seconds, which leaves plenty of quiet between
+    them.
 
     When a text arrives, board 1 writes a blank line, then `4f2a: lamp on`,
     then another blank line. ADK skips the blank lines, takes the short

@@ -83,6 +83,18 @@ namespace {
 
         return bits;
     }
+
+    // A transmitter rests after it starts as long as the longest message
+    // would need, 12.78 s, and after a short message for 10 s. The tests
+    // that aren't about the rest begin once the first is over, at Rested.
+    constexpr adk::Millis Rested    = 12780;
+    constexpr adk::Millis ShortRest = 10000;
+
+    void waitOutTheFirstRest ()
+    {
+        adk::update (0);
+        adk::update (Rested);
+    }
 }
 
 TEST (radioClaimsItsPinsAndStartsTimerOne)
@@ -106,6 +118,7 @@ TEST (radioSendsWhatRadioHeadSends)
     Air                   air;
 
     adk::setup ();
+    waitOutTheFirstRest ();
     CHECK (transmitter.send ("Hi"));
 
     // Six training symbols, the start symbol, then the length (9: two
@@ -131,16 +144,17 @@ TEST (radioMessageArrivesWholeForOneUpdate)
     Air                   air;
 
     adk::setup ();
+    waitOutTheFirstRest ();
     CHECK (transmitter.send ("Hello"));
     CHECK (transmitter.isSending ());
     air.runUntilSent (transmitter);
 
-    adk::update (0);
+    adk::update (Rested + 1);
     CHECK (receiver.wasReceived ());
     CHECK (std::string (receiver.text ()) == "Hello");
     CHECK (receiver.length () == 5);
 
-    adk::update (1);
+    adk::update (Rested + 2);
     CHECK (!receiver.wasReceived ());
     CHECK (std::string (receiver.text ()) == "Hello");
 }
@@ -152,14 +166,15 @@ TEST (radioFindsAMessageInNoise)
     Air                   air {&transmitter};
 
     adk::setup ();
+    waitOutTheFirstRest ();
     air.noisy = true;
     air.run (8000);
-    adk::update (0);
+    adk::update (Rested + 1);
     CHECK (!receiver.wasReceived ());
 
     CHECK (transmitter.send ("Dinner's ready!"));
     air.runUntilSent (transmitter);
-    adk::update (1);
+    adk::update (Rested + 2);
     CHECK (receiver.wasReceived ());
     CHECK (std::string (receiver.text ()) == "Dinner's ready!");
 }
@@ -171,6 +186,7 @@ TEST (radioRejectsAMessageNoiseGotInto)
     Air                   air;
 
     adk::setup ();
+    waitOutTheFirstRest ();
     CHECK (transmitter.send ("Hello"));
 
     // A burst that inverts two bits in the middle of the message.
@@ -180,13 +196,14 @@ TEST (radioRejectsAMessageNoiseGotInto)
     air.flip = 0;
     air.runUntilSent (transmitter);
 
-    adk::update (0);
+    adk::update (Rested + 96);
     CHECK (!receiver.wasReceived ());
 
-    // The next message gets through.
+    // The next message, after the rest, gets through.
+    adk::update (Rested + 96 + ShortRest);
     CHECK (transmitter.send ("Again"));
     air.runUntilSent (transmitter);
-    adk::update (1);
+    adk::update (Rested + 96 + ShortRest + 96);
     CHECK (receiver.wasReceived ());
     CHECK (std::string (receiver.text ()) == "Again");
 }
@@ -198,18 +215,20 @@ TEST (radioCarriesBytesAndTheLongestMessage)
     Air                   air;
 
     adk::setup ();
+    waitOutTheFirstRest ();
     const uint8_t bytes [] = {0, 1, 2, 255};
     CHECK (transmitter.send (bytes, 4));
     air.runUntilSent (transmitter);
-    adk::update (0);
+    adk::update (Rested + 90);
     CHECK (receiver.wasReceived ());
     CHECK (receiver.length () == 4);
     CHECK (memcmp (receiver.text (), bytes, 4) == 0);
 
+    adk::update (Rested + 90 + ShortRest);
     std::string longest (adk::RadioTransmitter::MaxLength, 'x');
     CHECK (transmitter.send (longest.c_str ()));
     air.runUntilSent (transmitter);
-    adk::update (1);
+    adk::update (Rested + 90 + ShortRest + 426);
     CHECK (receiver.wasReceived ());
     CHECK (std::string (receiver.text ()) == longest);
 }
@@ -220,14 +239,16 @@ TEST (radioRefusesATooLongOrOverlappingMessage)
     Air                   air;
 
     adk::setup ();
+    waitOutTheFirstRest ();
     std::string tooLong (adk::RadioTransmitter::MaxLength + 1, 'x');
     CHECK (!transmitter.send (tooLong.c_str ()));
     CHECK (!transmitter.isSending ());
+    CHECK (transmitter.isReady ());
 
     CHECK (transmitter.send ("One"));
     CHECK (!transmitter.send ("Two"));
     air.runUntilSent (transmitter);
-    CHECK (transmitter.send ("Two"));
+    CHECK (!transmitter.send ("Two"));
 }
 
 TEST (radioStopFallsSilent)
@@ -236,6 +257,7 @@ TEST (radioStopFallsSilent)
     Air                   air;
 
     adk::setup ();
+    waitOutTheFirstRest ();
     CHECK (transmitter.send ("Hello"));
     air.run (100);
     adk::stop ();
@@ -243,6 +265,110 @@ TEST (radioStopFallsSilent)
     CHECK (arduino::pin (Transmit).output == LOW);
     air.run (100);
     CHECK (arduino::pin (Transmit).output == LOW);
+
+    // A message cut short rests as long as a whole one.
+    adk::update (Rested + 6);
+    CHECK (!transmitter.send ("Hello"));
+    adk::update (Rested + 6 + ShortRest - 1);
+    CHECK (!transmitter.isReady ());
+    adk::update (Rested + 6 + ShortRest);
+    CHECK (transmitter.send ("Hello"));
+}
+
+// However soon after a message the board restarts, the next can't come
+// sooner than that message's rest allows.
+TEST (radioRestsAsLongAsTheLongestMessageAfterItStarts)
+{
+    adk::RadioTransmitter transmitter {Transmit};
+
+    adk::setup ();
+    CHECK (!transmitter.isReady ());
+    CHECK (!transmitter.send ("Hi"));
+    CHECK (transmitter.restLeft () == 12780);
+
+    adk::update (500);
+    CHECK (transmitter.restLeft () == 12780);
+    adk::update (500 + 12779);
+    CHECK (!transmitter.isReady ());
+    CHECK (transmitter.restLeft () == 1);
+    CHECK (!transmitter.send ("Hi"));
+
+    adk::update (500 + 12780);
+    CHECK (transmitter.isReady ());
+    CHECK (transmitter.restLeft () == 0);
+    CHECK (transmitter.send ("Hi"));
+}
+
+TEST (radioRestsTenSecondsAfterAShortMessage)
+{
+    adk::RadioTransmitter transmitter {Transmit};
+    Air                   air;
+
+    adk::setup ();
+    waitOutTheFirstRest ();
+
+    // "Hi" is 26 symbols, 78 ms on the air; 30 times that is 2.34 s, so
+    // it rests for 10 s from the update that finds it gone.
+    CHECK (transmitter.send ("Hi"));
+    CHECK (!transmitter.isReady ());
+    CHECK (transmitter.restLeft () == 10000);
+    adk::update (Rested + 40);
+    CHECK (transmitter.isSending ());
+    CHECK (transmitter.restLeft () == 10000);
+
+    air.runUntilSent (transmitter);
+    adk::update (Rested + 80);
+    CHECK (!transmitter.isSending ());
+    CHECK (!transmitter.isReady ());
+    CHECK (!transmitter.send ("Hi"));
+
+    adk::update (Rested + 80 + 9999);
+    CHECK (transmitter.restLeft () == 1);
+    CHECK (!transmitter.send ("Hi"));
+
+    adk::update (Rested + 80 + 10000);
+    CHECK (transmitter.isReady ());
+    CHECK (transmitter.send ("Hi"));
+}
+
+TEST (radioRestsThirtyTimesALongMessage)
+{
+    adk::RadioTransmitter transmitter {Transmit};
+    Air                   air;
+
+    adk::setup ();
+    waitOutTheFirstRest ();
+
+    // 60 letters are 142 symbols, 426 ms on the air: a 12.78 s rest.
+    std::string longest (adk::RadioTransmitter::MaxLength, 'x');
+    CHECK (transmitter.send (longest.c_str ()));
+    CHECK (transmitter.restLeft () == 12780);
+    CHECK (bitsSent (transmitter, air).size () == 6 * 142 + 1);
+
+    adk::update (Rested + 426);
+    CHECK (transmitter.restLeft () == 12780);
+    adk::update (Rested + 426 + 12779);
+    CHECK (!transmitter.send ("Hi"));
+
+    adk::update (Rested + 426 + 12780);
+    CHECK (transmitter.restLeft () == 0);
+    CHECK (transmitter.send ("Hi"));
+}
+
+TEST (radioRestsAcrossTheWrapOfMillis)
+{
+    adk::RadioTransmitter transmitter {Transmit};
+
+    adk::setup ();
+    adk::update (0xFFFFF000);
+    adk::update (0xFFFFFFFF);
+    CHECK (transmitter.restLeft () == Rested - 0xFFF);
+    CHECK (!transmitter.isReady ());
+
+    adk::update (Rested - 0x1000 - 1);
+    CHECK (!transmitter.isReady ());
+    adk::update (Rested - 0x1000);
+    CHECK (transmitter.isReady ());
 }
 
 TEST (radioAllowsOneTransmitterAndLeavesPinsElevenAndTwelveUnable)

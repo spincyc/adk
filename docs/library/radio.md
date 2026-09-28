@@ -19,8 +19,12 @@ so on) or `Japan` (76 to 90 MHz).
 ## Two boards
 
 A bridge keeps a few named numbers the same on two boards, over any of the
-radios on this page: a dial on one board and a servo on the other, say.
-Each radio is a `Link`, and a bridge needs nothing more from it.
+LoRa radios on this page: a dial on one board and a servo on the other,
+say. Each radio is a `Link`, and a bridge needs nothing more from it. The
+433 MHz modules are a `Link` too, but their transmitter rests at least
+10 s after every message, longer than a bridge waits to hear from the
+other board, so a bridge over them is slow, and says half the time that
+the other board has gone.
 
 <!-- api bridge.h Bridge -->
 

@@ -24,9 +24,11 @@ namespace adk {
     // setup () lets M0 and M1 go high, which puts the module in its settings
     // mode, and gives it a channel, 410 MHz plus its number, and its lowest
     // power, 10 mW. Europe allows 10 mW without a license from 433.05 to
-    // 434.79 MHz, so the channel is 24, 434 MHz, unless told otherwise; in
-    // the USA, 433 MHz belongs to licensed radio amateurs. It then pulls
-    // them low again for normal mode, taking about 0.2 s in all.
+    // 434.79 MHz, sending at most a tenth of the time, so the channel is
+    // 24, 434 MHz, unless told otherwise. In the USA and Canada, 433 MHz
+    // belongs to licensed radio amateurs, who must send their call sign at
+    // least every 10 minutes. It then pulls them low again for normal
+    // mode, taking about 0.2 s in all.
     struct LoraLink : Object, Link
     {
         LoraLink (HardwareSerial& port, Pin mode, Pin aux, uint8_t channel = 24);

@@ -7,7 +7,7 @@ namespace adk {
     namespace {
 
         constexpr unsigned long Baud = 38400;
-        constexpr Millis        Gap  = 1500;    // the node sends after 1 s of quiet
+        constexpr Millis        Gap  = 1500;    // the node sends after 250 ms of quiet
     }
 
     MeshNode::MeshNode (HardwareSerial& port)
