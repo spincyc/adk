@@ -95,7 +95,7 @@ always does the same thing: it locks the safe and rubs out what you typed.
     Unplug the USB cable and the power module's adapter before you wire.
     Keep Lesson 17's power module, screen and servo just as they are, with
     their wires and the Mega's GND and 5V wires, and take out the angle
-    knob in e45–e47 with its three wires. Put the keypad back where it was in
+    knob in columns 45 to 47 with its three wires. Put the keypad back where it was in
     Lesson 16, and add the buzzer past the screen. The power module's
     jumpers stay as Lesson 17 set them: the top one **OFF**, so the Mega's
     5V feeds the top rails for the screen, and the bottom one on **5V** for

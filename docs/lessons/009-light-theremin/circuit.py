@@ -21,7 +21,7 @@ bench.home_divider ("photoresistor", via=[(2.30, 2.85), (9.25, 2.85)])
 
 bench.home_buzzer ("passive", via=[(1.90, 0.45), (8.65, 0.45)])
 
-bench.home_knob (supply=[(10.05, 1.85), (10.25, 1.85), (10.25, 0.75)])
+bench.home_knob ()
 
 # Readings to take with a multimeter, with the sensor covered so that one
 # note keeps sounding: pin 10's average, and the knob's wiper where the

@@ -179,7 +179,7 @@ jump down and up by an octave.
 | The slightest shadow plays the top note | The sketch never saw the sensor covered. Press the Mega's reset button and cover the sensor fully while the LEDs blink. |
 | It never goes quiet | The room is darker than when the sketch learned it: a light went off, or your own shadow falls on the sensor. Press reset and let it learn again in the light you'll play in. |
 | Notes flutter between two neighbors | Your hand is at the edge of a slice, or the lamp above you flickers. Move a little, or try a steadier light. |
-| The knob changes nothing | Check A0's wire is in a46 and the knob's outer legs reach both rails: the black wire from a45 to the − rail, the red one from d47 to the top + rail. The octave only changes at a third and two thirds of the way round. |
+| The knob changes nothing | Check A0's wire is in a46 and the knob's outer legs reach both rails: the black wire from j45 to the top − rail, the red one from j47 to the top + rail, and the black one from B-60 to T-60. The octave only changes at a third and two thirds of the way round. |
 | No LEDs light at all | Upload Lesson 8's sketch again: if the light meter doesn't work either, fix it first using its table. |
 
 ??? note "How it works"

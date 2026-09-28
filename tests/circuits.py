@@ -66,6 +66,11 @@ check ("two legs in one strip",
                                                                           cathode="b7"),
        "share column 6 f-j")
 check ("a button's joined legs", button)
+check ("a knob's legs in one row",
+       lambda b: b.potentiometer ("e5", "e6", "e7"), "across the gap")
+check ("a knob across the gap",
+       lambda b: b.potentiometer ("f5", "d6", "f7").wire ("j5", "T-5").wire ("j7", "T+7")
+       .wire ("A0", "a6"))
 
 # What the drawing refuses.
 check ("waypoints on one grid point",
@@ -136,7 +141,7 @@ beside = Bench ("test", columns=(1, 62)).screen ()
 beside.home_button ("23").home_buzzer ("active").home_rgb_led ().home_knob ()
 beside = finished (beside)
 for hole, what in (("j38", "the button on 23"), ("f51", "the buzzer"), ("a41", "the RGB LED"),
-                   ("e57", "the knob")):
+                   ("f57", "the knob")):
     expect (f"{what} beside the screen, in {hole}", hole in beside.used, True)
 
 plain = Bench ("test", columns=(1, 63)).power_module ("right", top="off", bottom="5V")

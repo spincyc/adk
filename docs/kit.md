@@ -143,8 +143,8 @@ lesson with it have a second home past it.
 | Buzzer, active on 12 or passive on 10 | Across the gap in column 34: + in f, − in e, the pin into j; a black jumper (active) or the 220 Ω resistor (passive) from a to the − rail. With the four-digit display's wiring (Lesson 12), column 35, clear of the wires that rise over the gap in column 32 | Column 51 |
 | RGB LED on 5, 6, 7 | Legs in a6 (red), a9 (green), a11 (blue), the common leg in B-7; a 220 Ω resistor across the gap above each colored leg, and its pin into j | Columns 41–46, the same shape |
 | Light or temperature divider, on A1 or A2 | Column 40: a red jumper from j40 to T+40, the sensor across the gap in f40 and e40, the pin into a40, 10 kΩ from c40 to c43, a black jumper from a43 to the − rail | Same |
-| Knob on A0 | Legs in e45, e46, e47: a black jumper from a45 to the − rail, A0 into a46, a red jumper from d47 to T+49 | The same, or legs in e57, e58, e59 with the jumper to T+61 when the RGB LED takes columns 41–46 |
-| The screen (LCD, contrast knob, backlight) | Knob in e5–e7, the LCD's pins in a9–a24, wired by `bench.screen ()` | — |
+| Knob on A0 | Across the middle gap: its outer legs in f45 and f47, with jumpers from j45 to the top − rail and j47 to the top + rail; its wiper in d46, A0 into a46 | The same, or in columns 57–59 when the RGB LED or the FM radio takes columns 41–46 |
+| The screen (LCD, contrast knob, backlight) | Knob across the middle gap (outer legs in f5 and f7, wiper in d6), the LCD's pins in a9–a24, wired by `bench.screen ()` | — |
 | Power module | The right end, in columns 60 and 61 of all four rails | Same |
 | FM radio | Standing in row j, columns 45–52 (GPIO2 in j45 to 3.3V in j52), its board over the top rails: pins 42, 41 and 40 up from below into f47, f49 and f50, the Mega's 3.3V into f52, 1 kΩ from h47 to h52, a black jumper from f51 to B-51 | Same |
 | 433 MHz receiver | Standing in row j, columns 48–51 (VCC in j48): 5V from the power header into f48, pin 43 into f49, a black jumper from f51 to B-51 | Same |

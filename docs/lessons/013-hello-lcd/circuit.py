@@ -3,7 +3,7 @@
 bench = Bench ("An LCD1602 on pins 31 to 36, with a contrast knob and its backlight through 220 Ω",
                columns=(1, 30))
 
-bench.screen (text=("Hello, LCD!", ""), across=True)
+bench.screen (text=("Hello, LCD!", ""))
 
 # Readings to take with a multimeter: the contrast voltage the knob sets,
 # and the 5 V the backlight shares with its resistor.

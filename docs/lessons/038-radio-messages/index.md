@@ -97,10 +97,9 @@ other easily across a desk.
     5V, and its DAT only ever sees pin 46 through the 1 kΩ, with the 2 kΩ to
     GND. The receiver's VCC takes 5 V.
 
-Keep the screen from Lesson 37 as it is, and two of the short black
+Keep the screen from Lesson 37 as it is, and one of the short black
 jumpers down to the − rail: the radio's, from f51, which now takes the
-receiver's GND, and the volume knob's, from a57, which now finishes the
-divider. Take everything else off. The button goes at its home beside the
+receiver's GND. Take everything else off. The button goes at its home beside the
 screen, in columns 38 to 40.
 
 The receiver and the transmitter stand in row j, their boards lying back

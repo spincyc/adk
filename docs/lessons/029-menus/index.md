@@ -99,9 +99,9 @@ of 255 on its PWM pin, just as the dimmer's `write ()` set it in Lesson 7.
     | 15 | A | 5V through 220 Ω: the backlight's + |
     | 16 | K | GND: the backlight's − |
 
-    As in Lesson 13, the potentiometer stands in e5 to e7, just left of the
-    LCD's first pins, and three short jumpers carry GND, 5 V and its middle
-    leg to VSS, VDD and V0. The rotary encoder module's pins are labeled CLK,
+    As in Lesson 13, the potentiometer stands across the middle gap in
+    columns 5 to 7, just left of the LCD's first pins: short jumpers take
+    its outer legs up to the top − and + rails, and its wiper to V0. The rotary encoder module's pins are labeled CLK,
     DT, SW, + and GND: its + goes to the inner 5V pin at the top of the long
     header, its GND to the GND pin beside pin 13.
 

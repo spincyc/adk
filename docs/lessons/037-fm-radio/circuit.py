@@ -7,13 +7,13 @@
 bench = Bench ("An FM radio on pins 40, 41 and 42, the rotary encoder on 18, 19 and 22, a volume "
                "knob on A0, and the LCD on pins 31 to 36", columns=(1, 62))
 
-bench.screen (text=(" 98.8 MHz Stereo", "CITY FM  ████"), across=True)
+bench.screen (text=(" 98.8 MHz Stereo", "CITY FM  ████"))
 
 bench.home_encoder ()
 
 bench.home_fm_radio ()
 
-bench.home_knob (via=[(2.19, 4.05), (11.1, 4.05)], across=True)
+bench.home_knob (via=[(2.19, 4.05), (11.1, 4.05)])
 
 bench.closeup (23, 62)
 

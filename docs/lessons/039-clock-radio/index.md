@@ -82,9 +82,9 @@ begins.
     a CR2032.
 
 Keep the screen and the button from Lesson 38 just where they are, with the
-two short black jumpers from f51 and a57 to the − rail: the FM radio and the
-volume knob use them again. Take out the 433 MHz modules, their 1 kΩ and
-2 kΩ resistors, and the rest of their wires. Then everything comes back to
+short black jumper from f51 to the − rail: the FM radio uses it again. Take
+out the 433 MHz modules, their 1 kΩ and 2 kΩ resistors, and the rest of
+their wires. Then everything comes back to
 its home:
 
 - the **clock module** lies on its side above the board, as in Lessons 32
@@ -93,8 +93,8 @@ its home:
   Lesson 33;
 - the **FM radio** stands in row j, columns 45 to 52, as in Lesson 37, with
   its 1 kΩ along row h and its four wires coming up from below;
-- the **volume knob** stands in e57 to e59, its A0 wire also coming round
-  the bottom of the screen.
+- the **volume knob** stands across the middle gap in columns 57 to 59, as
+  in Lesson 37, its A0 wire also coming round the bottom of the screen.
 
 <!-- bench -->
 

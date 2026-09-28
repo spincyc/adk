@@ -38,7 +38,8 @@ across the middle gap), digit and four_digits (seven-segment displays), lcd,
 header_module (a module standing in one row) and power_module, whose two
 jumpers set each pair of rails to "5V", "3.3V" or "off":
 power_module ("right", top="5V", bottom="off"). screen () builds the
-course's LCD at its home: its contrast knob in e5-e7, the LCD's pins in
+course's LCD at its home: its contrast knob across the gap in f5, d6 and f7,
+the LCD's pins in
 a9-a24, power, and pins 31 to 36, wired the same in every lesson.
 
 Modules sit beside the board, placed in inches in the drawing's own
@@ -314,27 +315,22 @@ class Bench:
                     f"{negative}.")
         return self
 
-    # The kit's knob stands across the middle gap: its outer legs two
-    # columns apart in row e or f, the wiper in the column between them
-    # 0.4 inch away across the gap, in row g or d. The older drawings still
-    # stand its legs in one row.
+    # The kit's potentiometer has its legs in a triangle, the wiper on its
+    # own 0.4 inch from the other two, so it fits a breadboard only across
+    # the middle gap: its outer legs two columns apart in row e or f, the
+    # wiper between them on the other side of the gap, in row g or d.
     def potentiometer (self, left, wiper, right, value="10 kΩ"):
         spots = [parse_hole (hole) for hole in (left, wiper, right)]
         columns = [column for _, column, _ in spots]
         rows = [row for _, _, row in spots]
         steps = {columns[1] - columns[0], columns[2] - columns[1]}
-        across = rows[0] == rows[2] and (rows[0], rows[1]) in (("e", "g"), ("f", "d")) \
-            and steps == {1}
-        if not across and (len (set (rows)) != 1 or len (steps) != 1 or steps - {1, 2}):
+        if not (rows[0] == rows[2] and (rows[0], rows[1]) in (("e", "g"), ("f", "d"))
+                and steps == {1}):
             raise ValueError ("a potentiometer's outer legs stand two columns apart in row e or "
                               "f, its wiper between them across the gap in row g or d")
         self._add (Potentiometer (left, wiper, right, value))
-        if across:
-            self._step (f"The {value} potentiometer across the middle gap: its two outer legs "
-                               f"in {left} and {right}, the wiper, on its own, in {wiper}.")
-        else:
-            self._step (f"The {value} potentiometer, legs in {left}, {wiper} and {right}: the "
-                               f"middle one is the wiper.")
+        self._step (f"The {value} potentiometer across the middle gap: its two outer legs "
+                    f"in {left} and {right}, the wiper, on its own, in {wiper}.")
         return self
 
     def photoresistor (self, a, b):
@@ -407,38 +403,30 @@ class Bench:
 
     # The course's screen, at its home and wired the same in every lesson so
     # it can stay on the breadboard from one to the next. From column first
-    # (5): the contrast knob, its legs in row e, and the LCD four columns
-    # on, in row a, its screen over the bottom edge. The knob's left leg
-    # takes GND from the bottom − rail; three short jumpers join its legs to
-    # VSS, V0 and VDD; VSS, VDD and RW reach up to the top rails, so VDD
-    # takes 5V from the top + rail and the top − rail is GND through VSS.
-    # The signal wires from pins 31 to 36 rise beside the Mega and cross
-    # over the board in lanes, 31 lowest, each coming straight down into its
-    # pin's column; the backlight's 220 Ω resistor stands across the gap at
-    # the far end. lanes lifts the signal wires' lanes by that many steps,
-    # and risers gives where the first rises and how far apart they stand,
-    # in inches, to make room for other wires from the header. across
-    # stands the knob as the kit's does, across the middle gap: its wiper
-    # in row d, its outer legs in row f, each with a jumper up to a top
-    # rail, and column first only carries GND from the bottom − rail to
-    # VSS.
-    def screen (self, first=5, text=None, lanes=0, risers=(4.45, 0.1), across=False):
+    # (5): the contrast knob across the middle gap, its outer legs in row f
+    # with a jumper from each up to a top rail and its wiper in row d, and
+    # the LCD four columns on, in row a, its screen over the bottom edge. A
+    # jumper takes the wiper's column to V0, and column first carries GND
+    # from the bottom − rail to VSS; VSS, VDD and RW reach up to the top
+    # rails, so VDD takes 5V from the top + rail and the top − rail is GND
+    # through VSS. The signal wires from pins 31 to 36 rise beside the Mega
+    # and cross over the board in lanes, 31 lowest, each coming straight
+    # down into its pin's column; the backlight's 220 Ω resistor stands
+    # across the gap at the far end. lanes lifts the signal wires' lanes by
+    # that many steps, and risers gives where the first rises and how far
+    # apart they stand, in inches, to make room for other wires from the
+    # header.
+    def screen (self, first=5, text=None, lanes=0, risers=(4.45, 0.1)):
         self.screened = True
         knob, lcd = first, first + 4
         column = lambda offset: lcd + offset
-        if across:
-            self.potentiometer (f"f{knob}", f"d{knob + 1}", f"f{knob + 2}")
-        else:
-            self.potentiometer (f"e{knob}", f"e{knob + 1}", f"e{knob + 2}")
+        self.potentiometer (f"f{knob}", f"d{knob + 1}", f"f{knob + 2}")
         self.lcd (lcd, row="a", text=text)
         self.wire (f"a{knob}", self._rail ("B-", knob))
         self.wire (f"b{knob}", f"b{lcd}", color="black")
         self.wire (f"c{knob + 1}", f"c{column (2)}", color="yellow")
-        if across:
-            self.wire (f"j{knob}", self._rail ("T-", knob))
-            self.wire (f"j{knob + 2}", self._rail ("T+", knob + 2))
-        else:
-            self.wire (f"d{knob + 2}", f"d{column (1)}", color="red")
+        self.wire (f"j{knob}", self._rail ("T-", knob))
+        self.wire (f"j{knob + 2}", self._rail ("T+", knob + 2))
         self.wire (f"e{lcd}", self._rail ("T-", lcd))
         self.wire (f"e{column (1)}", self._rail ("T+", column (1)))
         self.wire (f"e{column (4)}", self._rail ("T-", column (4)))
@@ -544,23 +532,16 @@ class Bench:
         self.resistor ("10 kΩ", "c40", "c43")
         return self.wire ("a43", "B-43")
 
-    # The knob on A0: legs in e45 to e47, a black jumper from a45 to the −
-    # rail, A0 into a46, and a red jumper from d47 up to the top + rail,
-    # routed by supply. Where the RGB LED or the FM radio takes those
-    # columns, it stands in e57 to e59 instead. across stands it as the
-    # kit's knob stands, across the middle gap: outer legs in row f with
-    # jumpers up to the top − and + rails, the wiper in row d.
-    def home_knob (self, via=None, supply=None, across=False):
+    # The knob on A0, across the middle gap: its outer legs in f45 and f47,
+    # with jumpers from j45 and j47 up to the top − and + rails, its wiper
+    # in d46, and A0 into a46. Where the RGB LED or the FM radio takes those
+    # columns, it stands in columns 57 to 59 instead.
+    def home_knob (self, via=None):
         first = 57 if any (hole in self.used for hole in ("e46", "j45")) else 45
-        if across:
-            self.potentiometer (f"f{first}", f"d{first + 1}", f"f{first + 2}")
-            self.wire (f"j{first}", f"T-{first}")
-            self.wire (f"j{first + 2}", f"T+{first + 2}")
-            return self.wire ("A0", f"a{first + 1}", via=via)
-        self.potentiometer (f"e{first}", f"e{first + 1}", f"e{first + 2}")
-        self.wire (f"a{first}", f"B-{first}")
-        self.wire ("A0", f"a{first + 1}", via=via)
-        return self.wire (f"d{first + 2}", f"T+{first + 4}", via=supply)
+        self.potentiometer (f"f{first}", f"d{first + 1}", f"f{first + 2}")
+        self.wire (f"j{first}", f"T-{first}")
+        self.wire (f"j{first + 2}", f"T+{first + 2}")
+        return self.wire ("A0", f"a{first + 1}", via=via)
 
     # The rotary encoder above the Mega, its wires rising from 18 (CLK), 19
     # (DT), 22 (SW), the inner 5V at the top of the long header and the GND

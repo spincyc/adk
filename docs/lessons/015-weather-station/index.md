@@ -95,11 +95,13 @@ times a second, so it answers the knob straight away.
 
 ??? info "Two knobs"
     The LCD's contrast knob and the alarm knob are both 10 kΩ potentiometers;
-    the Mega kit comes with two. If one has gone missing, use the one you have
-    for the alarm, and give the screen a fixed contrast instead: take out the contrast knob and
-    the brown wire from c6 to c11, and put a 1 kΩ resistor (brown, black,
-    black, brown, brown) from c9 to c11, between the LCD's VSS and V0. Many screens read well like that; if
-    yours is too faint or too dark, you'll need a second knob after all.
+    the Mega kit comes with two. If one has gone missing, use the one you
+    have for the alarm, and give the screen a fixed contrast instead: take
+    out the contrast knob, its two wires from j5 and j7, and the yellow wire
+    from c6 to c11, and put a 1 kΩ resistor (brown, black, black, brown,
+    brown) from c9 to c11, between the LCD's VSS and V0. Many screens read
+    well like that; if yours is too faint or too dark, you'll need a second
+    knob after all.
 
 When you are done, these are the connections your circuit makes:
 
@@ -171,7 +173,7 @@ both ways, which is the gap doing its job.
 | The light stays off | Check the RGB LED's longest leg is in the bottom − rail, at B-42. |
 | One color is missing | Follow that color's pin: pin 5 to j41 and the resistor g41–e41 (red), pin 6 to j44 and g44–e44 (green), pin 7 to j46 and g46–e46 (blue). |
 | The light shows the wrong colors | The LED is in back to front, or the pin wires are swapped. |
-| The alarm setting is stuck at 10 or 40 | The knob has no power: check the red wire from d59 to the top + rail (T+61), and the black one from a57 to the bottom − rail. |
+| The alarm setting is stuck at 10 or 40 | The knob has no power: check the red wire from j59 to the top + rail (T+59), and the black one from j57 to the top − rail (T-57). |
 | The setting runs backwards | That's fine, or swap the red and black wires on the knob's outer legs. |
 | No beep when it says **TOO HOT!** | Check the buzzer's + leg is in f51 with pin 12's wire in j51, and the black wire from a51 goes to the − rail. |
 

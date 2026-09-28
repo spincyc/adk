@@ -5,7 +5,7 @@
 bench = Bench ("A 433 MHz receiver on pin 43 and transmitter on pin 46, the rotary encoder on 18 "
                "and 19 with its switch on 22, and the LCD on pins 31 to 36", columns=(1, 62))
 
-bench.screen (text=("20 letters 186ms", "Heard 10/10 100%"), across=True)
+bench.screen (text=("20 letters 186ms", "Heard 10/10 100%"))
 
 bench.home_encoder ()
 

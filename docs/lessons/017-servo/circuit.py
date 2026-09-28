@@ -12,8 +12,7 @@ bench.power_module ("right", top="off", bottom="5V")
 
 bench.screen (text=("Knob   90°", "Needle 90°"), risers=(4.8, 0.05))
 
-bench.home_knob (via=[(2.2, 2.85), (9.9, 2.85)],
-                 supply=[(10.05, 1.85), (10.25, 1.85), (10.25, 0.75)])
+bench.home_knob (via=[(2.2, 2.85), (9.9, 2.85)])
 
 bench.home_servo (via=[(4.55, 1.95), (4.55, 3.01), (10.5, 3.01)])
 
@@ -22,7 +21,7 @@ bench.home_servo (via=[(4.55, 1.95), (4.55, 3.01), (10.5, 3.01)])
 # knob and the screen, and the knob's wiper on A0.
 bench.measure ("The servo's 5 V, from the power module", red="B+49", black="B-52",
                expect="about 5 V", when="power module on")
-bench.measure ("The knob's 5 V, from the Mega", red="c47", black="GND", expect="about 5 V",
+bench.measure ("The knob's 5 V, from the Mega", red="h47", black="GND", expect="about 5 V",
                when="power module on or off")
 bench.measure ("The knob's wiper, on A0", red="A0", black="GND", expect="about 2.5 V",
                when="the horn at 90°")
