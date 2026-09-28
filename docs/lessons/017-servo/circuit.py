@@ -12,9 +12,9 @@ bench.power_module ()
 
 bench.screen (text=("Knob   90°", "Needle 90°"), risers=(4.8, 0.05))
 
-bench.home_knob (via=[(2.2, 2.85), (9.9, 2.85)])
+bench.home_knob (via=[(2.36, 2.85), (9.9, 2.85)])
 
-bench.home_servo (via=[(4.55, 1.95), (4.55, 3.01), (10.5, 3.01)])
+bench.home_servo (via=[(4.55, 1.90), (4.55, 3.01), (10.5, 3.01)])
 
 # Readings to take with a multimeter: the two 5 Vs, the power module's on
 # the bottom rails for the servo and the Mega's on the top rails for the

@@ -16,9 +16,9 @@ bench.home_rfid ()
 
 bench.home_tap ()
 
-bench.home_servo (via=[(4.85, 1.9), (4.85, 3.9), (9.75, 3.9), (9.75, 3.3), (10.5, 3.3)])
+bench.home_servo (via=[(4.85, 1.85), (4.85, 3.9), (9.75, 3.9), (9.75, 3.3), (10.5, 3.3)])
 
-bench.home_buzzer ("active", via=[(1.7, -1.85), (10.4, -1.85)])
+bench.home_buzzer ("active", via=[(1.60, -1.85), (10.4, -1.85)])
 
 # Readings to take with a multimeter, the power module switched on.
 bench.measure ("The latch's supply, on the bottom rails", red="B+49", black="B-49",

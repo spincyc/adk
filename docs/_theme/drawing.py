@@ -32,7 +32,7 @@ import sys
 
 import meter
 
-from bench import (BOARD_HEIGHT, MARGIN, MEGA_HEIGHT, MEGA_PINS, MEGA_WIDTH, ROWS, canonical,
+from bench import (BOARD_HEIGHT, END, MARGIN, MEGA_HEIGHT, MEGA_PINS, MEGA_WIDTH, ROWS, canonical,
                    load, numbered, parse_hole, rail_column)
 from modules import HOUSING
 from parts import HeaderModule, Label, Led, Resistor, spots_round
@@ -551,7 +551,7 @@ class Drawing:
     def _column_at (self, x):
         bench = self.bench
         bx, _ = bench.board_origin ()
-        column = round ((x / DPI - bx - 0.25) / 0.1) + bench.first
+        column = round ((x / DPI - bx - END) / 0.1) + bench.first
         return min (bench.last, max (bench.first, column))
 
     # The close-up before its labels: the columns it shows, and the rows the
@@ -850,7 +850,10 @@ class Drawing:
         pencil.paper_fill (outline, MEGA_TINT)
         pencil.hatch (x + 3, y + 3, w - 6, h - 6, gap=5.5, angle=35, tone=0.07)
         pencil.rect (x, y, w, h, width=1.0, radius=7, passes=2)
-        for hx, hy in ((0.55, 0.1), (0.6, 2.0), (3.3, 0.1), (3.95, 1.55)):
+        # Its mounting holes, the chip, the L LED and the headers where
+        # Arduino's board file puts them, in inches from the corner by the
+        # USB socket.
+        for hx, hy in ((0.55, 0.1), (0.6, 2.0), (2.6, 1.4), (2.6, 0.3), (3.55, 2.0), (3.8, 0.1)):
             cx, cy = x + hx * DPI, y + (MEGA_HEIGHT - hy) * DPI
             pencil.paper_fill ([(cx + 4.5 * math.cos (a / 8 * math.pi),
                                  cy + 4.5 * math.sin (a / 8 * math.pi))
@@ -873,7 +876,7 @@ class Drawing:
 
         # The microcontroller sits turned 45 degrees, as on the real board: a
         # 100-pin package with a pin-1 dot and its legend.
-        cx, cy, r = x + 2.4 * DPI, y + 1.05 * DPI, 0.36 * DPI
+        cx, cy, r = x + 2.0 * DPI, y + (MEGA_HEIGHT - 1.12) * DPI, 0.36 * DPI
         diamond = [(cx, cy - r), (cx + r, cy), (cx, cy + r), (cx - r, cy)]
         for (ax, ay), (bx, by) in zip (diamond, diamond[1:] + diamond[:1]):
             for step in range (1, 25):
@@ -886,13 +889,13 @@ class Drawing:
         pencil.disc (cx, cy - r + 7, 1.6, tone=0.35)
         pencil.text (cx, cy + 3, "ATMEGA2560", size=6.5, kind="silk", rotate=-45,
                      color="#e9e6de", tone=0.85)
-        pencil.text (x + 1.25 * DPI, y + 1.12 * DPI, "ARDUINO", size=12, weight="bold",
+        pencil.text (x + 1.0 * DPI, y + 1.12 * DPI, "ARDUINO", size=12, weight="bold",
                      tone=0.5, kind="silk")
-        pencil.text (x + 1.25 * DPI, y + 1.28 * DPI, "MEGA 2560", size=12, weight="bold",
+        pencil.text (x + 1.0 * DPI, y + 1.28 * DPI, "MEGA 2560", size=12, weight="bold",
                      tone=0.5, kind="silk")
 
         # The built-in LED, L, on pin 13.
-        lx, ly = x + 1.2 * DPI, y + 0.45 * DPI
+        lx, ly = x + 1.1 * DPI, y + (MEGA_HEIGHT - 1.66) * DPI
         pencil.rect (lx - 3.5, ly - 2, 7, 4, width=0.6)
         pencil.text (lx + 9, ly + 3, "L", size=7, anchor="start", kind="silk", tone=0.7)
 
@@ -903,8 +906,11 @@ class Drawing:
         groups = {}
         for name, pin in MEGA_PINS.items ():
             groups.setdefault ((pin.header, pin.block), []).append (name)
-        for names in groups.values ():
-            points = [bench.pin_xy (n) for n in names]
+        # The power header's first position has no pin: a socket with no name.
+        mx, my = bench.mega_origin ()
+        spare = ((mx + 1.10) * DPI, (my + MEGA_HEIGHT - 0.1) * DPI)
+        for key, names in groups.items ():
+            points = [bench.pin_xy (n) for n in names] + ([spare] if key == ("bottom", 0) else [])
             left = min (p[0] for p in points) - 5
             top = min (p[1] for p in points) - 5
             right = max (p[0] for p in points) + 5
@@ -912,6 +918,7 @@ class Drawing:
             pencil.fill ([(left, top), (right, top), (right, bottom), (left, bottom)], tone=0.72)
             pencil.rect (left, top, right - left, bottom - top, width=0.6)
 
+        pencil.socket (*spare)
         for name, pin in MEGA_PINS.items ():
             hx, hy = bench.pin_xy (name)
             pencil.socket (hx, hy)

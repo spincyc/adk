@@ -13,7 +13,7 @@ bench.home_encoder (above=True)
 
 bench.home_fm_radio ()
 
-bench.home_knob (via=[(2.19, 4.05), (11.1, 4.05)])
+bench.home_knob (via=[(2.35, 4.05), (11.1, 4.05)])
 
 bench.closeup (23, 62)
 

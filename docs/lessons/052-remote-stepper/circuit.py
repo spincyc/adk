@@ -14,7 +14,7 @@ knob = Bench ("Board A: a knob on A0, the LCD on pins 31 to 36, and a LoRa modem
 
 knob.screen (text=("Knob says 90°", "Arrived: 90°"))
 knob.home_modem ()
-knob.home_knob (via=[(2.19, 5.35), (11.1, 5.35)])
+knob.home_knob (via=[(2.35, 5.35), (11.1, 5.35)])
 knob.closeup (30, 62)
 
 # Readings to take with a multimeter: the knob's middle leg, whose voltage

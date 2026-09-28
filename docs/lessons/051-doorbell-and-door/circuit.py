@@ -18,13 +18,13 @@ door.power_module ("3.3V")
 
 door.home_button ("22")
 
-door.home_buzzer ("active", via=[(1.7, -0.45), (8.8, -0.45)])
+door.home_buzzer ("active", via=[(1.60, -0.45), (8.8, -0.45)])
 
 door.home_rfid ()
 
 door.home_tap ()
 
-door.home_modem (tx=[(3.15, -0.35), (9.9, -0.35)], rx=[(3.25, -0.25), (9.7, -0.25)], power="B+47")
+door.home_modem (tx=[(3.05, -0.35), (9.9, -0.35)], rx=[(3.15, -0.25), (9.7, -0.25)], power="B+47")
 
 # Board B, inside: the matrix comes out; the power module, the servo latch
 # and the modem stay. The screen goes in at its home, powered from the top
@@ -44,7 +44,7 @@ inside.home_modem ()
 
 inside.home_buzzer ("passive")
 
-inside.home_servo (via=[(4.85, 1.95), (4.85, 5.55), (10.5, 5.55)])
+inside.home_servo (via=[(4.85, 1.90), (4.85, 5.55), (10.5, 5.55)])
 
 boards = {"A": door, "B": inside}
 

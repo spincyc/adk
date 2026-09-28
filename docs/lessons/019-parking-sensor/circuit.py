@@ -11,7 +11,7 @@ bench.home_ultrasonic ()
 for pin, color in (("26", "red"), ("27", "yellow"), ("28", "green")):
     bench.home_led (pin, color)
 
-bench.home_buzzer ("active", via=[(1.69, -1.47), (8.7, -1.47)])
+bench.home_buzzer ("active", via=[(1.59, -1.47), (8.7, -1.47)])
 
 bench.closeup (1, 37)
 

@@ -21,13 +21,13 @@ COURT = ["........",
 def player (title, sketch):
     bench = Bench (title, columns=(1, 50), sketch=sketch)
 
-    bench.home_modem (tx=[(3.15, 0.35), (9.9, 0.35)], rx=[(3.25, 0.45), (9.7, 0.45)])
+    bench.home_modem (tx=[(3.05, 0.35), (9.9, 0.35)], rx=[(3.15, 0.45), (9.7, 0.45)])
 
     bench.home_matrix (pixels=[row[::-1] for row in reversed (COURT)])
 
     bench.home_joystick ()
 
-    bench.home_buzzer ("passive", via=[(1.89, 0.25), (8.7, 0.25)])
+    bench.home_buzzer ("passive", via=[(1.79, 0.25), (8.7, 0.25)])
     bench.closeup (1, 50)
 
     # Readings to take with a multimeter, before anyone serves: TX3

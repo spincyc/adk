@@ -4,9 +4,9 @@
 bench = Bench ("A white LED on pin 3 through 220 Ω, and a knob on A0 between GND and 5 V",
                columns=(1, 50))
 
-bench.home_led ("3", "white", via=[(2.65, 0.45), (9.10, 0.45)])
+bench.home_led ("3", "white", via=[(2.55, 0.45), (9.10, 0.45)])
 
-bench.home_knob (via=[(2.20, 2.85), (9.95, 2.85)])
+bench.home_knob (via=[(2.36, 2.85), (9.95, 2.85)])
 
 # Readings to take with a multimeter, with the knob turned until the sketch
 # reads about 256: a quarter of the way from the GND end.

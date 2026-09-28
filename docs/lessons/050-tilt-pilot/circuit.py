@@ -9,7 +9,7 @@ tilt = Bench ("Board A: a GY-521 accelerometer on the I2C pins 20 and 21, and th
 
 tilt.home_gy521 ()
 
-tilt.home_modem (tx=[(3.15, -0.35), (9.9, -0.35)], rx=[(3.25, -0.25), (9.7, -0.25)])
+tilt.home_modem (tx=[(3.05, -0.35), (9.9, -0.35)], rx=[(3.15, -0.25), (9.7, -0.25)])
 
 # Board B, the ball: the RGB LED and its resistors come out; the power
 # module, the servo and the modem stay. The LED matrix lies at its home,
@@ -36,7 +36,7 @@ ball.home_matrix (pixels=[row[::-1] for row in reversed (BALL)])
 
 ball.home_modem ()
 
-ball.home_servo (via=[(4.85, 1.95), (4.85, 2.95), (9.3, 2.95), (9.3, 5.55), (10.5, 5.55)])
+ball.home_servo (via=[(4.85, 1.90), (4.85, 2.95), (9.3, 2.95), (9.3, 5.55), (10.5, 5.55)])
 
 ball.closeup (38, 63)
 

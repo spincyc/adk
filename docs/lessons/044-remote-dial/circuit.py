@@ -12,8 +12,8 @@ dial.screen (text=("Asked  135°", "Servo  120°"))
 
 dial.home_encoder (above=True)
 
-dial.home_modem (tx=[(3.15, 0.05), (4.3, 0.05), (4.3, -0.22), (9.65, -0.22)],
-                 rx=[(3.25, 0.1), (4.35, 0.1), (4.35, -0.17), (9.45, -0.17)])
+dial.home_modem (tx=[(3.05, 0.05), (4.3, 0.05), (4.3, -0.22), (9.65, -0.22)],
+                 rx=[(3.15, 0.1), (4.35, 0.1), (4.35, -0.17), (9.45, -0.17)])
 
 # Board B, the servo: the button and the red LED come out; the yellow LED
 # on 27 stays at its home, now the link light. The power module lies
@@ -31,7 +31,7 @@ servo.home_led ("27", "yellow")
 
 servo.home_modem ()
 
-servo.home_servo (via=[(4.55, 1.95), (4.55, 5.45), (10.5, 5.45)])
+servo.home_servo (via=[(4.55, 1.90), (4.55, 5.45), (10.5, 5.45)])
 
 boards = {"A": dial, "B": servo}
 

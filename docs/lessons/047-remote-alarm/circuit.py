@@ -17,7 +17,7 @@ door = Bench ("Board A, by the door: a PIR on A12, a tilt switch on A14, a beam-
 
 
 def bridge_home (bench, power=((1.59, 5.3), (10.3, 5.3), (10.3, 2.8))):
-    bench.home_modem (tx=[(3.15, -1.95), (9.9, -1.95)], rx=[(3.25, -1.85), (9.7, -1.85)],
+    bench.home_modem (tx=[(3.05, -1.95), (9.9, -1.95)], rx=[(3.15, -1.85), (9.7, -1.85)],
                       txd=[(9.7, 2.0)], supply=list (power))
 
 
@@ -73,6 +73,6 @@ den.wire ("2", "receiver.S")
 den.wire ("receiver.+", "T+39")
 den.wire ("receiver.−", "T-37")
 
-den.home_buzzer ("active", via=[(1.69, -2.3), (10.4, -2.3)])
+den.home_buzzer ("active", via=[(1.59, -2.3), (10.4, -2.3)])
 
 boards = {"A": door, "B": den}

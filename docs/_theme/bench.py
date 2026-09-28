@@ -98,7 +98,8 @@ from pencil import DPI
 
 MEGA_WIDTH, MEGA_HEIGHT = 4.0, 2.1
 BOARD_HEIGHT = 2.2
-GAP = 0.8                           # between the Mega and the breadboard
+GAP = 0.9                           # between the Mega and the breadboard
+END = 0.15                          # from a board's end to its first column, as the kit's
 MARGIN = 0.35
 
 # The kit's breadboard jumpers come in black, red, orange, yellow, green,
@@ -166,26 +167,30 @@ class MegaPin (NamedTuple):
     outer: bool = False
 
 
+# The header pins where Arduino's Mega 2560 Rev3 board file puts them, in
+# inches from the board's corner by the USB socket: the shield headers as on
+# the Uno, with the 0.16 inch step between pins 8 and 7, and the power
+# header after its one unconnected pin.
 def mega_pins ():
     pins = {}
     top = ["SCL", "SDA", "AREF", "GND"] + [str (n) for n in range (13, 7, -1)]
     for index, name in enumerate (top):
-        pins[name] = MegaPin (0.84 + 0.1 * index, 2.0, "top", 0)
+        pins[name] = MegaPin (0.74 + 0.1 * index, 2.0, "top", 0)
     for index, n in enumerate (range (7, -1, -1)):
-        pins[str (n)] = MegaPin (1.90 + 0.1 * index, 2.0, "top", 1)
+        pins[str (n)] = MegaPin (1.80 + 0.1 * index, 2.0, "top", 1)
     for index, n in enumerate (range (14, 22)):
-        pins[str (n)] = MegaPin (2.80 + 0.1 * index, 2.0, "top", 2)
+        pins[str (n)] = MegaPin (2.70 + 0.1 * index, 2.0, "top", 2)
     for index, name in enumerate (["IOREF", "RESET", "3.3V", "5V", "GND2", "GND3", "VIN"]):
-        pins[name] = MegaPin (1.04 + 0.1 * index, 0.1, "bottom", 0)
+        pins[name] = MegaPin (1.20 + 0.1 * index, 0.1, "bottom", 0)
     for n in range (8):
-        pins[f"A{n}"] = MegaPin (1.84 + 0.1 * n, 0.1, "bottom", 1)
+        pins[f"A{n}"] = MegaPin (2.00 + 0.1 * n, 0.1, "bottom", 1)
     for n in range (8, 16):
-        pins[f"A{n}"] = MegaPin (2.74 + 0.1 * (n - 8), 0.1, "bottom", 2)
+        pins[f"A{n}"] = MegaPin (2.90 + 0.1 * (n - 8), 0.1, "bottom", 2)
     rows = [("5V2", "5V3")] + [(str (n), str (n + 1)) for n in range (22, 53, 2)]
     rows += [("GND4", "GND5")]
     for index, (even, odd) in enumerate (rows):
-        pins[even] = MegaPin (3.70, 1.95 - 0.1 * index, "double")
-        pins[odd] = MegaPin (3.80, 1.95 - 0.1 * index, "double", outer=True)
+        pins[even] = MegaPin (3.70, 2.00 - 0.1 * index, "double")
+        pins[odd] = MegaPin (3.80, 2.00 - 0.1 * index, "double", outer=True)
     return pins
 
 
@@ -238,7 +243,7 @@ class Bench:
     # Where things are ---------------------------------------------------
 
     def board_width (self):
-        return 0.5 + (self.last - self.first) * 0.1
+        return 2 * END + (self.last - self.first) * 0.1
 
     def mega_origin (self):
         return MARGIN, MARGIN + 0.25
@@ -269,7 +274,7 @@ class Bench:
         _, column, row = parse_hole (hole)
         if not self.first <= column <= self.last:
             raise ValueError (f"{hole} is outside the drawn columns {self.first}-{self.last}")
-        return (bx + 0.25 + (column - self.first) * 0.1) * DPI, (by + ROWS[row]) * DPI
+        return (bx + END + (column - self.first) * 0.1) * DPI, (by + ROWS[row]) * DPI
 
     def strip_of (self, hole):
         kind, column, row = parse_hole (hole)
@@ -611,10 +616,10 @@ class Bench:
     # from RST to 3.3 V along row h.
     def home_fm_radio (self):
         self.header_module ("fm_radio", first=45, row="j")
-        self.wire ("42", "f47", via=[(4.45, 1.85), (4.45, 3.65), (10.0, 3.65)])
-        self.wire ("41", "f49", via=[(4.55, 1.75), (4.55, 3.75), (10.2, 3.75)])
-        self.wire ("40", "f50", via=[(4.25, 1.7), (4.65, 1.7), (4.65, 3.85), (10.3, 3.85)])
-        self.wire ("3.3V", "f52", via=[(1.59, 3.95), (10.5, 3.95)])
+        self.wire ("42", "f47", via=[(4.45, 1.75), (4.45, 3.65), (10.0, 3.65)])
+        self.wire ("41", "f49", via=[(4.55, 1.70), (4.55, 3.75), (10.2, 3.75)])
+        self.wire ("40", "f50", via=[(4.25, 1.65), (4.65, 1.65), (4.65, 3.85), (10.3, 3.85)])
+        self.wire ("3.3V", "f52", via=[(1.75, 3.95), (10.5, 3.95)])
         self.wire ("f51", "B-51")
         return self.resistor ("1 kΩ", "h47", "h52")
 
@@ -624,8 +629,8 @@ class Bench:
     # and a black jumper from its GND column to the − rail.
     def home_rf_receiver (self):
         self.header_module ("rf_receiver", first=48, row="j")
-        self.wire ("5V.power", "f48", via=[(1.69, 3.65), (10.1, 3.65)])
-        self.wire ("43", "f49", via=[(4.45, 1.85), (4.45, 3.75), (10.2, 3.75)])
+        self.wire ("5V.power", "f48", via=[(1.85, 3.65), (10.1, 3.65)])
+        self.wire ("43", "f49", via=[(4.45, 1.80), (4.45, 3.75), (10.2, 3.75)])
         return self.wire ("f51", "B-51")
 
     # The 433 MHz transmitter standing in row j, columns 56 to 59: its DAT
@@ -634,11 +639,11 @@ class Bench:
     # 3.3V into its + column, and a black jumper from its − column.
     def home_rf_transmitter (self):
         self.header_module ("rf_transmitter", first=56, row="j")
-        self.wire ("46", "f54", via=[(4.25, 2.0), (4.55, 2.0), (4.55, 3.85), (10.7, 3.85)])
+        self.wire ("46", "f54", via=[(4.25, 1.95), (4.55, 1.95), (4.55, 3.85), (10.7, 3.85)])
         self.resistor ("1 kΩ", "h54", "h57")
         self.resistor ("2 kΩ", "g57", "e57")
         self.wire ("a57", "B-57")
-        self.wire ("3.3V", "f58", via=[(1.59, 3.95), (11.1, 3.95)])
+        self.wire ("3.3V", "f58", via=[(1.75, 3.95), (11.1, 3.95)])
         return self.wire ("f59", "B-59")
 
     # Modules at their homes beside the board.
@@ -674,8 +679,8 @@ class Bench:
         self.wire ("T+7", "i9")
         self.wire ("f10", "e10", color="black")
         self.wire ("a10", "B-10")
-        self.wire ("21", "g11", via=[(3.85, 0.55), (5.75, 0.55), (5.75, 1.35)])
-        return self.wire ("20", "h12", via=[(3.75, 0.5), (5.85, 0.5), (5.85, 1.25)])
+        self.wire ("21", "g11", via=[(3.75, 0.55), (5.75, 0.55), (5.75, 1.35)])
+        return self.wire ("20", "h12", via=[(3.65, 0.5), (5.85, 0.5), (5.85, 1.25)])
 
     # The DS1307 clock above the board, facing right: GND and VCC from the
     # top rails in columns 29 and 30, SDA and SCL from 20 and 21 over the
@@ -723,9 +728,9 @@ class Bench:
     # from the inner GND, both over the top.
     def home_relay (self):
         self.module ("relay", at=(5.05, -0.75), facing="left")
-        self.wire ("11", "relay.S", via=[(1.8, -0.35)])
-        self.wire ("5V.long", "relay.+", via=[(4.25, 0.7), (4.25, -0.25)])
-        return self.wire ("GND.long", "relay.−", via=[(4.35, 2.4), (4.35, -0.15)])
+        self.wire ("11", "relay.S", via=[(1.70, -0.35)])
+        self.wire ("5V.long", "relay.+", via=[(4.25, 0.65), (4.25, -0.25)])
+        return self.wire ("GND.long", "relay.−", via=[(4.35, 2.35), (4.35, -0.15)])
 
     # The keypad above the Mega, its eight wires R1 to C4 from 22 to 29,
     # each rising past the header in a lane of its own.
@@ -733,7 +738,7 @@ class Bench:
         self.module ("keypad", "keypad", at=(3.04, -4.95))
         turns = (0.5, 0.45, 0.4, 0.35, None, 0.4, 0.45, 0.5)
         for index, name in enumerate (("R1", "R2", "R3", "R4", "C1", "C2", "C3", "C4")):
-            riser, height = 4.25 + 0.05 * index, 0.8 + 0.05 * index
+            riser, height = 4.25 + 0.05 * index, 0.75 + 0.05 * index
             socket = 4.05 + 0.1 * index
             via = [(riser, height)]
             if turns[index]:
@@ -747,10 +752,10 @@ class Bench:
     # rails, unless the lesson powers it some other way.
     def home_stepper (self, powered=True):
         self.module ("stepper", at=(3.1, 4.5), facing="up")
-        self.wire ("A8", "stepper.IN1", via=[(3.09, 3.5), (4.45, 3.5)])
-        self.wire ("A9", "stepper.IN2", via=[(3.19, 3.3), (4.35, 3.3)])
-        self.wire ("A10", "stepper.IN3", via=[(3.29, 3.1), (4.25, 3.1)])
-        self.wire ("A11", "stepper.IN4", via=[(3.39, 2.9), (4.15, 2.9)])
+        self.wire ("A8", "stepper.IN1", via=[(3.25, 3.5), (4.45, 3.5)])
+        self.wire ("A9", "stepper.IN2", via=[(3.35, 3.3), (4.35, 3.3)])
+        self.wire ("A10", "stepper.IN3", via=[(3.45, 3.1), (4.25, 3.1)])
+        self.wire ("A11", "stepper.IN4", via=[(3.55, 2.9), (4.15, 2.9)])
         if powered:
             self.wire ("stepper.+", "B+5", via=[(3.56, 3.65), (5.8, 3.65)])
             self.wire ("stepper.−", "B-6", via=[(3.66, 3.75), (5.9, 3.75)])
@@ -761,8 +766,8 @@ class Bench:
     # 50 and 45, down past the double header in lanes.
     def home_rfid (self):
         self.module ("rfid", at=(1.65, 4.17), facing="up")
-        self.wire ("3.3V", "rfid.3.3V", via=[(1.6, 2.8), (2.1, 2.8)])
-        self.wire ("GND.long", "rfid.GND", via=[(4.25, 2.4), (4.25, 3.0), (2.3, 3.0)])
+        self.wire ("3.3V", "rfid.3.3V", via=[(1.76, 2.8), (2.1, 2.8)])
+        self.wire ("GND.long", "rfid.GND", via=[(4.25, 2.35), (4.25, 3.0), (2.3, 3.0)])
         self.wire ("53", "rfid.SDA", via=[(4.35, 3.1), (2.8, 3.1)])
         self.wire ("52", "rfid.SCK", via=[(4.45, 3.2), (2.7, 3.2)])
         self.wire ("51", "rfid.MOSI", via=[(4.55, 3.3), (2.6, 3.3)])
@@ -773,8 +778,8 @@ class Bench:
     # header.
     def home_pir (self):
         self.module ("pir", name="pir", at=(1.26, 3.8), facing="up")
-        self.wire ("A12", "pir.OUT", via=[(3.49, 3.05), (1.89, 3.05)])
-        self.wire ("5V.power", "pir.VCC", via=[(1.69, 2.9), (1.79, 2.9)])
+        self.wire ("A12", "pir.OUT", via=[(3.65, 3.05), (1.89, 3.05)])
+        self.wire ("5V.power", "pir.VCC", via=[(1.85, 2.9), (1.79, 2.9)])
         return self.wire ("GND.power", "pir.GND")
 
     # The tap sensor below the Mega's left end: S on A12, + and − from the
@@ -782,9 +787,9 @@ class Bench:
     def home_tap (self):
         self.module ("sensor", name="tap", at=(0.43, 3.62), pins=["S", "+", "−"],
                      label="tap sensor", facing="up")
-        self.wire ("A12", "tap.S", via=[(3.5, 2.95), (0.85, 2.95)])
-        self.wire ("5V.power", "tap.+", via=[(1.7, 2.9), (0.75, 2.9)])
-        return self.wire ("GND.power", "tap.−", via=[(1.8, 2.85), (0.65, 2.85)])
+        self.wire ("A12", "tap.S", via=[(3.66, 2.95), (0.85, 2.95)])
+        self.wire ("5V.power", "tap.+", via=[(1.86, 2.9), (0.75, 2.9)])
+        return self.wire ("GND.power", "tap.−", via=[(1.96, 2.85), (0.65, 2.85)])
 
     # The beam-break sensor below the board: S on A15, + and − from the
     # bottom rails in columns 36 and 37.

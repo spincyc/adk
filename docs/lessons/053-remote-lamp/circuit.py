@@ -17,8 +17,8 @@
 # Over the top, above the IR receiver or the relay: 14 in the higher lane, so the
 # two nest rather than cross.
 def modem (bench, lanes):
-    bench.home_modem (tx=[(3.15, lanes[0]), (9.9, lanes[0])],
-                      rx=[(3.25, lanes[1]), (9.7, lanes[1])])
+    bench.home_modem (tx=[(3.05, lanes[0]), (9.9, lanes[0])],
+                      rx=[(3.15, lanes[1]), (9.7, lanes[1])])
 
 
 receiver = Bench ("Board A: an IR receiver on pin 2, the LCD on pins 31 to 36, and a LoRa modem "
@@ -28,7 +28,7 @@ receiver = Bench ("Board A: an IR receiver on pin 2, the LCD on pins 31 to 36, a
 receiver.screen (text=("Sent 0x0C, #3", "Lamp is on"))
 modem (receiver, lanes=(-2.15, -2.05))
 receiver.module ("ir_receiver", name="eye", at=(7.89, -1.7))
-receiver.wire ("2", "eye.S", via=[(2.75, -0.2), (8.3, -0.2)])
+receiver.wire ("2", "eye.S", via=[(2.65, -0.2), (8.3, -0.2)])
 receiver.wire ("eye.+", "T+29")
 receiver.wire ("eye.−", "T-28")
 receiver.closeup (26, 50)
@@ -48,7 +48,7 @@ repeater.module ("battery9v", name="battery", at=(6.2, 3.3), facing="up")
 repeater.wire ("battery.−", "a14")
 repeater.wire ("battery.+", "relay.COM")
 
-repeater.wire ("3", "j38", via=[(2.65, -1.15), (9.1, -1.15)])
+repeater.wire ("3", "j38", via=[(2.55, -1.15), (9.1, -1.15)])
 repeater.resistor ("220 Ω", "g38", "e38")
 repeater.module ("ir_transmitter", name="irled", at=(8.69, 3.45), facing="up")
 repeater.wire ("irled.S", "a38")

@@ -11,7 +11,7 @@ door.screen (text=("Locked. Code?", "**"), risers=(4.8, 0.05))
 
 door.home_keypad ()
 
-door.home_modem (tx=[(3.15, -0.35), (9.9, -0.35)], rx=[(3.25, -0.25), (9.7, -0.25)])
+door.home_modem (tx=[(3.05, -0.35), (9.9, -0.35)], rx=[(3.15, -0.25), (9.7, -0.25)])
 
 # Board B, inside: the power module beside the board, its 5V and GND
 # wired to B+61 and B-61 for the servo; the Mega's GND joins the rails at
@@ -29,7 +29,7 @@ inside.home_rgb_led ()
 
 inside.home_modem ()
 
-inside.home_servo (via=[(4.85, 1.95), (4.85, 5.55), (10.5, 5.55)])
+inside.home_servo (via=[(4.85, 1.90), (4.85, 5.55), (10.5, 5.55)])
 
 boards = {"A": door, "B": inside}
 

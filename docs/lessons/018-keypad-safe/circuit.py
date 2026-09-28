@@ -13,9 +13,9 @@ bench.screen (text=("Locked. Code?", "****"), risers=(4.8, 0.05))
 
 bench.home_keypad ()
 
-bench.home_buzzer ("active", via=[(1.7, -0.25), (10.4, -0.25)])
+bench.home_buzzer ("active", via=[(1.60, -0.25), (10.4, -0.25)])
 
-bench.home_servo (via=[(4.55, 1.95), (4.55, 3.01), (10.5, 3.01)])
+bench.home_servo (via=[(4.55, 1.90), (4.55, 3.01), (10.5, 3.01)])
 
 # Readings to take with a multimeter: the screen's VDD, which takes the
 # Mega's 5 V from the top + rail, and its D4 wire, which shows a star's

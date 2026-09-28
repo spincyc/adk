@@ -19,9 +19,9 @@ bench.home_rtc (sda=[(3.75, 0.35), (3.95, 0.35), (3.95, -1.6), (8.5, -1.6), (8.5
 
 bench.home_encoder (above=True, lift=0.3)
 
-bench.home_button ("23", via=[(4.4, 0.85), (4.4, -1.7), (9.1, -1.7)])
+bench.home_button ("23", via=[(4.4, 0.80), (4.4, -1.7), (9.1, -1.7)])
 
-bench.home_buzzer ("passive", via=[(1.9, -2.4), (10.4, -2.4)])
+bench.home_buzzer ("passive", via=[(1.80, -2.4), (10.4, -2.4)])
 
 bench.power_module ()
 # The driver without its usual + and − wires, which come in below; the +

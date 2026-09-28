@@ -9,13 +9,13 @@ bench.home_button ("22")
 
 bench.home_button ("23")
 
-bench.home_led ("26", "red", via=[(4.45, 1.0), (4.45, 1.15)])
+bench.home_led ("26", "red", via=[(4.45, 0.95), (4.45, 1.15)])
 
-bench.home_led ("27", "yellow", via=[(4.35, 1.05), (4.35, 1.25)])
+bench.home_led ("27", "yellow", via=[(4.35, 1.00), (4.35, 1.25)])
 
-bench.home_led ("28", "green", via=[(4.25, 1.2), (4.25, 1.35), (7.05, 1.35)])
+bench.home_led ("28", "green", via=[(4.25, 1.15), (4.25, 1.35), (7.05, 1.35)])
 
-bench.home_buzzer ("active", via=[(1.7, 0.45), (8.65, 0.45)])
+bench.home_buzzer ("active", via=[(1.60, 0.45), (8.65, 0.45)])
 
 # Readings to take with a multimeter at Go, while the yellow light is on and
 # the buzzer sounds: the LED shares the pin's 5 V with its resistor, the

@@ -10,11 +10,11 @@ bench.screen (text=("23°C 45% Comfy", "Alarm at 30°C"))
 
 bench.home_dht11 ()
 
-bench.home_rgb_led (via=([(2.45, -1.55), (9.4, -1.55)],
-                          [(2.35, -1.65), (9.7, -1.65)],
-                          [(2.25, -1.75), (9.9, -1.75)]))
+bench.home_rgb_led (via=([(2.35, -1.55), (9.4, -1.55)],
+                          [(2.25, -1.65), (9.7, -1.65)],
+                          [(2.15, -1.75), (9.9, -1.75)]))
 
-bench.home_buzzer ("active", via=[(1.7, -1.85), (10.4, -1.85)])
+bench.home_buzzer ("active", via=[(1.60, -1.85), (10.4, -1.85)])
 
 bench.home_knob ()
 

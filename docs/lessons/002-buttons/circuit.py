@@ -9,9 +9,9 @@ bench.home_button ("22")
 
 bench.home_button ("23")
 
-bench.home_led ("26", "red", via=[(4.45, 1.0), (4.45, 1.15)])
+bench.home_led ("26", "red", via=[(4.45, 0.95), (4.45, 1.15)])
 
-bench.home_led ("27", "yellow", via=[(4.35, 1.05), (4.35, 1.25)])
+bench.home_led ("27", "yellow", via=[(4.35, 1.00), (4.35, 1.25)])
 
 # Readings to take with a multimeter: the left button's pin up and pressed,
 # and the yellow LED's pin while the right button is held.

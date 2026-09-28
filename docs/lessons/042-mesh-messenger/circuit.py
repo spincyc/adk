@@ -14,17 +14,17 @@ bench.screen (text=("4f2a says:", "Hi Mega!"))
 
 bench.home_dht11 ()
 
-bench.home_rgb_led (via=([(2.45, -1.55), (9.4, -1.55)],
-                          [(2.35, -1.65), (9.7, -1.65)],
-                          [(2.25, -1.75), (9.9, -1.75)]))
+bench.home_rgb_led (via=([(2.35, -1.55), (9.4, -1.55)],
+                          [(2.25, -1.65), (9.7, -1.65)],
+                          [(2.15, -1.75), (9.9, -1.75)]))
 
 bench.module ("mesh_board", "node", at=(9.2, 3.75), facing="up")
-bench.wire ("18", "j55", via=[(3.55, -2.35), (10.8, -2.35)])
+bench.wire ("18", "j55", via=[(3.45, -2.35), (10.8, -2.35)])
 bench.resistor ("1 kΩ", "g55", "e55")
 bench.resistor ("2 kΩ", "a55", "B-55")
 bench.wire ("node.47", "c55", color="white")
 bench.wire ("node.48", "f53", color="grey")
-bench.wire ("19", "j53", via=[(3.65, -2.25), (10.6, -2.25)])
+bench.wire ("19", "j53", via=[(3.55, -2.25), (10.6, -2.25)])
 bench.wire ("node.GND", "B-59")
 
 bench.home_button ("23", via=[(8.45, 0.95), (9.1, 0.95)])

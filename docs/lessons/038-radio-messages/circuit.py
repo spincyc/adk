@@ -8,7 +8,7 @@ bench = Bench ("A 433 MHz receiver on pin 43 and transmitter on pin 46, a button
 
 bench.screen (text=("Message 3:", "Dinner's ready"))
 
-bench.home_button ("23", via=[(4.4, 0.85), (4.4, -1.7), (9.1, -1.7)])
+bench.home_button ("23", via=[(4.4, 0.80), (4.4, -1.7), (9.1, -1.7)])
 
 bench.home_rf_receiver ()
 

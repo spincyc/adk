@@ -5,9 +5,9 @@
 bench = Bench ("An IR receiver on pin 2, and an RGB LED on pins 5, 6 and 7, each color through "
                "a 220 Ω resistor", columns=(1, 30))
 
-bench.home_rgb_led (via=([(2.45, -1.15), (5.9, -1.15)],
-                          [(2.35, -1.25), (6.2, -1.25)],
-                          [(2.25, -1.35), (6.4, -1.35)]))
+bench.home_rgb_led (via=([(2.35, -1.15), (5.9, -1.15)],
+                          [(2.25, -1.25), (6.2, -1.25)],
+                          [(2.15, -1.35), (6.4, -1.35)]))
 
 bench.module ("ir_receiver", name="receiver", at=(4.3, -0.9))
 bench.wire ("2", "receiver.S")

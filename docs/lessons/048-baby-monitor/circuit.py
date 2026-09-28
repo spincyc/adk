@@ -13,7 +13,7 @@ nursery = Bench ("Board A, in the nursery: a sound sensor on A5, a water sensor 
 
 
 def bridge_home (bench, power=((1.59, 5.3), (10.3, 5.3), (10.3, 2.8))):
-    bench.home_modem (tx=[(3.15, -1.95), (9.9, -1.95)], rx=[(3.25, -1.85), (9.7, -1.85)],
+    bench.home_modem (tx=[(3.05, -1.95), (9.9, -1.95)], rx=[(3.15, -1.85), (9.7, -1.85)],
                       txd=[(9.7, 2.0)], supply=list (power))
 
 
@@ -33,7 +33,7 @@ nursery.wire ("A6", "water.S")
 nursery.wire ("A7", "water.+")
 nursery.wire ("GND.power2", "water.−")
 
-nursery.home_divider ("photoresistor", via=[(2.29, 2.95), (9.25, 2.95)])
+nursery.home_divider ("photoresistor", via=[(2.45, 2.95), (9.25, 2.95)])
 
 # Board B, with the parent: Lesson 47's screen and clock module stay, and the
 # IR receiver stays to hush the alarm. The passive buzzer on pin 10 takes
@@ -54,7 +54,7 @@ parent.wire ("2", "receiver.S")
 parent.wire ("receiver.+", "T+39")
 parent.wire ("receiver.−", "T-37")
 
-parent.home_buzzer ("passive", via=[(1.9, -2.3), (10.4, -2.3)])
+parent.home_buzzer ("passive", via=[(1.80, -2.3), (10.4, -2.3)])
 
 # The matrix is drawn turned half round, so its picture is given upside
 # down: a bar graph of the last eight half seconds' sound.

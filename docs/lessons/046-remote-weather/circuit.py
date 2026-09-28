@@ -12,7 +12,7 @@ garden = Bench ("Board A, the garden: a DHT11 on pin 16, an 18B20 on pin 17, a t
 
 
 def bridge_home (bench):
-    bench.home_modem (tx=[(3.15, -1.95), (9.9, -1.95)], rx=[(3.25, -1.85), (9.7, -1.85)],
+    bench.home_modem (tx=[(3.05, -1.95), (9.9, -1.95)], rx=[(3.15, -1.85), (9.7, -1.85)],
                       txd=[(9.7, 2.0)], supply=[(1.59, 5.3), (10.3, 5.3), (10.3, 2.8)])
 
 
@@ -26,11 +26,11 @@ garden.home_dht11 ()
 
 garden.wire ("j33", "T+33")
 garden.thermistor ("f33", "e33")
-garden.wire ("A2", "a33", via=[(2.39, 2.85), (8.55, 2.85)])
+garden.wire ("A2", "a33", via=[(2.55, 2.85), (8.55, 2.85)])
 garden.resistor ("10 kΩ", "c33", "c36")
 garden.wire ("a36", "B-36")
 
-garden.home_divider ("photoresistor", via=[(2.29, 2.95), (9.25, 2.95)])
+garden.home_divider ("photoresistor", via=[(2.45, 2.95), (9.25, 2.95)])
 
 # Readings to take with a multimeter on Board A: the light divider's middle,
 # which Board B shows as a percentage, in room light and covered.
@@ -52,9 +52,9 @@ bridge_home (indoors)
 indoors.screen (text=("Air 21.5°C  45%", "Heard   14:32:05"))
 indoors.home_rtc ()
 
-indoors.wire ("5", "j48", via=[(2.45, -2.05), (10.1, -2.05)])
-indoors.wire ("6", "j51", via=[(2.35, -2.15), (10.4, -2.15)])
-indoors.wire ("7", "j53", via=[(2.25, -2.25), (10.6, -2.25)])
+indoors.wire ("5", "j48", via=[(2.35, -2.05), (10.1, -2.05)])
+indoors.wire ("6", "j51", via=[(2.25, -2.15), (10.4, -2.15)])
+indoors.wire ("7", "j53", via=[(2.15, -2.25), (10.6, -2.25)])
 indoors.resistor ("220 Ω", "g48", "e48")
 indoors.resistor ("220 Ω", "g51", "e51")
 indoors.resistor ("220 Ω", "g53", "e53")
