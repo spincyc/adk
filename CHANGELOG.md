@@ -57,9 +57,11 @@ A new start, built on the library's original 2021 design.
   come in stages, a part and its wires under a heading naming the pins
   they use, with each wire, resistor and LED drawn between the holes it
   joins, lined up from step to step; a stage built before folds away. A
-  learner can tick steps off, and choose one to light its part up in the
-  drawing, which stays in sight above the steps on a large screen; once
-  they begin, the next step lights up by itself. The
+  learner can tick steps off, and point at one to light its part up in
+  the drawing, which stays in sight above the steps on a large screen;
+  once they begin, the next step's part glows. Pages name a rail's hole in
+  words, "the bottom − rail by column 3", never as B-3, whose B reads as
+  row b. The
   drawings follow the kit: the Mega's headers and the breadboard at their
   real sizes, modules with their pins in their real order, every wire a
   color the kit has, the potentiometers across the middle gap, the rotary
