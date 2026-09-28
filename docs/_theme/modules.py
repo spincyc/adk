@@ -483,6 +483,7 @@ class Rfid (Kind):
     # RC522: 40 x 60 mm, an antenna coil round most of the board.
     title  = "RFID reader"
     pins   = ("SDA", "SCK", "MOSI", "MISO", "IRQ", "GND", "RST", "3.3V")
+    supply = "3.3V"
     width, height = 157, 236
 
     def draw (self, pencil):
@@ -521,18 +522,19 @@ class Gy521 (Kind):
 
 
 class Rtc (Kind):
-    # A DS1307 clock module: its chip, crystal and CR2032 backup cell.
+    # A DS1307 clock module: its chip, crystal and backup cell, the kit's a
+    # 12.5 mm CR1220.
     title  = "clock module"
     pins   = ("GND", "VCC", "SDA", "SCL", "SQW")
     width, height = 120, 100
 
     def draw (self, pencil):
         board (pencil, 0, 0, self.width, self.height, self.color, holes=[(112, 8)])
-        pencil.spot (40, 38, 33, METAL)
-        pencil.circle (40, 38, 33, width=1.0, layer="top")
-        pencil.circle (40, 38, 27, width=0.7, tone=0.45, layer="top", passes=1)
-        pencil.text (40, 36, "CR2032", size=7, kind="silk")
-        pencil.text (40, 49, "+", size=10, kind="silk")
+        pencil.spot (40, 38, 25, METAL)
+        pencil.circle (40, 38, 25, width=1.0, layer="top")
+        pencil.circle (40, 38, 20, width=0.7, tone=0.45, layer="top", passes=1)
+        pencil.text (40, 36, "CR1220", size=6, kind="silk")
+        pencil.text (40, 47, "+", size=9, kind="silk")
         ic (pencil, 94, 26, 22, 15, legs=4)
         pencil.tint (rounded (85, 46, 20, 8, 4), METAL)
         pencil.rect (85, 46, 20, 8, width=0.8, radius=4, layer="top", passes=1)

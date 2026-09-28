@@ -44,9 +44,9 @@ a film projector's flickering light looks steady.
 
 The segment lines come from the 74HC595, as in Lesson 10, each through its
 1 kΩ resistor, about 3 mA per lit segment. A digit pin carries the current
-of all its lit segments together: an 8 with its dot is 8 × 3 = 24 mA, within
-the 40 mA a Mega pin can take, and each digit is lit only a quarter of the
-time.
+of all its lit segments together: an 8 with its dot is 8 × 3 = 24 mA. That
+is a little over the 20 mA a pin gives comfortably all day, well under the
+40 mA it may ever give, and each digit is lit only a quarter of the time.
 
 Because the display must be refreshed every 2 milliseconds, the sketch must
 never stop to wait. For things that happen on a beat, such as counting up

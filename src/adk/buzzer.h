@@ -12,8 +12,9 @@ namespace adk {
     //   + (the longer leg) -> the pin
     //   the other leg      -> GND
     //
-    // It draws up to about 30 mA: within a Mega pin's 40 mA, but give it a
-    // pin to itself.
+    // It draws up to about 30 mA: more than the 20 mA a Mega pin gives
+    // comfortably, though well under the 40 mA it may ever give, so give it
+    // a pin to itself.
     struct Buzzer : Object
     {
         Buzzer (Pin pin, Polarity polarity = ActiveHigh);

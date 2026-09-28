@@ -36,7 +36,7 @@ alive.
 | Part | Take care |
 |---|---|
 | RFID reader (RC522) | It runs on **3.3 V**. Power it from the Mega's 3.3V pin, never 5V. The Mega's 5 V signals on its SDA, SCK, MOSI and RST pins are above what the chip is rated for. It usually copes, and the lessons wire it that way; for a build that has to last, put a 1 kΩ and 2 kΩ divider on each of those four lines. |
-| Active buzzer | It draws up to about 30 mA: fine on its own pin (a Mega pin's limit is 40 mA), but give it a pin to itself. |
+| Active buzzer | It draws up to about 30 mA: more than the 20 mA a Mega pin gives comfortably, though well under the 40 mA it may ever give, so give it a pin to itself and let it sound in short beeps. |
 | Passive buzzer | Always through its 220 Ω resistor: its coil is only about 16 Ω. |
 | IR LED module | Always through its 220 Ω resistor: on its own the LED would take more current than it or the pin should. |
 | Water sensor | Dip only its copper traces, never its parts or pins, and keep the water away from the boards. Current through wet traces corrodes them, so the lessons power it from a pin only while they read it. |

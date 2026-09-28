@@ -24,7 +24,8 @@ namespace adk {
     //
     //   SDA -> pin 20, SCL -> pin 21, VCC -> 5 V, GND -> GND
     //
-    // A CR2032 coin cell keeps the time while the module is unplugged. Some
+    // A coin cell keeps the time while the module is unplugged: a CR1220 on
+    // the kit's module (Elegoo's DS1307-Module-V03), a CR2032 on some. Some
     // modules (the Tiny RTC, and the ZS-042 with a DS3231) charge their cell:
     // fit those with a rechargeable LIR2032, never a CR2032.
     //

@@ -34,7 +34,8 @@ The Mega can count milliseconds with `millis ()`, but it forgets everything the
 moment it loses power, and it starts again from zero. A **real-time clock**
 is a chip that does one job: it counts seconds, minutes, hours, days, months
 and years, with its own **coin cell** to keep it going when the Mega is off.
-A cell like the CR2032 keeps a DS1307 running for years.
+The kit's module holds a small CR1220 cell, which keeps a DS1307 running for
+years.
 
 The clock counts vibrations of a tiny **quartz crystal**, the silver can on the
 module. It vibrates exactly 32,768 times a second, and 32,768 is 2 multiplied

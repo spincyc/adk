@@ -16,7 +16,9 @@ namespace adk {
     // each output through a 1k ohm resistor. The digit pins go straight to
     // the Mega, which lights a digit by pulling its pin low. That pin sinks
     // the current of every lit segment; the resistors hold it to about 25 mA
-    // with all eight lit, under the 40 mA limit of a Mega pin.
+    // with all eight lit: a little over the 20 mA a Mega pin gives
+    // comfortably, well under the 40 mA it may ever give, and each digit is
+    // lit only a quarter of the time.
     //
     //   74HC595      Q0  Q1  Q2  Q3  Q4  Q5  Q6  Q7
     //   Segment      a   b   c   d   e   f   g   dp

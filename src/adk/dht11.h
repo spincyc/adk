@@ -6,10 +6,10 @@ namespace adk {
 
     // A DHT11 temperature and humidity sensor. On the kit's three-pin module,
     // wire S to the pin, + to 5 V and - to GND; the module has its own
-    // pull-up. A bare four-pin DHT11 also needs 10 kohm from its data pin to
-    // 5 V.
+    // pull-up. A bare four-pin DHT11 also needs a pull-up from its data pin
+    // to 5 V: its datasheet asks for 5.1 kohm on a short wire.
     //
-    // The sensor needs a second after power-up and at least a second between
+    // The sensor needs a second after power-up and about two seconds between
     // readings, so the first reading comes a second after the first update
     // and then one every two seconds. Receiving a reading blocks update () for
     // about 4 ms. Interrupts are held off while each bit is timed, a tenth of

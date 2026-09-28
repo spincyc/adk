@@ -2,7 +2,10 @@
 
 The course is built around the **Elegoo Mega 2560 Most Complete Starter
 Kit**. A few lessons also use modules from the **Elegoo 37 in 1 Sensor
-Modules Kit**; those are marked below and in each lesson's parts list.
+Modules Kit**; those are marked below and in each lesson's parts list. The
+drawings show that kit's black boards, as its first two versions have them;
+the blue boards of its third version carry the same parts, so check each
+one's printed pin names.
 
 ## The parts
 
@@ -70,7 +73,7 @@ need a second of each thing the other board uses:
 |---|---|
 | A second Arduino Mega 2560, USB cable and breadboard | Board B |
 | Two REYAX RYLR896 LoRa modems, the pair from Lesson 40 | One on each board, the bridge between them |
-| A second breadboard power module, when both boards drive a motor or servo | Each motor's own supply |
+| A second breadboard power module, when both boards need one, as in Lesson 51: one board's modem, the other's servo | Each board's own supply |
 | Two USB power sources, or a long cable, if the boards are to be far apart | Each board runs on its own |
 
 Each board's page says what it needs. A second Elegoo kit covers all of
