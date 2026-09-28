@@ -707,8 +707,9 @@
     opacity: 0.45;
 }
 
-/* The step lit up in the drawing, and its row. */
-.md-typeset table.steps tr[data-item] {
+/* The step lit up in the drawing, and its row: one chosen, or the next
+   one to build. */
+.md-typeset table.steps tr[data-step] {
     cursor: pointer;
 }
 
@@ -1255,6 +1256,16 @@
 
     .md-typeset table.steps tr {
         break-inside: avoid;
+    }
+
+    /* A page printed partway through the build shows all of the drawing,
+       and no step lit. */
+    .pencil-drawing.lighting [data-item]:not(.lit) {
+        opacity: 1;
+    }
+
+    .md-typeset table.steps tr.lit {
+        background: none;
     }
 
     .md-typeset .lesson-header h1 {

@@ -1,8 +1,9 @@
 // A lesson's build steps (hooks.py writes them): tick a step off, and see
-// the part it adds lit up in the board's drawings. The ticks are kept in
-// this browser, a set per page and board; a stage whose steps are all
-// ticked folds away. Where there is room, the drawing above the steps stays
-// in sight while they scroll.
+// the part it adds lit up in the board's drawings. Once the first step is
+// ticked, the next one lights up by itself, and its stage opens; a stage
+// whose steps are all ticked folds away. The ticks are kept in this
+// browser, a set per page and board. Where there is room, the drawing above
+// the steps stays in sight while they scroll.
 
 (function () {
     "use strict";
@@ -34,7 +35,8 @@
         const drawings = document.querySelectorAll (
             'figure.bench-figure[data-board="' + board + '"] svg.pencil-drawing');
         const rows = [...steps.querySelectorAll ("tr[data-step]")];
-        let chosen = null;
+        let chosen = null;              // a step tapped, until tapped again
+        let passing = null;             // a step under the mouse, or focused
 
         const clear = document.createElement ("button");
         clear.type = "button";
@@ -58,10 +60,30 @@
             clear.hidden = done.size === 0;
         }
 
+        // The step to follow: none before the build begins or after it
+        // ends, and otherwise the first not yet ticked.
+        function next () {
+            return done.size ? rows.find (row => !done.has (row.dataset.step)) || null : null;
+        }
+
+        // The next step's stage opens, even one folded as built before.
+        function follow () {
+            const row = next ();
+            if (row) {
+                row.closest ("details.stage").open = true;
+            }
+        }
+
+        // A step passed over or chosen lights up in place of the next.
+        function refresh () {
+            light (passing || chosen || next ());
+        }
+
+        // A step taken out has nothing left in the drawing to light.
         function light (row) {
             const item = row ? row.dataset.item : undefined;
             for (const other of rows) {
-                other.classList.toggle ("lit", other === row && item !== undefined);
+                other.classList.toggle ("lit", other === row);
             }
             for (const drawing of drawings) {
                 drawing.classList.toggle ("lighting", item !== undefined);
@@ -73,6 +95,8 @@
 
         for (const row of rows) {
             show (row);
+            // Ticking a step lets go of any step chosen, so the light moves
+            // on to the next.
             row.querySelector (".tick").addEventListener ("click", () => {
                 const step = row.dataset.step;
                 if (!done.delete (step)) {
@@ -80,6 +104,9 @@
                 }
                 remember (key, done);
                 show (row);
+                chosen = null;
+                follow ();
+                refresh ();
             });
             // A tap chooses a step to light up, and a second tap lets it
             // go; a pointer passing over lights each step for a moment.
@@ -88,21 +115,31 @@
                     return;
                 }
                 chosen = chosen === row ? null : row;
-                light (chosen);
+                refresh ();
             });
             row.addEventListener ("pointerenter", event => {
                 if (event.pointerType === "mouse") {
-                    light (row);
+                    passing = row;
+                    refresh ();
                 }
             });
             row.addEventListener ("pointerleave", event => {
                 if (event.pointerType === "mouse") {
-                    light (chosen);
+                    passing = null;
+                    refresh ();
                 }
             });
-            row.addEventListener ("focusin", () => light (row));
-            row.addEventListener ("focusout", () => light (chosen));
+            row.addEventListener ("focusin", () => {
+                passing = row;
+                refresh ();
+            });
+            row.addEventListener ("focusout", () => {
+                passing = null;
+                refresh ();
+            });
         }
+        follow ();
+        refresh ();
 
         clear.addEventListener ("click", () => {
             done.clear ();
@@ -110,6 +147,8 @@
             for (const row of rows) {
                 show (row);
             }
+            chosen = null;
+            refresh ();
         });
     }
 
