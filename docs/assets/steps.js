@@ -1,7 +1,8 @@
 // A lesson's build steps (hooks.py writes them): tick a step off, and see
 // the part it adds lit up in the board's drawings. Once the first step is
-// ticked, the next one lights up by itself, and its stage opens; a stage
-// whose steps are all ticked folds away. The ticks are kept in this
+// ticked, the next one is marked, in its row and with a glow in the
+// drawing, and its stage opens; a stage whose steps are all ticked folds
+// away. The ticks are kept in this
 // browser, a set per page and board. Where there is room, the drawing above
 // the steps stays in sight while they scroll.
 
@@ -74,21 +75,27 @@
             }
         }
 
-        // A step passed over or chosen lights up in place of the next.
+        // The next step is marked in its row and in the drawing, which
+        // stays whole. Only a step pointed at or chosen fades the rest of
+        // the drawing, to show where it goes, and only while it is.
         function refresh () {
-            light (passing || chosen || next ());
+            const looking = passing || chosen;
+            mark (next (), "next");
+            mark (looking, "lit");
+            for (const drawing of drawings) {
+                drawing.classList.toggle ("lighting", Boolean (looking && looking.dataset.item));
+            }
         }
 
-        // A step taken out has nothing left in the drawing to light.
-        function light (row) {
+        // A step taken out has nothing left in the drawing to mark.
+        function mark (row, name) {
             const item = row ? row.dataset.item : undefined;
             for (const other of rows) {
-                other.classList.toggle ("lit", other === row);
+                other.classList.toggle (name, other === row);
             }
             for (const drawing of drawings) {
-                drawing.classList.toggle ("lighting", item !== undefined);
                 for (const part of drawing.querySelectorAll ("[data-item]")) {
-                    part.classList.toggle ("lit", part.dataset.item === item);
+                    part.classList.toggle (name, item !== undefined && part.dataset.item === item);
                 }
             }
         }

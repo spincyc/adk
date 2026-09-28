@@ -717,6 +717,13 @@
     background: color-mix(in srgb, var(--adk-red) 9%, transparent);
 }
 
+/* The next step to build, once the build has begun: its circle ringed. */
+.md-typeset table.steps tr.next .tick {
+    border-color: var(--adk-red);
+    color: var(--adk-red);
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--adk-red) 18%, transparent);
+}
+
 /* A part with more legs, or a module beside the board: its places run
    across From, the picture and To, each with what goes there beside it. */
 .md-typeset table.steps .places {
@@ -886,13 +893,18 @@
     }
 }
 
-/* The drawing a step lights up: everything else in it fades. */
+/* The drawing: the next step's part glows, and nothing fades; a step
+   pointed at or chosen fades everything else while it is. */
 .pencil-drawing [data-item] {
     transition: opacity 150ms;
 }
 
+.pencil-drawing [data-item].next {
+    filter: drop-shadow(0 0 1.5px var(--adk-red)) drop-shadow(0 0 3px var(--adk-red));
+}
+
 .pencil-drawing.lighting [data-item]:not(.lit) {
-    opacity: 0.15;
+    opacity: 0.25;
 }
 
 /* On a screen with room for both, the drawing stays in sight above the
@@ -1266,6 +1278,16 @@
 
     .md-typeset table.steps tr.lit {
         background: none;
+    }
+
+    .pencil-drawing [data-item].next {
+        filter: none;
+    }
+
+    .md-typeset table.steps tr.next .tick {
+        border-color: var(--adk-ink);
+        color: inherit;
+        box-shadow: none;
     }
 
     .md-typeset .lesson-header h1 {
