@@ -9,7 +9,7 @@ parts:
   - DS1307 clock module with its coin cell, from Lesson 32
   - Rotary encoder module
   - 9 female-to-male jumper wires
-  - 6 jumper wires
+  - 7 jumper wires
 ideas:
   - Putting a radio, a clock and two knobs together
   - A device as a set of states, again

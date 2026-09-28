@@ -9,7 +9,7 @@ parts:
   - Breadboard power module and its 9 V adapter
   - 2 × 1 kΩ resistors (brown, black, black, brown, brown)
   - 2 × 2 kΩ resistors (red, black, black, brown, brown)
-  - 8 female-to-male jumper wires
+  - 10 female-to-male jumper wires
   - 4 jumper wires
 ideas:
   - LoRa, which trades speed for range

@@ -11,6 +11,7 @@ parts:
   - Breadboard power module and its 9 V adapter
   - The kit's second 10 kΩ potentiometer
   - 6 more jumper wires
+  - 2 female-to-male jumper wires, for the power module
   - A piece of card and some tape, for the dial
 ideas:
   - Setting an angle with the width of a pulse

@@ -65,7 +65,11 @@ that starts with how to wire the part, its source, host tests, and a line in
 4. Write `docs/lessons/NNN-name/index.md` from Lesson 1's shape, with the
    markers `<!-- bench -->`, `<!-- closeup -->`, `<!-- steps -->`,
    `<!-- connections -->` and `<!-- sketch -->` where those belong. Its front
-   matter gives `lesson: NN`, the promise, time, level, parts and ideas.
+   matter gives `lesson: NN`, the promise, time, level, parts and ideas. The
+   parts list counts the jumper wires of each kind the build needs, jumpers
+   and female-to-male: all the build holds, or, where it carries on from the
+   lesson before, the ones its steps add ("5 more jumper wires"). `make site`
+   checks a one-board lesson's counts.
 5. `make pins site` must pass.
 
 `make pins` runs each sketch's `setup ()` on the host and holds it to its

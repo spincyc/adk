@@ -11,7 +11,7 @@ parts:
   - "Board B: the power module and its 9 V adapter"
   - "Board B: the 28BYJ-48 stepper and ULN2003 driver, and a paper disc about 6 cm across"
   - "Each board: a REYAX RYLR896 LoRa modem (add-on, not in the kit), a 1 kΩ and a 2 kΩ resistor, at the bridge's home"
-  - "Board A: 22 jumper wires and 4 female-to-male; Board B: 3 jumper wires and 10 female-to-male"
+  - "Board A: 23 jumper wires and 4 female-to-male; Board B: 3 jumper wires and 12 female-to-male"
 ideas:
   - A machine that reports back
   - Two values, one going each way

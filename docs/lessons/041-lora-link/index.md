@@ -7,7 +7,7 @@ parts:
   - Your circuit from Lesson 40, without its two modems
   - Two Ebyte E32-433T20D LoRa modules, with their aerials (add-on, not in the kit)
   - DHT11 temperature and humidity module, from Lesson 14
-  - 17 female-to-male jumper wires
+  - 18 female-to-male jumper wires
   - 4 jumper wires
 ideas:
   - A transparent link, bytes in at one end and out at the other

@@ -8,7 +8,7 @@ parts:
   - "Board A: joystick module and 5 female-to-male jumper wires"
   - "Board B: Lesson 44's Board B, with its power module, LoRa modem and servo"
   - "Board B: HC-SR04 ultrasonic sensor, L293D motor driver chip, and the DC motor with its fan blade"
-  - "Board B: 4 female-to-male jumper wires and 9 jumper wires"
+  - "Board B: 4 female-to-male jumper wires and 10 jumper wires"
   - "Sticky tape or putty, and a strip of card, for the turret"
 ideas:
   - A project split between two boards

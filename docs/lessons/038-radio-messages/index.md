@@ -12,7 +12,7 @@ parts:
   - Push button
   - 1 kΩ resistor (brown, black, black, brown, brown)
   - 2 kΩ resistor (red, black, black, brown, brown), or a second 1 kΩ
-  - 9 jumper wires
+  - 8 jumper wires
 ideas:
   - A radio switched on and off to send bits
   - Noise, and a warm-up the receiver can lock onto

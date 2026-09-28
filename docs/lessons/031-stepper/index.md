@@ -9,7 +9,7 @@ parts:
   - Breadboard power module and its 9 V adapter
   - 28BYJ-48 stepper and ULN2003 driver
   - Push button
-  - 6 female-to-male jumper wires
+  - 8 female-to-male jumper wires
   - 3 jumper wires
   - A paper arrow and sticky tape
 ideas:

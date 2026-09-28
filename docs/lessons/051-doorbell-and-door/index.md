@@ -7,7 +7,7 @@ parts:
   - "Both boards: the Mega, breadboard and LoRa modem from Lesson 50, with the modem's divider and wires"
   - "Board A: the RC522 RFID reader with its card and fob, the tap sensor (37 in 1), a push button, the active buzzer, and a breadboard power module with its 9 V adapter (a second one: the kit has only one)"
   - "Board B: the servo and power module from Lesson 50, the LCD, knob and 220 Ω resistor from Lesson 13, a push button, and the passive buzzer with a 220 Ω resistor"
-  - "11 female-to-male and 23 jumper wires, besides the modems' own"
+  - "13 female-to-male and 24 jumper wires, besides the modems' own"
   - "A box with a lid, and some tape, if you want a real door"
 ideas:
   - Three events, each crossing as a count

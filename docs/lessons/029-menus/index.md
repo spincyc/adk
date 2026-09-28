@@ -12,7 +12,7 @@ parts:
   - Red LED
   - 2 × 220 Ω resistors (red, red, black, black, brown)
   - 5 female-to-male jumper wires
-  - 19 jumper wires
+  - 20 jumper wires
 ideas:
   - A knob that turns forever and counts clicks
   - How the encoder tells which way it turned

@@ -11,7 +11,7 @@ parts:
   - HC-SR04 ultrasonic sensor
   - L293D motor driver chip
   - DC motor with its fan blade
-  - 11 jumper wires
+  - 12 jumper wires
   - 6 female-to-male jumper wires
   - Sticky tape or putty, and a strip of card
 ideas:

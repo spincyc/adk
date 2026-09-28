@@ -9,7 +9,7 @@ parts:
   - LCD1602 display, with its 16 header pins
   - 10 kΩ potentiometer
   - 220 Ω resistor (red, red, black, black, brown)
-  - 17 jumper wires
+  - 18 jumper wires
 ideas:
   - How a character LCD shows text
   - Contrast and backlight

@@ -6,10 +6,10 @@ level: 3
 parts:
   - "Board A: Lesson 43's Board A, with its LoRa modem and divider"
   - "Board A: LCD1602 display, 10 kΩ potentiometer, 220 Ω resistor (red, red, black, black, brown) and rotary encoder module"
-  - "Board A: 5 female-to-male jumper wires and 16 jumper wires"
+  - "Board A: 5 female-to-male jumper wires and 17 jumper wires"
   - "Board B: Lesson 43's Board B, with its LoRa modem, divider and yellow LED"
   - "Board B: SG90 servo, and the breadboard power module with its 9 V adapter"
-  - "Board B: 3 jumper wires, and a piece of card and some tape for the dial"
+  - "Board B: 2 female-to-male jumper wires and 3 jumper wires, and a piece of card and some tape for the dial"
 ideas:
   - Numbers going both ways across the bridge
   - Acting only when a new value arrives

@@ -164,6 +164,8 @@ def on_page_markdown (markdown, page, config, files):
             raise PluginError (f"{where}: <!-- {marker} {letter} --> names no board of its circuit"
                                if letter else f"{where}: a two-board page marks each board's "
                                f"{marker}, as <!-- {marker} A -->")
+    if lesson["boards"] == 1:
+        check_wires (lesson, boards[""], meta.get ("parts"))
     for letter, bench in boards.items ():
         replacements = board_pieces (lesson, letter, bench)
         for marker, content in replacements.items ():
@@ -331,7 +333,7 @@ def steps (bench, before=None):
         lesson, letter, old = before
         source = f"[Lesson {lesson['number']}](../{lesson['slug']}/index.md)" + \
             (f"'s Board {letter}" if letter else "")
-        if [kind for kind, _ in kept if kind != "wire"]:
+        if carries (kept):
             things = kept_words (old, kept)
             head = [f"**Keep from {source}:** {join (things)}, just as "
                     f"{'they are' if len (kept) > 1 else 'it is'}.", ""]
@@ -344,12 +346,68 @@ def steps (bench, before=None):
             words = power_words (power)
             head = [f"**Take out** everything from {source}"
                     f"{' except ' + join (words) if words else ''}.", ""]
-            kept = [("wire", wire) for wire in power]
-            ends = {identity (old, "wire", wire) for wire in power}
-            new = [item for item in bench.items if identity (bench, item[0], item[1]) not in ends]
+            new = added (bench, before)
         head += ["**Add:**" if new else "Nothing else to add.", ""]
     lines = head + [f"{index}. {step}" for index, (_, _, step) in enumerate (new, 1)]
     return '<div class="build-steps" markdown>\n\n' + "\n".join (lines) + "\n\n</div>"
+
+
+# Whether a build carries on from the one before: some part or module stays
+# where it was. Otherwise only the Mega's power wires stay.
+def carries (kept):
+    return any (kind != "wire" for kind, _ in kept)
+
+
+# The items a board's steps add to the build it carries on from.
+def added (bench, before=None):
+    if not before:
+        return bench.items
+    kept, _, new = continuity (bench, before[2])
+    if carries (kept):
+        return new
+    old = before[2]
+    ends = {identity (old, "wire", wire) for kind, wire in kept if old.is_standard (wire)}
+    return [item for item in bench.items if identity (bench, item[0], item[1]) not in ends]
+
+
+# How many jumper wires some items take, of each kind: a jumper between two
+# holes or pins, a female-to-male wire to a module's pin; a part's own leads
+# take none.
+def wire_count (bench, items):
+    counts = {"jumper": 0, "female-to-male": 0, "female-to-female": 0}
+    for kind, thing, _ in items:
+        ends = thing[:2] if kind == "wire" else ()
+        if not ends or "lead" in (bench.style (end) for end in ends):
+            continue
+        males = sum (bench.style (end) == "male" for end in ends)
+        counts[("jumper", "female-to-male", "female-to-female")[males]] += 1
+    return counts
+
+
+# A one-board lesson's parts list counts its jumper wires, of each kind the
+# build needs: all its build holds, or the ones its steps add where it
+# carries on ("5 more jumper wires"). A count that is neither, or a kind
+# left out, is an error. (Two-board lessons count their boards in too many
+# ways to check.)
+def check_wires (lesson, bench, parts):
+    listed = {}
+    for item in parts or []:
+        for number, kind in re.findall (r"\b(\d+) (?:more )?(female-to-male |female-to-female |)"
+                                        r"(?:and \d+ )?(?:more )?(?:jumper )?wires?", item):
+            kind = kind.strip () or "jumper"
+            listed[kind] = listed.get (kind, 0) + int (number)
+        for number in re.findall (r"\b\d+ female-to-male and (\d+) (?:jumper )?wires?", item):
+            listed["jumper"] = listed.get ("jumper", 0) + int (number)
+    if not listed:
+        return
+    new = wire_count (bench, added (bench, previous (lesson["number"])))
+    whole = wire_count (bench, bench.items)
+    for kind in new:
+        if listed.get (kind, 0) not in (new[kind], whole[kind]) and (new[kind] or whole[kind]
+                                                                      or kind in listed):
+            raise PluginError (f"{lesson['slug']}: its parts list gives {listed.get (kind, 0)} "
+                               f"{kind} wires, but its steps add {new[kind]} and its build holds "
+                               f"{whole[kind]}")
 
 
 # What this bench keeps from the one before (named), what it takes out

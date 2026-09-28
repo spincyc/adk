@@ -11,7 +11,7 @@ parts:
   - RGB LED
   - 3 × 220 Ω resistors (red, red, black, black, brown)
   - 3 female-to-male jumper wires
-  - 4 jumper wires
+  - 3 jumper wires
   - A soldering iron and an adult to help, unless your boards come with their pins soldered
 ideas:
   - A mesh, where radios pass messages on for each other

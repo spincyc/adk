@@ -10,7 +10,7 @@ parts:
   - "Board B: the relay module (37 in 1), a 9 V battery and its snap lead, a red LED and a 1 kΩ resistor, as in Lesson 35"
   - "Board B: the IR LED module, KY-005 (37 in 1), and a 220 Ω resistor"
   - "Each board: its LoRa modem at the bridge's home, from Lesson 52"
-  - "Board A: 19 jumper wires and 7 female-to-male; Board B: 5 jumper wires and 9 female-to-male"
+  - "Board A: 20 jumper wires and 7 female-to-male; Board B: 5 jumper wires and 9 female-to-male"
   - A small screwdriver for the relay's terminals
 ideas:
   - Light, then radio, then light again

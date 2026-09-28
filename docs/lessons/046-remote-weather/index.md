@@ -6,10 +6,10 @@ level: 3
 parts:
   - "Board A, the garden: Lesson 45's Board A, with its LoRa modem and divider"
   - "Board A: the DHT11 module, the 18B20 module (37 in 1 kit), the 10 kΩ thermistor and the photoresistor"
-  - "Board A: 2 × 10 kΩ resistors (brown, black, black, red, brown), a green LED, a 220 Ω resistor, 10 jumper wires and 6 female-to-male jumper wires"
+  - "Board A: 2 × 10 kΩ resistors (brown, black, black, red, brown), a green LED, a 220 Ω resistor, 9 jumper wires and 6 female-to-male jumper wires"
   - "Board B, indoors: Lesson 45's Board B, with its LoRa modem and divider (a second Mega and breadboard aren't in one kit, and the modems are an add-on)"
   - "Board B: the LCD, its contrast knob and 220 Ω resistor, as in Lesson 13, and the DS1307 clock module from Lesson 32"
-  - "Board B: the RGB LED, 3 × 220 Ω resistors (red, red, black, black, brown), 20 jumper wires and 4 female-to-male jumper wires"
+  - "Board B: the RGB LED, 3 × 220 Ω resistors (red, red, black, black, brown), 21 jumper wires and 4 female-to-male jumper wires"
 ideas:
   - Readings as whole numbers, in tenths
   - How often to send

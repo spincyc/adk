@@ -11,7 +11,7 @@ parts:
   - 220 Ω resistor (red, red, black, black, brown)
   - 28BYJ-48 stepper and ULN2003 driver, from Lesson 31
   - Breadboard power module and its 9 V adapter
-  - 11 female-to-male jumper wires
+  - 13 female-to-male jumper wires
   - 3 jumper wires
   - A paper flag and sticky tape
 ideas:

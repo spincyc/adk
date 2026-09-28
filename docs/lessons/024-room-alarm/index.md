@@ -13,7 +13,7 @@ parts:
   - Active buzzer
   - RGB LED
   - 4 × 220 Ω resistors (red, red, black, black, brown)
-  - 22 jumper wires
+  - 23 jumper wires
   - 6 female-to-male jumper wires
 ideas:
   - A device as a set of states

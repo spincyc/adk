@@ -8,7 +8,7 @@ parts:
   - 10 kΩ potentiometer (the knob)
   - Passive buzzer (green circuit board underneath)
   - 220 Ω resistor (red, red, black, black, brown)
-  - 4 more jumper wires
+  - 5 more jumper wires
 ideas:
   - Turning a sensor reading into steps on a musical scale
   - The pentatonic scale, and octaves as doubling

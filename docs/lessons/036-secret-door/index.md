@@ -10,7 +10,7 @@ parts:
   - RC522 RFID reader, with its card and fob
   - Tap sensor module (37 in 1)
   - SG90 servo and active buzzer
-  - 10 female-to-male and 22 jumper wires
+  - 12 female-to-male and 23 jumper wires
   - A box with a lid, and sticky tape
 ideas:
   - Two different keys for one lock

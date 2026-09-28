@@ -7,7 +7,7 @@ parts:
   - "Both boards: an Arduino Mega 2560 with its USB cable, a breadboard, and the LoRa modem with its 1 kΩ and 2 kΩ resistors from Lesson 48 (the modems are add-ons; the second Mega and breadboard aren't in one kit)"
   - "Board A: the LCD, knob and 220 Ω resistor from Lesson 13, and the 4×4 keypad from Lesson 16"
   - "Board B: the SG90 servo, the breadboard power module and its 9 V adapter, and the RGB LED with three 220 Ω resistors"
-  - "8 female-to-male and 36 jumper wires in all, the modems' among them"
+  - "10 female-to-male and 37 jumper wires in all, the modems' among them"
   - "A small box and some tape, if you want a real latch"
 ideas:
   - Which board should decide, and why

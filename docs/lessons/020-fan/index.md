@@ -11,7 +11,8 @@ parts:
   - DC motor with its fan blade
   - 10 kΩ potentiometer
   - Push button
-  - 13 jumper wires
+  - 14 jumper wires
+  - 2 female-to-male jumper wires, for the power module
 ideas:
   - Why a motor never runs from a pin
   - The H-bridge, which turns a motor either way
