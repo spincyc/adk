@@ -365,8 +365,10 @@ class Buzzer (Part):
         self.positive, self.negative, self.kind = positive, negative, kind
         self.name = f"{kind} buzzer"
 
+    # Only the active buzzer's + leg is the longer one.
     def legs (self):
-        return [("+ leg (long)", self.positive), ("− leg", self.negative)]
+        plus = "+ leg (long)" if self.kind == "active" else "+ leg"
+        return [(plus, self.positive), ("− leg", self.negative)]
 
     def center (self, bench):
         (x1, y1), (x2, y2) = bench.hole_xy (self.positive), bench.hole_xy (self.negative)
@@ -407,17 +409,18 @@ class Buzzer (Part):
             pencil.text (mx, top + 3.4, "AFTER WASHING", size=2.4, kind="silk")
         else:
             pencil.spot (mx, top, 3.2, "#111111")
-        px, _ = bench.hole_xy (self.positive)
-        side = 1 if px > mx else -1
-        pencil.text (mx + side * r * 0.72, top + 4.5, "+", size=12, kind="silk", weight="bold",
-                     color="#f4f1e8")
+        # The + mark on the side of the + leg, whichever way the legs lie.
+        px, py = bench.hole_xy (self.positive)
+        length = math.hypot (px - mx, py - my) or 1
+        ux, uy = (px - mx) / length, (py - my) / length
+        pencil.text (mx + ux * r * 0.62, top + uy * r * 0.62 + 4.5, "+", size=12, kind="silk",
+                     weight="bold", color="#f4f1e8")
 
 
 class Potentiometer (Part):
-    # The kit's 10 kΩ knob, a square body with the knob on top. Across the
-    # middle gap, as the kit's knob stands, the body sits over the gap
-    # between its outer legs and the wiper; its legs in one row, as the
-    # older drawings have it, the body stands behind them.
+    # The kit's 10 kΩ knob, a square body with the knob on top. It stands
+    # across the middle gap, its body over the gap between its outer legs
+    # and the wiper.
     mode = "input"
 
     def __init__ (self, left, wiper, right, value):

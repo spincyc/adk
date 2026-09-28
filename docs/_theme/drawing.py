@@ -431,10 +431,16 @@ class Drawing:
         self._draw_board (pencil, detail)
         for part in bench.parts:
             part.draw (pencil, bench)
+        # A module lying flat, as the power module does, goes under the
+        # wires that cross it; the others over them.
+        for module in bench.modules.values ():
+            if not module.kind.blocks:
+                module.draw (pencil)
         for start, end, points in routes:
             self._draw_wire (pencil, start, end, points)
         for module in bench.modules.values ():
-            module.draw (pencil)
+            if module.kind.blocks:
+                module.draw (pencil)
         for text, x, y, anchor, size, to, kind in placed:
             if kind == "note":
                 pencil.text (x, y, text, size=size, anchor=anchor, kind="label", italic=True)
@@ -489,10 +495,14 @@ class Drawing:
         self._draw_board (pencil, detail)
         for part in bench.parts:
             part.draw (pencil, bench)
+        for module in bench.modules.values ():
+            if not module.kind.blocks:
+                module.draw (pencil)
         for start, end, route in routes:
             self._draw_wire (pencil, start, end, route)
         for module in bench.modules.values ():
-            module.draw (pencil)
+            if module.kind.blocks:
+                module.draw (pencil)
         meter.draw (pencil, mx, my, taken["expect"])
         # The lower jack's lead, the black, runs outside the red one.
         for color, side in (("red", -1), ("black", 1)):

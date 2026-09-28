@@ -352,7 +352,9 @@ class Bench:
 
     def _two_legs (self, kind, a, b):
         self._add (TwoLegs (kind, a, b))
-        self._step (f"The {kind}, legs in {a} and {b}, either way round.")
+        # The tilt switch reads its tilt, so it stands straight up.
+        upright = ", standing upright" if kind == "tilt switch" else ""
+        self._step (f"The {kind}{upright}, legs in {a} and {b}, either way round.")
         return self
 
     # A DIP chip across the middle gap: pin 1 in e<first>, pins running
@@ -605,7 +607,7 @@ class Bench:
         self.wire (send, "j46", via=tx)
         self.resistor ("1 kΩ", "g46", "e46")
         self.resistor ("2 kΩ", "a46", "B-46")
-        self.wire ("modem.RXD", "c46", color="grey")
+        self.wire ("modem.RXD", "c46", color="brown")
         self.wire ("modem.TXD", "f44", color="purple", via=txd)
         return self.wire (hear, "j44", via=rx)
 
@@ -841,7 +843,7 @@ class Bench:
         self.last = max (self.last, 63)
         bx, by = self.board_origin ()
         self.module ("power_module", "power", at=(bx + self.board_width () + 0.3, by),
-                     facing="down",
+                     facing="left",
                      words="The power module, lying to the right of the breadboard, not plugged "
                            "in: both its jumpers off, each parked on one pin.")
         self.wire (f"power.{supply}", "B+61")
@@ -890,10 +892,16 @@ class Bench:
             return "left"
         return "down"
 
+    # Where a module lies, in words: above or below the Mega, the breadboard
+    # or the gap between them, as the kit page puts each one's home.
     def _whereabouts (self, box):
         x0, y0, x1, y1 = (v / DPI for v in box)
         bx, by = self.board_origin ()
-        over = "the Mega" if (x0 + x1) / 2 < bx - self.gap / 2 else "the breadboard"
+        mx, _ = self.mega_origin ()
+        middle = (x0 + x1) / 2
+        over = "the gap between the Mega and the breadboard" \
+            if mx + MEGA_WIDTH - 0.15 <= middle <= bx + 0.15 else \
+            "the Mega" if middle < bx - self.gap / 2 else "the breadboard"
         if y1 <= by + 0.1:
             return f"above {over}"
         if y0 >= by + BOARD_HEIGHT - 0.1:

@@ -841,10 +841,14 @@ class PowerModule (Kind):
     sources = {"5V": "5V", "3.3V": "3.3V", "GND": "GND"}
     HEADER = (30, 80)               # its first pin, 3.3V; the lower row is GND
 
+    # The bench lays it a quarter turn round, its barrel socket away from
+    # the board and its GND row nearest it: GND's wire leaves toward the
+    # board, 5V's from the end of its row down toward the bottom rails, and
+    # 3.3V's from the other end, so none crosses another pin.
     def header (self):
         x, y = self.HEADER
-        return [Pin ("3.3V", x, y, (-1, 0)), Pin ("5V", x + 2 * PITCH, y, (0, -1)),
-                Pin ("GND", x, y + PITCH, (-1, 0))]
+        return [Pin ("3.3V", x, y, (-1, 0)), Pin ("5V", x + 3 * PITCH, y, (1, 0)),
+                Pin ("GND", x + 3 * PITCH, y + PITCH, (0, 1))]
 
     def draw (self, pencil):
         board (pencil, 0, 0, self.width, self.height, PCB_BLUE)
@@ -870,7 +874,9 @@ class PowerModule (Kind):
         pencil.rect (x - 5, y - 5, 40, 20, width=0.7, passes=1)
         for column in range (4):
             for row in range (2):
-                pencil.spot (x + column * PITCH, y + row * PITCH, 1.8, GOLD, layer="shade")
+                pencil.rect (x + column * PITCH - 2, y + row * PITCH - 2, 4, 4, width=0.5,
+                             layer="top", passes=1)
+                pencil.spot (x + column * PITCH, y + row * PITCH, 1.6, GOLD, layer="top")
         pencil.text (x + 5, y - 9, "3.3V", size=5.5, kind="silk")
         pencil.text (x + 25, y - 9, "5V", size=5.5, kind="silk")
         pencil.text (x + 15, y + 24, "GND", size=5.5, kind="silk")
@@ -1007,13 +1013,14 @@ class RfReceiver (Kind):
     # above with the header at the bottom, pin 1 (VCC, the square pad) is
     # on the left. The two DATA pins are joined on the board; the second is
     # DATA2, as the bench names the second of a pair. The ANT and GND pads
-    # are at the far end, a spring antenna standing up from ANT.
+    # are at the far end. It's drawn without a spring aerial on ANT, as the
+    # lessons build it: in the USA and Canada the aerials stay off.
     title  = "radio receiver"
     pins   = ("VCC", "DATA", "DATA2", "GND")
     pin_modes = {"DATA": "input", "DATA2": "input"}
-    width, height = 118, 106
+    width, height = 118, 37.5
     color  = PCB_GREEN
-    TOP    = 68.5                   # the board's top edge, below the spring
+    TOP    = 0                      # the board's top edge
 
     def header_x (self):
         return 98
@@ -1029,9 +1036,6 @@ class RfReceiver (Kind):
         level (pencil, 92.5, top + 7.1, "6.7458", 5, tone=0.6)
         hole (pencil, 5, top + 31)
         hole (pencil, 14, top + 31)
-        pencil.line ((5, top + 31), (5, top - 1), width=1.3, tone=0.6, layer="top", passes=1)
-        pencil.line ((5, top - 1), (9, top - 3), width=1.3, tone=0.6, layer="top", passes=1)
-        coil (pencil, 9, top - 3, 1, 7, 12)
         self.draw_header (pencil, size=4.5)
 
 
@@ -1040,14 +1044,15 @@ class RfTransmitter (Kind):
     # right-angle header on one long edge and a 13.56 MHz crystal across
     # the other. Seen from above with the header at the bottom, EN (the
     # square pad) is on the left and − on the right: the back prints them
-    # − + DAT EN. OUT, in the top left corner, takes the spring antenna.
+    # − + DAT EN. OUT, in the top left corner, is where an aerial may go;
+    # it's drawn without one, as the lessons build it.
     title  = "radio transmitter"
     pins   = ("EN", "DAT", "+", "−")
     pin_modes = {"DAT": "output"}
     supply = "3.3V"
-    width, height = 70, 121
+    width, height = 70, 51
     color  = PCB_GREEN
-    TOP    = 70                     # the board's top edge, below the spring
+    TOP    = 0                      # the board's top edge
 
     def header_x (self):
         return 36
@@ -1062,9 +1067,6 @@ class RfTransmitter (Kind):
         for sx, sy in ((9, top + 20), (9, top + 28), (62, top + 26)):
             smd (pencil, sx, sy, 6, 3)
         hole (pencil, 7, top + 6)
-        pencil.line ((7, top + 6), (7, top - 2), width=1.3, tone=0.6, layer="top", passes=1)
-        pencil.line ((7, top - 2), (10, top - 4), width=1.3, tone=0.6, layer="top", passes=1)
-        coil (pencil, 10, top - 4, 1, 7, 12)
         self.draw_header (pencil, size=5.4)
 
 
