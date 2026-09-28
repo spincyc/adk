@@ -1,7 +1,7 @@
 # Lesson 41's screen, button, DHT11 and module A's divider stay where they
 # were, with the Mega's 5V feeding the top rails at T+3; both LoRa
 # modules, module B's divider and the power module go. The Meshtastic board
-# stands below the board in module A's place, its USB socket to the left
+# stands below the board in module A's place, its USB socket to the right
 # and its own cable powering it: its GPIO48 comes up into f53, where pin
 # 19's wire still waits, its GPIO47 up beside the divider into c55, and
 # its GND to the − rail past the divider. The RGB LED is the lamp, at its

@@ -7,8 +7,8 @@ parts:
   - Your circuit from Lesson 40, without its two modems
   - Two Ebyte E32-433T20D LoRa modules, with their aerials (add-on, not in the kit)
   - DHT11 temperature and humidity module, from Lesson 14
-  - 18 female-to-male jumper wires
-  - 4 jumper wires
+  - 18 more female-to-male jumper wires
+  - 4 more jumper wires
 ideas:
   - A transparent link, bytes in at one end and out at the other
   - Modes chosen with two pins
@@ -58,8 +58,12 @@ settings instead of going out on the air. (The other two mixes are for
 saving battery, and ADK doesn't use them.) This sketch only ever needs both
 low or both high, so the two pins are joined and share one Mega pin: 40 for
 module A, 42 for module B. And that pin never drives them high. The module
-has its own resistors that lift M0 and M1 to 3.3 V, so the Mega only ever
-pulls them low or lets them go, and 5 V never reaches them.
+has its own weak pull-ups that lift M0 and M1 to 3.3 V, so the Mega only
+ever pulls them low or lets them go, and 5 V never reaches them. The
+module's maker, Ebyte, asks for M0 and M1 never to be left floating, and
+those pull-ups hold them only gently. If a module won't take its settings,
+a 10 kΩ resistor to 3.3 V holds them firmly: *If it doesn't work* shows
+how.
 
 A third pin, **AUX**, tells the Mega when the module is busy: it goes low
 while the module starts up, changes mode or sends, and high when it is free.
@@ -128,10 +132,11 @@ where its modem's did, and three more are new:
 <!-- steps -->
 
 ??? info "The modules' pins"
-    The boards print no names by their pins. Hold a module flat, its metal
-    shield up and its pins toward you: from the left they are M0, M1, RXD,
-    TXD, AUX, VCC and GND. Lying below the breadboard with its aerial down,
-    as in the drawing, the order runs the other way, GND on the left.
+    The boards print no names by their pins, so the drawing labels them
+    for you. Hold a module flat, its metal shield up and its pins toward
+    you: from the left they are M0, M1, RXD, TXD, AUX, VCC and GND. Lying
+    below the breadboard with its aerial down, as in the drawing, the order
+    runs the other way, GND on the left.
 
     | Pin | Job | Goes to |
     |---|---|---|
@@ -142,10 +147,10 @@ where its modem's did, and three more are new:
     | VCC | Power, 5 V | The bottom + rail, at 5 V |
     | GND | Ground | The bottom − rail |
 
-    Each module can draw about 100 mA while it sends at full power, as much
-    as a small motor, so like the motors in earlier lessons they take the
-    power module's 5 V. Their pins still work at 3.3 V, which is why RXD
-    keeps its divider.
+    Each module can draw about 100 mA while it sends at full power, more
+    than the Mega's pins should supply, so like the motors in earlier
+    lessons they take the power module's 5 V. Their pins still work at
+    3.3 V, which is why RXD keeps its divider.
 
 When you are done, these are the connections your circuit makes:
 
@@ -210,6 +215,7 @@ eight times the size of the two bytes here, but it needs no key to read it.
 |---|---|
 | `No reply from A`, or from B | Is the power module on, with its LED lit? Check its red wire goes from its 5V pin to B+61 and its black one from GND to B-61. Check that module's VCC and GND, its M0 and M1 into f and g of column 57 (A) or 48 (B) with pin 40 or 42 in j above them, and its AUX into f52 (A) or f43 (B) with pin 41 or 43 in j above it. |
 | Still no reply | Check TXD and RXD aren't swapped: TXD goes up to f53 (A) or f44 (B), RXD to c55 (A) or c46 (B). Check the divider, as in Lesson 40. |
+| Still no reply, though every wire is right | That module's own pull-ups may be too weak to lift M0 and M1 when the Mega lets them go. Unplug, then add a 10 kΩ resistor (brown, black, black, red, brown) from h57 to h60 for module A, or from h48 to h51 for B, and a wire from the Mega's 3.3V pin to j60 or j51. It holds M0 and M1 firmly at 3.3 V, and the Mega can still pull them low. |
 | `A sends`, but B hears nothing | Check module B's TXD in f44 and pin 15's wire in j44, and that both aerials are on. |
 | Nothing is sent at all | The DHT11 hasn't given a good reading: check S goes to pin 16, + to the top + rail (T+36) and − to the top − rail (T-37). |
 | A blank lit screen, or a row of blocks | Turn the contrast knob beside the LCD. |
@@ -281,8 +287,12 @@ What the numbers tell you:
   where Lesson 40's modems had 3.3 V.
 - **Pin 40** reads 0 V: the Mega pulls M0 and M1 low for normal mode.
   Hold the Mega's reset button down while you watch: the Mega lets go of
-  every pin, and the module's own resistors lift M0 and M1 to about 3.3 V,
-  the settings mode. Let go, and the sketch pulls them low again.
+  every pin, and the module's weak pull-ups lift M0 and M1 to about 3.3 V,
+  the settings mode. Let go, and the sketch pulls them low again. The
+  meter takes almost no current, so even a weak pull-up shows the full
+  3.3 V, as Lesson 2's did. It is still only a gentle hold, which is why
+  Ebyte asks for something firmer, such as the 10 kΩ in *If it doesn't
+  work*.
 - **AUX** reads about 3.3 V, not 5 V: the module runs on 5 V, but its pins
   work at 3.3 V. That's still high enough for the Mega to read as high. It
   dips while a report goes out, too briefly for the meter to show.

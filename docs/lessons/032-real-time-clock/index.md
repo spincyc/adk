@@ -11,7 +11,7 @@ parts:
   - 220 Ω resistor (red, red, black, black, brown)
   - DS1307 clock module with its coin cell
   - 4 female-to-male jumper wires
-  - 17 jumper wires
+  - 18 jumper wires
 ideas:
   - A clock chip that runs on a battery
   - Counting seconds with a quartz crystal
@@ -38,8 +38,8 @@ The kit's module holds a small CR1220 cell, which keeps a DS1307 running for
 years.
 
 The clock counts vibrations of a tiny **quartz crystal**, the silver can on the
-module. It vibrates exactly 32,768 times a second, and 32,768 is 2 multiplied
-by itself 15 times. So the chip halves the count 15 times and gets exactly one
+module. It is made to vibrate 32,768 times a second, and 32,768 is fifteen
+2s multiplied together. So the chip halves the count 15 times and gets one
 tick a second. A crystal like this can be about 20 millionths fast or slow,
 and there are 86,400 seconds in a day:
 
@@ -87,8 +87,8 @@ SCL wires come over the top from pins 20 and 21.
     The LCD is the one from Lesson 13, lying off the bottom edge of the board
     so its screen reads the right way up. That puts it over the bottom rails,
     so its power comes from the top rails, carried down by the red and black
-    wires in columns 9, 10 and 13. The knob's outer legs connect to the LCD's
-    GND and 5 V pins, and its middle leg sets the contrast on pin 3, V0.
+    wires in columns 9, 10 and 13. The knob's outer legs go to the top
+    − and + rails, and its middle leg sets the contrast on pin 3, V0.
     The backlight, pins 15 and 16, gets 5 V through the 220 Ω resistor that
     bridges the middle gap.
 
@@ -119,7 +119,7 @@ What's new:
 - `rtc.ok ()` says whether the chip answered just then. If it didn't, the
   screen says so, and which pins to check.
 - `showDateAndTime ()` prints each row with one `adk::print` at
-  `lcd.at (0, 0)` or `lcd.at (0, 1)`, as in Lesson 13. `now.minute / 10` is
+  `lcd.at (0, 0)` or `lcd.at (0, 1)`, as in Lesson 15. `now.minute / 10` is
   the tens digit and `now.minute % 10` the ones, the trick from Lesson 10,
   so nine minutes past eight shows as `20:09`, not `20:9`.
 

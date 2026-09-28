@@ -46,12 +46,12 @@ hex:
 
 <p class="formula">0x1A2B3C4D = 439,041,101</p>
 
-The reader talks to the Mega over **SPI**, a faster cousin of the I2C bus you
-used for the accelerometer. SPI has separate wires for each direction: MOSI
-carries bits from the Mega to the reader, MISO from the reader back, SCK is
-the clock that times each bit, and a fourth wire, the **select** line,
-tells this reader that it's being spoken to. The Mega's SPI pins are 50 to 53.
-Confusingly, the reader calls its select pin SDA.
+The reader talks to the Mega over **SPI**, a faster cousin of the I2C bus of
+the clock and the accelerometer. SPI has separate wires for each direction:
+MOSI carries bits from the Mega to the reader, MISO from the reader back,
+SCK is the clock that times each bit, and a fourth wire, the **select**
+line, tells this reader that it's being spoken to. The Mega's SPI pins are
+50 to 53. Confusingly, the reader calls its select pin SDA.
 
 The reader's chip runs on **3.3 V**, not 5 V, so it takes its power from the
 Mega's 3.3V pin.

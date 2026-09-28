@@ -11,8 +11,8 @@ parts:
   - 433 MHz transmitter, WL102-341 (add-on, not in the kit)
   - Push button
   - 1 kΩ resistor (brown, black, black, brown, brown)
-  - 2 kΩ resistor (red, black, black, brown, brown), or a second 1 kΩ
-  - 8 jumper wires
+  - 2 kΩ resistor (red, black, black, brown, brown), or two more 1 kΩ
+  - 8 more jumper wires
 ideas:
   - A radio switched on and off to send bits
   - Noise, and a warm-up the receiver can lock onto
@@ -114,9 +114,8 @@ receiver's GND. Take everything else off. The button goes at its home beside the
 screen, in columns 38 to 40.
 
 The receiver and the transmitter stand in row j, their boards lying back
-over the top rails like the FM radio's in Lesson 37, and their aerials, if
-you've fitted them, pointing up and away. Their wires come round the bottom
-of the screen and up into row f.
+over the top rails like the FM radio's in Lesson 37. Their wires come round
+the bottom of the screen and up into row f.
 
 <!-- bench -->
 
@@ -126,8 +125,9 @@ of the screen and up into row f.
     The divider is two resistors in a row. From pin 46's wire in f54, the
     1 kΩ lies along row h into h57, DAT's column. The 2 kΩ stands across the
     middle gap from g57 to e57, and the black jumper from a57 takes it to
-    the − rail. If you have no 2 kΩ, use a second 1 kΩ in place of that
-    black jumper: two 1 kΩ in a row make 2 kΩ.
+    the − rail. If you have no 2 kΩ, put a 1 kΩ from g57 to e57 in its
+    place, and another 1 kΩ from a57 to the − rail instead of the black
+    jumper: two 1 kΩ in a row make 2 kΩ.
 
     | Module | Pin | Goes to |
     |---|---|---|

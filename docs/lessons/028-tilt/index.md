@@ -152,11 +152,11 @@ the numbers themselves, try the second challenge below.
 
 | What you see | Try this |
 |---|---|
-| *NO SENSOR* scrolls | Check SDA goes to pin 20 and SCL to 21: they can't be swapped. Check VCC's red jumper from the top + rail to i9, GND's two black jumpers (f10 to e10, a10 to the − rail), and that the header is pushed well into row j. |
+| *NO SENSOR* scrolls | Check SDA goes to pin 20 and SCL to 21: they can't be swapped. Check VCC's red jumper from the top + rail to i9 and the red wire from the Mega's 5V to T+3, GND's two black jumpers (f10 to e10, a10 to the − rail), and that the header is pushed well into row j. |
 | The bubble moves the wrong way left and right | Your module's X arrow points the other way. In `showBubble ()`, change `3 + lround (pitch / degreesPerDot)` to `3 - lround (pitch / degreesPerDot)`. |
 | The bubble moves the wrong way up and down | Change `3 - lround (roll / degreesPerDot)` to `3 + lround (roll / degreesPerDot)`. |
 | Up and down follow left and right instead | The arrows are turned a quarter round. Swap `pitch` and `roll` in the call to `showBubble ()`, then fix any direction as above. |
-| The frame never lights, even on a level table | Cheap MPU-6050s can be a degree or two out. Try the calibration in *Make it yours*. |
+| The frame never lights, even on a level table | Cheap MPU-6050s can be a degree or two out. Try *Zero it* in *Make it yours*. |
 | The bubble shivers | Tap the table and watch: the chip feels every bump. Keep the breadboard still. |
 
 ??? note "How it works"
@@ -217,7 +217,9 @@ What the numbers tell you:
   and resistors hold it high the rest of the time. Two sets of them pull on
   SDA here: the Mega's, up towards 5 V, and the module's own, up towards its
   3.3 V, so the wire settles between the two. Just where depends on your
-  module's resistors.
+  module's resistors. A little over the chip's 3.3 V does it no harm: the
+  Mega's resistors are 10 kΩ, so only a trickle of current gets through,
+  and the module's own 3.3 V supply takes it.
 - Every 20 ms the Mega asks for a reading, and 14 bytes go past in under
   2 ms, far too fast for the meter. It only averages them in, which nudges
   its number down a little.

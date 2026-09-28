@@ -65,7 +65,7 @@ den = Bench ("Board B, in the den: the LCD on pins 31 to 36, a clock module on 2
 
 bridge_home (den)
 
-den.screen (text=("Armed   Door ok", "Motion  21:07:43"))
+den.screen (text=("Armed    Door ok", "Motion  21:07:43"))
 den.home_rtc ()
 
 den.module ("ir_receiver", name="receiver", at=(8.89, -1.7))

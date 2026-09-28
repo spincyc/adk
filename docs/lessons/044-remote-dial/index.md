@@ -31,7 +31,8 @@ servo goes back to the middle, 90°.
 It is the knob from Lesson 29 and the servo from Lesson 17, with the
 bridge from Lesson 43 between them. The two boards can be in different
 rooms. Remember the band: send on 915 MHz only where it's allowed, as
-Lesson 43 said, and see [Radios](../../safety.md#radios).
+Lesson 43 said, and see [Radios](../../safety.md#radios). In Europe the
+band allows a tenth of the time, so don't keep the knob moving for long.
 
 ## The idea
 
@@ -103,11 +104,12 @@ them.
 
 Take out the button, the two LEDs and their wires. The screen goes in at
 its home, as in Lesson 13, with its red wire from the Mega's 5V to the
-top + rail. The rotary encoder sits above the Mega on its five wires, as in
-Lesson 37, since the modem lies below where it stood in Lesson 29: CLK and DT on pins 18 and 19, its switch, SW, on 22, its + on
-the inner 5V pin at the top of the long header and its GND on the GND
-pin beside pin 13. The wires from pins 14 and 15 rise past the
-encoder's on their way to the modem.
+top + rail. The rotary encoder sits above the Mega on its five wires, as
+in Lesson 37, since the modem now lies where the encoder stood in Lesson
+29: CLK and DT on pins 18 and 19, its switch, SW, on 22, its + on the
+inner 5V pin at the top of the long header and its GND on the GND pin
+beside pin 13. The wires from pins 14 and 15 rise past the encoder's on
+their way to the modem.
 
 <!-- bench A -->
 
@@ -142,8 +144,8 @@ Board B:
 
 ## Code it
 
-Open the Arduino IDE and choose **File → Examples → Adk →
-lessons/044-remote-dial → Dial**, for Board A:
+Open the Arduino IDE and choose **File → Examples → Adk → lessons →
+044-remote-dial → Dial**, for Board A:
 
 <!-- sketch A -->
 
@@ -164,7 +166,7 @@ What's new:
   B can't be heard. `degree` is the screen's own degree sign, as in
   Lesson 14.
 
-Then choose **lessons/044-remote-dial → Servo**, for Board B:
+Then choose **lessons → 044-remote-dial → Servo**, for Board B:
 
 <!-- sketch B -->
 
@@ -218,7 +220,7 @@ the module back on, and the servo jumps to the angle it was sent.
 | The screen shows the angles, but the servo never moves | Is the power module on, with its LED lit? Check its red wire from 5V to B+61 and its black wire from GND to B-61, then the servo's plug: brown to B-54, red to B+53, orange to pin 44. |
 | The Mega resets, or the USB disconnects, when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail, B+53, fed by the power module. |
 | The servo turns the opposite way to the knob | Nothing is wrong. To swap it, change `knob.turned () * step` to `-knob.turned () * step` in **Dial**. |
-| One click moves 10°, or it takes two clicks to move 5° | Your encoder makes a different number of steps per click. Try `adk::RotaryEncoder knob {18, 19, 2};`, as in Lesson 29. |
+| It takes two clicks to move 5° | Your encoder steps differently: try `adk::RotaryEncoder knob {18, 19, 2};`, as in Lesson 29, or 1 if it takes four clicks. |
 | It buzzes at one end of its travel | It's pushing against its end stop. Use `adk::Servo servo {44, 600, 2300};` to narrow the pulses a little. |
 | A blank lit screen, or a row of blocks | Turn the contrast knob. A row of blocks means the screen has power but isn't hearing the Mega: check pins 31 to 36. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |

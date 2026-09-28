@@ -7,7 +7,7 @@ parts:
   - "Both boards: the Mega, breadboard and LoRa modem from Lesson 50, with the modem's divider and wires"
   - "Board A: the RC522 RFID reader with its card and fob, the tap sensor (37 in 1), a push button, the active buzzer, and a breadboard power module with its 9 V adapter (a second one: the kit has only one)"
   - "Board B: the servo and power module from Lesson 50, the LCD, knob and 220 Ω resistor from Lesson 13, a push button, and the passive buzzer with a 220 Ω resistor"
-  - "13 female-to-male and 24 jumper wires, besides the modems' own"
+  - "13 female-to-male (one is Board A's modem's new VDD wire) and 24 jumper wires, besides the modems' own"
   - "A box with a lid, and some tape, if you want a real door"
 ideas:
   - Three events, each crossing as a count
@@ -160,8 +160,8 @@ When you are done, these are the connections Board B makes:
 
 ## Code it
 
-In the Arduino IDE, choose **File → Examples → Adk →
-lessons/051-doorbell-and-door**: **Door** is for Board A and **Inside** for
+In the Arduino IDE, choose **File → Examples → Adk → lessons →
+051-doorbell-and-door**: **Door** is for Board A and **Inside** for
 Board B.
 
 ### Board A: Door
@@ -217,7 +217,8 @@ Read it from the top:
 
 1. Check the power modules' red wires: Board A's from its **3.3V** pin,
    Board B's from its **5V** pin, and both jumpers off on each. Plug in
-   both adapters and switch both modules on.
+   both adapters and switch both modules on before you plug in the USB
+   cables: Board A's sketch sets its modem up only as it starts.
 2. Upload **Door** to Board A and **Inside** to Board B, each by its own
    port. Board B's latch swings to 0°, its screen says `Front door` and,
    once it hears Board A, `All quiet`. Board A's **L** LED lights.
@@ -242,7 +243,7 @@ news.
 
 | What you see | Try this |
 |---|---|
-| Board B says `Can't hear it` | Is Board A's power module on, with its LED lit? Its modem runs from the bottom rails now: check the module's red wire from its 3.3V pin to B+61 and its black wire from GND to B-61. Check the modem's VDD wire goes to B+47, and each modem's wires as in Lesson 49. |
+| Board B says `Can't hear it` | Is Board A's power module on, with its LED lit? If you switched the module on after Board A started, press Board A's **RESET** button. Its modem runs from the bottom rails now: check the module's red wire from its 3.3V pin to B+61 and its black wire from GND to B-61. Check the modem's VDD wire goes to B+47, and each modem's wires as in Lesson 49. |
 | Board A's modem gets warm | Unplug everything at once, and check the red wire of Board A's power module comes from its **3.3V** pin, never 5V. |
 | Board A's Serial Monitor says `No card reader` | Check the reader's seven wires as in Lesson 34, and that its 3.3V pin goes to the Mega's 3.3V. |
 | Your card always gets `Unknown card` | Copy its number from Board B's Serial Monitor exactly, with `0x` in front, into **Inside**, and upload it to Board B. |

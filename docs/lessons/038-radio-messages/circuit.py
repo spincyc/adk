@@ -1,6 +1,6 @@
 # The screen at its home, and the push button on 23 at its home beside it.
-# The 433 MHz receiver and transmitter stand at their homes past it, their
-# springs pointing up. The receiver, on pin 43, runs from 5 V; the
+# The 433 MHz receiver and transmitter stand at their homes past it, with
+# no aerials fitted. The receiver, on pin 43, runs from 5 V; the
 # transmitter runs from the Mega's 3.3V, and its DAT is the middle of a
 # divider from pin 46.
 bench = Bench ("A 433 MHz receiver on pin 43 and transmitter on pin 46, a button on pin 23, and "

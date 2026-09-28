@@ -10,8 +10,8 @@ parts:
   - A phone with the Meshtastic app, and a computer with Chrome or Edge
   - RGB LED
   - 3 × 220 Ω resistors (red, red, black, black, brown)
-  - 3 female-to-male jumper wires
-  - 3 jumper wires
+  - 3 more female-to-male jumper wires
+  - 3 more jumper wires
   - A soldering iron and an adult to help, unless your boards come with their pins soldered
 ideas:
   - A mesh, where radios pass messages on for each other
@@ -228,9 +228,11 @@ Read it from the top:
 
 ## Upload it
 
-1. Plug board 1 into a USB charger, and board 2 too. Both screens light.
-2. Plug in the Mega and upload the sketch. The screen says
+1. Plug in the Mega and upload the sketch. The screen says
    `Mesh Messenger` and `Waiting...`. Open the Serial Monitor at 9600 baud.
+2. Plug board 1 into a USB charger, and board 2 too. Both boards' screens
+   light. Board 1 goes after the Mega, so its 3.3 V pins never feed a Mega
+   that's switched off.
 3. In the app, open your private channel and send `help`. After a few
    seconds a reply arrives from board 1: `Try lamp on, lamp off or temp?`.
    The Mega's screen shows `Mega says:` and the reply.

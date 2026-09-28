@@ -99,8 +99,8 @@ void heard (Tripwire& wire)
 // The top row: the alarm's state, and whether the door is heard.
 void showState ()
 {
-    auto state = armed ? "Armed   " : "Disarmed";
-    auto door  = bridge.isConnected () ? "Door ok " : "No news ";
+    auto state = armed ? "Armed    " : "Disarmed ";
+    auto door  = bridge.isConnected () ? "Door ok" : "No news";
 
-    adk::print (lcd.at (0, 0), sounding ? "ALARM!  " : state, door);
+    adk::print (lcd.at (0, 0), sounding ? "ALARM!   " : state, door);
 }

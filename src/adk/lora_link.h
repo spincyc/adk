@@ -18,8 +18,11 @@ namespace adk {
     //   AUX -> any pin
     //
     // Its pins work at 3.3 V, so the Mega's TX is divided down, and the Mega
-    // only ever pulls M0 and M1 low or lets them go: the module pulls them
-    // up itself. AUX is low while the module is busy.
+    // only ever pulls M0 and M1 low or lets them go: the module's own weak
+    // pull-ups lift them. Ebyte asks for M0 and M1 never to float, so a
+    // 10 kohm from them to 3.3 V holds them firmly where a module won't
+    // take its settings; the Mega can still pull them low. AUX is low while
+    // the module is busy.
     //
     // setup () lets M0 and M1 go high, which puts the module in its settings
     // mode, and gives it a channel, 410 MHz plus its number, and its lowest

@@ -28,6 +28,9 @@ the time: `Knock   21:07:43`. Press POWER on the remote and the den arms
 the alarm; the door's red LED lights to show it, and now a tripwire sets the
 siren going until you press POWER again.
 
+As before, send on 915 MHz only where it's allowed: see
+[Radios](../../safety.md#radios).
+
 ## The idea
 
 **An event crosses as a count.** A tripwire going off is over in an
@@ -175,9 +178,9 @@ What's new:
 
 Now test your prediction: arm the alarm and unplug Board A. The siren stays
 quiet: no count went up, because the door can't count anything any more.
-Five seconds later the top row says `Armed   No news`, which is all the den
-knows. A real alarm treats that silence as trouble too, and *Make it
-yours* shows how.
+Three to five seconds later the top row says `Armed    No news`, which is
+all the den knows. A real alarm treats that silence as trouble too, and
+*Make it yours* shows how.
 
 ## If it doesn't work
 

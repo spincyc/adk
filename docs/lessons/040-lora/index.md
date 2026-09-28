@@ -9,8 +9,8 @@ parts:
   - Breadboard power module and its 9 V adapter
   - 2 × 1 kΩ resistors (brown, black, black, brown, brown)
   - 2 × 2 kΩ resistors (red, black, black, brown, brown)
-  - 10 female-to-male jumper wires
-  - 4 jumper wires
+  - 10 more female-to-male jumper wires
+  - 4 more jumper wires
 ideas:
   - LoRa, which trades speed for range
   - Addresses and a network number
@@ -157,8 +157,8 @@ own:
     on the left to VDD on the right. The radio chip hides under a metal can
     labeled **RYLR890**; that's normal for an RYLR896.
 
-    The spring is the aerial, soldered on. Keep the two springs upright and
-    apart, and don't bend them.
+    The spring is the aerial, soldered on. Keep the two springs straight,
+    pointing down, and apart, and don't bend them.
 
 When you are done, these are the connections your circuit makes:
 
@@ -191,7 +191,8 @@ What's new:
   line and make `Press 1`, as in Lesson 38.
 - `showMessage ()` puts the message on the top row, and the signal and the
   margin below it: `-32 dBm  9 dB`. The top row shows a long message's
-  first 16 letters; the Serial Monitor shows it all.
+  first 16 letters, kept in `start` as in Lesson 38; the Serial Monitor
+  shows it all.
 
 ## Upload it
 
@@ -224,7 +225,7 @@ means everyone. Put the 2 back when you're done.
 
 | What you see | Try this |
 |---|---|
-| `No reply from A`, or from B | Is the power module on, with its LED lit? Check its red wire goes from its 3.3V pin to B+61 and its black one from GND to B-61. Check that modem's VDD goes to the bottom + rail and its GND to the − rail. Check its TXD and RXD aren't swapped: TXD goes up to f53 (A) or f44 (B), RXD to c55 (A) or c46 (B). |
+| `No reply from A`, or from B | Is the power module on, with its LED lit? Check its red wire goes from its 3.3V pin to B+61 and its black one from GND to B-61. Check that modem's VDD goes to the bottom + rail and its GND to the − rail. Check its TXD and RXD aren't swapped: TXD goes up to f53 (A) or f44 (B), RXD to c55 (A) or c46 (B). Then press the Mega's reset button, so the sketch sets the modems up again. |
 | Still no reply | Check the divider: pin 18's wire in j55, the 1 kΩ from g55 to e55, the 2 kΩ from a55 to the − rail (for B: pin 14 in j46, g46 to e46, a46 to the − rail). And pin 19's wire in j53, pin 15's in j44. |
 | `A sends:`, but B shows nothing | Check the address in `sendFromA ()` is 2 or 0, and that modem B says it is ready. |
 | `A can't send just now: try again` | Wait a moment, and send again: the last message was still going. If it always says this, modem A didn't answer at the start. |
@@ -292,7 +293,8 @@ means everyone. Put the 2 back when you're done.
    for B. A pair on network 6 next door won't hear you, nor you them.
 4. **A signal bar.** Show the signal as a bar of blocks on the bottom row,
    as the FM radio did in Lesson 37: none at −120 dBm and sixteen at −24,
-   with `(modemB.signal () + 120) / 6` blocks.
+   with `min ((modemB.signal () + 120) / 6, 16)` blocks, so the bar can't
+   run past the end of the row.
 
 ## Measure it
 

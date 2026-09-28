@@ -3,7 +3,7 @@
 #
 # Board A, the dial: the button and the LEDs come out, and the course's
 # screen goes in at its home, wired by screen (). The rotary encoder sits
-# at its home above the Mega, as in Lesson 29, on 18, 19 and 22.
+# at its home above the Mega, as in Lesson 37, on 18, 19 and 22.
 dial = Bench ("Board A: the LCD on pins 31 to 36, a rotary encoder on 18 and 19 with its switch "
               "on 22, and the LoRa modem on Serial3 (pins 14 and 15)", columns=(1, 50),
               sketch="Dial")

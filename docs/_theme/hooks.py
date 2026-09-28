@@ -385,13 +385,14 @@ def wire_count (bench, items):
 
 
 # A one-board lesson's parts list counts its jumper wires, of each kind the
-# build needs: all its build holds, or the ones its steps add where it
-# carries on ("5 more jumper wires"). A count that is neither, or a kind
-# left out, is an error. (Two-board lessons count their boards in too many
+# build needs: all its build holds, or, saying "more", the ones its steps
+# add where it carries on ("5 more jumper wires"). A count that is
+# neither, or a kind left out, is an error. (Two-board lessons count their boards in too many
 # ways to check.)
 def check_wires (lesson, bench, parts):
-    listed = {}
+    listed, more = {}, False
     for item in parts or []:
+        more |= bool (re.search (r"\bmore\b", item))
         for number, kind in re.findall (r"\b(\d+) (?:more )?(female-to-male |female-to-female |)"
                                         r"(?:and \d+ )?(?:more )?(?:jumper )?wires?", item):
             kind = kind.strip () or "jumper"
@@ -403,11 +404,12 @@ def check_wires (lesson, bench, parts):
     new = wire_count (bench, added (bench, previous (lesson["number"])))
     whole = wire_count (bench, bench.items)
     for kind in new:
-        if listed.get (kind, 0) not in (new[kind], whole[kind]) and (new[kind] or whole[kind]
-                                                                      or kind in listed):
-            raise PluginError (f"{lesson['slug']}: its parts list gives {listed.get (kind, 0)} "
-                               f"{kind} wires, but its steps add {new[kind]} and its build holds "
-                               f"{whole[kind]}")
+        count = listed.get (kind, 0)
+        if count == whole[kind] or count == new[kind] and (more or not new[kind]):
+            continue
+        raise PluginError (f"{lesson['slug']}: its parts list gives {count} {kind} wires, but its "
+                           f"build holds {whole[kind]}, and its steps add {new[kind]} (\"{new[kind]} "
+                           f"more {'female-to-male ' if kind != 'jumper' else ''}jumper wires\")")
 
 
 # What this bench keeps from the one before (named), what it takes out
@@ -434,14 +436,20 @@ def identity (bench, kind, thing):
 
 
 # What is kept, in words: the parts, each module with its own wires, the
-# Mega's power wires, and how many other wires.
+# Mega's power wires, and the other wires. A part that leaves others of its
+# kind behind is named by its holes, and a few other wires one by one where
+# some are taken out, so the learner knows which to keep.
 def kept_words (bench, kept):
     modules = {thing.name: thing for kind, thing in kept if kind == "module"}
-    parts = [f"the {thing.name}" for kind, thing in kept if kind == "part"]
+    kept_parts = [thing for kind, thing in kept if kind == "part"]
+    everywhere = [part.name for part in bench.parts]
+    staying = [part.name for part in kept_parts]
+    parts = [describe (bench, "part", part) if everywhere.count (part.name) > staying.count (part.name)
+             else f"the {part.name}" for part in kept_parts]
     wires = [thing for kind, thing in kept if kind == "wire"]
     power = [wire for wire in wires if bench.is_standard (wire)]
     counts = {}
-    rest = 0
+    rest = []
     for wire in wires:
         if wire in power:
             continue
@@ -449,7 +457,9 @@ def kept_words (bench, kept):
         if owners and owners[0] in modules:
             counts[owners[0]] = counts.get (owners[0], 0) + 1
         else:
-            rest += 1
+            rest.append (wire)
+    others = [wire for wire in bench.wires if not bench.is_standard (wire) and
+              not any (end[0] == "module" for end in wire[:2])]
     things = gather (parts)
     for key, placed in modules.items ():
         count = counts.get (key, 0)
@@ -462,8 +472,10 @@ def kept_words (bench, kept):
     if len (power) > len (feeds):
         links = len (power) - len (feeds)
         things.append (f"the link{'s' if links > 1 else ''} between the rails")
-    if rest:
-        things.append (f"{rest} {'other ' if things else ''}wire{'s' if rest > 1 else ''}")
+    if rest and len (rest) <= 3 and len (others) > len (rest):
+        things += [describe (bench, "wire", wire) for wire in rest]
+    elif rest:
+        things.append (f"{len (rest)} {'other ' if things else ''}wire{'s' if len (rest) > 1 else ''}")
     return things
 
 

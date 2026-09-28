@@ -48,7 +48,7 @@ boards = {"A": stick, "B": turret}
 # Readings to take with a multimeter on Board B: the fan's enable pin, set
 # from Board A's joystick button, and what happens to it when Board A
 # goes quiet.
-turret.measure ("The enable pin, fan on", red="4", black="GND", expect="about 3.9 V",
+turret.measure ("The enable pin, fan on", red="4", black="B-21", expect="about 3.9 V",
                 when="fan on, turret still")
-turret.measure ("The enable pin, Board A off", red="4", black="GND", expect="0 V",
+turret.measure ("The enable pin, Board A off", red="4", black="B-21", expect="0 V",
                 when="five seconds after")

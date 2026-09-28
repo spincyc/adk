@@ -32,7 +32,8 @@ void loop ()
     }
 
     // In whole degrees. The bridge sends only a change, so a board held
-    // still sends nothing new, and a board on the move up to ten a second.
+    // still sends almost nothing new, and a board on the move up to ten a
+    // second.
     bridge.share ("pitch", lround (pitch));
     bridge.share ("roll", lround (roll));
     bridge.share ("sensor", tilt.ok ());

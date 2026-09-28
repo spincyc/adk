@@ -38,7 +38,7 @@ Each click is called a **detent**. The encoder doesn't report *where* it
 is, only that it has turned, and which way.
 
 Inside are two switch contacts, called **CLK** and **DT**, that open and
-close as you turn, a quarter of a step out of time with each other.
+close as you turn, a quarter of a click out of time with each other.
 Turning clockwise, CLK changes first and DT follows; turning the other way,
 DT changes first. So by watching which contact changes first, the Mega knows
 the direction:
@@ -81,10 +81,12 @@ of 255 on its PWM pin, just as the dimmer's `write ()` set it in Lesson 7.
 The rotary encoder plugs into the breadboard. Its pins bend at a right
 angle, so it stands upright in row a, columns 45 to 49, with its knob
 toward you. From the left, as you face the knob, its pins are **GND**,
-**+**, **SW**, **DT** and **CLK**: check the names printed beside yours,
-and turn it so they match. Two short jumpers take its GND and + up to the
-top rails, and the wires from pins 22, 19 and 18 come down into row e
-above SW, DT and CLK.
+**+**, **SW**, **DT** and **CLK**: check the names printed beside yours;
+if they're in another order, keep the knob toward you and move each wire
+to the column of the pin with that name. Two jumpers take its GND and +
+up to the top rails, and the wires from pins 22, 19 and 18 come down into
+row e above SW, DT and CLK. The drawings show it folded flat so you can
+read its pins; on your breadboard it stands upright.
 
 <!-- bench -->
 
@@ -129,8 +131,9 @@ What's new:
 - `struct Item` is one line of the menu: its `name`, its `choices` and its
   `setting`. `adk::Span<const char* const> choices` is a view of a list kept
   somewhere else, as in Lesson 18, so every item can point at a list of a
-  different length. The second `const` says the texts in the list are fixed
-  too.
+  different length. The first `const` keeps each text's letters fixed; the
+  second keeps the list's entries from being pointed at other texts, as a
+  `constexpr` list needs.
 - `adk::Array menu { Item {...}, ... };` is the whole menu, an array of
   structs as in Lesson 5. Writing `Item` in front of each one says what they
   are, so the array knows its type without being told.
@@ -175,8 +178,8 @@ first click back brings it straight down to 90%.
 | A row of solid blocks | The LCD has power but isn't hearing the Mega: check RS on 31 and E on 32. |
 | Strange characters | Check D4 to D7 go to pins 33 to 36, in order. |
 | Turning clockwise goes backwards | CLK and DT are swapped: CLK goes to 18, DT to 19. |
-| One click moves Level two steps, or it takes two clicks to move one | Your encoder makes a different number of changes per click. Try `adk::RotaryEncoder knob {18, 19, 2};`. |
-| Clicking does nothing | Press the shaft straight down until it clicks, and check SW goes to pin 22. |
+| It takes two clicks to move Level one step | Your encoder makes two changes per click. Try `adk::RotaryEncoder knob {18, 19, 2};`. |
+| Clicking does nothing | Push the knob straight in, toward the breadboard, until it clicks, with a finger behind the encoder's board to steady it, and check SW goes to pin 22. |
 | The menu works but the LED never lights | Check pin 3's wire goes to j38, the resistor runs from g38 across the gap to e38, the LED's long leg is in b38 and its short leg in b39, and the black jumper runs from a39 to the − rail. |
 
 ??? note "How it works"

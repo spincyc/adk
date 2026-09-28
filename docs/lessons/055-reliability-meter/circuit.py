@@ -19,7 +19,7 @@ bench.closeup (23, 62)
 # where each message is on the air for at most 0.43 s and then rests for
 # 10 s or more, so the meter shows 0 V but for a twitch; and the receiver's
 # DATA hearing noise between messages.
-bench.measure ("The transmitter's DAT", red="h57", black="GND", expect="0 V",
+bench.measure ("The transmitter's DAT", red="h57", black="B-55", expect="0 V",
                when="between messages")
-bench.measure ("The receiver's DATA, hearing noise", red="43", black="GND", expect="about 2.5 V",
+bench.measure ("The receiver's DATA, hearing noise", red="43", black="B-46", expect="about 2.5 V",
                when="between messages")

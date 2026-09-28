@@ -35,12 +35,13 @@ turntable follows, while the screen keeps you told.
 ## The idea
 
 **A machine that reports back.** Sending an order across the house is
-easy; knowing it was carried out is the hard part. So here Board B
+easy; knowing it arrived and was obeyed is the hard part. So here Board B
 answers: Board A shares the angle it wants, and Board B shares the angle
-it is at. When the
-two agree, the job is done, and Board A can say so. Engineers call a
-system that checks its result and acts on it a **closed loop**: the
-command goes out, the report comes back, and the loop closes.
+it is at. When the two agree, Board B has done what it was asked, as far
+as it knows, and Board A can say so. Board B's report is its own count of
+the steps it sent, not a measurement: with its motor unplugged, it would
+still say it had arrived at 90°. Engineers keep the name **closed loop**
+for a machine that measures its result with a sensor and corrects itself.
 
 **Two values, one going each way.** Each board shares its own value and
 reads the other's:
@@ -89,8 +90,11 @@ degrees from it. Between those points, a tiny wobble changes nothing.
 
 Each board keeps its LoRa modem at the bridge's home: lying below the
 breadboard under columns 42 to 47, its spring pointing down, its divider
-in column 46 and its VDD fed from the Mega's 3.3V pin. The steps begin
-with what to keep from Lesson 51 and what to take out.
+in column 46 and its VDD fed from the Mega's 3.3V pin. On Board A, the
+power module and the modem's red wire to B+47 come off, and the modem's
+VDD goes back to the Mega's 3.3V pin, as in Lesson 50: without the card
+reader, that pin has enough for it. The steps begin with what to keep
+from Lesson 51 and what to take out.
 
 !!! danger "3.3 V for the modems"
     The modem's VDD takes 3.3 V, never 5 V, and gets it by a wire from the
@@ -139,11 +143,11 @@ When you are done, these are the connections Board B makes:
 ## Code it
 
 Each board has a sketch of its own. Open **File → Examples → Adk →
-lessons/052-remote-stepper → Knob** for Board A:
+lessons → 052-remote-stepper → Knob** for Board A:
 
 <!-- sketch A -->
 
-And **lessons/052-remote-stepper → Turntable** for Board B:
+And **lessons → 052-remote-stepper → Turntable** for Board B:
 
 <!-- sketch B -->
 
@@ -169,8 +173,8 @@ What's new:
 - `motor.moveTo ()` goes to a position counted from where the motor was
   when Board B started, and asking again for where it is already going
   changes nothing, so Board B can ask on every pass of `loop ()`.
-- `showAngles ()` compares the two: the same number means the turntable
-  has arrived. If the bridge hasn't heard Board B for five seconds, it says
+- `showAngles ()` compares the two: the same number means Board B says
+  the turntable has arrived. If the bridge hasn't heard Board B for five seconds, it says
   so instead. The spaces after each number wipe out what a longer number
   left behind.
 - On Board B, the Mega's own **L** LED shows `bridge.isConnected ()`.

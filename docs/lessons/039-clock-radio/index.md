@@ -8,8 +8,8 @@ parts:
   - The FM radio (add-on, not in the kit), earbuds, 1 kΩ resistor and volume knob from Lesson 37
   - DS1307 clock module with its coin cell, from Lesson 32
   - Rotary encoder module
-  - 9 female-to-male jumper wires
-  - 7 jumper wires
+  - 9 more female-to-male jumper wires
+  - 7 more jumper wires
 ideas:
   - Putting a radio, a clock and two knobs together
   - A device as a set of states, again
@@ -46,7 +46,7 @@ second it sets the volume to the share of the half minute that has gone by:
 
 With the volume knob at 12, the radio starts at 0, reaches 6 after 15
 seconds, and 12 after 30, where it stays. The radio has sixteen volumes, 0
-to 15, so it steps up about every two seconds.
+to 15, so at 12 it steps up every two and a half seconds.
 
 ## How the clock radio works
 
@@ -212,7 +212,7 @@ and the time gone by, so the whole fade shrinks to fit.
 
     The volume changes in steps, because the radio has only sixteen of them.
     Each step is about 2 dB, a small change to your ears, so a fade that
-    takes a step every two seconds sounds like one gentle rise.
+    takes a step every two and a half seconds sounds like one gentle rise.
 
 ## Make it yours
 

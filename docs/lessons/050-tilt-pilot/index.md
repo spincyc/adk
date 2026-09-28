@@ -47,9 +47,9 @@ would jump in little steps.
 **Smooth before sending.** Board A doesn't share every reading as it
 comes. It keeps a smoothed tilt: each new reading moves it only a quarter
 of the way from where it was, so a shaky reading barely moves it, while a
-real tilt gets there in a few readings, about a tenth of a second. Then it
+real tilt gets most of the way there in a tenth of a second. Then it
 shares the tilt in whole degrees. The bridge sends a value only when it
-changes, so a board held still sends nothing new at all, and the air stays
+changes, so a board held still sends almost nothing new, and the air stays
 free.
 
 **Glide after receiving.** Board B fills in between the values it gets.
@@ -173,11 +173,15 @@ What's new:
    the edge, and the servo arm leans over. Lower the near edge instead,
    and the ball rolls down the matrix, as in Lesson 30.
 
-Now your prediction. Held still on the table, Board A sends nothing new,
-and the Serial Monitor prints `New tilts this second: 0`. Rock it to and
-fro and the count climbs, but never past 10: that's the bridge's limit,
-and the radio's. Yet the ball and the arm move smoothly, because Board B
-fills in between.
+Now your prediction. Held still on the table, Board A sends almost nothing
+new, and the Serial Monitor prints `New tilts this second: 0`, or now and
+then 1. Rock it to and fro and the count climbs, but never past 10:
+that's the bridge's limit, and the radio's. Yet the ball and the arm move
+smoothly, because Board B fills in between.
+
+!!! question "Predict"
+    Without the smoothing, what will the count do while you hold Board A
+    still? Write down your guess.
 
 Try it without the smoothing. In **Tilt**, change both `/ 4` to `/ 1`, so
 each reading is taken as it is, and upload. Hold Board A still: the count

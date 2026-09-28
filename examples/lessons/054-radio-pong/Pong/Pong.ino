@@ -40,6 +40,10 @@ long drift     = 0;
 long pace      = 250;
 long misses    = 0;
 
+// The other board's counts as last heard, -1 before any.
+long theirCrossings = -1;
+long theirMisses    = -1;
+
 adk::Text<12> score;
 
 void setup ()
@@ -52,12 +56,12 @@ void loop ()
 {
     adk::update ();
 
-    if (bridge.changed ("ball") && bridge.value ("ball") > 0)
+    if (wentUp ("ball", theirCrossings))
     {
         catchBall ();
     }
 
-    if (bridge.changed ("misses") && bridge.value ("misses") > 0)
+    if (wentUp ("misses", theirMisses))
     {
         speaker.play (cheer);
         showScore ();
@@ -96,6 +100,23 @@ void loop ()
 
     linked.set (bridge.isConnected ());
     draw ();
+}
+
+// Whether the other board's count by this name has gone up: something
+// happened. The first count heard, or one that went down because the other
+// board restarted, only says where it has got to, as in Lesson 51.
+bool wentUp (const char* name, long& seen)
+{
+    if (!bridge.changed (name))
+    {
+        return false;
+    }
+
+    long count = bridge.value (name);
+    bool up    = seen >= 0 && count > seen;
+
+    seen = count;
+    return up;
 }
 
 // In at the top. The other player faces this way, so their left is this

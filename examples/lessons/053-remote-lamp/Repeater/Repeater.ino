@@ -16,6 +16,8 @@ adk::LoraModem radio  {Serial3, 2, {.partner = 1,
                                     .power   = 10}};
 adk::Bridge    bridge {radio};
 
+long presses = -1;    // Board A's count as last heard, -1 before any
+
 void setup ()
 {
     adk::setup ();
@@ -34,10 +36,18 @@ void loop ()
         relay.off ();
     }
 
-    // A new count is a new press to send on; 0 means none yet.
-    if (bridge.changed ("presses") && bridge.value ("presses") > 0)
+    // A count that went up is a new press to send on. The first count
+    // heard only says where Board A has got to, as in Lesson 51.
+    if (bridge.changed ("presses"))
     {
-        irLed.send (bridge.value ("button"), bridge.value ("address"));
+        long count = bridge.value ("presses");
+
+        if (presses >= 0 && count > presses)
+        {
+            irLed.send (bridge.value ("button"), bridge.value ("address"));
+        }
+
+        presses = count;
     }
 
     bridge.share ("relay", relay.isOn ());

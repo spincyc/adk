@@ -55,9 +55,11 @@ work at 3.3 V, and a radio that sends is ruled by law.
   divider: 1 kΩ from the Mega's pin to the radio's, and 2 kΩ from the
   radio's pin to GND, which turns 5 V into 3.3 V. Where the Mega only pulls
   a pin low or lets it go (the FM radio's SDIO and SCLK, the LoRa module's
-  M0 and M1), the radio's own resistors lift it to 3.3 V instead. The FM
-  radio's board holds its RST low, so Lesson 37 lifts it with a 1 kΩ to
-  3.3 V. Their outputs are safe for the Mega to read directly.
+  M0 and M1), the radio's own resistors lift it to 3.3 V instead. The LoRa
+  module's are weak, and Ebyte asks for M0 and M1 never to float, so
+  Lesson 41 shows a 10 kΩ to 3.3 V that holds them firmly. The FM radio's
+  board holds its RST low, so Lesson 37 lifts it with a 1 kΩ to 3.3 V.
+  Their outputs are safe for the Mega to read directly.
 - **Power them as the lesson says.** The FM radio and the 433 MHz
   transmitter take little enough for the Mega's 3.3V pin. A LoRa modem
   sending at full power draws up to about 50 mA by REYAX's datasheets: all

@@ -7,8 +7,8 @@
 # feeds only the bottom rails, for the driver, from B+61 and B-61, so the
 # screen and clock keep the Mega's 5V on the top rails. The screen's knob
 # jumper takes column 5 and the LCD covers the bottom rails from column 6,
-# so the driver's + and − come in one column nearer the Mega than in
-# Lesson 31, at B+4 and B-4.
+# so the driver's + and − come in nearer the Mega than Lesson 31's B+5 and
+# B-6, at B+4 and B-4.
 bench = Bench ("Lesson 32's clock and LCD, with a knob on pins 18, 19 and 22, a snooze button on "
                "pin 23, a passive buzzer on pin 10, and a stepper flag on pins A8 to A11 powered "
                "from the power module", columns=(1, 63))

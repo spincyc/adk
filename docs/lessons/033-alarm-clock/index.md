@@ -11,8 +11,8 @@ parts:
   - 220 Ω resistor (red, red, black, black, brown)
   - 28BYJ-48 stepper and ULN2003 driver, from Lesson 31
   - Breadboard power module and its 9 V adapter
-  - 13 female-to-male jumper wires
-  - 3 jumper wires
+  - 13 more female-to-male jumper wires
+  - 3 more jumper wires
   - A paper flag and sticky tape
 ideas:
   - A device as a set of states
@@ -114,9 +114,9 @@ as in Lesson 32. The steps below say what to keep and what to add.
 
 <!-- steps -->
 
-The driver's red and black wires go into B+4 and B-4, one column nearer
-the Mega than in Lesson 31, because the screen's black jumper takes column
-5 and the LCD covers the rails from column 6.
+The driver's red and black wires go into B+4 and B-4, nearer the Mega
+than Lesson 31's B+5 and B-6, because the screen's black jumper takes
+column 5 and the LCD covers the rails from column 6.
 
 Push the motor's white plug into the driver's socket. Tape a paper flag to
 the motor's shaft so that, looking at the end of the shaft, the flag lies

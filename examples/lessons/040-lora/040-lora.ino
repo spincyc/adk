@@ -59,11 +59,15 @@ void sendFromA (const char* text)
     }
 }
 
-// The message on the top row, the signal and the margin below it.
+// The message on the top row, the signal and the margin below it. The top
+// row has room for its first 16 letters; the Serial Monitor shows it all.
 void showMessage ()
 {
+    adk::Text<16> start;
+    adk::print (start, modemB.text ());
+
     lcd.clear ();
-    adk::print (lcd.at (0, 0), modemB.text ());
+    adk::print (lcd.at (0, 0), start.c_str ());
     adk::print (lcd.at (0, 1), modemB.signal (), " dBm  ",
                 modemB.margin (), " dB");
 

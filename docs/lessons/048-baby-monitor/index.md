@@ -32,7 +32,8 @@ beeps and says so: a monitor that quietly stops working is worse than
 none.
 
 This project puts Lessons 46 and 47 together, and adds the two sensors in
-the kit that no lesson has used yet.
+the kit that no lesson has used yet. As before, send on 915 MHz only where
+it's allowed: see [Radios](../../safety.md#radios).
 
 ## The idea
 
@@ -52,7 +53,9 @@ Sending every one would keep the radio busy ten times a second, as
 Lesson 46 found. Sending an average would hide a short cry among quiet
 moments.
 So the nursery keeps the loudest level of each half second and sends that:
-nothing loud is ever lost between messages.
+nothing loud is ever lost between messages. In Europe, send the sound once
+a second instead (`adk::Every halfSecond {1000}`), to stay well inside a
+tenth of the time.
 
 **Feeling for water.** The water sensor is a comb of copper traces, every
 other one joined to its **+**. Dry, nothing joins them. Water between the
@@ -65,7 +68,8 @@ away, and a sensor left powered in water all day soon corrodes. So its
 
 <p class="formula">10 ms ÷ 2000 ms = 1/200 of the time</p>
 
-The sensor needs only a few milliamps, well within what a pin can give.
+The sensor needs up to 20 mA, by Elegoo's figure: within what a pin can
+give, and only for those 10 ms.
 
 **Fail loud.** Lesson 46 showed stale news on the screen. A baby monitor
 must do more: silence from the nursery could mean a sleeping baby or a

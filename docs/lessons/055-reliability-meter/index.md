@@ -12,7 +12,7 @@ parts:
   - Rotary encoder module
   - 433 MHz receiver, RX470C, and transmitter, WL102-341, from Lesson 38 (add-ons, not in the kit)
   - 1 kΩ resistor (brown, black, black, brown, brown)
-  - 2 kΩ resistor (red, black, black, brown, brown), or a second 1 kΩ
+  - 2 kΩ resistor (red, black, black, brown, brown), or two more 1 kΩ
   - 5 female-to-male jumper wires, and 3 more for the last experiment
   - 25 jumper wires
   - For the last experiment, a small metal tin with a lid, and a plastic bag
@@ -43,7 +43,8 @@ first.
 groups of six bits: 12 bits, at 2000 bits a second, so 6 ms a letter. But a
 message is more than its letters. It starts with the warm-up the receiver
 locks onto, 48 bits, and it carries seven bytes of its own: its length,
-four bytes RadioHead keeps for addresses, and the two-byte checksum. That
+four bytes of RadioHead's own header (who it's to and from, and two more),
+and the two-byte checksum. That
 is 66 ms before the first letter, whether the message is one letter long
 or sixty:
 
@@ -90,7 +91,9 @@ from Lesson 13, the rotary encoder above the Mega as in Lesson 37, and the
 receiver and transmitter in row j past the screen, as in Lesson 38, with
 their wires coming round the bottom of the screen and up into row f.
 None of Lesson 54's parts stay, so take its Board A apart first, all but
-the Mega's GND wire, and build this one from the start.
+the Mega's GND wire, and build this one from the start. Leave the aerials
+off: in the USA and Canada they must stay off, and the two modules hear
+each other easily across the board without them, as in Lesson 38.
 
 <!-- bench -->
 
@@ -143,7 +146,7 @@ What's new:
   with the last message.
 - `sendMessage ()` builds each message in an `adk::Text<60>`, as Snake's
   message was built in Lesson 27: its number, such as `#3 `, and then
-  letters `a` to `z` over and over, until it is exactly as long as the dial
+  letters of the alphabet over and over, until it is exactly as long as the dial
   says. `message.size ()` is how many letters it has so far. It shows
   `Sent 3 of 5` before it sends, so the stopwatch times only the message.
 - `message == receiver.text ()` is true when what arrived is exactly what

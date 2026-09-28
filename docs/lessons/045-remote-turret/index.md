@@ -33,6 +33,8 @@ whether the fan is on, and how far away the sensor sees something, with
 It brings together the bridge from Lesson 43, the remote servo from
 Lesson 44 and the follow-me fan from Lesson 21. As before, send on
 915 MHz only where it's allowed: see [Radios](../../safety.md#radios).
+In Europe the band allows a tenth of the time, so don't keep the stick
+pushed over for long.
 
 ## The idea
 
@@ -127,7 +129,8 @@ Keep the screen and the modem from Lesson 44, with all their wires. Take
 out the rotary encoder and its five wires. The joystick lies at its home
 below the Mega, under A3 and A4, as in Lesson 26: VRx to A3, VRy to A4,
 its switch, SW, to pin 22, its +5V to the 5V pin on the power header and
-its GND to the inner GND pin at the end of the long header.
+its GND to the inner GND pin at the end of the long header. When you
+steer, hold the joystick with its pins pointing left, as in Lesson 26.
 
 <!-- bench A -->
 
@@ -179,8 +182,8 @@ Board B:
 
 ## Code it
 
-Open the Arduino IDE and choose **File → Examples → Adk →
-lessons/045-remote-turret → Joystick**, for Board A:
+Open the Arduino IDE and choose **File → Examples → Adk → lessons →
+045-remote-turret → Joystick**, for Board A:
 
 <!-- sketch A -->
 
@@ -208,7 +211,7 @@ Read it from the top:
   `cm < closeBy ? "CLOSE! " : "Ahead  "` picks one of two texts, as
   `modemA.ok () ? ... : ...` did in Lesson 40.
 
-Then choose **lessons/045-remote-turret → Turret**, for Board B:
+Then choose **lessons → 045-remote-turret → Turret**, for Board B:
 
 <!-- sketch B -->
 
@@ -266,7 +269,7 @@ the middle, and the fan stays still until you press the stick.
 | What you see | Try this |
 |---|---|
 | `Not connected` stays on the screen, and the **L** LED stays dark | Check Board A runs **Joystick** and Board B runs **Turret**. Check Board B's modem wires now come from pins 16 and 17: 16 into j46, 17 into j44. |
-| The turret never moves | Is the power module on, with its LED lit? Check its red wire from 5V to B+61 and its black wire from GND to B-61, then the servo's plug: brown to B-54, red to B+53, orange to pin 44. |
+| The turret never moves | Hold the joystick with its pins pointing left, as in Lesson 26: held another way round, pushing left or right may do nothing. Is the power module on, with its LED lit? Check its red wire from 5V to B+61 and its black wire from GND to B-61, then the servo's plug: brown to B-54, red to B+53, orange to pin 44. |
 | The turret turns the wrong way | Change `aim - stick.x () / 25` to `aim + stick.x () / 25` in **Joystick**. |
 | The turret creeps when nobody touches the stick | The stick moved while the sketch started. Press Board A's reset button with your hands off the stick. |
 | `Fan on`, but the fan never spins | Is anything closer than 15 cm, or the sensor facing a wire or the desk? Then check the L293D as in Lesson 20: pin 4 in j19, 8 in j13, 9 in j18, the motor's leads in j14 and j17, j12 to T+12, a15 to the − rail and a19 to B+19. |
@@ -293,9 +296,10 @@ the middle, and the fan stays still until you press the stick.
 
 ## Make it yours
 
-1. **Harder the closer.** Set the fan's speed from the distance, as
-   Lesson 21 did: `map (distance, tooClose, 80, 255, 110)`, and full
-   speed beyond 80 cm.
+1. **Harder the closer.** Set the fan's speed from the distance with
+   `map (distance, tooClose, 80, 255, 110)`, and stop it beyond 80 cm, as
+   Lesson 21 did: past 80, `map ()` gives less than 110, and then
+   negative numbers, which run the motor backwards.
 2. **A beep.** Put the active buzzer on Board A at its home beside the
    screen, in column 51 on pin 12, and beep while the screen says
    `CLOSE!`.

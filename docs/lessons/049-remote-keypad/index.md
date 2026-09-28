@@ -73,7 +73,7 @@ Every key goes to Board B, which does one of these:
 | 0 to 9 | Adds the digit, up to four, unless the door is open | One more `*` |
 | # | Checks the four digits: right opens the latch, wrong counts a try | `Open! # locks`, or `Wrong! Tries: 1` |
 | # or \* while open | Closes the latch | `Locked. Code?` |
-| \* | Rubs out the digits | `Locked. Code?`, no stars |
+| \* | Rubs out the digits | `Locked. Code?`, or still `Wrong! Tries:` after a wrong code; no stars |
 
 Board B's light says the same: dim blue while it waits, green while the
 door is open, red after a wrong code, and dim orange while it can't hear
@@ -94,8 +94,9 @@ Board A at all.
     servo takes its power from the bottom rails, never from the Mega.
 
 Each board keeps its LoRa modem from Lesson 48 where it is, below the
-board, with its divider and its wires: those stay the same in every
-two-board lesson. The steps say what else to keep and what to take out.
+board, with its divider and its wires: those stay where they are in every
+two-board lesson (Lesson 51 moves one wire). The steps say what else to
+keep and what to take out.
 
 ### Board A: the door
 

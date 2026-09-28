@@ -25,7 +25,7 @@ bench.wire ("modemB.VDD", "B+47")
 bench.wire ("14", "j46")
 bench.resistor ("1 kΩ", "g46", "e46")
 bench.resistor ("2 kΩ", "a46", "B-46")
-bench.wire ("modemB.RXD", "c46", color="grey")
+bench.wire ("modemB.RXD", "c46", color="brown")
 bench.wire ("modemB.TXD", "f44", color="purple")
 bench.wire ("15", "j44")
 

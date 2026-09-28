@@ -102,14 +102,14 @@ instead of a few, which is plenty across a house and makes the bridge
 answer quickly.
 
 **One modem on the Mega's 3.3 V.** In Lesson 40 the two modems ran from
-the power module, because a modem sending at its full power, 15 dBm,
-draws up to about 50 mA by REYAX's datasheet: as much as the Mega's 3.3V
-pin can give. Here each board has one modem, set to send at 10 dBm,
-about a third of that power. REYAX gives no figure for that, but the
-radio chip inside the modem draws about 29 mA even at 13 dBm, by its
-maker's datasheet, so the modem's VDD goes straight to the Mega's own
-3.3V pin and neither board needs a power module. The Mega's TX3 pin
-still reaches the modem's RXD through a divider, as in Lesson 40.
+the power module, because a modem sending at its full power draws up to
+about 50 mA by REYAX's datasheet: as much as the Mega's 3.3V pin can
+give. Here each board has one modem, set to send at 10 dBm, about a
+third of that power. REYAX gives no figure for that, but the radio chip
+inside the modem draws about 29 mA even at 13 dBm, by its maker's
+datasheet, so the modem's VDD goes straight to the Mega's own 3.3V pin
+and neither board needs a power module. The Mega's TX3 pin still reaches
+the modem's RXD through a divider, as in Lesson 40.
 
 !!! question "Predict"
     Once both boards are running, you'll unplug Board B. How long will it
@@ -176,8 +176,8 @@ are the same as Board A's:
 
 ## Code it
 
-Open the Arduino IDE and choose **File → Examples → Adk →
-lessons/043-the-bridge → BoardA**:
+Open the Arduino IDE and choose **File → Examples → Adk → lessons →
+043-the-bridge → BoardA**:
 
 <!-- sketch A -->
 
@@ -291,7 +291,8 @@ to check `isConnected ()` as well: Lesson 45's fan does.
    the signal fall, and see where the yellow LEDs start to flicker.
 3. **Far.** Change `.speed` to `adk::LoraSpeed::Far` on both boards. Does
    the red LED answer the button more slowly? Does the link reach
-   further?
+   further? In Europe, at Far each board's refresh alone fills more than
+   a tenth of the time, so keep Quick there.
 4. **Your own network.** Add `.network = 12` to the settings on both
    boards, so another pair of boards nearby won't hear yours.
 

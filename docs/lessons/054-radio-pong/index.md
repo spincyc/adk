@@ -50,7 +50,7 @@ first.
 matrix, your board shares three things about it: the column it crossed
 at, its **drift**, −1, 0 or 1 for which way it was going across, and its
 **pace**, the milliseconds between steps. And it adds one to a count
-called `ball`. The other board watches that count, and when it changes,
+called `ball`. The other board watches that count, and when it goes up,
 the ball is its own. The count is what matters: a ball can leave twice
 from the same column, the same way, at the same pace, and then only the
 count is new. Lesson 53 counted its presses the same way.
@@ -115,17 +115,19 @@ Open **File → Examples → Adk → lessons → 054-radio-pong → Ping** for B
 
 <!-- sketch A -->
 
-Board B's sketch, **lessons/054-radio-pong → Pong**, is the same but for line
-18, the radio's: `{Serial3, 2, {.partner = 1,`.
+Board B's sketch, **lessons → 054-radio-pong → Pong**, is the same but for
+line 18, the radio's: `{Serial3, 2, {.partner = 1,`.
 
 What's new:
 
 - `enum class Ball { Serving, Here, There };` names the three states from
   the table above, as Lesson 24 named its alarm's.
-- `bridge.changed ("ball") && bridge.value ("ball") > 0` is true when the
-  other board's count of crossings changes: a ball is coming. The `> 0`
-  leaves out the count of 0 each board shares when it starts.
-  `catchBall ()` puts the ball on the top row, mirrored:
+- `wentUp ()` is Lesson 51's. `wentUp ("ball", theirCrossings)` is true
+  when the other board's count of crossings goes up: a ball is coming.
+  `theirCrossings` starts at −1, and the first count heard only says where
+  the other board has got to, so a board that has just started doesn't
+  catch a ball nobody sent. `theirMisses` works the same way for the
+  cheer. `catchBall ()` puts the ball on the top row, mirrored:
   `7 - bridge.value ("column")` and `-bridge.value ("drift")`.
 - The five values after `bridge.share` are kept apart from the ball's own
   `x` and `y`. The ball moves every step, but `column`, `drift`, `pace`
@@ -233,7 +235,7 @@ again with its next check. That's the radio, not you.
 2. **A smaller paddle.** After ten hits in a rally, make the paddle two
    dots wide instead of three, and three again after a miss.
 3. **Hear them hit.** Count your paddle's hits and share the count; when
-   the other board's count changes, play a soft tick, so you hear the
+   the other board's count goes up, play a soft tick, so you hear the
    ball being hit back before it arrives.
 4. **Spin.** If the paddle is moving when it hits the ball, add one to
    the drift that way, so the ball goes off at a steeper angle.

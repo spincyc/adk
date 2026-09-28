@@ -30,6 +30,9 @@ the latest report arrived, and its light glows blue, green or red for a
 cold, mild or hot garden. Unplug the garden and, a few seconds later, the
 screen says **No news** and the light goes out.
 
+As before, send on 915 MHz only where it's allowed: see
+[Radios](../../safety.md#radios).
+
 ## The idea
 
 **Whole numbers, in tenths.** The bridge from Lesson 43 keeps named
@@ -100,12 +103,13 @@ When you are done, these are the connections Board A makes:
 
 ### Board B, indoors
 
-The screen goes at its home, as in Lesson 13, and the clock module on its
-side above it, as in Lesson 32. The RGB LED has the same shape as beside
-the screen in Lesson 15, but the modem has those columns now, so it stands
-just past the modem: its longest leg in the bottom − rail at B-49, red in
-a48, green in a51 and blue in a53, each color's resistor across the gap
-above it.
+Its modem goes back to Serial3: take out the wires from pins 16 and 17,
+and put pins 14 and 15 into j46 and j44 again. The screen goes at its
+home, as in Lesson 13, and the clock module on its side above it, as in
+Lesson 32. The RGB LED has the same shape as beside the screen in Lesson
+15, but the modem has those columns now, so it stands just past the modem:
+its longest leg in the bottom − rail at B-49, red in a48, green in a51 and
+blue in a53, each color's resistor across the gap above it.
 
 <!-- bench B -->
 
@@ -117,8 +121,8 @@ When you are done, these are the connections Board B makes:
 
 ## Code it
 
-Each board has its own sketch. Open **File → Examples → Adk →
-lessons/046-remote-weather → Garden** for Board A:
+Each board has its own sketch. Open **File → Examples → Adk → lessons →
+046-remote-weather → Garden** for Board A:
 
 <!-- sketch A -->
 
@@ -162,9 +166,10 @@ What's new:
 
 1. Plug in Board A and upload **Garden** to it. Its green LED stays off:
    indoors isn't talking yet.
-2. Plug in Board B and upload **Indoors** to it. Until the first report
+2. Plug in Board B and upload **Indoors** to it. Its screen stays blank
+   for about three seconds, until the first page. Until the first report
    the bottom row says `No news 00:00:00`: 00:00:00 means never.
-3. Within five seconds, Board A's green LED lights, Board B's light glows
+3. Within a few seconds, Board A's green LED lights, Board B's light glows
    and the screen shows something like:
 
     ```text
@@ -173,7 +178,10 @@ What's new:
     ```
 
     Every three seconds the top row moves on: the 18B20 and the thermistor
-    side by side (`DS 21.1 NTC 21.4`), then `Light 64%`.
+    side by side (`DS 21.1 NTC 21.4`), then `Light 64%`, and round again,
+    so the first page you see may well be the `DS` one. If Board A has
+    only just started, the bottom row may say `Heard   00:00:00` at first:
+    the garden is heard, but its first report hasn't come yet.
 
 4. Cover the light sensor with a finger. The next report, up to five
    seconds later, says the garden went dark. Pinch the thermistor's bead:
@@ -197,7 +205,7 @@ everything back.
 | `DS 0.0` | Check the 18B20's Y pin (the signal) goes to pin 17, its R to the top + rail and its G to the top − rail. |
 | `NTC` shows about −77 or hundreds | As in Lesson 14: the thermistor's legs in f33 and e33, the red wire from j33 to the top + rail, the 10 kΩ from c33 to c36. |
 | `Light` stays at 0 or 100 | Check the photoresistor in f40 and e40, the red wire from j40 to T+40, the 10 kΩ from c40 to c43, and A1's wire in a40. |
-| The time is `00:00:00`, or wrong | Check the clock module's SDA on pin 20 and SCL on 21. Lesson 32 shows how to set it. |
+| The time stays `00:00:00` after reports arrive, or is wrong | Check the clock module's SDA on pin 20 and SCL on 21. Lesson 32 shows how to set it. |
 | The light never comes on | Check its longest leg is in B-49, and each color's wire: pin 5 to j48, pin 6 to j51, pin 7 to j53. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 

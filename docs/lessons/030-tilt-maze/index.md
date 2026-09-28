@@ -83,10 +83,11 @@ buzzer knocks. The edges of the matrix are walls too.
     Mega's GND and 5V wires, and take the rest off. The GY-521 and the
     matrix you put aside in Lesson 29 come back: the GY-521 in row j,
     columns 9 to 16, and the matrix below the breadboard, both wired as in
-    Lesson 28. The passive buzzer goes through its
-    220 Ω resistor, as in Lesson 27. You will pick up the breadboard to
-    play, so use wires long enough to let it move, and keep the Mega flat
-    on the table beside it.
+    Lesson 28. A black jumper from B-60 to T-60 now brings GND to the
+    top − rail, as the screen's wiring did in Lesson 29. The passive
+    buzzer goes through its 220 Ω resistor, as in Lesson 27. You will pick
+    up the breadboard to play, so use wires long enough to let it move, and
+    keep the Mega flat on the table beside it.
 
 <!-- bench -->
 
@@ -165,11 +166,11 @@ seconds, where 10° took under two.
 
 | What you see | Try this |
 |---|---|
-| *NO SENSOR* scrolls | Check the GY-521: SDA to pin 20, SCL to pin 21, VCC's red jumper from the top + rail to i9, GND's black jumpers from f10 to e10 and a10 to the − rail, and its pins well down in row j. |
-| The ball rolls uphill | The GY-521's arrows point differently on your module. In `rollBall ()`, change `- (tilt.pitch () - flatPitch)` to `+`, or the `+` before `(tilt.roll () - flatRoll)` to `-`, whichever axis is wrong. |
+| *NO SENSOR* scrolls | Check the GY-521: SDA to pin 20, SCL to pin 21, VCC's red jumper from the top + rail to i9 and the red wire from the Mega's 5V to T+3, GND's black jumpers from f10 to e10 and a10 to the − rail, and its pins well down in row j. |
+| The ball rolls uphill | The GY-521's arrows point differently on your module. In `rollBall ()`, change `- (tilt.pitch () - flatPitch)` to `+`, or the `+` before `(tilt.roll () - flatRoll)` to `-`, whichever axis is wrong. If you changed a sign in Lesson 28, change the same axis here. |
 | The ball drifts on a level board | Hold it level when you click: that tilt is what counts as flat. |
-| Turning the knob does nothing | Check the wires from pins 18 and 19 in e49 and e48, above CLK and DT, and the encoder's jumpers from e45 to the top − rail and e46 to the top + rail. |
-| Clicking doesn't start the maze | The knob's switch is on pin 22: press the shaft straight down. |
+| Turning the knob does nothing | Check the wires from pins 18 and 19 in e49 and e48, above CLK and DT, and the encoder's jumpers from e45 to the top − rail and e46 to the top + rail, and the black jumper from B-60 to T-60 that grounds the top − rail. |
+| Clicking doesn't start the maze | The knob's switch is on pin 22: push the knob straight in, toward the breadboard, steadying its board from behind. |
 | No sound | Check the buzzer's + leg is in f34, under pin 10's wire in j34, its other leg in e34, and the resistor runs from a34 to the bottom − rail, which needs its GND wire. |
 
 ??? note "How it works"
@@ -180,7 +181,8 @@ seconds, where 10° took under two.
 
     A ball moving less than one dot per reading can never jump over a
     wall. The fastest it can go, with the board stood on end at 90°, is
-    0.001 × 90 ÷ 0.1 = 0.9 dots per reading, so the walls always hold.
+    0.001 × 90 ÷ 0.1 = 0.9 dots per reading, so the walls hold however
+    steeply you tip it, short of turning it over.
 
     The ball's position is a `float`, and `lround ()` decides which dot it
     is in: from 2.5 up to 3.5 it's dot 3. So a ball in dot 3 has to move
@@ -232,9 +234,10 @@ What the numbers tell you:
   time the pin is on; the pitch is how often it switches, and that the
   meter can't see at all. Your ear is the other way round.
 - **SDA on a tilted board** reads between 3.5 and 4 V, flat or tipped, just
-  as it did in Lesson 28. Hold the probes in their holes and tip the
-  breadboard gently, or have someone tip it for you: the number doesn't
-  follow. Tilt Lesson 26's joystick and its two knobs' voltages follow the
-  stick; tilt the accelerometer and the angle travels as numbers
-  instead, a burst of bits every 20 ms, far too quick for the meter. All it
-  sees is the bus resting high between them.
+  as it did in Lesson 28, which showed why that is safe for a 3.3 V chip.
+  Hold the probes in their holes and tip the breadboard gently, or have
+  someone tip it for you: the number doesn't follow. Tilt Lesson 26's
+  joystick and its two knobs' voltages follow the stick; tilt the
+  accelerometer and the angle travels as numbers instead, a burst of bits
+  every 20 ms, far too quick for the meter. All it sees is the bus resting
+  high between them.

@@ -51,14 +51,14 @@ only the button's code wouldn't work, because the bridge sends a number
 only when it changes: press **1** twice and the code is 0x0C both times,
 so the second press would never cross. So Board A also shares a count,
 `presses`, which goes up by one with every press. Board B watches the
-count, and sends a code each time it changes.
+count, and sends a code each time it goes up.
 
 | Shared | By | Kind | The other board |
 |---|---|---|---|
 | `lamp` | A | a state, 0 or 1 | B keeps the relay on or off to match |
 | `button`, `address` | A | the last press's code | B sends them with the IR LED... |
-| `presses` | A | an event, counted | ...each time this changes |
-| `relay` | B | a state, 0 or 1 | A shows it: the lamp really is on |
+| `presses` | A | an event, counted | ...each time this goes up |
+| `relay` | B | a state, 0 or 1 | A shows it: the relay really has switched |
 
 **Sending infrared.** The IR LED module is an LED whose light is
 infrared, like the one at the end of the remote. Lesson 22 said a receiver
@@ -149,7 +149,7 @@ Board A:
 
 <!-- sketch A -->
 
-And **lessons/053-remote-lamp → Repeater** for Board B:
+And **lessons → 053-remote-lamp → Repeater** for Board B:
 
 <!-- sketch B -->
 
@@ -158,11 +158,14 @@ What's new:
 - `receiver.address ()` says which remote sent the code: 0 for the kit's
   remote, and a number of its own for each other remote that speaks NEC.
   `obey ()` keeps it with the command, so Board B can send both.
-- `presses` counts the buttons passed on, and `++presses` adds one. The
-  lamp's `lampOn` is a `bool`, which the bridge shares as 1 or 0.
+- On Board A, `presses` counts the buttons passed on, and `++presses`
+  adds one. The lamp's `lampOn` is a `bool`, which the bridge shares as 1
+  or 0.
 - `bridge.changed ("presses")` on Board B is true in the one pass of
-  `loop ()` in which a new count arrives. The `> 0` leaves out the first
-  count Board A shares when it starts, 0, which is no press at all.
+  `loop ()` in which a new count arrives. Board B keeps the count it last
+  heard in its own `presses`, which starts at −1, and sends a code only
+  when the new count is higher: the first count heard only says where
+  Board A has got to, as in Lesson 51.
 - `adk::IrTransmitter irLed {3};` is the IR LED on pin 3. It can only go
   on pin 2, 3 or 5, the pins Timer 3 can flicker. `irLed.send (command,
   address)` sends one press of a button, exactly as a remote would.
@@ -207,10 +210,11 @@ Now carry Board B to another room, powered from a USB power bank or a
 phone charger, and try it all again through the wall.
 
 You predicted what two presses of **1** would do: Board B sends the code
-twice. The count went from 1 to 2, and a change of count is a new press,
-even though the code is the same. Holding **VOL+** sends it only once:
-while a button is held, the remote sends short "still held" repeats, and
-Board A leaves them out. To turn the TV up by five, press five times.
+twice. The count went from 1 to 2, and a count that goes up is a new
+press, even though the code is the same. Holding **VOL+** sends it only
+once: while a button is held, the remote sends short "still held"
+repeats, and Board A leaves them out. To turn the TV up by five, press
+five times.
 
 !!! question "Predict: an echo"
     With the two boards side by side, turn Board B's IR LED to face Board
@@ -264,7 +268,7 @@ LED away and the echo stops.
 
 1. **Hold to repeat.** Pass on held buttons too: count repeats as
    `repeats` on Board A, and on Board B call `irLed.repeat ()` each time
-   that count changes. Now holding **VOL+** keeps the TV's volume going.
+   that count goes up. Now holding **VOL+** keeps the TV's volume going.
 2. **A universal remote.** Find your TV's own codes with its remote and
    Board A's screen. Then make Board A pass on the TV's code when you
    press a button on the kit's remote: **VOL+** on the kit's remote could

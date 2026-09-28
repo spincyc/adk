@@ -18,10 +18,11 @@ knob.home_knob (via=[(2.35, 5.35), (11.1, 5.35)])
 knob.closeup (30, 62)
 
 # Readings to take with a multimeter: the knob's middle leg, whose voltage
-# is the angle it asks for.
-knob.measure ("The knob at 90°", red="A0", black="GND", expect="about 1.25 V",
+# is the angle it asks for. The black probe goes in B-59, clear of A0's
+# wire, which crosses the rails in column 58.
+knob.measure ("The knob at 90°", red="A0", black="B-59", expect="about 1.25 V",
               when="the screen says Knob says 90°")
-knob.measure ("The knob at 180°", red="A0", black="GND", expect="about 2.5 V",
+knob.measure ("The knob at 180°", red="A0", black="B-59", expect="about 2.5 V",
               when="the screen says Knob says 180°")
 
 turntable = Bench ("Board B: a stepper motor's driver on pins A8 to A11, powered from the "

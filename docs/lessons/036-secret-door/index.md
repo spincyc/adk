@@ -42,7 +42,7 @@ which only needs to know whom to welcome.
 
 The sketch keeps a list of friends. Each friend is two things that belong
 together, a card number and a name, so the sketch groups them into one
-`struct`:
+`struct`, as Lesson 5's `Key` bundled a button with its note:
 
 ```cpp
 struct Friend
@@ -210,7 +210,8 @@ then `lock ()` forgets them.
    `enum class` of the door's states.
 4. **Visitor's book.** Count how many times each friend has come in, and
    show the count after their name: `Welcome, Ada (7)`. Add `int visits`
-   to `Friend`, and take `constexpr` off `friends`, so the list can change.
+   to `Friend`, take `constexpr` off `friends`, and drop `const` from
+   `checkCard ()`'s loop, so the list can change.
 
 ## Measure it
 

@@ -12,8 +12,8 @@ parts:
   - Rotary encoder module
   - The kit's second 10 kΩ potentiometer, for the volume
   - 1 kΩ resistor (brown, black, black, brown, brown)
-  - 5 female-to-male jumper wires
-  - 8 jumper wires
+  - 5 more female-to-male jumper wires
+  - 8 more jumper wires
 ideas:
   - How an FM station sends sound, and its name
   - Tuning, and seeking the next station
