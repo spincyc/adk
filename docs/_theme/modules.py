@@ -692,12 +692,33 @@ class Sensor (Kind):
     pin_modes = {"S": "input", "Y": "input", "OUT": "input", "DO": "input", "AO": "input"}
     width, height = 64, 100
     flexible = True
+    # The long ones at their real size, by the words in their labels, from
+    # Elegoo's kit documents: the sound sensor 15 x 42.5 mm, the obstacle
+    # sensor 17 x 46 mm with its LEDs, the water sensor 20 x 62 mm, most of
+    # it the traces that go in the water.
+    SIZES = {"sound": (59, 167), "obstacle": (67, 181), "water": (79, 244)}
+
+    def __init__ (self, pins=None, label=None, **options):
+        super ().__init__ (pins, label, **options)
+        for word, (w, h) in self.SIZES.items ():
+            if word in (label or "").lower ():
+                self.width, self.height = max (w, self.width), h
 
     def draw (self, pencil):
         w = self.width
         board (pencil, 0, 0, w, self.height, self.color, holes=[(8, 8)])
         emblem = (self.label or "").lower ()
         cx = w / 2
+        if "water" in emblem:
+            # Ten traces down most of its length.
+            for index in range (10):
+                x = cx - 31 + index * 7
+                pencil.line ((x, 10), (x, self.height - 70), width=1.0, tone=0.5, layer="top",
+                             passes=1)
+            led_dot (pencil, cx + 14, self.height - 56)
+            pencil.text (cx, self.height - 40, self.label, size=5.5, kind="silk")
+            self.draw_header (pencil)
+            return
         if any (word in emblem for word in ("sound", "mic", "clap")):
             pencil.spot (cx, 24, 15, METAL)
             pencil.circle (cx, 24, 15, width=1.0, layer="top")

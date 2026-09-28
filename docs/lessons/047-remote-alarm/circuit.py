@@ -39,7 +39,7 @@ door.wire ("a33", "B-33")
 
 door.home_beam ()
 
-door.module ("sensor", name="obstacle", at=(8.63, -1.15), label="obstacle sensor",
+door.module ("sensor", name="obstacle", at=(8.63, -1.96), label="obstacle sensor",
              pins=("GND", "+", "OUT", "EN"))
 door.wire ("16", "obstacle.OUT")
 door.wire ("obstacle.+", "T+36")
