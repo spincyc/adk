@@ -12,7 +12,7 @@ parts:
   - 3 × 220 Ω resistors (red, red, black, black, brown)
   - The kit's second 10 kΩ potentiometer, for the alarm
   - Active buzzer
-  - 8 jumper wires
+  - 8 more jumper wires
 ideas:
   - Putting sensors, lights and a screen together
   - Thresholds with a gap between them, so nothing flickers

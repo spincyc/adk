@@ -83,7 +83,7 @@ while you're leaving.
     build so far: take it a step at a time, and check each step against the
     picture before moving on. Match the IR receiver's and the PIR's pins by
     their printed names (the PIR's are under its dome). The buzzer's longer
-    leg, under the **+** on its top, goes in the top row, f51.
+    leg, under the **+** on its top, goes in the top half, in f51.
 
 <!-- bench -->
 
@@ -128,6 +128,8 @@ Read it from the top:
   hands back the screen, so `.print ('*')` can follow on the same line.
 - `countedDown ()` does one second's work on each tick of `second`: counts
   down, beeps and shows the number, and says when it has reached zero.
+  It skips the beep while `siren.isOn ()`, so a tick never cuts a wrong
+  code's long beep short.
   `adk::print ()` works on the screen just as `adk::println ()` works on
   `Serial`, and the `?:` puts a space in front of a one-digit number, which
   rubs out the 1 of the 10.
@@ -147,8 +149,9 @@ Read it from the top:
 5. Walk back in. The light turns orange, *Code, quick!* appears and the
    countdown beeps again. Key in 1, 2, 3, 4 on the remote: a star for each
    of the first three, and at the fourth the alarm is *Disarmed*.
-6. Now let the countdown run out: the siren wails and the light flashes red
-   and blue until you key in the code.
+6. Arm it again, walk back in, and this time let the countdown run out: the
+   siren wails and the light flashes red and blue until you key in the
+   code.
 
 You predicted what happens if you are still in front of the PIR sensor when
 the exit countdown reaches zero. The alarm arms, sees you at once and
@@ -162,7 +165,7 @@ few seconds after the last movement, so leave its view in good time.
 | The screen is lit but blank | The contrast is too faint: turn the contrast knob slowly until the letters appear. |
 | The top row is solid blocks | The screen has power but isn't hearing the Mega: check pins 31 to 36 land in columns 12, 14 and 19 to 22. |
 | It arms and straight away asks for the code | The PIR still saw movement when the countdown ended; it stays on for a few seconds after the last movement. Leave sooner, or make `delaySeconds` longer. |
-| It never notices you | Give the PIR a minute after power-up, check its OUT pin goes to A12, and turn its time knob fully anticlockwise. |
+| It never notices you | Give the PIR a minute after power-up, check its OUT pin goes to A12, and turn its sensitivity knob (Sx) up a little. |
 | The remote does nothing | Aim at the receiver's window, and upload Lesson 22's sketch to check your remote's codes. If POWER sends another code, put yours in place of `adk::remote::power`. If the number buttons do, `adk::remote::digitOf ()` won't know them: give the sketch an `adk::Array` of your ten codes, 0 to 9, and in `pressed ()` look through it for the button, as Lesson 22 looked through `choices`, in place of `digitOf ()`. |
 | No beeps | The buzzer's + leg goes in f51, under pin 12's wire in j51, and its other leg's column needs the black wire from a51 to the − rail. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |

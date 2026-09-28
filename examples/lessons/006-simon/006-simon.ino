@@ -108,7 +108,8 @@ void yourTurn (int pressed)
         key.light.set (key.button.isPressed ());
     }
 
-    if (pressed >= 0)
+    // A new press counts only once the last key you pressed is up again.
+    if (pressed >= 0 && (held < 0 || !keys[held].button.isPressed ()))
     {
         speaker.tone (keys[pressed].pitch);
         held = pressed;

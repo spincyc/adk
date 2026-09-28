@@ -156,8 +156,9 @@ its way after the knob's.
 Now test your prediction. With the module switched off, the knob and the
 screen still work, because they run on the Mega's own 5 V, and the screen
 still shows the angle the Mega is sending. But the servo is limp: it has
-the signal but no power to act on it. Switch the module back on and the
-servo snaps to wherever the knob now points.
+the signal but no power to act on it. Keep this test short, because the
+Mega's pulses still flow into the servo while it has no power. Switch the
+module back on and the servo snaps to wherever the knob now points.
 
 ## If it doesn't work
 
@@ -211,16 +212,19 @@ rails together would short the power module.
 
 !!! question "Predict"
     The servo's 5 V and the knob's 5 V come from two different places. When
-    you switch the power module off, which of them will fall to 0 V? Write
-    down your guess, then take the first two readings with the module on,
-    and again with it off.
+    you switch the power module off, which of them will drop? Write down
+    your guess, then take the first two readings with the module on, and
+    again, briefly, with it off.
 
 <!-- measure -->
 
 What the numbers tell you:
 
 - **The servo's 5 V** comes from the power module's own regulator. Switch
-  the module off and it falls close to 0 V, and the servo goes limp.
+  the module off and it falls far below 5 V, and the servo goes limp. It
+  may not reach 0 V, because the Mega's pulses can leak a little through
+  the servo onto the rail. Switch the module back on once you have the
+  reading.
 - **The knob's 5 V** comes from the Mega, which gets it from your computer's
   USB port, down the top + rail, so it stays with the module off. That's
   why the knob and the screen still work. Compare it with the first

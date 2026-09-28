@@ -206,7 +206,9 @@ lead in **COM** and the red one in **V**.
 The modules' signal wires run straight to the Mega, with no hole for a
 probe, but the tilt switch stands in the breadboard, where the meter can
 show the pull-up at work. Tip the switch over on its legs, or stand it
-up, before you put the probes in place: it stays where you leave it.
+up, before you put the probes in place: it stays where you leave it. The
+last reading is across the bottom rails: keep the tips apart, because
+touching both rails at once is a short.
 
 !!! question "Predict"
     Standing up, the tilt switch's ball joins its legs. Which way up will

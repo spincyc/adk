@@ -93,9 +93,10 @@ receives: the first thing you'll do is check yours against this table.
     across the middle gap above it, and its longest leg straight down in
     the − rail. Red takes about 14 mA, green and blue about 8 mA.
 
-    The receiver sits between the Mega and the breadboard, under the LED's
-    three wires. It takes its 5 V and GND straight from the Mega: the inner
-    pins at the top and bottom ends of the long header.
+    The receiver sits above the gap between the Mega and the breadboard,
+    with the LED's three wires passing over it. It takes its 5 V and GND
+    straight from the Mega: the inner pins at the top and bottom ends of
+    the long header.
 
 When you are done, these are the connections your circuit makes:
 
@@ -190,8 +191,11 @@ What the meter can see is what each code does to the lamp's pins, and the
 lamp keeps its color until the next press, so there is plenty of time to
 read it. Press the buttons first, then put the probes in place.
 
+Start from full red: press 1, then press VOL+ until the lamp stops
+brightening. Eight presses always get it there.
+
 !!! question "Predict"
-    Press 1 for red, then VOL− four times. What will the red pin, 5, read?
+    From full red, press VOL− four times. What will the red pin, 5, read?
 
 <!-- measure -->
 

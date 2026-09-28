@@ -33,4 +33,4 @@ bench.measure ("The tilt switch's pin, upright", red="A14", black="GND", expect=
                when="standing up")
 bench.measure ("The tilt switch's pin, tipped", red="A14", black="GND", expect="about 5 V",
                when="on its side")
-bench.measure ("The bottom rails", red="B+21", black="B-21", expect="about 5 V", when="any time")
+bench.measure ("The bottom rails", red="B+21", black="B-23", expect="about 5 V", when="any time")

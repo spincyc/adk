@@ -30,9 +30,9 @@ bench.closeup (1, 50)
 
 # Readings to take with a multimeter, the fan at one fixed speed set in the
 # sketch.
-bench.measure ("The enable pin", red="4", black="GND", expect="about 2.5 V",
+bench.measure ("The enable pin", red="4", black="B-21", expect="about 2.5 V",
                when="speed 128, forward")
-bench.measure ("The forward pin", red="8", black="GND", expect="about 5 V",
+bench.measure ("The forward pin", red="8", black="B-21", expect="about 5 V",
                when="speed 128, forward")
 bench.measure ("Across the motor", red="h17", black="h14", expect="about 3 V",
                when="speed 255, forward")

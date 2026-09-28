@@ -177,10 +177,11 @@ Switch the power module off when you finish, before you unplug the USB.
     pulses a second, fast enough that the motor feels an average.
 
     Reversing a spinning motor at once would briefly draw about twice its
-    stall current. So when the direction changes, ADK switches the motor
-    off, lets it coast for half a second while your sketch carries on,
-    long enough for a small fan to slow right down, and only then drives
-    it the other way. That is the pause you saw.
+    **stall current**: the current it draws when its shaft is held still,
+    as it is for the instant it starts. So when the direction changes, ADK
+    switches the motor off, lets it coast for half a second while your
+    sketch carries on, long enough for a small fan to slow right down, and
+    only then drives it the other way. That is the pause you saw.
 
 ## Make it yours
 

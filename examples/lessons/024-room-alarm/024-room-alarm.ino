@@ -106,7 +106,13 @@ bool countedDown ()
     }
 
     --countdown;
-    siren.beep (30);
+
+    // A wrong code's long beep may still be sounding: let it finish.
+    if (!siren.isOn ())
+    {
+        siren.beep (30);
+    }
+
     adk::print (screen.at (14, 0), countdown < 10 ? " " : "", countdown);
     return countdown == 0;
 }

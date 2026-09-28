@@ -46,8 +46,9 @@ it can make any pitch you ask for. (The active buzzer in
 so it could only ever play its one note.)
 
 That coil is only about 16 Ω. Straight from a pin, it would try to take
-5 V ÷ 16 Ω, about 310 mA: fifteen times more than a pin should ever give.
-So the buzzer gets a 220 Ω resistor in series, and the two add up:
+5 V ÷ 16 Ω, about 310 mA: fifteen times what a pin gives comfortably, and
+eight times the most it may ever give. So the buzzer gets a 220 Ω resistor
+in series, and the two add up:
 
 <p class="formula">current = <span class="fraction"><span>5 V</span><span>220 Ω + 16 Ω</span></span> ≈ 21 mA</p>
 
@@ -120,9 +121,10 @@ What's new:
   speaker because a small speaker, wired the same way, works too.)
 - `constexpr adk::Note tune [] = {...};` is the melody: a list of notes,
   each `{pitch, milliseconds}`. The `[]` makes it C++'s own kind of list,
-  which counts the notes for you and is what `speaker.play ()` takes. The
-  comments beside it are the words, one syllable per note, and the long
-  notes, 800 ms, fall on *lamb*.
+  which counts the notes for you; `speaker.play ()` takes it, as it takes
+  an `adk::Array` or an `adk::Vector` of notes. The comments beside it are
+  the words, one syllable per note, and the long notes, 800 ms, fall on
+  *lamb*.
 - `speaker.play (tune);` starts the tune and returns straight away. The
   speaker moves on to each next note inside `adk::update ()`, so the loop
   keeps checking the keys all the time the tune plays.
@@ -146,8 +148,8 @@ Each note lasts exactly as long as you hold its key.
 You predicted how often the disc moves. Holding G for a second moves it back
 and forth 392 times, and C, at 262 Hz, is the slowest.
 
-Now play the tune yourself. The keys are C, D, E, G from left to right, so the
-first line is: third, second, first, second, third, third, third.
+Now play the tune yourself. The keys are C, D, E, G from left to right, so
+it starts: third, second, first, second, third, third, third.
 
 Press a key while the tune is still playing: the tune stops and your note
 takes over. That's the sketch carrying on while the tune plays.
@@ -235,12 +237,12 @@ What the numbers tell you:
 - **Pin 10** reads about half of 5 V: the meter shows the average, and the
   pin is high for half of every vibration. Hold G, then C: the number stays
   the same. A higher note switches faster, but it is still high half the
-  time. It reads a little under 2.5 V, because a pin gives slightly less
-  than 5 V while it drives the buzzer.
+  time. It reads about 2.3 V, a little under 2.5 V, because a pin gives
+  slightly less than 5 V while it drives the buzzer.
 - **Across the buzzer** is only about 0.15 V, and **across the resistor**
   about 2.1 V. In one loop the voltage is shared in proportion to
   resistance, and the coil is only 16 Ω of the loop's 236 Ω. Add the two
-  and you get pin 10's reading back.
+  and you get pin 10's reading back: 0.15 V + 2.1 V ≈ 2.3 V.
 - The resistor's reading gives the current, by Ohm's law:
   2.1 V ÷ 220 Ω ≈ 10 mA on average, just what *The idea* worked out.
   Lesson 3's active buzzer read a steady, nearly full 5 V: that buzzer

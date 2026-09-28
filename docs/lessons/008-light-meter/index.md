@@ -33,8 +33,8 @@ corner to a sunny window and watch the bar climb.
 
 A **photoresistor** is a resistor that light controls. Its wavy track is
 made of a material that conducts better the more light falls on it. In the
-dark it is a million ohms or more; in ordinary room light, somewhere around
-10 kΩ; under a bright lamp, 1 kΩ or less.
+dark it is a million ohms or more; in ordinary room light, from a few kΩ to
+about 10 kΩ; under a bright lamp, 1 kΩ or less.
 
 The Mega can't measure resistance, only voltage, so the photoresistor gets a
 partner: a fixed 10 kΩ resistor. The two make a **voltage divider**, like the
@@ -233,7 +233,7 @@ cover the sensor with a bottle cap, or a small cup turned upside down.
 What the numbers tell you:
 
 - **In room light** the middle sits somewhere near half of 5 V. Anything
-  from about 1.5 V to 4 V is normal: the brighter the room, the lower the
+  from about 1.5 V to 4.5 V is normal: the brighter the room, the lower the
   photoresistor's resistance, and the higher the reading. The plotter's
   level × 5 ÷ 1023 comes out close to your meter's reading.
 - **Covered**, the middle drops, to under 1 V: in the dark the photoresistor

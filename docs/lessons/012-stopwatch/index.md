@@ -65,12 +65,12 @@ The stopwatch is always in one of three **states**:
 |---|---|---|---|---|
 | Stopped | the time so far, standing still | starts it | resets it | next mode |
 | Running | the time, changing | stops it | freezes a lap for 3 seconds | ignored |
-| Done | **donE**, after three beeps | resets it | resets it | next mode |
+| Done | **donE**, with three beeps | resets it | resets it | next mode |
 
 The mode button steps through four **modes**: the stopwatch, which starts
 at 0.0 and counts up, and timers that start at 10.0, 60.0 and 180.0 seconds
-and count down. Only a timer can reach Done. Every button press gives a
-short click from the buzzer, so you know it registered.
+and count down. Only a timer can reach Done. Every press that does
+something clicks the buzzer, so you know it registered.
 
 A lap freezes the display on the time when you pressed it, while the clock
 keeps counting behind it; after three seconds the display catches up.
@@ -138,8 +138,8 @@ What's new:
   the time in `lap` and starts `lapShown` for 3000 ms, and `showClock ()`
   shows `lap` while `lapShown.isRunning ()`.
 - `loop ()` checks the alarm, reads the three buttons, and redraws the
-  display, every time round. Each press clicks the buzzer with
-  `buzzer.beep (20)`. `(current + 1) % modes.size ()` steps to the next
+  display, every time round. Each press that does something clicks the
+  buzzer with `buzzer.beep (20)`. `(current + 1) % modes.size ()` steps to the next
   mode, and back to the first after the last.
 - `clockTime ()` turns the stopwatch into what the display shows: its time
   for the stopwatch, or `total - time` for a kitchen timer. Its last line
@@ -175,9 +175,9 @@ seconds it stood stopped don't count: the stopwatch banked 3.0 seconds,
 and carried on from there.
 
 Now press mode (24): the display shows `10.0`. Press start and it counts
-down; at zero it shows **donE** and the buzzer beeps three times. Press any
-button to set it back to `10.0`, or mode for `60.0`, `180.0`, and back to
-the stopwatch.
+down; at zero it shows **donE** and the buzzer beeps three times. Press
+start/stop or lap/reset to set it back to `10.0`, or mode for `60.0`,
+`180.0`, and back to the stopwatch.
 
 ## If it doesn't work
 

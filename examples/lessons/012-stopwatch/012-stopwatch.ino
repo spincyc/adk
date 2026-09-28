@@ -1,7 +1,8 @@
 // Lesson 12: Stopwatch
 // A stopwatch and kitchen timer on the four-digit display. The button on
 // pin 22 starts and stops, 23 takes a lap or resets, 24 changes mode; the
-// active buzzer on pin 12 clicks at every press and beeps at zero.
+// active buzzer on pin 12 clicks at every press that does something and
+// beeps at zero.
 
 #include <Adk.h>
 

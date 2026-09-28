@@ -169,7 +169,7 @@ light, one at a time, and each lights for its note in either octave.
 
 Cover the sensor completely for the highest note. Lift your hand away and
 the buzzer stops. Turn the knob to one end, then the other: the same notes
-jump down and up by an octave.
+jump an octave at a time, two octaves from end to end.
 
 ## If it doesn't work
 
@@ -201,9 +201,10 @@ jump down and up by an octave.
    so `shadowSlice ()` needs thirteen slices, and six notes to an octave
    don't fit five LEDs: decide what the lights should show.
 2. **The real theremin sound.** Instead of steps, slide smoothly: play
-   `speaker.tone (map (level, open, covered, 200, 2000))` whenever the
-   pitch has changed by more than a few hertz. It sounds like a 1950s space
-   film.
+   `speaker.tone (constrain (map (level, open, covered, 200, 2000), 200, 2000))`
+   whenever the pitch has changed by more than a few hertz. `constrain ()`
+   keeps it between 200 and 2000 Hz, even if the room grows brighter. It
+   sounds like a 1950s space film.
 3. **Stop droning.** If your hand holds still for three seconds, let the
    note stop by itself. Keep the pitch that is sounding in a variable, so
    `playNote ()` can tell when the note changes; start an `adk::Timer` for

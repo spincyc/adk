@@ -24,11 +24,12 @@ ideas:
 <!-- closeup -->
 
 A duel for two. Each player rests a finger on a button: red on the left,
-green on the right. The yellow light blinks, somebody presses to start, and
-everything goes dark. You wait. And wait. Then, at a moment nobody can
-guess, the yellow light snaps on and the buzzer beeps. First to press wins,
-their light flashes, and the Serial Monitor tells you exactly how fast they
-were: *Red wins in 231 ms!* Jump the gun, and you lose on the spot.
+green on the right. The yellow light blinks, **one of you** presses to
+start, and everything goes dark. You wait. And wait. Then, at a moment
+nobody can guess, the yellow light snaps on and the buzzer beeps. First to
+press wins, their light flashes, and the Serial Monitor tells you exactly
+how fast they were: *Red wins in 231 ms!* Jump the gun, and you lose on the
+spot.
 
 ## The idea
 
@@ -76,12 +77,13 @@ pass of `loop ()`, only does what the current state allows.
 
 | State | What you see | What moves it on |
 |---|---|---|
-| **Waiting** | The yellow light blinks slowly, or, after a round, the winner's light flashes | Either button: *Ready* |
+| **Waiting** | The yellow light blinks slowly, or, after a round, the winner's light flashes | One player's press: *Ready* |
 | **Ready** | All dark, for a random 2 to 5 seconds | Time's up: *Go*. A press: a **false start**, the other player wins, and back to *Waiting* |
 | **Go** | Yellow on, and a beep | The first press wins: back to *Waiting* |
 
 A false start is only possible because the game knows it is in *Ready*: the
-same press in *Go* would win.
+same press in *Go* would win. So only one of you presses to start: after
+that, any press before the light is a false start.
 
 ## Build it
 
@@ -228,8 +230,9 @@ out whatever you put it across.
 A 200 ms beep is over before the meter settles, so change
 `buzzer.beep (200);` in `go ()` to `buzzer.beep (5000);` and upload again.
 Now at *Go* the buzzer sounds for five seconds, and the yellow light stays
-on until somebody presses, so start a round and don't press. Put 200 back
-when you have finished.
+on until somebody presses, so start a round and don't press. Five seconds
+now and then is fine: 30 mA is well under the 40 mA a pin may ever give.
+Put 200 back when you have finished.
 
 !!! question "Predict"
     The yellow LED keeps about 2 V for itself and leaves the other 3 V to its

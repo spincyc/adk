@@ -8,7 +8,7 @@ parts:
   - Breadboard
   - The LCD, knob and 220 Ω resistor from Lesson 13, wired as before
   - 4×4 membrane keypad
-  - 8 jumper wires
+  - 8 more jumper wires
 ideas:
   - Rows and columns: a key matrix
   - Scanning, one row at a time
@@ -70,9 +70,9 @@ then **2** makes 4, then 4 × 10 + 2 = 42. Type **7** next and it's
 ??? info "Which way round is the ribbon?"
     Hold the keypad with its keys facing you and the ribbon hanging down. The
     eight contacts, from left to right, are rows 1 to 4 and then columns 1 to
-    4, so the leftmost one goes to pin 22 and the rightmost to pin 29. If you
-    press **1** and see **D** or **\***, the wires are in back to front: turn
-    the order of all eight round.
+    4, so the leftmost one goes to pin 22 and the rightmost to pin 29. If
+    pressing **1** puts ` / ` on the screen (the keypad read it as **D**),
+    the wires are in back to front: turn the order of all eight round.
 
 When you are done, these are the connections your circuit makes:
 
@@ -131,7 +131,7 @@ but the 2 only arrives when you let go: the keypad counts one key at a time.
 | What you see | Try this |
 |---|---|
 | No key does anything | Check the eight wires go to pins 22 to 29, in order, and that each is pushed fully into the keypad's socket. |
-| **1** shows as **D** or **\*** | The ribbon is back to front: see "Which way round is the ribbon?" above. |
+| Pressing **1** shows ` / ` | The ribbon is back to front: see "Which way round is the ribbon?" above. |
 | A whole row or column of keys is dead | One wire is loose. Row 1 is pin 22, row 4 pin 25; column 1 is pin 26, column 4 pin 29. |
 | Digits appear twice | A dirty or worn contact. Press firmly and squarely; if one key keeps doing it, it's the keypad. |
 | The screen is blank or shows blocks | Go back to Lesson 13's table: the LCD wiring or the contrast knob. |

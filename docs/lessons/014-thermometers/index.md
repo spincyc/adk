@@ -79,9 +79,10 @@ reading and is good to ±0.5 °C, the best of the three.
     the thermistor goes just past the screen, in column 40, built like
     Lesson 8's light sensor, and its wire from A2 runs round below the
     screen. The two modules sit above the board and take their power from
-    the top rails. Each module's pins are marked **S**, **+** and **−**.
-    Check the marks on yours before you wire it, because a module wired
-    backwards can get hot; if one does, unplug at once.
+    the top rails. The DHT11's pins are marked **S**, **+** and **−**; the
+    18B20's are printed **G**, **R** and **Y** (Y is the signal, R is +, G
+    is −). Check the marks on yours before you wire it, because a module
+    wired backwards can get hot; if one does, unplug at once.
 
 <!-- bench -->
 
@@ -167,12 +168,12 @@ settles over the next minute; its temperature moves much less.
     Each thermometer is read at its own pace, inside `adk::update ()`:
 
     - **DHT11:** every two seconds ADK holds pin 16 low for 20 ms, then listens
-      for the 40 bits, timing each high pulse. Listening takes about 4 ms with
-      interrupts switched off, because the pulses are too short to risk
-      missing. A reading whose checksum doesn't add up is thrown away:
-      `dht.ok ()` turns false, so the screen shows `--` until the next good
-      reading two seconds later, while `dht.temperature ()` still holds the
-      last good one.
+      for the 40 bits, timing each high pulse. Listening takes about 4 ms,
+      with interrupts held off while each bit is timed, because the pulses
+      are too short to risk missing. A reading whose checksum doesn't add up
+      is thrown away: `dht.ok ()` turns false, so the screen shows `--`
+      until the next good reading two seconds later, while
+      `dht.temperature ()` still holds the last good one.
     - **Thermistor:** A2 is read every 100 ms and smoothed with a Smoother, as
       in Lesson 8, so the number doesn't flicker.
     - **18B20:** ADK asks it to measure, comes back 750 ms later, reads nine

@@ -73,7 +73,7 @@ Simon and the player take **turns**, and the game is always in one state:
 |---|---|---|
 | **Idle** | All four lights blink slowly | Any button starts a new game |
 | **Simon's turn** | Simon adds a random step, then shows the whole sequence | Your presses are ignored |
-| **Your turn** | Each light and its note follow its button while you hold it | Letting go is your answer. Right: the next step. Last step right: Simon's turn again, one step longer. Wrong: game over |
+| **Your turn** | Each light and its note follow its button while you hold it | Letting go is your answer, so let go of each button before you press the next. Right: the next step. Last step right: Simon's turn again, one step longer. Wrong: game over |
 | **Game over** | A low buzz, then a fanfare if you beat your best | Back to *Idle* |
 
 Simon's turn is so short and simple, just show and wait, that the sketch
@@ -145,8 +145,10 @@ What's new:
 - `yourTurn ()` makes each light follow its button, as in
   [Lesson 2](../002-buttons/index.md), and sounds a key's note when it goes
   down. `held` remembers which key that was, and letting go of it is your
-  answer. `held` starts each turn at -1, so a button you were already
-  holding while Simon played doesn't count when you let it go.
+  answer. Another press counts only once that key is up again, so two
+  buttons held together give one answer, not two. `held` starts each turn
+  at -1, so a button you were already holding while Simon played doesn't
+  count when you let it go.
 - `check ()` compares your answer with `sequence[step]`. Wrong ends the
   game. Right moves `step` on, until the last step: steps are numbered
   from 0, so the last is `sequence.size () - 1`. Then Simon takes its turn

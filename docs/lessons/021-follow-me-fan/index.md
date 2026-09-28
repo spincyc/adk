@@ -12,7 +12,7 @@ parts:
   - L293D motor driver chip
   - DC motor with its fan blade
   - 12 jumper wires
-  - 6 female-to-male jumper wires
+  - 6 female-to-male jumper wires, and two more to lengthen the motor's leads
   - Sticky tape or putty, and a strip of card
 ideas:
   - Scanning with a sensor on a servo
@@ -167,13 +167,15 @@ Read it from the top:
 
 ## Upload it
 
-1. Plug in the USB cable and upload the sketch.
-2. Plug in the power module's adapter and switch it on.
+1. Plug in the USB cable, then the power module's adapter, and switch the
+   module on so its LED lights.
+2. Upload the sketch.
 3. The turret swings to 30° and starts its sweep, stepping steadily to 150°,
    which takes a little over two seconds.
 4. Stand in front of it, 30 to 60 cm away. At the end of the sweep it turns
-   to face you and the fan spins up. Lean closer and it blows harder; lean
-   in closer than 15 cm and it stops.
+   to face you and the fan spins up. It blows harder as you step closer.
+   To see it stop, hold a book flat in front of the sensor and bring it
+   closer than 15 cm, keeping your face and fingers back.
 5. Step to one side. Within a few seconds it stops, sweeps, and turns to
    your new spot.
 

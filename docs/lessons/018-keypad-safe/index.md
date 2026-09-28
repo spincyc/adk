@@ -198,7 +198,7 @@ locks, and the old code still opens it.
 | The servo never moves | Is the power module on, with its LED lit? Check its red wire from 5V to B+61 and its black wire from GND to B-61, then that the servo's red and black wires reach the bottom rails (B+53, B-54) and its orange wire pin 44. |
 | The screen is dark | It runs on the Mega's 5 V, as in Lesson 17: check the red wire from the Mega's 5V into the top + rail (T+3). |
 | The screen is blank, but the backlight is on | Turn the contrast knob. |
-| Keys come out wrong | See Lesson 16's "Which way round is the ribbon?" |
+| Keys come out wrong | See [Lesson 16](../016-keypad/index.md#build-it)'s "Which way round is the ribbon?" |
 | The right code says `Wrong!` | You may have saved a different code. If you've forgotten it, change `savedMark` to 43 and upload: the sketch then ignores the saved code and starts again from 1234. |
 | No clicks or beeps | Check the buzzer's + leg is in f51 with pin 12's wire in j51, and the black wire from a51 goes to the − rail. |
 | The servo buzzes when locked | It's pressing against its stop or the lid. Try a `lockedAngle` of 10. |

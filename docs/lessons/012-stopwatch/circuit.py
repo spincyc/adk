@@ -28,7 +28,7 @@ bench.wire ("38", "j23", via=[(4.20, 1.55), (5.00, 1.55), (5.00, 0.35), (X (23),
 bench.wire ("j24", "T+24")
 bench.wire ("a25", "B-25")
 
-bench.four_digits (51, shows="12.34")
+bench.four_digits (51, shows="123.4")
 
 # Q0, segment a: along row h to its resistor in row i, then over to the top.
 bench.wire ("h19", "h26")

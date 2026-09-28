@@ -9,7 +9,7 @@ parts:
   - White LED
   - 220 Ω resistor (red, red, black, black, brown)
   - 10 kΩ potentiometer (the knob)
-  - 7 jumper wires
+  - 8 jumper wires
 ideas:
   - Analog input, read as a number from 0 to 1023
   - The potentiometer as a voltage divider
@@ -34,12 +34,12 @@ anywhere between 0 V and 5 V and turn it into a number, from 0 at 0 V up to
 1023 at 5 V. That is **analog input**. Halfway, 2.5 V, reads about 512.
 
 A **potentiometer** makes those voltages. Inside it is a curved strip of
-resistance joining its two outer legs, and a contact called the **wiper**,
-joined to the middle leg, that slides along the strip as you turn the knob.
-Put 5 V on one outer leg and GND on the other, and the strip shares the 5 V
-out along its length. The wiper picks off the voltage wherever it sits. This
-is a **voltage divider**. With the wiper a quarter of the way from the GND
-end, it sits at a quarter of 5 V:
+resistance joining its two outer legs, and a contact called the **wiper**
+that slides along the strip as you turn the knob. The wiper is joined to
+the middle leg, the one on its own. Put 5 V on one outer leg and GND on the
+other, and the strip shares the 5 V out along its length. The wiper picks
+off the voltage wherever it sits. This is a **voltage divider**. With the
+wiper a quarter of the way from the GND end, it sits at a quarter of 5 V:
 
 <p class="formula">reading ≈ <span class="fraction"><span>1.25 V</span><span>5 V</span></span> × 1023 ≈ 256</p>
 
@@ -62,9 +62,9 @@ becomes 128.
 
 !!! warning "Unplug first"
     Unplug the USB cable before you change any wiring. The knob's **middle
-    leg goes only to A0**. If it were joined to 5 V or GND as well, turning
-    the knob to the end would connect 5 V straight to GND. If the knob ever
-    feels warm, unplug at once and check its wires.
+    leg, the one on its own, goes only to A0**. If it were joined to 5 V or
+    GND as well, turning the knob to the end would connect 5 V straight to
+    GND. If the knob ever feels warm, unplug at once and check its wires.
 
 <!-- bench -->
 
@@ -129,8 +129,10 @@ What's new:
 - `adk::println ()`, from Lesson 2, prints a line such as
   `knob:512 brightness:128`. The Serial Plotter reads each `name:number`
   pair and draws it as a line of its own.
-- `adk::wait (20)` takes 50 readings a second: quick enough to follow your
-  hand, and slow enough for the graph to scroll at a comfortable pace.
+- `adk::wait (20)` pauses between readings. With the time each line takes
+  to send at 9600 baud, that makes about 40 readings a second: quick enough
+  to follow your hand, and slow enough for the graph to scroll at a
+  comfortable pace.
 
 ## Upload it
 
@@ -159,7 +161,7 @@ a quarter of the height of the knob line.
 | The LED flickers or changes by itself | A0 isn't reaching the wiper: its wire must be in a46, the wiper's column. |
 | The plotter's knob line sits at 0 or 1023 whatever you do | One outer leg has lost its supply. Check the Mega's red wire into T+3 and black wire into B-3, and the knob's wires: black from j45 to the top − rail, red from j47 to the top + rail, and the black one from B-60 to T-60 that joins the − rails. |
 | Full brightness comes at the "wrong" end | Nothing is wrong. If you'd like it the other way round, swap the outer legs' wires, as "About the knob" says, or use `knob.read (255, 0)` for the brightness. |
-| The knob or a wire gets warm | Unplug now. The middle leg is joined to 5 V or GND; it must go only to A0. |
+| The knob or a wire gets warm | Unplug now. The middle leg, the one on its own, is joined to 5 V or GND; it must go only to A0. |
 | The Serial Plotter shows nothing, or nonsense | Pick 9600 baud, and close the Serial Monitor: only one of them can use the port at a time. |
 
 ??? note "How it works"
@@ -171,9 +173,9 @@ a quarter of the height of the knob line.
     `low + (high − low) × reading ÷ 1023` in whole numbers.
 
     `adk::PwmOutput` claims pin 3 when the sketch starts and checks that it
-    can do PWM. `write ()` tells the timer behind pin 3 how many of every 256
-    ticks to keep the pin high, and the timer does the switching on its own,
-    so your sketch never has to.
+    can do PWM. `write ()` tells the timer behind pin 3 for how many parts
+    in 255 to keep the pin high, and the timer does the switching on its
+    own, so your sketch never has to.
 
 ## Make it yours
 

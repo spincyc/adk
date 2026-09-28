@@ -7,7 +7,7 @@ bench.screen (text=("Hello, LCD!", ""))
 
 # Readings to take with a multimeter: the contrast voltage the knob sets,
 # and the 5 V the backlight shares with its resistor.
-bench.measure ("The contrast voltage, on V0", red="b6", black="B-4", expect="about 0.6 V",
+bench.measure ("The contrast voltage, on V0", red="d11", black="B-4", expect="about 0.6 V",
                when="letters sharp")
 bench.measure ("Across the backlight's resistor", red="h23", black="c23", expect="about 2 V",
                when="backlight on")
