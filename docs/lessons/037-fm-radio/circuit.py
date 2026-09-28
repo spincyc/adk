@@ -9,7 +9,7 @@ bench = Bench ("An FM radio on pins 40, 41 and 42, the rotary encoder on 18, 19 
 
 bench.screen (text=(" 98.8 MHz Stereo", "CITY FM  ████"))
 
-bench.home_encoder (above=True)
+bench.home_encoder ()
 
 bench.home_fm_radio ()
 

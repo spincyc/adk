@@ -502,8 +502,9 @@ class Bench:
     # apart they stand, in inches, to make room for other wires from the
     # header.
     @staged ("the screen")
-    def screen (self, first=5, text=None, lanes=0, risers=(4.45, 0.1)):
+    def screen (self, first=43, text=None, lanes=0, risers=(4.45, 0.1)):
         self.screened = True
+        self.last = max (self.last, 63)
         knob, lcd = first, first + 4
         column = lambda offset: lcd + offset
         self.potentiometer (f"f{knob}", f"d{knob + 1}", f"f{knob + 2}")
@@ -538,11 +539,16 @@ class Bench:
         self.wire (f"e{column (15)}", self._rail ("T-", column (15)))
         return self
 
-    # The first free hole of a rail at or after a column.
+    # The first free hole of a rail at or after a column, or, past the
+    # rail's last hole, the nearest before it.
     def _rail (self, rail, column):
-        while not rail_column (column) or f"{rail}{column}" in self.used:
-            column += 1
-        return f"{rail}{column}"
+        for step in (1, -1):
+            spot = column
+            while 1 <= spot <= 63:
+                if rail_column (spot) and f"{rail}{spot}" not in self.used:
+                    return f"{rail}{spot}"
+                spot += step
+        raise ValueError (f"no free hole in the {rail} rail near column {column}")
 
     # Parts at their homes -----------------------------------------------
     #
@@ -571,7 +577,7 @@ class Bench:
     # Beside the screen, the button on 23 stands past it, in column 38.
     @staged ("the button")
     def home_button (self, pin, via=None):
-        column = 38 if pin == "23" and self.screened else BUTTON_HOMES[pin]
+        column = BUTTON_HOMES[pin]
         self.wire (pin, f"j{column}", via=via)
         self.button (column)
         self.wire (f"a{column + 2}", f"B-{column + 2}")
@@ -584,7 +590,7 @@ class Bench:
     # gap in column 32; beside the screen, in column 51.
     @staged ("the {kind} buzzer")
     def home_buzzer (self, kind, via=None):
-        column = 51 if self.screened else 35 if self._has ("four-digit display") else 34
+        column = 35 if self._has ("four-digit display") else 34
         self.wire ({"active": "12", "passive": "10"}[kind], f"j{column}", via=via)
         self.buzzer (f"f{column}", f"e{column}", kind=kind)
         if kind == "active":
@@ -599,7 +605,7 @@ class Bench:
     # columns 41 to 46, the same shape. via routes the three pins' wires.
     @staged ("the RGB LED")
     def home_rgb_led (self, via=(None, None, None)):
-        columns = (41, 44, 46) if self.screened else (6, 9, 11)
+        columns = (6, 9, 11)
         for pin, column, route in zip (("5", "6", "7"), columns, via):
             self.wire (pin, f"j{column}", via=route)
         for column in columns:
@@ -614,14 +620,15 @@ class Bench:
     # a black jumper from a43 to the − rail.
     @staged ("the {sensor}")
     def home_divider (self, sensor, via=None):
-        self.wire ("j40", "T+40")
+        c = 39 if self.screened else 40
+        self.wire (f"j{c}", f"T+{c}")
         if sensor == "photoresistor":
-            self.photoresistor ("f40", "e40")
+            self.photoresistor (f"f{c}", f"e{c}")
         else:
-            self.thermistor ("f40", "e40")
-        self.wire ({"photoresistor": "A1", "thermistor": "A2"}[sensor], "a40", via=via)
-        self.resistor ("10 kΩ", "c40", "c43")
-        return self.wire ("a43", "B-43")
+            self.thermistor (f"f{c}", f"e{c}")
+        self.wire ({"photoresistor": "A1", "thermistor": "A2"}[sensor], f"a{c}", via=via)
+        self.resistor ("10 kΩ", f"c{c}", f"c{c + 3}")
+        return self.wire (f"a{c + 3}", f"B-{c + 3}")
 
     # The knob on A0, across the middle gap: its outer legs in f45 and f47,
     # with jumpers from j45 and j47 up to the top − and + rails, its wiper
@@ -629,7 +636,7 @@ class Bench:
     # columns, it stands in columns 57 to 59 instead.
     @staged ("the knob")
     def home_knob (self, via=None):
-        first = 57 if any (hole in self.used for hole in ("e46", "j45")) else 45
+        first = 39 if self.screened else 57 if any (hole in self.used for hole in ("e46", "j45")) else 45
         self.potentiometer (f"f{first}", f"d{first + 1}", f"f{first + 2}")
         self.wire (f"j{first}", f"T-{first}")
         self.wire (f"j{first + 2}", f"T+{first + 2}")
@@ -647,6 +654,8 @@ class Bench:
     # raises the lanes, in inches, above other wires from the top header.
     @staged ("the rotary encoder")
     def home_encoder (self, above=False, lift=0.0, first=45):
+        if self.screened:
+            above, first = False, 15
         if not above:
             self.header_module ("encoder", pins=("GND", "+", "SW", "DT", "CLK"), first=first,
                                 row="a")
@@ -670,9 +679,9 @@ class Bench:
     # own overlaps, it lies lower.
     @staged ("the servo")
     def home_servo (self, via=None):
-        self.module ("servo", at=(9.85, 5.7 if "modem" in self.modules else 3.45), facing="up")
-        self.wire ("servo.+", "B+53")
-        self.wire ("servo.−", "B-54")
+        self.module ("servo", at=(8.05, 3.45), facing="up")
+        self.wire ("servo.+", "B+35")
+        self.wire ("servo.−", "B-36")
         return self.wire ("44", "servo.signal", via=via)
 
     # The LoRa modem below the board under columns 42 to 47, aerial down:
@@ -686,15 +695,15 @@ class Bench:
     @staged ("the LoRa modem")
     def home_modem (self, tx=None, rx=None, txd=None, power="3.3V", supply=None):
         send, hear = ("16", "17") if "14" in self.taken else ("14", "15")
-        self.module ("lora_modem", "modem", at=(9.415, 3.45), facing="up")
-        self.wire ("modem.GND", "B-42")
+        self.module ("lora_modem", "modem", at=(7.615, 3.45), facing="up")
+        self.wire ("modem.GND", "B-24")
         self.wire (power, "modem.VDD", via=supply)
-        self.wire (send, "j46", via=tx)
-        self.resistor ("1 kΩ", "g46", "e46")
-        self.resistor ("2 kΩ", "a46", "B-46")
-        self.wire ("modem.RXD", "c46", color="brown")
-        self.wire ("modem.TXD", "f44", color="purple", via=txd)
-        return self.wire (hear, "j44", via=rx)
+        self.wire (send, "j28", via=tx)
+        self.resistor ("1 kΩ", "g28", "e28")
+        self.resistor ("2 kΩ", "a28", "B-28")
+        self.wire ("modem.RXD", "c28", color="brown")
+        self.wire ("modem.TXD", "f26", color="purple", via=txd)
+        return self.wire (hear, "j26", via=rx)
 
     # The FM radio standing in row j, columns 45 to 52, its board over the
     # top rails: pins 42, 41 and 40 up from below, round the bottom of the
@@ -703,13 +712,13 @@ class Bench:
     # from RST to 3.3 V along row h.
     @staged ("the FM radio")
     def home_fm_radio (self):
-        self.header_module ("fm_radio", first=45, row="j")
-        self.wire ("42", "f47", via=[(4.45, 1.75), (4.45, 3.65), (10.0, 3.65)])
-        self.wire ("41", "f49", via=[(4.55, 1.70), (4.55, 3.75), (10.2, 3.75)])
-        self.wire ("40", "f50", via=[(4.25, 1.65), (4.65, 1.65), (4.65, 3.85), (10.3, 3.85)])
-        self.wire ("3.3V", "f52", via=[(1.75, 3.95), (10.5, 3.95)])
-        self.wire ("f51", "B-51")
-        return self.resistor ("1 kΩ", "h47", "h52")
+        self.header_module ("fm_radio", first=27, row="j")
+        self.wire ("42", "f29")
+        self.wire ("41", "f31")
+        self.wire ("40", "f32")
+        self.wire ("3.3V", "f34")
+        self.wire ("f33", "B-33")
+        return self.resistor ("1 kΩ", "h29", "h34")
 
     # The 433 MHz receiver standing in row j, columns 48 to 51, its board
     # over the top rails: 5 V from the power header into VCC's column, pin
@@ -717,10 +726,10 @@ class Bench:
     # and a black jumper from its GND column to the − rail.
     @staged ("the radio receiver")
     def home_rf_receiver (self):
-        self.header_module ("rf_receiver", first=48, row="j")
-        self.wire ("5V.power", "f48", via=[(1.85, 3.65), (10.1, 3.65)])
-        self.wire ("43", "f49", via=[(4.45, 1.80), (4.45, 3.75), (10.2, 3.75)])
-        return self.wire ("f51", "B-51")
+        self.header_module ("rf_receiver", first=30, row="j")
+        self.wire ("5V.power", "f30")
+        self.wire ("43", "f31")
+        return self.wire ("f33", "B-33")
 
     # The 433 MHz transmitter standing in row j, columns 56 to 59: its DAT
     # the middle of a divider, pin 46 into f54, 1 kΩ along row h to DAT's
@@ -728,13 +737,13 @@ class Bench:
     # 3.3V into its + column, and a black jumper from its − column.
     @staged ("the radio transmitter")
     def home_rf_transmitter (self):
-        self.header_module ("rf_transmitter", first=56, row="j")
-        self.wire ("46", "f54", via=[(4.25, 1.95), (4.55, 1.95), (4.55, 3.85), (10.7, 3.85)])
-        self.resistor ("1 kΩ", "h54", "h57")
-        self.resistor ("2 kΩ", "g57", "e57")
-        self.wire ("a57", "B-57")
-        self.wire ("3.3V", "f58", via=[(1.75, 3.95), (11.1, 3.95)])
-        return self.wire ("f59", "B-59")
+        self.header_module ("rf_transmitter", first=38, row="j")
+        self.wire ("46", "f36")
+        self.resistor ("1 kΩ", "h36", "h39")
+        self.resistor ("2 kΩ", "g39", "e39")
+        self.wire ("a39", "B-39")
+        self.wire ("3.3V", "f40")
+        return self.wire ("f41", "B-41")
 
     # Modules at their homes beside the board.
 
@@ -781,8 +790,8 @@ class Bench:
     @staged ("the clock module")
     def home_rtc (self, sda=None, scl=None):
         self.module ("rtc", at=(6.5, -1.4), facing="right")
-        self.wire ("rtc.GND", "T-29")
-        self.wire ("rtc.VCC", "T+30")
+        self.wire ("rtc.GND", "T-13")
+        self.wire ("rtc.VCC", "T+15")
         self.wire ("20", "rtc.SDA", via=sda or [(3.75, -1.6), (8.5, -1.6), (8.5, -0.8)])
         return self.wire ("21", "rtc.SCL", via=scl or [(3.85, -1.5), (8.4, -1.5), (8.4, -0.9)])
 
@@ -946,11 +955,11 @@ class Bench:
             raise ValueError (f"the power module gives 5V or 3.3V, not {supply!r}")
         self.last = max (self.last, 63)
         bx, by = self.board_origin ()
-        self.module ("power_module", "power", at=(bx + self.board_width () + 0.3, by),
+        self.module ("power_module", "power", at=(bx + self.board_width () + 0.3, by - 0.3),
                      facing="left",
                      detail="not plugged in: both its jumpers off, each parked on one pin")
-        self.wire (f"power.{supply}", "B+61")
-        return self.wire ("power.GND", "B-61")
+        self.wire (f"power.{supply}", "B+42")
+        return self.wire ("power.GND", "B-42")
 
     # Modules beside the board -------------------------------------------
 
@@ -1052,7 +1061,10 @@ class Bench:
         if "T+" in used or ("B+" in used and not module):
             power.append (self._power_wire (("5V.long2", "5V.long"), "T+3"))
         links = []
-        for rail, source, a, b in (("T-", "GND", "B-60", "T-60"), ("B+", "5V", "T+61", "B+61"),
+        far = 42 if self.screened else 60
+        for rail, source, a, b in (("T-", "GND", f"B-{far}", f"T-{far}"),
+                                   ("B+", "5V", f"T+{far + 1 if far == 60 else far}",
+                                    f"B+{far + 1 if far == 60 else far}"),
                                    ("T+", "5V", None, None), ("B-", "GND", None, None)):
             if rail not in used or self._powered (rail, source) \
                     or (source == "5V" and self._powered (rail, "3.3V")):

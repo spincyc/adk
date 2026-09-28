@@ -10,7 +10,7 @@ bench.screen (text=("06:58:30  \u237e07:00", "CITY FM     98.8"), risers=(4.55, 
 bench.home_rtc (sda=[(3.75, 0.35), (3.95, 0.35), (3.95, -1.6), (8.5, -1.6), (8.5, -0.8)],
                 scl=[(3.85, 0.45), (4.05, 0.45), (4.05, -1.5), (8.4, -1.5), (8.4, -0.9)])
 
-bench.home_encoder (above=True, lift=0.3)
+bench.home_encoder ()
 
 bench.home_button ("23", via=[(4.4, 0.80), (4.4, -1.7), (9.1, -1.7)])
 
