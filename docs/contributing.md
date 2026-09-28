@@ -125,7 +125,10 @@ The dialog's instructions, geometry and endpoints come from `circuit.py`
 through the same build hook as the static steps. Do not maintain a separate
 set of UI coordinates or wiring instructions. `make site` checks this
 metadata before building the pages. `make pdf` also checks the guided
-view's crops in Chromium before printing the lessons.
+view's crops in Chromium before printing the lessons. The regression
+includes Firefox's different root-SVG matrix behavior: tagged item groups
+already use drawing coordinates, with any part rotation inside them, so
+their bounds must not be scaled through the page's viewport again.
 
 ## Two-board lessons
 

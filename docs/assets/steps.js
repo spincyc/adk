@@ -80,15 +80,17 @@
     }
 
     function bounds (source, item) {
+        // The renderer tags groups in drawing coordinates; part rotations
+        // live inside those groups and getBBox already includes them. Root
+        // and child getCTM disagree about viewport scaling in Firefox.
         const points = [];
         for (const group of source.querySelectorAll ("[data-item]")) {
             if (group.dataset.item !== item) continue;
             const box = group.getBBox ();
             if (!box.width && !box.height) continue;
-            const matrix = source.getCTM ().inverse ().multiply (group.getCTM ());
             for (const x of [box.x, box.x + box.width]) {
                 for (const y of [box.y, box.y + box.height]) {
-                    points.push (new DOMPoint (x, y).matrixTransform (matrix));
+                    points.push ({x, y});
                 }
             }
         }
@@ -334,7 +336,7 @@
             const box = ends ? [Math.min (points[0][0], points[1][0]),
                 Math.min (points[0][1], points[1][1]),
                 Math.abs (points[0][0] - points[1][0]),
-                Math.abs (points[0][1] - points[1][1])] : item ? bounds (source, item) : null;
+                Math.abs (points[0][1] - points[1][1])] : item ? bounds (map.svg, item) : null;
             if (!box) {
                 focusTitle.textContent = "Before the next part";
                 views.append (element ("p", "workbench-no-part",

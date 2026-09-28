@@ -3,18 +3,31 @@
 <meta charset="utf-8">
 <title>Build view regression checks</title>
 <link rel="stylesheet" href="../docs/assets/adk.css">
-<style>svg { width: 800px; height: 500px; }</style>
+<style>
+svg { width: 1200px; height: 500px; }
+.bench-figure { width: 360px; overflow-x: auto; }
+</style>
 <body>
 <h1>Build view regression checks</h1>
 <!-- Nearby wire ends can have a long route around another part. The
      close-up must show the named connections, not centre on the detour. -->
 <figure class="bench-figure bench-bench" data-board="">
-  <svg class="pencil-drawing" viewBox="0 0 1000 500">
+  <svg class="pencil-drawing" viewBox="0 -34 1500 500">
     <g data-item="0"><path d="M 100 100 L 800 100 L 800 300 L 140 300 L 140 120"
       fill="none" stroke="black"/></g>
     <g data-item="1"><path d="M 100 100 L 800 100 L 800 400"
       fill="none" stroke="red"/></g>
     <g data-item="2"><rect x="120" y="70" width="30" height="20" fill="blue"/></g>
+    <!-- Like Lesson 13, placement geometry is in drawing coordinates;
+         the LCD rotates inside its tagged groups, some of which are empty. -->
+    <g data-item="3"><rect x="953" y="150" width="34" height="40" fill="blue"/></g>
+    <g data-item="4"><g transform="translate(1284 354) rotate(180)"></g></g>
+    <g data-item="4"><g transform="translate(1284 354) rotate(180)">
+      <rect width="315" height="142" fill="green"/>
+    </g></g>
+    <g data-item="4"><g transform="translate(1284 354) rotate(180)">
+      <rect x="25" y="40" width="265" height="80" fill="blue"/>
+    </g></g>
   </svg>
 </figure>
 <div class="build-steps" data-board="" data-title="Test board" data-revision="test">
@@ -35,6 +48,14 @@
       <tr data-step="part" data-item="2" data-points="[]" data-action="Place the module.">
         <td><button class="tick" type="button">3</button></td><td class="what">Module</td>
       </tr>
+      <tr data-step="pot" data-item="3" data-points="[[960,150],[970,190],[980,150]]"
+          data-action="Place the potentiometer in f43, d44 and f45.">
+        <td><button class="tick" type="button">4</button></td><td class="what">Potentiometer</td>
+      </tr>
+      <tr data-step="lcd" data-item="4" data-points="[[1000,220],[1150,220]]"
+          data-action="Place the LCD in a47 through a62.">
+        <td><button class="tick" type="button">5</button></td><td class="what">LCD</td>
+      </tr>
     </tbody></table>
   </details>
 </div>
@@ -46,6 +67,11 @@ try {
         .map (svg => svg.getAttribute ("viewBox").split (" ").map (Number));
     const contains = (box, x, y) => x >= box[0] && y >= box[1] &&
         x <= box[0] + box[2] && y <= box[1] + box[3];
+    // Firefox returns identity for the outer SVG's CTM, while child CTMs
+    // include viewport scaling. Keep that behavior in the Chromium check
+    // too: placement crops must use drawing coordinates in either browser.
+    SVGSVGElement.prototype.getCTM = () => new DOMMatrix ();
+    document.querySelector (".bench-figure").scrollLeft = 650;
     document.querySelector (".build-launch").click ();
     document.querySelector (".workbench-reset").click ();
     const select = index => document.querySelectorAll (".workbench-list button")[index].click ();
@@ -69,6 +95,16 @@ try {
     const location = document.querySelector (".workbench-location");
     assert (["x", "y", "width", "height"].every ((name, i) =>
         Number (location.getAttribute (name)) === boxes[0][i]), "map marker matches the crop");
+    select (3);
+    boxes = crops ();
+    assert (boxes.length === 1 && contains (boxes[0], 953, 150) &&
+        contains (boxes[0], 987, 190) && !contains (boxes[0], 500, 150),
+        "the potentiometer crop stays at columns 43–45 on a scrolled drawing");
+    select (4);
+    boxes = crops ();
+    assert (boxes.length === 1 && contains (boxes[0], 969, 212) &&
+        contains (boxes[0], 1284, 354) && !contains (boxes[0], 500, 220),
+        "the LCD crop contains its rotated body at the far end of the board");
     document.body.dataset.testResult = "pass";
 } catch (error) {
     document.body.dataset.testResult = "fail";

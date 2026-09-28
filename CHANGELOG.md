@@ -61,7 +61,9 @@ A new start, built on the library's original 2021 design.
   of the current step beside its instruction, with the whole board below.
   Rings mark the exact holes and pins; a long wire shows its two ends in
   separate close-ups. Wire close-ups stay centered on those connections,
-  even when the wire takes a long detour around another part. Progress is
+  even when the wire takes a long detour around another part. Part-placement
+  close-ups use drawing coordinates directly, keeping the potentiometer,
+  LCD and other parts in frame in Firefox as well as Chromium. Progress is
   saved separately for each board and starts fresh when its instructions
   change. The full steps remain on the
   page and in print. Pages name a rail's hole in
