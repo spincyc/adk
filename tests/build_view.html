@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Build view regression checks</title>
+<link rel="stylesheet" href="../docs/assets/adk.css">
+<style>svg { width: 800px; height: 500px; }</style>
+<body>
+<h1>Build view regression checks</h1>
+<!-- Nearby wire ends can have a long route around another part. The
+     close-up must show the named connections, not centre on the detour. -->
+<figure class="bench-figure bench-bench" data-board="">
+  <svg class="pencil-drawing" viewBox="0 0 1000 500">
+    <g data-item="0"><path d="M 100 100 L 800 100 L 800 300 L 140 300 L 140 120"
+      fill="none" stroke="black"/></g>
+    <g data-item="1"><path d="M 100 100 L 800 100 L 800 400"
+      fill="none" stroke="red"/></g>
+    <g data-item="2"><rect x="120" y="70" width="30" height="20" fill="blue"/></g>
+  </svg>
+</figure>
+<div class="build-steps" data-board="" data-title="Test board" data-revision="test">
+  <details class="stage" open><summary class="stage-title">Connect it</summary>
+    <table><tbody>
+      <tr data-step="near" data-item="0" data-points="[[100,100],[140,120]]"
+          data-action="Connect the nearby ends.">
+        <td><button class="tick" type="button">1</button></td><td class="what">Wire</td>
+        <td class="place">First end</td><td class="link"><span class="wire"></span></td>
+        <td class="place">Second end</td>
+      </tr>
+      <tr data-step="far" data-item="1" data-points="[[100,100],[800,400]]"
+          data-action="Connect the distant ends.">
+        <td><button class="tick" type="button">2</button></td><td class="what">Wire</td>
+        <td class="place">First end</td><td class="link"><span class="wire"></span></td>
+        <td class="place">Second end</td>
+      </tr>
+      <tr data-step="part" data-item="2" data-points="[]" data-action="Place the module.">
+        <td><button class="tick" type="button">3</button></td><td class="what">Module</td>
+      </tr>
+    </tbody></table>
+  </details>
+</div>
+<script src="../docs/assets/steps.js"></script>
+<script>
+try {
+    const assert = (ok, message) => { if (!ok) throw Error (message); };
+    const crops = () => [...document.querySelectorAll (".workbench-crop svg")]
+        .map (svg => svg.getAttribute ("viewBox").split (" ").map (Number));
+    const contains = (box, x, y) => x >= box[0] && y >= box[1] &&
+        x <= box[0] + box[2] && y <= box[1] + box[3];
+    document.querySelector (".build-launch").click ();
+    document.querySelector (".workbench-reset").click ();
+    const select = index => document.querySelectorAll (".workbench-list button")[index].click ();
+    select (0);
+    let boxes = crops ();
+    assert (boxes.length === 1, "nearby ends share a close-up");
+    assert (contains (boxes[0], 100, 100) && contains (boxes[0], 140, 120),
+        "both named connections are visible");
+    assert (!contains (boxes[0], 800, 300), "the unrelated detour is outside the close-up");
+    assert (Math.abs (boxes[0][0] + boxes[0][2] / 2 - 120) < 1 &&
+        Math.abs (boxes[0][1] + boxes[0][3] / 2 - 110) < 1,
+        "the close-up is centred on the connections");
+    document.querySelector (".workbench-done").click ();
+    boxes = crops ();
+    assert (boxes.length === 2 && contains (boxes[0], 100, 100) &&
+        contains (boxes[1], 800, 400), "distant ends each get their own close-up");
+    select (2);
+    boxes = crops ();
+    assert (boxes.length === 1 && contains (boxes[0], 120, 70) &&
+        contains (boxes[0], 150, 90), "a module step frames that module");
+    const location = document.querySelector (".workbench-location");
+    assert (["x", "y", "width", "height"].every ((name, i) =>
+        Number (location.getAttribute (name)) === boxes[0][i]), "map marker matches the crop");
+    document.body.dataset.testResult = "pass";
+} catch (error) {
+    document.body.dataset.testResult = "fail";
+    document.body.append (String (error));
+}
+</script>
+</html>

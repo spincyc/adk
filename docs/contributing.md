@@ -106,7 +106,9 @@ the article's complete drawing and tables, and its **Build along** view.
 Build along opens a separate dialog for each board. It gives the current
 step a large close-up with marked endpoints and a smaller whole-board map,
 so the learner can read the instruction and find its holes without scrolling
-between them. Long connections show both ends. The map can be enlarged;
+between them. Wire close-ups frame the connections named in the instruction;
+the map shows the full route, including any detour around other parts.
+Long connections show both ends. The map can be enlarged;
 stage buttons and **All steps** let the learner jump around. **Previous**
 and **Next** only browse; **Done & next** records completion. Progress is
 saved per lesson and board, and a change to the generated build instructions
@@ -122,7 +124,8 @@ or interactive controls.
 The dialog's instructions, geometry and endpoints come from `circuit.py`
 through the same build hook as the static steps. Do not maintain a separate
 set of UI coordinates or wiring instructions. `make site` checks this
-metadata before building the pages.
+metadata before building the pages. `make pdf` also checks the guided
+view's crops in Chromium before printing the lessons.
 
 ## Two-board lessons
 

@@ -60,8 +60,10 @@ A new start, built on the library's original 2021 design.
   learner can tick steps off, or open **Build along** for a large close-up
   of the current step beside its instruction, with the whole board below.
   Rings mark the exact holes and pins; a long wire shows its two ends in
-  separate close-ups. Progress is saved separately for each board and
-  starts fresh when its instructions change. The full steps remain on the
+  separate close-ups. Wire close-ups stay centered on those connections,
+  even when the wire takes a long detour around another part. Progress is
+  saved separately for each board and starts fresh when its instructions
+  change. The full steps remain on the
   page and in print. Pages name a rail's hole in
   words, "the bottom − rail by column 3", never as B-3, whose B reads as
   row b. The

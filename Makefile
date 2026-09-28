@@ -394,7 +394,7 @@ $(BUILD_DIR)/steps.ok: tests/build_steps.py $(wildcard docs/_theme/*.py) \
 	@touch $@
 
 ## pdf             print every lesson page to build/site/pdf
-pdf: site
+pdf: site $(BUILD_DIR)/view.ok
 	@mkdir -p $(BUILD_DIR)/site/pdf
 	@for page in $(abspath $(BUILD_DIR))/site/lessons/*/index.html; do    \
 	    lesson=$$(basename $$(dirname $$page));                           \
@@ -409,6 +409,17 @@ pdf: site
 	        --print-to-pdf=$(abspath $(BUILD_DIR))/site/pdf/$$lesson.pdf  \
 	        file://$$page 2>/dev/null || exit 1;                          \
 	done
+
+$(BUILD_DIR)/view.ok: tests/build_view.html docs/assets/steps.js docs/assets/adk.css
+	@mkdir -p $(BUILD_DIR)
+	@echo "  VIEW tests/build_view.html"
+	@$(CHROMIUM) --headless=new --no-sandbox --disable-gpu                 \
+	    --user-data-dir=$(abspath $(BUILD_DIR))/chromium-view-test         \
+	    --dump-dom file://$(abspath tests/build_view.html)                 \
+	    > $(BUILD_DIR)/view-test.html 2> $(BUILD_DIR)/view-test.log
+	@grep -q 'data-test-result="pass"' $(BUILD_DIR)/view-test.html || \
+	    { cat $(BUILD_DIR)/view-test.html; exit 1; }
+	@touch $@
 
 ## boards          install the site's ADK Boards package and compile lessons with it
 #

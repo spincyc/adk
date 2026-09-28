@@ -327,7 +327,14 @@
                 .forEach (node => node.remove ());
             highlight (map, item, points);
             views.replaceChildren ();
-            const box = item ? bounds (source, item) : null;
+            const wire = Boolean (row.querySelector (".wire"));
+            // A wire can take a long detour around other parts. Its close-up
+            // belongs at the connections in the instruction, not that detour.
+            const ends = wire && points.length === 2;
+            const box = ends ? [Math.min (points[0][0], points[1][0]),
+                Math.min (points[0][1], points[1][1]),
+                Math.abs (points[0][0] - points[1][0]),
+                Math.abs (points[0][1] - points[1][1])] : item ? bounds (source, item) : null;
             if (!box) {
                 focusTitle.textContent = "Before the next part";
                 views.append (element ("p", "workbench-no-part",
@@ -337,13 +344,11 @@
                 return;
             }
             focusTitle.textContent = "This step, up close";
-            const wire = Boolean (row.querySelector (".wire"));
-            const split = wire && points.length === 2 &&
-                (Math.abs (points[0][0] - points[1][0]) > 230 ||
-                 Math.abs (points[0][1] - points[1][1]) > 170);
+            const split = ends && (box[2] > 230 || box[3] > 170);
+            const width = Math.max (100, box[2] + 70);
+            const height = Math.max (100, box[3] + 70);
             const crops = split ? points.map (([x, y]) => [x - 70, y - 65, 140, 130]) :
-                [[box[0] - 35, box[1] - 35, Math.max (100, box[2] + 70),
-                    Math.max (100, box[3] + 70)]];
+                [[box[0] + (box[2] - width) / 2, box[1] + (box[3] - height) / 2, width, height]];
             views.classList.toggle ("has-two-ends", split);
             crops.forEach ((crop, i) => {
                 const figure = element ("figure", "workbench-crop");
@@ -368,6 +373,7 @@
             });
             focusCaption.textContent = split ?
                 "Both ends, enlarged separately. Follow the whole wire in the map below." :
+                ends ? "Connection points, enlarged. Follow the whole wire in the map below." :
                 points.length ?
                 "Same orientation as your board. The rings mark this step’s connection points." :
                 "Same orientation as the whole board. The highlighted module is this step’s part.";
