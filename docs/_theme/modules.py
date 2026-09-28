@@ -64,6 +64,9 @@ class Kind:
     # may be either, as a bus's are.
     pin_modes = {}
     inset  = 0                      # how far in from the edge the header sits
+    reach  = None                   # how far its male pins are drawn sticking out
+    blocks = True                   # wires go round it; a flat one they may cross
+    sources = {}                    # pins that feed power, by what they give
     title_side, title_gap = "top", 8
 
     def __init__ (self, pins=None, label=None, **options):
@@ -791,6 +794,73 @@ class Motor (Kind):
                           (186, pin.y + 2.5)], METAL)
 
 
+class PowerModule (Kind):
+    # The breadboard power module, 36 x 53 mm, lying beside the board: its
+    # pins underneath fit the kit's breadboard the right way round only at
+    # the end nearest the Mega, so it doesn't plug in. Both its jumpers are
+    # off, parked on one pin, so those pins carry nothing, and wires from
+    # the header in its middle take 5 V or 3.3 V, and GND, to the rails:
+    # that header gives both voltages whatever the jumpers say. Drawn as
+    # the kit's lies with its barrel socket top right: the header's upper
+    # row is 3.3V, 3.3V, 5V, 5V, its lower row GND.
+    title  = "power module"
+    width, height = 140, 210
+    reach  = 0                      # its header's pins stand up, out of the page
+    blocks = False                  # it lies flat: wires may cross it
+    sources = {"5V": "5V", "3.3V": "3.3V", "GND": "GND"}
+    HEADER = (30, 80)               # its first pin, 3.3V; the lower row is GND
+
+    def header (self):
+        x, y = self.HEADER
+        return [Pin ("3.3V", x, y, (-1, 0)), Pin ("5V", x + 2 * PITCH, y, (0, -1)),
+                Pin ("GND", x, y + PITCH, (-1, 0))]
+
+    def draw (self, pencil):
+        board (pencil, 0, 0, self.width, self.height, PCB_BLUE)
+        # The pins underneath, a pair at each end of its left edge, as they
+        # would meet a pair of rails: + by the edge at the top, − by the edge
+        # at the bottom.
+        for y, sign in ((12, "+"), (22, "−"), (188, "+"), (198, "−")):
+            hole (pencil, 10, y, r=3.4, square=True)
+            pencil.text (22, y + 3, sign, size=7, kind="silk")
+        # Each side's jumper, three pins beside its label, its cap parked
+        # on the end pin: off.
+        for top in (8, 172):
+            for index in range (3):
+                pencil.spot (40, top + index * 10, 1.8, "#9a9a9a", layer="shade")
+            pencil.tint ([(35.5, top + 16), (44.5, top + 16), (44.5, top + 26), (35.5, top + 26)],
+                         "#1f1f1f")
+            pencil.text (50, top + 3, "5V", size=5, kind="silk", anchor="start")
+            pencil.text (50, top + 13, "OFF", size=5, kind="silk", anchor="start")
+            pencil.text (50, top + 23, "3.3", size=5, kind="silk", anchor="start")
+        # The header in its middle: 3.3V, 3.3V, 5V, 5V above, four GNDs below.
+        x, y = self.HEADER
+        pencil.tint ([(x - 5, y - 5), (x + 35, y - 5), (x + 35, y + 15), (x - 5, y + 15)], PLASTIC)
+        pencil.rect (x - 5, y - 5, 40, 20, width=0.7, passes=1)
+        for column in range (4):
+            for row in range (2):
+                pencil.spot (x + column * PITCH, y + row * PITCH, 1.8, GOLD, layer="shade")
+        pencil.text (x + 5, y - 9, "3.3V", size=5.5, kind="silk")
+        pencil.text (x + 25, y - 9, "5V", size=5.5, kind="silk")
+        pencil.text (x + 15, y + 24, "GND", size=5.5, kind="silk")
+        # The barrel socket, the switch and its LED, the two regulators, the
+        # USB socket, which only gives power out.
+        pencil.tint (rounded (92, 4, 44, 46, 3), PLASTIC)
+        pencil.rect (92, 4, 44, 46, width=1.0, radius=3, layer="top", passes=1)
+        pencil.circle (114, 27, 9, width=0.9, tone=0.5, layer="top", passes=1)
+        pencil.tint (rounded (100, 60, 32, 30, 2), WHITE)
+        pencil.rect (100, 60, 32, 30, width=0.9, radius=2, layer="top", passes=1)
+        pencil.rect (108, 68, 16, 14, width=0.8, radius=2, layer="top", passes=1)
+        pencil.spot (116, 104, 3.2, "#5cc45a")
+        pencil.circle (116, 104, 3.2, width=0.7, layer="top", passes=1)
+        for top in (118, 150):
+            ic (pencil, 44, top + 10, 22, 16, notch=False)
+        pencil.circle (78, 110, 10, width=0.9, layer="top", passes=1)
+        pencil.tint (rounded (84, 128, 52, 64, 2), METAL)
+        pencil.rect (84, 128, 52, 64, width=1.0, radius=2, layer="top", passes=1)
+        pencil.text (70, 204, "ELEGOO", size=6, kind="silk", weight="bold")
+
+
 class Battery9V (Kind):
     # A 9 V battery on a snap with red and black leads.
     title  = "9 V battery"
@@ -1141,7 +1211,8 @@ KINDS = {
     "relay": Relay, "stepper": Stepper, "encoder": Encoder, "pir": Pir, "sensor": Sensor,
     "dht11": Dht11, "motor": Motor, "battery9v": Battery9V, "fm_radio": FmRadio,
     "rf_receiver": RfReceiver, "rf_transmitter": RfTransmitter, "lora_modem": LoraModem,
-    "lora_module": LoraModule, "mesh_board": MeshBoard, "module": Kind,
+    "lora_module": LoraModule, "mesh_board": MeshBoard, "power_module": PowerModule,
+    "module": Kind,
 }
 
 # Other names a wire may use for a pin, when the module has no pin by that

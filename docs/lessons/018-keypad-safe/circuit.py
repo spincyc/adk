@@ -7,7 +7,7 @@
 bench = Bench ("A keypad safe: the keypad on pins 22 to 29, the screen on 31 to 36, a servo latch "
                "on 44 powered by the power module, and the buzzer on 12", columns=(1, 63))
 
-bench.power_module ("right", top="off", bottom="5V")
+bench.power_module ()
 
 bench.screen (text=("Locked. Code?", "****"), risers=(4.8, 0.05))
 

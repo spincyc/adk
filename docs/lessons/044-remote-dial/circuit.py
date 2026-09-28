@@ -25,7 +25,7 @@ servo = Bench ("Board B: a servo on pin 44 powered by the breadboard power modul
                "27, and the LoRa modem on Serial3 (pins 14 and 15)", columns=(1, 63),
                sketch="Servo")
 
-servo.power_module ("right", top="off", bottom="5V")
+servo.power_module ()
 
 servo.home_led ("27", "yellow")
 

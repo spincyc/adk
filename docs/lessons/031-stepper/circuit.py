@@ -5,7 +5,7 @@
 bench = Bench ("A stepper motor's driver on pins A8 to A11, powered from the breadboard power "
                "module, and a button on pin 22", columns=(1, 63))
 
-bench.power_module ("right", top="off", bottom="5V")
+bench.power_module ()
 bench.home_button ("22", via=[(5.3, 1.05)])
 bench.home_stepper ()
 bench.closeup (1, 28)
@@ -13,5 +13,3 @@ bench.closeup (1, 28)
 # Readings to take with a multimeter, the power module switched on.
 bench.measure ("The driver's supply, on the bottom rails", red="B+10", black="B-10",
                expect="about 5 V", when="Power module on")
-bench.measure ("The top rails, their jumper off", red="T+10", black="T-10", expect="0 V",
-               when="Power module on")

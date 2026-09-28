@@ -10,7 +10,7 @@ bench = Bench ("A servo on pin 44 carrying an ultrasonic sensor on 14 and 15 and
                "L293D (4, 8, 9), the servo and the fan powered from the breadboard power module",
                columns=(1, 63))
 
-bench.power_module ("right", top="off", bottom="5V")
+bench.power_module ()
 
 bench.home_ultrasonic ()
 

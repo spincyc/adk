@@ -9,7 +9,7 @@
 bench = Bench ("The Secret Door: an LCD on pins 31 to 36, an RFID reader on the SPI pins and 45, "
                "a tap sensor on A12, a servo latch on 44 and an active buzzer on 12", columns=(1, 63))
 
-bench.power_module ("right", top="off", bottom="5V")
+bench.power_module ()
 bench.screen (text=("Secret Door", "Card or knock..."))
 
 bench.home_rfid ()

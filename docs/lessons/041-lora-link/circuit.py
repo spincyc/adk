@@ -13,7 +13,7 @@ bench = Bench ("Two LoRa modules: A on pins 18 and 19, its M0 and M1 on 40 and A
                "2 kΩ divider, and both on 5 V from the power module. The DHT11 on pin 16, the "
                "button on 23 and the LCD on 31 to 36", columns=(1, 63))
 
-bench.power_module ("right", top="off", bottom="5V")
+bench.power_module ()
 bench.screen (text=("Temp 23C Hum 45%", "1 s ago"), risers=(4.4, 0.1))
 
 bench.home_dht11 ()

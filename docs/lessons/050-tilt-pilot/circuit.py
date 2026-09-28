@@ -29,7 +29,7 @@ ball = Bench ("Board B: the LED matrix on pins 47 to 49, a servo on 44 powered b
               "module, and the LoRa modem on Serial3 (pins 14 and 15)", columns=(1, 63),
               sketch="Ball")
 
-ball.power_module ("right", top="off", bottom="5V")
+ball.power_module ()
 
 # The matrix is drawn turned half round, so its picture is given upside down.
 ball.home_matrix (pixels=[row[::-1] for row in reversed (BALL)])

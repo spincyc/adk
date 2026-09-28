@@ -29,18 +29,18 @@ circuit.py has run, finish () brings GND from the outer pin at the end of
 the long header into B-3 and 5V from the outer pin at its top into T+3,
 when anything uses the rails, and joins a rail pair at the far end (B-60 to
 T-60, T+61 to B+61) when a part uses the other rail and nothing else feeds
-it. With a power module 5V stays off the rails. Wiring the Mega's GND or 5V
-to a rail, or using those two pins, is an error.
+it. With the power module, which lies beside the far end and feeds the
+bottom rails from B+61 and B-61 (power_module ("5V") or ("3.3V")), the
+Mega's 5V feeds only the top rails. Wiring the Mega's GND or 5V to a rail,
+or using those two pins, is an error.
 
 Parts stand in the breadboard: resistor, led, button, rgb_led, buzzer,
 potentiometer, photoresistor, thermistor, tilt_switch, chip (a DIP chip
-across the middle gap), digit and four_digits (seven-segment displays), lcd,
-header_module (a module standing in one row) and power_module, whose two
-jumpers set each pair of rails to "5V", "3.3V" or "off":
-power_module ("right", top="5V", bottom="off"). screen () builds the
-course's LCD at its home: its contrast knob across the gap in f5, d6 and f7,
-the LCD's pins in
-a9-a24, power, and pins 31 to 36, wired the same in every lesson.
+across the middle gap), digit and four_digits (seven-segment displays), lcd
+and header_module (a module standing in one row). screen () builds the
+course's LCD at its home: its contrast knob across the gap in f5, d6 and
+f7, the LCD's pins in a9-a24, power, and pins 31 to 36, wired the same in
+every lesson.
 
 Modules sit beside the board, placed in inches in the drawing's own
 coordinates, where the Mega's top-left corner is (0.35, 0.6) and the
@@ -91,9 +91,9 @@ import math
 import re
 from typing import NamedTuple
 
-from modules import Placed, make as make_module
-from parts import (Button, Buzzer, Chip, Display, HeaderModule, Led, PowerModule, Potentiometer,
-                   Resistor, RgbLed, TwoLegs, bands_for)
+from modules import STUB, Placed, PowerModule, make as make_module
+from parts import (Button, Buzzer, Chip, Display, HeaderModule, Led, Potentiometer, Resistor, RgbLed,
+                   TwoLegs, bands_for)
 from pencil import DPI
 
 MEGA_WIDTH, MEGA_HEIGHT = 4.0, 2.1
@@ -805,38 +805,38 @@ class Bench:
     # The breadboard power supply across both pairs of rails at one end,
     # each side's jumper on "5V", "3.3V" or "off": wires to the rails take
     # their power from it.
-    def power_module (self, end="left", top="5V", bottom="5V"):
-        if end not in ("left", "right"):
-            raise ValueError ("the power module goes on the left or right end")
-        columns = (3, 4) if end == "left" else (60, 61)
-        if not (self.first <= columns[0] and columns[1] <= self.last):
-            raise ValueError (f"the power module needs columns {columns[0]}-{columns[1]} drawn")
-        if end == "left":
-            # Its jack hangs over the end, so the board moves over for it.
-            self.gap = GAP + 1.3
-        part = PowerModule (end, columns, top, bottom)
-        self._add (part)
-        setting = lambda value: {"5V": "on 5 V", "3.3V": "on 3.3 V", "off": "off"}[value]
-        jumpers = f"both jumpers {setting (top)}" if top == bottom else \
-            f"the top jumper {setting (top)} and the bottom one {setting (bottom)}"
-        holes = ", ".join (unbroken (f"{rail}{columns[0]}") for rail in ("T+", "T-", "B+"))
-        self._step (
-            f"The power module on the {end} end of the board, its pins in both pairs of rails "
-            f"({holes}, {unbroken (f'B-{columns[0]}')} and the holes beside them), {jumpers}.")
-        return self
+    # The breadboard power module, for motors and servos, or 3.3 V for LoRa
+    # modems. The pins underneath it fit the kit's breadboard the right way
+    # round only at the end nearest the Mega, which the Mega's own wires
+    # need; turned round for the far end, its supply would meet the Mega's
+    # GND. So it lies beside the far end instead, both its jumpers off so
+    # those pins carry nothing, and two wires from the header in its middle
+    # feed the bottom rails: supply ("5V" or "3.3V") into B+61, GND into
+    # B-61. The Mega's 5V feeds the top rails, for the screen and sensors.
+    def power_module (self, supply="5V"):
+        if supply not in ("5V", "3.3V"):
+            raise ValueError (f"the power module gives 5V or 3.3V, not {supply!r}")
+        self.last = max (self.last, 63)
+        bx, by = self.board_origin ()
+        self.module ("power_module", "power", at=(bx + self.board_width () + 0.3, by),
+                     facing="down",
+                     words="The power module, lying to the right of the breadboard, not plugged "
+                           "in: both its jumpers off, each parked on one pin.")
+        self.wire (f"power.{supply}", "B+61")
+        return self.wire ("power.GND", "B-61")
 
     # Modules beside the board -------------------------------------------
 
     # A module placed with its top-left corner at (x, y) inches, its pins
     # facing the board unless facing says otherwise (down, up, left, right).
     def module (self, kind, name=None, at=(0.0, 0.0), pins=None, label=None, facing=None,
-                **options):
+                words=None, **options):
         name = name or kind
         if name in self.modules or "." in name:
             raise ValueError (f"a module needs a new name without a dot, not {name!r}")
         made = make_module (kind, pins, label, **options)
         angle = FACING[facing or self._facing (at, made)]
-        placed = Placed (made, name, 0, 0, angle)
+        placed = Placed (made, name, 0, 0, angle, reach=STUB if made.reach is None else made.reach)
         w, h = made.width, made.height
         turned_w, turned_h = (h, w) if angle in (90, 270) else (w, h)
         rx, ry = placed.turn (w / 2, h / 2)
@@ -854,7 +854,7 @@ class Bench:
                 raise ValueError (f"the {placed.title} at {at} overlaps {thing}")
         self.modules[name] = placed
         self._last = ("module", placed)
-        self._step (f"The {placed.title}, {self._whereabouts (placed.box ())}.")
+        self._step (words or f"The {placed.title}, {self._whereabouts (placed.box ())}.")
         return self
 
     def _facing (self, at, made):
@@ -886,10 +886,11 @@ class Bench:
     # pair at the top of the long header) into the top + rail's first hole,
     # T+3, whenever the rails are used. A rail that nothing else powers is
     # linked to its partner at the board's far end: GND from B-60 to T-60,
-    # 5V from T+61 to B+61. A power module, at the far end, feeds the rails
-    # itself, and the Mega's GND still joins them at B-3. The site calls this
-    # once circuit.py has run; circuits never wire the Mega's power to a rail.
-    # Then it checks the circuit could work, and places the probes.
+    # 5V from T+61 to B+61. The power module, beside the far end, feeds the
+    # bottom rails itself, and the Mega's GND still joins them at B-3. The
+    # site calls this once circuit.py has run; circuits never wire the Mega's
+    # power to a rail. Then it checks the circuit could work, and places the
+    # probes.
     def finish (self):
         if self._finished:
             return self
@@ -901,20 +902,16 @@ class Bench:
         return self
 
     def _power (self):
-        module = next ((part for part in self.parts if isinstance (part, PowerModule)), None)
-        # The rails something uses; the power module's own pins don't count.
-        own = {hole for _, hole in module.legs ()} if module else set ()
-        used = {parse_hole (hole)[2] for hole in self.used
-                if parse_hole (hole)[0] == "rail" and hole not in own}
+        module = any (isinstance (placed.kind, PowerModule) for placed in self.modules.values ())
+        used = {parse_hole (hole)[2] for hole in self.used if parse_hole (hole)[0] == "rail"}
         if not used:
             return
         power = [self._power_wire (("GND.long2", "GND.long"), "B-3")]
-        # The Mega's 5V feeds the top rails unless the power module does:
-        # with the module's top jumper off, the screen and sensors run from
-        # the Mega, as their signals do, and the module feeds only the
-        # bottom rails, for motors.
-        if (not module and used & {"T+", "B+"}) or \
-                (module and module.top == "off" and "T+" in used):
+        # The Mega's 5V feeds the top rails, and the bottom ones too unless
+        # the power module does: the screen and sensors run from the Mega,
+        # as their signals do, and the module feeds only the bottom rails,
+        # for motors.
+        if "T+" in used or ("B+" in used and not module):
             power.append (self._power_wire (("5V.long2", "5V.long"), "T+3"))
         links = []
         for rail, source, a, b in (("T-", "GND", "B-60", "T-60"), ("B+", "5V", "T+61", "B+61"),
@@ -922,11 +919,10 @@ class Bench:
             if rail not in used or self._powered (rail, source) \
                     or (source == "5V" and self._powered (rail, "3.3V")):
                 continue
-            if module or not a:
+            if not a:
                 side = "top" if rail[0] == "T" else "bottom"
-                raise ValueError (f"nothing feeds the {side} {rail[1]} rail: " +
-                                  (f"set the power module's {side} jumper" if module else
-                                   "wire it from a part that does"))
+                raise ValueError (f"nothing feeds the {side} {rail[1]} rail: wire it from a part "
+                                  f"that does")
             self.last = max (self.last, 63)
             links.append (self._power_wire (None, a, b))
         # Power first in the build steps, the links after it.
@@ -1051,11 +1047,10 @@ class Bench:
                 return self._carries (net, source)
         return False
 
-    # Whether a net is fed with GND, 5V or 3.3V: by the Mega's pin, or by a
-    # power module's leg; a module that only uses it doesn't count.
+    # Whether a net is fed with GND, 5V or 3.3V: by the Mega's pin, or by the
+    # power module's; a module that only uses it doesn't count.
     def _carries (self, net, source):
-        leg = {"GND": "GND", "5V": "5 V", "3.3V": "3.3 V"}[source]
-        feeds = {m for m in self._sources () if m.endswith (": " + leg)}
+        feeds = {m for m, gives in self._sources ().items () if gives == source}
         return f"pin {source}" in net or bool (feeds & net)
 
     # A reading to take with a multimeter on DC volts, between the red
@@ -1418,11 +1413,12 @@ class Bench:
             groups.setdefault (find (member), set ()).add (member)
         return list (groups.values ())
 
-    # Legs that feed power, such as the power module's 5 V, listed with the
-    # Mega's pins.
+    # Module pins that feed power, such as the power module's 5V, listed with
+    # the Mega's pins: {net member: "GND", "5V" or "3.3V"}.
     def _sources (self):
-        names = self._names ()
-        return {f"{names[id (part)]}: {leg}" for part in self.parts for leg in part.sources}
+        return {f"{placed.title}: {pin.label ()}": placed.kind.sources[pin.name]
+                for placed in self.modules.values () for pin in placed.pins ()
+                if pin.name in placed.kind.sources}
 
     # The circuit point by point: every junction that joins two or more
     # things, in the order current meets them walking out from each pin.

@@ -11,7 +11,7 @@
 bench = Bench ("A DC motor on an L293D (enable 4, forward 8, backward 9), powered from the "
                "breadboard power module, with a button on 22 and a knob on A0", columns=(1, 63))
 
-bench.power_module ("right", top="off", bottom="5V")
+bench.power_module ()
 
 bench.home_button ("22")
 

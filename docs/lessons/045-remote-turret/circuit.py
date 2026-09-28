@@ -24,7 +24,7 @@ turret = Bench ("Board B: a servo on pin 44 carrying an ultrasonic sensor on 14 
                 "an L293D (4, 8, 9), both powered from the breadboard power module, and the LoRa "
                 "modem on Serial2 (pins 16 and 17)", columns=(1, 63), sketch="Turret")
 
-turret.power_module ("right", top="off", bottom="5V")
+turret.power_module ()
 
 turret.home_ultrasonic ()
 

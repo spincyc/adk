@@ -54,7 +54,6 @@ def spots_round (box, text, size, first="above", gap=2.5):
 
 class Part:
     name = "part"
-    sources = ()                    # legs that feed power, listed like the Mega's pins
     blocks = True                   # wires go round its body
     # How a sketch claims a Mega pin wired to its legs: "output" to drive
     # it, "input" to read it, or None when that isn't the part's to say.
@@ -727,118 +726,6 @@ class Display (Chip):
 
     def _dot (self, pencil, x, y, lit):
         pencil.spot (x, y, 2.8, "#ff4a3a" if lit else "#dcd8cf")
-
-
-class PowerModule (Part):
-    # The breadboard power supply: it plugs into both pairs of rails at one
-    # end of the board, its barrel jack and USB socket hanging over the end.
-    # Each side has its own jumper: 5 V, 3.3 V or off; its GND is always on.
-    blocks = False                  # it is low: wires may lie over it
-    LENGTH, OVERHANG = 1.3 * DPI, 0.3 * DPI
-    SETTINGS = {"5V": "5 V", "3.3V": "3.3 V", "off": None}
-
-    def __init__ (self, end, columns, top="5V", bottom="5V"):
-        for side in (top, bottom):
-            if side not in self.SETTINGS:
-                raise ValueError (f"a power module's jumper is on 5V, 3.3V or off, not {side!r}")
-        self.end, self.columns, self.top, self.bottom = end, columns, top, bottom
-        self.name = "power module"
-        self.sources = tuple ({self.SETTINGS[s] for s in (top, bottom) if self.SETTINGS[s]}) + ("GND",)
-
-    # A rail pair switched off still has its pins in the + rail, joined to
-    # nothing.
-    def legs (self):
-        legs = []
-        for side, setting, plus, minus in (("top", self.top, "T+", "T-"),
-                                           ("bottom", self.bottom, "B+", "B-")):
-            voltage = self.SETTINGS[setting] or f"{side} + pin, switched off"
-            legs += [(voltage, f"{plus}{column}") for column in self.columns]
-            legs += [("GND", f"{minus}{column}") for column in self.columns]
-        return legs
-
-    # Its outline: sign is -1 when it hangs off the left end.
-    def frame (self, bench):
-        sign = -1 if self.end == "left" else 1
-        xs = [bench.hole_xy (f"T+{column}")[0] for column in self.columns]
-        near = (max if sign < 0 else min) (xs) - sign * 18
-        far = near + sign * self.LENGTH
-        _, top = bench.hole_xy (f"T+{self.columns[0]}")
-        _, bottom = bench.hole_xy (f"B-{self.columns[0]}")
-        return sign, near, far, top - 13, bottom + 13
-
-    def footprint (self, bench):
-        sign, near, far, top, bottom = self.frame (bench)
-        return [("rect", min (near, far), top, max (near, far), bottom)]
-
-    def box (self, bench):
-        sign, near, far, top, bottom = self.frame (bench)
-        outer = far + sign * self.OVERHANG
-        return min (near, outer), top, max (near, outer), bottom
-
-    def shapes (self, bench):
-        return [("rect", *self.box (bench))]
-
-    def labels (self, bench):
-        sign, near, far, top, bottom = self.frame (bench)
-        size = bench.label_size
-        x = (near + far) / 2 + sign * 30
-        spots = [(x, top - 4 - size * 0.26, "middle", 0), (x, bottom + 4 + size * 0.8, "middle", 4)]
-        return [Label (self.name, spots, (x, top))]
-
-    # Drawn beneath the wires, which lie over it.
-    def draw (self, pencil, bench):
-        sign, near, far, top, bottom = self.frame (bench)
-        x = lambda d: near + sign * d
-        left, right = min (near, far), max (near, far)
-        for _, hole in self.legs ():
-            hx, hy = bench.hole_xy (hole)
-            pencil.tint ([(hx - 2.2, hy - 2.2), (hx + 2.2, hy - 2.2), (hx + 2.2, hy + 2.2),
-                          (hx - 2.2, hy + 2.2)], "#1d1d1d", layer="shade")
-        pencil.solid (rounded (left, top, right - left, bottom - top, 4), "#d3dde9", layer="crisp")
-        pencil.tint (rounded (left, top, right - left, bottom - top, 4), "#c5d4e6", layer="shade")
-        pencil.rect (left, top, right - left, bottom - top, width=1.0, radius=4, layer="ink")
-        for _, hole in self.legs ():
-            hx, hy = bench.hole_xy (hole)
-            pencil.tint ([(hx - 3, hy - 3), (hx + 3, hy - 3), (hx + 3, hy + 3), (hx - 3, hy + 3)],
-                         "#c9c3b0", layer="shade")
-            pencil.rect (hx - 3, hy - 3, 6, 6, width=0.6, tone=0.6, layer="ink", passes=1)
-        # Each side's output jumper, three pins in a row: its cap joins the
-        # pair by 5V or the pair by 3.3V, or is parked on the end pin, off.
-        for setting, y, below in ((self.top, top + 42, True), (self.bottom, bottom - 42, False)):
-            for index in range (3):
-                pencil.spot (x (22 + index * 10), y, 1.8, "#9a9a9a", layer="shade")
-            cap = {"5V": (17, 37), "3.3V": (27, 47), "off": (38, 47)}[setting]
-            pencil.tint ([(x (cap[0]), y - 4.5), (x (cap[1]), y - 4.5), (x (cap[1]), y + 4.5),
-                          (x (cap[0]), y + 4.5)], "#1f1f1f", layer="shade")
-            for word, along, rise in (("5V", 10, 2.2), ("3.3V", 58, 2.2),
-                                      ("OFF", 32, 12 if below else -7)):
-                chosen = setting == ("off" if word == "OFF" else word)
-                pencil.text (x (along), y + rise, word, size=6 if chosen else 5, kind="silk",
-                             weight="bold" if chosen else "normal", tone=0.95 if chosen else 0.55)
-        cy = (top + bottom) / 2
-        # The regulators, switch and LED, the USB socket and the barrel jack.
-        for y in (cy - 40, cy + 28):
-            pencil.tint ([(x (60), y), (x (80), y), (x (80), y + 12), (x (60), y + 12)], "#2e2e2e",
-                         layer="shade")
-        pencil.tint ([(x (92), cy - 14), (x (108), cy - 14), (x (108), cy + 2), (x (92), cy + 2)],
-                     "#f1efe8", layer="shade")
-        pencil.circle (x (100), cy - 6, 5, width=0.9, layer="ink", passes=1)
-        pencil.spot (x (100), cy + 14, 3, "#8fd18a", layer="shade")
-        usb = sorted ((x (104), x (self.LENGTH + 12)))
-        pencil.tint ([(usb[0], cy + 38), (usb[1], cy + 38), (usb[1], cy + 70), (usb[0], cy + 70)],
-                     METAL, layer="shade")
-        pencil.rect (usb[0], cy + 38, usb[1] - usb[0], 32, width=1.2, layer="ink")
-        pencil.hatch (usb[0] + 2, cy + 42, usb[1] - usb[0] - 4, 24, gap=2.4, angle=0, tone=0.3,
-                      layer="ink")
-        jack = sorted ((x (78), x (self.LENGTH + self.OVERHANG)))
-        pencil.tint ([(jack[0], cy - 86), (jack[1], cy - 86), (jack[1], cy - 44), (jack[0], cy - 44)],
-                     "#2a2a2a", layer="shade")
-        pencil.rect (jack[0], cy - 86, jack[1] - jack[0], 42, width=1.0, layer="ink")
-        pencil.spot (x (self.LENGTH + self.OVERHANG - 6), cy - 65, 7, "#555555", layer="shade")
-        for rail, hole in (("+", "T+"), ("−", "T-"), ("+", "B+"), ("−", "B-")):
-            _, hy = bench.hole_xy (f"{hole}{self.columns[0]}")
-            pencil.text (x (46), hy + 4, rail, size=11, kind="silk", weight="bold")
-        pencil.text ((near + far) / 2, cy + 2, "MB102", size=8, kind="silk", tone=0.6)
 
 
 class HeaderModule (Part):

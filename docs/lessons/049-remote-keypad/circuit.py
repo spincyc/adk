@@ -23,7 +23,7 @@ inside = Bench ("Board B: a servo latch on pin 44 powered by the power module, t
                 "pins 5, 6 and 7, and the LoRa modem on Serial3 (pins 14 and 15)",
                 columns=(1, 63), sketch="Inside")
 
-inside.power_module ("right", top="off", bottom="5V")
+inside.power_module ()
 
 inside.home_rgb_led ()
 

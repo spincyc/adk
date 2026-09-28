@@ -14,7 +14,7 @@ bench = Bench ("Two LoRa modems: A on pins 18 and 19, B on pins 14 and 15, each 
                "the power module with its RXD through a 1 kΩ and 2 kΩ divider, a button on "
                "pin 23 and the LCD on pins 31 to 36", columns=(1, 63))
 
-bench.power_module ("right", top="off", bottom="3.3V")
+bench.power_module ("3.3V")
 bench.screen (text=("Press 1", "-32 dBm  9 dB"))
 
 bench.home_button ("23")

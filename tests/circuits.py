@@ -144,8 +144,8 @@ for hole, what in (("j38", "the button on 23"), ("f51", "the buzzer"), ("a41", "
                    ("f57", "the knob")):
     expect (f"{what} beside the screen, in {hole}", hole in beside.used, True)
 
-plain = Bench ("test", columns=(1, 63)).power_module ("right", top="off", bottom="5V")
-bridged = Bench ("test", columns=(1, 63)).power_module ("right", top="off", bottom="5V")
+plain = Bench ("test", columns=(1, 63)).power_module ()
+bridged = Bench ("test", columns=(1, 63)).power_module ()
 plain.home_servo ()
 bridged.home_modem ().home_servo ()
 expect ("the servo lower beside the modem",

@@ -8,7 +8,7 @@
 bench = Bench ("A servo on pin 44 powered by the breadboard power module, a knob on A0, and the "
                "screen from Lesson 13", columns=(1, 63))
 
-bench.power_module ("right", top="off", bottom="5V")
+bench.power_module ()
 
 bench.screen (text=("Knob   90°", "Needle 90°"), risers=(4.8, 0.05))
 

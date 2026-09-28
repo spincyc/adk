@@ -14,7 +14,7 @@ door = Bench ("Board A: an RFID reader on the SPI pins and 45, a tap sensor on A
               "button on 22, an active buzzer on 12, and the LoRa modem on Serial3 (pins 14 and "
               "15), powered at 3.3 V by the power module", columns=(1, 63), sketch="Door")
 
-door.power_module ("right", top="off", bottom="3.3V")
+door.power_module ("3.3V")
 
 door.home_button ("22")
 
@@ -35,7 +35,7 @@ inside = Bench ("Board B: the LCD on pins 31 to 36, a button on 23, a passive bu
                 "servo latch on 44 powered by the power module, and the LoRa modem on Serial3 "
                 "(pins 14 and 15)", columns=(1, 63), sketch="Inside")
 
-inside.power_module ("right", top="off", bottom="5V")
+inside.power_module ()
 inside.screen (text=("Welcome home,", "Ada"))
 
 inside.home_button ("23")

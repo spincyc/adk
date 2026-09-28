@@ -339,7 +339,10 @@ class Drawing:
                 x, y, anchor, _ = label.spots[0]
                 router.cost (("rect", *text_box (x, y, label.text, 10 * label.size, anchor)), 10)
         for placed in bench.modules.values ():
-            router.block (("rect", *placed.reach_box ()))
+            if placed.kind.blocks:
+                router.block (("rect", *placed.reach_box ()))
+            else:
+                router.cost (("rect", *placed.reach_box ()), 5)
             router.block (("rect", *placed.title_box ()))
         return router
 
@@ -399,7 +402,7 @@ class Drawing:
                 if shape_crosses (shape, (x1, y1), (x2, y2)):
                     return False
         for placed in bench.modules.values ():
-            if segment_meets_box ((x1, y1), (x2, y2), placed.reach_box (), 2):
+            if placed.kind.blocks and segment_meets_box ((x1, y1), (x2, y2), placed.reach_box (), 2):
                 return False
         return True
 

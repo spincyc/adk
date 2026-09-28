@@ -28,7 +28,7 @@ turntable = Bench ("Board B: a stepper motor's driver on pins A8 to A11, powered
                    "breadboard power module, and a LoRa modem on pins 14 and 15, its VDD from "
                    "the Mega's 3.3V pin", columns=(1, 63), sketch="Turntable")
 
-turntable.power_module ("right", top="off", bottom="5V")
+turntable.power_module ()
 turntable.home_modem ()
 turntable.home_stepper ()
 turntable.closeup (1, 63)

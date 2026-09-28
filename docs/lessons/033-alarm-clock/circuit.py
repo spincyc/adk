@@ -23,7 +23,7 @@ bench.home_button ("23", via=[(4.4, 0.85), (4.4, -1.7), (9.1, -1.7)])
 
 bench.home_buzzer ("passive", via=[(1.9, -2.4), (10.4, -2.4)])
 
-bench.power_module ("right", top="off", bottom="5V")
+bench.power_module ()
 # The driver without its usual + and − wires, which come in below; the +
 # wire rises between B-3 and B-4 to reach B+4.
 bench.home_stepper (powered=False)
