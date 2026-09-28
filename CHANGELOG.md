@@ -23,7 +23,9 @@ A new start, built on the library's original 2021 design.
   serial ports, `LoraModem` (REYAX RYLR896), `LoraLink` (Ebyte E32) and
   `MeshNode` (a Meshtastic board). Their 3.3 V pins are only ever pulled low
   or reached through a divider, and the E32 is set to a license-free channel
-  and power at every start. `IrTransmitter` sends the kit remote's codes
+  and power at every start. The 433 MHz transmitter rests after every
+  message, 30 times as long as it took and never under 10 s, as the FCC
+  and ISED ask of a gadget that sends data (`isReady ()`, `restLeft ()`). `IrTransmitter` sends the kit remote's codes
   from the 37-in-1 kit's IR LED, and `SoundSensor` hears how loud a room is.
 - **Two boards.** `Bridge` keeps a few named numbers the same on two boards
   over any radio that is a `Link`: a change goes at once, at most ten
@@ -51,9 +53,16 @@ A new start, built on the library's original 2021 design.
   with pencil drawings generated from one description of the build and
   checked against the lesson's code. Wires route round parts and labels;
   every part has a home on the breadboard, so each lesson's steps say what
-  to keep from the one before, what to take out and what to add. On a
-  phone the drawings scroll sideways at a legible size; lines stay near
-  seventy characters; printing works in either theme.
+  to keep from the one before, what to take out and what to add. The
+  drawings follow the kit: the Mega's headers and the breadboard at their
+  real sizes, modules with their pins in their real order, every wire a
+  color the kit has, the potentiometers across the middle gap, the rotary
+  encoder standing in the breadboard where there's room, and the power
+  module beside the board, since its pins fit the kit's breadboard the
+  right way round only at the Mega's end. Each parts list counts the
+  wires its build needs. On a phone the drawings scroll sideways at a
+  legible size; lines stay near seventy characters; printing works in
+  either theme. A rebuild draws only what changed, every lesson at once.
 - **Measure it.** Every lesson ends with readings to take with a
   multimeter, each drawn with the probes on the exact holes and the reading
   expected, to turn the lesson's idea into something you can see.
