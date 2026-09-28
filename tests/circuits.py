@@ -14,7 +14,7 @@ import tempfile
 ROOT = os.path.dirname (os.path.dirname (os.path.abspath (__file__)))
 sys.path.insert (0, os.path.join (ROOT, "docs", "_theme"))
 
-from bench import Bench, load  # noqa: E402
+from bench import Bench, load, pin_words  # noqa: E402
 from drawing import Drawing  # noqa: E402
 
 failures = []
@@ -154,6 +154,30 @@ expect ("the servo lower beside the modem",
 sensing = finished (Bench ("test", columns=(1, 50)).home_ultrasonic ().home_modem ())
 expect ("the modem on Serial2 beside the ultrasonic sensor",
         {"14", "15", "16", "17"} <= sensing.signal_pins (), True)
+
+# The build's stages: a home_* call is one, named for its part and the
+# pins it wires; steps in no stage are named for their first part other
+# than a resistor, and a module placed among them starts another; stage ()
+# names the steps after it.
+def titles (bench):
+    stages = []
+    for _, _, step in bench.items:
+        if step.stage not in stages:
+            stages.append (step.stage)
+    return [bench.stage_title (stage) for stage in stages]
+
+
+staged = Bench ("test", columns=(1, 20)).home_led ("26", "red")
+staged.wire ("27", "j12").resistor ("220 Ω", "g12", "e12")
+staged.led ("yellow", anode="b12", cathode="b13").wire ("a13", "B-13")
+staged.module ("lora_modem", "modem", at=(6.0, 3.45), facing="up").wire ("modem.GND", "B-15")
+staged.stage ("the link").wire ("T-18", "B-18")
+expect ("stage titles", titles (finished (staged)),
+        ["power to the rails", "the red LED on pin 26", "the yellow LED on pin 27",
+         "the LoRa modem", "the link"])
+expect ("pins in words", pin_words ({"36", "A0", "9", "31", "33", "10", "32", "34", "35"}),
+        "pins 9, 10, 31–36 and A0")
+expect ("a pin in words", pin_words ({"A3"}), "pin A3")
 
 if failures:
     sys.exit ("tests/circuits.py:\n  " + "\n  ".join (failures))

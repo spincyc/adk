@@ -27,6 +27,7 @@ bench.power_module ()
 # The driver without its usual + and − wires, which come in below; the +
 # wire rises between B-3 and B-4 to reach B+4.
 bench.home_stepper (powered=False)
+bench.stage ("the stepper driver's power")
 bench.wire ("stepper.+", "B+4", via=[(3.56, 3.65), (5.65, 3.65), (5.65, 2.5)])
 bench.wire ("stepper.−", "B-4", via=[(3.66, 3.75), (5.7, 3.75)])
 

@@ -33,6 +33,7 @@ door.wire ("17", "tap.S")
 door.wire ("tap.+", "T+27")
 door.wire ("tap.−", "T-28")
 
+door.stage ("the tilt switch")
 door.tilt_switch ("c32", "c33")
 door.wire ("A14", "a32")
 door.wire ("a33", "B-33")

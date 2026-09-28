@@ -235,7 +235,7 @@
     }
 
     .md-typeset .lesson-body > :is(.bench-figure, .meters, .md-typeset__scrollwrap,
-                                   .highlight:has(> .filename)) {
+                                   .build-steps, .highlight:has(> .filename)) {
         width: var(--adk-wide);
         max-width: none;
         margin-inline: calc((100% - var(--adk-wide)) / 2);
@@ -243,6 +243,11 @@
 
     /* A sketch's lines run to 80 characters. */
     .lesson-body > .highlight:has(> .filename) {
+        --adk-wide: min(100cqi, max(100%, 45em));
+    }
+
+    /* The build steps are as wide as the sketch. */
+    .lesson-body > .build-steps {
         --adk-wide: min(100cqi, max(100%, 45em));
     }
 
@@ -558,34 +563,274 @@
     border-bottom: 1.5px solid currentcolor;
 }
 
-/* Build steps: numbered circles down the page, like a checklist. */
-.md-typeset .build-steps ol {
-    counter-reset: step;
-    list-style: none;
-    margin: 0 0 1.25rem;
+/* Build steps: a board's build in stages, each a part and its wires under
+   a heading that names them and the pins they use. Every stage is a small
+   table with the same columns, so holes and pins line up all the way down,
+   and the thing each step puts in is drawn between its two holes. A stage
+   built before starts folded. */
+.md-typeset .build-steps {
+    margin: 1rem 0 1.5rem;
+}
+
+.md-typeset details.stage {
+    margin: 0 0 1rem;
     padding: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    font-size: inherit;
+    background: none;
+    box-shadow: none;
 }
 
-.md-typeset .build-steps ol > li {
-    position: relative;
-    margin: 0 0 0.45rem;
-    padding: 0.05rem 0 0 2rem;
-    counter-increment: step;
+.md-typeset details.stage > summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.7rem;
+    margin: 0;
+    padding: 0.3rem 0 0.3rem 1.3rem;
+    border-bottom: 1.5px solid var(--adk-ink);
+    border-radius: 0;
+    background: none;
+    font-size: 0.82rem;
 }
 
-.md-typeset .build-steps ol > li::before {
-    content: counter(step);
-    position: absolute;
-    top: 0.1rem;
+.md-typeset details.stage > summary::before {
+    display: none;
+}
+
+/* Material's chevron, on the left, turning as the stage opens. */
+.md-typeset details.stage > summary::after {
+    top: 0.5rem;
+    right: auto;
     left: 0;
-    width: 1.35rem;
-    height: 1.35rem;
+    width: 0.9rem;
+    height: 0.9rem;
+    background-color: currentcolor;
+}
+
+.md-typeset .stage-count {
+    font-size: 0.72rem;
+    font-weight: 400;
+    color: var(--adk-muted);
+}
+
+.md-typeset details.stage.out > summary {
+    border-bottom-style: dashed;
+}
+
+.md-typeset table.steps {
+    display: table;
+    width: 100%;
+    margin: 0;
+    table-layout: fixed;
+    border-collapse: collapse;
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+.md-typeset table.steps col.step {
+    width: 2.4rem;
+}
+
+.md-typeset table.steps col.what {
+    width: 22%;
+}
+
+.md-typeset table.steps col.link {
+    width: 15%;
+}
+
+.md-typeset table.steps td {
+    padding: 0.5em 0.6em;
+    border-bottom: 1px solid var(--adk-rule);
+    text-align: left;
+    vertical-align: top;
+}
+
+.md-typeset table.steps td.step {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.md-typeset table.steps small {
+    display: block;
+    color: var(--adk-muted);
+    font-size: 0.88em;
+}
+
+/* The step's number in a circle. */
+.md-typeset table.steps .tick {
+    display: block;
+    width: 1.45rem;
+    height: 1.45rem;
+    padding: 0;
     border: 1.5px solid var(--adk-ink);
     border-radius: 50%;
+    color: inherit;
+    background: none;
+    font: inherit;
     font-size: 0.72rem;
     font-weight: 700;
     line-height: 1.2rem;
     text-align: center;
+}
+
+.md-typeset .stage.out table.steps .tick {
+    border-style: dashed;
+}
+
+/* A part with more legs, or a module beside the board: its places run
+   across From, the picture and To, each with what goes there beside it. */
+.md-typeset table.steps .places {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1.2em;
+}
+
+.md-typeset table.steps .places .place {
+    white-space: nowrap;
+}
+
+/* A short named place keeps a column's room, so a screen's sixteen pins
+   line up in rows. */
+.md-typeset table.steps .places .place:has(small) {
+    min-width: 4.4em;
+}
+
+.md-typeset table.steps .places small {
+    display: inline;
+    margin-left: 0.3em;
+}
+
+/* The pictures: a jumper in its color with a dark plug at each end, a
+   part's own lead with bare tips, a resistor with its bands, an LED lit in
+   its color, and any other part's body on its two legs. The color's name
+   goes beneath. */
+.md-typeset table.steps td.link {
+    text-align: center;
+}
+
+/* From sits against the picture, so a row reads "pin 22 ━━ j2". */
+.md-typeset table.steps td.from {
+    text-align: right;
+}
+
+.md-typeset table.steps td.link small {
+    margin-top: 0.1em;
+}
+
+.md-typeset .wire,
+.md-typeset .resistor,
+.md-typeset .led,
+.md-typeset .legs {
+    display: block;
+    position: relative;
+    height: 0.9em;
+    margin-top: 0.3em;
+}
+
+.md-typeset .wire {
+    height: 0.5em;
+    margin: 0.5em 0 0.2em;
+    border-radius: 0.2em;
+    background: linear-gradient(to right, #333 0 0.55em, var(--swatch) 0.55em calc(100% - 0.55em),
+                                #333 0);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--adk-ink) 40%, transparent);
+}
+
+.md-typeset .wire.lead {
+    height: 0.35em;
+    background: linear-gradient(to right, #a8a8a4 0 0.4em, var(--swatch) 0.4em calc(100% - 0.4em),
+                                #a8a8a4 0);
+}
+
+/* A part's legs: a grey line through the middle. */
+.md-typeset :is(.resistor, .led, .legs) {
+    background: linear-gradient(#a8a8a4, #a8a8a4) center / 100% 1.5px no-repeat;
+}
+
+.md-typeset .resistor {
+    display: flex;
+    justify-content: center;
+}
+
+.md-typeset .bands {
+    display: inline-flex;
+    gap: 0.15em;
+    height: 100%;
+    padding: 0 0.3em;
+    border-radius: 0.3em;
+    background: #a9c3d8;
+}
+
+.md-typeset .bands span {
+    width: 0.2em;
+    background: var(--swatch);
+}
+
+.md-typeset .bands span:last-child {
+    margin-left: 0.25em;
+}
+
+.md-typeset :is(.led, .legs)::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 0.9em;
+    height: 0.9em;
+    margin-left: -0.45em;
+}
+
+.md-typeset .led::after {
+    border-radius: 50% 50% 45% 45%;
+    background: var(--swatch);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--adk-ink) 45%, transparent),
+                0 0 0.5em var(--swatch);
+}
+
+.md-typeset .legs::after {
+    width: 1.1em;
+    margin-left: -0.55em;
+    border-radius: 0.25em;
+    background: var(--adk-ink-soft);
+}
+
+/* On a phone the columns close up, so From and To stay in sight. */
+@media screen and (max-width: 29.984375em) {
+    .md-typeset table.steps {
+        font-size: 0.72rem;
+    }
+
+    .md-typeset table.steps td {
+        padding: 0.45em 0.35em;
+    }
+
+    .md-typeset table.steps col.step {
+        width: 1.9rem;
+    }
+
+    .md-typeset table.steps col.what {
+        width: 23%;
+    }
+
+    .md-typeset table.steps col.link {
+        width: 16%;
+    }
+
+    .md-typeset table.steps .what {
+        hyphens: auto;
+    }
+
+    .md-typeset table.steps .places {
+        column-gap: 0.8em;
+    }
+
+    .md-typeset table.steps .places .place:has(small) {
+        min-width: 3.8em;
+    }
 }
 
 /* The circuit, point by point: a compact ruled list. */
@@ -922,6 +1167,20 @@
     .md-typeset details,
     .lesson-kit,
     .md-typeset li {
+        break-inside: avoid;
+    }
+
+    /* A long build runs on over pages a step at a time, each stage's
+       heading kept with its first step. */
+    .md-typeset :is(details.stage, table.steps) {
+        break-inside: auto;
+    }
+
+    .md-typeset details.stage > summary {
+        break-after: avoid;
+    }
+
+    .md-typeset table.steps tr {
         break-inside: avoid;
     }
 

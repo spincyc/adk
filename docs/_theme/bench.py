@@ -66,6 +66,11 @@ pin of that kind nearest the wire's other end; these names pick one:
     GND.long                the inner GND at its bottom end
     5V.long2, GND.long2     their outer partners, kept for the rails
 
+The build steps come in stages, a part and its wires under one heading:
+each home_* call is one, and stage (name) names the steps after it, up to
+the next home_* call or stage (). Other steps are named for their first
+part other than a resistor, and a module placed among them starts another.
+
 measure (label, red=..., black=..., expect=..., when=...) records a reading
 to take with a multimeter set to DC volts: each probe on a hole (main or
 rail) that holds or shares a strip with something in the build, on a Mega
@@ -87,6 +92,7 @@ spacing are where they really are.
 
 import functools
 import hashlib
+import inspect
 import math
 import re
 from typing import NamedTuple
@@ -167,6 +173,48 @@ class MegaPin (NamedTuple):
     outer: bool = False
 
 
+# One build step, as a row of the steps table: what goes in, with a note on
+# it; the colors it is picked out by (a wire's or an LED's, a resistor's
+# bands); and its places, each a hole or pin with what tells it apart. Two
+# places are the step's From and To; more, or spread ones, fill both.
+class Step (NamedTuple):
+    what: str
+    places: tuple
+    note: str = ""
+    colors: tuple = ()
+    spread: bool = False
+    stage: object = None
+
+
+# A stage of the build: a part and the wires that go with it, as a home_*
+# call lays them, or the steps after stage () in circuit.py. Its name is
+# the part's; the pins it wires are added to it (stage_title ()). Steps in
+# no stage make one of their own, named for their first part other than a
+# resistor, and each module placed there starts another.
+class Stage:
+    def __init__ (self, name=None):
+        self.name = name
+
+
+# A home_* call's steps make one stage, named for its part: "the {color}
+# LED" names home_led ("26", "red")'s "the red LED".
+def staged (name):
+    def wrap (build):
+        signature = inspect.signature (build)
+
+        @functools.wraps (build)
+        def staging (self, *args, **options):
+            asked = signature.bind (self, *args, **options)
+            asked.apply_defaults ()
+            self._stage = Stage (name.format (**asked.arguments))
+            try:
+                return build (self, *args, **options)
+            finally:
+                self._stage = None
+        return staging
+    return wrap
+
+
 # The header pins where Arduino's Mega 2560 Rev3 board file puts them, in
 # inches from the board's corner by the USB socket: the shield headers as on
 # the Uno, with the 0.16 inch step between pins 8 and 7, and the power
@@ -235,10 +283,36 @@ class Bench:
         self._powering = False
         self.measurements = []
         self.screened = False           # the course's screen is on the board
+        self._stage = None              # the stage steps join now
 
-    def _step (self, text):
+    def _step (self, step):
         kind, thing = self._last
-        self.items.append ((kind, thing, text))
+        self._stage = self._stage or Stage ()
+        self.items.append ((kind, thing, step._replace (stage=self._stage)))
+
+    # The steps that follow, up to the next home_* call or stage (), are
+    # one stage of the build, named for what they build: "the 74HC595".
+    def stage (self, name):
+        self._stage = Stage (name)
+        return self
+
+    # A stage's title: its name, or its first part's, and the pins it wires.
+    def stage_title (self, stage):
+        items = [(kind, thing) for kind, thing, step in self.items if step.stage is stage]
+        name = stage.name
+        if name is None:
+            things = [thing for kind, thing in items if kind != "wire"]
+            main = next ((thing for thing in things if not isinstance (thing, Resistor)),
+                         things[0] if things else None)
+            name = f"the {getattr (main, 'title', None) or main.name}" if main else "wires"
+        pins = {canonical (end[1]) for kind, wire in items if kind == "wire" for end in wire[:2]
+                if end[0] == "pin" and numbered (canonical (end[1]))}
+        return name + (f" on {pin_words (pins)}" if pins else "")
+
+    # A leg's hole in a step, with which leg it is and which rail.
+    def _at (self, hole, leg=""):
+        where, rail = self.place (("hole", hole))
+        return where, ", ".join (words for words in (leg, rail) if words)
 
     # Where things are ---------------------------------------------------
 
@@ -286,26 +360,28 @@ class Bench:
 
     def resistor (self, value, a, b):
         self._add (Resistor (value, a, b))
-        self._step (f"The {value} resistor ({', '.join (bands_for (value))}) "
-                           f"from {a} to {b}.")
+        self._step (Step (f"{value} resistor", (self._at (a), self._at (b)),
+                          colors=tuple (bands_for (value))))
         return self
 
     def led (self, color, anode, cathode):
         self._add (Led (color, anode, cathode))
-        self._step (f"The {color} LED: long leg in {anode}, short leg in {cathode}.")
+        self._step (Step ("LED", (self._at (anode, "long leg"), self._at (cathode, "short leg")),
+                          colors=(color,)))
         return self
 
     def button (self, column):
         part = Button (column)
         self._add (part)
-        self._step (f"A push button across the middle gap, legs in "
-                           f"{', '.join (part.holes ())}.")
+        self._step (Step ("push button", tuple (self._at (hole) for hole in part.holes ()),
+                          "across the middle gap"))
         return self
 
     def rgb_led (self, red, common, green, blue):
         self._add (RgbLed (red, common, green, blue))
-        self._step (f"The RGB LED: red leg in {red}, the longest leg (common, −) in {common}, "
-                           f"green in {green}, blue in {blue}.")
+        self._step (Step ("RGB LED", (self._at (red, "red leg"),
+                                      self._at (common, "the longest leg (common, −)"),
+                                      self._at (green, "green leg"), self._at (blue, "blue leg"))))
         return self
 
     def buzzer (self, positive, negative, kind="active"):
@@ -319,8 +395,7 @@ class Bench:
         self._add (Buzzer (positive, negative, kind))
         # A new active buzzer's + leg is also the longer; follow the mark on either.
         mark = "+ mark and longer leg" if kind == "active" else "+ mark"
-        self._step (f"The {kind} buzzer, its {mark} in {positive}, the other leg in "
-                    f"{negative}.")
+        self._step (Step (f"{kind} buzzer", (self._at (positive, mark), self._at (negative))))
         return self
 
     # The kit's potentiometer has its legs in a triangle, the wiper on its
@@ -337,8 +412,10 @@ class Bench:
             raise ValueError ("a potentiometer's outer legs stand two columns apart in row e or "
                               "f, its wiper between them across the gap in row g or d")
         self._add (Potentiometer (left, wiper, right, value))
-        self._step (f"The {value} potentiometer across the middle gap: its two outer legs "
-                    f"in {left} and {right}, the wiper, on its own, in {wiper}.")
+        self._step (Step (f"{value} potentiometer", (self._at (left, "outer leg"),
+                                                     self._at (wiper, "wiper, on its own"),
+                                                     self._at (right, "outer leg")),
+                          "across the middle gap"))
         return self
 
     def photoresistor (self, a, b):
@@ -353,8 +430,8 @@ class Bench:
     def _two_legs (self, kind, a, b):
         self._add (TwoLegs (kind, a, b))
         # The tilt switch reads its tilt, so it stands straight up.
-        upright = ", standing upright" if kind == "tilt switch" else ""
-        self._step (f"The {kind}{upright}, legs in {a} and {b}, either way round.")
+        upright = "standing upright, " if kind == "tilt switch" else ""
+        self._step (Step (kind, (self._at (a), self._at (b)), f"{upright}either way round"))
         return self
 
     # A DIP chip across the middle gap: pin 1 in e<first>, pins running
@@ -362,14 +439,12 @@ class Bench:
     # package).
     def chip (self, name, pins=None, first=1, span=3):
         pins = list (pins or CHIPS[name])
-        holes, rows = self._straddle (len (pins), first, span)
+        holes, _ = self._straddle (len (pins), first, span)
         self._add (Chip (name, pins, holes))
         half = len (pins) // 2
-        self._step (
-            f"The {name} across the middle gap, its notch to the left: pin 1 ({pins[0]}) in "
-            f"{holes[0]}, pins 1–{half} along row {rows[0]} to {holes[half - 1]}, and pins "
-            f"{half + 1}–{len (pins)} back along row {rows[1]} from {holes[half]} to pin "
-            f"{len (pins)} ({pins[-1]}) in {holes[-1]}.")
+        sides = ((f"{holes[0]}–{holes[half - 1]}", f"pins 1 ({pins[0]}) to {half}"),
+                 (f"{holes[half]}–{holes[-1]}", f"pins {half + 1} to {len (pins)} ({pins[-1]})"))
+        self._step (Step (name, sides, "across the middle gap, its notch to the left", spread=True))
         return self
 
     def digit (self, first, shows=None):
@@ -383,10 +458,10 @@ class Bench:
         labels = [segment_label (pin) for pin in pins]
         self._add (Display (name, pins, labels, holes, width, digits, shows))
         half = len (pins) // 2
-        self._step (
-            f"The {name} across the middle gap, decimal point{'s' if digits > 1 else ''} at the "
-            f"bottom: pins 1–{half} in {holes[0]}–{holes[half - 1]} (pin 1, {labels[0]}, on the "
-            f"left) and pins {half + 1}–{len (pins)} in {holes[half]}–{holes[-1]}.")
+        sides = ((f"{holes[0]}–{holes[half - 1]}", f"pins 1 ({labels[0]}) to {half}"),
+                 (f"{holes[half]}–{holes[-1]}", f"pins {half + 1} to {len (pins)}"))
+        self._step (Step (name, sides, f"across the middle gap, decimal point"
+                                       f"{'s' if digits > 1 else ''} at the bottom", spread=True))
         return self
 
     def _straddle (self, count, first, span):
@@ -403,12 +478,11 @@ class Bench:
     # a it lies off the bottom edge, reading the right way up.
     def lcd (self, first, row="j", text=None):
         part = self._header_part ("lcd", None, first, row, "LCD", None, {"text": text})
-        pins = ", ".join (f"{pin.name} in {hole}" for pin, hole in part.pairs ())
         edge = "bottom" if part.turned else "top"
-        self._step (
-            f"The LCD, face up, its screen lying over the {edge} edge of the board"
-            f"{'' if part.turned else ' (upside down from where you sit)'} and its 16 pins in "
-            f"{part.holes[0]}–{part.holes[-1]}: {pins}.")
+        self._step (Step ("LCD", tuple ((hole, pin.name) for pin, hole in part.pairs ()),
+                          f"face up, its screen lying over the {edge} edge of the board"
+                          f"{'' if part.turned else ', upside down from where you sit'}",
+                          spread=True))
         return self
 
     # The course's screen, at its home and wired the same in every lesson so
@@ -426,6 +500,7 @@ class Bench:
     # that many steps, and risers gives where the first rises and how far
     # apart they stand, in inches, to make room for other wires from the
     # header.
+    @staged ("the screen")
     def screen (self, first=5, text=None, lanes=0, risers=(4.45, 0.1)):
         self.screened = True
         knob, lcd = first, first + 4
@@ -481,6 +556,7 @@ class Bench:
     # An LED on 26 to 30, or the dimmable one on 3: the pin into j, 220 Ω
     # from g across the gap to e, the long leg in b, the short leg in b of
     # the next column, and a black jumper from a there to the − rail.
+    @staged ("the {color} LED")
     def home_led (self, pin, color, via=None):
         column = LED_HOMES[pin]
         self.wire (pin, f"j{column}", via=via)
@@ -492,6 +568,7 @@ class Bench:
     # A button on 22 to 25 across the gap, the pin into j of its left
     # column and a black jumper from a of its right column to the − rail.
     # Beside the screen, the button on 23 stands past it, in column 38.
+    @staged ("the button")
     def home_button (self, pin, via=None):
         column = 38 if pin == "23" and self.screened else BUTTON_HOMES[pin]
         self.wire (pin, f"j{column}", via=via)
@@ -504,6 +581,7 @@ class Bench:
     # black jumper (active) or 220 Ω (passive). Beside the four-digit
     # display it stands in column 35, clear of the wires that rise over the
     # gap in column 32; beside the screen, in column 51.
+    @staged ("the {kind} buzzer")
     def home_buzzer (self, kind, via=None):
         column = 51 if self.screened else 35 if self._has ("four-digit display") else 34
         self.wire ({"active": "12", "passive": "10"}[kind], f"j{column}", via=via)
@@ -518,6 +596,7 @@ class Bench:
     # a11, its common leg in the − rail beside the red, and 220 Ω across the
     # gap above each colored leg, its pin into j. Beside the screen it takes
     # columns 41 to 46, the same shape. via routes the three pins' wires.
+    @staged ("the RGB LED")
     def home_rgb_led (self, via=(None, None, None)):
         columns = (41, 44, 46) if self.screened else (6, 9, 11)
         for pin, column, route in zip (("5", "6", "7"), columns, via):
@@ -532,6 +611,7 @@ class Bench:
     # the top + rail, the photoresistor (on A1) or thermistor (on A2) across
     # the gap in f40 and e40, the pin into a40, 10 kΩ from c40 to c43, and
     # a black jumper from a43 to the − rail.
+    @staged ("the {sensor}")
     def home_divider (self, sensor, via=None):
         self.wire ("j40", "T+40")
         if sensor == "photoresistor":
@@ -546,6 +626,7 @@ class Bench:
     # with jumpers from j45 and j47 up to the top − and + rails, its wiper
     # in d46, and A0 into a46. Where the RGB LED or the FM radio takes those
     # columns, it stands in columns 57 to 59 instead.
+    @staged ("the knob")
     def home_knob (self, via=None):
         first = 57 if any (hole in self.used for hole in ("e46", "j45")) else 45
         self.potentiometer (f"f{first}", f"d{first + 1}", f"f{first + 2}")
@@ -563,6 +644,7 @@ class Bench:
     # its five wires rising from 18, 19, 22, the inner 5V at the top of the
     # long header and the GND beside pin 13, each in a lane of its own; lift
     # raises the lanes, in inches, above other wires from the top header.
+    @staged ("the rotary encoder")
     def home_encoder (self, above=False, lift=0.0, first=45):
         if not above:
             self.header_module ("encoder", pins=("GND", "+", "SW", "DT", "CLK"), first=first,
@@ -585,6 +667,7 @@ class Bench:
     # B+53 and − into B-54, fed by the power module's bottom rails, and its
     # signal from pin 44. On a board with the LoRa modem, whose place its
     # own overlaps, it lies lower.
+    @staged ("the servo")
     def home_servo (self, via=None):
         self.module ("servo", at=(9.85, 5.7 if "modem" in self.modules else 3.45), facing="up")
         self.wire ("servo.+", "B+53")
@@ -599,6 +682,7 @@ class Bench:
     # RX2 (17). Its VDD takes 3.3 V from power: the Mega's 3.3V pin, or a
     # rail the power module sets to 3.3 V. tx, rx, txd and supply route the
     # wires from the two pins, TXD and power.
+    @staged ("the LoRa modem")
     def home_modem (self, tx=None, rx=None, txd=None, power="3.3V", supply=None):
         send, hear = ("16", "17") if "14" in self.taken else ("14", "15")
         self.module ("lora_modem", "modem", at=(9.415, 3.45), facing="up")
@@ -616,6 +700,7 @@ class Bench:
     # screen, into RST, SCLK and SDIO, the Mega's 3.3V into its 3.3V
     # column, a black jumper from its GND column to the − rail, and 1 kΩ
     # from RST to 3.3 V along row h.
+    @staged ("the FM radio")
     def home_fm_radio (self):
         self.header_module ("fm_radio", first=45, row="j")
         self.wire ("42", "f47", via=[(4.45, 1.75), (4.45, 3.65), (10.0, 3.65)])
@@ -629,6 +714,7 @@ class Bench:
     # over the top rails: 5 V from the power header into VCC's column, pin
     # 43 into DATA's, both up from below round the bottom of the screen,
     # and a black jumper from its GND column to the − rail.
+    @staged ("the radio receiver")
     def home_rf_receiver (self):
         self.header_module ("rf_receiver", first=48, row="j")
         self.wire ("5V.power", "f48", via=[(1.85, 3.65), (10.1, 3.65)])
@@ -639,6 +725,7 @@ class Bench:
     # the middle of a divider, pin 46 into f54, 1 kΩ along row h to DAT's
     # column and 2 kΩ across the gap and down to the − rail; the Mega's
     # 3.3V into its + column, and a black jumper from its − column.
+    @staged ("the radio transmitter")
     def home_rf_transmitter (self):
         self.header_module ("rf_transmitter", first=56, row="j")
         self.wire ("46", "f54", via=[(4.25, 1.95), (4.55, 1.95), (4.55, 3.85), (10.7, 3.85)])
@@ -654,6 +741,7 @@ class Bench:
     # input pins up: CLK from 48, CS from 49, DIN from 47, GND from the −
     # rail at ground, and VCC from the inner 5V pin, or vcc. options, such
     # as pixels, are the matrix's own.
+    @staged ("the LED matrix")
     def home_matrix (self, vcc="5V.long", ground="B-5", **options):
         self.module ("matrix", at=(4.22, 3.9), facing="up", **options)
         self.wire ("48", "matrix.CLK")
@@ -665,6 +753,7 @@ class Bench:
     # The joystick below the Mega, under A3 and A4: VRx and VRy on them, +5V
     # from the power header's 5V, GND from the inner GND at the end of the
     # long header, and its switch on 22.
+    @staged ("the joystick")
     def home_joystick (self):
         self.module ("joystick", at=(2.08, 3.9), facing="up")
         self.wire ("A3", "joystick.VRx")
@@ -676,6 +765,7 @@ class Bench:
     # The GY-521 standing in row j, columns 9 to 16, its board over the top
     # rails: VCC from the top + rail, GND down across the gap to the − rail,
     # and SCL and SDA from 21 and 20 over the top of the board.
+    @staged ("the GY-521")
     def home_gy521 (self):
         self.header_module ("gy521", first=9, row="j")
         self.wire ("T+7", "i9")
@@ -687,6 +777,7 @@ class Bench:
     # The DS1307 clock above the board, facing right: GND and VCC from the
     # top rails in columns 29 and 30, SDA and SCL from 20 and 21 over the
     # top. sda and scl route those two round anything else up there.
+    @staged ("the clock module")
     def home_rtc (self, sda=None, scl=None):
         self.module ("rtc", at=(6.5, -1.4), facing="right")
         self.wire ("rtc.GND", "T-29")
@@ -696,6 +787,7 @@ class Bench:
 
     # The DHT11 above the board: S from 16, + and − from the top rails in
     # columns 36 and 37.
+    @staged ("the DHT11")
     def home_dht11 (self):
         self.module ("dht11", "dht", at=(8.58, -1.27))
         self.wire ("16", "dht.S")
@@ -704,6 +796,7 @@ class Bench:
 
     # The 18B20 temperature module above the board: S from 17, + and − from
     # the top rails in columns 27 and 28.
+    @staged ("the 18B20")
     def home_ds18b20 (self):
         self.module ("sensor", "probe", at=(7.68, -1.15), label="18B20", pins=("G", "R", "Y"))
         self.wire ("17", "probe.S")
@@ -712,6 +805,7 @@ class Bench:
 
     # The ultrasonic sensor above the Mega, facing away: Trig and Echo from
     # 14 and 15, VCC from the inner 5V pin, GND to the top − rail.
+    @staged ("the ultrasonic sensor")
     def home_ultrasonic (self):
         self.module ("ultrasonic", name="sensor", at=(2.715, -1.2))
         self.wire ("14", "sensor.Trig")
@@ -721,6 +815,7 @@ class Bench:
 
     # The DC motor above the board, its leads down into j14 and j17, the
     # L293D's outputs.
+    @staged ("the motor")
     def home_motor (self):
         self.module ("motor", name="motor", at=(4.7, -1.25), facing="down")
         self.wire ("motor.−", "j14", via=[(6.7, -0.41)])
@@ -728,6 +823,7 @@ class Bench:
 
     # The relay above the Mega: S from 11, + from the inner 5V pin and −
     # from the inner GND, both over the top.
+    @staged ("the relay")
     def home_relay (self):
         self.module ("relay", at=(5.05, -0.75), facing="left")
         self.wire ("11", "relay.S", via=[(1.70, -0.35)])
@@ -736,6 +832,7 @@ class Bench:
 
     # The keypad above the Mega, its eight wires R1 to C4 from 22 to 29,
     # each rising past the header in a lane of its own.
+    @staged ("the keypad")
     def home_keypad (self):
         self.module ("keypad", "keypad", at=(3.04, -4.95))
         turns = (0.5, 0.45, 0.4, 0.35, None, 0.4, 0.45, 0.5)
@@ -752,6 +849,7 @@ class Bench:
     # each stepping down and across to its pin, A11 highest, so the four
     # cross square on in a tidy staircase; and its + and − from the bottom
     # rails, unless the lesson powers it some other way.
+    @staged ("the stepper driver")
     def home_stepper (self, powered=True):
         self.module ("stepper", at=(3.1, 4.5), facing="up")
         self.wire ("A8", "stepper.IN1", via=[(3.25, 3.5), (4.45, 3.5)])
@@ -766,6 +864,7 @@ class Bench:
     # The RFID reader below the Mega: 3.3V from the Mega's 3.3V pin, GND
     # from the inner GND, and SDA, SCK, MOSI, MISO and RST from 53, 52, 51,
     # 50 and 45, down past the double header in lanes.
+    @staged ("the RFID reader")
     def home_rfid (self):
         self.module ("rfid", at=(1.65, 4.17), facing="up")
         self.wire ("3.3V", "rfid.3.3V", via=[(1.76, 2.8), (2.1, 2.8)])
@@ -778,6 +877,7 @@ class Bench:
 
     # The PIR sensor below the Mega: OUT on A12, VCC and GND from the power
     # header.
+    @staged ("the PIR sensor")
     def home_pir (self):
         self.module ("pir", name="pir", at=(1.26, 3.8), facing="up")
         self.wire ("A12", "pir.OUT", via=[(3.65, 3.05), (1.89, 3.05)])
@@ -786,6 +886,7 @@ class Bench:
 
     # The tap sensor below the Mega's left end: S on A12, + and − from the
     # power header.
+    @staged ("the tap sensor")
     def home_tap (self):
         self.module ("sensor", name="tap", at=(0.43, 3.62), pins=["S", "+", "−"],
                      label="tap sensor", facing="up")
@@ -795,6 +896,7 @@ class Bench:
 
     # The beam-break sensor below the board: S on A15, + and − from the
     # bottom rails in columns 36 and 37.
+    @staged ("the beam-break sensor")
     def home_beam (self):
         self.module ("sensor", name="beam", at=(8.58, 3.45), label="beam-break sensor",
                      pins=("−", "+", "S"), facing="up")
@@ -810,10 +912,10 @@ class Bench:
     # right as they meet the columns.
     def header_module (self, kind, pins=None, first=1, row="j", name=None, label=None, **options):
         part = self._header_part (kind, pins, first, row, name, label, options)
-        pins = ", ".join (f"{pin.name} in {hole}" for pin, hole in part.pairs ())
         edge = "bottom" if part.turned else "top"
-        self._step (f"The {part.name}, standing in row {row} with its board toward the "
-                           f"{edge} edge: {pins}.")
+        self._step (Step (part.name, tuple ((hole, pin.name) for pin, hole in part.pairs ()),
+                          f"standing in row {row}, its board toward the {edge} edge",
+                          spread=True))
         return self
 
     def _header_part (self, kind, pins, first, row, name, label, options):
@@ -837,6 +939,7 @@ class Bench:
     # those pins carry nothing, and two wires from the header in its middle
     # feed the bottom rails: supply ("5V" or "3.3V") into B+61, GND into
     # B-61. The Mega's 5V feeds the top rails, for the screen and sensors.
+    @staged ("the power module")
     def power_module (self, supply="5V"):
         if supply not in ("5V", "3.3V"):
             raise ValueError (f"the power module gives 5V or 3.3V, not {supply!r}")
@@ -844,8 +947,7 @@ class Bench:
         bx, by = self.board_origin ()
         self.module ("power_module", "power", at=(bx + self.board_width () + 0.3, by),
                      facing="left",
-                     words="The power module, lying to the right of the breadboard, not plugged "
-                           "in: both its jumpers off, each parked on one pin.")
+                     detail="not plugged in: both its jumpers off, each parked on one pin")
         self.wire (f"power.{supply}", "B+61")
         return self.wire ("power.GND", "B-61")
 
@@ -853,8 +955,9 @@ class Bench:
 
     # A module placed with its top-left corner at (x, y) inches, its pins
     # facing the board unless facing says otherwise (down, up, left, right).
+    # detail is anything more its build step needs to say.
     def module (self, kind, name=None, at=(0.0, 0.0), pins=None, label=None, facing=None,
-                words=None, **options):
+                detail="", **options):
         name = name or kind
         if name in self.modules or "." in name:
             raise ValueError (f"a module needs a new name without a dot, not {name!r}")
@@ -878,7 +981,10 @@ class Bench:
                 raise ValueError (f"the {placed.title} at {at} overlaps {thing}")
         self.modules[name] = placed
         self._last = ("module", placed)
-        self._step (words or f"The {placed.title}, {self._whereabouts (placed.box ())}.")
+        if self._stage and self._stage.name is None:
+            self._stage = None
+        self._step (Step (placed.title, ((self._whereabouts (placed.box ()), ""),), detail,
+                          spread=True))
         return self
 
     def _facing (self, at, made):
@@ -936,6 +1042,7 @@ class Bench:
         used = {parse_hole (hole)[2] for hole in self.used if parse_hole (hole)[0] == "rail"}
         if not used:
             return
+        self._stage = Stage ("power to the rails")
         power = [self._power_wire (("GND.long2", "GND.long"), "B-3")]
         # The Mega's 5V feeds the top rails, and the bottom ones too unless
         # the power module does: the screen and sensors run from the Mega,
@@ -1208,13 +1315,10 @@ class Bench:
     def _wire_step (self, start, end, color):
         for lead, other in ((start, end), (end, start)):
             if self.style (lead) == "lead":
-                placed, pin = self.module_pin (lead[1])
-                return f"The {placed.title}'s {pin.note} into {self.describe (other)}."
+                return Step ("lead", (self.place (lead), self.place (other)), colors=(color,))
         males = sum (self.style (end) == "male" for end in (start, end))
-        jumper = ("", "female-to-male ", "female-to-female ")[males]
-        # The article agrees with the first word after it: the color.
-        article = "An" if color[0] in "aeiou" else "A"
-        return f"{article} {color} {jumper}wire from {self.describe (start)} to {self.describe (end)}."
+        jumper = ("", "female-to-male", "female-to-female")[males]
+        return Step ("wire", (self.place (start), self.place (end)), jumper, (color,))
 
     # Black to ground, red to power, and any other wire a color of its own
     # that never changes from lesson to lesson: a pin's wire by its number,
@@ -1290,6 +1394,34 @@ class Bench:
 
     def style (self, end):
         return self.module_pin (end[1])[1].style if end[0] == "module" else end[0]
+
+    # Where a wire's end goes, as a build step gives it: the pin, hole or
+    # module pin to look for, and what tells it apart.
+    def place (self, end):
+        kind, name = end
+        if kind == "module":
+            placed, pin = self.module_pin (name)
+            if pin.style == "lead":
+                return placed.title, pin.note
+            noun = {"male": "pin", "female": "socket", "screw": "terminal"}[pin.style]
+            owner = f"{placed.title}{' plug' if pin.style == 'female' else ''}"
+            return f"{owner}'s {pin.name} {noun}", pin.note or ""
+        if kind == "hole":
+            _, _, row = parse_hole (name)
+            if row in ROWS and len (row) == 2:
+                side = "top" if row[0] == "T" else "bottom"
+                return unbroken (name), f"{side} {'+' if row[1] == '+' else '−'} rail"
+            return name, ""
+        label = canonical (name)
+        pin = MEGA_PINS[name]
+        if numbered (label):
+            return f"pin {label}", ""
+        if pin.header == "double":
+            return label, (f"{'outer' if pin.outer else 'inner'} pin at the "
+                           f"{'end' if pin.y < 1 else 'top'} of the long header")
+        if pin.header == "top":
+            return label, "beside pin 13" if label == "GND" else "at the left end of the top header"
+        return label, "on the power header"
 
     # Where to find a pin, a hole or a module's pin, in words.
     def describe (self, end):
@@ -1583,6 +1715,23 @@ POWER_PINS = {"GND", "5V", "3.3V", "VIN"}
 # word joiner after the hyphen.
 def unbroken (hole):
     return hole.replace ("-", "-\u2060")
+
+
+# Pins in a few words, in order and runs of three or more closed up:
+# "pin 26", "pins 22 and 23", "pins 31–36 and A0".
+def pin_words (pins):
+    order = sorted (pins, key=lambda pin: (pin.startswith ("A"), int (pin.lstrip ("A"))))
+    runs = []
+    for pin in order:
+        last = runs[-1][-1] if runs else ""
+        if last and pin.startswith ("A") == last.startswith ("A") and \
+                int (pin.lstrip ("A")) == int (last.lstrip ("A")) + 1:
+            runs[-1].append (pin)
+        else:
+            runs.append ([pin])
+    words = [f"{run[0]}–{run[-1]}" if len (run) > 2 else ", ".join (run) for run in runs]
+    words = ", ".join (words).rsplit (", ", 1)
+    return ("pins " if len (order) > 1 else "pin ") + " and ".join (words)
 
 
 # Pins called by number, "pin 26" or "pin A0", rather than by name.

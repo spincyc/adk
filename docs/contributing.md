@@ -93,6 +93,15 @@ over, they begin "Take out everything from Lesson N except the Mega's GND
 and 5V wires." (naming the power wires that stay), and then build the rest.
 If the page tells the learner what to keep or move, make it say the same.
 
+The steps come in stages, each a part and its wires under a heading that
+names them and the pins they use: "The red LED on pin 26". Each `home_*`
+call is a stage. Anything else is named for its first part other than a
+resistor, and a module placed there starts a stage of its own; where that
+reads badly, as with a chip and its resistors, `bench.stage ("the 74HC595")`
+names the steps that follow, up to the next `home_*` call or `stage ()`. A
+stage built just the same way in an earlier lesson starts folded, pointing
+back to it.
+
 ## Two-board lessons
 
 The projects in an arc marked `boards: 2` in `course.yml` run on two Megas

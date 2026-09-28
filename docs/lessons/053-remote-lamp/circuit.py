@@ -41,6 +41,7 @@ modem (repeater, lanes=(-1.05, -0.95))
 
 repeater.home_relay ()
 
+repeater.stage ("the relay's lamp")
 repeater.wire ("relay.NO", "j13", via=[(6.6, -0.45)])
 repeater.resistor ("1 kΩ", "g13", "e13")
 repeater.led ("red", anode="b13", cathode="b14")
@@ -48,6 +49,7 @@ repeater.module ("battery9v", name="battery", at=(6.2, 3.3), facing="up")
 repeater.wire ("battery.−", "a14")
 repeater.wire ("battery.+", "relay.COM")
 
+repeater.stage ("the IR LED")
 repeater.wire ("3", "j38", via=[(2.55, -1.15), (9.1, -1.15)])
 repeater.resistor ("220 Ω", "g38", "e38")
 repeater.module ("ir_transmitter", name="irled", at=(8.69, 3.45), facing="up")

@@ -7,7 +7,7 @@ course.yml, and its sketch from its name: examples/lessons/013-hello-lcd for
 
     <!-- bench -->         the pencil drawing of the whole bench
     <!-- closeup -->       a close-up of the breadboard
-    <!-- steps -->         the build, step by step
+    <!-- steps -->         the build, step by step, in stages
     <!-- connections -->   which Mega pin reaches which part
     <!-- sketch -->        the example sketch, exactly as it compiles
     <!-- measure -->       each reading to take with a multimeter, drawn, and
@@ -50,6 +50,8 @@ sys.path.insert (0, os.path.dirname (__file__))
 from api import document  # noqa: E402
 from bench import canonical, example, load, unbroken  # noqa: E402
 from drawing import Drawing, draw_all  # noqa: E402
+from parts import Led, Resistor  # noqa: E402
+from pencil import WIRES  # noqa: E402
 
 ROOT = os.path.dirname (os.path.dirname (os.path.dirname (os.path.abspath (__file__))))
 
@@ -103,6 +105,7 @@ def arc_title (arc, lessons):
 def on_pre_build (config):
     CIRCUITS.clear ()
     DRAWINGS.clear ()
+    STAGES.clear ()
     draw_all ([os.path.join (ROOT, "docs", "lessons", lesson["slug"], "circuit.py")
                for lesson in LESSONS if written (lesson)])
 
@@ -194,7 +197,7 @@ def board_pieces (lesson, letter, bench):
             "closeup": figure (closeup,
                                f"Close-up of {whose}. Letters name the rows, numbers the columns.",
                                "closeup"),
-            "steps": steps (bench, previous (lesson["number"], letter)),
+            "steps": steps (bench, previous (lesson["number"], letter), lesson["number"]),
             "connections": connections (bench),
             "sketch": f'```cpp title="{name}.ino" linenums="1"\n{sketch.rstrip ()}\n```',
             "measure": measurements (bench, measured),
@@ -326,30 +329,150 @@ def measurements (bench, drawn):
 # carries on from and what to take out of it. When no part or module
 # carries over, the learner takes out everything but the Mega's power
 # wires, and builds the rest.
-def steps (bench, before=None):
+def steps (bench, before=None, number=1):
     kept, gone, new = continuity (bench, before[2]) if before else ([], [], bench.items)
-    head = []
+    head, out = [], []
     if before:
-        lesson, letter, old = before
+        lesson, letter_before, old = before
         source = f"[Lesson {lesson['number']}](../{lesson['slug']}/index.md)" + \
-            (f"'s Board {letter}" if letter else "")
+            (f"'s Board {letter_before}" if letter_before else "")
         if carries (kept):
             things = kept_words (old, kept)
             head = [f"**Keep from {source}:** {join (things)}, just as "
-                    f"{'they are' if len (kept) > 1 else 'it is'}.", ""]
+                    f"{'they are' if len (kept) > 1 else 'it is'}."]
             if len (gone) > 8:
-                head += [f"**Take out** everything else from Lesson {lesson['number']}.", ""]
-            elif gone:
-                head += [f"**Take out:** {'; '.join (gone)}.", ""]
+                head.append (f"**Take out** everything else from Lesson {lesson['number']}.")
+            else:
+                out = gone
         else:
             power = [wire for kind, wire in kept if old.is_standard (wire)]
             words = power_words (power)
             head = [f"**Take out** everything from {source}"
-                    f"{' except ' + join (words) if words else ''}.", ""]
+                    f"{' except ' + join (words) if words else ''}."]
             new = added (bench, before)
-        head += ["**Add:**" if new else "Nothing else to add.", ""]
-    lines = head + [f"{index}. {step}" for index, (_, _, step) in enumerate (new, 1)]
-    return '<div class="build-steps" markdown>\n\n' + "\n".join (lines) + "\n\n</div>"
+        if not new:
+            head.append ("Nothing else to add.")
+    if out or new:
+        head.append (step_stages (bench, out, new, number))
+    return "\n\n".join (head)
+
+
+# The steps in stages, each a part and its wires under a heading that names
+# them and the pins they use, so a build reads as a few things to add
+# rather than a long list. Each stage is a small table with the same
+# columns as the others, so the holes and pins line up all the way down. A
+# stage built just this way in an earlier lesson starts folded, pointing
+# back to it; everything taken out comes first.
+def step_stages (bench, out, new, number):
+    blocks = []
+    if out:
+        rows = [step_row ("−", item) for item in out]
+        blocks.append (stage_block ("Take out", rows, kind="out"))
+    count = 0
+    for stage, items in group (new):
+        rows = []
+        for item in items:
+            count += 1
+            rows.append (step_row (count, item))
+        whole = {identity (bench, kind, thing) for kind, thing, _ in items} == stages (bench)[stage]
+        earlier = built_before (bench, stage, number) if whole else None
+        where = (f', as in <a href="../{earlier["slug"]}/">Lesson {earlier["number"]}</a>'
+                 if earlier else "")
+        blocks.append (stage_block (capital (bench.stage_title (stage)), rows,
+                                    f"{len (rows)} step{'s' if len (rows) > 1 else ''}{where}",
+                                    "again" if earlier else ""))
+    return '<div class="build-steps">\n' + "\n".join (blocks) + "\n</div>"
+
+
+def stage_block (title, rows, count="", kind=""):
+    tally = f' <span class="stage-count">{count}</span>' if count else ""
+    folded = "" if kind == "again" else " open"
+    return (f'<details class="stage{" " + kind if kind else ""}"{folded}><summary>'
+            f'<span class="stage-title">{title}</span>{tally}</summary>\n'
+            '<table class="steps"><colgroup><col class="step"><col class="what"><col>'
+            '<col class="link"><col></colgroup>\n<tbody>\n' + "\n".join (rows) +
+            "\n</tbody></table></details>")
+
+
+# One step: its number, what it is, and where it goes, with the thing
+# itself drawn between its From and To.
+def step_row (mark, item):
+    kind, thing, step = item
+    places = [f'<span class="place">{escape (where)}{detail (how)}</span>'
+              for where, how in step.places]
+    if len (places) == 2 and not step.spread:
+        ends = (f'<td class="from">{places[0]}</td>'
+                f'<td class="link">{picture (kind, thing, step)}</td><td>{places[1]}</td>')
+    else:
+        ends = f'<td colspan="3"><div class="places">{"".join (places)}</div></td>'
+    return (f'<tr><td class="step"><span class="tick">{mark}</span></td>'
+            f'<td class="what">{capital (step.what)}{detail (step.note)}</td>{ends}</tr>')
+
+
+# The steps grouped by stage, in order: (stage, items).
+def group (items):
+    groups = []
+    for item in items:
+        if groups and groups[-1][0] is item[2].stage:
+            groups[-1][1].append (item)
+        else:
+            groups.append ((item[2].stage, [item]))
+    return groups
+
+
+# A bench's stages, each with the identities of all its items, which say
+# whether another lesson built it just the same way.
+STAGES = {}
+
+
+def stages (bench):
+    if id (bench) not in STAGES:
+        found = {}
+        for kind, thing, step in bench.items:
+            found.setdefault (step.stage, set ()).add (identity (bench, kind, thing))
+        STAGES[id (bench)] = {stage: frozenset (held) for stage, held in found.items ()}
+    return STAGES[id (bench)]
+
+
+# The first lesson before this one to build a stage just as this one does,
+# on either of its boards, or None.
+def built_before (bench, stage, number):
+    held = stages (bench)[stage]
+    for lesson in LESSONS[:number - 1]:
+        if written (lesson) and any (held in stages (other).values ()
+                                     for other in load_circuit (lesson).values ()):
+            return lesson
+    return None
+
+
+def detail (text):
+    return f"<small>{escape (text)}</small>" if text else ""
+
+
+def capital (text):
+    return escape (text[:1].upper () + text[1:])
+
+
+# The thing a step puts in, drawn between the holes it joins: a wire in its
+# color, a resistor with its bands, an LED lit in its color, or a part's
+# two legs. The color's name goes beneath, for anyone who can't tell them
+# apart.
+PALETTE = dict (Resistor.TINTS, **WIRES)
+
+
+def picture (kind, thing, step):
+    names = f"<small>{escape (', '.join (step.colors))}</small>" if step.colors else ""
+    if kind == "wire":
+        lead = " lead" if step.what == "lead" else ""
+        color = PALETTE[step.colors[0]]
+        return f'<span class="wire{lead}" style="--swatch: {color}"></span>{names}'
+    if isinstance (thing, Resistor):
+        bands = "".join (f'<span style="--swatch: {PALETTE[color]}"></span>'
+                         for color in step.colors)
+        return f'<span class="resistor"><span class="bands">{bands}</span></span>{names}'
+    if isinstance (thing, Led):
+        return f'<span class="led" style="--swatch: {PALETTE[step.colors[0]]}"></span>{names}'
+    return '<span class="legs"></span>'
 
 
 # Whether a build carries on from the one before: some part or module stays
@@ -412,14 +535,14 @@ def check_wires (lesson, bench, parts):
                            f"more {'female-to-male ' if kind != 'jumper' else ''}jumper wires\")")
 
 
-# What this bench keeps from the one before (named), what it takes out
-# (described), and the items it adds: parts and modules that stand where
-# they stood, and wires between the same two points, are kept.
+# What this bench keeps from the one before, and the items it takes out
+# and adds: parts and modules that stand where they stood, and wires
+# between the same two points, are kept.
 def continuity (bench, before):
-    here = {identity (bench, kind, thing): (kind, thing) for kind, thing, _ in bench.items}
+    here = {identity (bench, kind, thing) for kind, thing, _ in bench.items}
     there = {identity (before, kind, thing): (kind, thing) for kind, thing, _ in before.items}
     kept = [there[key] for key in there if key in here]
-    gone = [describe (before, *there[key]) for key in there if key not in here]
+    gone = [item for item in before.items if identity (before, item[0], item[1]) not in here]
     new = [item for item in bench.items if identity (bench, item[0], item[1]) not in there]
     return kept, gone, new
 
@@ -491,8 +614,6 @@ def power_words (wires):
 
 
 def describe (bench, kind, thing):
-    if kind == "module":
-        return f"the {thing.title}"
     if kind == "part":
         holes = [unbroken (hole) for _, hole in thing.legs ()]
         return f"the {thing.name} ({holes[0]}{'–' + holes[-1] if len (holes) > 1 else ''})"

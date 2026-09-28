@@ -13,6 +13,7 @@ bench.home_tap ()
 
 bench.home_relay ()
 
+bench.stage ("the relay's lamp")
 bench.wire ("relay.NO", "j13", via=[(6.6, -0.45)])
 bench.resistor ("1 kΩ", "g13", "e13")
 bench.led ("red", anode="b13", cathode="b14")

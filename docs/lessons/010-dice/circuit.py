@@ -16,6 +16,7 @@ bench = Bench ("A button on pin 22, and a digit behind a 74HC595 on pins 37, 38 
 
 bench.home_button ("22")
 
+bench.stage ("the 74HC595")
 bench.wire ("T-6", "B-6")
 
 bench.chip ("74HC595", first=18)
@@ -27,14 +28,17 @@ bench.wire ("38", "j23", via=[(4.20, 1.55), (5.00, 1.55), (5.00, 0.35), (X (23),
 bench.wire ("j24", "T+24")
 bench.wire ("a25", "B-25")
 
+bench.stage ("the digit")
 bench.digit (46, shows="5")
 
 # Q0, segment a: along row h to its resistor in row i, then over to the top.
+bench.stage ("segment a's resistor")
 bench.wire ("h19", "h26")
 bench.resistor ("1 kΩ", "i26", "i29")
 bench.wire ("j29", "j49", via=[(X (29), Y (0.40)), (X (49), Y (0.40))])
 
 # Q5, Q1 and Q6 (f, b, g) cross the middle gap through their resistors.
+bench.stage ("the resistors for segments f, b and g")
 bench.wire ("d22", "d27")
 bench.resistor ("1 kΩ", "g27", "e27")
 bench.wire ("h27", "j47", via=[(X (27), Y (0.70)), (X (29.5), Y (0.70)), (X (29.5), Y (0.45)),
@@ -48,6 +52,7 @@ bench.resistor ("1 kΩ", "g30", "e30")
 bench.wire ("h30", "j46", via=[(X (30), Y (0.50)), (X (46), Y (0.50))])
 
 # Q4, Q3 and Q2 (e, d, c) step up over the gap to their resistors.
+bench.stage ("the resistors for segments e, d and c")
 bench.wire ("c21", "h41", via=[(X (21), Y (1.50)), (X (31), Y (1.50)), (X (31), Y (0.65)),
                                (X (41), Y (0.65))])
 bench.wire ("b20", "h40", via=[(X (31.5), Y (1.55)), (X (31.5), Y (0.70)), (X (40), Y (0.70))])
@@ -57,6 +62,7 @@ bench.resistor ("1 kΩ", "g40", "e40")
 bench.resistor ("1 kΩ", "g41", "e41")
 
 # Into the digit's bottom pins, nested, and its common back to the − rail.
+bench.stage ("the wires into the digit")
 bench.wire ("a39", "a49", via=[(X (39), Y (1.80)), (X (49), Y (1.80))])
 bench.wire ("a40", "a47", via=[(X (40), Y (1.75)), (X (47), Y (1.75))])
 bench.wire ("a41", "a46", via=[(X (41), Y (1.70)), (X (46), Y (1.70))])

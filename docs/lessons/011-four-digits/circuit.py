@@ -14,6 +14,7 @@ Y = lambda row: round (0.55 + row, 3)               # row offsets from the board
 bench = Bench ("A four-digit display behind a 74HC595 on pins 37 to 39, its digits on pins 40 to 43",
                columns=(1, 63))
 
+bench.stage ("the 74HC595")
 bench.wire ("T-6", "B-6")
 
 bench.chip ("74HC595", first=18)
@@ -25,14 +26,17 @@ bench.wire ("38", "j23", via=[(4.20, 1.55), (5.00, 1.55), (5.00, 0.35), (X (23),
 bench.wire ("j24", "T+24")
 bench.wire ("a25", "B-25")
 
+bench.stage ("the four-digit display")
 bench.four_digits (51, shows="1234")
 
 # Q0, segment a: along row h to its resistor in row i, then over to the top.
+bench.stage ("segment a's resistor")
 bench.wire ("h19", "h26")
 bench.resistor ("1 kΩ", "i26", "i29")
 bench.wire ("j29", "j52", via=[(X (29), Y (0.45)), (X (52), Y (0.45))])
 
 # Q5 and Q1, segments f and b, cross the middle gap through their resistors.
+bench.stage ("the resistors for segments f and b")
 bench.wire ("d22", "d27")
 bench.resistor ("1 kΩ", "g27", "e27")
 bench.wire ("h27", "j53", via=[(X (27), Y (0.70)), (X (29.5), Y (0.70)), (X (29.5), Y (0.40)),
@@ -43,6 +47,7 @@ bench.wire ("h28", "i56", via=[(X (30), Y (0.75)), (X (30), Y (0.50)), (X (43), 
                                (X (43), Y (0.60)), (X (56), Y (0.60))])
 
 # Q7, Q4, Q3 and Q2 (dp, e, d, c) step up over the gap to the ladder.
+bench.stage ("the resistors for dp, e, d and c")
 bench.wire ("c24", "h42", via=[(X (30.5), Y (1.45)), (X (30.5), Y (0.60)), (X (42), Y (0.60))])
 bench.wire ("c21", "h41", via=[(X (21), Y (1.50)), (X (31), Y (1.50)), (X (31), Y (0.65)),
                                (X (41), Y (0.65))])
@@ -54,10 +59,12 @@ bench.resistor ("1 kΩ", "g41", "e41")
 bench.resistor ("1 kΩ", "g42", "e42")
 
 # Q6, segment g, stays below the gap.
+bench.stage ("segment g's resistor")
 bench.wire ("a23", "a33", via=[(X (23), Y (1.70)), (X (33), Y (1.70))])
 bench.resistor ("1 kΩ", "b33", "b36")
 
 # Into the display's bottom pins, nested so none crosses another.
+bench.stage ("the wires into the display")
 bench.wire ("a36", "a55", via=[(X (36), Y (1.85)), (X (55), Y (1.85))])
 bench.wire ("a39", "a54", via=[(X (39), Y (1.80)), (X (54), Y (1.80))])
 bench.wire ("a40", "a52", via=[(X (40), Y (1.75)), (X (52), Y (1.75))])
@@ -65,6 +72,7 @@ bench.wire ("a41", "a51", via=[(X (41), Y (1.70)), (X (51), Y (1.70))])
 bench.wire ("b42", "b53", via=[(X (42), Y (1.60)), (X (53), Y (1.60))])
 
 # The digit pins, straight from the Mega.
+bench.stage ("the digits")
 bench.wire ("40", "j51", via=[(4.20, 1.65), (4.90, 1.65), (4.90, 0.30), (X (51), 0.30)])
 bench.wire ("41", "j54", via=[(4.85, 1.70), (4.85, 0.25), (X (54), 0.25)])
 bench.wire ("42", "j55", via=[(4.20, 1.75), (4.80, 1.75), (4.80, 0.20), (X (55), 0.20)])
