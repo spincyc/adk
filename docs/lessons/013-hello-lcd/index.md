@@ -170,7 +170,7 @@ last column it starts again at the left.
 
 | What you see | Try this |
 |---|---|
-| No light at all | Check the red wire from the Mega's 5V to the top + rail (T+3), the resistor from e23 across the gap to f23, the wires from j23 to + and e24 to −, and the black wires that bring GND to the top − rail: a5 to the bottom − rail, b5 to b9, and e9 to the top − rail. |
+| No light at all | Check the red wire from the Mega's 5V to the top + rail by column 3, the resistor from e23 across the gap to f23, the wires from j23 to + and e24 to −, and the black wires that bring GND to the top − rail: a5 to the bottom − rail, b5 to b9, and e9 to the top − rail. |
 | The backlight glows, but the screen is blank | Turn the contrast knob, slowly, all the way through. If nothing ever appears, check the yellow wire from c6 to c11, the black one from a5 to the bottom − rail, and the knob's jumpers from j5 to − and j7 to +. |
 | A row of solid blocks on top, nothing below | The screen has power but isn't hearing the Mega. Check pins 31 and 32 go to e12 (RS) and e14 (E), and that the upload finished. |
 | Strange symbols instead of letters | Two data wires are swapped: pins 33, 34, 35 and 36 go to e19, e20, e21 and e22, in that order. Check too that RW (e13) goes to −. |

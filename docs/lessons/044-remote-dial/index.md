@@ -88,13 +88,13 @@ nothing tells Board B.
     when it moves, and don't force it round by hand.
 
 !!! danger "The servo's power"
-    Board B's power module lies beside its breadboard as in Lesson 17,
-    never plugged into it, both its jumpers **off**, its red wire from
-    **5V** to B+61 and its black wire from **GND** to B-61. The servo
-    takes its power from the bottom rails; its red wire
-    never goes to the Mega's 5V, and the modem stays on the Mega's 3.3V
-    pin. The Mega's GND at B-3 joins the module's GND, so that the servo
-    can read the pulses on pin 44.
+    Board B's power module lies beside its breadboard as in Lesson 17, never
+    plugged into it, both its jumpers **off**, its red wire from **5V** to
+    the bottom + rail and its black wire from **GND** to the bottom − rail,
+    both by column 61. The servo takes its power from the bottom rails; its
+    red wire never goes to the Mega's 5V, and the modem stays on the Mega's
+    3.3V pin. The Mega's GND at the bottom − rail by column 3 joins the
+    module's GND, so that the servo can read the pulses on pin 44.
 
 Both modems stay at their bridge homes from Lesson 43, with their
 dividers and wires, just as they are. Everything else changes around
@@ -117,12 +117,12 @@ their way to the modem.
 
 ### Board B
 
-Take out the button, the red LED and their wires; the yellow LED stays,
-to show the link. The power module lies to the right of the board, wired
-to the bottom rails at B+61 and B-61. The servo lies below the board
-with its plug under columns 52 to 54, its + into B+53 and its − into
-B-54, as in Lesson 17. It lies lower than it did there, below the modem,
-which now takes the servo's old place.
+Take out the button, the red LED and their wires; the yellow LED stays, to
+show the link. The power module lies to the right of the board, wired to the
+bottom rails by column 61. The servo lies below the board with its plug
+under columns 52 to 54, its + into the bottom + rail by column 53 and
+its − into the bottom − rail by column 54, as in Lesson 17. It lies lower
+than it did there, below the modem, which now takes the servo's old place.
 
 <!-- bench B -->
 
@@ -217,8 +217,8 @@ the module back on, and the servo jumps to the angle it was sent.
 | What you see | Try this |
 |---|---|
 | `Not connected` stays on the screen, and Board B's yellow LED stays dark | Check Board A runs **Dial** and Board B runs **Servo**. Then upload Lesson 43's sketches to both boards: if their yellow LEDs light there, the modems are fine, and the trouble is in this lesson's wiring or sketches. |
-| The screen shows the angles, but the servo never moves | Is the power module on, with its LED lit? Check its red wire from 5V to B+61 and its black wire from GND to B-61, then the servo's plug: brown to B-54, red to B+53, orange to pin 44. |
-| The Mega resets, or the USB disconnects, when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail, B+53, fed by the power module. |
+| The screen shows the angles, but the servo never moves | Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 61, then the servo's plug: brown to the bottom − rail by column 54, red to the bottom + rail by column 53, orange to pin 44. |
+| The Mega resets, or the USB disconnects, when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail by column 53, fed by the power module. |
 | The servo turns the opposite way to the knob | Nothing is wrong. To swap it, change `knob.turned () * step` to `-knob.turned () * step` in **Dial**. |
 | It takes two clicks to move 5° | Your encoder steps differently: try `adk::RotaryEncoder knob {18, 19, 2};`, as in Lesson 29, or 1 if it takes four clicks. |
 | It buzzes at one end of its travel | It's pushing against its end stop. Use `adk::Servo servo {44, 600, 2300};` to narrow the pulses a little. |

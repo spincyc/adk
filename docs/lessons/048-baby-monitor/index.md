@@ -118,7 +118,8 @@ Lesson 47. The passive buzzer takes the active buzzer's place in column 51,
 on pin 10 now, with its 220 Ω resistor from a51 down to the − rail, as in
 Lesson 33. The LED matrix lies at its home below the gap between the Mega
 and the board, as in Lesson 25, but the screen's contrast knob already has
-B-5, so the matrix's GND goes one hole nearer the Mega, into B-4. The
+the bottom − rail's hole by column 5, so the matrix's GND goes one hole
+nearer the Mega, by column 4. The
 modem's 3.3 V wire runs below the matrix.
 
 <!-- bench B -->
@@ -207,7 +208,7 @@ What's new:
 | `No news!` all the time | The boards don't hear each other: check each modem as in Lesson 43. |
 | The bars never move | Check the sound sensor's AO goes to A5, + to 5V and G to GND on the power header. Clap right beside it. If they still don't move, make `perDot` smaller. |
 | The matrix is full all the time | The room is louder than you think, or `perDot` is too small: make it bigger. |
-| The matrix stays dark, even when the screen shows sound | Check pins 47, 48 and 49 go to DIN, CLK and CS, VCC to the inner 5V pin and GND to B-4. |
+| The matrix stays dark, even when the screen shows sound | Check pins 47, 48 and 49 go to DIN, CLK and CS, VCC to the inner 5V pin and GND to the bottom − rail by column 4. |
 | The graph runs the wrong way, or upside down | The matrix is turned: turn it round, as Lesson 25 explains. |
 | Never `WET!` | Check the water sensor's S goes to A6, + to A7, which powers it, and − to GND. Dip deeper, or make `wetAbove` smaller. |
 | `WET!` when dry | Dry the traces well, or make `wetAbove` bigger. |

@@ -181,7 +181,7 @@ long it lasts.
 |---|---|
 | Pressing a button does nothing | Push the button firmly down until all four legs are in, across the gap in rows e and f. Check its black wire runs from row a to the − rail. |
 | The yellow LED is on all the time | The right button's black wire may be on the wrong side. It belongs in a10; in column 8 it would join pin 23 to GND all the time. |
-| Nothing works at all, buttons or LEDs | Check the black wire from the Mega's GND pin to the − rail (B-3). Every part here returns through it. |
+| Nothing works at all, buttons or LEDs | Check the black wire from the Mega's GND pin to the bottom − rail by column 3. Every part here returns through it. |
 | An LED never lights | Turn it round: its long leg goes in b6 (red) or b12 (yellow). Check its resistor reaches from row g, across the gap, to row e. |
 | The Serial Monitor shows strange characters | Set the Serial Monitor's speed menu to 9600 baud. |
 | The Serial Monitor stays empty | Tap the left button: the sketch only prints when you do. Check the port in **Tools → Port**. |

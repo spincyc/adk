@@ -107,21 +107,21 @@ did in Lesson 38:
     and check your work before you plug them back in.
 
 !!! danger "3.3 V for the modems"
-    The power module's red wire goes from its **3.3V** pin to B+61, for
-    the modems, never from its 5V pin: check it before you plug anything
-    in. The module lies beside the board, never plugged into it, both its
-    jumpers **off**. The modems' VDD pins go to the bottom + rail, never
-    5 V: more than 3.6 V damages
-    them. Their RXD pins only ever see the Mega's TX through the 1 kΩ, with
-    the 2 kΩ to GND.
+    The power module's red wire goes from its **3.3V** pin to the
+    bottom + rail by column 61, for the modems, never from its 5V pin: check
+    it before you plug anything in. The module lies beside the board, never
+    plugged into it, both its jumpers **off**. The modems' VDD pins go to
+    the bottom + rail, never 5 V: more than 3.6 V damages them. Their RXD
+    pins only ever see the Mega's TX through the 1 kΩ, with the 2 kΩ to GND.
 
 Keep the screen and the button from Lesson 39 just as they are, with the
-Mega's GND and 5V wires, and take everything else off: the clock module,
-the rotary encoder, the FM radio and the volume knob. The power module lies
-beside the board, as in Lesson 36, its black wire from **GND** to B-61, but
-this time its red wire comes from its **3.3V** pin to B+61: the module
-feeds only the bottom rails, at 3.3 V, for the modems, and the Mega's 5V
-still feeds the screen on the top rails.
+Mega's GND and 5V wires, and take everything else off: the clock module, the
+rotary encoder, the FM radio and the volume knob. The power module lies
+beside the board, as in Lesson 36, its black wire from **GND** to the
+bottom − rail by column 61, but this time its red wire comes from its
+**3.3V** pin to the bottom + rail by column 61: the module feeds only the
+bottom rails, at 3.3 V, for the modems, and the Mega's 5V still feeds the
+screen on the top rails.
 
 The modems stand below the board, past the button, their springs pointing
 down and away: modem B first, then modem A, so their wires meet the Mega's
@@ -225,7 +225,7 @@ means everyone. Put the 2 back when you're done.
 
 | What you see | Try this |
 |---|---|
-| `No reply from A`, or from B | Is the power module on, with its LED lit? Check its red wire goes from its 3.3V pin to B+61 and its black one from GND to B-61. Check that modem's VDD goes to the bottom + rail and its GND to the − rail. Check its TXD and RXD aren't swapped: TXD goes up to f53 (A) or f44 (B), RXD to c55 (A) or c46 (B). Then press the Mega's reset button, so the sketch sets the modems up again. |
+| `No reply from A`, or from B | Is the power module on, with its LED lit? Check its red wire goes from its 3.3V pin to the bottom + rail and its black one from GND to the bottom − rail, both by column 61. Check that modem's VDD goes to the bottom + rail and its GND to the − rail. Check its TXD and RXD aren't swapped: TXD goes up to f53 (A) or f44 (B), RXD to c55 (A) or c46 (B). Then press the Mega's reset button, so the sketch sets the modems up again. |
 | Still no reply | Check the divider: pin 18's wire in j55, the 1 kΩ from g55 to e55, the 2 kΩ from a55 to the − rail (for B: pin 14 in j46, g46 to e46, a46 to the − rail). And pin 19's wire in j53, pin 15's in j44. |
 | `A sends:`, but B shows nothing | Check the address in `sendFromA ()` is 2 or 0, and that modem B says it is ready. |
 | `A can't send just now: try again` | Wait a moment, and send again: the last message was still going. If it always says this, modem A didn't answer at the start. |

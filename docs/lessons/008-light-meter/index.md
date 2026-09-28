@@ -180,7 +180,7 @@ challenge below lets you check.
 | The bar is full in the dark and empty in the light | The photoresistor and the 10 kΩ have swapped places. The photoresistor goes across the gap in f40 and e40, the 10 kΩ from c40 to c43. |
 | One LED never lights | Turn it round: its long leg goes in the column of its pin's wire. Check its resistor crosses the gap and its black wire reaches the − rail. |
 | No LED ever lights | The black wires from row a must go to the − rail, the one with the blue line. |
-| The level stays near 0 or near 1023 | Check A1's wire is in a40, the red wire joins j40 to the top + rail, the black one joins a43 to the − rail, and the Mega's red and black wires reach T+3 and B-3. |
+| The level stays near 0 or near 1023 | Check A1's wire is in a40, the red wire joins j40 to the top + rail, the black one joins a43 to the − rail, and the Mega's red and black wires reach the top + rail by column 3 and the bottom − rail by column 3. |
 | The top LED flickers on and off | The light is right at the edge of a slice. Try `adk::Smoother light {5};` for a calmer bar. |
 
 ??? note "How it works"

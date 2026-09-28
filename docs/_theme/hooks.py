@@ -52,7 +52,7 @@ from mkdocs.exceptions import PluginError
 sys.path.insert (0, os.path.dirname (__file__))
 
 from api import document  # noqa: E402
-from bench import canonical, example, load, unbroken  # noqa: E402
+from bench import canonical, example, hole_words, load  # noqa: E402
 from drawing import Drawing, draw_all  # noqa: E402
 from parts import Led, Resistor  # noqa: E402
 from pencil import WIRES  # noqa: E402
@@ -140,7 +140,7 @@ def on_page_markdown (markdown, page, config, files):
     markdown = re.sub (r"<!-- api (\S+)(?: (\w+))? -->", reference, markdown)
     markdown = link_lessons (markdown, page)
     if "lesson" not in meta:
-        return markdown
+        return words_for_rails (markdown, page.file.src_uri)
 
     lesson = LESSONS[meta["lesson"] - 1]
     where = page.file.src_uri
@@ -183,6 +183,24 @@ def on_page_markdown (markdown, page, config, files):
         for marker, content in replacements.items ():
             markdown = markdown.replace (f"<!-- {marker}{' ' + letter if letter else ''} -->",
                                          content)
+    return words_for_rails (markdown, where)
+
+
+# A rail's hole goes by its name, B-3 or T+61, only in circuit.py and in
+# code: its B reads as row b, and its − as a minus. A page, its build steps
+# among it, says "the bottom − rail by column 3".
+RAIL_NAME = re.compile (r"(?<![\w`-])[BT][-+−]\u2060?\d{1,2}\b")
+
+
+def words_for_rails (markdown, where):
+    fenced = False
+    for line in markdown.split ("\n"):
+        if line.lstrip ().startswith (("```", "~~~")):
+            fenced = not fenced
+        found = None if fenced else RAIL_NAME.search (re.sub (r"`[^`]*`", "", line))
+        if found:
+            raise PluginError (f"{where}: say which rail in words, as \"the bottom − rail by "
+                               f"column 3\", not {found.group ()}")
     return markdown
 
 
@@ -633,8 +651,14 @@ def power_words (wires):
 
 def describe (bench, kind, thing):
     if kind == "part":
-        holes = [unbroken (hole) for _, hole in thing.legs ()]
-        return f"the {thing.name} ({holes[0]}{'–' + holes[-1] if len (holes) > 1 else ''})"
+        # Its first and last holes: "(b6–b7)", or, where one is a rail's,
+        # "(a46 to the bottom − rail by column 46)".
+        legs = thing.legs ()
+        ends = [hole_words (hole) for _, hole in (legs[0], legs[-1])]
+        if len (legs) == 1:
+            return f"the {thing.name} ({ends[0]})"
+        between = "–" if all (" " not in end for end in ends) else " to "
+        return f"the {thing.name} ({ends[0]}{between}{ends[1]})"
     start, end, color, _ = thing
     return f"the {color} wire from {bench.describe (start)} to {bench.describe (end)}"
 

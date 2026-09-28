@@ -309,10 +309,11 @@ class Bench:
                 if end[0] == "pin" and numbered (canonical (end[1]))}
         return name + (f" on {pin_words (pins)}" if pins else "")
 
-    # A leg's hole in a step, with which leg it is and which rail.
+    # A leg's hole in a step, with which leg it is: in a rail, after the
+    # column beside it.
     def _at (self, hole, leg=""):
-        where, rail = self.place (("hole", hole))
-        return where, ", ".join (words for words in (leg, rail) if words)
+        where, column = self.place (("hole", hole))
+        return where, ", ".join (words for words in (column, leg) if words)
 
     # Where things are ---------------------------------------------------
 
@@ -1407,11 +1408,7 @@ class Bench:
             owner = f"{placed.title}{' plug' if pin.style == 'female' else ''}"
             return f"{owner}'s {pin.name} {noun}", pin.note or ""
         if kind == "hole":
-            _, _, row = parse_hole (name)
-            if row in ROWS and len (row) == 2:
-                side = "top" if row[0] == "T" else "bottom"
-                return unbroken (name), f"{side} {'+' if row[1] == '+' else '−'} rail"
-            return name, ""
+            return rail_words (name) if parse_hole (name)[0] == "rail" else (name, "")
         label = canonical (name)
         pin = MEGA_PINS[name]
         if numbered (label):
@@ -1435,12 +1432,7 @@ class Bench:
             note = f" ({pin.note})" if pin.note else ""
             return f"{owner}'s {pin.name} {noun}{note}"
         if kind == "hole":
-            _, column, row = parse_hole (name)
-            if row in ROWS and len (row) == 2:
-                side = "top" if row[0] == "T" else "bottom"
-                sign = "+" if row[1] == "+" else "−"
-                return f"the {side} {sign} rail ({unbroken (name)})"
-            return name
+            return hole_words (name)
         label = canonical (name)
         pin = MEGA_PINS[name]
         if numbered (label):
@@ -1540,8 +1532,9 @@ class Bench:
             counts[part.name] = counts.get (part.name, 0) + 1
         names = {}
         for part in self.parts:
-            holes = [hole for _, hole in part.legs ()]
-            where = f"{holes[0]}–{holes[-1]}" if len (holes) == 2 else f"at {holes[0]}"
+            holes = [hole_words (hole) for _, hole in part.legs ()]
+            between = "–" if all (" " not in hole for hole in holes) else " to "
+            where = f"{holes[0]}{between}{holes[-1]}" if len (holes) == 2 else f"at {holes[0]}"
             names[id (part)] = f"{part.name} ({where})" if counts[part.name] > 1 else part.name
         return names
 
@@ -1711,10 +1704,19 @@ def pin_id (name):
 POWER_PINS = {"GND", "5V", "3.3V", "VIN"}
 
 
-# A hole's name that a line of text never breaks at its hyphen: B-3, with a
-# word joiner after the hyphen.
-def unbroken (hole):
-    return hole.replace ("-", "-\u2060")
+# A rail's hole in words, as a page gives it: "bottom − rail", "by column
+# 3". Never by its name here, B-3, whose B reads as row b and whose − as a
+# minus. Every hole along a rail joins the rest; the column only keeps a
+# wire short, as the drawing shows it.
+def rail_words (hole):
+    _, column, rail = parse_hole (hole)
+    side = "top" if rail[0] == "T" else "bottom"
+    return f"{side} {'+' if rail[1] == '+' else '−'} rail", f"by column {column}"
+
+
+# Any hole in running text: "j6", or "the bottom − rail by column 3".
+def hole_words (hole):
+    return "the " + " ".join (rail_words (hole)) if parse_hole (hole)[0] == "rail" else hole
 
 
 # Pins in a few words, in order and runs of three or more closed up:

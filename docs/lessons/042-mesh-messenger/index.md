@@ -161,13 +161,14 @@ building Lesson 41, start from Lesson 40 instead, and put the DHT11 at its
 home above the board as in Lesson 15.
 
 The lamp is the RGB LED, at its home beside the screen in columns 41 to 46,
-as in Lesson 15: its longest leg in the − rail at B-42, a 220 Ω resistor
-across the gap above each colored leg, and pins 5, 6 and 7 into row j.
+as in Lesson 15: its longest leg in the bottom − rail by column 42, a 220 Ω
+resistor across the gap above each colored leg, and pins 5, 6 and 7 into row
+j.
 
 Board 1 lies below the breadboard in module A's place, its pins toward the
 board, with three wires: **48** up into f53, where pin 19's wire waits in
-j53; **47** up into c55, the middle of the divider; and **GND** to the − rail
-at B-59.
+j53; **47** up into c55, the middle of the divider; and **GND** to the
+bottom − rail by column 59.
 
 <!-- bench -->
 
@@ -259,8 +260,8 @@ shows it on the screen as a message instead.
 | Messages arrive, but the phone never gets a reply | Check board 1's 47 goes to c55, pin 18's wire is in j55, and the divider's 1 kΩ is from g55 to e55 and 2 kΩ from a55 to the − rail. |
 | `Too soon to send` on the Serial Monitor | The node takes a message at most every 1.5 seconds: press the button more slowly. |
 | The Mega shows a command instead of obeying it | A command must be the whole message, with nothing after it: no full stop, no space. Some keyboards add a space after a word they finish for you. |
-| The reply to `temp?` is `No reading yet` | Wait a few seconds after starting. If it stays, check the DHT11: S to pin 16, + to T+36, − to T-37. |
-| The lamp stays dark, or a color is missing | Check the RGB LED's longest leg is in B-42, and follow each color from its pin: 5 to j41, 6 to j44, 7 to j46, each through its resistor. |
+| The reply to `temp?` is `No reading yet` | Wait a few seconds after starting. If it stays, check the DHT11: S to pin 16, + to the top + rail by column 36, − to the top − rail by column 37. |
+| The lamp stays dark, or a color is missing | Check the RGB LED's longest leg is in the bottom − rail by column 42, and follow each color from its pin: 5 to j41, 6 to j44, 7 to j46, each through its resistor. |
 | The app can't find board 2 | Make sure it has power, and that Bluetooth is on. Only one phone at a time can pair with a board. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 

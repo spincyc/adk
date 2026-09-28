@@ -114,11 +114,11 @@ of these are true:
 !!! danger "The motors' power"
     Board B's power module stays beside its breadboard as in Lesson 44,
     never plugged into it, both its jumpers **off**, its red wire from
-    **5V** to B+61 and its black wire from **GND** to B-61. The servo and
-    the motor take their power
-    from the bottom rails, never from the Mega; the L293D's logic and the
-    sensor run on the Mega's own 5 V, from the top rails and the inner 5V
-    pin. The modem stays on the Mega's 3.3V pin.
+    **5V** to the bottom + rail and its black wire from **GND** to the
+    bottom − rail, both by column 61. The servo and the motor take their
+    power from the bottom rails, never from the Mega; the L293D's logic and
+    the sensor run on the Mega's own 5 V, from the top rails and the inner
+    5V pin. The modem stays on the Mega's 3.3V pin.
 
 Both modems stay at their bridge homes. On each board the modem, its
 divider and its four wires stay just as they are.
@@ -150,15 +150,15 @@ moves to the Mega's other spare serial port, **Serial2**, on pins 16
 j44, and put wires from pins 16 and 17 into those same holes: 16 into
 j46, the divider's top, and 17 into j44, beside the modem's TXD.
 
-Then build Lesson 21's turret, just as it was there: the sensor above
-the Mega, its VCC on the inner 5V pin at the top of the long header and
-its GND in T-5; the L293D across the middle gap from column 12, its
-logic on the top rails and the motor's supply on the bottom ones; and
-the motor above the board, its leads down into j14 and j17. The wires
-from pins 16 and 17 go up past the sensor's left end and over the
-motor, to reach the modem's holes from above. As in Lesson 21, a black
-wire from B-60 to T-60 joins the top − rail, where the sensor's GND goes,
-to the bottom one: the power module feeds only the bottom rails.
+Then build Lesson 21's turret, just as it was there: the sensor above the
+Mega, its VCC on the inner 5V pin at the top of the long header and its GND
+in the top − rail by column 5; the L293D across the middle gap from column
+12, its logic on the top rails and the motor's supply on the bottom ones;
+and the motor above the board, its leads down into j14 and j17. The wires
+from pins 16 and 17 go up past the sensor's left end and over the motor, to
+reach the modem's holes from above. As in Lesson 21, a black wire at the far
+end, by column 60, joins the top − rail, where the sensor's GND goes, to the
+bottom one: the power module feeds only the bottom rails.
 
 <!-- bench B -->
 
@@ -269,11 +269,11 @@ the middle, and the fan stays still until you press the stick.
 | What you see | Try this |
 |---|---|
 | `Not connected` stays on the screen, and the **L** LED stays dark | Check Board A runs **Joystick** and Board B runs **Turret**. Check Board B's modem wires now come from pins 16 and 17: 16 into j46, 17 into j44. |
-| The turret never moves | Hold the joystick with its pins pointing left, as in Lesson 26: held another way round, pushing left or right may do nothing. Is the power module on, with its LED lit? Check its red wire from 5V to B+61 and its black wire from GND to B-61, then the servo's plug: brown to B-54, red to B+53, orange to pin 44. |
+| The turret never moves | Hold the joystick with its pins pointing left, as in Lesson 26: held another way round, pushing left or right may do nothing. Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 61, then the servo's plug: brown to the bottom − rail by column 54, red to the bottom + rail by column 53, orange to pin 44. |
 | The turret turns the wrong way | Change `aim - stick.x () / 25` to `aim + stick.x () / 25` in **Joystick**. |
 | The turret creeps when nobody touches the stick | The stick moved while the sketch started. Press Board A's reset button with your hands off the stick. |
-| `Fan on`, but the fan never spins | Is anything closer than 15 cm, or the sensor facing a wire or the desk? Then check the L293D as in Lesson 20: pin 4 in j19, 8 in j13, 9 in j18, the motor's leads in j14 and j17, j12 to T+12, a15 to the − rail and a19 to B+19. |
-| The bottom row always says `Nothing ahead`, or jumps about | Check the sensor: Trig to 14, Echo to 15, VCC to the inner 5V pin, GND to T-5, and that it faces forwards, clear of the fan. |
+| `Fan on`, but the fan never spins | Is anything closer than 15 cm, or the sensor facing a wire or the desk? Then check the L293D as in Lesson 20: pin 4 in j19, 8 in j13, 9 in j18, the motor's leads in j14 and j17, j12 to the top + rail by column 12, a15 to the − rail and a19 to the bottom + rail by column 19. |
+| The bottom row always says `Nothing ahead`, or jumps about | Check the sensor: Trig to 14, Echo to 15, VCC to the inner 5V pin, GND to the top − rail by column 5, and that it faces forwards, clear of the fan. |
 | The Mega resets, or the servo jerks, when the fan starts | Check the servo's red wire and a19 go to the bottom + rail, fed by the power module, never the Mega's 5V. |
 | The **L** LED blinks long and short flashes, and nothing works | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 

@@ -68,9 +68,10 @@ module, just as the servo in Lesson 17 took its power from there.
     Unplug the USB cable and switch the power module off before you change
     any wiring. The power module lies beside the board as in Lesson 17,
     never plugged into it, both its jumpers **off**, its red wire from
-    **5V** to B+61 and its black wire from **GND** to B-61. Never power the
-    driver from the Mega's 5V pin: the motor could pull the Mega's power
-    down and reset it, or damage it.
+    **5V** to the bottom + rail and its black wire from **GND** to the
+    bottom − rail, both by column 61. Never power the driver from the Mega's
+    5V pin: the motor could pull the Mega's power down and reset it, or
+    damage it.
 
 <!-- bench -->
 
@@ -143,7 +144,7 @@ positive means for your motor.
 
 | What you see | Try this |
 |---|---|
-| Nothing moves, and the driver's LEDs stay dark | Check the power module is switched on and its LED is lit, its red wire goes from 5V to B+61 and its black one from GND to B-61, and the red and black wires go from the bottom rails to the driver's + and − pins. |
+| Nothing moves, and the driver's LEDs stay dark | Check the power module is switched on and its LED is lit, its red wire goes from 5V to the bottom + rail and its black one from GND to the bottom − rail, both by column 61, and the red and black wires go from the bottom rails to the driver's + and − pins. |
 | The LEDs flicker but the shaft doesn't turn | Push the motor's white plug fully into its socket. |
 | The motor hums or shakes but hardly turns | Two of the IN wires are swapped: IN1 to A8, IN2 to A9, IN3 to A10, IN4 to A11. |
 | Nothing happens when you press | The button must straddle the middle gap, with pin 22's wire in column 2 and the black wire from a4 to the − rail. |

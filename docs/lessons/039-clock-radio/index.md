@@ -88,7 +88,8 @@ their wires. Then everything comes back to
 its home:
 
 - the **clock module** lies on its side above the board, as in Lessons 32
-  and 33, its GND and VCC dropping into T-29 and T+30;
+  and 33, its GND and VCC dropping into the top − and + rails by columns 29
+  and 30;
 - the **rotary encoder** sits above the Mega on five wires, as in
   Lesson 33;
 - the **FM radio** stands in row j, columns 45 to 52, as in Lesson 37, with

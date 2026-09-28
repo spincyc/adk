@@ -139,22 +139,22 @@ lesson with it have a second home past it.
 
 | Part | Home | Beside the screen |
 |---|---|---|
-| GND from the Mega | The GND at the end of the long header, outer pin, into B-3 | Same |
-| 5V from the Mega | The 5V at the top of the long header, outer pin, into T+3 | Same |
-| Joining the rails, when a lesson needs both pairs | B-60 to T-60 (GND), T+61 to B+61 (5V) | Same |
+| GND from the Mega | The GND at the end of the long header, outer pin, into the bottom − rail by column 3 | Same |
+| 5V from the Mega | The 5V at the top of the long header, outer pin, into the top + rail by column 3 | Same |
+| Joining the rails, when a lesson needs both pairs | At the far end: the bottom − rail to the top − rail by column 60 (GND), the top + rail to the bottom + rail by column 61 (5V) | Same |
 | Button on 22, 23, 24, 25 | Across the gap in columns 2–4, 8–10, 14–16, 20–22: the pin into row j of the left column, a black jumper from row a of the right column to the − rail | 23 in columns 38–40 |
 | LED on 26, 27, 28, 29, 30 | Columns 6, 12, 18, 24, 30: the pin into j, 220 Ω from g across the gap to e, the long leg in b, the short leg in b of the next column, a black jumper from a of that column to the − rail | — |
 | Dimmable LED on 3 | Column 38, laid out like the other LEDs | Same |
 | Buzzer, active on 12 or passive on 10 | Across the gap in column 34: + in f, − in e, the pin into j; a black jumper (active) or the 220 Ω resistor (passive) from a to the − rail. With the four-digit display's wiring (Lesson 12), column 35, clear of the wires that rise over the gap in column 32 | Column 51 |
-| RGB LED on 5, 6, 7 | Legs in a6 (red), a9 (green), a11 (blue), the common leg in B-7; a 220 Ω resistor across the gap above each colored leg, and its pin into j | Columns 41–46, the same shape |
-| Light or temperature divider, on A1 or A2 | Column 40: a red jumper from j40 to T+40, the sensor across the gap in f40 and e40, the pin into a40, 10 kΩ from c40 to c43, a black jumper from a43 to the − rail | Same |
+| RGB LED on 5, 6, 7 | Legs in a6 (red), a9 (green), a11 (blue), the common leg in the bottom − rail by column 7; a 220 Ω resistor across the gap above each colored leg, and its pin into j | Columns 41–46, the same shape |
+| Light or temperature divider, on A1 or A2 | Column 40: a red jumper from j40 to the top + rail by column 40, the sensor across the gap in f40 and e40, the pin into a40, 10 kΩ from c40 to c43, a black jumper from a43 to the − rail | Same |
 | Knob on A0 | Across the middle gap: its outer legs in f45 and f47, with jumpers from j45 to the top − rail and j47 to the top + rail; its wiper in d46, A0 into a46 | The same, or in columns 57–59 when the RGB LED or the FM radio takes columns 41–46 |
 | The screen (LCD, contrast knob, backlight) | Knob across the middle gap (outer legs in f5 and f7, wiper in d6), the LCD's pins in a9–a24, wired by `bench.screen ()` | — |
-| Rotary encoder | Standing in row a, columns 45–49, its knob toward you: GND, +, SW, DT and CLK from the left; jumpers from e45 to T-45 and e46 to T+46, and 22, 19 and 18 into e47, e48 and e49 | — |
-| Power module | Lying to the right of the breadboard, not plugged in, both jumpers off: a red wire from its 5V (or 3.3V) pin into B+61, a black wire from its GND into B-61 | Same |
-| FM radio | Standing in row j, columns 45–52 (GPIO2 in j45 to 3.3V in j52), its board over the top rails: pins 42, 41 and 40 up from below into f47, f49 and f50, the Mega's 3.3V into f52, 1 kΩ from h47 to h52, a black jumper from f51 to B-51 | Same |
-| 433 MHz receiver | Standing in row j, columns 48–51 (VCC in j48): 5V from the power header into f48, pin 43 into f49, a black jumper from f51 to B-51 | Same |
-| 433 MHz transmitter | Standing in row j, columns 56–59 (EN in j56): pin 46 into f54, 1 kΩ from h54 to h57 and 2 kΩ from g57 to e57, a black jumper from a57 to B-57; the Mega's 3.3V into f58, a black jumper from f59 to B-59 | Same |
+| Rotary encoder | Standing in row a, columns 45–49, its knob toward you: GND, +, SW, DT and CLK from the left; jumpers from e45 to the top − rail by column 45 and e46 to the top + rail by column 46, and 22, 19 and 18 into e47, e48 and e49 | — |
+| Power module | Lying to the right of the breadboard, not plugged in, both jumpers off: a red wire from its 5V (or 3.3V) pin into the bottom + rail by column 61, a black wire from its GND into the bottom − rail by column 61 | Same |
+| FM radio | Standing in row j, columns 45–52 (GPIO2 in j45 to 3.3V in j52), its board over the top rails: pins 42, 41 and 40 up from below into f47, f49 and f50, the Mega's 3.3V into f52, 1 kΩ from h47 to h52, a black jumper from f51 to the bottom − rail by column 51 | Same |
+| 433 MHz receiver | Standing in row j, columns 48–51 (VCC in j48): 5V from the power header into f48, pin 43 into f49, a black jumper from f51 to the bottom − rail by column 51 | Same |
+| 433 MHz transmitter | Standing in row j, columns 56–59 (EN in j56): pin 46 into f54, 1 kΩ from h54 to h57 and 2 kΩ from g57 to e57, a black jumper from a57 to the bottom − rail by column 57; the Mega's 3.3V into f58, a black jumper from f59 to the bottom − rail by column 59 | Same |
 
 The radios' homes overlap others beside the screen: the FM radio's the RGB
 LED's and the buzzer's, the receiver's the buzzer's, and the transmitter's
@@ -167,43 +167,43 @@ outer pair feed the rails.
 
 | Module | Home | Power |
 |---|---|---|
-| Ultrasonic sensor | Above the Mega, just right of pins 14 and 15 | VCC from the inner 5V pin; GND into T-5 |
+| Ultrasonic sensor | Above the Mega, just right of pins 14 and 15 | VCC from the inner 5V pin; GND into the top − rail by column 5 |
 | Motor (on the L293D) | Above the board, its leads straight down into j14 (black) and j17 (red) | From the chip |
-| Servo | Below the board, its plug under columns 52–54; on a bridge board, lower down, below the modem, its signal wire running under it | + into B+53, − into B-54 |
+| Servo | Below the board, its plug under columns 52–54; on a bridge board, lower down, below the modem, its signal wire running under it | + into the bottom + rail by column 53, − into the bottom − rail by column 54 |
 | Keypad | High above the gap between the Mega and the breadboard, its eight wires rising from pins 22–29 | — |
-| DHT11 | Above the board, its pins over columns 35–37 | + into T+36, − into T-37 |
-| 18B20 | Above the board, its pins (printed G, R, Y) over columns 26–28 | R (+) into T+27, G (−) into T-25 |
-| IR receiver | Above the gap between the Mega and the breadboard; beside the screen, above columns 28–30 (its pins printed G, R, Y) | The inner 5V and GND pins; beside the screen, R into T+29 and G into T-28 |
+| DHT11 | Above the board, its pins over columns 35–37 | + into the top + rail by column 36, − into the top − rail by column 37 |
+| 18B20 | Above the board, its pins (printed G, R, Y) over columns 26–28 | R (+) into the top + rail by column 27, G (−) into the top − rail by column 25 |
+| IR receiver | Above the gap between the Mega and the breadboard; beside the screen, above columns 28–30 (its pins printed G, R, Y) | The inner 5V and GND pins; beside the screen, R into the top + rail by column 29 and G into the top − rail by column 28 |
 | PIR sensor | Below the Mega, under the power header | The power header's 5V and GND |
 | Obstacle and beam-break sensors | Below the board, under columns 45 and 36 | From the bottom rails beside them |
-| Obstacle sensor, beside the bridge's modem | Above the board, pins over columns 35–38 (the DHT11's place) | + into T+36, GND into T-35 |
-| Tap sensor, beside the PIR | Above the board, pins over columns 26–28 (the 18B20's place) | + into T+27, − into T-28 |
+| Obstacle sensor, beside the bridge's modem | Above the board, pins over columns 35–38 (the DHT11's place) | + into the top + rail by column 36, GND into the top − rail by column 35 |
+| Tap sensor, beside the PIR | Above the board, pins over columns 26–28 (the 18B20's place) | + into the top + rail by column 27, − into the top − rail by column 28 |
 | Sound sensor | Below the Mega, under the power header | + and G from the power header's 5V and GND |
 | Water sensor | Below the Mega, beside the sound sensor | + from A7, − into the power header's second GND |
-| LED matrix | Below the gap between the Mega and the breadboard, facing up | VCC from the inner 5V pin; GND into B-5 |
+| LED matrix | Below the gap between the Mega and the breadboard, facing up | VCC from the inner 5V pin; GND into the bottom − rail by column 5 |
 | Joystick | Below the Mega, under pins A3 and A4 | The power header's 5V and the inner GND pin |
 | Rotary encoder, where the board is full (beside the radios, the buzzer beside the screen, or a bridge's modem) | High above the Mega, over pins 18 and 19 | The inner 5V pin and the GND beside pin 13 |
-| Clock module | Above the board on its side, over the screen's wires | GND into T-29, VCC into T+30 |
-| Stepper driver | Below the Mega, under pins A8–A11 | From the power module's bottom rails: + into B+5, − into B-6 |
+| Clock module | Above the board on its side, over the screen's wires | GND into the top − rail by column 29, VCC into the top + rail by column 30 |
+| Stepper driver | Below the Mega, under pins A8–A11 | From the power module's bottom rails: + into the bottom + rail by column 5, − into the bottom − rail by column 6 |
 | RFID reader | Below the Mega, facing up | The Mega's 3.3V and the inner GND pin |
 | Tap sensor | Below the Mega, at its left end | The power header's 5V and GND |
 | Relay | Above the board, its pins toward the Mega and its screw terminals away from it | The inner 5V and GND pins |
-| LoRa modems (RYLR896) | Below the board past the button, aerials down: B (on Serial3) under columns 42–47, A (on Serial1) under columns 51–57. Each modem's TXD comes up into row f (44 for B, 53 for A), beside its RX pin in row j; its TX pin goes into j46 or j55, then 1 kΩ across the gap from g to e and 2 kΩ from a down to the − rail, and its RXD into row c of that column | The power module's bottom rails at 3.3 V: B's VDD into B+47 and GND into B-42, A's into B+57 and B-51 |
-| A bridge board's LoRa modem (Lessons 43–54) | Where Lesson 40's modem B lies: below the board under columns 42–47, aerial down, its TXD into f44 beside the RX pin in j44; the TX pin into j46, 1 kΩ from g46 to e46, 2 kΩ from a46 to B-46, and its RXD into c46 | Its VDD straight from the Mega's 3.3V pin, GND into B-42. Beside the RFID reader, which shares that pin, its VDD comes from the power module's bottom rails at 3.3 V, into B+47 (Lesson 51) |
-| IR LED (KY-005) | Below the board under columns 36–38, its LED pointing away: pin 3 into j38, 220 Ω from g38 across the gap to e38, S into a38 | − into B-36; its middle pin empty |
-| LoRa modules (E32) | The same places and dividers as the modems, aerials down. AUX comes up into f43 beside pin 43 (B) or f52 beside pin 41 (A); M0 and M1 into f and g of column 48 beside pin 42 (B) or column 57 beside pin 40 (A) | The power module's bottom rails at 5 V: B's VCC into B+42 and GND into B-41, A's into B+51 and B-49 |
-| Meshtastic board | In LoRa modem A's place below the board, its pins up: its 48 into f53, its 47 into c55 through A's divider, its GND into B-59 | Its own USB-C cable |
+| LoRa modems (RYLR896) | Below the board past the button, aerials down: B (on Serial3) under columns 42–47, A (on Serial1) under columns 51–57. Each modem's TXD comes up into row f (44 for B, 53 for A), beside its RX pin in row j; its TX pin goes into j46 or j55, then 1 kΩ across the gap from g to e and 2 kΩ from a down to the − rail, and its RXD into row c of that column | The power module's bottom rails at 3.3 V: B's VDD into the bottom + rail by column 47 and GND into the bottom − rail by column 42, A's into the bottom + rail by column 57 and the bottom − rail by column 51 |
+| A bridge board's LoRa modem (Lessons 43–54) | Where Lesson 40's modem B lies: below the board under columns 42–47, aerial down, its TXD into f44 beside the RX pin in j44; the TX pin into j46, 1 kΩ from g46 to e46, 2 kΩ from a46 to the bottom − rail by column 46, and its RXD into c46 | Its VDD straight from the Mega's 3.3V pin, GND into the bottom − rail by column 42. Beside the RFID reader, which shares that pin, its VDD comes from the power module's bottom rails at 3.3 V, into the bottom + rail by column 47 (Lesson 51) |
+| IR LED (KY-005) | Below the board under columns 36–38, its LED pointing away: pin 3 into j38, 220 Ω from g38 across the gap to e38, S into a38 | − into the bottom − rail by column 36; its middle pin empty |
+| LoRa modules (E32) | The same places and dividers as the modems, aerials down. AUX comes up into f43 beside pin 43 (B) or f52 beside pin 41 (A); M0 and M1 into f and g of column 48 beside pin 42 (B) or column 57 beside pin 40 (A) | The power module's bottom rails at 5 V: B's VCC into the bottom + rail by column 42 and GND into the bottom − rail by column 41, A's into the bottom + rail by column 51 and the bottom − rail by column 49 |
+| Meshtastic board | In LoRa modem A's place below the board, its pins up: its 48 into f53, its 47 into c55 through A's divider, its GND into the bottom − rail by column 59 | Its own USB-C cable |
 
 The four-digit display, from column 51, covers columns 44 to 63 in rows d
 to h, so it can't share a board with the bridge's modem.
 
 Chips and parts that stand in the board without a home above keep one place
-too: the 74HC595 across the gap in columns 18–25, the one-digit display
-from column 46 and the four-digit display from column 51 (with the rails
-joined by a black jumper from T-6 to B-6, since the display covers the far
-end); the GY-521 in row j, columns 9–16; the L293D across the gap from
-column 12; the tilt switch in c32 and c33; the relay's lamp in the LED shape
-in column 13.
+too: the 74HC595 across the gap in columns 18–25, the one-digit display from
+column 46 and the four-digit display from column 51 (with the rails joined
+by a black jumper from the top − rail to the bottom − rail, by column 6,
+since the display covers the far end); the GY-521 in row j, columns 9–16;
+the L293D across the gap from column 12; the tilt switch in c32 and c33; the
+relay's lamp in the LED shape in column 13.
 
 ## Reading resistors
 

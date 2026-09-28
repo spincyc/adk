@@ -93,11 +93,12 @@ side the Y arrow points to. ADK works them out for you in degrees with
     own address, `0x6B`. Its eight pins are named **5V**, **GND**, **SCL**,
     **SDA**, **3V3**, **RST**, **SWDIO** and **SWCLK**, in their own order,
     so stand it in the same holes, then move each of the four wires to the
-    column of the pin with its name: the red one from T+7 to **5V**'s
-    column, the two black ones that carry GND across the gap to **GND**'s,
-    pin 21's to **SCL**'s and pin 20's to **SDA**'s. Its other four pins
-    stay unconnected. Its axes should follow the arrows printed on it, but
-    that hasn't been checked on a real board: the bubble test tells you.
+    column of the pin with its name: the red one from the top + rail, by
+    column 7, to **5V**'s column, the two black ones that carry GND across
+    the gap to **GND**'s, pin 21's to **SCL**'s and pin 20's to **SDA**'s.
+    Its other four pins stay unconnected. Its axes should follow the arrows
+    printed on it, but that hasn't been checked on a real board: the bubble
+    test tells you.
 
 When you are done, these are the connections your circuit makes:
 
@@ -152,7 +153,7 @@ the numbers themselves, try the second challenge below.
 
 | What you see | Try this |
 |---|---|
-| *NO SENSOR* scrolls | Check SDA goes to pin 20 and SCL to 21: they can't be swapped. Check VCC's red jumper from the top + rail to i9 and the red wire from the Mega's 5V to T+3, GND's two black jumpers (f10 to e10, a10 to the − rail), and that the header is pushed well into row j. |
+| *NO SENSOR* scrolls | Check SDA goes to pin 20 and SCL to 21: they can't be swapped. Check VCC's red jumper from the top + rail to i9 and the red wire from the Mega's 5V to the top + rail by column 3, GND's two black jumpers (f10 to e10, a10 to the − rail), and that the header is pushed well into row j. |
 | The bubble moves the wrong way left and right | Your module's X arrow points the other way. In `showBubble ()`, change `3 + lround (pitch / degreesPerDot)` to `3 - lround (pitch / degreesPerDot)`. |
 | The bubble moves the wrong way up and down | Change `3 - lround (roll / degreesPerDot)` to `3 + lround (roll / degreesPerDot)`. |
 | Up and down follow left and right instead | The arrows are turned a quarter round. Swap `pitch` and `roll` in the call to `showBubble ()`, then fix any direction as above. |

@@ -131,8 +131,8 @@ the modem's RXD through a divider, as in Lesson 40.
 
 Stick a label on each Mega, **A** and **B**, so you always know which is
 which. Then build the two boards the same way. Board A carries on from
-Lesson 42: take everything off but the black GND wire into B-3. Board B
-starts from an empty breadboard.
+Lesson 42: take everything off but the black GND wire into the bottom − rail
+by column 3. Board B starts from an empty breadboard.
 
 - **The button** on 22 and **the LEDs** on 26 (red) and 27 (yellow) go
   in at their homes, as in Lesson 2: the button across the middle gap in
@@ -163,7 +163,7 @@ Board B is built just as Board A is, on its own Mega and breadboard:
     | RXD | Listens to the Mega | c46, the middle of the divider |
     | TXD | Talks to the Mega | f44, beside pin 15's wire in j44 |
     | NC | Not connected inside | Nothing |
-    | GND | Ground | The bottom − rail, at B-42 |
+    | GND | Ground | The bottom − rail by column 42 |
 
     The names are printed on the board beside its pins. Lying below the
     breadboard, spring down, the pins run from GND on the left to VDD on
@@ -241,7 +241,7 @@ to check `isConnected ()` as well: Lesson 45's fan does.
 
 | What you see | Try this |
 |---|---|
-| The Serial Monitor says `No reply from the modem` | Check that board's modem: VDD to the Mega's 3.3V pin, GND to B-42, TXD up to f44 and RXD to c46, not swapped. Then the divider: pin 14 in j46, the 1 kΩ from g46 to e46, the 2 kΩ from a46 to the − rail. And pin 15 in j44. |
+| The Serial Monitor says `No reply from the modem` | Check that board's modem: VDD to the Mega's 3.3V pin, GND to the bottom − rail by column 42, TXD up to f44 and RXD to c46, not swapped. Then the divider: pin 14 in j46, the 1 kΩ from g46 to e46, the 2 kΩ from a46 to the − rail. And pin 15 in j44. |
 | Neither yellow LED lights | Check each board has its own sketch: Board A runs **BoardA**, Board B **BoardB**. Two boards with the same sketch have the same address, and both send to an address neither has. |
 | The yellow LEDs light, but a red one never does | Check the button on the other board: pin 22 in j2, the button across the gap in columns 2 to 4, and a4 to the − rail. Then this board's red LED: pin 26 in j6, the resistor from g6 to e6, the long leg in b6, and a7 to the − rail. |
 | The yellow LEDs flicker on and off | The boards barely hear each other. Bring them closer, keep the springs upright and away from metal, and keep your hand off them. |

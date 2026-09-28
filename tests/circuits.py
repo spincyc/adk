@@ -14,7 +14,7 @@ import tempfile
 ROOT = os.path.dirname (os.path.dirname (os.path.abspath (__file__)))
 sys.path.insert (0, os.path.join (ROOT, "docs", "_theme"))
 
-from bench import Bench, load, pin_words  # noqa: E402
+from bench import Bench, hole_words, load, pin_words  # noqa: E402
 from drawing import Drawing  # noqa: E402
 
 failures = []
@@ -178,6 +178,14 @@ expect ("stage titles", titles (finished (staged)),
 expect ("pins in words", pin_words ({"36", "A0", "9", "31", "33", "10", "32", "34", "35"}),
         "pins 9, 10, 31–36 and A0")
 expect ("a pin in words", pin_words ({"A3"}), "pin A3")
+
+# A rail's hole in words, never as B-7, whose B reads as row b: in running
+# text, and in the steps table as the rail with its column beneath.
+expect ("a rail's hole in words", hole_words ("B-7"), "the bottom − rail by column 7")
+expect ("a hole in words", hole_words ("j6"), "j6")
+railed = finished (blink (Bench ("test", columns=(1, 20))))
+expect ("a rail in the steps", railed.items[-1][2].places,
+        (("a7", ""), ("bottom − rail", "by column 7")))
 
 if failures:
     sys.exit ("tests/circuits.py:\n  " + "\n  ".join (failures))

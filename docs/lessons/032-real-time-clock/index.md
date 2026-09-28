@@ -194,9 +194,9 @@ cell's flat top, the side marked **+**, and nothing else.
 
 What the numbers tell you:
 
-- **The clock's supply** is the Mega's 5 V, carried from the red wire in
-  T+3 all along the top + rail to the clock's VCC wire in T+30, and to the
-  screen.
+- **The clock's supply** is the Mega's 5 V, carried along the top + rail
+  from the red wire by column 3 to the clock's VCC wire by column 30, and to
+  the screen.
 - **The coin cell** gives less: about 3 V, or a little more from a
   rechargeable LIR2032. While the rails give more than the cell, the
   DS1307 runs from them and leaves the cell alone. When the

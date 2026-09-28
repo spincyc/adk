@@ -91,13 +91,13 @@ in b38, and its short leg in b39 has a short black wire down to the − rail.
 A white LED keeps about 3.2 V for itself, like the blue one, so through
 220 Ω it takes about 8 mA at full brightness. Pin 3 is one of the Mega's pins that can do PWM.
 
-The knob stands across the middle gap, its outer legs in f45 and f47 and
-its wiper in d46. A black wire takes its left leg from j45 up to the top −
-rail, and a red wire takes its right leg from j47 up to the top + rail,
-which the Mega's 5 V feeds at T+3. A0's wire goes into a46, below the
-wiper. The top − rail gets GND from a black wire at the far end, from B-60
-to T-60. These are the knob's own holes: Lesson 9 puts it back in exactly
-the same place.
+The knob stands across the middle gap, its outer legs in f45 and f47 and its
+wiper in d46. A black wire takes its left leg from j45 up to the top − rail,
+and a red wire takes its right leg from j47 up to the top + rail, which the
+Mega's 5 V feeds by column 3. A0's wire goes into a46, below the wiper. The
+top − rail gets GND from a black wire at the far end, by column 60, from the
+bottom − rail. These are the knob's own holes: Lesson 9 puts it back in
+exactly the same place.
 
 When you are done, these are the connections your circuit makes:
 
@@ -159,7 +159,7 @@ a quarter of the height of the knob line.
 |---|---|
 | The LED never lights, wherever the knob is | Turn the LED round: its long leg goes in b38. Check the wire from pin 3 is in j38, the resistor really crosses the gap, from g38 to e38, and the black wire joins a39 to the − rail. |
 | The LED flickers or changes by itself | A0 isn't reaching the wiper: its wire must be in a46, the wiper's column. |
-| The plotter's knob line sits at 0 or 1023 whatever you do | One outer leg has lost its supply. Check the Mega's red wire into T+3 and black wire into B-3, and the knob's wires: black from j45 to the top − rail, red from j47 to the top + rail, and the black one from B-60 to T-60 that joins the − rails. |
+| The plotter's knob line sits at 0 or 1023 whatever you do | One outer leg has lost its supply. Check the Mega's red wire into the top + rail by column 3 and black wire into the bottom − rail by column 3, and the knob's wires: black from j45 to the top − rail, red from j47 to the top + rail, and the black one from the bottom − rail to the top − rail, by column 60 that joins the − rails. |
 | Full brightness comes at the "wrong" end | Nothing is wrong. If you'd like it the other way round, swap the outer legs' wires, as "About the knob" says, or use `knob.read (255, 0)` for the brightness. |
 | The knob or a wire gets warm | Unplug now. The middle leg, the one on its own, is joined to 5 V or GND; it must go only to A0. |
 | The Serial Plotter shows nothing, or nonsense | Pick 9600 baud, and close the Serial Monitor: only one of them can use the port at a time. |

@@ -190,7 +190,7 @@ all the den knows. A real alarm treats that silence as trouble too, and
 | A tripwire never shows | Check its wire: the PIR's OUT to A12, the tilt switch's A14 into a32, the beam-break's S to A15, the obstacle's OUT to pin 16, the tap's S to pin 17. Watch the module's own LED: if that doesn't light, check its + and GND on the rails. |
 | A tripwire shows on its own, over and over | The PIR may be settling, or seeing warm air: give it a minute. The obstacle sensor may see too far: turn its knob back. |
 | A tripwire shows when it stops, not when it starts | That module is the other way round from most: swap `adk::ActiveHigh` in or out of its line in **Door**. |
-| POWER does nothing | Aim the remote at the receiver. Check its Y pin (the signal) goes to pin 2, its R to T+39 and its G to T-37. Lesson 22's sketch shows your remote's codes. |
+| POWER does nothing | Aim the remote at the receiver. Check its Y pin (the signal) goes to pin 2, its R to the top + rail by column 39 and its G to the top − rail by column 37. Lesson 22's sketch shows your remote's codes. |
 | `ALARM!` but no sound | Check the buzzer's + leg in f51 under pin 12's wire in j51, and the black wire from a51 to the − rail. |
 | The door's red LED never lights | Check pin 26's wire to j6 and the black wire from a7 to the − rail. It lights only while the den says armed. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |

@@ -156,14 +156,14 @@ lessons alike. [The kit page](kit.md#breadboard-homes) gives each part's home.
   parts; the holes never change, so a lesson never repeats them.
 - **Power.** Never wire the Mega's 5V or GND to a rail: the site does it the
   same way in every lesson, from the outer GND at the end of the long header
-  into B-3 and the outer 5V at its top into T+3, and joins the other rail of
-  a pair at the far end (B-60 to T-60, T+61 to B+61) only when a part uses
-  it. Those two header pins are kept for the rails. With the power module,
+  into `B-3` and the outer 5V at its top into `T+3`, and joins the other
+  rail of a pair at the far end (`B-60` to `T-60`, `T+61` to `B+61`) only
+  when a part uses it. Those two header pins are kept for the rails. With the power module,
   the Mega's 5V still feeds the top rails, for the screen and the sensors,
   whose signals come from the Mega too, so nothing is ever powered
   backwards through its inputs; the module feeds only the bottom rails, for
   motors and servos (or 3.3 V for LoRa modems); and the Mega's GND joins
-  them all at B-3.
+  them all at `B-3`.
 - **An LED and its resistor** away from a home: the pin's wire into row j
   of column *c*, the resistor standing across the middle gap from g*c* to
   e*c*, the LED's long leg in b*c* and its short leg in b*c+1*, and a black
@@ -176,6 +176,12 @@ lessons alike. [The kit page](kit.md#breadboard-homes) gives each part's home.
 - **The screen.** `bench.screen ()` builds the LCD at its home with its
   contrast knob, power, and pins 31 to 36, wired the same in every lesson,
   so it can stay on the breadboard from one lesson to the next.
+- **Rails.** In `circuit.py` a rail's hole is named for its rail and the
+  column beside it: `B-3` is the bottom − rail by column 3, and `T+61` the
+  top + rail by column 61. A page never uses those names, whose B and T
+  read as rows b and t: it says "the bottom − rail by column 3", as the
+  build steps do, and `make site` fails on a rail's name in a page's text
+  outside code.
 - **Wires** find their own way round parts, labels and each other. When a
   wire needs to go a particular way, name holes or points it passes
   through: `bench.wire ("36", "e18", via=["j14"])`, where a point is
@@ -205,8 +211,8 @@ lessons alike. [The kit page](kit.md#breadboard-homes) gives each part's home.
   supplies. So `bench.power_module ()` lays it to the right of the
   breadboard with both jumpers off, and wires the header in its middle,
   which gives 5 V and 3.3 V whatever the jumpers say, to the bottom rails:
-  a red wire from its 5V pin into B+61 and a black wire from its GND into
-  B-61. `bench.power_module ("3.3V")` takes the red wire from its 3.3V pin
+  a red wire from its 5V pin into `B+61` and a black wire from its GND into
+  `B-61`. `bench.power_module ("3.3V")` takes the red wire from its 3.3V pin
   instead, for LoRa modems.
 
 A circuit that could never work stops the site: a Mega pin whose wire

@@ -80,13 +80,14 @@ zones, and makes the gap between beeps 10 ms for every centimeter:
 <!-- steps -->
 
 ??? info "Joining the two − rails"
-    The long black wire at the far end, from B-60 to T-60, is new. The
-    Mega's GND comes into the bottom − rail at B-3, but the sensor's GND
-    goes into the top one, close to the sensor. The two rails aren't joined
-    inside the breadboard, so this wire joins them, and the sensor, the
-    LEDs and the buzzer all share the Mega's GND. The sensor's VCC wire
-    takes a 5V pin of its own, the inner one at the top of the long header,
-    just along from Trig and Echo: it needs only about 15 mA.
+    The long black wire at the far end, from the bottom − rail to the
+    top − rail, by column 60, is new. The Mega's GND comes into the
+    bottom − rail by column 3, but the sensor's GND goes into the top one,
+    close to the sensor. The two rails aren't joined inside the breadboard,
+    so this wire joins them, and the sensor, the LEDs and the buzzer all
+    share the Mega's GND. The sensor's VCC wire takes a 5V pin of its own,
+    the inner one at the top of the long header, just along from Trig and
+    Echo: it needs only about 15 mA.
 
 When you are done, these are the connections your circuit makes:
 

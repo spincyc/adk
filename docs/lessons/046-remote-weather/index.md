@@ -103,13 +103,13 @@ When you are done, these are the connections Board A makes:
 
 ### Board B, indoors
 
-Its modem goes back to Serial3: take out the wires from pins 16 and 17,
-and put pins 14 and 15 into j46 and j44 again. The screen goes at its
-home, as in Lesson 13, and the clock module on its side above it, as in
-Lesson 32. The RGB LED has the same shape as beside the screen in Lesson
-15, but the modem has those columns now, so it stands just past the modem:
-its longest leg in the bottom − rail at B-49, red in a48, green in a51 and
-blue in a53, each color's resistor across the gap above it.
+Its modem goes back to Serial3: take out the wires from pins 16 and 17, and
+put pins 14 and 15 into j46 and j44 again. The screen goes at its home, as
+in Lesson 13, and the clock module on its side above it, as in Lesson 32.
+The RGB LED has the same shape as beside the screen in Lesson 15, but the
+modem has those columns now, so it stands just past the modem: its longest
+leg in the bottom − rail by column 49, red in a48, green in a51 and blue in
+a53, each color's resistor across the gap above it.
 
 <!-- bench B -->
 
@@ -199,14 +199,14 @@ everything back.
 
 | What you see | Try this |
 |---|---|
-| Board B always says `No news` and Board A's green LED stays off | The boards don't hear each other. Check each modem as in Lesson 43: TXD into f44, pin 15 into j44, pin 14 into j46 with the 1 kΩ and 2 kΩ, RXD into c46, GND into B-42 and VDD on the 3.3V pin. |
+| Board B always says `No news` and Board A's green LED stays off | The boards don't hear each other. Check each modem as in Lesson 43: TXD into f44, pin 15 into j44, pin 14 into j46 with the 1 kΩ and 2 kΩ, RXD into c46, GND into the bottom − rail by column 42 and VDD on the 3.3V pin. |
 | Board A's green LED is on, but Board B says `No news` | Board B hears nothing, but Board A hears Board B: check Board B's TXD and pin 15, and Board A's RXD and its divider. |
-| `Air 0.0°C  0%` | The DHT11 on Board A isn't answering: check S to pin 16, + to T+36, − to T-37, and wait two seconds. |
+| `Air 0.0°C  0%` | The DHT11 on Board A isn't answering: check S to pin 16, + to the top + rail by column 36, − to the top − rail by column 37, and wait two seconds. |
 | `DS 0.0` | Check the 18B20's Y pin (the signal) goes to pin 17, its R to the top + rail and its G to the top − rail. |
 | `NTC` shows about −77 or hundreds | As in Lesson 14: the thermistor's legs in f33 and e33, the red wire from j33 to the top + rail, the 10 kΩ from c33 to c36. |
-| `Light` stays at 0 or 100 | Check the photoresistor in f40 and e40, the red wire from j40 to T+40, the 10 kΩ from c40 to c43, and A1's wire in a40. |
+| `Light` stays at 0 or 100 | Check the photoresistor in f40 and e40, the red wire from j40 to the top + rail by column 40, the 10 kΩ from c40 to c43, and A1's wire in a40. |
 | The time stays `00:00:00` after reports arrive, or is wrong | Check the clock module's SDA on pin 20 and SCL on 21. Lesson 32 shows how to set it. |
-| The light never comes on | Check its longest leg is in B-49, and each color's wire: pin 5 to j48, pin 6 to j51, pin 7 to j53. |
+| The light never comes on | Check its longest leg is in the bottom − rail by column 49, and each color's wire: pin 5 to j48, pin 6 to j51, pin 7 to j53. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"

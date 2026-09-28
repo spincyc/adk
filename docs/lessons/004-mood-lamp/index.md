@@ -83,10 +83,10 @@ time you choose.
 
     The legs come out of the LED a tenth of an inch apart, but their holes
     are further apart than that: red in a6, green three columns on in a9,
-    blue in a11, and the common leg down in the − rail at B-7. Spread the
-    legs gently with your fingers until each lines up with its hole, then
-    push the LED in. The common leg is long enough to reach straight down
-    into the − rail, so it needs no wire of its own.
+    blue in a11, and the common leg down in the bottom − rail by column 7.
+    Spread the legs gently with your fingers until each lines up with its
+    hole, then push the LED in. The common leg is long enough to reach
+    straight down into the − rail, so it needs no wire of its own.
 
     The RGB LED takes the red LED's place from Lesson 3, so that LED's
     resistor, in g6 and e6, can stay where it is: it now feeds the red leg.
@@ -150,10 +150,10 @@ brighter to your eye than the red one.
 
 | What you see | Try this |
 |---|---|
-| Nothing lights at all | Check the longest leg is in the − rail (B-7), and the black wire from the Mega's GND reaches B-3. |
+| Nothing lights at all | Check the longest leg is in the bottom − rail by column 7, and the black wire from the Mega's GND reaches the bottom − rail by column 3. |
 | One color never appears | Follow that color from its pin: pin 5 to j6, the resistor from g6 across the gap to e6, the red leg in a6. Green is pin 6 and column 9, blue pin 7 and column 11. |
 | The colors are in the wrong places | Your LED's legs are in a different order. Swap the numbers in `adk::RgbLed lamp {5, 6, 7};` until orange looks orange, or swap the wires. |
-| Still nothing, and the longest leg is in the − rail | You may have a common-anode LED, whose longest leg is +. Move that leg into the bottom + rail, at B+7, and bring that rail 5 V: a red wire from the Mega's 5V pin to T+3, and another from T+61 to B+61. Then write `adk::RgbLed lamp {5, 6, 7, adk::ActiveLow};`. |
+| Still nothing, and the longest leg is in the − rail | You may have a common-anode LED, whose longest leg is +. Move that leg into the bottom + rail by column 7, and bring that rail 5 V: a red wire from the Mega's 5V pin to the top + rail by column 3, and another from the top + rail to the bottom + rail at the far end, by column 61. Then write `adk::RgbLed lamp {5, 6, 7, adk::ActiveLow};`. |
 | White looks a little pink or blue | That's normal: the three tiny LEDs are not exactly equally bright. |
 | The button does nothing | Push it firmly into the board, and check the black wire from a4 to the − rail. |
 

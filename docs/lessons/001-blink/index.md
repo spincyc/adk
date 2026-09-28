@@ -69,6 +69,8 @@ That is bright, and comfortably below the 20 mA a Mega pin is happy to give.
     a separate strip, across the gap. The long rows along the top and bottom
     edges, marked **+** and **−**, are the rails: each runs the whole length
     of the board, ready to carry 5 V and GND to wherever they're needed.
+    Any hole along a rail will do, but the steps name the one by a column,
+    as "the bottom − rail by column 7", to keep each wire short.
 
     That is why the circuit climbs down column 6. The orange wire (j6) and
     the resistor's top leg (g6) share the upper strip; the resistor stands
