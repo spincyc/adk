@@ -7,7 +7,7 @@ bench = Bench ("A 433 MHz receiver on pin 43 and transmitter on pin 46, the rota
 
 bench.screen (text=("20 letters 186ms", "Heard 5/5 100%"))
 
-bench.home_encoder ()
+bench.home_encoder (above=True)
 
 bench.home_rf_receiver ()
 

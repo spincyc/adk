@@ -86,7 +86,7 @@ and [Safety](../../safety.md#radios) have the details.
     stay silent.
 
 Everything goes back to a home it has had before: the screen at its home
-from Lesson 13, the rotary encoder above the Mega as in Lesson 29, and the
+from Lesson 13, the rotary encoder above the Mega as in Lesson 37, and the
 receiver and transmitter in row j past the screen, as in Lesson 38, with
 their wires coming round the bottom of the screen and up into row f.
 None of Lesson 54's parts stay, so take its Board A apart first, all but

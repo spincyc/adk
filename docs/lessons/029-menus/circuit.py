@@ -1,14 +1,14 @@
 # The screen at its home, and the red LED on 3 at its home. The rotary
-# encoder sits at its home above the Mega, on 18, 19 and 22; pin 3's wire
-# goes over the encoder to the far end of the board.
+# encoder stands at its home in row a, columns 45 to 49, its knob toward
+# you, on 18, 19 and 22.
 bench = Bench ("An LCD on pins 31 to 36, a rotary encoder on 18 and 19 with its switch "
-               "on 22, and a lamp on pin 3", columns=(1, 40))
+               "on 22, and a lamp on pin 3", columns=(1, 50))
 
 bench.screen (text=(">Level   60%", " Mode    Steady"))
 
 bench.home_encoder ()
 
-bench.home_led ("3", "red", via=[(2.65, -2.5), (9.1, -2.5)])
+bench.home_led ("3", "red")
 
 # Readings to take with a multimeter, with Mode on Steady: the lamp's pin at
 # two levels, and the LED's share.

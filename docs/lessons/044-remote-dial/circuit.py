@@ -10,7 +10,7 @@ dial = Bench ("Board A: the LCD on pins 31 to 36, a rotary encoder on 18 and 19 
 
 dial.screen (text=("Asked  135°", "Servo  120°"))
 
-dial.home_encoder ()
+dial.home_encoder (above=True)
 
 dial.home_modem (tx=[(3.15, 0.05), (4.3, 0.05), (4.3, -0.22), (9.65, -0.22)],
                  rx=[(3.25, 0.1), (4.35, 0.1), (4.35, -0.17), (9.45, -0.17)])

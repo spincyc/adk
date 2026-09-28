@@ -103,8 +103,8 @@ them.
 
 Take out the button, the two LEDs and their wires. The screen goes in at
 its home, as in Lesson 13, with its red wire from the Mega's 5V to the
-top + rail. The rotary encoder sits at its home above the Mega, as in
-Lesson 29: CLK and DT on pins 18 and 19, its switch, SW, on 22, its + on
+top + rail. The rotary encoder sits above the Mega on its five wires, as in
+Lesson 37, since the modem lies below where it stood in Lesson 29: CLK and DT on pins 18 and 19, its switch, SW, on 22, its + on
 the inner 5V pin at the top of the long header and its GND on the GND
 pin beside pin 13. The wires from pins 14 and 15 rise past the
 encoder's on their way to the modem.

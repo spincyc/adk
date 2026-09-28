@@ -147,6 +147,7 @@ lesson with it have a second home past it.
 | Light or temperature divider, on A1 or A2 | Column 40: a red jumper from j40 to T+40, the sensor across the gap in f40 and e40, the pin into a40, 10 kΩ from c40 to c43, a black jumper from a43 to the − rail | Same |
 | Knob on A0 | Across the middle gap: its outer legs in f45 and f47, with jumpers from j45 to the top − rail and j47 to the top + rail; its wiper in d46, A0 into a46 | The same, or in columns 57–59 when the RGB LED or the FM radio takes columns 41–46 |
 | The screen (LCD, contrast knob, backlight) | Knob across the middle gap (outer legs in f5 and f7, wiper in d6), the LCD's pins in a9–a24, wired by `bench.screen ()` | — |
+| Rotary encoder | Standing in row a, columns 45–49, its knob toward you: GND, +, SW, DT and CLK from the left; jumpers from e45 to T-45 and e46 to T+46, and 22, 19 and 18 into e47, e48 and e49 | — |
 | Power module | Lying to the right of the breadboard, not plugged in, both jumpers off: a red wire from its 5V (or 3.3V) pin into B+61, a black wire from its GND into B-61 | Same |
 | FM radio | Standing in row j, columns 45–52 (GPIO2 in j45 to 3.3V in j52), its board over the top rails: pins 42, 41 and 40 up from below into f47, f49 and f50, the Mega's 3.3V into f52, 1 kΩ from h47 to h52, a black jumper from f51 to B-51 | Same |
 | 433 MHz receiver | Standing in row j, columns 48–51 (VCC in j48): 5V from the power header into f48, pin 43 into f49, a black jumper from f51 to B-51 | Same |
@@ -178,7 +179,7 @@ outer pair feed the rails.
 | Water sensor | Below the Mega, beside the sound sensor | + from A7, − into the power header's second GND |
 | LED matrix | Below the gap between the Mega and the breadboard, facing up | VCC from the inner 5V pin; GND into B-5 |
 | Joystick | Below the Mega, under pins A3 and A4 | The power header's 5V and the inner GND pin |
-| Rotary encoder | High above the Mega, over pins 18 and 19 | The inner 5V pin and the GND beside pin 13 |
+| Rotary encoder, where the board is full (beside the radios, the buzzer beside the screen, or a bridge's modem) | High above the Mega, over pins 18 and 19 | The inner 5V pin and the GND beside pin 13 |
 | Clock module | Above the board on its side, over the screen's wires | GND into T-29, VCC into T+30 |
 | Stepper driver | Below the Mega, under pins A8–A11 | From the power module's bottom rails: + into B+5, − into B-6 |
 | RFID reader | Below the Mega, facing up | The Mega's 3.3V and the inner GND pin |

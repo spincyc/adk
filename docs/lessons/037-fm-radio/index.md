@@ -120,7 +120,8 @@ top rails, like the accelerometer in Lesson 28. Its three signal wires, and
 its 3.3 V, come round the bottom of the screen and up into row f. The volume
 knob stands across the middle gap beside the screen, as the contrast knob
 does: its two outer legs in row f, its wiper on its own in row d. The rotary
-encoder sits at its home above the Mega, as in Lesson 29.
+encoder sits above the Mega on its five wires, as in Lesson 33: the radio's
+wires, coming up into row f, need the columns where it stood in Lesson 29.
 
 <!-- bench -->
 

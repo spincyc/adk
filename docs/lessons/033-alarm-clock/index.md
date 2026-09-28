@@ -128,7 +128,9 @@ the flag's steps from wherever it is when the Mega starts.
     18 and 19, its push switch SW to pin 22, and it takes 5 V from the inner
     5V pin at the top of the long header and GND from the GND pin beside
     pin 13. If yours has its pins in a different order, go by the
-    printed names, not their places.
+    printed names, not their places. Here it sits above the Mega on its
+    five wires, rather than standing in the breadboard as in Lesson 29: the
+    passive buzzer beside the screen takes the holes it stood in there.
 
 When you are done, these are the connections your circuit makes:
 

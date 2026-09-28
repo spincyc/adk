@@ -546,11 +546,25 @@ class Bench:
         self.wire (f"j{first + 2}", f"T+{first + 2}")
         return self.wire ("A0", f"a{first + 1}", via=via)
 
-    # The rotary encoder above the Mega, its wires rising from 18 (CLK), 19
-    # (DT), 22 (SW), the inner 5V at the top of the long header and the GND
-    # beside pin 13, each in a lane of its own. lift raises the lanes, in
-    # inches, above other wires from the top header.
-    def home_encoder (self, lift=0.0):
+    # The rotary encoder standing in row a, columns 45 to 49, its knob toward
+    # you: its pins, GND, +, SW, DT and CLK from the left, as they read from
+    # the knob's side, and its board drawn lying over the bottom rails. Short
+    # jumpers take its GND and + up to the top rails, which the Mega's 5V
+    # feeds, and 22 (SW), 19 (DT) and 18 (CLK) come down into row e above
+    # their pins. Where the board is full, as beside the radios whose wires
+    # come up from below there, above sits it high above the Mega instead,
+    # its five wires rising from 18, 19, 22, the inner 5V at the top of the
+    # long header and the GND beside pin 13, each in a lane of its own; lift
+    # raises the lanes, in inches, above other wires from the top header.
+    def home_encoder (self, above=False, lift=0.0, first=45):
+        if not above:
+            self.header_module ("encoder", pins=("GND", "+", "SW", "DT", "CLK"), first=first,
+                                row="a")
+            self.wire (f"e{first}", f"T-{first}")
+            self.wire (f"e{first + 1}", f"T+{first + 1}")
+            for offset, pin in ((2, "22"), (3, "19"), (4, "18")):
+                self.wire (pin, f"e{first + offset}")
+            return self
         lane = lambda y: round (y - lift, 2)
         self.module ("encoder", at=(3.0, -2.1))
         self.wire ("18", "encoder.CLK", via=[(3.55, lane (0.25)), (3.6, lane (0.25))])

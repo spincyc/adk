@@ -11,8 +11,7 @@ parts:
   - Rotary encoder module
   - Red LED
   - 2 × 220 Ω resistors (red, red, black, black, brown)
-  - 5 female-to-male jumper wires
-  - 20 jumper wires
+  - 25 jumper wires
 ideas:
   - A knob that turns forever and counts clicks
   - How the encoder tells which way it turned
@@ -79,6 +78,14 @@ of 255 on its PWM pin, just as the dimmer's `write ()` set it in Lesson 7.
     Lesson 30 brings them back, in the same places. The LED gets its own
     220 Ω resistor, and so does the LCD's backlight.
 
+The rotary encoder plugs into the breadboard. Its pins bend at a right
+angle, so it stands upright in row a, columns 45 to 49, with its knob
+toward you. From the left, as you face the knob, its pins are **GND**,
+**+**, **SW**, **DT** and **CLK**: check the names printed beside yours,
+and turn it so they match. Two short jumpers take its GND and + up to the
+top rails, and the wires from pins 22, 19 and 18 come down into row e
+above SW, DT and CLK.
+
 <!-- bench -->
 
 <!-- steps -->
@@ -101,9 +108,7 @@ of 255 on its PWM pin, just as the dimmer's `write ()` set it in Lesson 7.
 
     As in Lesson 13, the potentiometer stands across the middle gap in
     columns 5 to 7, just left of the LCD's first pins: short jumpers take
-    its outer legs up to the top − and + rails, and its wiper to V0. The rotary encoder module's pins are labeled CLK,
-    DT, SW, + and GND: its + goes to the inner 5V pin at the top of the long
-    header, its GND to the GND pin beside pin 13.
+    its outer legs up to the top − and + rails, and its wiper to V0.
 
 When you are done, these are the connections your circuit makes:
 
@@ -210,9 +215,7 @@ it up as in [Lesson 1](../001-blink/index.md#measure-it): DC volts (**V⎓**),
 the black lead in **COM** and the red one in **V**, never in **10A**. Keep
 each probe tip in its own hole, so it can't bridge two.
 
-The encoder's wires run straight from the Mega to the module, out of the
-probes' reach, so these readings are on the lamp, where the menu's settings
-end up. Leave Mode on **Steady**, so the brightness holds still, and set
+These readings are on the lamp, where the menu's settings end up. Leave Mode on **Steady**, so the brightness holds still, and set
 Level with the knob before each reading. The black probe goes in the bottom
 − rail at column 40, just past the end of the LCD.
 

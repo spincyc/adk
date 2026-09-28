@@ -1,10 +1,8 @@
-# Lesson 29's rotary encoder stays as it was; the screen and LED go. The
-# GY-521 and the matrix come back as in Lesson 28, except that the matrix's
-# VCC takes the power header's 5V, since the encoder has the long header's
-# inner 5V pin. The passive buzzer stands at its home, pin 10's wire going
-# over the encoder.
+# Lesson 29's rotary encoder stays standing in row a; the screen and LED
+# go. The GY-521 and the matrix come back as in Lesson 28, and the passive
+# buzzer stands at its home.
 bench = Bench ("The GY-521 and LED matrix of Lesson 28, the rotary encoder of Lesson 29, and a "
-               "passive buzzer on pin 10", columns=(1, 40))
+               "passive buzzer on pin 10", columns=(1, 50))
 
 # The matrix is drawn turned half round, so its picture is given upside down.
 MAZE = ["#.......",
@@ -20,9 +18,9 @@ bench.home_encoder ()
 
 bench.home_gy521 ()
 
-bench.home_matrix (vcc="5V.power", pixels=[row[::-1] for row in reversed (MAZE)])
+bench.home_matrix (pixels=[row[::-1] for row in reversed (MAZE)])
 
-bench.home_buzzer ("passive", via=[(1.9, -2.5), (8.7, -2.5)])
+bench.home_buzzer ("passive")
 bench.closeup (1, 37)
 
 # Readings to take with a multimeter: the buzzer's pin on a high note and a

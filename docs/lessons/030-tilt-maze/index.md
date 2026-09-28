@@ -10,8 +10,8 @@ parts:
   - The rotary encoder from Lesson 29
   - Passive buzzer
   - 220 Ω resistor (red, red, black, black, brown)
-  - 10 female-to-male jumper wires
-  - 8 jumper wires
+  - 5 female-to-male jumper wires
+  - 14 jumper wires
 ideas:
   - A ball with a position and a speed
   - Walls stored as bits, and testing one bit
@@ -78,13 +78,12 @@ buzzer knocks. The edges of the matrix are walls too.
 ## Build it
 
 !!! warning "Unplug first"
-    Unplug the USB cable before you wire. Keep the rotary encoder and its
-    five wires from Lesson 29, and the Mega's GND and 5V wires, and take
-    the rest off. The GY-521 and the matrix you put aside in Lesson 29 come
-    back: the GY-521 in row j, columns 9 to 16, and the matrix below the
-    breadboard, both wired as in Lesson 28, except that the matrix's VCC
-    now takes the 5V pin on the power header, because the encoder uses the
-    one at the top of the long header. The passive buzzer goes through its
+    Unplug the USB cable before you wire. Keep the rotary encoder standing
+    in row a, with its two jumpers and three wires, from Lesson 29, and the
+    Mega's GND and 5V wires, and take the rest off. The GY-521 and the
+    matrix you put aside in Lesson 29 come back: the GY-521 in row j,
+    columns 9 to 16, and the matrix below the breadboard, both wired as in
+    Lesson 28. The passive buzzer goes through its
     220 Ω resistor, as in Lesson 27. You will pick up the breadboard to
     play, so use wires long enough to let it move, and keep the Mega flat
     on the table beside it.
@@ -169,7 +168,7 @@ seconds, where 10° took under two.
 | *NO SENSOR* scrolls | Check the GY-521: SDA to pin 20, SCL to pin 21, VCC's red jumper from the top + rail to i9, GND's black jumpers from f10 to e10 and a10 to the − rail, and its pins well down in row j. |
 | The ball rolls uphill | The GY-521's arrows point differently on your module. In `rollBall ()`, change `- (tilt.pitch () - flatPitch)` to `+`, or the `+` before `(tilt.roll () - flatRoll)` to `-`, whichever axis is wrong. |
 | The ball drifts on a level board | Hold it level when you click: that tilt is what counts as flat. |
-| Turning the knob does nothing | Check CLK on 18 and DT on 19, + on the inner 5V pin at the top of the long header, and GND on the GND pin beside pin 13. |
+| Turning the knob does nothing | Check the wires from pins 18 and 19 in e49 and e48, above CLK and DT, and the encoder's jumpers from e45 to the top − rail and e46 to the top + rail. |
 | Clicking doesn't start the maze | The knob's switch is on pin 22: press the shaft straight down. |
 | No sound | Check the buzzer's + leg is in f34, under pin 10's wire in j34, its other leg in e34, and the resistor runs from a34 to the bottom − rail, which needs its GND wire. |
 
