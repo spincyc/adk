@@ -100,7 +100,8 @@ resistor, and a module placed there starts a stage of its own; where that
 reads badly, as with a chip and its resistors, `bench.stage ("the 74HC595")`
 names the steps that follow, up to the next `home_*` call or `stage ()`. A
 stage built just the same way in an earlier lesson starts folded, pointing
-back to it.
+back to it. On the page, a learner can tick each step off, and choose one
+to light its part up in the drawing.
 
 ## Two-board lessons
 

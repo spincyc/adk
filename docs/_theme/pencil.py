@@ -7,6 +7,7 @@ same picture, so a drawing only changes when its circuit does.
 
 import math
 import random
+import re
 from xml.sax.saxutils import escape
 
 GRAPHITE = "#2b2b2b"
@@ -120,6 +121,16 @@ class Pencil:
         for layer in self.layers.values ():
             layer.append ("</g>")
         self.turns.pop ()
+
+    # One item of the build, a part, module or wire, tagged in every layer
+    # it is drawn in, so the page can light it up when its step is chosen.
+    def item (self, key):
+        for layer in self.layers.values ():
+            layer.append (f'<g data-item="{key}">')
+
+    def done (self):
+        for layer in self.layers.values ():
+            layer.append ("</g>")
 
     # Bench details ------------------------------------------------------
 
@@ -296,15 +307,17 @@ class Pencil:
             f'<feTurbulence type="fractalNoise" baseFrequency="0.04 0.7" numOctaves="3" seed="11"/>'
             f'<feColorMatrix type="matrix" values="0 0 0 0 0.35 0 0 0 0 0.33 0 0 0 0 0.3 0 0 0 0.05 0"/></filter>'
             f'</defs>')
-        layers = self.layers
+        # An item leaves an empty group in each layer it isn't drawn in.
+        layers = {name: re.sub (r'<g data-item="\d+"></g>', "", "".join (parts))
+                  for name, parts in self.layers.items ()}
         body = (
             f'<rect x="{x:.0f}" y="{y:.0f}" width="{w:.0f}" height="{h:.0f}" fill="{PAPER}"/>'
             f'<rect x="{x:.0f}" y="{y:.0f}" width="{w:.0f}" height="{h:.0f}" filter="url(#{paper})"/>'
-            + "".join (layers["paper"] + layers["crisp"])
-            + f'<g filter="url(#{pencil})">' + "".join (layers["shade"] + layers["ink"]) + "</g>"
-            + "".join (layers["wire"])
-            + f'<g filter="url(#{pencil})">' + "".join (layers["top"]) + "</g>"
-            + "".join (layers["text"]))
+            + layers["paper"] + layers["crisp"]
+            + f'<g filter="url(#{pencil})">' + layers["shade"] + layers["ink"] + "</g>"
+            + layers["wire"]
+            + f'<g filter="url(#{pencil})">' + layers["top"] + "</g>"
+            + layers["text"])
         return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="{x:.0f} {y:.0f} {w:.0f} {h:.0f}" '
                 f'role="img" aria-labelledby="{self.id ("title")}" class="pencil-drawing">'
                 f'<title id="{self.id ("title")}">{escape (title)}</title>'

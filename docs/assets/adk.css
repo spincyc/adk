@@ -234,7 +234,7 @@
         margin-inline: auto;
     }
 
-    .md-typeset .lesson-body > :is(.bench-figure, .meters, .md-typeset__scrollwrap,
+    .md-typeset :is(.lesson-body, .build) > :is(.bench-figure, .meters, .md-typeset__scrollwrap,
                                    .build-steps, .highlight:has(> .filename)) {
         width: var(--adk-wide);
         max-width: none;
@@ -242,23 +242,23 @@
     }
 
     /* A sketch's lines run to 80 characters. */
-    .lesson-body > .highlight:has(> .filename) {
+    :is(.lesson-body, .build) > .highlight:has(> .filename) {
         --adk-wide: min(100cqi, max(100%, 45em));
     }
 
     /* The build steps are as wide as the sketch. */
-    .lesson-body > .build-steps {
+    :is(.lesson-body, .build) > .build-steps {
         --adk-wide: min(100cqi, max(100%, 45em));
     }
 
     /* A table's box bleeds into the page margin, as Material's do, so the
        table itself lines up with the text; a wide one is centered. */
-    .lesson-body > .md-typeset__scrollwrap {
+    :is(.lesson-body, .build) > .md-typeset__scrollwrap {
         --adk-wide: calc(100cqi + 1.6rem);
         text-align: center;
     }
 
-    .lesson-body > .md-typeset__scrollwrap > .md-typeset__table {
+    :is(.lesson-body, .build) > .md-typeset__scrollwrap > .md-typeset__table {
         min-width: min(100%, var(--adk-measure) + 1.6rem);
         text-align: left;
     }
@@ -442,11 +442,11 @@
 @media screen {
     /* Two units to the pixel for a close-up, one and a half for the bench,
        as far as the page's column allows. */
-    .lesson-body > .bench-closeup {
+    :is(.lesson-body, .build) > .bench-closeup {
         --adk-wide: min(100cqi, var(--drawing-width, 340) * 2px);
     }
 
-    .lesson-body > .bench-bench {
+    :is(.lesson-body, .build) > .bench-bench {
         --adk-wide: min(100cqi, var(--drawing-width, 10000) * 1.5px);
     }
 }
@@ -454,30 +454,30 @@
 /* On a phone or small tablet, a drawing is never drawn so small that its
    labels can't be read: it keeps its size and scrolls sideways instead. */
 @media screen and (max-width: 59.984375em) {
-    .md-typeset .lesson-body > .bench-figure {
+    .md-typeset :is(.lesson-body, .build) > .bench-figure {
         --adk-wide: calc(100cqi + 1.6rem);
         padding: 0 0.8rem 0.4rem;
         overflow-x: auto;
         overscroll-behavior-x: contain;
     }
 
-    .lesson-body > .bench-closeup svg.pencil-drawing {
+    :is(.lesson-body, .build) > .bench-closeup svg.pencil-drawing {
         min-width: calc(var(--drawing-width, 0) * 1.5px);
     }
 
-    .lesson-body > .bench-bench svg.pencil-drawing {
+    :is(.lesson-body, .build) > .bench-bench svg.pencil-drawing {
         min-width: calc(var(--drawing-width, 0) * 1.15px);
     }
 
     /* The caption stays in view while the drawing scrolls, and says to
        swipe when there is more to see. */
-    .md-typeset .lesson-body > .bench-figure figcaption {
+    .md-typeset :is(.lesson-body, .build) > .bench-figure figcaption {
         position: sticky;
         left: 0;
     }
 
     @supports (animation-timeline: scroll()) {
-        .md-typeset .lesson-body > .bench-figure figcaption::before {
+        .md-typeset :is(.lesson-body, .build) > .bench-figure figcaption::before {
             content: "⟷  Swipe sideways to see all of it";
             display: block;
             max-height: 0;
@@ -514,7 +514,7 @@
 }
 
 @media screen {
-    .lesson-body > .meters {
+    :is(.lesson-body, .build) > .meters {
         --adk-wide: 100cqi;
     }
 }
@@ -616,6 +616,16 @@
     color: var(--adk-muted);
 }
 
+/* A stage done: ticked, and folded away. */
+.md-typeset details.stage.done > summary .stage-title::after {
+    content: " ✓";
+}
+
+.md-typeset details.stage.done > summary {
+    color: var(--adk-muted);
+    border-bottom-color: var(--adk-rule);
+}
+
 .md-typeset details.stage.out > summary {
     border-bottom-style: dashed;
 }
@@ -660,7 +670,7 @@
     font-size: 0.88em;
 }
 
-/* The step's number in a circle. */
+/* The step's number in a circle, a button that ticks it off. */
 .md-typeset table.steps .tick {
     display: block;
     width: 1.45rem;
@@ -675,10 +685,35 @@
     font-weight: 700;
     line-height: 1.2rem;
     text-align: center;
+    cursor: pointer;
+}
+
+.md-typeset table.steps .tick[aria-pressed="true"] {
+    font-size: 0;
+    color: var(--adk-paper);
+    background: var(--adk-ink);
+}
+
+.md-typeset table.steps .tick[aria-pressed="true"]::before {
+    content: "✓";
+    font-size: 0.8rem;
 }
 
 .md-typeset .stage.out table.steps .tick {
     border-style: dashed;
+}
+
+.md-typeset table.steps tr.done > td:not(.step) {
+    opacity: 0.45;
+}
+
+/* The step lit up in the drawing, and its row. */
+.md-typeset table.steps tr[data-item] {
+    cursor: pointer;
+}
+
+.md-typeset table.steps tr.lit {
+    background: color-mix(in srgb, var(--adk-red) 9%, transparent);
 }
 
 /* A part with more legs, or a module beside the board: its places run
@@ -798,6 +833,23 @@
     background: var(--adk-ink-soft);
 }
 
+.md-typeset .clear-ticks {
+    display: block;
+    margin: 0 0 0 auto;
+    padding: 0;
+    border: 0;
+    color: var(--adk-muted);
+    background: none;
+    font: inherit;
+    font-size: 0.72rem;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.md-typeset .clear-ticks[hidden] {
+    display: none;
+}
+
 /* On a phone the columns close up, so From and To stay in sight. */
 @media screen and (max-width: 29.984375em) {
     .md-typeset table.steps {
@@ -830,6 +882,27 @@
 
     .md-typeset table.steps .places .place:has(small) {
         min-width: 3.8em;
+    }
+}
+
+/* The drawing a step lights up: everything else in it fades. */
+.pencil-drawing [data-item] {
+    transition: opacity 150ms;
+}
+
+.pencil-drawing.lighting [data-item]:not(.lit) {
+    opacity: 0.15;
+}
+
+/* On a screen with room for both, the drawing stays in sight above the
+   steps while they scroll (steps.js decides). */
+@media screen {
+    .md-typeset .build > .bench-figure.pinned {
+        position: sticky;
+        top: 2.4rem;
+        z-index: 1;
+        padding-bottom: 0.3rem;
+        background: var(--md-default-bg-color);
     }
 }
 

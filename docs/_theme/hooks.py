@@ -29,6 +29,10 @@ navigation from the lessons that exist.
 how): the pins it claims must be the pins the circuit wires, each claimed
 as an output or an input as the parts on it need.
 
+Where a board's steps follow its bench drawing straight away, the two
+share a box, so on a large screen the drawing stays in sight while the
+steps scroll, and a step chosen lights its part up in it (steps.js).
+
 When a lesson shares parts in the same holes, or wires between the same
 points, with the lesson before it, its steps say what to keep, what to take
 out and what to add, so a learner carries the build on rather than starting
@@ -161,6 +165,11 @@ def on_page_markdown (markdown, page, config, files):
     if (lesson["boards"] == 2) != ("" not in boards):
         raise PluginError (f"{where}: course.yml gives its arc {lesson['boards']} board(s), but "
                            f"its circuit.py describes {len (boards)}")
+    # Where a board's steps follow its drawing straight away, the two share
+    # a box, in which the drawing can stay in sight while the steps scroll.
+    markdown = re.sub (r"<!-- bench((?: [A-Z])?) -->\s*<!-- steps\1 -->",
+                       r'<div class="build" markdown>\n\n<!-- bench\1 -->\n\n<!-- steps\1 -->'
+                       r"\n\n</div>", markdown)
     markers = re.findall (r"<!-- (" + "|".join (MARKERS) + r")(?: ([A-Z]))? -->", markdown)
     for marker, letter in markers:
         if letter not in boards:
@@ -193,11 +202,11 @@ def board_pieces (lesson, letter, bench):
     try:
         whole, closeup, measured = Drawing (bench).page (letter)
         return {
-            "bench": figure (whole, bench.title, "bench"),
+            "bench": figure (whole, bench.title, "bench", letter),
             "closeup": figure (closeup,
                                f"Close-up of {whose}. Letters name the rows, numbers the columns.",
-                               "closeup"),
-            "steps": steps (bench, previous (lesson["number"], letter), lesson["number"]),
+                               "closeup", letter),
+            "steps": steps (bench, previous (lesson["number"], letter), lesson["number"], letter),
             "connections": connections (bench),
             "sketch": f'```cpp title="{name}.ino" linenums="1"\n{sketch.rstrip ()}\n```',
             "measure": measurements (bench, measured),
@@ -292,9 +301,12 @@ def previous (number, letter=""):
 
 # The drawing's own width, in drawing units, lets the page size it so its
 # labels stay legible: on a phone it scrolls sideways rather than shrink.
-def figure (svg, caption, kind):
+# A lesson's own drawings name their board, so its steps can light up the
+# part each one adds.
+def figure (svg, caption, kind, board=None):
     width = re.search (r'viewBox="\S+ \S+ (\S+)', svg).group (1)
-    return (f'<figure class="bench-figure bench-{kind}" style="--drawing-width: {width}" '
+    whose = f' data-board="{board}"' if board is not None else ""
+    return (f'<figure class="bench-figure bench-{kind}" style="--drawing-width: {width}"{whose} '
             f'markdown="0">\n{held (svg)}\n<figcaption>{caption}</figcaption>\n</figure>')
 
 
@@ -329,7 +341,7 @@ def measurements (bench, drawn):
 # carries on from and what to take out of it. When no part or module
 # carries over, the learner takes out everything but the Mega's power
 # wires, and builds the rest.
-def steps (bench, before=None, number=1):
+def steps (bench, before=None, number=1, letter=""):
     kept, gone, new = continuity (bench, before[2]) if before else ([], [], bench.items)
     head, out = [], []
     if before:
@@ -353,7 +365,7 @@ def steps (bench, before=None, number=1):
         if not new:
             head.append ("Nothing else to add.")
     if out or new:
-        head.append (step_stages (bench, out, new, number))
+        head.append (step_stages (bench, out, new, number, letter))
     return "\n\n".join (head)
 
 
@@ -363,17 +375,18 @@ def steps (bench, before=None, number=1):
 # columns as the others, so the holes and pins line up all the way down. A
 # stage built just this way in an earlier lesson starts folded, pointing
 # back to it; everything taken out comes first.
-def step_stages (bench, out, new, number):
+def step_stages (bench, out, new, number, letter):
     blocks = []
     if out:
-        rows = [step_row ("−", item) for item in out]
+        rows = [step_row (f"t{index}", "−", item, label="Taken out")
+                for index, item in enumerate (out, 1)]
         blocks.append (stage_block ("Take out", rows, kind="out"))
     count = 0
     for stage, items in group (new):
         rows = []
         for item in items:
             count += 1
-            rows.append (step_row (count, item))
+            rows.append (step_row (str (count), str (count), item, bench))
         whole = {identity (bench, kind, thing) for kind, thing, _ in items} == stages (bench)[stage]
         earlier = built_before (bench, stage, number) if whole else None
         where = (f', as in <a href="../{earlier["slug"]}/">Lesson {earlier["number"]}</a>'
@@ -381,7 +394,8 @@ def step_stages (bench, out, new, number):
         blocks.append (stage_block (capital (bench.stage_title (stage)), rows,
                                     f"{len (rows)} step{'s' if len (rows) > 1 else ''}{where}",
                                     "again" if earlier else ""))
-    return '<div class="build-steps">\n' + "\n".join (blocks) + "\n</div>"
+    return (f'<div class="build-steps" data-board="{letter}">\n' + "\n".join (blocks) +
+            "\n</div>")
 
 
 def stage_block (title, rows, count="", kind=""):
@@ -394,10 +408,13 @@ def stage_block (title, rows, count="", kind=""):
             "\n</tbody></table></details>")
 
 
-# One step: its number, what it is, and where it goes, with the thing
-# itself drawn between its From and To.
-def step_row (mark, item):
+# One step: its tick, what it is, and where it goes, with the thing itself
+# drawn between its From and To. A step of this bench lights up its part in
+# the drawings (data-item, as drawing.py tags them); one taken out of the
+# build before can't.
+def step_row (key, mark, item, bench=None, label=None):
     kind, thing, step = item
+    lit = f' data-item="{bench.items.index (item)}"' if bench else ""
     places = [f'<span class="place">{escape (where)}{detail (how)}</span>'
               for where, how in step.places]
     if len (places) == 2 and not step.spread:
@@ -405,7 +422,8 @@ def step_row (mark, item):
                 f'<td class="link">{picture (kind, thing, step)}</td><td>{places[1]}</td>')
     else:
         ends = f'<td colspan="3"><div class="places">{"".join (places)}</div></td>'
-    return (f'<tr><td class="step"><span class="tick">{mark}</span></td>'
+    return (f'<tr data-step="{key}"{lit}><td class="step"><button type="button" class="tick" '
+            f'aria-pressed="false" aria-label="{label or f"Step {mark} done"}">{mark}</button></td>'
             f'<td class="what">{capital (step.what)}{detail (step.note)}</td>{ends}</tr>')
 
 

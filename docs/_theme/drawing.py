@@ -429,18 +429,29 @@ class Drawing:
         box = self._view_box (rough, placed, detail) if detail else self._canvas (routes, placed)
         self._draw_mega (pencil)
         self._draw_board (pencil, detail)
+        # Each part, module and wire is tagged with its build step's place in
+        # the bench's items, which the steps table names too.
+        keys = {id (thing): index for index, (_, thing, _) in enumerate (bench.items)}
+        wires = {frozenset (wire[:2]): keys[id (wire)] for wire in bench.wires}
+
+        def draw (thing, key):
+            pencil.item (key)
+            thing ()
+            pencil.done ()
+
         for part in bench.parts:
-            part.draw (pencil, bench)
+            draw (lambda: part.draw (pencil, bench), keys[id (part)])
         # A module lying flat, as the power module does, goes under the
         # wires that cross it; the others over them.
         for module in bench.modules.values ():
             if not module.kind.blocks:
-                module.draw (pencil)
+                draw (lambda: module.draw (pencil), keys[id (module)])
         for start, end, points in routes:
-            self._draw_wire (pencil, start, end, points)
+            draw (lambda: self._draw_wire (pencil, start, end, points),
+                  wires[frozenset ((start, end))])
         for module in bench.modules.values ():
             if module.kind.blocks:
-                module.draw (pencil)
+                draw (lambda: module.draw (pencil), keys[id (module)])
         for text, x, y, anchor, size, to, kind in placed:
             if kind == "note":
                 pencil.text (x, y, text, size=size, anchor=anchor, kind="label", italic=True)

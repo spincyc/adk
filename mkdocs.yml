@@ -66,6 +66,9 @@ extra_css:
   - assets/fonts.css
   - assets/adk.css
 
+extra_javascript:
+  - assets/steps.js
+
 hooks:
   - docs/_theme/hooks.py
   - docs/_theme/boards.py
