@@ -59,7 +59,7 @@
         }
 
         function light (row) {
-            const item = row && row.dataset.item;
+            const item = row ? row.dataset.item : undefined;
             for (const other of rows) {
                 other.classList.toggle ("lit", other === row && item !== undefined);
             }
