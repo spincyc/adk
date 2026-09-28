@@ -101,27 +101,30 @@ BOARD_HEIGHT = 2.2
 GAP = 0.8                           # between the Mega and the breadboard
 MARGIN = 0.35
 
-# The kit's jumpers come in black, red, orange, blue, green, yellow and white:
-# red and black are kept for 5V and GND. Brown, purple and grey are still used
-# by lessons not yet redrawn for the kit.
-SIGNAL_COLORS = ["yellow", "green", "blue", "orange", "purple", "white", "brown", "grey"]
+# The kit's breadboard jumpers come in black, red, orange, yellow, green,
+# blue and white; its female-to-male wires are a ribbon of ten colors, those
+# and brown, purple and grey. A wire must be one the kit has, and red and
+# black are kept for 5V and GND.
+JUMPERS = {"black", "red", "orange", "yellow", "green", "blue", "white"}
+RIBBON = JUMPERS | {"brown", "purple", "grey"}
+SIGNAL_COLORS = ["yellow", "green", "blue", "orange", "white"]
 # Each home pin's wire keeps one color in every lesson, chosen so the pins
 # that share a lesson differ where they can: an LED's wire in its LED's
 # color (orange for red), the RGB LED's in its channel's.
 PIN_COLORS = {
-    "22": "green", "23": "grey", "24": "brown", "25": "white",
+    "22": "green", "23": "blue", "24": "yellow", "25": "white",
     "26": "orange", "27": "yellow", "28": "green", "29": "blue", "30": "white",
     "31": "white", "32": "orange", "33": "yellow", "34": "green", "35": "blue", "36": "white",
     "37": "yellow", "38": "green", "39": "blue", "40": "orange", "41": "green", "42": "white",
-    "43": "yellow", "44": "orange", "45": "yellow", "46": "orange", "47": "green", "48": "blue", "49": "purple",
-    "50": "purple", "51": "white", "52": "brown", "53": "grey",
+    "43": "yellow", "44": "orange", "45": "yellow", "46": "orange", "47": "green", "48": "blue",
+    "49": "yellow", "50": "orange", "51": "white", "52": "green", "53": "blue",
     "2": "white", "3": "orange", "4": "yellow", "5": "orange", "6": "green", "7": "blue",
-    "8": "blue", "9": "white", "10": "grey", "11": "green", "12": "white", "14": "grey",
-    "15": "purple", "16": "orange", "17": "white", "18": "white", "19": "blue", "20": "green",
+    "8": "blue", "9": "white", "10": "orange", "11": "green", "12": "white", "14": "yellow",
+    "15": "green", "16": "orange", "17": "white", "18": "white", "19": "blue", "20": "green",
     "21": "blue",
-    "A0": "blue", "A1": "purple", "A2": "yellow", "A3": "yellow", "A4": "white", "A5": "green",
-    "A8": "green", "A9": "blue", "A10": "purple", "A11": "white",
-    "A12": "purple", "A13": "white", "A14": "brown", "A15": "grey",
+    "A0": "blue", "A1": "green", "A2": "yellow", "A3": "yellow", "A4": "white", "A5": "green",
+    "A8": "green", "A9": "blue", "A10": "yellow", "A11": "white",
+    "A12": "orange", "A13": "white", "A14": "yellow", "A15": "green",
 }
 # The holes of the parts that have a breadboard home, by pin: an LED's column
 # (its resistor's and long leg's) and a button's left column.
@@ -1153,6 +1156,14 @@ class Bench:
         if color is None:
             color = self.module_pin (leads[0][1])[1].color if leads else \
                 self._color ((start_end, end_end))
+        if not leads:
+            males = sum (self.style (end) == "male" for end in (start_end, end_end))
+            kit = JUMPERS if males == 0 else RIBBON
+            if color not in kit:
+                raise ValueError (f"the {self.describe (start_end)} to {self.describe (end_end)} "
+                                  f"wire can't be {color}: the kit's "
+                                  f"{'jumpers' if males == 0 else 'female-ended wires'} come in "
+                                  f"{', '.join (sorted (kit))}")
         for point in via or ():
             self.point_xy (point)
         if not self._powering and {start_end[0], end_end[0]} == {"pin", "hole"}:
