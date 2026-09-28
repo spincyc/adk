@@ -59,11 +59,12 @@ the latch. Here Board A, at the door, has the reader and a modem, and both
 run on 3.3 V. The Mega's 3.3V pin can give about 50 mA; the reader can
 draw up to about 26 mA, and the modem draws tens of milliamps each time it
 sends. Together they would ask too much of that pin. So on Board A, the
-modem takes its 3.3 V from the power module instead, with the bottom
-jumper on **3.3V**, as in Lesson 40. Those rails then can't give a servo
-its 5 V, and the latch goes to Board B, which has the power module set to
-5 V from Lessons 49 and 50. That suits Lesson 49's rule anyway: the board
-outside knows no friends, holds no latch, and only reports what happens.
+modem takes its 3.3 V from the power module instead, by a red wire from
+the module's **3.3V** pin to the bottom rails, as in Lesson 40. Those rails
+then can't give a servo its 5 V, and the latch goes to Board B, whose power
+module feeds its bottom rails from its **5V** pin, as in Lessons 49
+and 50. That suits Lesson 49's rule anyway: the board outside knows no
+friends, holds no latch, and only reports what happens.
 Board B tells Board A one thing back, `door`, 1 while the latch is open,
 and Board A buzzes when it changes to 1.
 
@@ -99,14 +100,17 @@ Board A's **L** LED is lit while it can hear Board B.
     Unplug both boards' USB cables and both power modules' adapters before
     you wire, and check your work before you plug them back in.
 
-!!! danger "Two power modules, set differently"
-    - **Board A:** top jumper **OFF**, bottom jumper **3.3V**, for the
-      modem. Never 5V: more than 3.6 V damages the modem.
-    - **Board B:** top jumper **OFF**, bottom jumper **5V**, for the servo.
+!!! danger "Two power modules, wired differently"
+    - **Board A:** the red wire from the module's **3.3V** pin to B+61, for
+      the modem. Never 5V: more than 3.6 V damages the modem.
+    - **Board B:** the red wire from the module's **5V** pin to B+61, for
+      the servo.
 
-    Label the two boards, so their power modules never swap. The RFID
-    reader takes **3.3 V** from Board A's own 3.3V pin, never 5V; Lesson 34
-    explains its signal wires.
+    On both boards the module lies beside the breadboard, never plugged
+    into it, both its jumpers **off**, and its black wire goes from its
+    **GND** pin to B-61. Label the two boards, so their power modules never
+    swap. The RFID reader takes **3.3 V** from Board A's own 3.3V pin, never
+    5V; Lesson 34 explains its signal wires.
 
 Both boards keep their LoRa modems where they were, with the same
 dividers and wires, but for one change on Board A: its modem's VDD moves
@@ -115,7 +119,9 @@ from the Mega's 3.3V pin to the bottom + rail, B+47, right above it.
 ### Board A: the door
 
 The GY-521 comes off, and with it the red wire from the Mega's 5V to the
-top rails: nothing on Board A uses the top rails now. The reader and the
+top rails: nothing on Board A uses the top rails now. A power module of
+its own lies to the right of the board, its red wire from **3.3V** to
+B+61 and its black wire from **GND** to B-61. The reader and the
 tap sensor lie below the Mega in their places from Lesson 36, wired the
 same way. The doorbell is the button on pin 22 at its home, and the active
 buzzer stands at its home in column 34.
@@ -209,9 +215,9 @@ Read it from the top:
 
 ## Upload it
 
-1. Set Board A's power module's bottom jumper to **3.3V** and Board B's to
-   **5V**, both top jumpers off. Plug in both adapters and switch both
-   modules on.
+1. Check the power modules' red wires: Board A's from its **3.3V** pin,
+   Board B's from its **5V** pin, and both jumpers off on each. Plug in
+   both adapters and switch both modules on.
 2. Upload **Door** to Board A and **Inside** to Board B, each by its own
    port. Board B's latch swings to 0°, its screen says `Front door` and,
    once it hears Board A, `All quiet`. Board A's **L** LED lights.
@@ -236,13 +242,13 @@ news.
 
 | What you see | Try this |
 |---|---|
-| Board B says `Can't hear it` | Is Board A's power module on, with its bottom jumper on 3.3V? Its modem runs from those rails now. Check its VDD wire goes to B+47, and each modem's wires as in Lesson 49. |
-| Board A's modem gets warm | Unplug everything at once, and check Board A's bottom jumper is on 3.3V, never 5V. |
+| Board B says `Can't hear it` | Is Board A's power module on, with its LED lit? Its modem runs from the bottom rails now: check the module's red wire from its 3.3V pin to B+61 and its black wire from GND to B-61. Check the modem's VDD wire goes to B+47, and each modem's wires as in Lesson 49. |
+| Board A's modem gets warm | Unplug everything at once, and check the red wire of Board A's power module comes from its **3.3V** pin, never 5V. |
 | Board A's Serial Monitor says `No card reader` | Check the reader's seven wires as in Lesson 34, and that its 3.3V pin goes to the Mega's 3.3V. |
 | Your card always gets `Unknown card` | Copy its number from Board B's Serial Monitor exactly, with `0x` in front, into **Inside**, and upload it to Board B. |
 | Knocks never reach Board B | Check the tap sensor's S goes to A12, + to the power header's 5V and − to its GND, and knock close to it. |
 | The doorbell does nothing | Check pin 22's wire in j2, the button across the gap in columns 2 to 4, and the black wire from a4 to the − rail. |
-| The latch doesn't move | Is Board B's power module on, with its bottom jumper on 5V? Check the servo's wires in B+53 and B-54, and pin 44's to its orange. |
+| The latch doesn't move | Is Board B's power module on, with its LED lit? Check its red wire from 5V to B+61 and its black wire from GND to B-61, then the servo's wires in B+53 and B-54, and pin 44's to its orange. |
 | No chime | Check the passive buzzer's + in f51 with pin 10's wire in j51, and the 220 Ω from a51 to the − rail. |
 | A blank lit screen, or a row of blocks | Turn the contrast knob. |
 

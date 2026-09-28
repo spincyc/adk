@@ -1,5 +1,5 @@
-# The Secret Door. The power module at the right end feeds only the bottom
-# rails, its top jumper off: the servo latch, at its home below the board,
+# The Secret Door. The power module beside the board feeds only the bottom
+# rails, from B+61 and B-61: the servo latch, at its home below the board,
 # takes its 5 V from the bottom rails, while the screen, at its home, runs
 # from the Mega's 5V on the top rails; the Mega's GND joins them all at B-3.
 # The RFID reader comes back to its place from Lesson 34 and the tap sensor

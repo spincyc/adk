@@ -82,9 +82,10 @@ degrees from it. Between those points, a tiny wobble changes nothing.
 
 !!! warning "Unplug first"
     Unplug both boards' USB cables, and Board B's power module adapter,
-    before you change any wiring. Set Board B's power module jumpers before
-    you plug it in: the bottom one to **5V**, for the motor, and the top one
-    **OFF**.
+    before you change any wiring. Board B's power module stays beside the
+    board as in Lesson 51, never plugged into it, both its jumpers **off**,
+    its red wire from **5V** to B+61, for the motor, and its black wire
+    from **GND** to B-61.
 
 Each board keeps its LoRa modem at the bridge's home: lying below the
 breadboard under columns 42 to 47, its spring pointing down, its divider
@@ -117,7 +118,8 @@ When you are done, these are the connections Board A makes:
 ### Board B: the turntable
 
 The driver board lies below the Mega, wired as in Lesson 31, and takes its
-power from the power module at the right end of the breadboard. The
+power from the bottom rails, which the power module beside the breadboard
+feeds. The
 modem's GND joins the same bottom − rail, and the Mega's GND reaches it at
 B-3, so every part agrees where 0 V is.
 
@@ -208,7 +210,7 @@ good.
 | What you see | Try this |
 |---|---|
 | **No word from B** | Is Board B powered and running **Turntable**? Its **L** LED lights when it hears Board A. Check both modems' wiring against the steps: TXD into f44, RXD into c46, pin 14 into j46, pin 15 into j44, and VDD to the Mega's 3.3V pin. |
-| The screen counts, but the turntable doesn't move | Is Board B's power module on, with its bottom jumper on **5V**? Push the motor's white plug fully into its socket. |
+| The screen counts, but the turntable doesn't move | Is Board B's power module on, with its LED lit? Check its red wire goes from its **5V** pin to B+61 and its black one from GND to B-61. Push the motor's white plug fully into its socket. |
 | The motor hums or shakes but hardly turns | Two of Board B's IN wires are swapped: IN1 to A8, IN2 to A9, IN3 to A10, IN4 to A11. |
 | **Arrived** shows the wrong place on the table | Board B counts from where the arrow was when it started. Point the arrow at 0 and press Board B's reset button. |
 | The turntable goes anticlockwise | That's fine: it is the way positive steps turn your motor. Lesson 31 says more. |

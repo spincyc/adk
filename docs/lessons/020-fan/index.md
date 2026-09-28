@@ -84,10 +84,12 @@ the module's 5 V: plenty for this 3–6 V motor.
 
 !!! warning "Unplug first"
     Unplug the USB cable, unplug the power module's adapter and switch the
-    module off before you change any wiring. Set the module's bottom yellow
-    jumper to **5V**, never 3.3V, and its top one to **OFF**: the Mega's 5V
-    feeds the top rails, and the two supplies must never be joined. The
-    chip's notch (the little half moon at one end) faces left, towards the
+    module off before you change any wiring. The power module lies beside
+    the board as in Lesson 17, never plugged into it, both its jumpers
+    **off**, its red wire from **5V** to B+61 and its black wire from
+    **GND** to B-61: it feeds only the bottom rails. The Mega's 5V feeds
+    the top rails, and the two supplies must never be joined. The chip's
+    notch (the little half moon at one end) faces left, towards the
     Mega. Keep fingers and hair clear of the fan blade whenever the power is
     on.
 
@@ -160,10 +162,10 @@ Switch the power module off when you finish, before you unplug the USB.
 
 | What you see | Try this |
 |---|---|
-| Nothing spins at all | Is the power module's LED on, with its bottom jumper on 5V? Check the red wire from a19 to the bottom + rail (the motor's supply) and the one from j12 to the top + rail (the chip's). |
+| Nothing spins at all | Is the power module's LED on? Check its red wire from 5V to B+61 and its black wire from GND to B-61, then the red wire from a19 to the bottom + rail (the motor's supply) and the one from j12 to the top + rail (the chip's). |
 | It hums but doesn't turn | The speed is too low: turn the knob further. A flick of the blade helps a sluggish motor start. |
 | It only ever spins one way | The wire from pin 8 or pin 9 is in the wrong hole: pin 8's goes to j18, pin 9's to j13. |
-| The Mega resets when the fan starts | The motor is taking power from the Mega. Its supply goes from a19 to the bottom + rail, which only the power module feeds; and the module's top jumper must be off, so its 5 V never meets the Mega's. |
+| The Mega resets when the fan starts | The motor is taking power from the Mega. Its supply goes from a19 to the bottom + rail, which only the power module feeds; and the module's red wire must go only to B+61, so its 5 V never meets the Mega's. |
 | The chip gets hot | Unplug everything at once and check the motor's leads go to j14 and j17, not straight to a rail. |
 | The button does nothing | The button straddles the middle gap; pin 22's wire goes in j2 and the black wire from a4 to the − rail. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |

@@ -1,7 +1,7 @@
 # Lesson 16's screen stays where it was; the keypad goes. The power module
-# plugs into all four rails at the far end, its top jumper off and its
-# bottom one on 5 V: the Mega's 5V feeds the top rails, for the screen and
-# the knob, and the module feeds only the bottom rails, for the servo. The
+# lies to the right of the board, not plugged in, both its jumpers off, and
+# its 5V and GND feed only the bottom rails, for the servo, at B+61 and
+# B-61. The Mega's 5V feeds the top rails, for the screen and the knob. The
 # Mega's GND joins them all at B-3. The knob stands at its home, its wiper
 # on A0, and the servo lies at its home below the board, its signal from
 # pin 44.

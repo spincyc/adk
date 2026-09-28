@@ -144,11 +144,11 @@ lessons alike. [The kit page](kit.md#breadboard-homes) gives each part's home.
   into B-3 and the outer 5V at its top into T+3, and joins the other rail of
   a pair at the far end (B-60 to T-60, T+61 to B+61) only when a part uses
   it. Those two header pins are kept for the rails. With the power module,
-  which sits at the right end, set its top jumper off: the Mega's 5V then
-  feeds the top rails, for the screen and the sensors, whose signals come
-  from the Mega too, so nothing is ever powered backwards through its
-  inputs; the module feeds only the bottom rails, for motors and servos (or
-  3.3 V for LoRa modems); and the Mega's GND joins them all at B-3.
+  the Mega's 5V still feeds the top rails, for the screen and the sensors,
+  whose signals come from the Mega too, so nothing is ever powered
+  backwards through its inputs; the module feeds only the bottom rails, for
+  motors and servos (or 3.3 V for LoRa modems); and the Mega's GND joins
+  them all at B-3.
 - **An LED and its resistor** away from a home: the pin's wire into row j
   of column *c*, the resistor standing across the middle gap from g*c* to
   e*c*, the LED's long leg in b*c* and its short leg in b*c+1*, and a black
@@ -183,10 +183,16 @@ lessons alike. [The kit page](kit.md#breadboard-homes) gives each part's home.
   other name: `GND` for −, `S` for `OUT`, `VCC` for + or `VDD`. A voltage
   only finds a pin that takes it: `servo.5V` is the servo's +, but
   `lora_modem.5V` is an error, since the modem's VDD takes 3.3 V.
-- **The power module** sits at the right end and sets each pair of rails
-  with its own jumper: `bench.power_module ("right", top="5V",
-  bottom="off")` powers the top rails at 5 V and leaves the bottom + rail
-  unpowered. Either side may also be `"3.3V"`.
+- **The power module** never plugs into the breadboard. Its pins fit the
+  kit's breadboard the right way round only at the end nearest the Mega,
+  which the Mega's own wires need; turned round for the far end, its supply
+  pins would land in the − rails, with the Mega's GND, and short the two
+  supplies. So `bench.power_module ()` lays it to the right of the
+  breadboard with both jumpers off, and wires the header in its middle,
+  which gives 5 V and 3.3 V whatever the jumpers say, to the bottom rails:
+  a red wire from its 5V pin into B+61 and a black wire from its GND into
+  B-61. `bench.power_module ("3.3V")` takes the red wire from its 3.3V pin
+  instead, for LoRa modems.
 
 A circuit that could never work stops the site: a Mega pin whose wire
 reaches no part's leg or module's pin, a pin joined straight to GND, 5V or

@@ -72,8 +72,9 @@ jumping there.
     you wire, and check your work before you plug them back in.
 
 Both boards keep their LoRa modems and their wires from Lesson 49, and
-Board B keeps its power module, still with the top jumper **OFF** and the
-bottom one on **5V**, and its servo.
+Board B keeps its power module, still lying beside the board with both
+jumpers **off**, its red wire from **5V** to B+61 and its black wire from
+**GND** to B-61, and its servo.
 
 ### Board A: the tilt
 
@@ -193,7 +194,7 @@ you can see it step.
 | The matrix scrolls `NO SENSOR` | Board A can't find its accelerometer. Check the GY-521 as in Lesson 28: VCC from T+7, GND to the − rail, SCL to pin 21 and SDA to pin 20. |
 | The ball rolls uphill | The GY-521's arrows point differently on your module, as Lesson 30 warned. In Board B's `rollBall ()`, change the `-` before `pitch` to `+`, or the `+` before `roll` to `-`, whichever way is wrong. |
 | The ball drifts with Board A flat | Your table isn't quite level, or your sensor reads a degree or two off. See *Make it yours*. |
-| The servo doesn't move | Is the power module on, with its bottom jumper on 5V? Check the servo's red wire in B+53, its brown in B-54 and pin 44's wire to its orange. |
+| The servo doesn't move | Is the power module on, with its LED lit? Check its red wire from 5V to B+61 and its black wire from GND to B-61, then the servo's red wire in B+53, its brown in B-54 and pin 44's wire to its orange. |
 | The matrix is blank | Check its wires as in Lesson 25: DIN on 47, CLK on 48, CS on 49, VCC and GND. |
 
 ??? note "How it works"

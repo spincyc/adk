@@ -1,6 +1,7 @@
-# Lesson 20's fan stays as it was: the power module on the right end, its
-# top jumper off, the L293D in columns 12-19 and the motor above the board,
-# with the same wires from 4, 8 and 9; the knob and the button come out.
+# Lesson 20's fan stays as it was: the power module beside the board, its
+# wires in B+61 and B-61, the L293D in columns 12-19 and the motor above
+# the board, with the same wires from 4, 8 and 9; the knob and the button
+# come out.
 # The ultrasonic sensor comes back from Lesson 19 to the same place above
 # the Mega, the wires from 4, 8 and 9 passing over it, and the servo goes in
 # at its home below the board, its plug on the power module's bottom rails

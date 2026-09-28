@@ -147,7 +147,7 @@ lesson with it have a second home past it.
 | Light or temperature divider, on A1 or A2 | Column 40: a red jumper from j40 to T+40, the sensor across the gap in f40 and e40, the pin into a40, 10 kΩ from c40 to c43, a black jumper from a43 to the − rail | Same |
 | Knob on A0 | Across the middle gap: its outer legs in f45 and f47, with jumpers from j45 to the top − rail and j47 to the top + rail; its wiper in d46, A0 into a46 | The same, or in columns 57–59 when the RGB LED or the FM radio takes columns 41–46 |
 | The screen (LCD, contrast knob, backlight) | Knob across the middle gap (outer legs in f5 and f7, wiper in d6), the LCD's pins in a9–a24, wired by `bench.screen ()` | — |
-| Power module | The right end, in columns 60 and 61 of all four rails | Same |
+| Power module | Lying to the right of the breadboard, not plugged in, both jumpers off: a red wire from its 5V (or 3.3V) pin into B+61, a black wire from its GND into B-61 | Same |
 | FM radio | Standing in row j, columns 45–52 (GPIO2 in j45 to 3.3V in j52), its board over the top rails: pins 42, 41 and 40 up from below into f47, f49 and f50, the Mega's 3.3V into f52, 1 kΩ from h47 to h52, a black jumper from f51 to B-51 | Same |
 | 433 MHz receiver | Standing in row j, columns 48–51 (VCC in j48): 5V from the power header into f48, pin 43 into f49, a black jumper from f51 to B-51 | Same |
 | 433 MHz transmitter | Standing in row j, columns 56–59 (EN in j56): pin 46 into f54, 1 kΩ from h54 to h57 and 2 kΩ from g57 to e57, a black jumper from a57 to B-57; the Mega's 3.3V into f58, a black jumper from f59 to B-59 | Same |

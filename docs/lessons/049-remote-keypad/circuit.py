@@ -13,9 +13,9 @@ door.home_keypad ()
 
 door.home_modem (tx=[(3.15, -0.35), (9.9, -0.35)], rx=[(3.25, -0.25), (9.7, -0.25)])
 
-# Board B, inside: the power module at the right end, its top jumper off
-# and its bottom one on 5 V for the servo; the Mega's GND joins the rails
-# at B-3. The RGB LED at its home on pins 5, 6 and 7, as in Lesson 34.
+# Board B, inside: the power module beside the board, its 5V and GND
+# wired to B+61 and B-61 for the servo; the Mega's GND joins the rails at
+# B-3. The RGB LED at its home on pins 5, 6 and 7, as in Lesson 34.
 # The servo at its home beside the modem, lower than in Lesson 17, as the
 # modem's place overlaps its old one; pin 44's wire drops beside the board
 # and runs under the modem to it.

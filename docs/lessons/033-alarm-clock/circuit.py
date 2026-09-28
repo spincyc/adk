@@ -3,8 +3,8 @@
 # rotary encoder, sits at its home above the Mega, on 18, 19 and 22. The
 # snooze button and the passive buzzer take their homes beside the screen,
 # their pin wires coming over the top. The flag is Lesson 31's stepper, its
-# driver at its home as it was there; the power module at the right end
-# feeds only the bottom rails, for the driver, its top jumper off, so the
+# driver at its home as it was there; the power module beside the board
+# feeds only the bottom rails, for the driver, from B+61 and B-61, so the
 # screen and clock keep the Mega's 5V on the top rails. The screen's knob
 # jumper takes column 5 and the LCD covers the bottom rails from column 6,
 # so the driver's + and − come in one column nearer the Mega than in

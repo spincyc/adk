@@ -1,8 +1,8 @@
 # Lesson 40's screen, button and dividers stay where they were; the modems
 # go, and two LoRa modules take their places below the board, B on Serial3
-# first and A on Serial1 after it. The power module's bottom jumper moves
-# to 5V, for the modules; its top jumper stays off, so the Mega's 5V still
-# feeds the top rails, for the screen and the DHT11. Each module's TXD
+# first and A on Serial1 after it. The power module's red wire moves from
+# its 3.3V pin to its 5V pin, for the modules; the Mega's 5V still feeds
+# the top rails, for the screen and the DHT11. Each module's TXD
 # still comes up into f to meet its Mega RX pin's wire, and its RXD still
 # comes up beside its divider; new are its AUX, up into f beside its TXD
 # to meet its Mega pin, and its M0 and M1, up into f and g two columns

@@ -53,10 +53,10 @@ pulse matters, not how bright it would make an LED.
 hundred milliamps in sudden bursts. A Mega pin can give about 20 mA, and even
 the Mega's 5V pin, fed from your computer's USB port, can dip so far that the
 Mega resets. So the servo takes its power from the **breadboard power
-module**, which plugs into the rails and turns a 9 V adapter into a steady
-5 V, and the Mega sends only the signal. The module feeds only the bottom
-rails, for the servo; the screen, as in Lesson 16, and the knob run on the
-Mega's own 5 V, on the top rails. The Mega's GND joins all the rails: a pulse
+module**, which turns a 9 V adapter into a steady 5 V, and the Mega sends
+only the signal. Two wires from the module feed only the bottom rails, for
+the servo; the screen, as in Lesson 16, and the knob run on the Mega's own
+5 V, on the top rails. The Mega's GND joins all the rails: a pulse
 is a voltage measured from GND, and the servo can only read it if they share
 the same GND.
 
@@ -71,34 +71,44 @@ the same GND.
     Unplug the USB cable and the power module's adapter before you wire. Keep
     Lesson 16's screen, its contrast knob and resistor with their wires, and
     the Mega's GND and 5V wires, just as they are, and take out everything
-    else from Lesson 16: the keypad and its eight wires. Plug the power module
-    into the far end of the breadboard so that its **+** and **−** pins match
-    the red **+** and blue **−** stripes on *both* sides of the breadboard.
-    Set its top yellow jumper to **OFF**, so it leaves the top rails to the
-    Mega's 5V, and its bottom jumper to **5V**, never 3.3V: the bottom rails
-    are the servo's. Never connect the servo's red wire to the Mega's 5V pin
-    or the top + rail. Keep fingers and hair away from the horn when it moves,
-    and don't force it round by hand.
+    else from Lesson 16: the keypad and its eight wires. Never connect the
+    servo's red wire to the Mega's 5V pin or the top + rail. Keep fingers and
+    hair away from the horn when it moves, and don't force it round by hand.
+
+!!! danger "Never plug the power module into the breadboard"
+    The pins underneath it are made for a breadboard's rails, but on this
+    kit's breadboard they only fit the right way round at the end where the
+    Mega is, and the Mega's own wires need that end. Turned round to fit the
+    far end, its + pins would land in the − rails, with the Mega's GND: a
+    short circuit. So it lies flat to the right of the breadboard, with
+    nothing in those pins, and both its yellow jumpers **off**, each parked
+    on one pin, where it joins nothing. Its power comes from the header in
+    its middle instead: a red wire from its **5V** pin to B+61, and a black
+    wire from its **GND** pin to B-61.
 
 <!-- bench -->
 
 <!-- steps -->
 
 ??? info "The power module"
-    It takes 6.5 to 12 V from its barrel socket (the kit's 9 V adapter, or a
-    9 V battery on a snap) and turns it into 5 V for each pair of rails whose
-    jumper is on 5V, enough for a servo or two. Its button switches it on,
-    and its little LED lights when it is. It has a USB socket too; in this
-    course, always power it through the barrel socket with the kit's
-    adapter.
+    It takes 6.5 to 9 V from its barrel socket (the kit's 9 V adapter, or a
+    9 V battery on a snap) and turns it into 5 V and 3.3 V, enough for a
+    servo or two. The header in its middle has two rows of four pins: one
+    row gives 3.3V, 3.3V, 5V, 5V, and every pin in the other is GND.
+    That header gives both voltages whatever the jumpers say, so the
+    jumpers can stay off. The two wires are female-to-male: their sockets
+    go on the header's pins, and their pins into the rails. Its button
+    switches it on, and its little LED lights when it is. It has a USB
+    socket too; in this course, always power it through the barrel socket
+    with the kit's adapter.
 
     The knob stands at its home, as in Lesson 7, its red wire from j47 up to
     the top + rail. That rail carries the Mega's own 5 V, from the red wire
     into T+3, and so does the screen's VDD: the Mega measures A0 against
     that 5 V, so a knob fed from it reads from 0 to 1023 exactly, and the
     knob and the screen keep working with the power module switched off.
-    The two 5 Vs never meet, because the module's top jumper is off; only
-    their GNDs join, at the − rails.
+    The two 5 Vs never meet: the module's reaches only the bottom + rail,
+    and the Mega's only the top one. Only their GNDs join, at the − rails.
 
 When you are done, these are the connections your circuit makes:
 
@@ -152,7 +162,8 @@ servo snaps to wherever the knob now points.
 
 | What you see | Try this |
 |---|---|
-| The servo never moves, though the screen shows the angles | Is the power module's LED on? Check the adapter, the button and that the bottom jumper is on 5V. Then check the black wire from the Mega's GND to the bottom − rail (B-3): without it the servo can't read the signal. |
+| The servo never moves, though the screen shows the angles | Is the power module's LED on? Check the adapter and the button, then the module's two wires: red from its 5V pin to B+61, black from its GND pin to B-61. Then check the black wire from the Mega's GND to the bottom − rail (B-3): without it the servo can't read the signal. |
+| The power module gets hot | Unplug its adapter and the USB cable at once. The module must lie beside the breadboard, never plugged into it, and its red wire must go to B+61 and its black one to B-61, never the other way round. |
 | The screen is dark | It runs on the Mega's 5 V, not the module's: check the red wire from the Mega's 5V into the top + rail (T+3). |
 | It moves, but not with the knob | Check the servo's orange wire goes to pin 44, the knob's middle leg to A0, and the red wire from j47 up to the top + rail (T+47). |
 | The Mega resets or the USB disconnects when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail (B+53), fed by the power module. |
@@ -213,9 +224,10 @@ What the numbers tell you:
   USB port, down the top + rail, so it stays with the module off. That's
   why the knob and the screen still work. Compare it with the first
   reading: the two are seldom exactly equal. Joined, the higher would push
-  current back into the other, which is why the module's top jumper is
-  off: the Mega's 5 V has the top rails and the module's the bottom ones.
-  Only their GNDs are joined, so that the servo can read the pulses.
+  current back into the other, which is why the module's red wire goes
+  only to the bottom + rail: the Mega's 5 V has the top rails and the
+  module's the bottom ones. Only their GNDs are joined, so that the servo
+  can read the pulses.
 - **The knob's wiper** is the angle, as a voltage. `knob.read (0, 180)`
   turns 0 V into 0° and 5 V into 180°, so 90° is 2.5 V, and each degree is
   5 V ÷ 180 ≈ 0.03 V. Turn the knob and watch the needle and the meter move

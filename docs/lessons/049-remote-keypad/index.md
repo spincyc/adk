@@ -88,9 +88,10 @@ Board A at all.
 !!! danger "3.3 V for the modems; 5 V for the servo"
     Each modem's VDD goes to its own Mega's **3.3V** pin, never 5V, and
     its RXD only ever sees the Mega's TX pin through the 1 kΩ, with the
-    2 kΩ to GND. On Board B, set the power module's **top** jumper to
-    **OFF** and its **bottom** jumper to **5V**: the servo takes its power
-    from the bottom rails, never from the Mega.
+    2 kΩ to GND. On Board B, the power module lies beside the board as in
+    Lesson 17, never plugged into it, both its jumpers **off**, its red
+    wire from **5V** to B+61 and its black wire from **GND** to B-61: the
+    servo takes its power from the bottom rails, never from the Mega.
 
 Each board keeps its LoRa modem from Lesson 48 where it is, below the
 board, with its divider and its wires: those stay the same in every
@@ -214,7 +215,7 @@ never shows a key that Board B hasn't taken.
 | Board B's light stays dim orange | Board B can't hear Board A. The same checks, on Board A's modem; and are both sketches from this lesson, with addresses 1 and 2? |
 | Keys don't make stars | Check the keypad as in Lesson 16: its ribbon on pins 22 to 29, in order. A key pressed while the boards can't hear each other is lost; press it again. |
 | A key is sometimes missed | Two keys pressed within a tenth of a second can share a message, and Board B skips a jump in the count. Type at a steady pace; a missed key means a wrong code, never a wrong opening. |
-| The servo doesn't move | Is the power module on, with its bottom jumper on 5V? Check the servo's red wire in B+53, its brown in B-54, and pin 44's wire to its orange. |
+| The servo doesn't move | Is the power module on, with its LED lit? Check its red wire from 5V to B+61 and its black wire from GND to B-61, then the servo's red wire in B+53, its brown in B-54, and pin 44's wire to its orange. |
 | A blank lit screen, or a row of blocks | Turn the contrast knob. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 

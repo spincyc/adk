@@ -97,14 +97,16 @@ puts it straight on the screen, and a computer could show it just as easily.
 !!! danger "5 V for these modules, and aerials first"
     Screw each module's aerial onto its gold socket before you power
     anything: sending into no aerial can damage a module. These modules
-    take **5 V**, so move the power module's **bottom** jumper from 3.3V to
-    **5V**, and leave its top jumper off. Should you go back to Lesson 40's
-    modems, set it back to 3.3V first: 5 V would damage them.
+    take **5 V**, so move the power module's red wire from its 3.3V pin to
+    its **5V** pin, and leave both its jumpers off. Should you go back to
+    Lesson 40's modems, move the wire back to **3.3V** first: 5 V would
+    damage them.
 
 Keep the screen, the button, both dividers and the Mega's wires to pins 14,
 15, 18 and 19 from Lesson 40 just as they are, and take out the two modems
-and their wires. The power module stays where it is: the steps list it
-again because its bottom jumper moves to **5V**. The DHT11 goes back to its
+and their wires. The power module stays where it is, with its black wire:
+the steps list its red wire again because it moves from the module's
+**3.3V** pin to its **5V** pin. The DHT11 goes back to its
 home above the board, as in Lesson 15, on the top rails, which the Mega's
 5V feeds as it feeds the screen.
 
@@ -181,9 +183,9 @@ What's new:
 
 ## Upload it
 
-1. Check both aerials are on, and the power module's bottom jumper is on
-   5V. Plug in the USB cable, then the power module's adapter, and switch
-   it on.
+1. Check both aerials are on, and the power module's red wire comes from
+   its 5V pin. Plug in the USB cable, then the power module's adapter, and
+   switch it on.
 2. Upload the sketch. The screen says `Module A ready` and
    `Module B ready`.
 3. Open the Serial Monitor at 9600 baud. A second or two later, and every
@@ -206,7 +208,7 @@ eight times the size of the two bytes here, but it needs no key to read it.
 
 | What you see | Try this |
 |---|---|
-| `No reply from A`, or from B | Is the power module on, with its bottom jumper on 5V? Check that module's VCC and GND, its M0 and M1 into f and g of column 57 (A) or 48 (B) with pin 40 or 42 in j above them, and its AUX into f52 (A) or f43 (B) with pin 41 or 43 in j above it. |
+| `No reply from A`, or from B | Is the power module on, with its LED lit? Check its red wire goes from its 5V pin to B+61 and its black one from GND to B-61. Check that module's VCC and GND, its M0 and M1 into f and g of column 57 (A) or 48 (B) with pin 40 or 42 in j above them, and its AUX into f52 (A) or f43 (B) with pin 41 or 43 in j above it. |
 | Still no reply | Check TXD and RXD aren't swapped: TXD goes up to f53 (A) or f44 (B), RXD to c55 (A) or c46 (B). Check the divider, as in Lesson 40. |
 | `A sends`, but B hears nothing | Check module B's TXD in f44 and pin 15's wire in j44, and that both aerials are on. |
 | Nothing is sent at all | The DHT11 hasn't given a good reading: check S goes to pin 16, + to the top + rail (T+36) and − to the top − rail (T-37). |

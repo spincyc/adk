@@ -110,8 +110,10 @@ of these are true:
     whenever Board B's power module is on.
 
 !!! danger "The motors' power"
-    Board B's power module keeps its **top** jumper **off** and its
-    **bottom** jumper on **5V**. The servo and the motor take their power
+    Board B's power module stays beside its breadboard as in Lesson 44,
+    never plugged into it, both its jumpers **off**, its red wire from
+    **5V** to B+61 and its black wire from **GND** to B-61. The servo and
+    the motor take their power
     from the bottom rails, never from the Mega; the L293D's logic and the
     sensor run on the Mega's own 5 V, from the top rails and the inner 5V
     pin. The modem stays on the Mega's 3.3V pin.
@@ -133,7 +135,8 @@ its GND to the inner GND pin at the end of the long header.
 
 ### Board B
 
-Keep the power module, the modem and the servo from Lesson 44. Take out
+Keep the power module and its two wires, the modem and the servo from
+Lesson 44. Take out
 the yellow LED, with its resistor and wires: the L293D needs its column,
 so the Mega's own **L** LED, on pin 13, shows the link now, and needs no
 wire at all.
@@ -150,7 +153,9 @@ its GND in T-5; the L293D across the middle gap from column 12, its
 logic on the top rails and the motor's supply on the bottom ones; and
 the motor above the board, its leads down into j14 and j17. The wires
 from pins 16 and 17 go up past the sensor's left end and over the
-motor, to reach the modem's holes from above.
+motor, to reach the modem's holes from above. As in Lesson 21, a black
+wire from B-60 to T-60 joins the top − rail, where the sensor's GND goes,
+to the bottom one: the power module feeds only the bottom rails.
 
 <!-- bench B -->
 
@@ -261,7 +266,7 @@ the middle, and the fan stays still until you press the stick.
 | What you see | Try this |
 |---|---|
 | `Not connected` stays on the screen, and the **L** LED stays dark | Check Board A runs **Joystick** and Board B runs **Turret**. Check Board B's modem wires now come from pins 16 and 17: 16 into j46, 17 into j44. |
-| The turret never moves | Is the power module on, with its bottom jumper on 5V? Check the servo's plug: brown to B-54, red to B+53, orange to pin 44. |
+| The turret never moves | Is the power module on, with its LED lit? Check its red wire from 5V to B+61 and its black wire from GND to B-61, then the servo's plug: brown to B-54, red to B+53, orange to pin 44. |
 | The turret turns the wrong way | Change `aim - stick.x () / 25` to `aim + stick.x () / 25` in **Joystick**. |
 | The turret creeps when nobody touches the stick | The stick moved while the sketch started. Press Board A's reset button with your hands off the stick. |
 | `Fan on`, but the fan never spins | Is anything closer than 15 cm, or the sensor facing a wire or the desk? Then check the L293D as in Lesson 20: pin 4 in j19, 8 in j13, 9 in j18, the motor's leads in j14 and j17, j12 to T+12, a15 to the − rail and a19 to B+19. |

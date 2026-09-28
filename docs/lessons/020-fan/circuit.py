@@ -1,6 +1,6 @@
-# The power module at its home on the right end feeds only the bottom rails,
-# for the motor (its top jumper off); the Mega's 5V feeds the top rails, for
-# the chip's logic and the knob, and the Mega's GND joins them all at B-3.
+# The power module at its home beside the board feeds only the bottom rails,
+# for the motor; the Mega's 5V feeds the top rails, for the chip's logic and
+# the knob, and the Mega's GND joins them all at B-3.
 # The reverse button on 22 and the knob on A0 stand at their homes. The
 # L293D's upper half drives the motor: the chip across the gap in columns
 # 12-19, its logic power from the top + rail, its GND and the motor's power

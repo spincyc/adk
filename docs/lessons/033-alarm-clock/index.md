@@ -94,16 +94,17 @@ alarm (or the end of a snooze), the clock goes from `Showing` to `Ringing`.
     Unplug the USB cable and switch the power module off before you change
     any wiring. The passive buzzer always goes through its 220 Ω resistor:
     its coil is only about 16 Ω, and on its own it would draw far more than
-    a pin should give. Set the power module's bottom yellow jumper to
-    **5V**, never 3.3V, and its top one **OFF**: the Mega's 5V already
-    feeds the top rails, and two supplies must never feed the same rail.
-    Never power the stepper's driver from the Mega's 5V pin.
+    a pin should give. The power module lies beside the board as in
+    Lesson 31, never plugged into it, both its jumpers **off**, its red
+    wire from **5V** to B+61 and its black wire from **GND** to B-61: the
+    Mega's 5V already feeds the top rails, and two supplies must never feed
+    the same rail. Never power the stepper's driver from the Mega's 5V pin.
 
 Keep your clock from Lesson 32 just as it is. The new parts are the snooze
 button just past the LCD, in columns 38 to 40, the passive buzzer in column
 51 with its resistor down to the − rail, the knob above the Mega on five
 wires, and the flag: the stepper's driver below the Mega, as in Lesson 31,
-with the power module at the right end of the board.
+with the power module lying to the right of the board.
 
 The power module feeds only the bottom rails, for the stepper's driver, as
 in Lesson 31. The screen and the clock keep the Mega's 5 V on the top rails,
@@ -230,7 +231,7 @@ every step on the way up, it knows exactly how far back 0 is.
 | The screen flashes **Wake up!** but there's no sound | Check the buzzer's + leg, the one by its + mark, is in f51, in pin 10's column, that pin 10's wire is in j51, and that the resistor goes from a51 to the − rail. |
 | The snooze button does nothing | It must straddle the middle gap in columns 38 and 40, with pin 23's wire in j38 and the black wire from a40 to the − rail. |
 | The time is wrong | See Lesson 32: the clock module keeps whatever time it was set to. |
-| The flag never moves, and the driver's LEDs stay dark | Switch the power module on, with its bottom jumper on 5V, and check the driver's red and black wires go to B+4 and B-4. |
+| The flag never moves, and the driver's LEDs stay dark | Switch the power module on and check its LED is lit, its red wire goes from 5V to B+61 and its black one from GND to B-61, and the driver's red and black wires go to B+4 and B-4. |
 | The flag hums or shakes but hardly turns | Check IN1 goes to A8, IN2 to A9, IN3 to A10 and IN4 to A11. |
 | The flag swings down instead of up | Your motor turns the other way: tape the flag on pointing right instead. |
 | The flag stands up while it's quiet, and lies flat when it rings | The Mega started while the flag was up, and counts from there. Unplug it, turn the flag flat by hand, and plug it in again. |

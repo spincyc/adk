@@ -16,8 +16,8 @@ dial.home_modem (tx=[(3.15, 0.05), (4.3, 0.05), (4.3, -0.22), (9.65, -0.22)],
                  rx=[(3.25, 0.1), (4.35, 0.1), (4.35, -0.17), (9.45, -0.17)])
 
 # Board B, the servo: the button and the red LED come out; the yellow LED
-# on 27 stays at its home, now the link light. The power module goes on
-# the right end, its top jumper off and its bottom one on 5 V: the servo
+# on 27 stays at its home, now the link light. The power module lies
+# beside the board, its 5V and GND wired to B+61 and B-61: the servo
 # takes its power from the bottom rails, never the Mega's. The servo lies
 # at its home, but lower than in Lesson 17, below the level of the modem,
 # whose place overlaps its usual one.

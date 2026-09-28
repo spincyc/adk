@@ -96,11 +96,13 @@ always does the same thing: it locks the safe and rubs out what you typed.
     Keep Lesson 17's power module, screen and servo just as they are, with
     their wires and the Mega's GND and 5V wires, and take out the angle
     knob in columns 45 to 47 with its three wires. Put the keypad back where it was in
-    Lesson 16, and add the buzzer past the screen. The power module's
-    jumpers stay as Lesson 17 set them: the top one **OFF**, so the Mega's
-    5V feeds the top rails for the screen, and the bottom one on **5V** for
-    the servo. Never connect the servo's red wire to the Mega's 5V or the
-    top + rail. Keep fingers clear of the servo's arm.
+    Lesson 16, and add the buzzer past the screen. The power module stays
+    beside the board as in Lesson 17, never plugged into it, both its
+    jumpers **off**, its red wire from **5V** to B+61 and its black wire
+    from **GND** to B-61: it feeds only the bottom rails, for the servo,
+    and the Mega's 5V feeds the top rails, for the screen. Never connect
+    the servo's red wire to the Mega's 5V or the top + rail. Keep fingers
+    clear of the servo's arm.
 
 <!-- bench -->
 
@@ -193,7 +195,7 @@ locks, and the old code still opens it.
 
 | What you see | Try this |
 |---|---|
-| The servo never moves | Is the power module on, with its LED lit and its bottom jumper on 5V? Check the servo's red and black wires reach the bottom rails (B+53, B-54) and its orange wire pin 44. |
+| The servo never moves | Is the power module on, with its LED lit? Check its red wire from 5V to B+61 and its black wire from GND to B-61, then that the servo's red and black wires reach the bottom rails (B+53, B-54) and its orange wire pin 44. |
 | The screen is dark | It runs on the Mega's 5 V, as in Lesson 17: check the red wire from the Mega's 5V into the top + rail (T+3). |
 | The screen is blank, but the backlight is on | Turn the contrast knob. |
 | Keys come out wrong | See Lesson 16's "Which way round is the ribbon?" |

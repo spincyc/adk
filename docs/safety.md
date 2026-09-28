@@ -62,14 +62,14 @@ work at 3.3 V, and a radio that sends is ruled by law.
   transmitter take little enough for the Mega's 3.3V pin. A LoRa modem
   sending at full power draws up to about 50 mA by REYAX's datasheets: all
   that pin can give, so Lesson 40's two run from the breadboard power
-  module set to 3.3 V. In the two-board lessons each board has one modem
+  module's 3.3V pin. In the two-board lessons each board has one modem
   sending at 10 dBm. REYAX gives no figure for that, but the radio chip
   inside draws about 29 mA even at 13 dBm (Semtech's SX1276 datasheet), so
   its VDD goes to the Mega's 3.3V pin; a board that also has the RFID
-  reader, which shares that pin, powers its modem from the power module set
-  to 3.3 V instead. Label a power module set to 3.3 V: a 5 V one in its
-  place would ruin the modem. The Meshtastic board runs from its own USB
-  cable.
+  reader, which shares that pin, powers its modem from the power module's
+  3.3V pin instead. Check that the module's red wire comes from its 3.3V
+  pin before you switch on: from its 5V pin it would ruin the modem. The
+  Meshtastic board runs from its own USB cable.
 - **Fit the aerial before powering a LoRa radio.** Sending into no aerial
   can damage it, and the Meshtastic board starts sending as soon as it is
   set up.

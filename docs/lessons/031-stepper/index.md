@@ -66,17 +66,18 @@ module, just as the servo in Lesson 17 took its power from there.
 
 !!! warning "Unplug first"
     Unplug the USB cable and switch the power module off before you change
-    any wiring. Set the power module's bottom yellow jumper to **5V**, never
-    3.3V. Never power the driver from the Mega's 5V pin: the motor could pull
-    the Mega's power down and reset it, or damage it.
+    any wiring. The power module lies beside the board as in Lesson 17,
+    never plugged into it, both its jumpers **off**, its red wire from
+    **5V** to B+61 and its black wire from **GND** to B-61. Never power the
+    driver from the Mega's 5V pin: the motor could pull the Mega's power
+    down and reset it, or damage it.
 
 <!-- bench -->
 
 <!-- steps -->
 
-Set the power module's bottom yellow jumper to **5V**: it feeds the driver
-through the bottom rails. Its top jumper is **OFF**, as in Lesson 20: the
-module never feeds the top rails, and nothing here uses them.
+The power module's red and black wires feed the driver through the bottom
+rails. Nothing here uses the top rails, so nothing feeds them.
 
 Last, push the motor's white plug into the socket on the driver board. It only
 fits one way round. Plug the 9 V adapter into the power module's round socket,
@@ -142,7 +143,7 @@ positive means for your motor.
 
 | What you see | Try this |
 |---|---|
-| Nothing moves, and the driver's LEDs stay dark | Check the power module is switched on, its LED is lit, its bottom jumper is on 5V, and the red and black wires go from the bottom rails to the driver's + and − pins. |
+| Nothing moves, and the driver's LEDs stay dark | Check the power module is switched on and its LED is lit, its red wire goes from 5V to B+61 and its black one from GND to B-61, and the red and black wires go from the bottom rails to the driver's + and − pins. |
 | The LEDs flicker but the shaft doesn't turn | Push the motor's white plug fully into its socket. |
 | The motor hums or shakes but hardly turns | Two of the IN wires are swapped: IN1 to A8, IN2 to A9, IN3 to A10, IN4 to A11. |
 | Nothing happens when you press | The button must straddle the middle gap, with pin 22's wire in column 2 and the black wire from a4 to the − rail. |
@@ -182,26 +183,24 @@ positive means for your motor.
 This part is for anyone with a multimeter; there isn't one in the kit. Set
 it up as in [Lesson 1](../001-blink/index.md#measure-it): the dial on DC volts
 (**V⎓**), the black lead in **COM** and the red one in **V**. Never use the
-**10A** socket here: across a supply, it is a short circuit. These readings
-hold still by themselves, so just switch the power module on. The + and −
+**10A** socket here: across a supply, it is a short circuit. This reading
+holds still by itself, so just switch the power module on. The + and −
 holes of a rail pair are only 2.5 mm apart: push each probe tip into its own
 hole, so neither can slip across and touch the other rail.
 
 !!! question "Predict"
-    The top jumper is off. What will the meter read across the top rails:
-    5 V, 3.3 V, or nothing at all?
+    While the motor turns, its coils take up to about 200 mA from the bottom
+    rails. Will the reading there drop while it moves, or hold steady? Write
+    down your guess.
 
 <!-- measure -->
 
 What the numbers tell you:
 
-- **The driver's supply** is the power module's 5 V; none of it comes from
-  the Mega. Press the button and watch the reading while the motor turns: it
-  hardly moves, because the module has plenty to spare for the coils'
-  200 mA.
-- **The top rails** read 0: with their jumper off, nothing feeds them. Each
-  pair of rails gets its voltage from its own jumper. The − rails are joined
-  inside the module, whatever the jumpers say.
+- **The driver's supply** is the power module's 5 V, carried to the bottom
+  rails by its red wire; none of it comes from the Mega. Press the button
+  and watch the reading while the motor turns: it hardly moves, because the
+  module has plenty to spare for the coils' 200 mA.
 - Now switch the power module off, leave the Mega plugged in, and press the
   button. The driver's supply reads 0, its LEDs stay dark and the arrow
   stays put, but the sketch counts its 1024 half-steps just the same:

@@ -6,9 +6,9 @@
 # four-digit display would cover the modem's divider, so the screen shows
 # the angles.
 #
-# Board B: the stepper's driver at its home, as in Lesson 31, on the power
-# module's bottom rails at 5 V; the top jumper is off, as nothing uses the
-# top rails.
+# Board B: the stepper's driver at its home, as in Lesson 31, on the
+# bottom rails, which the power module beside the board feeds at 5 V;
+# nothing uses the top rails.
 knob = Bench ("Board A: a knob on A0, the LCD on pins 31 to 36, and a LoRa modem on pins 14 "
               "and 15, its VDD from the Mega's 3.3V pin", columns=(1, 62), sketch="Knob")
 
