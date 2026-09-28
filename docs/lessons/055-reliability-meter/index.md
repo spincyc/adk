@@ -6,13 +6,15 @@ level: 2
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
-  - The LCD, knob and 220 Ω resistor from Lesson 13, wired as before
+  - LCD1602 display
+  - 10 kΩ potentiometer
+  - 220 Ω resistor (red, red, black, black, brown)
   - Rotary encoder module
   - 433 MHz receiver, RX470C, and transmitter, WL102-341, from Lesson 38 (add-ons, not in the kit)
   - 1 kΩ resistor (brown, black, black, brown, brown)
   - 2 kΩ resistor (red, black, black, brown, brown), or a second 1 kΩ
   - 5 female-to-male jumper wires, and 3 more for the last experiment
-  - 7 jumper wires
+  - 25 jumper wires
   - For the last experiment, a small metal tin with a lid, and a plastic bag
 ideas:
   - The time every message costs, however short
@@ -83,6 +85,8 @@ Everything goes back to a home it has had before: the screen at its home
 from Lesson 13, the rotary encoder above the Mega as in Lesson 29, and the
 receiver and transmitter in row j past the screen, as in Lesson 38, with
 their wires coming round the bottom of the screen and up into row f.
+None of Lesson 54's parts stay, so take its Board A apart first, all but
+the Mega's GND wire, and build this one from the start.
 
 <!-- bench -->
 
@@ -141,9 +145,10 @@ What's new:
 1. Upload the sketch. The screen says `20 letters` and `Press to test`.
 2. Press the knob. The bottom row counts `Sending 1 of 10` up to 10, in
    about 2 seconds.
-3. The screen shows the result: `20 letters 186ms` and `Heard 10/10 100%`.
+3. The screen shows the result: `20 letters 186ms`, or a millisecond
+   either side, and `Heard 10/10 100%`.
 4. Turn the knob to 60 and press again. The test takes longer this time,
-   and the top row says `426ms`.
+   and the top row says about `426ms`.
 
 Did you predict 186 ms and 426 ms? A 60-letter message carries twelve
 times the letters of a 5-letter one, but takes less than five times as

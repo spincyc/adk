@@ -46,7 +46,7 @@ alive.
 
 ## Radios
 
-The add-on radios in Lessons 37 to 54 need two kinds of care: their pins
+The add-on radios in Lessons 37 to 55 need two kinds of care: their pins
 work at 3.3 V, and a radio that sends is ruled by law.
 
 - **Never put 5 V on a 3.3 V pin.** The FM radio, the 433 MHz

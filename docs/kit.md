@@ -42,7 +42,7 @@ Modules Kit**; those are marked below and in each lesson's parts list.
 
 ## Add-on radios
 
-Lessons 37 to 42 use radios that aren't in either kit. Each costs a few
+Lessons 37 to 55 use radios that aren't in either kit. Each costs a few
 dollars; the LoRa radios come in pairs, because it takes two to talk.
 
 | Part | What it does | First used |
