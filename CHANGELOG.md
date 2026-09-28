@@ -53,7 +53,12 @@ A new start, built on the library's original 2021 design.
   with pencil drawings generated from one description of the build and
   checked against the lesson's code. Wires route round parts and labels;
   every part has a home on the breadboard, so each lesson's steps say what
-  to keep from the one before, what to take out and what to add. The
+  to keep from the one before, what to take out and what to add. The steps
+  come in stages, a part and its wires under a heading naming the pins
+  they use, with each wire, resistor and LED drawn between the holes it
+  joins, lined up from step to step; a stage built before folds away. A
+  learner can tick steps off, and choose one to light its part up in the
+  drawing, which stays in sight above the steps on a large screen. The
   drawings follow the kit: the Mega's headers and the breadboard at their
   real sizes, modules with their pins in their real order, every wire a
   color the kit has, the potentiometers across the middle gap, the rotary
