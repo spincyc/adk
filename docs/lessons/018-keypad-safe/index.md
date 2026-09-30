@@ -9,7 +9,11 @@ parts:
   - Lesson 17's screen, servo and power module (with its 9 V adapter), wired as before
   - The 4×4 keypad from Lesson 16
   - Active buzzer
-  - 10 more jumper wires
+  - S8050 NPN transistor
+  - 1 kΩ resistor (brown, black, black, brown, brown)
+  - 10 kΩ resistor (brown, black, black, red, brown)
+  - 1N4007 diode
+  - 13 more jumper wires
   - A small cardboard box and some tape, if you want a real safe
 ideas:
   - A lock as a set of states
@@ -96,17 +100,23 @@ always does the same thing: it locks the safe and rubs out what you typed.
     Keep Lesson 17's power module, screen and servo just as they are, with
     their wires and the Mega's GND and 5V wires, and take out the angle knob
     in columns 39 to 41 with its three wires. Put the keypad back where it
-    was in Lesson 16, and add the buzzer in column 33. The power module
+    was in Lesson 16, and add the buzzer in column 33 with its transistor
+    driver, both resistors and diode from Lesson 3. The power module
     stays beside the board as in Lesson 17, never plugged into it, both its
     jumpers **off**, its red wire from **5V** to the bottom + rail and its
     black wire from **GND** to the bottom − rail, both by column 42: it
     feeds only the bottom rails, for the servo, and the Mega's 5V feeds the
-    top rails, for the screen. Never connect the servo's red wire to the
-    Mega's 5V or the top + rail. Keep fingers clear of the servo's arm.
+    top rails, for the screen and buzzer. Never connect the servo's red wire
+    to the Mega's 5V or the top + rail. Keep fingers clear of the servo's arm.
 
 <!-- bench -->
 
 <!-- steps -->
+
+The buzzer uses the driver from [Lesson 3](../003-reaction-duel/index.md):
+its current comes from the Mega's top + rail, and pin 12 only controls the
+transistor. Follow the driver steps for the transistor's leg order and the
+diode's band. The servo keeps its separate supply on the bottom + rail.
 
 ??? info "Making the box"
     Tape the servo inside a small cardboard box, just below the rim, with its
@@ -200,7 +210,7 @@ locks, and the old code still opens it.
 | The screen is blank, but the backlight is on | Turn the contrast knob. |
 | Keys come out wrong | See [Lesson 16](../016-keypad/index.md#build-it)'s "Which way round is the ribbon?" |
 | The right code says `Wrong!` | You may have saved a different code. If you've forgotten it, change `savedMark` to 43 and upload: the sketch then ignores the saved code and starts again from 1234. |
-| No clicks or beeps | Check the buzzer's + leg is in f33 with pin 12's wire in j33, and the black wire from a33 goes to the − rail. |
+| No clicks or beeps | Check the buzzer's + leg is in f33 and its supply wire reaches the top + rail. Follow the driver steps: pin 12 goes through 1 kΩ to the transistor's base, and the emitter goes to GND. Check the transistor's leg order and the diode's band. |
 | The servo buzzes when locked | It's pressing against its stop or the lid. Try a `lockedAngle` of 10. |
 | The Mega resets when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail by column 35, which only the power module feeds. |
 

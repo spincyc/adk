@@ -8,8 +8,9 @@ parts:
   - Breadboard
   - The LED matrix from Lessons 25 to 27
   - GY-521 accelerometer module (MPU-6050)
-  - 5 female-to-male jumper wires
-  - 7 jumper wires
+  - BSS138 bidirectional I2C level shifter (Adafruit 757 layout), with headers fitted; an extra part
+  - 12 female-to-male jumper wires
+  - 6 jumper wires
 ideas:
   - The I2C bus and addresses
   - An accelerometer feels gravity
@@ -36,7 +37,9 @@ that many chips can share using just two wires: **SDA** carries the data and
 **address**, a number it answers to; the MPU-6050's is `0x68`, a hexadecimal
 (base 16) number, 104 in ordinary counting. The Mega's I2C pins are 20 (SDA)
 and 21 (SCL). The module has its own 3.3 V regulator, so it runs from 5V,
-and its own resistors that hold the two wires high between bits.
+and its own resistors that hold the two wires high between bits. Its
+**signals still need 3.3 V**. A bidirectional I2C level shifter lets each
+side use its own voltage: 5 V at the Mega and 3.3 V at the sensor.
 
 An **accelerometer** measures how hard something is pushed, along three
 directions at right angles, x, y and z. Lying still, it isn't pushed by
@@ -70,6 +73,14 @@ side the Y arrow points to. ADK works them out for you in degrees with
     it, so its 5V comes from the top + rail at column 7, beside it, and its
     GND crosses the middle gap in column 10 to reach the bottom − rail.
 
+    Add the **BSS138 bidirectional I2C level shifter**, an extra part
+    described in [the kit list](../../kit.md#i2c-level-shifter). Lay it
+    above the gap between the Mega and breadboard, on a nonconductive
+    support. Its fitted headers take female-to-male wires. HV takes 5 V,
+    LV takes the Mega’s 3.3 V through column 5, and GND joins GND. Pin 20
+    reaches B1, with A1 to SDA; pin 21 reaches B2, with A2 to SCL. Leave
+    channels 3 and 4 empty. Do not join A and B with jumper wires.
+
 <!-- bench -->
 
 <!-- steps -->
@@ -95,7 +106,8 @@ side the Y arrow points to. ADK works them out for you in degrees with
     so stand it in the same holes, then move each of the four wires to the
     column of the pin with its name: the red one from the top + rail, by
     column 7, to **5V**'s column, the two black ones that carry GND across
-    the gap to **GND**'s, pin 21's to **SCL**'s and pin 20's to **SDA**'s.
+    the gap to **GND**’s, the level shifter’s **A2** wire to **SCL**’s
+    and its **A1** wire to **SDA**’s.
     Its other four pins stay unconnected. Its axes should follow the arrows
     printed on it, but that hasn't been checked on a real board: the bubble
     test tells you.
@@ -153,7 +165,7 @@ the numbers themselves, try the second challenge below.
 
 | What you see | Try this |
 |---|---|
-| *NO SENSOR* scrolls | Check SDA goes to pin 20 and SCL to 21: they can't be swapped. Check VCC's red jumper from the top + rail to i9 and the red wire from the Mega's 5V to the top + rail by column 3, GND's two black jumpers (f10 to e10, a10 to the − rail), and that the header is pushed well into row j. |
+| *NO SENSOR* scrolls | Check pin 20 → B1 and A1 → SDA, and pin 21 → B2 and A2 → SCL on the level shifter. HV needs 5 V and LV needs 3.3 V. Check VCC's red jumper from the top + rail to i9 and the red wire from the Mega's 5V to the top + rail by column 3, GND's two black jumpers (f10 to e10, a10 to the − rail), and that the header is pushed well into row j. |
 | The bubble moves the wrong way left and right | Your module's X arrow points the other way. In `showBubble ()`, change `3 + lround (pitch / degreesPerDot)` to `3 - lround (pitch / degreesPerDot)`. |
 | The bubble moves the wrong way up and down | Change `3 - lround (roll / degreesPerDot)` to `3 + lround (roll / degreesPerDot)`. |
 | Up and down follow left and right instead | The arrows are turned a quarter round. Swap `pitch` and `roll` in the call to `showBubble ()`, then fix any direction as above. |
@@ -213,14 +225,13 @@ What the numbers tell you:
 
 - **The module's supply** is the 5 V of the top + rail. The MPU-6050 itself
   runs on 3.3 V, which a small regulator on the module makes from the 5 V.
-- **SDA** reads somewhere between 3.5 and 4 V: neither 0 nor 5. On an I2C
-  bus no chip ever drives a wire high. Each can only pull it low, for a 0,
-  and resistors hold it high the rest of the time. Two sets of them pull on
-  SDA here: the Mega's, up towards 5 V, and the module's own, up towards its
-  3.3 V, so the wire settles between the two. Just where depends on your
-  module's resistors. A little over the chip's 3.3 V does it no harm: the
-  Mega's resistors are 10 kΩ, so only a trickle of current gets through,
-  and the module's own 3.3 V supply takes it.
+- **SDA at the sensor** reads about 3.3 V between messages. On an I2C bus,
+  each chip can pull the wire low or release it; resistors lift it high.
+  The level shifter passes lows between the sides while allowing separate
+  high voltages: 3.3 V at A1 and about 5 V at B1. Do not connect those
+  sides directly. The [MPU-6050 datasheet](https://product.tdk.com/system/files/dam/doc/product/sensor/mortion-inertial/imu/data_sheet/mpu-6000-datasheet1.pdf)
+  limits an input to its supply plus 0.5 V; a reading near 4 V at the
+  sensor is a reason to unplug and check the interface, not a safe target.
 - Every 20 ms the Mega asks for a reading, and 14 bytes go past in under
   2 ms, far too fast for the meter. It only averages them in, which nudges
   its number down a little.

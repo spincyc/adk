@@ -324,7 +324,7 @@ class Pencil:
                 f'<style>.silk{{font-family:"Atkinson Hyperlegible Next",sans-serif}}'
                 + ('.mono{font-family:"JetBrains Mono",monospace}' if self.mono else "")
                 + '</style>'
-                f'{defs}{body}</svg>')
+                f'{defs}<g id="{self.id ("scene")}">{body}</g></svg>')
 
     def _stroke (self, points, width, tone, layer, wobble, closed):
         jittered = [(x + self.random.uniform (-wobble, wobble),

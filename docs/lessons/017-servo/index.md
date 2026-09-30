@@ -1,6 +1,6 @@
 ---
 lesson: 17
-promise: Make a motor turn to exactly the angle you ask for, powered the safe way.
+promise: Make a motor follow the angle you ask for, powered the safe way.
 time: 45 minutes
 level: 2
 parts:
@@ -26,8 +26,8 @@ ideas:
 A dial with a needle that obeys a knob. Turn the knob a little and the servo's
 white arm, the **horn**, swings to match; turn it all the way and the horn
 sweeps half a circle. The screen from Lesson 13 shows the angle the knob
-asks for, and the angle the needle has reached as it glides after it. Tape a
-paper scale behind the horn and you have a gauge that can point at anything:
+asks for, and the angle the Mega is sending as the needle glides after it.
+Tape a paper scale behind the horn and you have a gauge that can point at anything:
 the temperature, a score, or how hungry the cat is.
 
 ## The idea
@@ -133,27 +133,35 @@ What's new:
   46 can drive a servo, because ADK makes the pulses with the Mega's Timer 5,
   in hardware, so they never wobble.
 - `knob.read (0, 180)` turns the knob into an angle, as in Lesson 7.
+- `refresh`, an `adk::Every` from Lesson 11, reads the knob and redraws the
+  screen ten times a second. The servo keeps gliding between those readings.
+- `target` remembers the last angle requested. It starts at -1, which means
+  no angle has been chosen yet. After that, a new reading must differ by at
+  least 2° to change the target; either end of the dial, 0° or 180°, always
+  counts. Ignoring a one-degree wobble lets a glide finish instead of
+  starting it again every time a noisy reading changes.
 - `needle.moveTo (angle, 300);` asks the servo to glide to that angle over
   300 ms, while the sketch carries on. Asking again for the angle it is
-  already gliding to changes nothing, which is why it can sit in `loop ()`.
+  already gliding to changes nothing; a different target starts a new glide.
 - Its sister `needle.write (angle);` jumps straight there, as fast as the
   servo can go.
 - `needle.angle ()` is the angle the Mega is sending the servo now. During
-  a glide it is how far the glide has got, so on the screen it runs a
-  little behind the knob's angle and then catches up.
-- The screen is Lesson 13's `adk::Lcd`, and `refresh` is an `adk::Every`
-  from Lesson 11 that redraws it ten times a second, with the degree sign
-  and the trailing spaces of Lesson 14.
+  a glide it is how far the command has got. The servo has its own position
+  sensor inside, but sends no position reading back to the Mega: the screen
+  cannot tell whether the horn has followed the command.
+- The screen is Lesson 13's `adk::Lcd`, with the degree sign and trailing
+  spaces of Lesson 14.
 
 ## Upload it
 
 Plug in the USB cable, then the power module's adapter, and press the module's
 button so its LED lights. Upload the sketch. The servo swings to wherever the
-knob points and stops, and the screen shows the two angles, `Knob` and
-`Needle`. Turn the knob slowly: the needle follows, a third of a second
-behind. Turn it quickly from one end to the other and the needle glides
-smoothly across instead of jerking, while its number on the screen counts
-its way after the knob's.
+knob points and stops, and the screen shows `Knob` and `Needle`, the angle
+the Mega is currently sending. Turn the knob slowly: the needle follows.
+Turn it quickly from one end to the other and stop: the command glides to
+the new angle over 300 ms, and its number on the screen counts after the
+knob's. A one-degree difference is allowed to keep a noisy reading from
+restarting the glide; turning fully to either end always asks for 0° or 180°.
 
 Now test your prediction. With the module switched off, the knob and the
 screen still work, because they run on the Mega's own 5 V, and the screen
@@ -172,7 +180,7 @@ module back on and the servo snaps to wherever the knob now points.
 | It moves, but not with the knob | Check the servo's orange wire goes to pin 44, the knob's middle leg to A0, and the red wire from j41 up to the top + rail by column 41. |
 | The Mega resets or the USB disconnects when the servo moves | The servo is getting power from the Mega. Its red wire must go to the bottom + rail by column 35, fed by the power module. |
 | The needle turns the opposite way to the knob | Nothing is wrong. To swap it, change `knob.read (0, 180)` to `knob.read (180, 0)`. |
-| The servo hums or twitches when it should be still | The knob's reading wobbles by one step, and the servo chases it. See the second challenge below. |
+| The servo hums or twitches when it should be still | Watch the knob's number. If it wobbles by 2° or more, check its wires; the second challenge tries a wider quiet zone. |
 | It buzzes at one end of its travel | It's pushing against its end stop. Use `adk::Servo needle {44, 600, 2300};` to narrow the pulses a little. |
 | The **L** LED blinks long and short flashes | A pin problem: see [Faults](../../library/index.md#faults). A servo on a pin other than 44, 45 or 46 is refused. |
 
@@ -194,8 +202,11 @@ module back on and the servo snaps to wherever the knob now points.
 
 1. **Jump or glide.** Change `moveTo (angle, 300)` to `write (angle)`, then
    try `moveTo (angle, 2000)`. Which feels most like a real gauge?
-2. **Steady needle.** Only move when the knob has changed by at least 2°:
-   compare `angle` with `needle.angle ()`, the angle it is sending now.
+2. **A wider quiet zone.** Change `target - 1` and `target + 1` to
+   `target - 3` and `target + 3`, so it takes a change of at least 4° to
+   start a new glide. Predict how tiny turns of the knob will feel, then
+   try it. Does the steadier needle make small adjustments harder? Put
+   the two 1s back when you're done.
 3. **Windshield wiper.** Forget the knob: make the horn sweep from 0° to 180°
    and back forever, using `needle.isMoving ()` to know when each sweep is
    done. Then let the knob set the speed.

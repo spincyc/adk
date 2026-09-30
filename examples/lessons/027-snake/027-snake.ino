@@ -61,7 +61,7 @@ void loop ()
             moveSnake ();
         }
 
-        if (blink.ticked ())
+        if (playing && blink.ticked ())
         {
             matrix.set (food.x, food.y, !matrix.get (food.x, food.y));
         }
@@ -124,6 +124,12 @@ void moveSnake ()
     snake.push_front (head);
     matrix.set (head.x, head.y);
 
+    if (snake.full ())
+    {
+        gameOver ();
+        return;
+    }
+
     if (eating)
     {
         speaker.play (gulp);
@@ -162,7 +168,7 @@ bool onSnake (Dot dot)
     return false;
 }
 
-// Anywhere the snake isn't, unless it fills the whole matrix.
+// Anywhere the snake isn't: a full matrix has already ended the game.
 void placeFood ()
 {
     do
@@ -170,15 +176,18 @@ void placeFood ()
         food.x = random (8);
         food.y = random (8);
     }
-    while (onSnake (food) && !snake.full ());
+    while (onSnake (food));
 }
 
 void gameOver ()
 {
-    speaker.play (crash);
+    bool won = snake.full ();
+
+    speaker.play (won ? fanfare : crash);
     adk::wait (1500);
 
     message.clear ();
-    adk::print (message, "SCORE ", snake.size () - 3, "   ");
+    adk::print (message, won ? "YOU WIN! SCORE " : "SCORE ",
+                snake.size () - 3, "   ");
     playing = false;
 }

@@ -22,6 +22,6 @@ bench.closeup (1, 16)
 # column: its supply, the data line resting high between readings, and the
 # address pin that the module's own resistor holds low.
 bench.measure ("The module's supply", red="f9", black="c10", expect="about 5 V", when="any time")
-bench.measure ("SDA, the data line", red="f12", black="c10", expect="3.5 to 4 V",
+bench.measure ("SDA, the data line", red="f12", black="c10", expect="about 3.3 V",
                when="sketch running")
 bench.measure ("AD0, the address pin", red="f15", black="c10", expect="about 0 V", when="any time")

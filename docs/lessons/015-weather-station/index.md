@@ -12,7 +12,11 @@ parts:
   - 3 × 220 Ω resistors (red, red, black, black, brown)
   - The kit's second 10 kΩ potentiometer, for the alarm
   - Active buzzer
-  - 8 more jumper wires
+  - S8050 NPN transistor
+  - 1 kΩ resistor (brown, black, black, brown, brown)
+  - 10 kΩ resistor (brown, black, black, red, brown)
+  - 1N4007 diode
+  - 11 more jumper wires
 ideas:
   - Putting sensors, lights and a screen together
   - Thresholds with a gap between them, so nothing flickers
@@ -86,12 +90,18 @@ times a second, so it answers the knob straight away.
     with their wires, and add the rest to the left of the screen. Two things
     to check twice: the RGB LED's longest leg is the common one and goes straight
     into the bottom − rail by column 7, and the buzzer's + mark goes in f33,
-    above the gap. The alarm knob stands in columns 39 to 41, just left of
-    the contrast knob.
+    above the gap. Build its transistor driver as in Lesson 3, including
+    both resistors and the diode. The alarm knob stands in columns 39 to
+    41, just left of the contrast knob.
 
 <!-- bench -->
 
 <!-- steps -->
+
+The buzzer takes its power from the top + rail through the driver from
+[Lesson 3](../003-reaction-duel/index.md). Pin 12 controls the transistor;
+the transistor carries the buzzer's current. Follow the steps for the
+transistor's leg order and the diode's band.
 
 ??? info "Two knobs"
     The LCD's contrast knob and the alarm knob are both 10 kΩ potentiometers;
@@ -175,7 +185,7 @@ both ways, which is the gap doing its job.
 | The light shows the wrong colors | The LED is in back to front, or the pin wires are swapped. |
 | The alarm setting is stuck at 10 or 40 | The knob has no power: check the red wire from j41 to the top + rail by column 41, and the black one from j39 to the top − rail by column 39. |
 | The setting runs backwards | That's fine, or swap the red and black wires on the knob's outer legs. |
-| No beep when it says **TOO HOT!** | Check the buzzer's + leg is in f33 with pin 12's wire in j33, and the black wire from a33 goes to the − rail. |
+| No beep when it says **TOO HOT!** | Check the buzzer's + leg is in f33 and its supply wire reaches the top + rail. Follow the driver steps: pin 12 goes through 1 kΩ to the transistor's base, and the emitter goes to GND. Check the transistor's leg order and the diode's band. |
 
 ??? note "How it works"
     Nothing in `loop ()` ever waits. The DHT11 takes a reading every two

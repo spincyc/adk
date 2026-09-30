@@ -147,7 +147,8 @@ for hole, what in (("j8", "the button on 23"), ("f33", "the buzzer"), ("a6", "th
 
 # Compare the complete home, including its power jumpers, on both boards.
 for home, args in (("home_button", ("23",)), ("home_rgb_led", ()),
-                    ("home_buzzer", ("passive",)), ("home_knob", ()),
+                    ("home_buzzer", ("passive",)), ("home_buzzer", ("active",)),
+                    ("home_rfid", ()), ("home_gy521", ()), ("home_knob", ()),
                     ("home_divider", ("photoresistor",)), ("home_encoder", ()),
                     ("home_modem", ()), ("home_servo", ())):
     homes = []
@@ -209,6 +210,70 @@ expect ("the two positive rails are separate", separate._powered ("B+", "5V"), F
 sensing = finished (Bench ("test", columns=(1, 50)).home_ultrasonic ().home_modem ())
 expect ("the modem on Serial2 beside the ultrasonic sensor",
         {"14", "15", "16", "17"} <= sensing.signal_pins (), True)
+
+# Electrical interfaces: GPIO only controls the active buzzer's base; it
+# never supplies the buzzer. Reader inputs have dividers, and the two I2C
+# voltage domains remain separate. These checks cannot validate real parts.
+def net_of (bench, member):
+    return next (net for net in bench.nets () if member in net)
+
+
+active = finished (Bench ("test", columns=(1, 63)).home_buzzer ("active"))
+expect ("the active buzzer takes rail power",
+        "pin 5V" in net_of (active, "active buzzer: + leg (long)"), True)
+expect ("the buzzer's negative goes to the collector",
+        "S8050 transistor: C, collector" in net_of (active, "active buzzer: − leg"), True)
+expect ("the emitter is grounded",
+        "pin GND" in net_of (active, "S8050 transistor: E, emitter"), True)
+expect ("pin 12 has only the current-limiting resistor",
+        net_of (active, "pin 12") - {"pin 12", "column 32 a-e"},
+        {"1 kΩ resistor: one end"})
+expect ("the base has its resistor and startup pull-down",
+        net_of (active, "S8050 transistor: B, base") - {"column 30 a-e"},
+        {"S8050 transistor: B, base", "1 kΩ resistor: other end", "10 kΩ resistor: one end"})
+expect ("the diode catches a positive collector spike",
+        "1N4007 diode: anode, unbanded end" in net_of (active, "active buzzer: − leg")
+        and "1N4007 diode: cathode, banded end" in net_of (active, "active buzzer: + leg (long)"),
+        True)
+
+reader = finished (Bench ("test", columns=(1, 63)).home_rfid ())
+for pin, signal in (("53", "SDA"), ("52", "SCK"), ("51", "MOSI"), ("45", "RST")):
+    output = net_of (reader, f"pin {pin}")
+    input_net = net_of (reader, f"RFID reader: {signal}")
+    series = next (member for member in output if member.startswith ("1 kΩ resistor"))
+    shunt = next (member for member in input_net if member.startswith ("2 kΩ resistor"))
+    expect (f"RFID {signal} has a series 1 kΩ",
+            series.replace (": one end", ": other end") in input_net, True)
+    expect (f"RFID {signal} has 2 kΩ to ground",
+            "pin GND" in net_of (reader, shunt.replace (": one end", ": other end")), True)
+    expect (f"RFID {signal} never gets direct 5 V", f"pin {pin}" in input_net, False)
+expect ("RFID MISO goes directly back to the Mega",
+        "pin 50" in net_of (reader, "RFID reader: MISO"), True)
+
+gyro = finished (Bench ("test", columns=(1, 63)).home_gy521 ().home_modem (power="e5"))
+for pin, channel, signal in (("20", "1", "SDA"), ("21", "2", "SCL")):
+    high = net_of (gyro, f"I2C level shifter: B{channel}")
+    low = net_of (gyro, f"I2C level shifter: A{channel}")
+    expect (f"I2C {signal} translates to the sensor", f"pin {pin}" in high
+            and f"GY-521: {signal}" in low and not high & low, True)
+expect ("the I2C high supply is 5 V",
+        "pin 5V" in net_of (gyro, "I2C level shifter: HV"), True)
+expect ("the I2C low supply is 3.3 V",
+        "pin 3.3V" in net_of (gyro, "I2C level shifter: LV"), True)
+expect ("the modem can share the shifter's 3.3 V supply",
+        "pin 3.3V" in net_of (gyro, "LoRa modem: VDD"), True)
+door = finished (Bench ("test", columns=(1, 63)).power_module ("3.3V")
+                 .home_buzzer ("active").home_rfid ().home_modem (power="B+29"))
+expect ("the door's buzzer keeps 5 V beside its 3.3 V modem",
+        door._powered ("T+", "5V") and door._powered ("B+", "3.3V")
+        and not door._powered ("B+", "5V"), True)
+
+# Both multiplexed-display lessons must limit current while a digit is
+# actually on; a low average duty cycle cannot excuse excess peak current.
+for lesson in ("011-four-digits", "012-stopwatch"):
+    display = load (os.path.join (ROOT, "docs", "lessons", lesson, "circuit.py"))[""]
+    segment_resistors = [part for part in display.parts if part.name == "2 kΩ resistor"]
+    expect (f"{lesson} limits all eight segment currents", len (segment_resistors), 8)
 
 # The build's stages: a home_* call is one, named for its part and the
 # pins it wires; steps in no stage are named for their first part other

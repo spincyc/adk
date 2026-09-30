@@ -8,7 +8,7 @@ parts:
   - "Board A: the HC-SR501 PIR sensor and the tilt switch, and the beam-break, obstacle and tap sensors (37 in 1 kit), from Lessons 23 and 35"
   - "Board A: a red LED, a 220 Ω resistor, 5 jumper wires and 12 female-to-male jumper wires"
   - "Board B, in the den: Lesson 46's Board B, with its LoRa modem, screen and clock module"
-  - "Board B: the IR receiver and the kit's remote, the active buzzer, 2 jumper wires and 3 female-to-male jumper wires"
+  - "Board B: the IR receiver and the kit's remote, the active buzzer, S8050 transistor, 1 kΩ resistor, 10 kΩ resistor, 1N4007 diode, 5 jumper wires and 3 female-to-male jumper wires"
 ideas:
   - An event sent as a count
   - Why the first number heard isn't news
@@ -107,7 +107,9 @@ When you are done, these are the connections Board A makes:
 
 Keep the modem, the screen and the clock module from Lesson 46, and take
 out the RGB LED, its resistors and wires. The active buzzer keeps its home
-in column 33, as in Lesson 24. The IR receiver sits above columns 38 to
+in column 33, with the S8050 driver from Lesson 24: the top 5 V rail
+powers it and pin 12 controls the transistor through 1 kΩ. Check the
+transistor’s marking and E–B–C order as in Lesson 3. The IR receiver sits above columns 38 to
 40, clear of the clock module, powered from the top rails below it.
 
 <!-- bench B -->
@@ -190,7 +192,7 @@ all the den knows. A real alarm treats that silence as trouble too, and
 | A tripwire shows on its own, over and over | The PIR may be settling, or seeing warm air: give it a minute. The obstacle sensor may see too far: turn its knob back. |
 | A tripwire shows when it stops, not when it starts | That module is the other way round from most: swap `adk::ActiveHigh` in or out of its line in **Door**. |
 | POWER does nothing | Aim the remote at the receiver. Check its Y pin (the signal) goes to pin 2, its R to the top + rail by column 39 and its G to the top − rail by column 37. Lesson 22's sketch shows your remote's codes. |
-| `ALARM!` but no sound | Check the buzzer's + leg in f33 under pin 12's wire in j33, and the black wire from a33 to the − rail. |
+| `ALARM!` but no sound | Check the buzzer’s + leg in f33, its supply from h33 to the top + rail, and pin 12 to a32. Check the S8050’s E–B–C order, emitter to GND, collector to a33, and diode band at column 36. |
 | The door's red LED never lights | Check pin 26's wire to j6 and the black wire from a7 to the − rail. It lights only while the den says armed. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 

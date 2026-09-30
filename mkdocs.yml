@@ -68,6 +68,7 @@ extra_css:
 
 extra_javascript:
   - assets/steps.js
+  - assets/print.js
 
 hooks:
   - docs/_theme/hooks.py

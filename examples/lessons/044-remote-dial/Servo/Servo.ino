@@ -27,7 +27,7 @@ void loop ()
         servo.moveTo (bridge.value ("angle"), 300);
     }
 
-    // While it glides it keeps quiet, leaving the air to Board A.
+    // Skip intermediate positions; the bridge still sends its heartbeat.
     if (!servo.isMoving ())
     {
         bridge.share ("at", servo.angle ());

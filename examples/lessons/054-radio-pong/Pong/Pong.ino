@@ -1,8 +1,8 @@
 // Lesson 54: Radio Pong
 // Pong between two rooms. Your paddle is the bottom row of your matrix,
 // and its top row opens onto the other player's matrix, over the bridge.
-// Click the stick to serve. Both boards run this sketch; only the radio's
-// first line differs: Board A, Ping, is address 1, and Board B, Pong, 2.
+// Board A serves first; after a miss, whoever missed serves next.
+// Only firstServer differs: true on Board A, false on Board B.
 
 #include <Adk.h>
 
@@ -14,8 +14,11 @@ adk::Led       linked   {LED_BUILTIN};
 adk::Every     ballStep {250};
 adk::Every     nudge    {80};         // a held stick moves the paddle
 
-// The bridge to the other board, over the LoRa modem on Serial3.
-adk::LoraModem radio  {Serial3, 2, {.partner = 1,
+// One initial owner, even if both players click their sticks together.
+constexpr bool firstServer = false;
+
+adk::LoraModem radio  {Serial3, firstServer ? 1 : 2,
+                                {.partner = firstServer ? 2 : 1,
                                     .speed   = adk::LoraSpeed::Quick,
                                     .power   = 10}};
 adk::Bridge    bridge {radio};
@@ -26,7 +29,7 @@ constexpr adk::Note cheer [] {{adk::note::c5, 80}, {adk::note::g5, 160}};
 // On this paddle waiting to be served, on this matrix, or on the other.
 enum class Ball { Serving, Here, There };
 
-Ball   ball   = Ball::Serving;
+Ball   ball   = firstServer ? Ball::Serving : Ball::There;
 int8_t paddle = 2;                  // its left dot: it is three dots wide
 int8_t x = 3, y = 6;                // the ball, while it's on this side
 int8_t dx = 0, dy = -1;             // its way: dx across, dy down
@@ -56,7 +59,11 @@ void loop ()
 {
     adk::update ();
 
-    if (wentUp ("ball", theirCrossings))
+    // The initial zero can be lost before the first handover arrives.
+    bool firstBall = theirCrossings < 0 && bridge.changed ("ball")
+                  && bridge.value ("ball") > 0;
+
+    if (wentUp ("ball", theirCrossings) || firstBall)
     {
         catchBall ();
     }
@@ -92,10 +99,8 @@ void loop ()
         moveBall ();
     }
 
-    bridge.share ("ball", crossings);
-    bridge.share ("column", column);
-    bridge.share ("drift", drift);
-    bridge.share ("pace", pace);
+    long flight = pace * 32 + (drift + 1) * 8 + column;
+    bridge.shareEvent ("ball", crossings, flight);
     bridge.share ("misses", misses);
 
     linked.set (bridge.isConnected ());
@@ -123,11 +128,12 @@ bool wentUp (const char* name, long& seen)
 // side's right: the column and the drift come mirrored.
 void catchBall ()
 {
-    x  = 7 - bridge.value ("column");
+    long flight = bridge.payload ("ball");
+    x  = 7 - flight % 8;
     y  = 0;
-    dx = -bridge.value ("drift");
+    dx = -(flight / 8 % 4 - 1);
     dy = 1;
-    ballStep.period (bridge.value ("pace"));
+    ballStep.period (flight / 32);
     ballStep.restart ();
     speaker.tone (adk::note::e5, 20);
     ball = Ball::Here;

@@ -249,7 +249,7 @@
                 color[0].toUpperCase () + color.slice (1) + " " + name.toLowerCase () : name;
         }
 
-        function highlight (copy, item, points) {
+        function highlight (copy, item, points, labels = []) {
             copy.svg.classList.toggle ("workbench-lighting", Boolean (item));
             for (const group of copy.svg.querySelectorAll ("[data-item]")) {
                 group.classList.remove ("lit", "next");
@@ -257,13 +257,31 @@
                 group.classList.toggle ("workbench-placed", rows.some (row =>
                     row.dataset.item === group.dataset.item && done.has (row.dataset.step)));
             }
-            for (const [x, y] of points) {
+            for (const [index, [x, y]] of points.entries ()) {
                 const ring = document.createElementNS (ns, "circle");
                 ring.setAttribute ("cx", x);
                 ring.setAttribute ("cy", y);
                 ring.setAttribute ("r", "6");
                 ring.setAttribute ("class", "workbench-endpoint");
                 copy.layer.append (ring);
+                // Dense headers need the two ends of each row, rather than
+                // sixteen overlapping names. Every connection keeps its ring.
+                const sameRow = points.filter (point => point[1] === y);
+                const edge = x === Math.min (...sameRow.map (point => point[0])) ||
+                    x === Math.max (...sameRow.map (point => point[0]));
+                if (labels[index] && (sameRow.length <= 3 || edge)) {
+                    const crowded = sameRow.some (point => point[0] !== x &&
+                        Math.abs (point[0] - x) < 18);
+                    const middle = sameRow.filter (point => point[0] < x).length % 2;
+                    const label = document.createElementNS (ns, "text");
+                    label.setAttribute ("x", x);
+                    label.setAttribute ("y", y + (crowded && middle ? 18 : -11));
+                    label.setAttribute ("text-anchor", "middle");
+                    label.setAttribute ("font-size", "6");
+                    label.setAttribute ("class", "workbench-point-label");
+                    label.textContent = labels[index];
+                    copy.layer.append (label);
+                }
             }
         }
 
@@ -319,8 +337,10 @@
             });
             const item = complete ? undefined : row.dataset.item;
             let points = [];
+            let labels = [];
             try {
                 points = JSON.parse (row.dataset.points || "[]");
+                labels = JSON.parse (row.dataset.pointLabels || "[]");
             } catch (error) { /* No crop. */ }
             points = points.filter (p => Array.isArray (p) && p.length === 2 &&
                 p.every (Number.isFinite));
@@ -356,7 +376,7 @@
                 const figure = element ("figure", "workbench-crop");
                 const copy = drawingCopy (source);
                 copy.crop (crop);
-                highlight (copy, item, points);
+                highlight (copy, item, points, labels);
                 copy.svg.setAttribute ("aria-label",
                     split ? "Wire end " + (i + 1) : partName (row));
                 figure.append (copy.svg);
@@ -397,7 +417,15 @@
         launch.setAttribute ("aria-haspopup", "dialog");
         const intro = element ("div", "build-launcher");
         intro.append (launch, element ("span", "", "One step at a time, with a closer look."));
-        steps.before (intro);
+        source.closest ("figure").before (intro);
+        const fullDrawing = source.closest ("figure");
+        const zoomDrawing = button ("drawing-zoom", "Enlarge drawing", () => {
+            const expanded = fullDrawing.classList.toggle ("is-expanded");
+            zoomDrawing.setAttribute ("aria-pressed", String (expanded));
+            zoomDrawing.textContent = expanded ? "Fit whole drawing" : "Enlarge drawing";
+        });
+        zoomDrawing.setAttribute ("aria-pressed", "false");
+        intro.append (zoomDrawing);
         return () => { reviewing = false; render (); };
     }
 

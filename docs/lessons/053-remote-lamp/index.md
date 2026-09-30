@@ -51,13 +51,15 @@ only the button's code wouldn't work, because the bridge sends a number
 only when it changes: press **1** twice and the code is 0x0C both times,
 so the second press would never cross. So Board A also shares a count,
 `presses`, which goes up by one with every press. Board B watches the
-count, and sends a code each time it goes up.
+count, and sends a code each time it goes up. `shareEvent ()` carries
+that count and the complete code in one record, even for repeated buttons.
+A lost packet cannot attach a new count to an old command. A rapid series
+can still coalesce into its latest event: the bridge is not an event queue.
 
 | Shared | By | Kind | The other board |
 |---|---|---|---|
 | `lamp` | A | a state, 0 or 1 | B keeps the relay on or off to match |
-| `button`, `address` | A | the last press's code | B sends them with the IR LED... |
-| `presses` | A | an event, counted | ...each time this goes up |
+| `press` | A | an event: count and combined address/command | B sends its payload with the IR LED when the count goes up |
 | `relay` | B | a state, 0 or 1 | A shows it: the relay really has switched |
 
 **Sending infrared.** The IR LED module is an LED whose light is
@@ -161,11 +163,17 @@ What's new:
 - On Board A, `presses` counts the buttons passed on, and `++presses`
   adds one. The lamp's `lampOn` is a `bool`, which the bridge shares as 1
   or 0.
-- `bridge.changed ("presses")` on Board B is true in the one pass of
+- `bridge.changed ("press")` on Board B is true in the one pass of
   `loop ()` in which a new count arrives. Board B keeps the count it last
   heard in its own `presses`, which starts at −1, and sends a code only
   when the new count is higher: the first count heard only says where
   Board A has got to, as in Lesson 51.
+- `address * 256 + button` combines the two code numbers: a command fits
+  in 0–255, so `% 256` recovers it and `/ 256` recovers the address.
+  `shareEvent ("press", presses, ...)` sends this payload and its count
+  together. Board B reads the payload with `bridge.payload ("press")`.
+- The lamp intercepts POWER only from address 0, the kit remote. The same
+  command from another address is forwarded to its device.
 - `adk::IrTransmitter irLed {3};` is the IR LED on pin 3. It can only go
   on pin 2, 3 or 5, the pins Timer 3 can flicker. `irLed.send (command,
   address)` sends one press of a button, exactly as a remote would.
@@ -247,10 +255,13 @@ LED away and the echo stops.
     message, such as:
 
     ```text
-    @button=12 presses=1
+    @press=1:12
     ```
 
-    Board B's `bridge.changed ("presses")` is true for that one pass of
+    Address 0 and command 12 combine to 12. The colon joins this payload
+    to count 1, so both arrive or neither does.
+
+    Board B's `bridge.changed ("press")` is true for that one pass of
     `loop ()`, and `irLed.send (12, 0)` builds the same 32 bits the remote
     sent: the address, the address upside down, the command and the
     command upside down. It switches Timer 3's flicker on and off for each

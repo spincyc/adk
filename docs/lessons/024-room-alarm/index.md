@@ -11,9 +11,12 @@ parts:
   - HC-SR501 PIR motion sensor
   - IR receiver module and the kit's remote
   - Active buzzer
+  - S8050 NPN transistor
+  - 1 kΩ and 10 kΩ resistors
+  - 1N4007 diode
   - RGB LED
   - 4 × 220 Ω resistors (red, red, black, black, brown)
-  - 23 jumper wires
+  - 26 jumper wires
   - 6 female-to-male jumper wires
 ideas:
   - A device as a set of states
@@ -84,6 +87,8 @@ while you're leaving.
     picture before moving on. Match the IR receiver's and the PIR's pins by
     their printed names (the PIR's are under its dome). The buzzer's longer
     leg, under the **+** on its top, goes in the top half, in f33.
+    Match the transistor's flat face to the drawing, and put the diode's
+    banded end in column 36.
 
 <!-- bench -->
 
@@ -93,7 +98,9 @@ while you're leaving.
     The screen, its contrast knob and their short wires stand exactly as in
     Lesson 13, at the far right. The RGB LED keeps its home near the Mega,
     its colored legs in columns 6, 9 and 11. The buzzer keeps column 33,
-    to the left of the contrast knob.
+    to the left of the contrast knob, with its transistor beside it in
+    columns 29 to 31. As in Lesson 3, the buzzer's current comes from the
+    5 V rail through the transistor; pin 12 only tells it when to switch.
 
     The IR receiver takes 5 V and GND from the top rails below it. The
     PIR takes them straight from the Mega's power header, as in Lesson 23.
@@ -166,7 +173,7 @@ few seconds after the last movement, so leave its view in good time.
 | It arms and straight away asks for the code | The PIR still saw movement when the countdown ended; it stays on for a few seconds after the last movement. Leave sooner, or make `delaySeconds` longer. |
 | It never notices you | Give the PIR a minute after power-up, check its OUT pin goes to A12, and turn its sensitivity knob (Sx) up a little. |
 | The remote does nothing | Aim at the receiver's window, and upload Lesson 22's sketch to check your remote's codes. If POWER sends another code, put yours in place of `adk::remote::power`. If the number buttons do, `adk::remote::digitOf ()` won't know them: give the sketch an `adk::Array` of your ten codes, 0 to 9, and in `pressed ()` look through it for the button, as Lesson 22 looked through `choices`, in place of `digitOf ()`. |
-| No beeps | The buzzer's + leg goes in f33, under pin 12's wire in j33, and its other leg's column needs the black wire from a33 to the − rail. |
+| No beeps | The buzzer's + leg goes in f33, with 5 V from the top + rail into h33. Pin 12 goes to a32, then through 1 kΩ to the transistor's base in column 30. Check its flat face and all three legs against the drawing: the emitter goes to GND, and the collector reaches the buzzer's − leg. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"
@@ -184,7 +191,10 @@ few seconds after the last movement, so leave its view in good time.
 ## Make it yours
 
 1. **Your own code.** Change `secretCode` to four digits of your own, and
-   `delaySeconds` to suit how far you have to walk.
+   `delaySeconds` to suit how far you have to walk. If your code starts with
+   zero, leave that zero out of the number in the sketch: write `123` for
+   the code 0123, but still press all four digits on the remote. In C++, a
+   number written with a leading zero uses base eight instead of base ten.
 2. **Three strikes.** Count wrong codes in `keyIn ()`, and after three go
    straight to the siren with `enter (State::Sounding, ...)`, even during
    the entry delay.

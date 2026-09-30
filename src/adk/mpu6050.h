@@ -16,7 +16,13 @@ namespace adk {
     // 20 ms. It goes on the I2C bus:
     //
     //   VCC -> 5 V (the module has its own 3.3 V regulator), GND -> GND,
-    //   SCL -> pin 21, SDA -> pin 20
+    //   SCL -> pin 21, SDA -> pin 20, both through an I2C level shifter
+    //
+    // The sensor's I2C pins work at 3.3 V. Use two channels of a BSS138
+    // bidirectional level-shifter module: its high side faces the Mega,
+    // its low side faces the sensor. Connect HV to 5 V, LV to the Mega's
+    // 3.3V and GND to the shared GND. A module's 5 V power input does not
+    // make its signal pins safe for the Mega's 5 V bus pull-ups.
     //
     // With AD0 unconnected the chip answers at I2C address 0x68. A DS1307
     // clock answers there too, so beside one wire AD0 -> 3.3 V and declare

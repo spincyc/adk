@@ -38,13 +38,15 @@ void loop ()
 
     // A count that went up is a new press to send on. The first count
     // heard only says where Board A has got to, as in Lesson 51.
-    if (bridge.changed ("presses"))
+    if (bridge.changed ("press"))
     {
-        long count = bridge.value ("presses");
+        long count = bridge.value ("press");
 
         if (presses >= 0 && count > presses)
         {
-            irLed.send (bridge.value ("button"), bridge.value ("address"));
+            long code = bridge.payload ("press");
+            irLed.send (static_cast<uint8_t> (code % 256),
+                        static_cast<uint16_t> (code / 256));
         }
 
         presses = count;

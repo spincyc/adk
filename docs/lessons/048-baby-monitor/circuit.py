@@ -39,7 +39,7 @@ parent = Bench ("Board B, with the parent: the LCD on pins 31 to 36, a clock mod
 
 parent.home_modem ()
 
-parent.screen (text=("Quiet  Lit  Dry", "Cried   02:14:07"))
+parent.screen (text=("Quiet  Lit  Dry", "Loud at 02:14:07"))
 parent.home_rtc ()
 
 parent.module ("ir_receiver", name="receiver", at=(8.89, -1.7))

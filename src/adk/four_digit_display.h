@@ -13,12 +13,11 @@ namespace adk {
     // display flickers.
     //
     // The segment lines come from a 74HC595 wired as for a ShiftRegister,
-    // each output through a 1k ohm resistor. The digit pins go straight to
+    // each output through a 2k ohm resistor. The digit pins go straight to
     // the Mega, which lights a digit by pulling its pin low. That pin sinks
-    // the current of every lit segment; the resistors hold it to about 25 mA
-    // with all eight lit: a little over the 20 mA a Mega pin gives
-    // comfortably, well under the 40 mA it may ever give, and each digit is
-    // lit only a quarter of the time.
+    // the current of every lit segment; with about 1.5 mA per segment,
+    // all eight lit draw about 12 mA. This stays below the Mega pin's
+    // recommended 20 mA while a digit is on, regardless of multiplexing.
     //
     //   74HC595      Q0  Q1  Q2  Q3  Q4  Q5  Q6  Q7
     //   Segment      a   b   c   d   e   f   g   dp

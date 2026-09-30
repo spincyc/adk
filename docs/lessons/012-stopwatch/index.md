@@ -7,7 +7,8 @@ parts:
   - Lesson 11's display circuit, built and working
   - 3 push buttons
   - Active buzzer (sealed, with a sticker on top)
-  - 8 more jumper wires
+  - S8050 transistor, 1 kΩ resistor, 10 kΩ resistor and 1N4007 diode
+  - 11 more jumper wires
 ideas:
   - How a stopwatch keeps time, and ADK's Stopwatch and Timer
   - A device with states and modes
@@ -81,13 +82,13 @@ keeps counting behind it; after three seconds the display catches up.
     Unplug the USB cable before you add anything. Leave Lesson 11's display
     circuit exactly as it is: the buttons go in at their homes, at the end of
     the board nearest the Mega, and the buzzer in column 35, between the
-    chip's resistors and the display. The **active** buzzer goes straight
-    to its pin, with its **+** leg, the longer one, in the top half. It draws
-    up to about 30 mA, which a pin can give, as long as it has the pin to
-    itself.
+    chip’s resistors and the display. Add the S8050 driver from
+    [Lesson 3](../003-reaction-duel/index.md): it switches the buzzer’s
+    current from the 5 V rail. Verify the transistor’s marking and E–B–C
+    pin order before inserting it; pin 12 controls its base through 1 kΩ.
 
 Everything from Lesson 11 stays as it is; the steps only add the buttons and
-the buzzer.
+the buzzer and its driver.
 
 <!-- bench -->
 
@@ -102,10 +103,11 @@ the buzzer.
     Use the **active** buzzer, the sealed one with a sticker: it makes its
     own tone whenever pin 12 is high. The passive buzzer, with its green
     board, would only click. The buzzer stands across the middle gap, one
-    leg on each side, so its + leg in f35 meets pin 12's wire and its other
-    leg in e35 meets the black wire to GND. Its usual home is column 33, but
-    with the display's wiring it moves two columns along, so its round body
-    stays clear of the wires that rise over the gap in column 32.
+    leg on each side. Its + leg in f35 meets the top + rail through h35;
+    its other leg in e35 reaches the transistor’s collector through a35.
+    Its usual home is column 33, but here it moves two columns along to
+    clear the display’s wires. The diode moves with it: unbanded end c35,
+    banded end c38; a38 connects to j35. The transistor stays in a29–a31.
 
 When you are done, these are the connections your circuit makes:
 
@@ -186,7 +188,7 @@ start/stop or lap/reset to set it back to `10.0`, or mode for `60.0`,
 | The display is dark or scrambled | Go back to Lesson 11: upload its sketch and fix the display first. |
 | A button does nothing | Its wire from the Mega goes in row j of its left legs (j2, j8, j14) and its black wire from row a of its right legs to the − rail. Check it straddles the gap. |
 | The buttons do the wrong jobs | The wires from pins 22, 23 and 24 are crossed: 22 goes to the first button. |
-| No beep, but the timer shows donE | The buzzer's + leg, the longer one, goes in f35, with pin 12's wire in j35, and its black wire runs from a35 to the − rail. Make sure it's the active buzzer. |
+| No beep, but the timer shows donE | The active buzzer’s + leg goes in f35, powered through h35 from the top + rail. Pin 12 goes to a32. Check the transistor’s E–B–C order, emitter to GND, collector to a35, and diode band at column 38. |
 | The buzzer never stops | Its + leg is getting 5 V: check that the wire in j35 comes from pin 12, not from a 5V pin. |
 | The mode button does nothing | It only works while the clock is stopped. Stop it first. |
 

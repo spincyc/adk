@@ -19,7 +19,7 @@ bench.closeup (1, 37)
 # the sensor, or nothing there at all.
 bench.measure ("The yellow light's pin", red="27", black="GND", expect="about 5 V",
                when="a book 30 cm away")
-bench.measure ("Across the buzzer", red="i33", black="b33", expect="about 4.5 V",
+bench.measure ("Across the buzzer", red="i33", black="b33", expect="about 4.8 V",
                when="a book 5 cm away")
 bench.measure ("Across the green LED", red="b18", black="b19", expect="about 3.2 V",
                when="nothing within 50 cm")

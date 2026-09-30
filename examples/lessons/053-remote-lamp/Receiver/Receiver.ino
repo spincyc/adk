@@ -39,9 +39,7 @@ void loop ()
     }
 
     bridge.share ("lamp", lampOn);
-    bridge.share ("button", button);
-    bridge.share ("address", address);
-    bridge.share ("presses", presses);
+    bridge.shareEvent ("press", presses, address * 256 + button);
 
     if (tick.ticked ())
     {
@@ -53,7 +51,7 @@ void loop ()
 // remote that speaks NEC, is passed on.
 void obey (uint8_t command, uint16_t from)
 {
-    if (command == adk::remote::power)
+    if (from == 0 && command == adk::remote::power)
     {
         lampOn = !lampOn;
     }

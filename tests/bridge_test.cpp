@@ -1,6 +1,7 @@
 #include "check.h"
 
 #include <Arduino.h>
+#include <climits>
 #include <deque>
 #include <string>
 #include <vector>
@@ -219,6 +220,252 @@ TEST (bridgeIgnoresTextThatIsNotABridgeMessage)
     boards.run (100);
     CHECK (boards.bridgeB.value ("angle") == 7);
     CHECK (boards.bridgeB.value ("speed") == 0);
+}
+
+TEST (bridgeCarriesAnEventAndRepeatsItsPayloadWithEachSequence)
+{
+    Boards boards;
+
+    adk::setup ();
+    CHECK (boards.bridgeB.payload ("key") == 0);
+    boards.bridgeA.shareEvent ("key", 1, 7);
+    CHECK (boards.run (110, "key") == 1);
+    CHECK (boards.bridgeB.value ("key") == 1);
+    CHECK (boards.bridgeB.payload ("key") == 7);
+    CHECK (boards.bridgeB.changed ("key"));
+    CHECK (boards.bridgeB.changed ("key"));
+    CHECK (boards.radioA.sent.back () == "@key=1:7");
+    boards.run (10);
+    CHECK (!boards.bridgeB.changed ("key"));
+
+    boards.bridgeA.shareEvent ("key", 2, 7);
+    CHECK (boards.run (100, "key") == 1);
+    CHECK (boards.bridgeB.value ("key") == 2);
+    CHECK (boards.bridgeB.payload ("key") == 7);
+    CHECK (boards.radioA.sent.back () == "@key=2:7");
+}
+
+TEST (bridgeEventKeepsTheRightPayloadAfterAPayloadChangingPacketIsLost)
+{
+    Boards boards;
+
+    adk::setup ();
+    boards.bridgeA.shareEvent ("key", 1, 7);
+    boards.run (200);
+
+    // Lose the first event with the new payload, then repeat that payload
+    // as a new event. Separate shared names would leave B with the old 7.
+    boards.radioA.other = nullptr;
+    boards.bridgeA.shareEvent ("key", 2, 9);
+    CHECK (boards.run (200, "key") == 0);
+    CHECK (boards.bridgeB.value ("key") == 1);
+    CHECK (boards.bridgeB.payload ("key") == 7);
+
+    boards.radioA.other = &boards.radioB;
+    boards.bridgeA.shareEvent ("key", 3, 9);
+    CHECK (boards.run (200, "key") == 1);
+    CHECK (boards.radioA.sent.back () == "@key=3:9");
+    CHECK (boards.bridgeB.value ("key") == 3);
+    CHECK (boards.bridgeB.payload ("key") == 9);
+}
+
+TEST (bridgeEventRefreshRecoversBothNumbersAndDuplicatesAreNotChanges)
+{
+    Boards boards;
+
+    adk::setup ();
+    boards.radioA.other = nullptr;
+    boards.bridgeA.shareEvent ("key", 4, -9);
+    boards.run (200);
+
+    boards.radioA.other = &boards.radioB;
+    CHECK (boards.run (2000, "key") == 1);
+    CHECK (boards.bridgeB.value ("key") == 4);
+    CHECK (boards.bridgeB.payload ("key") == -9);
+    CHECK (boards.radioA.sent.back () == "@key=4:-9");
+    CHECK (boards.run (2000, "key") == 0);
+
+    size_t sent = boards.radioA.sent.size ();
+    boards.bridgeA.shareEvent ("key", 4, -9);
+    CHECK (boards.run (200, "key") == 0);
+    CHECK (boards.radioA.sent.size () == sent);
+
+    // Either member changing makes the complete pair unsent again.
+    boards.bridgeA.shareEvent ("key", 4, -10);
+    CHECK (boards.run (200, "key") == 1);
+    CHECK (boards.radioA.sent.back () == "@key=4:-10");
+    CHECK (boards.bridgeB.payload ("key") == -10);
+}
+
+TEST (bridgeEventCoalescesWhileBusyAndRetriesTheWholePair)
+{
+    Boards boards;
+
+    adk::setup ();
+    boards.radioA.busy = true;
+    boards.bridgeA.shareEvent ("key", 1, 7);
+    boards.run (200);
+    boards.bridgeA.shareEvent ("key", 2, 9);
+    boards.run (200);
+    CHECK (boards.radioA.sent.empty ());
+    CHECK (boards.bridgeB.value ("key") == 0);
+    CHECK (boards.bridgeB.payload ("key") == 0);
+
+    boards.radioA.busy = false;
+    CHECK (boards.run (200, "key") == 1);
+    CHECK (boards.radioA.sent.size () == 1);
+    CHECK (boards.radioA.sent.back () == "@key=2:9");
+    CHECK (boards.bridgeB.value ("key") == 2);
+    CHECK (boards.bridgeB.payload ("key") == 9);
+}
+
+TEST (bridgeSplitsFullSizeEventsWithoutSplittingTheirPairs)
+{
+    Boards boards;
+
+    adk::setup ();
+    constexpr long Lowest = -2147483647L - 1;
+    const char* names [] = {"alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf",
+                            "hotel"};
+
+    boards.bridgeA.shareEvent ("toolong8", 1, 2);
+
+    for (const char* name : names)
+    {
+        boards.bridgeA.shareEvent (name, Lowest, Lowest);
+    }
+
+    boards.run (1000);
+    CHECK (boards.radioA.sent.size () == 8);
+
+    for (const std::string& line : boards.radioA.sent)
+    {
+        CHECK (line.size () <= 56);
+        CHECK (line.find ("=-2147483648:-2147483648") != std::string::npos);
+    }
+
+    for (const char* name : names)
+    {
+        CHECK (boards.bridgeB.value (name) == Lowest);
+        CHECK (boards.bridgeB.payload (name) == Lowest);
+    }
+
+    CHECK (boards.bridgeB.value ("toolong8") == 0);
+    boards.bridgeA.share ("india", 9);
+    boards.bridgeA.shareEvent ("juliet", 10, 11);
+    boards.run (3000);
+    CHECK (boards.bridgeB.value ("india") == 0);
+    CHECK (boards.bridgeB.value ("juliet") == 0);
+}
+
+TEST (bridgeEventsPreserveSigned32BitLimitsAndUidBits)
+{
+    Boards boards;
+
+    adk::setup ();
+    constexpr long Lowest = -2147483647L - 1;
+    constexpr long Highest = 2147483647L;
+
+    boards.bridgeA.shareEvent ("low", Highest, Lowest);
+    boards.bridgeA.shareEvent ("high", Lowest, Highest);
+    boards.bridgeA.shareEvent ("uid", 1, static_cast<int32_t> (0xfedcba98UL));
+    boards.run (500);
+    CHECK (boards.bridgeB.value ("low") == Highest);
+    CHECK (boards.bridgeB.payload ("low") == Lowest);
+    CHECK (boards.bridgeB.value ("high") == Lowest);
+    CHECK (boards.bridgeB.payload ("high") == Highest);
+    CHECK (static_cast<uint32_t> (boards.bridgeB.payload ("uid")) == 0xfedcba98UL);
+
+    if constexpr (LONG_MAX > Highest)
+    {
+        // A host's wider long must not produce a token the Mega can't read.
+        boards.bridgeA.shareEvent ("low", LONG_MAX, 1);
+        boards.bridgeA.shareEvent ("low", 1, LONG_MIN);
+        CHECK (boards.run (200, "low") == 0);
+        CHECK (boards.bridgeB.value ("low") == Highest);
+        CHECK (boards.bridgeB.payload ("low") == Lowest);
+    }
+}
+
+TEST (bridgeRejectsMalformedEventsBeforeChangingEitherNumber)
+{
+    Boards boards;
+
+    adk::setup ();
+    boards.radioB.queue.push_back ("@key=7:9");
+    CHECK (boards.run (10, "key") == 1);
+
+    const char* malformed [] = {
+        "@key=:4", "@key=8:", "@key=8:no", "@key=8:+", "@key=8:-",
+        "@key=8: 4", "@key=8::4", "@key=8:4:5", "@key=8:4x", "@key=8x",
+        "@key=8:2147483648", "@key=8:-2147483649", "@key=2147483648:4",
+        "@key=-2147483649:4", "@key=99999999999999999999999:4",
+        "@key=8:99999999999999999999999", "@key=8: other=4", "@key= 8:4"
+    };
+
+    for (const char* token : malformed)
+    {
+        boards.radioB.queue.push_back (token);
+        CHECK (boards.run (10, "key") == 0);
+        CHECK (boards.bridgeB.value ("key") == 7);
+        CHECK (boards.bridgeB.payload ("key") == 9);
+        CHECK (boards.bridgeB.value ("other") == 0);
+    }
+}
+
+TEST (bridgeMalformedEventsDoNotTakeSlots)
+{
+    Boards boards;
+
+    adk::setup ();
+    boards.radioB.queue = {"@one=1:", "@two=1:", "@three=1:", "@four=1:",
+                           "@five=1:", "@six=1:", "@seven=1:", "@eight=1:",
+                           "@toolong8=1:2", "@=1:2", "@valid=0:0"};
+    CHECK (boards.run (110, "valid") == 1);
+    CHECK (boards.bridgeB.changed ("valid"));
+    CHECK (boards.bridgeB.value ("valid") == 0);
+    CHECK (boards.bridgeB.payload ("valid") == 0);
+}
+
+TEST (bridgeEventChangesSurviveDuplicatesAndLaterMalformedTokens)
+{
+    Boards boards;
+
+    adk::setup ();
+    boards.radioB.queue.push_back ("@key=2:7 key=3:8 key=3:8");
+    CHECK (boards.run (10, "key") == 1);
+    CHECK (boards.bridgeB.value ("key") == 3);
+    CHECK (boards.bridgeB.payload ("key") == 8);
+
+    boards.radioB.queue.push_back ("@key=4:9 key=5:");
+    CHECK (boards.run (10, "key") == 1);
+    CHECK (boards.bridgeB.value ("key") == 4);
+    CHECK (boards.bridgeB.payload ("key") == 9);
+    CHECK (boards.run (10, "key") == 0);
+}
+
+TEST (bridgeCanReplaceAScalarWithAnEventAndBack)
+{
+    Boards boards;
+
+    adk::setup ();
+    boards.bridgeA.share ("key", 1);
+    CHECK (boards.run (200, "key") == 1);
+    CHECK (boards.bridgeB.payload ("key") == 0);
+
+    boards.bridgeA.shareEvent ("key", 1, 0);
+    CHECK (boards.run (200, "key") == 1);
+    CHECK (boards.radioA.sent.back () == "@key=1:0");
+
+    boards.bridgeA.shareEvent ("key", 1, 7);
+    CHECK (boards.run (200, "key") == 1);
+    CHECK (boards.bridgeB.payload ("key") == 7);
+
+    boards.bridgeA.share ("key", 1);
+    CHECK (boards.run (200, "key") == 1);
+    CHECK (boards.bridgeB.value ("key") == 1);
+    CHECK (boards.bridgeB.payload ("key") == 0);
+    CHECK (boards.radioA.sent.back () == "@key=1");
 }
 
 TEST (loraModemSendsToItsPartnerWithItsSettings)

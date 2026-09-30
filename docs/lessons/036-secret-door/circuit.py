@@ -20,5 +20,5 @@ bench.home_buzzer ("active")
 # Readings to take with a multimeter, the power module switched on.
 bench.measure ("The latch's supply, on the bottom rails", red="B+40", black="B-40",
                expect="about 5 V", when="Power module on")
-bench.measure ("The buzzer's pin during a beep", red="12", black="GND", expect="about 4.5 V",
+bench.measure ("The buzzer's pin during a beep", red="12", black="GND", expect="about 5 V",
                when="A long beep")

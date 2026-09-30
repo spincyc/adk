@@ -29,5 +29,5 @@ bench.measure ("Pin 10 on a high C", red="10", black="GND", expect="about 2.5 V"
                when="a long c6 tick")
 bench.measure ("Pin 10 on a low C", red="10", black="GND", expect="about 2.5 V",
                when="a long c3 tick")
-bench.measure ("SDA on a tilted board", red="f12", black="c10", expect="3.5 to 4 V",
+bench.measure ("SDA on a tilted board", red="f12", black="c10", expect="about 3.3 V",
                when="board tipped")

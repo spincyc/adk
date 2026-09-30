@@ -521,6 +521,34 @@ class Gy521 (Kind):
         self.draw_header (pencil, size=5.4)
 
 
+class I2cLevelShifter (Kind):
+    # Adafruit 757 BSS138 board, two six-pin rows 0.4 inch apart.
+    # Match its printed A/B channel names; both GND pads share ground.
+    title = "I2C level shifter"
+    width, height = 60, 80
+    pins = ("LV", "A1", "A2", "A3", "A4", "GND")
+    reach = 0
+    blocks = False
+
+    def header (self):
+        return [Pin (name, 10, 15 + index * PITCH, (-1, 0))
+                for index, name in enumerate (self.names)]
+
+    def extra (self):
+        return [Pin (name, 50, 15 + index * PITCH, (1, 0))
+                for index, name in enumerate (("HV", "B1", "B2", "B3", "B4", "GND"))]
+
+    def draw (self, pencil):
+        board (pencil, 0, 0, self.width, self.height, PCB_BLUE)
+        for pin in self.all_pins ():
+            hole (pencil, pin.x, pin.y, r=2.5)
+            inward = 5 if pin.x < 30 else -5
+            pencil.text (pin.x + inward, pin.y + 2, pin.name, size=4.5,
+                         anchor="start" if inward > 0 else "end", kind="silk")
+        for y in (25, 35, 45, 55):
+            ic (pencil, 30, y, 9, 6, notch=False)
+
+
 class Rtc (Kind):
     # A DS1307 clock module: its chip, crystal and backup cell, the kit's a
     # 12.5 mm CR1220.
@@ -1240,7 +1268,7 @@ class MeshBoard (Kind):
 KINDS = {
     "lcd": Lcd1602, "servo": Servo, "ultrasonic": Ultrasonic, "matrix": Matrix, "joystick": Joystick,
     "keypad": Keypad, "ir_receiver": IrReceiver, "ir_transmitter": IrTransmitter, "rfid": Rfid,
-    "gy521": Gy521, "rtc": Rtc,
+    "gy521": Gy521, "i2c_level_shifter": I2cLevelShifter, "rtc": Rtc,
     "relay": Relay, "stepper": Stepper, "encoder": Encoder, "pir": Pir, "sensor": Sensor,
     "dht11": Dht11, "motor": Motor, "battery9v": Battery9V, "fm_radio": FmRadio,
     "rf_receiver": RfReceiver, "rf_transmitter": RfTransmitter, "lora_modem": LoraModem,

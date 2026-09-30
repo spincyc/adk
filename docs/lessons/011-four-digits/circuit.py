@@ -2,7 +2,7 @@
 # bottom one at the standard link by column 41; the 74HC595 in
 # e18-e25/f18-f25, VCC and MR to the top + rail, OE to the top −
 # rail, GND to the bottom one, pins 37, 39 and 38 dropping into its data,
-# latch and clock columns. Each output then meets its own 1 kΩ: Q0 (a) runs
+# latch and clock columns. Each output then meets its own 2 kΩ: Q0 (a) runs
 # along row h to one lying in row i above two that stand across the gap for
 # Q5 (f) and Q1 (b); Q7, Q4, Q3 and Q2 (dp, e, d, c) step up over the gap
 # to a ladder of four standing across it just before the display, whose
@@ -30,17 +30,17 @@ bench.four_digits (51, shows="1234")
 # Q0, segment a: along row h to its resistor in row i, then over to the top.
 bench.stage ("segment a's resistor")
 bench.wire ("h19", "h26")
-bench.resistor ("1 kΩ", "i26", "i29")
+bench.resistor ("2 kΩ", "i26", "i29")
 bench.wire ("j29", "j52", via=[(X (29), Y (0.45)), (X (52), Y (0.45))])
 
 # Q5 and Q1, segments f and b, cross the middle gap through their resistors.
 bench.stage ("the resistors for segments f and b")
 bench.wire ("d22", "d27")
-bench.resistor ("1 kΩ", "g27", "e27")
+bench.resistor ("2 kΩ", "g27", "e27")
 bench.wire ("h27", "j53", via=[(X (27), Y (0.70)), (X (29.5), Y (0.70)), (X (29.5), Y (0.40)),
                                (X (53), Y (0.40))])
 bench.wire ("d18", "d28", via=[(X (18), Y (1.40)), (X (28), Y (1.40))])
-bench.resistor ("1 kΩ", "g28", "e28")
+bench.resistor ("2 kΩ", "g28", "e28")
 bench.wire ("h28", "i56", via=[(X (30), Y (0.75)), (X (30), Y (0.50)), (X (43), Y (0.50)),
                                (X (43), Y (0.60)), (X (56), Y (0.60))])
 
@@ -51,15 +51,15 @@ bench.wire ("c21", "h41", via=[(X (21), Y (1.50)), (X (31), Y (1.50)), (X (31), 
                                (X (41), Y (0.65))])
 bench.wire ("b20", "h40", via=[(X (31.5), Y (1.55)), (X (31.5), Y (0.70)), (X (40), Y (0.70))])
 bench.wire ("b19", "h39", via=[(X (19), Y (1.60)), (X (32), Y (1.60)), (X (32), Y (0.75))])
-bench.resistor ("1 kΩ", "g39", "e39")
-bench.resistor ("1 kΩ", "g40", "e40")
-bench.resistor ("1 kΩ", "g41", "e41")
-bench.resistor ("1 kΩ", "g42", "e42")
+bench.resistor ("2 kΩ", "g39", "e39")
+bench.resistor ("2 kΩ", "g40", "e40")
+bench.resistor ("2 kΩ", "g41", "e41")
+bench.resistor ("2 kΩ", "g42", "e42")
 
 # Q6, segment g, stays below the gap.
 bench.stage ("segment g's resistor")
 bench.wire ("a23", "a33", via=[(X (23), Y (1.70)), (X (33), Y (1.70))])
-bench.resistor ("1 kΩ", "b33", "b36")
+bench.resistor ("2 kΩ", "b33", "b36")
 
 # Into the display's bottom pins, nested so none crosses another.
 bench.stage ("the wires into the display")

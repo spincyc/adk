@@ -6,7 +6,7 @@ course.yml, and its sketch from its name: examples/lessons/013-hello-lcd for
 13-hello-lcd. Markers in the page are replaced when the site builds:
 
     <!-- bench -->         the pencil drawing of the whole bench
-    <!-- closeup -->       a close-up of the breadboard
+    <!-- closeup -->       the opening picture, including off-board screens
     <!-- steps -->         the build, step by step, in stages
     <!-- connections -->   which Mega pin reaches which part
     <!-- sketch -->        the example sketch, exactly as it compiles
@@ -131,7 +131,15 @@ def on_page_content (html, page, config, files):
 
     parts = re.split (r"(<pre\b.*?</pre>)", html, flags=re.S)
     parts[::2] = [re.sub (r"<code>([^<]*)</code>", hold, part) for part in parts[::2]]
-    return "".join (parts)
+    html = "".join (parts)
+    if "lesson" in page.meta:
+        # Keep the promised result beside the title, before the inventory.
+        # The original heading and anchor still belong to the lesson's TOC.
+        opening = re.match (r"(<h2\b.*?)(?=<h2\b)", html, flags=re.S)
+        if opening:
+            page.meta["opening"] = opening.group (1)
+            html = html[opening.end ():]
+    return html
 
 
 def on_page_markdown (markdown, page, config, files):
@@ -219,14 +227,21 @@ def board_pieces (lesson, letter, bench):
     except OSError as error:
         raise PluginError (f"{lesson['slug']}: no sketch for board {letter or 'of the lesson'} at "
                            f"{os.path.relpath (path, ROOT)}") from error
-    whose = f"Board {letter}'s breadboard" if letter else "the breadboard"
     try:
-        whole, closeup, measured = Drawing (bench).page (letter)
+        drawing = Drawing (bench)
+        whole, closeup, measured = drawing.page (letter)
+        details = []
+        for index, (caption, crop, columns) in enumerate (drawing.print_regions ()):
+            if letter:
+                caption = f"Board {letter} · {caption}"
+            svg = drawing.print_svg (caption, crop, columns, f"detail{letter}{index}", "bench" + letter)
+            details.append (figure (svg, caption, "detail"))
         return {
-            "bench": figure (whole, bench.title, "bench", letter),
+            "bench": (figure (whole, bench.title, "bench", letter) +
+                      '<div class="print-details" markdown="0">' + "".join (details) + "</div>"),
             "closeup": figure (closeup,
-                               f"Close-up of {whose}. Letters name the rows, numbers the columns.",
-                               "closeup", letter),
+                               f"{'Board ' + letter + ' · ' if letter else ''}{bench.title}",
+                               "opening", letter),
             "steps": steps (bench, previous (lesson["number"], letter), lesson["number"], letter,
                             f"Board {letter} · {bench.sketch}" if letter else lesson["title"]),
             "connections": connections (bench),
@@ -322,7 +337,7 @@ def previous (number, letter=""):
 
 
 # The drawing's own width, in drawing units, lets the page size it so its
-# labels stay legible: on a phone it scrolls sideways rather than shrink.
+# labels stay legible when enlarged; the opening and overview fit a phone.
 # A lesson's own drawings name their board, so its steps can light up the
 # part each one adds.
 def figure (svg, caption, kind, board=None):
@@ -443,6 +458,7 @@ def step_row (key, mark, item, bench=None, label=None):
     kind, thing, step = item
     lit = f' data-item="{bench.items.index (item)}"' if bench else ""
     points = step_points (bench, item) if bench else []
+    labels = step_point_labels (bench, item, points) if bench else []
     action = step_action (item, bench)
     # Saved progress must follow the actual connection, not its row number.
     # Include physical placement: moving a module can leave its sentence
@@ -452,7 +468,8 @@ def step_row (key, mark, item, bench=None, label=None):
     signature = (kind, physical, step.what, step.places, step.note, step.colors, bool (bench))
     key = hashlib.sha256 (json.dumps (signature, ensure_ascii=False).encode ()).hexdigest ()[:16]
     metadata = (f' data-kind="{kind}" data-action={quoteattr (action)}'
-                f' data-points={quoteattr (json.dumps (points))}')
+                f' data-points={quoteattr (json.dumps (points))}'
+                f' data-point-labels={quoteattr (json.dumps (labels, ensure_ascii=False))}')
     if step.what == "LCD" and bench:
         care = ("Support the overhanging screen at breadboard height, for example on the kit's "
                 "box, so it cannot pull its pins out.")
@@ -494,6 +511,29 @@ def step_points (bench, item):
                 points = [bench.hole_xy (hole) for _, hole in thing.legs ()]
                 break
     return [[round (x, 2), round (y, 2)] for x, y in points]
+
+
+# Crops can exclude the board's printed row letters. Name the actual holes
+# at their rings, from the same endpoints that supply the coordinates.
+def step_point_labels (bench, item, points):
+    kind, thing, _ = item
+    ends = thing[:2] if kind == "wire" else \
+        [("hole", hole) for _, hole in thing.legs ()] if kind == "part" else []
+    labels = []
+    for point in points:
+        end = next ((end for end in ends if [round (v, 2) for v in bench.xy (end)] == point), None)
+        if end is None:
+            labels.append ("")
+        elif end[0] == "hole" and end[1][0] in "BT":
+            labels.append (("top " if end[1][0] == "T" else "bottom ") +
+                           end[1][1:].replace ("-", "−"))
+        elif end[0] == "hole":
+            labels.append (end[1])
+        elif end[0] == "pin":
+            labels.append (canonical (end[1]))
+        else:
+            labels.append (bench.module_pin (end[1])[1].name)
+    return labels
 
 
 # A short instruction for the guided view. The table below it remains the

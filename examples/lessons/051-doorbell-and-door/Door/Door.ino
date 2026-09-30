@@ -62,8 +62,7 @@ void loop ()
     // turns it back.
     bridge.share ("rings", rings);
     bridge.share ("knocks", knocks);
-    bridge.share ("cards", cards);
-    bridge.share ("card", long (reader.uid ()));
+    bridge.shareEvent ("cards", cards, static_cast<int32_t> (reader.uid ()));
 
     // Board B has opened the door.
     if (bridge.changed ("door") && bridge.value ("door") == 1)

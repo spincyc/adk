@@ -10,7 +10,9 @@ parts:
   - RC522 RFID reader, with its card and fob
   - Tap sensor module (37 in 1)
   - SG90 servo and active buzzer
-  - 12 female-to-male and 23 jumper wires
+  - 4 × 1 kΩ and 4 × 2 kΩ resistors for the reader
+  - S8050 transistor, 1 kΩ resistor, 10 kΩ resistor and 1N4007 diode
+  - 12 female-to-male and 30 jumper wires
   - A box with a lid, and sticky tape
 ideas:
   - Two different keys for one lock
@@ -91,9 +93,10 @@ can't knock on its own door.
     bottom − rail, both by column 42: it feeds only the servo, on the bottom
     rails, and the screen runs from the Mega's 5V on the top rails, as in
     Lesson 33. The RFID reader takes **3.3 V** from the Mega's 3.3V pin:
-    never 5V. Its signal wires get 5 V from the Mega, more than its chip is
-    rated for, as Lesson 34 explains; the [safety page](../../safety.md)
-    says how to protect them in a build that has to last.
+    never 5V. Its four input signals use the 1 kΩ / 2 kΩ dividers from
+    Lesson 34. The active buzzer uses Lesson 3’s S8050 driver and the
+    Mega’s top 5 V rail. Check the transistor’s marking and E–B–C order
+    and the diode’s band before powering it.
 
 <!-- bench -->
 
@@ -101,7 +104,7 @@ can't knock on its own door.
 
 The tap sensor stays where it was in Lesson 35, below the Mega, and the
 RFID reader you kept from Lesson 34 goes back beside it, where it was
-then, on the same seven wires.
+then, on the same seven wires and four dividers.
 
 ??? info "Making the latch"
     The servo's arm is the bolt. Tape the servo inside the box, near the top
@@ -183,7 +186,7 @@ then `lock ()` forgets them.
 | Knocks never make stars | Check the tap sensor's S goes to A12, + to 5V and − to GND, and knock close to it. |
 | Stars appear, but the knock is always wrong | Knock the gaps more clearly: quick knocks well under half a second apart, and a pause of about a second. |
 | The latch opens the wrong way | Swap `lockedAngle` and `openAngle`, or remount the servo. |
-| No beeps | Check the buzzer's + leg, the longer one, is in f33, and the black wire goes from a33 to the − rail. |
+| No beeps | Check the buzzer's + leg, the longer one, is in f33, h33 reaches the top + rail, and pin 12 reaches a32. Check the S8050’s E–B–C order, emitter to GND, collector to a33, and diode band at column 36. |
 
 ??? note "How it works"
     While the door is open, `openFor ()` waits five seconds with
@@ -240,5 +243,5 @@ What the numbers tell you:
   plenty to spare for the servo.
 - **The buzzer's pin** reads nearly the full 5 V for the whole beep, and 0
   the rest of the time. The pin is simply switched on, and the buzzer makes
-  its tone inside. It reads a little under 5 V because the buzzer draws
-  about 30 mA, and a pin's 5 V sags a little as it gives more current.
+  its tone inside. Pin 12 now supplies only a few milliamps through the
+  base resistor; the transistor switches the buzzer’s current from the rail.

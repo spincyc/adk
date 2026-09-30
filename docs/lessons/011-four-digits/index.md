@@ -8,7 +8,7 @@ parts:
   - Breadboard
   - 74HC595 shift register chip
   - Four-digit seven-segment display (5461AS)
-  - 8 × 1 kΩ resistors (brown, black, black, brown, brown)
+  - 8 × 2 kΩ resistors (red, black, black, brown, brown)
   - 30 jumper wires
 ideas:
   - Multiplexing, one digit at a time
@@ -43,10 +43,10 @@ into four steady digits. That's **persistence of vision**, the same reason
 a film projector's flickering light looks steady.
 
 The segment lines come from the 74HC595, as in Lesson 10, each through its
-1 kΩ resistor, about 3 mA per lit segment. A digit pin carries the current
-of all its lit segments together: an 8 with its dot is 8 × 3 = 24 mA. That
-is a little over the 20 mA a pin gives comfortably all day, well under the
-40 mA it may ever give, and each digit is lit only a quarter of the time.
+2 kΩ resistor, about 1.5 mA per lit segment. A digit pin carries the current
+of all its lit segments together: an 8 with its dot is about 8 × 1.5 = 12 mA.
+That leaves room below the Mega pin’s recommended 20 mA even while a digit
+is on. The four-digit display uses larger resistors than Lesson 10.
 
 Because the display must be refreshed every 2 milliseconds, the sketch must
 never stop to wait. For things that happen on a beat, such as counting up
@@ -83,10 +83,10 @@ every 100 milliseconds, and the rest of the time `loop ()` just carries on.
     | Segment | a | b | c | d | e | f | g | dot |
     | Display pin | 11 | 7 | 4 | 2 | 1 | 10 | 5 | 3 |
 
-    The chip and the resistors for a, f and b stay where Lesson 10 had them;
-    so do the wires that step up over the gap for e, d and c, and their
-    resistors standing across the gap just before the display, now with a
-    fourth beside them for the dot. g's resistor lies in row b. The lower
+    The chip stays where Lesson 10 had it. Replace its 1 kΩ segment
+    resistors with **2 kΩ** ones in the same holes; the steps show which
+    to take out and add. The wires that step up over the gap for e, d and c
+    stay, with a fourth resistor beside theirs for the dot. g's resistor lies in row b. The lower
     legs of that row of four drop into the display's bottom pins in turn, so
     no two wires cross. The steps give every hole.
 

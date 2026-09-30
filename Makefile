@@ -51,11 +51,14 @@ LIBRARY_SOURCES  := $(wildcard src/adk/*.cpp)
 LIBRARY_FILES    := $(wildcard src/*.h src/adk/*.h src/adk/*.cpp)  \
                     library.properties
 TEST_SOURCES     := $(wildcard tests/*.cpp tests/arduino/*.cpp)
+EXAMPLE_TESTS     := $(wildcard tests/examples/*.cpp)
 SKETCHES         := $(wildcard examples/lessons/*/*.ino examples/lessons/*/*/*.ino)
 EXAMPLES         := $(patsubst examples/%/,%,$(sort $(dir $(SKETCHES))))
 STYLED           := $(wildcard src/*.h src/adk/*.h src/adk/*.cpp)  \
                     $(wildcard tests/*.h tests/*.cpp)              \
                     $(wildcard tests/arduino/* tests/probe/*.cpp)  \
+                    $(wildcard tests/examples/*.h)                 \
+                    $(EXAMPLE_TESTS)                               \
                     $(SKETCHES)                                    \
                     Makefile
 
@@ -77,6 +80,7 @@ HOST_FLAGS       := -std=c++23       \
                     -Itests/arduino  \
                     -Itests
 HOST_OBJECTS     := $(patsubst %.cpp,$(HOST_DIR)/obj/%.o,$(LIBRARY_SOURCES) $(TEST_SOURCES))
+HOST_EXAMPLES    := $(patsubst tests/examples/%.cpp,$(HOST_DIR)/examples/%,$(EXAMPLE_TESTS))
 
 SANITIZE_DIR     := $(BUILD_DIR)/sanitize
 SANITIZE_FLAGS   := $(HOST_FLAGS)                 \
@@ -84,6 +88,7 @@ SANITIZE_FLAGS   := $(HOST_FLAGS)                 \
                     -fsanitize=address,undefined  \
                     -fno-omit-frame-pointer
 SANITIZE_OBJECTS := $(patsubst %.cpp,$(SANITIZE_DIR)/obj/%.o,$(LIBRARY_SOURCES) $(TEST_SOURCES))
+SANITIZE_CASES   := $(patsubst tests/examples/%.cpp,$(SANITIZE_DIR)/examples/%,$(EXAMPLE_TESTS))
 
 # The Mega's builds and the pins check -----------------------------------------
 #
@@ -108,6 +113,12 @@ PROBE_OBJECTS    := $(filter $(HOST_DIR)/obj/src/%            \
                              $(HOST_DIR)/obj/tests/arduino/%  \
                              $(HOST_DIR)/obj/tests/fake_%,    \
                              $(HOST_OBJECTS))
+SANITIZE_PROBES  := $(patsubst $(HOST_DIR)/%,$(SANITIZE_DIR)/%,$(PROBE_OBJECTS))
+SANITIZE_PROBE_FLAGS := $(PROBE_FLAGS)                  \
+                        -g                              \
+                        -O1                             \
+                        -fsanitize=address,undefined    \
+                        -fno-omit-frame-pointer
 
 # Each lesson's own targets ----------------------------------------------------
 #
@@ -264,8 +275,9 @@ deps-debian deps-fedora deps-Darwin deps-other:
 	@exit 1
 
 ## test            build and run the host tests (TEST=name runs matching cases)
-test: $(HOST_DIR)/tests
+test: $(HOST_DIR)/tests $(HOST_EXAMPLES)
 	$(HOST_DIR)/tests $(TEST)
+	@set -e; for example in $(HOST_EXAMPLES); do "$$example"; done
 
 $(HOST_DIR)/tests: $(HOST_OBJECTS)
 	@$(CXX) $(HOST_FLAGS) $^ -o $@
@@ -275,9 +287,17 @@ $(HOST_DIR)/obj/%.o: %.cpp
 	@echo "  CXX  $<"
 	@$(CXX) $(HOST_FLAGS) -MMD -MP -c $< -o $@
 
+# Each regression includes a real sketch, with its own setup and loop and
+# its own main. It shares the library and fake core, never the test runner.
+$(HOST_DIR)/examples/%: tests/examples/%.cpp $(PROBE_OBJECTS)
+	@mkdir -p $(@D)
+	@echo "  TEST $<"
+	@$(CXX) $(PROBE_FLAGS) -MMD -MP -MF $@.d $< $(PROBE_OBJECTS) -o $@
+
 ## sanitize        run the host tests under AddressSanitizer and UBSan
-sanitize: $(SANITIZE_DIR)/tests
+sanitize: $(SANITIZE_DIR)/tests $(SANITIZE_CASES)
 	$(SANITIZE_DIR)/tests $(TEST)
+	@set -e; for example in $(SANITIZE_CASES); do "$$example"; done
 
 $(SANITIZE_DIR)/tests: $(SANITIZE_OBJECTS)
 	@$(CXX) $(SANITIZE_FLAGS) $^ -o $@
@@ -287,7 +307,13 @@ $(SANITIZE_DIR)/obj/%.o: %.cpp
 	@echo "  CXX  $< (sanitized)"
 	@$(CXX) $(SANITIZE_FLAGS) -MMD -MP -c $< -o $@
 
+$(SANITIZE_DIR)/examples/%: tests/examples/%.cpp $(SANITIZE_PROBES)
+	@mkdir -p $(@D)
+	@echo "  TEST $< (sanitized)"
+	@$(CXX) $(SANITIZE_PROBE_FLAGS) -MMD -MP -MF $@.d $< $(SANITIZE_PROBES) -o $@
+
 -include $(HOST_OBJECTS:.o=.d) $(SANITIZE_OBJECTS:.o=.d)
+-include $(HOST_EXAMPLES:%=%.d) $(SANITIZE_CASES:%=%.d)
 
 ## toolchain       fetch the C++23 avr-gcc the examples build with
 toolchain: $(TOOLCHAIN)/bin/avr-g++
@@ -394,7 +420,7 @@ $(BUILD_DIR)/steps.ok: tests/build_steps.py $(wildcard docs/_theme/*.py) \
 	@touch $@
 
 ## pdf             print every lesson page to build/site/pdf
-pdf: site $(BUILD_DIR)/view.ok
+pdf: site $(BUILD_DIR)/view.ok $(BUILD_DIR)/print.ok
 	@mkdir -p $(BUILD_DIR)/site/pdf
 	@for page in $(abspath $(BUILD_DIR))/site/lessons/*/index.html; do    \
 	    lesson=$$(basename $$(dirname $$page));                           \
@@ -414,11 +440,23 @@ $(BUILD_DIR)/view.ok: tests/build_view.html docs/assets/steps.js docs/assets/adk
 	@mkdir -p $(BUILD_DIR)
 	@echo "  VIEW tests/build_view.html"
 	@$(CHROMIUM) --headless=new --no-sandbox --disable-gpu                 \
+	    --window-size=1280,900                                             \
 	    --user-data-dir=$(abspath $(BUILD_DIR))/chromium-view-test         \
 	    --dump-dom file://$(abspath tests/build_view.html)                 \
 	    > $(BUILD_DIR)/view-test.html 2> $(BUILD_DIR)/view-test.log
 	@grep -q 'data-test-result="pass"' $(BUILD_DIR)/view-test.html || \
 	    { cat $(BUILD_DIR)/view-test.html; exit 1; }
+	@touch $@
+
+$(BUILD_DIR)/print.ok: tests/print_view.html docs/assets/print.js docs/assets/adk.css
+	@mkdir -p $(BUILD_DIR)
+	@echo "  VIEW tests/print_view.html"
+	@$(CHROMIUM) --headless=new --no-sandbox --disable-gpu                 \
+	    --user-data-dir=$(abspath $(BUILD_DIR))/chromium-print-test        \
+	    --dump-dom file://$(abspath tests/print_view.html)                 \
+	    > $(BUILD_DIR)/print-test.html 2> $(BUILD_DIR)/print-test.log
+	@grep -q 'data-test-result="pass"' $(BUILD_DIR)/print-test.html || \
+	    { cat $(BUILD_DIR)/print-test.html; exit 1; }
 	@touch $@
 
 ## boards          install the site's ADK Boards package and compile lessons with it

@@ -102,7 +102,7 @@
   lessons:
     - {slug: 046-remote-weather, title: Remote Weather, builds: The garden's weather, read indoors}
     - {slug: 047-remote-alarm, title: Remote Alarm, builds: Sensors by the door and the siren where you are}
-    - {slug: 048-baby-monitor, title: Baby Monitor, builds: A room's sound and a leak alarm, heard from afar, project: true}
+    - {slug: 048-baby-monitor, title: Room Monitor, builds: A room's sound and a leak alarm, heard from afar, project: true}
 
 - arc: Far hands
   boards: 2

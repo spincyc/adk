@@ -11,7 +11,8 @@ hide:
 # Build real circuits. Understand every line.
 
 Thirty-six hands-on lessons for the Arduino Mega 2560 and the parts in the
-Elegoo starter and sensor kits, six more with add-on radios, and twelve that
+Elegoo starter and sensor kits, plus an I2C level shifter. Six more use
+add-on radios, and twelve
 join two boards across a house. Start with one blinking LED; finish with
 games, musical instruments, a weather station, a door that opens for the
 right card, and a game of Pong played between two rooms.

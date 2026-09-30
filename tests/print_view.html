@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Print and narrow-layout regression checks</title>
+<link rel="canonical" href="https://spincyc.github.io/adk/lessons/001-blink/">
+<link rel="stylesheet" href="../docs/assets/adk.css">
+<style>
+html { font-size: 20px; }
+body { margin: 0; }
+.md-typeset { width: 320px; }
+</style>
+<body>
+<div class="md-typeset">
+  <table class="steps">
+    <colgroup><col class="step"><col class="what"><col><col class="link"><col></colgroup>
+    <tbody><tr>
+      <td class="step">1</td><td>LED matrix</td>
+      <td colspan="3"><div class="places"><span class="place">
+        below the gap between the Mega and the breadboard
+      </span></div></td>
+    </tr><tr>
+      <td class="step">2</td><td>RGB LED</td>
+      <td colspan="3"><div class="places"><span class="place">
+        b5 <small>common leg, the longest one</small>
+      </span></div></td>
+    </tr></tbody>
+  </table>
+</div>
+<a id="relative" href="../../start/">Getting started</a>
+<a id="root" href="/adk/library/#faults">Faults</a>
+<a id="fragment" href="#relative">This page</a>
+<a id="external" href="https://example.invalid/">External</a>
+<script src="../docs/assets/print.js"></script>
+<script>
+try {
+    const assert = (ok, message) => { if (!ok) throw Error (message); };
+    const href = id => document.getElementById (id).getAttribute ("href");
+    const table = document.querySelector ("table");
+    assert (table.scrollWidth <= table.clientWidth + 1,
+        "descriptive locations and common-leg notes fit a narrow step table");
+
+    for (let run = 0; run < 2; ++run) {
+        window.dispatchEvent (new Event ("beforeprint"));
+        assert (href ("relative") === "https://spincyc.github.io/adk/start/",
+            "relative print links use the published course");
+        assert (href ("root") === "https://spincyc.github.io/adk/library/#faults",
+            "root-relative print links use the published origin");
+        assert (href ("fragment") === "#relative", "PDF fragment links stay internal");
+        assert (href ("external") === "https://example.invalid/", "external links stay intact");
+        window.dispatchEvent (new Event ("afterprint"));
+        assert (href ("relative") === "../../start/" && href ("root") === "/adk/library/#faults",
+            "printing restores the browser's local navigation");
+    }
+    document.querySelector ('link[rel="canonical"]').remove ();
+    window.dispatchEvent (new Event ("beforeprint"));
+    assert (href ("relative") === "../../start/", "without a canonical URL, keep the original");
+    document.body.dataset.testResult = "pass";
+    document.body.append ("Print links and narrow step locations pass.");
+} catch (error) {
+    document.body.dataset.testResult = "fail";
+    document.body.append (error.stack);
+}
+</script>
+</html>

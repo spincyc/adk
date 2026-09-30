@@ -15,6 +15,7 @@ sys.path.insert (0, str (ROOT / "docs" / "_theme"))
 
 from bench import Bench  # noqa: E402
 from hooks import step_points, step_row, step_stages, steps  # noqa: E402
+from drawing import Drawing  # noqa: E402
 
 
 class Tags (HTMLParser):
@@ -43,6 +44,7 @@ attrs = row (screen, wire)
 assert json.loads (attrs["data-points"]) == [[960, 220], [960, 250]]
 assert "bottom − rail by column 43" in attrs["data-action"]
 assert "B-43" not in attrs["data-action"]
+assert json.loads (attrs["data-point-labels"]) == ["a43", "bottom −43"]
 
 # All sixteen LCD legs are marked at their actual holes. Its instruction
 # also carries the support reminder when the article's warning is away.
@@ -53,6 +55,33 @@ assert len (points) == 16
 assert points[0] == [1000, 220] and points[-1] == [1150, 220]
 assert "a47 through a62" in attrs["data-action"]
 assert "breadboard height" in attrs["data-care"]
+assert json.loads (attrs["data-point-labels"])[::15] == ["a47", "a62"]
+
+# An opening must include off-board hardware even when a lesson explicitly
+# asks for a breadboard close-up. Printed details must remain large enough
+# to read, and cover every occupied breadboard column.
+matrix = Bench ("Matrix", columns=(1, 63)).button (2)
+matrix.module ("matrix", at=(6, 4), facing="up")
+matrix.closeup (1, 16)
+drawing = Drawing (matrix)
+left, top, width, height = drawing.opening_box ()
+for module in matrix.modules.values ():
+    x0, y0, x1, y1 = module.reach_box ()
+    assert left <= x0 < x1 <= left + width
+    assert top <= y0 < y1 <= top + height
+regions = Drawing (screen).print_regions ()
+assert all (crop[2] <= 430 for _, crop, columns in regions if columns)
+assert any (columns and columns[0] <= 43 <= columns[1] for _, _, columns in regions)
+assert any (columns and columns[0] <= 62 <= columns[1] for _, _, columns in regions)
+
+# A crop beginning at column 3 can still contain the board's original
+# left row letters. Add replacement letters only when those are outside.
+colors = Drawing (Bench ("Colors", columns=(1, 63)).led ("red", anode="b5", cathode="b6"))
+caption, box, columns = next (r for r in colors.print_regions () if r[2])
+assert columns[0] == 3
+assert ">a</text>" not in colors.print_svg (caption, box, columns, "detail", "bench")
+caption, box, columns = next (r for r in regions if r[2])
+assert ">a</text>" in Drawing (screen).print_svg (caption, box, columns, "detail", "bench")
 
 # The power feed uses the outer GND, not another same-named ground pin.
 screen.finish ()

@@ -33,10 +33,15 @@ alive.
 
 ## Parts that need care
 
+The [Arduino Mega pinout](https://docs.arduino.cc/resources/pinouts/A000067-full-pinout.pdf)
+lists 20 mA per I/O pin. Use this operating limit when choosing resistors
+and drivers; the chip’s 40 mA absolute maximum is not a design target.
+
 | Part | Take care |
 |---|---|
-| RFID reader (RC522) | It runs on **3.3 V**. Power it from the Mega's 3.3V pin, never 5V. The Mega's 5 V signals on its SDA, SCK, MOSI and RST pins are above what the chip is rated for. It usually copes, and the lessons wire it that way; for a build that has to last, put a 1 kΩ and 2 kΩ divider on each of those four lines. |
-| Active buzzer | It draws up to about 30 mA: more than the 20 mA a Mega pin gives comfortably, though well under the 40 mA it may ever give, so give it a pin to itself and let it sound in short beeps. |
+| RFID reader (RC522) | It runs on **3.3 V**. Power it from the Mega's 3.3V pin, never 5V. Every build includes a 1 kΩ / 2 kΩ divider on SDA, SCK, MOSI and RST: never bypass one. The [MFRC522 datasheet](https://www.nxp.com/docs/en/data-sheet/MFRC522.pdf) limits these inputs to the supply plus 0.5 V. |
+| Active buzzer | It can need 30 mA, above a Mega pin’s recommended 20 mA. Every build uses an S8050 transistor, 1 kΩ base resistor, 10 kΩ pull-down and 1N4007 diode. Verify the transistor’s marking and E–B–C pin order before inserting it; see Lesson 3. Short beeps do not make excess pin current acceptable. |
+| GY-521 accelerometer | Its regulator accepts 5 V power, but its MPU-6050 signals use 3.3 V. Every build uses a BSS138 bidirectional I2C level shifter with LV at 3.3 V, HV at 5 V and common GND. A direct 5 V pull-up exceeds the [MPU-6050 input limit](https://product.tdk.com/system/files/dam/doc/product/sensor/mortion-inertial/imu/data_sheet/mpu-6000-datasheet1.pdf). |
 | Passive buzzer | Always through its 220 Ω resistor: its coil is only about 16 Ω. |
 | IR LED module | Always through its 220 Ω resistor: on its own the LED would take more current than it or the pin should. |
 | Water sensor | Dip only its copper traces, never its parts or pins, and keep the water away from the boards. Current through wet traces corrodes them, so the lessons power it from a pin only while they read it. |

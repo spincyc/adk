@@ -120,6 +120,11 @@ When you are done, these are the connections your circuit makes:
 
 Open **File → Examples → Adk → lessons → 029-menus**:
 
+First trace one turn while browsing: `knob.turned ()` reaches `turnKnob ()`
+and changes `current`. Then trace a click and another turn: now `editing`
+is true, so the turn changes the item's `setting`. Once those two paths
+make sense, read how `choices` holds each item's list of settings.
+
 <!-- sketch -->
 
 What's new:

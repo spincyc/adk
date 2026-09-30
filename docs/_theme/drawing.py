@@ -4,6 +4,7 @@ lesson's circuit.py describes (bench.py).
 
     drawing = Drawing (bench)
     drawing.svg ("bench")           the Mega, the breadboard, every part and wire
+    drawing.svg ("opening")         the visible result, including off-board screens
     drawing.svg ("closeup")         the breadboard round the parts, larger
     drawing.measure_svg (0)         the first measurement's probes and meter
 
@@ -34,7 +35,7 @@ import meter
 
 from bench import (BOARD_HEIGHT, END, MARGIN, MEGA_HEIGHT, MEGA_PINS, MEGA_WIDTH, ROWS, canonical,
                    load, numbered, parse_hole, rail_column)
-from modules import HOUSING
+from modules import HOUSING, Lcd1602, Matrix
 from parts import HeaderModule, Label, Led, Resistor, spots_round
 from pencil import DPI, WIRES, Pencil
 from route import (HARD, Placer, Router, bounds_of, corners, direction, node, segment_distance,
@@ -409,9 +410,9 @@ class Drawing:
     # Drawing ------------------------------------------------------------
 
     # Everything a lesson's page shows of a board, by the names the page
-    # gives its drawings: the bench, the close-up, and each measurement.
+    # gives its drawings: the bench, the opening, and each measurement.
     def page (self, letter=""):
-        return (self.svg ("bench", "bench" + letter), self.svg ("closeup", "closeup" + letter),
+        return (self.svg ("bench", "bench" + letter), self.svg ("opening", "opening" + letter),
                 [self.measure_svg (index, "measure" + letter)
                  for index in range (len (self.bench.measurements))])
 
@@ -423,10 +424,12 @@ class Drawing:
         pencil = Pencil (bench.seed, prefix)
         detail = self._closeup_columns () if view == "closeup" else None
         # Labels are set smaller in the close-up, which the page shows larger.
-        bench.label_size = 6.4 if detail else 10
-        rough = self._closeup_box () if detail else None
+        bench.label_size = 6.4 if view == "closeup" else 10
+        rough = self._closeup_box () if view == "closeup" else None
         placed = self._place_labels (routes, rough, detail)
-        box = self._view_box (rough, placed, detail) if detail else self._canvas (routes, placed)
+        box = self._view_box (rough, placed, detail) if rough else self._canvas (routes, placed)
+        if view == "opening":
+            box = self.opening_box ()
         self._draw_mega (pencil)
         self._draw_board (pencil, detail)
         # Each part, module and wire is tagged with its build step's place in
@@ -461,6 +464,90 @@ class Drawing:
                 pencil.label (x, y, text, size=size, anchor=anchor, to=to, width=width,
                               patch=self._patch (x, y, width, size, anchor))
         return pencil.svg (box, bench.title if view == "bench" else f"{bench.title}: close-up")
+
+    # The opening shows the actual parts, including screens and other
+    # modules standing outside the breadboard. Wiring detail comes later.
+    def opening_box (self):
+        bench = self.bench
+        modules = list (bench.modules.values ())
+        modules += [part.placed (bench) for part in bench.parts if isinstance (part, HeaderModule)]
+        screens = [module for module in modules if isinstance (module.kind, (Lcd1602, Matrix))]
+        # A screen is the visible result. Framing a distant button with it
+        # would turn a readable picture into a tall strip of empty wiring.
+        if screens:
+            boxes = [box for module in screens for box in (module.reach_box (), module.title_box ())]
+        else:
+            boxes = [bounds_of (shape) for part in bench.parts for shape in part.shapes (bench)]
+            boxes += [box for module in bench.modules.values ()
+                      for box in (module.reach_box (), module.title_box ())]
+        if not boxes:
+            boxes = [bench.board_box ()]
+        left, top = min (box[0] for box in boxes) - 30, min (box[1] for box in boxes) - 30
+        right, bottom = max (box[2] for box in boxes) + 30, max (box[3] for box in boxes) + 30
+        width = max (160, right - left)
+        height = max (110, bottom - top)
+        return ((left + right - width) / 2, (top + bottom - height) / 2, width, height)
+
+    # Paper cannot scroll or open the guided view. Divide the occupied
+    # breadboard into readable, overlapping ranges, and give each off-board
+    # module its own view. All views retain the finished drawing's orientation.
+    def print_regions (self):
+        bench = self.bench
+        regions = []
+        left, top, right, bottom = bench.mega_box ()
+        regions.append (("Mega · check the pin numbers", (left - 12, top - 12,
+                         right - left + 24, bottom - top + 24), None))
+        standard = {hole for start, end, _, _ in bench.wires if bench.is_standard ((start, end))
+                    for kind, hole in (start, end) if kind == "hole"}
+        columns = sorted ({parse_hole (hole)[1] for hole in bench.used if hole not in standard})
+        groups = []
+        for column in columns:
+            if not groups or column - groups[-1][-1] > 6:
+                groups.append ([])
+            groups[-1].append (column)
+        for group in groups:
+            low, high = max (bench.first, group[0] - 2), min (bench.last, group[-1] + 2)
+            first = low
+            while first <= high:
+                last = min (high, first + 33)
+                x, _ = bench.hole_xy (f"a{first}")
+                right, _ = bench.hole_xy (f"a{last}")
+                _, top, _, bottom = bench.board_box ()
+                regions.append ((f"Breadboard · columns {first}–{last}",
+                                 (x - 36, top - 35, right - x + 72, bottom - top + 70),
+                                 (first, last)))
+                if last == high:
+                    break
+                first = last - 1
+        modules = list (bench.modules.values ())
+        modules += [part.placed (bench) for part in bench.parts if isinstance (part, HeaderModule)]
+        for module in modules:
+            points = [module.anchor (pin)[0] for pin in module.pins ()]
+            if not points:
+                continue
+            left, top = min (p[0] for p in points), min (p[1] for p in points)
+            right, bottom = max (p[0] for p in points), max (p[1] for p in points)
+            regions.append ((module.title + " · connections",
+                             (left - 38, top - 38, right - left + 76, bottom - top + 76), None))
+        return regions
+
+    # Reuse the overview's scene instead of copying thousands of SVG nodes
+    # for each printed crop. Add row names at a crop's own edge;
+    # the wiring itself is exactly the same scene, at a readable scale.
+    # Keep the existing column numbers: the label placer reserved their
+    # space, whereas extra numbers could cover a wire's pin label.
+    def print_svg (self, caption, box, columns, prefix, source):
+        pencil = Pencil (self.bench.seed, prefix)
+        pencil.layers["paper"].append (f'<use href="#{source}-scene"/>')
+        if columns:
+            first, _ = columns
+            left, _ = self.bench.hole_xy (f"a{first}")
+            original, _ = self.bench.hole_xy (f"a{self.bench.first}")
+            rows = "" if box[0] <= original - 11 <= box[0] + box[2] else "abcdefghij"
+            for row in rows:
+                _, y = self.bench.hole_xy (f"{row}{first}")
+                pencil.text (left - 20, y + 2, row, size=7, kind="silk", halo="#ffffff")
+        return pencil.svg (box, caption)
 
     # A measurement: the breadboard round its two probe points, the meter
     # below the board reading what is expected, and its leads rising to the

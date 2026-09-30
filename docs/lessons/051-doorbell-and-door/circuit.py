@@ -6,8 +6,8 @@
 # its home, as in Lessons 35 and 36. Reader and modem together would ask
 # more of that pin than it can give, so here the modem's VDD moves to the
 # bottom rails, which the power module feeds from its 3.3V pin, into B+29
-# above it: the modem's home in Lesson 40. Nothing else takes power from
-# the rails, so the Mega's 5V stays off them. The doorbell is the
+# above it: the modem's home in Lesson 40. The active buzzer takes its
+# power from the Mega's 5V on the separate top rail. The doorbell is the
 # button on 22 at its home, and the active buzzer on 12 stands at its
 # home. The L LED shows the link.
 door = Bench ("Board A: an RFID reader on the SPI pins and 45, a tap sensor on A12, a doorbell "

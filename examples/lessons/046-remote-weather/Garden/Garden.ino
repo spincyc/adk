@@ -16,6 +16,8 @@ adk::AnalogInput light      {A1};
 adk::Led         online     {28};    // lit while indoors is heard
 adk::Every       report     {5000};
 
+constexpr long noReading = -10000;    // outside either thermometer's range
+
 long reports = 0;    // how many reports have gone, which marks a new one
 
 void setup ()
@@ -32,12 +34,14 @@ void loop ()
     if (report.ticked ())
     {
         ++reports;
-        bridge.share ("report", reports);
-        bridge.share ("air",    tenths (dht.temperature ()));
-        bridge.share ("humid",  lround (dht.humidity ()));
-        bridge.share ("probe",  tenths (probe.celsius ()));
-        bridge.share ("ntc",    tenths (thermistor.celsius ()));
-        bridge.share ("light",  light.read (0, 100));
+        bridge.shareEvent ("air", reports, dht.ok ()
+                        ? tenths (dht.temperature ()) : noReading);
+        bridge.shareEvent ("humid", reports, dht.ok ()
+                        ? lround (dht.humidity ()) : noReading);
+        bridge.shareEvent ("probe", reports, probe.ok ()
+                        ? tenths (probe.celsius ()) : noReading);
+        bridge.shareEvent ("ntc", reports, tenths (thermistor.celsius ()));
+        bridge.shareEvent ("light", reports, light.read (0, 100));
     }
 }
 

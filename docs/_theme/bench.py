@@ -98,8 +98,8 @@ import re
 from typing import NamedTuple
 
 from modules import STUB, Placed, PowerModule, make as make_module
-from parts import (Button, Buzzer, Chip, Display, HeaderModule, Led, Potentiometer, Resistor, RgbLed,
-                   TwoLegs, bands_for)
+from parts import (Button, Buzzer, Chip, Diode, Display, HeaderModule, Led, Potentiometer, Resistor,
+                   RgbLed, Transistor, TwoLegs, bands_for)
 from pencil import DPI
 
 MEGA_WIDTH, MEGA_HEIGHT = 4.0, 2.1
@@ -371,6 +371,20 @@ class Bench:
                           colors=(color,)))
         return self
 
+    def diode (self, anode, cathode):
+        self._add (Diode (anode, cathode))
+        self._step (Step ("1N4007 diode", (self._at (anode, "unbanded end"),
+                                           self._at (cathode, "banded end"))))
+        return self
+
+    def transistor (self, emitter, base, collector):
+        self._add (Transistor (emitter, base, collector))
+        self._step (Step ("S8050 transistor", (self._at (emitter, "E, emitter"),
+                                               self._at (base, "B, base"),
+                                               self._at (collector, "C, collector")),
+                          "marked flat face toward you; check S8050 and its E–B–C pin order"))
+        return self
+
     def button (self, column):
         part = Button (column)
         self._add (part)
@@ -583,18 +597,27 @@ class Bench:
         return self
 
     # The active buzzer on 12, or the passive one on 10, across the gap in
-    # column 33: + in f, − in e, the pin into j, and from a to the − rail a
-    # black jumper (active) or 220 Ω (passive). Beside the four-digit
+    # column 33: + in f, − in e. A passive buzzer takes its pin into j and
+    # 220 Ω from a to GND. An active one takes 5 V through a low-side S8050
+    # driver, whose base on column 30 gets pin 12 through 1 kΩ. Beside the four-digit
     # display it stands in column 35, clear of the wires that rise over the
     # gap in column 32 and the segment circuit that occupies column 33.
     @staged ("the {kind} buzzer")
     def home_buzzer (self, kind, via=None):
         column = 35 if self._has ("four-digit display") else 33
-        self.wire ({"active": "12", "passive": "10"}[kind], f"j{column}", via=via)
         self.buzzer (f"f{column}", f"e{column}", kind=kind)
         if kind == "active":
-            self.wire (f"a{column}", f"B-{column}")
+            self.transistor ("a29", "a30", "a31")
+            self.wire ("12", "a32", via=via)
+            self.resistor ("1 kΩ", "c32", "c30")
+            self.resistor ("10 kΩ", "b30", "B-30")
+            self.wire ("b29", "B-29")
+            self.wire ("b31", f"a{column}", color="black")
+            self.wire (f"h{column}", f"T+{column}")
+            self.diode (f"c{column}", f"c{column + 3}")
+            self.wire (f"a{column + 3}", f"j{column}", color="red")
         else:
+            self.wire ("10", f"j{column}", via=via)
             self.resistor ("220 Ω", f"a{column}", f"B-{column}")
         return self
 
@@ -750,15 +773,25 @@ class Bench:
 
     # The GY-521 standing in row j, columns 9 to 16, its board over the top
     # rails: VCC from the top + rail, GND down across the gap to the − rail,
-    # and SCL and SDA from 21 and 20 over the top of the board.
+    # and SCL and SDA from 21 and 20 through the BSS138 level shifter above
+    # the gap beside the Mega. Its low side takes 3.3 V through column 5,
+    # which also leaves a tap for another 3.3 V module.
     @staged ("the GY-521")
     def home_gy521 (self):
         self.header_module ("gy521", first=9, row="j")
         self.wire ("T+7", "i9")
         self.wire ("f10", "e10", color="black")
         self.wire ("a10", "B-10")
-        self.wire ("21", "g11", via=[(3.75, 0.55), (5.75, 0.55), (5.75, 1.35)])
-        return self.wire ("20", "h12", via=[(3.65, 0.5), (5.85, 0.5), (5.85, 1.25)])
+        self.module ("i2c_level_shifter", "levels", at=(5.0, -1.3), facing="down",
+                     detail="headers fitted; LV/A pins toward the Mega, HV/B pins toward the board")
+        self.wire ("3.3V", "a5")
+        self.wire ("b5", "levels.LV", color="red")
+        self.wire ("T+5", "levels.HV")
+        self.wire ("B-12", "levels.GND")
+        self.wire ("20", "levels.B1")
+        self.wire ("21", "levels.B2")
+        self.wire ("levels.A1", "h12", color="green")
+        return self.wire ("levels.A2", "g11", color="blue")
 
     # The DS1307 clock above the board, facing right: GND and VCC from the
     # top rails in columns 13 and 15, SDA and SCL from 20 and 21 over the
@@ -848,18 +881,22 @@ class Bench:
         return self
 
     # The RFID reader below the Mega: 3.3V from the Mega's 3.3V pin, GND
-    # from the inner GND, and SDA, SCK, MOSI, MISO and RST from 53, 52, 51,
-    # 50 and 45, down past the double header in lanes.
+    # from the inner GND. The four Mega outputs reach SDA, SCK, MOSI and
+    # RST through 1 kΩ / 2 kΩ dividers in columns 18, 20, 22 and 24;
+    # MISO, the reader's 3.3 V output, reaches pin 50 directly.
     @staged ("the RFID reader")
     def home_rfid (self):
         self.module ("rfid", at=(1.65, 4.17), facing="up")
         self.wire ("3.3V", "rfid.3.3V", via=[(1.76, 2.8), (2.1, 2.8)])
         self.wire ("GND.long", "rfid.GND", via=[(4.25, 2.35), (4.25, 3.0), (2.3, 3.0)])
-        self.wire ("53", "rfid.SDA", via=[(4.35, 3.1), (2.8, 3.1)])
-        self.wire ("52", "rfid.SCK", via=[(4.45, 3.2), (2.7, 3.2)])
-        self.wire ("51", "rfid.MOSI", via=[(4.55, 3.3), (2.6, 3.3)])
+        for pin, signal, column, ground in (("53", "SDA", 18, 18), ("52", "SCK", 20, 21),
+                                             ("51", "MOSI", 22, 22), ("45", "RST", 24, 25)):
+            self.wire (pin, f"j{column}")
+            self.resistor ("1 kΩ", f"g{column}", f"e{column}")
+            self.resistor ("2 kΩ", f"a{column}", f"B-{ground}")
+            self.wire (f"c{column}", f"rfid.{signal}")
         self.wire ("50", "rfid.MISO", via=[(4.65, 3.4), (2.5, 3.4)])
-        return self.wire ("45", "rfid.RST", via=[(4.75, 3.5), (2.2, 3.5)])
+        return self
 
     # The PIR sensor below the Mega: OUT on A12, VCC and GND from the power
     # header.
@@ -1767,5 +1804,3 @@ def grow (box, margin):
 
 def overlaps (a, b):
     return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
-
-

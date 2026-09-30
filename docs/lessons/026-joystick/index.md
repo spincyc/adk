@@ -96,6 +96,11 @@ When you are done, these are the connections your circuit makes:
 
 Open **File → Examples → Adk → lessons → 026-joystick**:
 
+Start with the movement: follow `joystick.x ()` and `joystick.y ()` through
+`movePen ()` to the pixel chosen by `matrix.set ()`. Once that makes sense,
+follow a click that changes `penDown`. Then look at `drawn` and the blink:
+they let the pen move without changing the picture underneath it.
+
 <!-- sketch -->
 
 What's new:

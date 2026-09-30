@@ -21,5 +21,5 @@ bench.home_buzzer ("active")
 # buzzer takes it all.
 bench.measure ("Across the yellow LED", red="b12", black="b13", expect="about 2 V",
                when="Yellow light on, at Go")
-bench.measure ("Across the buzzer", red="i33", black="b33", expect="about 4.5 V",
+bench.measure ("Across the buzzer", red="i33", black="b33", expect="about 4.8 V",
                when="Buzzer sounding, at Go")

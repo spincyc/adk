@@ -6,12 +6,12 @@ level: 3
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
-  - The LED matrix and GY-521 from Lesson 28
+  - The LED matrix, GY-521 and BSS138 I2C level shifter from Lesson 28
   - The rotary encoder from Lesson 29
   - Passive buzzer
   - 220 Ω resistor (red, red, black, black, brown)
-  - 5 female-to-male jumper wires
-  - 14 jumper wires
+  - 12 female-to-male jumper wires
+  - 13 jumper wires
 ideas:
   - A ball with a position and a speed
   - Walls stored as bits, and testing one bit
@@ -83,7 +83,9 @@ buzzer knocks. The edges of the matrix are walls too.
     Mega's GND and 5V wires, and take the rest off. The GY-521 and the
     matrix you put aside in Lesson 29 come back: the GY-521 in row j,
     columns 9 to 16, and the matrix below the breadboard, both wired as in
-    Lesson 28. A black jumper from the bottom − rail to the top − rail, by
+    Lesson 28, including the level shifter between pins 20/21 and SDA/SCL.
+    Support the shifter on the table and leave its wires slack as you tilt.
+    A black jumper from the bottom − rail to the top − rail, by
     column 41, now brings GND to the top − rail, as the screen's wiring did
     in Lesson 29. The passive buzzer goes through its 220 Ω resistor, as in
     Lesson 27. You will pick up the breadboard to play, so use wires long
@@ -166,7 +168,7 @@ seconds, where 10° took under two.
 
 | What you see | Try this |
 |---|---|
-| *NO SENSOR* scrolls | Check the GY-521: SDA to pin 20, SCL to pin 21, VCC's red jumper from the top + rail to i9 and the red wire from the Mega's 5V to the top + rail by column 3, GND's black jumpers from f10 to e10 and a10 to the − rail, and its pins well down in row j. |
+| *NO SENSOR* scrolls | Check the level shifter: pin 20 → B1 / A1 → SDA, pin 21 → B2 / A2 → SCL, HV to 5 V and LV to 3.3 V; then the GY-521: VCC's red jumper from the top + rail to i9 and the red wire from the Mega's 5V to the top + rail by column 3, GND's black jumpers from f10 to e10 and a10 to the − rail, and its pins well down in row j. |
 | The ball rolls uphill | The GY-521's arrows point differently on your module. In `rollBall ()`, change `- (tilt.pitch () - flatPitch)` to `+`, or the `+` before `(tilt.roll () - flatRoll)` to `-`, whichever axis is wrong. If you changed a sign in Lesson 28, change the same axis here. |
 | The ball drifts on a level board | Hold it level when you click: that tilt is what counts as flat. |
 | Turning the knob does nothing | Check the wires from pins 18 and 19 in e19 and e18, above CLK and DT, and the encoder's jumpers from e15 to the top − rail by column 18 and e16 to the top + rail by column 19, and the black jumper from the bottom − rail to the top − rail, by column 41 that grounds the top − rail. |
@@ -233,8 +235,9 @@ What the numbers tell you:
   is, so the average is always half of 5 V. The meter shows how much of the
   time the pin is on; the pitch is how often it switches, and that the
   meter can't see at all. Your ear is the other way round.
-- **SDA on a tilted board** reads between 3.5 and 4 V, flat or tipped, just
-  as it did in Lesson 28, which showed why that is safe for a 3.3 V chip.
+- **SDA on a tilted board** reads about 3.3 V, flat or tipped, just
+  as it did in Lesson 28. The level shifter keeps the Mega’s 5 V pull-ups
+  separate from the sensor’s 3.3 V signals.
   Hold the probes in their holes and tip the breadboard gently, or have
   someone tip it for you: the number doesn't follow. Tilt Lesson 26's
   joystick and its two knobs' voltages follow the stick; tilt the

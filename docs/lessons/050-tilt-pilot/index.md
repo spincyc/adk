@@ -5,9 +5,10 @@ time: 60 minutes
 level: 3
 parts:
   - "Both boards: the Mega, breadboard and LoRa modem from Lesson 49, with the modem's divider and wires"
-  - "Board A: the GY-521 accelerometer from Lesson 28 (or the QMI8658 board some kits have in its place)"
+  - "Board A: the GY-521 accelerometer and BSS138 I2C level shifter from Lesson 28 (or the QMI8658 board some kits have in its place)"
   - "Board B: the LED matrix from Lesson 25, and the servo and power module from Lesson 49"
-  - "5 female-to-male and 5 jumper wires"
+  - "Board A in total: 11 female-to-male and 8 jumper wires"
+  - "Board B in total: 11 female-to-male and 6 jumper wires"
 ideas:
   - Streaming a value that keeps changing
   - How often a value can cross the air
@@ -79,8 +80,10 @@ from **GND** to the bottom − rail, both by column 42, and its servo.
 ### Board A: the tilt
 
 The keypad and the screen come off. The GY-521 stands in row j, columns 9
-to 16, just as in Lesson 28, and pins 20 and 21 reach it over the top
-header. The Mega's own **L** LED, beside pin 13, shows whether Board B can
+to 16, just as in Lesson 28. Its I2C level shifter also returns: pin 20
+reaches B1 / A1 reaches SDA, and pin 21 reaches B2 / A2 reaches SCL. HV
+takes 5 V and LV takes 3.3 V. The modem now shares that 3.3 V feed through
+column 5: the Mega’s 3.3V goes to a5, LV to b5 and modem VDD to e5. The Mega's own **L** LED, beside pin 13, shows whether Board B can
 be heard, so it needs no wire.
 
 ??? info "A board marked ICM40607&QMI8658 instead"
@@ -88,7 +91,7 @@ be heard, so it needs no wire.
     QMI8658 chip, and ADK reads it through the same calls, in the same
     units. Its pins are in a different order, so go by the names printed
     on them: **5V** to the top + rail, **GND** to the − rail, **SCL** to
-    pin 21 and **SDA** to pin 20, and leave **RST**, **SWDIO**, **3V3** and
+    the level shifter’s A2 and **SDA** to A1, and leave **RST**, **SWDIO**, **3V3** and
     **SWCLK** unconnected. Its axes
     should follow its printed arrows as the GY-521's do, but no one has
     checked that on a real board yet: if the ball rolls the wrong way, see
@@ -195,7 +198,7 @@ you can see it step.
 | What you see | Try this |
 |---|---|
 | The matrix keeps scrolling `CALLING A` | Is Board A's sketch running? Check each modem as in Lesson 49, and that the sketches are **Tilt** on Board A and **Ball** on Board B. |
-| The matrix scrolls `NO SENSOR` | Board A can't find its accelerometer. Check the GY-521 as in Lesson 28: VCC from the top + rail by column 7, GND to the − rail, SCL to pin 21 and SDA to pin 20. |
+| The matrix scrolls `NO SENSOR` | Board A can't find its accelerometer. Check the GY-521 as in Lesson 28: VCC from the top + rail by column 7, GND to the − rail, SCL to the shifter’s A2 and SDA to A1, pin 21 to B2 and pin 20 to B1, HV to 5 V and LV to 3.3 V. |
 | The ball rolls uphill | The GY-521's arrows point differently on your module, as Lesson 30 warned. In Board B's `rollBall ()`, change the `-` before `pitch` to `+`, or the `+` before `roll` to `-`, whichever way is wrong. |
 | The ball drifts with Board A flat | Your table isn't quite level, or your sensor reads a degree or two off. See *Make it yours*. |
 | The servo doesn't move | Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 42, then the servo's red wire in the bottom + rail by column 35, its brown in the bottom − rail by column 36 and pin 44's wire to its orange. |

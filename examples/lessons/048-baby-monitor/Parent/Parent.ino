@@ -1,7 +1,7 @@
-// Lesson 48: Baby Monitor, Board B, with the parent
+// Lesson 48: Room Monitor, Board B, with the parent
 // The matrix graphs the nursery's sound, a column every half second. The
-// screen says whether the nursery is quiet, lit and dry, and when the baby
-// last cried. A cry brings a soft chime; water on the floor, an alarm that
+// screen says whether the nursery is quiet, lit and dry, and when it was
+// last loud. A loud sound brings a chime; water on the sensor, an alarm that
 // POWER on the remote hushes; and a silent nursery, a beep, because no
 // news isn't good news.
 
@@ -21,7 +21,7 @@ adk::Every      step     {500};     // the graph moves on a column
 adk::Every      beat     {5000};    // a beep while the nursery is silent
 
 constexpr long perDot   = 25;     // how much more sound lights one more dot
-constexpr long cryLevel = 150;    // a sound this loud is a cry
+constexpr long loudLevel = 150;    // the threshold for a loud sound
 constexpr long wetAbove = 100;    // the water sensor reads less when dry
 constexpr long litAbove = 30;     // the light, in percent
 
@@ -29,8 +29,8 @@ constexpr adk::Note chime [] = {{adk::note::e5, 150}, {adk::note::c5, 300}};
 constexpr adk::Note alarm [] = {{adk::note::a5, 200}, {adk::note::e5, 200}};
 
 adk::Array<long, 8> bars    {};    // dots in each column, oldest first
-adk::DateTime       criedAt {};    // when the latest cry began
-bool                crying = false;
+adk::DateTime       loudAt {};    // when the latest loud sound began
+bool                loudNow = false;
 bool                hushed = false;
 
 void setup ()
@@ -54,7 +54,7 @@ void loop ()
         hushed = true;
     }
 
-    // Hushed until the floor is dry again, so the next leak rings anew.
+    // A received dry reading clears hush before a later wet reading.
     hushed = hushed && wet;
 
     if (wet && !hushed)
@@ -75,7 +75,7 @@ void loop ()
 }
 
 // Each half second: move the graph on a column, add the loudest sound the
-// nursery heard, and chime when a cry begins. With no news, the nursery
+// nursery heard, and chime when a loud sound begins. With no news, the nursery
 // counts as silent rather than as whatever it last said.
 void listen ()
 {
@@ -96,26 +96,26 @@ void listen ()
         }
     }
 
-    bool loud = level >= cryLevel;
+    bool loud = level >= loudLevel;
 
-    if (loud && !crying)
+    if (loud && !loudNow)
     {
-        criedAt = rtc.now ();
+        loudAt = rtc.now ();
         speaker.play (chime);
     }
 
-    crying = loud;
+    loudNow = loud;
 }
 
-// The top row: quiet or crying, lit or dark, dry or wet, or no news. The
-// bottom row: when the latest cry began, 00:00:00 until the first.
+// The top row: quiet or loud, lit or dark, dry or wet, or no news. The
+// bottom row: when the latest loud sound began, 00:00:00 until the first.
 void showNursery (bool wet)
 {
     lcd.at (0, 0);
 
     if (bridge.isConnected ())
     {
-        adk::print (lcd, crying ? "Crying " : "Quiet  ",
+        adk::print (lcd, loudNow ? "Loud   " : "Quiet  ",
                     bridge.value ("light") > litAbove ? "Lit  " : "Dark ",
                     wet ? "WET!" : "Dry ");
     }
@@ -124,9 +124,9 @@ void showNursery (bool wet)
         lcd.print ("No news!        ");
     }
 
-    auto at = criedAt;
+    auto at = loudAt;
 
-    adk::print (lcd.at (0, 1), "Cried   ", at.hour / 10, at.hour % 10, ':',
+    adk::print (lcd.at (0, 1), "Loud at ", at.hour / 10, at.hour % 10, ':',
                 at.minute / 10, at.minute % 10, ':',
                 at.second / 10, at.second % 10);
 }

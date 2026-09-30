@@ -118,8 +118,15 @@ The dialog includes the build's safety and keep/take-out instructions.
 Removing a part is described in words, without highlighting an unrelated
 part in the new drawing. **Back to lesson** or Escape returns to the article.
 Without JavaScript the complete article and step tables remain available;
-printing uses those tables and the complete drawings, with no dimmed steps
-or interactive controls.
+printing uses those tables, the complete drawings and enlarged connection
+details, with no dimmed steps or interactive controls. The printed details
+reuse the overview's SVG scene; their bounds and coordinate labels come
+from the circuit model. Cross-page PDF links point to the published site.
+
+The first section shows the result before the parts list. Its `closeup`
+marker frames the finished parts, including a screen outside the breadboard.
+The full wiring overview fits a phone initially; **Enlarge drawing** opens
+its scrollable detail, and **Build along** appears above it.
 
 The dialog's instructions, geometry and endpoints come from `circuit.py`
 through the same build hook as the static steps. Do not maintain a separate

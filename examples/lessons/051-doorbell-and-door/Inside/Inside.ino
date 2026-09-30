@@ -63,7 +63,7 @@ void loop ()
 
     if (swiped)
     {
-        checkCard (uint32_t (bridge.value ("card")));
+        checkCard (uint32_t (bridge.payload ("cards")));
     }
     else if (rang)
     {

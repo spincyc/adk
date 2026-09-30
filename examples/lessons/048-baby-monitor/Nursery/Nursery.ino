@@ -1,4 +1,4 @@
-// Lesson 48: Baby Monitor, Board A, in the nursery
+// Lesson 48: Room Monitor, Board A, in the nursery
 // Listens, feels for water and watches the light, and sends what it finds
 // across the bridge: the loudest sound in each half second, the water
 // sensor's reading every two seconds, and how bright the room is.
@@ -23,7 +23,8 @@ uint16_t loudest = 0;    // the loudest sound so far in this half second
 
 void setup ()
 {
-    adk::setup ();
+    Serial.begin (9600);
+    adk::setup (Serial);
 }
 
 void loop ()
@@ -33,7 +34,7 @@ void loop ()
     online.set (bridge.isConnected ());
 
     // A new level comes every 50 ms, ten in each half second, and only
-    // the loudest goes, so a short cry is never lost between messages.
+    // the loudest goes. A lost radio packet can still lose this peak.
     if (sound.measured ())
     {
         loudest = max (loudest, sound.level ());
@@ -41,6 +42,7 @@ void loop ()
 
     if (halfSecond.ticked ())
     {
+        adk::println (Serial, "Peak ", loudest);
         bridge.share ("sound", loudest);
         bridge.share ("light", light.read (0, 100));
         loudest = 0;
@@ -56,7 +58,9 @@ void loop ()
 
     if (settle.expired ())
     {
-        bridge.share ("water", water.read ());
+        int reading = water.read ();
+        adk::println (Serial, "Water ", reading);
+        bridge.share ("water", reading);
         waterPower.write (false);
     }
 }

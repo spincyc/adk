@@ -7,7 +7,8 @@ parts:
   - "Both boards: the Mega, breadboard and LoRa modem from Lesson 50, with the modem's divider and wires"
   - "Board A: the RC522 RFID reader with its card and fob, the tap sensor (37 in 1), a push button, the active buzzer, and a breadboard power module with its 9 V adapter (a second one: the kit has only one)"
   - "Board B: the servo and power module from Lesson 50, the LCD, knob and 220 Ω resistor from Lesson 13, a push button, and the passive buzzer with a 220 Ω resistor"
-  - "13 female-to-male (one is Board A's modem's new VDD wire) and 24 jumper wires, besides the modems' own"
+  - "Board A: 4 × 1 kΩ and 4 × 2 kΩ resistors for the reader, plus an S8050 transistor, 1 kΩ base resistor, 10 kΩ pull-down resistor and 1N4007 diode for the buzzer"
+  - "Board A: 15 jumper wires and 16 female-to-male wires in total, including the modem; Board B: 26 jumper wires and 6 female-to-male wires in total"
   - "A box with a lid, and some tape, if you want a real door"
 ideas:
   - Three events, each crossing as a count
@@ -43,8 +44,11 @@ What's new is how they fit together.
 
 **Three events, three counts.** A ring, a knock and a card are all events,
 so, as in Lesson 49, each crosses the air as a count that goes up:
-`rings`, `knocks` and `cards`. A card also brings its number, `card`, for
-Board B to look up. Board B keeps the last count it heard of each, and a
+`rings`, `knocks` and `cards`. A card carries its number as the payload of the `cards` event, for
+Board B to look up. `shareEvent ()` always sends the count and full card
+number together, so losing a packet cannot associate a new swipe with
+an old card. A newer event may replace a lost older one; this is not an
+ordered queue of every visitor. Board B keeps the last count it heard of each, and a
 count that has gone up is news.
 
 **The first count heard is not news.** Suppose Board B is switched on
@@ -86,8 +90,8 @@ back into a card's number with `uint32_t (...)`.
 |---|---|---|
 | Someone presses the doorbell | `rings` goes up | `Ding dong!`, a two-note chime |
 | Someone knocks | `knocks` goes up | `Knock knock!`, a tap on the chime |
-| A friend's card | `cards` goes up, with `card` | `Welcome home,` and the name, a tune, and the latch opens for 5 s |
-| A stranger's card | `cards` goes up, with `card` | `Unknown card`, a low note, and its number on the Serial Monitor |
+| A friend's card | `cards` goes up, carrying the card number | `Welcome home,` and the name, a tune, and the latch opens for 5 s |
+| A stranger's card | `cards` goes up, carrying the card number | `Unknown card`, a low note, and its number on the Serial Monitor |
 | The buzzer buzzes for a second | `door` becomes 1, the other way | The latch opens, for a friend's card or when you press the button: `Door open` |
 
 News stays on Board B's screen for ten seconds; then it says
@@ -119,13 +123,20 @@ from the Mega's 3.3V pin to the bottom + rail by column 29, right above it.
 
 ### Board A: the door
 
-The GY-521 comes off, and with it the red wire from the Mega's 5V to the top
-rails: nothing on Board A uses the top rails now. A power module of its own
+The GY-521 and its level shifter come off. Keep the Mega's 5V wire to
+the top rails: these power the active buzzer through its transistor
+driver. A power module of its own
 lies to the right of the board, its red wire from **3.3V** to the
 bottom + rail and its black wire from **GND** to the bottom − rail, both by
 column 42. The reader and the tap sensor lie below the Mega in their places
 from Lesson 36, wired the same way. The doorbell is the button on pin 22 at
-its home, and the active buzzer stands at its home in column 33.
+its home, and the active buzzer stands at its home in column 33, with
+the S8050 driver, base resistor, pull-down and diode from Lesson 47.
+
+The reader still takes 3.3 V from the Mega. Its four inputs, SDA, SCK,
+MOSI and RST, each need Lesson 34's 1 kΩ/2 kΩ divider in columns 18, 20,
+22 and 24. Do not connect those inputs directly to the Mega's 5 V signals.
+MISO goes directly back to pin 50.
 
 <!-- bench A -->
 
@@ -176,8 +187,9 @@ Read it from the top:
   outputs.
 - `setup ()` says on the Serial Monitor if the reader doesn't answer.
 - `loop ()` counts rings, knocks and cards, and shares the counts and the
-  latest card's number on every pass. `long (reader.uid ())` puts the
-  card's 32 bits in a `long`, as *The idea* explains.
+  latest card's number on every pass. `static_cast<int32_t> (reader.uid ())` interprets the card's 32 bits as signed, as *The idea* explains.
+  `shareEvent ("cards", cards, ...)` sends this number with its swipe
+  count as one record; `bridge.payload ("cards")` reads it inside.
 - A knock heard while the buzzer sounds is skipped: the buzzer shakes the
   board, and the tap sensor would hear it.
 - `bridge.changed ("door") && bridge.value ("door") == 1` is true once,
@@ -258,7 +270,7 @@ news.
     When Sam's card is held to the reader, Board A's modem sends:
 
     ```text
-    @cards=4 card=-1698898192
+    @cards=4:-1698898192
     ```
 
     Board B turns −1698898192 back into 0x9ABCDEF0, finds Sam, and
@@ -269,8 +281,7 @@ news.
     ```
 
     Five seconds later it sends `@door=0`, and every two seconds each board
-    repeats everything it shares: `@rings=2 knocks=5 cards=4
-    card=-1698898192`, so a lost message is soon made good. A repeat is no
+    repeats everything it shares: `@rings=2 knocks=5 cards=4:-1698898192`, so a lost message is soon made good. A repeat is no
     change, so it's never news.
 
     A card's number and a knock are easy to copy, and anyone nearby with a

@@ -10,7 +10,8 @@ parts:
   - Red, yellow and green LEDs
   - 3 × 220 Ω resistors (red, red, black, black, brown)
   - Active buzzer (the sealed one, often with a sticker on top)
-  - 13 jumper wires
+  - S8050 transistor, 1 kΩ resistor, 10 kΩ resistor and 1N4007 diode
+  - 17 jumper wires
 ideas:
   - Random numbers, and a random seed
   - Measuring time with a timer and a stopwatch
@@ -57,11 +58,11 @@ somebody presses.
 
 **The active buzzer.** It has a tiny oscillator circuit inside, so it makes
 its own tone, a shrill note a little over 2000 vibrations a second, whenever
-its pin is HIGH. The Mega only switches it on and off, just like an LED. Its
-maker rates it at up to 30 mA: more than an LED takes, and more than the
-20 mA a pin gives comfortably all day, but well under the 40 mA that is the
-most a Mega pin may ever give, and here it only sounds in short beeps. So it
-plugs straight in, with no resistor. In [Lesson 5](../005-melody-maker/index.md)
+it has power. It can need up to 30 mA, above the Mega pin’s recommended
+20 mA. A **transistor** acts as a switch: pin 12 supplies a small control
+current through a 1 kΩ resistor, and the S8050 switches the buzzer’s current
+from the 5 V rail to GND. A 10 kΩ resistor keeps it off while the Mega starts.
+A diode across the buzzer catches a voltage spike when it switches off. In [Lesson 5](../005-melody-maker/index.md)
 you'll meet its cousin, the passive buzzer, which can play any note but needs
 a resistor and more help from the Mega.
 
@@ -90,9 +91,8 @@ that, any press before the light is a false start.
 !!! warning "Unplug first"
     Unplug the USB cable before you change any wiring. Every LED needs its
     220 Ω resistor. Make sure you have the **active** buzzer, the sealed one:
-    the passive buzzer, plugged in here with no resistor, would take far more
-    current than a pin can give. The active buzzer stands across the middle
-    gap: its **+** leg, the longer one, with a **+** on its top, goes in f33,
+    use the transistor driver shown below, even for short beeps. The active
+    buzzer stands across the middle gap: its **+** leg, the longer one, with a **+** on its top, goes in f33,
     above the gap.
 
 <!-- bench -->
@@ -102,9 +102,24 @@ that, any press before the light is a false start.
 ??? info "The buzzer across the gap"
     The buzzer's legs are 0.3 inch apart, exactly as far as row f is from
     row e across the middle gap, so it stands across the gap like the
-    buttons do. Pin 12's wire reaches its **+** leg through the top half of
-    column 33, and its other leg reaches the − rail through the black wire
-    from a33.
+    buttons do. Its **+** leg takes 5 V through h33. Its other leg reaches
+    the transistor’s collector through a33. Pin 12 reaches a32, then the
+    1 kΩ resistor leads to the transistor’s base in column 30. Its holes
+    are close together: if its body cannot lie flat, stand it upright and
+    bend one lead back alongside it, keeping bare leads from touching.
+
+    Before inserting the transistor, check that its marking is **S8050**
+    and its own supplier’s pin diagram says **E–B–C**, left to right with
+    the marked flat face toward you and the legs down. The
+    [onsemi SS8050 drawing](https://www.onsemi.com/download/data-sheet/pdf/ss8050-d.pdf)
+    shows that order. Do not substitute the kit’s PN2222 by its shape.
+    Spread the legs into a29 (emitter), a30 (base), a31 (collector).
+    If the marking or order differs, get the correct pin diagram first.
+    The **1N4007** diode’s silver band goes toward column 36, which
+    connects to buzzer **+**; its unbanded end is in column 33. Check its
+    marking too: a band identifies the cathode, not the part’s rating.
+    The [Vishay 1N4007 datasheet](https://www.vishay.com/docs/88503/1n4001.pdf)
+    identifies the banded end and rates the diode for this use.
 
     To tell the two buzzers in the kit apart, look underneath. The active
     buzzer is sealed with black plastic, and usually has a paper sticker on
@@ -122,6 +137,12 @@ When you are done, these are the connections your circuit makes:
 Open **File → Examples → Adk → lessons → 003-reaction-duel**:
 
 <!-- sketch -->
+
+Try the game in two passes. First replace `random (2000, 5000)` in
+`getReady ()` with `3000`, and play alone using the red button. Follow the
+three states: start, wait, press at the signal. Deliberately press early once.
+Then put the random wait back and invite a second player. The extra player
+changes who wins; the three states stay the same.
 
 What's new:
 
@@ -180,7 +201,7 @@ are faster to a sound, try the first challenge below.
 | The yellow LED doesn't blink at the start | Turn it round: its long leg goes in b12. Check its resistor runs from g12, across the gap, to e12. |
 | A button never starts a round | Push it firmly into the board, all four legs in. Check its black wire goes from row a (a4 or a10) to the − rail. |
 | The loser's light flashes, not the winner's | The LED wires may be swapped: pin 26 goes to j6 (red, on the left), pin 28 to j18 (green, on the right). |
-| No beep | The buzzer may be the wrong way round: its **+** leg goes in f33, above the gap. Check the black wire from a33 to the − rail. |
+| No beep | The buzzer may be the wrong way round: its **+** leg goes in f33, above the gap. Check h33 reaches the top + rail, pin 12 reaches a32, and the S8050’s emitter reaches GND. Check its E–B–C order and the diode’s band at column 36. |
 | Only a faint click instead of a beep | That is the passive buzzer. Unplug the USB cable at once and swap it for the sealed, active one. |
 | The same wait every game | Make sure nothing is plugged into A7: the seed only changes if the pin is left floating. |
 
@@ -230,14 +251,14 @@ out whatever you put it across.
 A 200 ms beep is over before the meter settles, so change
 `buzzer.beep (200);` in `go ()` to `buzzer.beep (5000);` and upload again.
 Now at *Go* the buzzer sounds for five seconds, and the yellow light stays
-on until somebody presses, so start a round and don't press. Five seconds
-now and then is fine: 30 mA is well under the 40 mA a pin may ever give.
+on until somebody presses, so start a round and don’t press. The
+transistor carries the buzzer’s current throughout the beep.
 Put 200 back when you have finished.
 
 !!! question "Predict"
     The yellow LED keeps about 2 V for itself and leaves the other 3 V to its
-    resistor. The buzzer has no resistor. How much of the pin's 5 V do you
-    think it gets?
+    resistor. The buzzer takes its current through a transistor from the
+    5 V rail. Will it get most of that voltage, or only half?
 
 <!-- measure -->
 
@@ -246,11 +267,10 @@ What the numbers tell you:
 - **Across the yellow LED** is about 2 V, like the red LED in Lesson 1: the
   LED shares the pin's 5 V with its resistor, and the resistor sets the
   current.
-- **Across the buzzer** is nearly the whole 5 V, because nothing else in its
-  loop takes a share. It is made for 5 V, and its own circuit keeps its
-  current to 30 mA at most. That is more than an LED takes, and a pin gives
-  a little less than 5 V when it works that hard, so yours may read 4.5 V
-  or so.
+- **Across the buzzer** is nearly the whole 5 V, about 4.8 V: the
+  transistor takes only a small share when switched on. The buzzer’s
+  current comes from the rail; pin 12 supplies only the base’s few milliamps.
+  Supply voltage and the particular transistor affect the exact reading.
 - The number holds steady while you hear a note of over 2000 vibrations a
   second. The pin is simply on, like an LED's; the buzzer makes the
   vibration inside itself. The passive buzzer in

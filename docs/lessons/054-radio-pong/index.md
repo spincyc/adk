@@ -27,8 +27,8 @@ the ball flies up, off the top of your matrix, and a moment later drops
 in at the top of your friend's, in another room. They get their paddle
 under it and send it back. Miss, and your buzzer groans while theirs
 cheers, and both matrices scroll the score. Every hit makes the ball a
-little faster. With nobody at the other end, the top of your matrix is a
-wall, so you can practice alone.
+little faster. With nobody at the other end, Board A's top row is a wall, so you can
+practice alone on Board A. Board B waits for an incoming ball.
 
 ## The idea
 
@@ -43,15 +43,18 @@ matrix it is on. Each board keeps the ball in one of three states:
 | **Here** | The ball moves one dot every step, bouncing off the sides and your paddle | Leaving the top: the state is **There**. Getting past your paddle: a point to the other side, and you serve next. |
 | **There** | Only your paddle: the ball is on the other matrix | The ball coming back over the bridge: **Here** again. |
 
-At the start both boards are **Serving**, so either player may serve
-first.
+At the start only Board A is **Serving**; Board B is **There**, waiting.
+That fixed first server gives the game one ball even if both players click
+at once. After a miss, only the player who missed may serve.
 
 **Handing over with a count.** When the ball leaves the top of your
 matrix, your board shares three things about it: the column it crossed
 at, its **drift**, −1, 0 or 1 for which way it was going across, and its
 **pace**, the milliseconds between steps. And it adds one to a count
 called `ball`. The other board watches that count, and when it goes up,
-the ball is its own. The count is what matters: a ball can leave twice
+the ball is its own. The count and all three flight details travel in
+one `shareEvent ()` record, so a lost packet cannot attach old flight
+details to a new crossing. The count is what matters: a ball can leave twice
 from the same column, the same way, at the same pace, and then only the
 count is new. Lesson 53 counted its presses the same way.
 
@@ -65,11 +68,12 @@ they see it:
 
 **The score is two counts.** Each board counts its own misses and shares
 them. Your points are your friend's misses, and theirs are yours, so
-both boards always agree on the score without ever sending it.
+both boards calculate the same score once both counts have arrived.
 
 **One sketch, two boards.** Both boards run the same program. The only
-line that differs is the radio's: Board A is address 1, with 2 as its
-partner, and Board B is address 2, with 1. The two copies are in their
+line that differs is `firstServer`: true on Board A and false on Board B.
+That choice sets both the starting ball owner and the radio addresses: A
+is address 1 with partner 2; B is address 2 with partner 1. The two copies are in their
 own folders, **Ping** and **Pong**, so you don't have to change anything
 before uploading.
 
@@ -118,7 +122,7 @@ Open **File → Examples → Adk → lessons → 054-radio-pong → Ping** for B
 <!-- sketch A -->
 
 Board B's sketch, **lessons → 054-radio-pong → Pong**, is the same but for
-line 18, the radio's: `{Serial3, 2, {.partner = 1,`.
+`firstServer`, which is `false` on Board B.
 
 What's new:
 
@@ -126,12 +130,17 @@ What's new:
   the table above, as Lesson 24 named its alarm's.
 - `wentUp ()` is Lesson 51's. `wentUp ("ball", theirCrossings)` is true
   when the other board's count of crossings goes up: a ball is coming.
-  `theirCrossings` starts at −1, and the first count heard only says where
-  the other board has got to, so a board that has just started doesn't
-  catch a ball nobody sent. `theirMisses` works the same way for the
-  cheer. `catchBall ()` puts the ball on the top row, mirrored:
-  `7 - bridge.value ("column")` and `-bridge.value ("drift")`.
-- The five values after `bridge.share` are kept apart from the ball's own
+  `theirCrossings` starts at −1. `firstBall` also accepts a first positive
+  crossing count, because the startup zero may have been lost. For
+  `theirMisses`, a first count remains only a baseline for the cheer.
+  Reset both boards to start a new game; restarting one mid-rally can
+  replay an old crossing. `catchBall ()` unpacks and mirrors the flight.
+- `flight = pace * 32 + (drift + 1) * 8 + column` packs bounded whole
+  numbers, as Lesson 53 packed an IR command: column is 0–7, drift + 1
+  is 0–2, and pace is 100–250. `% 8` recovers the column, `/ 8 % 4 - 1`
+  the drift, and `/ 32` the pace. The flight travels with its crossing
+  count through `shareEvent ("ball", crossings, flight)`.
+- The shared flight and miss count are kept apart from the ball's own
   `x` and `y`. The ball moves every step, but `column`, `drift`, `pace`
   and the counts only change when something happens, and the bridge only
   sends what has changed. So nothing goes over the air while the ball is
@@ -172,8 +181,8 @@ What's new:
    charger, and put them in two rooms, or at least with their players
    back to back. Within a couple of seconds both **L** LEDs light.
 3. Hold the joystick with its pins pointing to your left, as in Lesson
-   27. The paddle sits along the bottom row with the ball on its middle.
-4. One of you clicks the stick. The ball flies up, off the top, and
+   27. Each paddle sits along the bottom row. Only Board A has the ball on it.
+4. Board A's player clicks the stick. The ball flies up, off the top, and
    drops in at the top of the other matrix with a little blip. Hit it
    back, and keep the rally going.
 5. Miss, and the buzzer groans; the other board cheers, and both scroll
@@ -198,9 +207,9 @@ again with its next check. That's the radio, not you.
 | The ball goes over, but never comes down on the other matrix | Wait two seconds for the bridge to send it again. If the other **L** LED is dark, that board has lost the link. |
 | The paddle moves the wrong way | Hold the joystick with its pins to your left. |
 | The picture is upside down or back to front | Turn the matrix, as Lesson 25 says, until the paddle is along the bottom. |
-| Two balls at once | You both served at the start. When one crosses over, the board it lands on drops its own, and there is one ball again. |
+| Two balls at once | Check `firstServer`: true only on Board A, false on Board B. Reset both boards after correcting it. |
 | The score looks wrong after a board was reset | Each board counts its own misses from when it started. Press both reset buttons together for a new game. |
-| The ball never comes back, and your board's **L** LED is dark | The other board was switched off with the ball on its side. Press your board's reset button. |
+| The ball never comes back, and your board's **L** LED is dark | The other board may have been switched off with the ball. Reset both boards for a new game. To practise alone, reset Board A: it is the first server. |
 | No sound | Check the buzzer's + leg is in f33, beside pin 10's wire in j33, and its 220 Ω from a33 to the − rail. |
 | The matrix shows junk | Check its wires, especially CLK on 48 and CS on 49. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
@@ -211,23 +220,25 @@ again with its next check. That's the radio, not you.
     ball crosses, Board A's modem sends one message:
 
     ```text
-    @ball=12 column=2 drift=1 pace=190
+    @ball=12:6098
     ```
 
-    and a miss sends another, `@misses=3`. That is the whole game on the
+    Here `6098 = 190 × 32 + (1 + 1) × 8 + 2`: pace, drift and column
+    together. A miss sends `@misses=3`. That is the whole game on the
     air: a few messages a rally, each in about a twentieth of a second.
     Sending the ball's place at every step instead would keep both modems
     busy, and two modems sending at once lose both messages.
 
-    When a message is lost, the bridge makes it good at its next check:
-    every two seconds each board sends everything it shares, and the
-    count of crossings is still new to the other board, so the ball comes
-    down late, but it comes.
+    Every two seconds each board repeats everything it shares. If a
+    handover was lost and a later repeat arrives, the complete crossing
+    is still new to the other board, so the ball comes down late. Repeats
+    improve the chance of delivery; the bridge does not acknowledge or
+    guarantee delivery. Persistent loss can stop a rally.
 
-    Two balls can only happen at the start, when both boards are serving.
-    Whichever ball crosses first takes the other board's place: its
-    `catchBall ()` sets `x` and `y` afresh, so that board's own ball is
-    simply gone.
+    Both players cannot serve at startup: Board B starts in `There` and
+    ignores its serve button until it has received and missed a ball.
+    Choosing one initial owner avoids two handovers crossing in flight
+    and leaving both boards with a ball. Reset both boards for a new game.
 
 ## Make it yours
 
@@ -239,8 +250,9 @@ again with its next check. That's the radio, not you.
 3. **Hear them hit.** Count your paddle's hits and share the count; when
    the other board's count goes up, play a soft tick, so you hear the
    ball being hit back before it arrives.
-4. **Spin.** If the paddle is moving when it hits the ball, add one to
-   the drift that way, so the ball goes off at a steeper angle.
+4. **Aim the bounce.** If the paddle is moving when it hits the ball,
+   set the drift to −1 or 1 in that direction. Keep it between −1 and 1:
+   those are the limits of the packed flight record.
 
 ## Measure it
 

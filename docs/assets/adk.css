@@ -60,6 +60,15 @@
 }
 
 @media screen {
+    .md-typeset .bench-bench.is-expanded {
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+    }
+
+    .md-typeset .bench-bench.is-expanded svg.pencil-drawing {
+        min-width: calc(var(--drawing-width, 0) * 1.15px);
+    }
+
     [data-md-color-scheme="slate"] {
         color-scheme: dark;
         --md-hue: 35;
@@ -430,6 +439,48 @@
     box-shadow: var(--adk-shadow);
 }
 
+/* The opening picture shows the outcome; the build below supplies the
+   wiring overview and details. It always fits, including on a phone. */
+.md-typeset .bench-opening svg.pencil-drawing {
+    width: auto;
+    max-width: 100%;
+    max-height: 320px;
+    margin-inline: auto;
+}
+
+.lesson-opening {
+    display: flow-root;
+}
+
+.md-typeset .lesson-opening > h2:first-child {
+    margin-top: 0;
+}
+
+@media print, screen and (min-width: 60em) {
+    .md-typeset .lesson-opening .bench-opening {
+        float: right;
+        width: 46%;
+        margin: 0 0 0.8rem 1.2rem;
+    }
+}
+
+.md-typeset :is(.bench-opening, .bench-detail) svg.pencil-drawing {
+    overflow: hidden;
+}
+
+.print-details {
+    display: none;
+}
+
+.workbench-point-label {
+    fill: #b93a22;
+    paint-order: stroke;
+    stroke: #fbfaf6;
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    font-weight: 700;
+}
+
 .md-typeset :is(.bench-figure, .meter) figcaption {
     max-width: none;
     margin: 0.5rem 0 0;
@@ -465,10 +516,6 @@
         min-width: calc(var(--drawing-width, 0) * 1.5px);
     }
 
-    :is(.lesson-body, .build) > .bench-bench svg.pencil-drawing {
-        min-width: calc(var(--drawing-width, 0) * 1.15px);
-    }
-
     /* The caption stays in view while the drawing scrolls, and says to
        swipe when there is more to see. */
     .md-typeset :is(.lesson-body, .build) > .bench-figure figcaption {
@@ -477,7 +524,8 @@
     }
 
     @supports (animation-timeline: scroll()) {
-        .md-typeset :is(.lesson-body, .build) > .bench-figure figcaption::before {
+        .md-typeset :is(.lesson-body, .build) > :is(.bench-closeup,
+                .bench-bench.is-expanded) figcaption::before {
             content: "⟷  Swipe sideways to see all of it";
             display: block;
             max-height: 0;
@@ -733,7 +781,9 @@
 }
 
 .md-typeset table.steps .places .place {
-    white-space: nowrap;
+    /* Hole names have no spaces; descriptions and leg notes need to wrap. */
+    max-width: 100%;
+    white-space: normal;
 }
 
 /* A short named place keeps a column's room, so a screen's sixteen pins
@@ -921,6 +971,7 @@
 }
 
 .build-launch,
+.drawing-zoom,
 .build-workbench button {
     min-height: 44px;
     padding: 10px 16px;
@@ -943,7 +994,8 @@
 }
 
 .build-workbench :is(button, summary):focus-visible,
-.build-launch:focus-visible {
+.build-launch:focus-visible,
+.drawing-zoom:focus-visible {
     outline: 3px solid var(--adk-red);
     outline-offset: 3px;
 }
@@ -1953,9 +2005,65 @@ body.building-along {
         line-height: 1.5;
     }
 
+    .md-typeset :is(p, ul, ol) {
+        margin-bottom: 0.8em;
+    }
+
     .md-content__inner {
         margin: 0;
         padding: 0;
+    }
+
+    /* Screen scroll areas cannot be operated on paper. Let their content
+       participate in pagination, and fit every table column to the sheet. */
+    .md-typeset__scrollwrap,
+    .md-typeset__table,
+    .md-typeset pre,
+    .md-typeset pre > code {
+        overflow: visible;
+    }
+
+    .md-typeset__scrollwrap {
+        margin-inline: 0;
+    }
+
+    .md-typeset__table {
+        display: block;
+        padding: 0;
+    }
+
+    .md-typeset table:not([class]) {
+        display: table;
+        width: 100%;
+        max-width: 100%;
+        overflow: visible;
+    }
+
+    .md-typeset table:not([class]) :is(th, td) {
+        min-width: 0;
+        overflow-wrap: normal;
+    }
+
+    /* A small code example may be a picture, such as the seven-segment
+       digit. Complete sketches can span sheets, with a useful first and
+       last fragment instead of a filename or closing brace on its own. */
+    .md-typeset .highlight:not(:has(> .filename)) {
+        break-inside: avoid;
+    }
+
+    .md-typeset .highlight > .filename {
+        break-after: avoid;
+    }
+
+    .md-typeset pre,
+    .md-typeset pre > code {
+        orphans: 4;
+        widows: 4;
+    }
+
+    .md-typeset p:has(+ ul),
+    .md-typeset p:has(+ ol) {
+        break-after: avoid;
     }
 
     .md-typeset h2 {
@@ -1971,26 +2079,28 @@ body.building-along {
 
     .bench-figure,
     .meter,
-    .md-typeset table,
     .md-typeset .admonition,
-    .md-typeset details,
     .lesson-kit,
     .md-typeset li {
         break-inside: avoid;
     }
 
-    /* A long build runs on over pages a step at a time, each stage's
-       heading kept with its first step. */
-    .md-typeset :is(details.stage, table.steps) {
+    /* Tables run on a row at a time, and long reference notes can share
+       the page above them. Keep their headings with the first content. */
+    .md-typeset :is(details, table) {
         break-inside: auto;
     }
 
-    .md-typeset details.stage > summary {
+    .md-typeset details > summary {
         break-after: avoid;
     }
 
-    .md-typeset table.steps tr {
+    .md-typeset table tr {
         break-inside: avoid;
+    }
+
+    .md-typeset table thead {
+        display: table-header-group;
     }
 
     /* A page printed partway through the build shows all of the drawing,
@@ -2021,6 +2131,38 @@ body.building-along {
         float: right;
         width: 46%;
         margin: 0 0 0.8rem 1.2rem;
+    }
+
+    .md-typeset .bench-opening svg.pencil-drawing {
+        max-height: 2in;
+    }
+
+    .print-details {
+        display: block;
+        text-align: center;
+        margin: 0.6rem 0;
+        break-inside: auto;
+    }
+
+    .md-typeset .print-details .bench-figure {
+        display: inline-block;
+        vertical-align: top;
+        width: min(100%, calc(var(--drawing-width, 435) * 1.1pt));
+        margin: 0.3rem;
+    }
+
+    .md-typeset .print-details figcaption {
+        margin: 0.3rem 0 0;
+        font-size: 8.5pt;
+        line-height: 1.3;
+    }
+
+    /* Three readings fit across Letter without forcing the last meter
+       onto a row of its own. Keep ordinary text at the same reading size. */
+    .md-typeset .meters {
+        grid-template-columns: repeat(auto-fit, 10.5rem);
+        gap: 0.4rem 0.8rem;
+        margin: 1rem 0;
     }
 
     /* A tall close-up is scaled down to fit beside the opening text, rather

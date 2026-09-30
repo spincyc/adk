@@ -181,6 +181,68 @@ class Resistor (Part):
         pencil.polyline (outline, width=0.8, closed=True, layer="top")
 
 
+class Diode (Part):
+    # The rectifier's band marks its cathode; unlike a resistor its ends
+    # must stay distinguishable in both the drawing and the build steps.
+    LENGTH = 18
+    standing = Resistor.standing
+    geometry = Resistor.geometry
+    shapes = Resistor.shapes
+    labels = Resistor.labels
+
+    def __init__ (self, anode, cathode):
+        self.a, self.b = anode, cathode
+        self.name = self.value = "1N4007 diode"
+
+    def legs (self):
+        return [("anode, unbanded end", self.a), ("cathode, banded end", self.b)]
+
+    def draw (self, pencil, bench):
+        a, b = bench.hole_xy (self.a), bench.hole_xy (self.b)
+        cx, cy = self.geometry (bench)
+        angle = math.degrees (math.atan2 (b[1] - a[1], b[0] - a[0]))
+        ux, uy = math.cos (math.radians (angle)), math.sin (math.radians (angle))
+        pencil.lead (a, (cx - ux * 9, cy - uy * 9))
+        pencil.lead ((cx + ux * 9, cy + uy * 9), b)
+        pencil.begin (cx, cy, angle)
+        pencil.tint (rounded (-9, -4.5, 18, 9, 2), "#353535")
+        pencil.rect (-9, -4.5, 18, 9, radius=2, width=0.8)
+        pencil.tint ([(4, -4.5), (6.5, -4.5), (6.5, 4.5), (4, 4.5)], "#d4d4cf")
+        pencil.end ()
+
+
+class Transistor (Part):
+    # TO-92 S8050, emitter/base/collector with the marked flat face toward
+    # the learner. Spread the three leads to adjacent breadboard columns.
+    name = "S8050 transistor"
+
+    def __init__ (self, emitter, base, collector):
+        self.holes = (emitter, base, collector)
+
+    def legs (self):
+        return list (zip (("E, emitter", "B, base", "C, collector"), self.holes))
+
+    def modes (self):
+        return [None, "output", None]
+
+    def shapes (self, bench):
+        x, y = bench.hole_xy (self.holes[1])
+        return [("rect", x - 10, y - 25, x + 10, y - 10)]
+
+    def labels (self, bench):
+        _, x0, y0, x1, y1 = self.shapes (bench)[0]
+        return [Label (self.name, spots_round ((x0, y0, x1, y1), self.name,
+                                               bench.label_size, "below"), ((x0 + x1) / 2, y1))]
+
+    def draw (self, pencil, bench):
+        x, y = bench.hole_xy (self.holes[1])
+        for index, hole in enumerate (self.holes):
+            pencil.lead (bench.hole_xy (hole), (x + (index - 1) * 5, y - 10))
+        pencil.tint (rounded (x - 10, y - 25, 20, 15, 4), "#353535")
+        pencil.rect (x - 10, y - 25, 20, 15, radius=4, width=0.8)
+        pencil.text (x, y - 14, "8050", size=5, kind="silk", color="#f4f1e8")
+
+
 class Led (Part):
     # A 5 mm LED seen from above, leaning back so its legs show: the lens
     # inside its flange, and the flange's flat on the short leg's side.

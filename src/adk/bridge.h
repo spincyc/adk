@@ -25,12 +25,21 @@ namespace adk {
         Bridge          (Link& out, Link& in);
 
         // Tell the other board a value. Call it as often as you like: only a
-        // change is sent. Up to eight names.
+        // change is sent. Up to eight names, shared with shareEvent ().
         void share (const char* name, long value);
 
+        // Send an event's sequence and payload together. Change the sequence
+        // for each event, even when its payload is the same. Only the latest
+        // pair is kept; this is not a queue or a delivery acknowledgement.
+        // Both numbers use the Mega's signed 32-bit long range.
+        void shareEvent (const char* name, long sequence, long payload);
+
         // The other board's latest value by that name, or 0 until one has
-        // arrived; and whether a new one arrived in this update.
+        // arrived. For an event, value () is its sequence and payload () is
+        // its payload; a scalar's payload is 0. changed () lasts one update
+        // when either number or its kind changes, or the name first arrives.
         long value   (const char* name) const;
+        long payload (const char* name) const;
         bool changed (const char* name) const;
 
         // Heard from the other board in the last five seconds.
@@ -47,6 +56,8 @@ namespace adk {
         {
             const char* name;
             long        value;
+            long        payload;
+            bool        event;
             bool        unsent;
         };
 
@@ -54,9 +65,12 @@ namespace adk {
         {
             char name [NameLength + 1];
             long value;
+            long payload;
+            bool event;
             bool fresh;
         };
 
+        void          keep (const char* name, long value, long payload, bool event);
         void          hear (const char* text);
         void          tell (Millis now);
         const Theirs* find (const char* name) const;

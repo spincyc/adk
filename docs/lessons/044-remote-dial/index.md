@@ -58,10 +58,10 @@ when two modems send at once, they drown each other out and neither is
 heard. While you turn the knob, Board A sends up to ten messages a
 second, which fills about half the time on the air. If Board B reported
 every step of the servo's glide at the same time, many messages each way
-would be lost. So Board B keeps quiet while its servo moves, and shares
-`at` only once the servo has stopped. The air is Board A's while you
-turn, and then Board B's for the one message that answers. A message
-lost anyway is made good by the next refresh, within two seconds.
+would be lost. So Board B shares a new `at` only once its servo has stopped. This leaves
+more airtime for Board A while you turn. Board B still repeats its previous
+`at` every two seconds as a heartbeat; this reduces traffic, rather than
+reserving the air. A lost message can be recovered by a later refresh.
 
 **What a servo knows.** An SG90 can't tell the Mega where its horn
 really points. `servo.angle ()` is the angle ADK last told it to go to,
@@ -176,8 +176,8 @@ What's new:
   needle did in Lesson 17; an angle that arrives during a glide starts a
   new one from wherever the horn has got to.
 - `if (!servo.isMoving ())` shares `at` only while the servo is still.
-  During a glide, `servo.angle ()` changes on every pass, but nothing is
-  shared, so nothing is sent.
+  During a glide, `servo.angle ()` changes on every pass, but no new
+  position is shared. Heartbeats still repeat the previous position.
 - `connected` is the yellow LED from Lesson 43, showing that Board A can
   be heard.
 
@@ -202,7 +202,7 @@ Now test your predictions. Turn the knob quickly from 90° to 180°. In
 half a second, Board A can send five or six messages, far fewer than the
 18 clicks, so the servo gets every third or fourth angle and glides from
 one to the next. The bottom row doesn't change while you turn, because
-Board B keeps quiet while the servo moves. About a third of a second
+Board B does not share intermediate positions while the servo moves. About a third of a second
 after the last angle arrives, the servo stops and the row says
 `Servo  180°`.
 

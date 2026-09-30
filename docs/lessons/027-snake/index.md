@@ -27,7 +27,8 @@ A three-dot snake slides across the matrix, and you steer it with the
 joystick towards a blinking dot of food. Every bite plays a little gulp,
 adds a dot to the snake and makes it faster. Hit a wall or your own tail
 and the game ends with a sad three-note tune and your score scrolling past.
-Click the stick to play again.
+Fill all 64 dots and a fanfare celebrates your win. Click the stick to play
+again.
 
 ## The idea
 
@@ -68,7 +69,7 @@ The game is in one of two states, **waiting** or **playing**:
 | State | On the matrix | What changes it |
 |---|---|---|
 | Waiting | A message scrolls: *SNAKE! CLICK TO PLAY*, or your last score | Clicking the stick starts a new game: a fanfare, and a snake of three dots heading right. |
-| Playing | The snake, and the blinking food | Hitting a wall or yourself: a crash tune, a pause, and back to waiting with *SCORE* and the number of bites. |
+| Playing | The snake, and the blinking food | Hitting a wall or yourself ends the game with a crash tune. Filling all 64 dots wins with a fanfare. After a pause, back to waiting with your score. |
 
 While playing, pushing the joystick turns the snake, but never straight back
 into its own neck: going right, it can turn up or down, not left. The food
@@ -139,8 +140,10 @@ What's new:
   `default:` catches every direction without a `case`, here `Center`.
 - `moveSnake ()` runs on every beat of `step`. It finds the new head, checks
   for the wall and for a bite, then takes the tail off unless the snake is
-  eating, and puts the new head on. A bite plays `gulp`, makes the beat
-  20 ms shorter and places new food.
+  eating, and puts the new head on. If the snake now fills the matrix,
+  `gameOver ()` celebrates the win: there is nowhere left to put food.
+  Otherwise, a bite plays `gulp`, makes the beat 20 ms shorter and places
+  new food.
 - `for (auto part : snake)` in `onSnake ()` walks the snake from head to
   tail, as range-`for` walks an `adk::Array`.
 - `placeFood ()` uses a `do` ... `while` loop. It is a `while` loop that
@@ -149,14 +152,16 @@ What's new:
   `randomSeed (analogRead (A7))` in `setup ()` makes the food land somewhere
   different every game, as in Lesson 3.
 - `blink` flips the food on and off by asking the matrix whether it is lit
-  with `matrix.get ()`.
+  with `matrix.get ()`. It checks `playing` again because `moveSnake ()`
+  may just have ended the game.
 - `newGame ()` lays out three dots, sets the beat back to 400 ms, and
   `step.restart ()` makes the first step come a whole beat after the click.
 - `adk::Text<24> message` is text you print into, up to 24 characters, the
   way `adk::print` prints to `Serial` or the screen. `gameOver ()` plays the
-  crash, leaves the dead snake on show for a moment, then empties `message`
-  with `clear ()` and prints the score into it. `message.c_str ()` hands the
-  text to `matrix.scroll ()`.
+  fanfare for a full matrix or the crash otherwise, and leaves the snake on
+  show for a moment. It then empties `message` with `clear ()` and prints
+  the score into it, with *YOU WIN!* in front after a win.
+  `message.c_str ()` hands the text to `matrix.scroll ()`.
 
 ## Upload it
 
@@ -167,6 +172,10 @@ right, with a dot of food blinking somewhere else. Steer to it. Each bite
 gulps, and the snake grows a dot and moves a little faster. Run into an
 edge, or into yourself, and three falling notes play; a moment later
 *SCORE* and your number of bites scroll by.
+
+If you fill the whole matrix, the fanfare plays and all 64 dots stay lit for
+a moment. Then *YOU WIN! SCORE 61* scrolls past: the three starting dots
+plus 61 bites fill the grid. Click to start again.
 
 You predicted the bites to top speed. From 400 ms down to 120 ms is 280 ms,
 and each bite takes 20 ms off, so it takes 280 ÷ 20 = 14 bites. After that

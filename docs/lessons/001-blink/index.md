@@ -140,8 +140,9 @@ nearly five times the resistance, only about a fifth of the current flows,
     every part the sketch declared: that each pin exists, and that no two
     parts share a pin. If something is wrong it stops and blinks the pin
     number on the Mega's own **L** LED, long flashes for tens and short
-    flashes for ones, so a wiring mistake in the code can never quietly drive
-    the wrong pin.
+    flashes for ones. It cannot see your wires: declaring pin 27 when the
+    LED is wired to pin 26 still passes these checks, because 27 exists and
+    is free. Check the pin numbers against your build too.
 
     `adk::wait (500)` pauses like Arduino's `delay (500)`, with one difference
     that matters from the next lesson on: while it waits, every part keeps

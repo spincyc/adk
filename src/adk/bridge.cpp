@@ -2,7 +2,6 @@
 
 #include "print.h"
 
-#include <stdlib.h>
 #include <string.h>
 
 namespace adk {
@@ -14,6 +13,50 @@ namespace adk {
         constexpr Millis  Silence = 5000;       // after which the other board is gone
         constexpr uint8_t Longest = 56;         // the shortest radio line, LoraLink's
         constexpr char    Mark    = '@';        // a bridge message, not stray text
+        constexpr long    Lowest  = -2147483647L - 1;
+        constexpr long    Highest = 2147483647L;
+
+        // The wire carries a Mega's signed 32-bit long, including its minimum.
+        // Bound each digit before multiplying, even on a host with wider longs.
+        bool readNumber (const char*& text, long& number)
+        {
+            bool negative = *text == '-';
+
+            if (negative || *text == '+')
+            {
+                ++text;
+            }
+
+            if (*text < '0' || *text > '9')
+            {
+                return false;
+            }
+
+            uint32_t magnitude = 0;
+            uint32_t limit     = negative ? 2147483648UL : 2147483647UL;
+
+            while (*text >= '0' && *text <= '9')
+            {
+                uint8_t digit = static_cast<uint8_t> (*text - '0');
+
+                if (magnitude > (limit - digit) / 10)
+                {
+                    return false;
+                }
+
+                magnitude = magnitude * 10 + digit;
+                ++text;
+            }
+
+            number = magnitude == 2147483648UL ? Lowest : static_cast<long> (magnitude);
+
+            if (negative && magnitude != 2147483648UL)
+            {
+                number = -number;
+            }
+
+            return true;
+        }
     }
 
     Bridge::Bridge (Link& radio)
@@ -39,21 +82,39 @@ namespace adk {
 
     void Bridge::share (const char* name, long value)
     {
+        keep (name, value, 0, false);
+    }
+
+    void Bridge::shareEvent (const char* name, long sequence, long payload)
+    {
+        keep (name, sequence, payload, true);
+    }
+
+    void Bridge::keep (const char* name, long value, long payload, bool event)
+    {
+        if (value < Lowest || value > Highest || payload < Lowest || payload > Highest)
+        {
+            return;
+        }
+
         for (uint8_t index = 0; index < mineCount_; ++index)
         {
             Mine& mine = mine_[index];
 
             if (strcmp (mine.name, name) == 0)
             {
-                mine.unsent = mine.unsent || mine.value != value;
-                mine.value  = value;
+                mine.unsent  = mine.unsent || mine.value != value || mine.payload != payload
+                               || mine.event != event;
+                mine.value   = value;
+                mine.payload = payload;
+                mine.event   = event;
                 return;
             }
         }
 
         if (mineCount_ < MaxValues && strlen (name) <= NameLength)
         {
-            mine_[mineCount_++] = {name, value, true};
+            mine_[mineCount_++] = {name, value, payload, event, true};
         }
     }
 
@@ -61,6 +122,12 @@ namespace adk {
     {
         const Theirs* theirs = find (name);
         return theirs ? theirs->value : 0;
+    }
+
+    long Bridge::payload (const char* name) const
+    {
+        const Theirs* theirs = find (name);
+        return theirs ? theirs->payload : 0;
     }
 
     bool Bridge::changed (const char* name) const
@@ -98,9 +165,9 @@ namespace adk {
         }
     }
 
-    // "angle=90 speed=3": each name, an equals sign and a whole number. A
-    // malformed pair ends the reading, as noise can't get past the radio's
-    // checksum, so it can only come from something that isn't a bridge.
+    // A token is a scalar, "angle=90", or an event, "key=3:7". Validate
+    // the whole token before changing either number. A malformed token ends
+    // the reading; earlier complete tokens remain valid.
     void Bridge::hear (const char* text)
     {
         while (*text != '\0')
@@ -110,18 +177,41 @@ namespace adk {
                 ++text;
             }
 
-            const char* equals = strchr (text, '=');
-            char*       end    = nullptr;
+            const char* equals = text;
 
-            if (!equals)
+            while (*equals != '\0' && *equals != ' ' && *equals != '=')
+            {
+                ++equals;
+            }
+
+            if (*equals != '=')
             {
                 return;
             }
 
-            size_t length = static_cast<size_t> (equals - text);
-            long   number = strtol (equals + 1, &end, 10);
+            size_t      length  = static_cast<size_t> (equals - text);
+            const char* end     = equals + 1;
+            long        number  = 0;
+            long        payload = 0;
 
-            if (length == 0 || length > NameLength || end == equals + 1)
+            if (length == 0 || length > NameLength || !readNumber (end, number))
+            {
+                return;
+            }
+
+            bool event = *end == ':';
+
+            if (event)
+            {
+                ++end;
+
+                if (!readNumber (end, payload))
+                {
+                    return;
+                }
+            }
+
+            if (*end != '\0' && *end != ' ')
             {
                 return;
             }
@@ -147,8 +237,11 @@ namespace adk {
 
             if (theirs)
             {
-                theirs->fresh = theirs->fresh || theirs->value != number;
-                theirs->value = number;
+                theirs->fresh   = theirs->fresh || theirs->value != number
+                                  || theirs->payload != payload || theirs->event != event;
+                theirs->value   = number;
+                theirs->payload = payload;
+                theirs->event   = event;
             }
 
             text = end;
@@ -179,11 +272,18 @@ namespace adk {
         for (uint8_t index = 0; index < mineCount_; ++index)
         {
             const Mine& mine = mine_[index];
-            Text<24>    pair;
+            Text<32>    pair;
 
             print (pair, mine.name, '=', mine.value);
 
-            if (!mine.unsent || line.size () + 1 + pair.size () > Longest)
+            if (mine.event)
+            {
+                print (pair, ':', mine.payload);
+            }
+
+            size_t separator = line.size () > 1 ? 1 : 0;
+
+            if (!mine.unsent || line.size () + separator + pair.size () > Longest)
             {
                 continue;
             }

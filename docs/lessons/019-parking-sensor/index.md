@@ -10,7 +10,10 @@ parts:
   - Green, yellow and red LEDs
   - 3 × 220 Ω resistors (red, red, black, black, brown)
   - Active buzzer
-  - 10 jumper wires
+  - S8050 NPN transistor
+  - 1 kΩ and 10 kΩ resistors
+  - 1N4007 diode
+  - 14 jumper wires
   - 4 female-to-male jumper wires
 ideas:
   - Measuring distance with an echo
@@ -74,6 +77,8 @@ zones, and makes the gap between beeps 10 ms for every centimeter:
     VCC, Trig, Echo and GND on its front: match them by name. VCC wired to
     GND the wrong way round can ruin the sensor. The buzzer's longer leg,
     under the **+** on its top, goes in the top half, in f33.
+    Match the transistor's flat face to the drawing, and put the diode's
+    banded end in column 36.
 
 <!-- bench -->
 
@@ -88,6 +93,12 @@ zones, and makes the gap between beeps 10 ms for every centimeter:
     share the Mega's GND. The sensor's VCC wire takes a 5V pin of its own,
     the inner one at the top of the long header, just along from Trig and
     Echo: it needs only about 15 mA.
+
+The buzzer uses the transistor driver from Lesson 3. Its power comes from
+the top + rail, and the transistor switches its path to GND. Pin 12 only
+supplies a few milliamps through the 1 kΩ resistor to tell the transistor
+when to switch. The 10 kΩ resistor holds it off while the Mega starts, and
+the diode catches the buzzer's kick when it switches off.
 
 When you are done, these are the connections your circuit makes:
 
@@ -145,7 +156,7 @@ every 30 × 10 = 300 ms, a little over three a second.
 | Stuck on red with a steady tone | Something is very close to the sensor, or it sees the edge of the breadboard or a wire: point it clear of the desk. |
 | The lights jump about | Soft things like a jumper or a curtain soak up sound, and slanted ones bounce it away. Try a book held square to the sensor. |
 | Closer than about 2 cm it goes green | That is a real limit: the sensor can't hear an echo that comes back while it is still sending. |
-| The lights work but there's no sound | Check the buzzer's + leg is in f33, under pin 12's wire in j33, and that the black wire from a33 reaches the bottom − rail. |
+| The lights work but there's no sound | Check the buzzer's + leg is in f33, with 5 V from the top + rail into h33. Pin 12 goes to a32, then through 1 kΩ to the transistor's base in column 30. Check the transistor's flat face and all three legs against the drawing: its emitter reaches GND and its collector reaches the buzzer's − leg. |
 | An LED never lights | Its long leg goes in row b of its resistor's column (b6, b12 or b18), its short leg just to the right, where the black wire from row a runs to the − rail. |
 | The **L** LED blinks long and short flashes | ADK found a problem with a pin. See [Faults](../../library/index.md#faults). |
 
@@ -204,9 +215,9 @@ What the numbers tell you:
   give or take a centimeter. If it does, the distance the Mega worked out
   from echo times, at 58 µs for every centimeter, agrees with the ruler.
 - **Across the buzzer**, with the book 5 cm away, the buzzer sounds without
-  a break and the meter settles at about 4.5 V. That is a little under
-  5 V because the buzzer takes up to 30 mA, and a pin's voltage sags a
-  little under that much load. Move the book back to 30 cm and the number
+  a break and the meter settles at about 4.8 V. The transistor keeps a small
+  part of the 5 V supply while it carries the buzzer's current; that current
+  comes from the supply rail, not pin 12. Move the book back to 30 cm and the number
   jumps about and never settles: the pin is on for 50 ms in every 300, too
   quick for the meter to follow.
 - **Across the green LED** is about 3.2 V, where the red LED in Lesson 1

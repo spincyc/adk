@@ -28,6 +28,27 @@ the other board has gone.
 
 <!-- api bridge.h Bridge -->
 
+Use `share ("angle", angle)` for a value such as a dial position. For an
+event such as a key press, use `shareEvent ("key", sequence, key)`, changing
+`sequence` for every press, even when the same key is pressed again. The
+receiver checks `changed ("key")`, reads the sequence with `value ("key")`
+and the key with `payload ("key")`. The sequence and payload travel together
+as one token, such as `@key=3:7`; a receiver accepts both or neither.
+An identical repeat or refresh does not set `changed ()` again.
+
+A bridge keeps only the latest value or event for each of its eight names.
+While the radio is busy, several events can become one, and a lost packet
+can leave a gap in the sequence. The two-second refresh repeats the latest
+pair; it cannot recover the events before it. There is no acknowledgement
+or ordering guarantee. Use this for projects that can tolerate missed
+events, not for counting every press or confirming that an action happened.
+
+Both numbers use the Mega's signed 32-bit range, −2147483648 to 2147483647.
+For a 32-bit RFID ID, send `static_cast<int32_t> (reader.uid ())` as the
+payload. Recover its bits with
+`static_cast<uint32_t> (bridge.payload ("card"))`.
+A scalar's payload is zero, as is an unknown name's payload.
+
 <!-- api link.h Link -->
 
 ## LoRa, over a serial port

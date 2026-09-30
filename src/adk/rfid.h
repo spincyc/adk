@@ -21,11 +21,11 @@ namespace adk {
     //   RST     the reset pin
     //   3.3V    3.3V
     //
-    // The Mega drives SDA, SCK, MOSI and RST at 5 V, above what the MFRC522
-    // is rated to accept. It is widely done with this module and works in
-    // practice, but for a build that has to last, put a level shifter, or a
-    // 1 kohm resistor from the Mega and 2 kohm to GND, in each of those four
-    // lines. MISO needs none: 3.3 V is already a high for the Mega.
+    // Protect SDA, SCK, MOSI and RST from the Mega's 5 V signals. Each of
+    // those four lines needs a divider: 1 kohm from the Mega's pin to the
+    // reader's pin, and 2 kohm from the reader's pin to GND. A suitable level
+    // shifter also works. Never connect these inputs directly to the Mega.
+    // MISO needs no divider: 3.3 V is already a high for the Mega.
     //
     // The reader looks for a tag every 100 ms. It reads 4-byte UIDs, which is
     // what MIFARE Classic tags like the kit's have. A tag with a 7-byte UID

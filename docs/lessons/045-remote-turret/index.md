@@ -8,7 +8,7 @@ parts:
   - "Board A: joystick module and 5 female-to-male jumper wires"
   - "Board B: Lesson 44's Board B, with its power module, LoRa modem and servo"
   - "Board B: HC-SR04 ultrasonic sensor, L293D motor driver chip, and the DC motor with its fan blade"
-  - "Board B: 4 female-to-male jumper wires and 10 jumper wires"
+  - "Board B: 4 female-to-male jumper wires, two more to lengthen the motor's leads, and 10 jumper wires"
   - "Sticky tape or putty, and a strip of card, for the turret"
 ideas:
   - A project split between two boards
@@ -169,8 +169,10 @@ bottom one: the power module feeds only the bottom rails.
     horn, then stick the sensor on it facing forwards and the motor
     beside it, its fan blade pointing the same way and clear of
     everything when it spins. Stand the servo on the desk with putty or
-    tape so it can't walk, and leave the wires slack, so the turret can
-    swing from end to end without tugging on them.
+    tape so it can't walk. Lengthen each motor lead with a female-to-male
+    jumper wire: push the lead into its female end, then put the male end
+    in j14 for the black lead or j17 for the red one. Leave the wires slack,
+    so the turret can swing from end to end without tugging on them.
 
 When you are done, these are the connections each board makes. Board A:
 
@@ -272,7 +274,7 @@ the middle, and the fan stays still until you press the stick.
 | The turret never moves | Hold the joystick with its pins pointing left, as in Lesson 26: held another way round, pushing left or right may do nothing. Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 42, then the servo's plug: brown to the bottom − rail by column 36, red to the bottom + rail by column 35, orange to pin 44. |
 | The turret turns the wrong way | Change `aim - stick.x () / 25` to `aim + stick.x () / 25` in **Joystick**. |
 | The turret creeps when nobody touches the stick | The stick moved while the sketch started. Press Board A's reset button with your hands off the stick. |
-| `Fan on`, but the fan never spins | Is anything closer than 15 cm, or the sensor facing a wire or the desk? Then check the L293D as in Lesson 20: pin 4 in j19, 8 in j13, 9 in j18, the motor's leads in j14 and j17, j12 to the top + rail by column 12, a15 to the − rail and a19 to the bottom + rail by column 19. |
+| `Fan on`, but the fan never spins | Is anything closer than 15 cm, or the sensor facing a wire or the desk? Then check the L293D as in Lesson 20: pin 4 in j19, 9 in j13, 8 in j18, the motor's leads in j14 and j17, j12 to the top + rail by column 12, a15 to the − rail and a19 to the bottom + rail by column 19. |
 | The bottom row always says `Nothing ahead`, or jumps about | Check the sensor: Trig to 14, Echo to 15, VCC to the inner 5V pin, GND to the top − rail by column 5, and that it faces forwards, clear of the fan. |
 | The Mega resets, or the servo jerks, when the fan starts | Check the servo's red wire and a19 go to the bottom + rail, fed by the power module, never the Mega's 5V. |
 | The **L** LED blinks long and short flashes, and nothing works | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |

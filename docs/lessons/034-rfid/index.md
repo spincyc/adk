@@ -10,7 +10,8 @@ parts:
   - RGB LED
   - 3 × 220 Ω resistors (red, red, black, black, brown)
   - 7 female-to-male jumper wires
-  - 4 jumper wires
+  - 4 × 1 kΩ and 4 × 2 kΩ resistors
+  - 8 jumper wires
 ideas:
   - Radio tags that need no battery
   - A card's unique number, in hexadecimal
@@ -71,24 +72,22 @@ Mega's 3.3V pin.
     header beside 5V. Never connect it to 5V: 5 V would damage the reader's
     chip.
 
-    Its signal wires still get 5 V from the Mega, which is more than the
-    chip is rated for. This course wires it that way, as most people do, and
-    the reader usually copes. For a build that has to last, protect those
-    wires as the box below and the [safety page](../../safety.md) explain.
+    The four signals going from the Mega to the reader also need their
+    **1 kΩ / 2 kΩ dividers**, included in this build. Never bypass them.
 
 <!-- bench -->
 
 <!-- steps -->
 
 ??? info "The reader's 5 V signals"
-    The reader takes 3.3 V power, but the Mega drives its SDA, SCK, MOSI and
-    RST wires at 5 V, which is more than its chip is rated for. Almost
-    everyone wires these readers this way and they work, but for a build that
-    has to last years, put a level shifter in those four wires, or a 1 kΩ
-    resistor from the Mega's pin and a 2 kΩ resistor from the reader's pin to
-    GND. The reader's MISO needs nothing: 3.3 V is already a high for the
-    Mega. The [safety page](../../safety.md) lists this with the kit's other
-    parts that need care.
+    Each divider has 1 kΩ from the Mega’s output to the reader’s signal
+    and 2 kΩ from that signal to GND. Together they turn 5 V into about
+    3.3 V: 5 × 2 / (1 + 2). SDA, SCK, MOSI and RST use columns 18, 20,
+    22 and 24. The reader’s MISO output goes directly to Mega pin 50.
+    The [NXP MFRC522 datasheet](https://www.nxp.com/docs/en/data-sheet/MFRC522.pdf)
+    limits signal voltage to the reader’s supply plus 0.5 V; a direct
+    5 V connection exceeds that limit. These dividers are part of every
+    reader build in the course.
 
 When you are done, these are the connections your circuit makes:
 
@@ -133,10 +132,16 @@ What's new:
 4. Now the card makes the LED flash green. The fob still gets red: put its
    number in place of `0x9ABCDEF0` if it's yours too.
 
-Now try your prediction: lift the card slowly away from the reader, hold it
-still, and find the furthest it still makes a flash. You predicted 1, 5 or
-50 cm. Most readers manage a few centimeters, far nearer 5 than 50: further
-away, the card's coil can't catch enough of the field to power its chip.
+Now try your prediction. Lay a ruler beside the reader and hold the card
+parallel to the reader, 1 cm away. A flash means it was read. Take the card well away
+for a second, then try again at 2 cm, 3 cm and so on. Remove it between
+every try: a card that stays in range is read once, so its fading light
+doesn't tell you whether it is still in range.
+
+You predicted 1, 5 or 50 cm. Find the furthest distance that gives a fresh
+flash on repeated tries. Most readers manage a few centimeters, far nearer
+5 than 50: further away, the card's coil can't catch enough of the field to
+power its chip.
 
 ## If it doesn't work
 
@@ -179,11 +184,10 @@ away, the card's coil can't catch enough of the field to power its chip.
 
 This part is for anyone with a multimeter; there isn't one in the kit. Set
 it up as in [Lesson 1](../001-blink/index.md#measure-it): DC volts (**V⎓**),
-the black lead in **COM**, the red one in **V**. The reader's seven wires
-run straight from the Mega's pins to the reader, with no breadboard hole on
-the way, so there's nowhere on this build to touch a probe to its 3.3 V
-supply, or to the 5 V on its signal wires. The RGB LED's pins, though, show
-what the sketch does with each card.
+the black lead in **COM**, the red one in **V**. The reader’s four input
+signals now pass through dividers on the breadboard. Their voltage changes
+quickly during messages, so a meter averages the bits. Here, measure the
+RGB LED’s pins to see what the sketch does with each card.
 
 !!! question "Predict"
     `quietBlue` is `{0, 0, 40}`: blue at 40 out of 255. What will the meter

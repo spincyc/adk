@@ -1,5 +1,6 @@
 # Each board keeps its LoRa modem at its bridge home from Lesson 49, on
-# Serial3 (pins 14 and 15), VDD on the Mega's 3.3V pin.
+# Serial3 (pins 14 and 15), powered by the Mega's 3.3V pin. Board A
+# shares that supply with the level shifter through column 5.
 #
 # Board A, the tilt: the keypad and the screen come out. The GY-521 stands
 # at its home on pins 20 and 21, as in Lesson 28. The Mega's built-in L
@@ -9,7 +10,7 @@ tilt = Bench ("Board A: a GY-521 accelerometer on the I2C pins 20 and 21, and th
 
 tilt.home_gy521 ()
 
-tilt.home_modem ()
+tilt.home_modem (power="e5")
 
 # Board B, the ball: the RGB LED and its resistors come out; the power
 # module, the servo and the modem stay. The LED matrix lies at its home,

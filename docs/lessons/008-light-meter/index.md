@@ -87,7 +87,8 @@ itself, so a single odd reading barely nudges the bar.
     | 220 Ω | red, red, black, black, brown | one per LED, to set its current |
 
     Swap them and nothing breaks, but a 10 kΩ on an LED makes it very dim,
-    and a 220 Ω in the divider squashes all the readings up near 1023.
+    and a 220 Ω in the divider pulls the readings down toward 0: it takes
+    a much smaller share of the 5 V than the intended 10 kΩ.
 
 The steps begin by taking out everything from Lesson 7 except the Mega's
 GND and 5V wires. Each LED of the bar is built the way you built Lesson 7's,

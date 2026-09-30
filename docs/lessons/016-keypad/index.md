@@ -36,8 +36,8 @@ in Lesson 2, so a column that reads low must be joined to row 1 by a pressed
 key. Then it lets row 1 go and tries row 2, and so on. Pressing **5** joins
 row 2 (pin 23) to column 2 (pin 27), so pin 27 reads low only while row 2 is
 being pulled low. ADK scans all four rows every time `adk::update ()` runs,
-thousands of times a second, so no press is ever missed, and it debounces each
-key the way it debounces a button.
+thousands of times a second here. It follows one held key at a time and
+debounces changes the way it debounces a button.
 
 Four rows and four columns make 4 × 4 = 16 keys on 4 + 4 = 8 wires. A 10 × 10
 grid would give 100 keys on just 20 wires, which is how a computer keyboard
@@ -50,8 +50,8 @@ then **2** makes 4, then 4 × 10 + 2 = 42. Type **7** next and it's
 42 × 10 + 7 = 427.
 
 !!! question "Predict"
-    What do you think happens if you hold down **1** and, while it's still
-    down, press **2**? Does the screen show 1, 2, 12 or 21, and when? Write
+    Hold down **1**, then hold **2** as well. Keep **2** down while you
+    release **1**. Does the screen show 1, 2, 12 or 21, and when? Write
     down your guess and try it once the calculator works.
 
 ## Build it
@@ -122,9 +122,15 @@ Upload the sketch; the screen starts blank. Type **12**, press **C**, type
 **D**, **2**, **#** for `= 3`, and **5**, **D**, **0**, **#** to see what the
 calculator thinks of dividing by zero.
 
-Then test your prediction: hold **1** and press **2**. Only **1** appears at
-first; **2** appears when you let **1** go. So the screen ends up showing 12,
-but the 2 only arrives when you let go: the keypad counts one key at a time.
+Then test your prediction: hold **1**, then hold **2** as well. Only **1**
+appears at first. Keep **2** down and release **1**: after the debounce,
+**2** appears. The screen ends up showing 12 because the keypad follows one
+held key at a time. Release **2** before continuing.
+
+Predict what will happen if you release **2** first. Then clear with **\***,
+hold **1**, tap and release **2**, and release **1**. Only 1 appears. The
+second key was already up when the first let go: ADK doesn't save those
+overlapping taps for later.
 
 ## If it doesn't work
 
@@ -146,8 +152,8 @@ but the 2 only arrives when you let go: the keypad counts one key at a time.
     Each scan finds the first key held down, or keeps the one already held.
     A new key must read the same for 20 ms before it counts, which is the
     debounce. When it does, `key ()` returns it for exactly one update. That's
-    why holding **1** and pressing **2** gives the **2** only when **1** is let
-    go: until then, **1** is still the key held.
+    why holding both **1** and **2**, then releasing **1** first, gives the
+    **2** only after **1** is let go: until then, **1** is still the key held.
 
 ## Make it yours
 

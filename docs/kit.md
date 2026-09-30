@@ -5,7 +5,7 @@ Kit**. A few lessons also use modules from the **Elegoo 37 in 1 Sensor
 Modules Kit**; those are marked below and in each lesson's parts list. The
 drawings show that kit's black boards, as its first two versions have them;
 the blue boards of its third version carry the same parts, so check each
-one's printed pin names.
+one’s printed pin names. Lesson 28 also needs the I2C level shifter below.
 
 ## The parts
 
@@ -13,9 +13,10 @@ one's printed pin names.
 |---|---|---|
 | Arduino Mega 2560 and USB cable | The computer that runs your sketches | [Lesson 1](lessons/001-blink/index.md) |
 | 830-hole breadboard and jumper wires | Joins parts without soldering | Lesson 1 |
-| LEDs, and 220 Ω, 1 kΩ and 10 kΩ resistors | Light, and the current that makes it | Lesson 1 |
+| LEDs, and 220 Ω, 1 kΩ, 2 kΩ and 10 kΩ resistors | Light, and the current that makes it | Lesson 1 |
 | Push buttons | Input you can press | Lesson 2 |
 | Active buzzer | Beeps when switched on | Lesson 3 |
+| S8050 transistor and 1N4007 diode | Switch and protect the active buzzer | Lesson 3 |
 | RGB LED | Any color, mixed from red, green and blue | Lesson 4 |
 | Passive buzzer | Plays any note you ask for | Lesson 5 |
 | 10 kΩ potentiometer | A knob that sets a voltage | Lesson 7 |
@@ -43,6 +44,24 @@ one's printed pin names.
 | Sound sensor module and water level sensor | How loud it is, and water on the floor | Lesson 48 |
 | IR LED module (KY-005) *(37 in 1)* | Sends a remote's codes | Lesson 53 |
 
+## I2C level shifter
+
+Lessons 28, 30 and 50 need one **BSS138 bidirectional I2C level shifter**,
+an extra part beyond the two kits. The drawings use the
+[Adafruit 757 board](https://www.adafruit.com/product/757): LV and A1–A4 on
+one side, HV and B1–B4 on the other, with 10 kΩ pull-ups fitted. Use one
+with its headers already soldered, or have someone experienced fit them
+before the lesson. The GY-521 regulator accepts 5 V power, but its I2C
+signals need 3.3 V; the shifter keeps the Mega’s 5 V pull-ups separate.
+A plain unidirectional buffer or resistor divider cannot replace this
+bidirectional I2C interface.
+
+Check the transistor and diode in your kit too. Lesson 3 requires an S8050
+with the documented E–B–C pin order and a diode marked 1N4007. Kit versions
+and transistor packages vary; the similarly shaped PN2222 is not a drop-in
+replacement. If those parts are missing, obtain the specified parts before
+building the active-buzzer lessons.
+
 ## Add-on radios
 
 Lessons 37 to 55 use radios that aren't in either kit. Each costs a few
@@ -59,7 +78,7 @@ dollars; the LoRa radios come in pairs, because it takes two to talk.
 Their pins work at 3.3 V, so the Mega's signals reach them through a
 resistor divider, 1 kΩ and 2 kΩ; [Safety](safety.md#radios) explains why, and
 which bands you may send on where you live. If your resistor card has no
-2 kΩ, two 1 kΩ resistors in a row make one. Heltec's shop lists the
+2 kΩ, obtain the specified 2 kΩ resistors so their holes match the drawings. Heltec's shop lists the
 863–928 MHz boards by band: 902–928 MHz for the Americas and Australia,
 863–870 MHz for Europe. Its 433 MHz and 470–510 MHz boards won't do.
 
@@ -102,7 +121,7 @@ circuit from an earlier lesson can often stay on the breadboard.
 | RGB LED: red, green, blue | 5, 6, 7 |
 | Passive buzzer (through 220 Ω) | 10 |
 | Relay | 11 |
-| Active buzzer | 12 |
+| Active buzzer, through its S8050 driver | 12 |
 | Ultrasonic sensor: trigger, echo | 14, 15 |
 | DHT11 | 16 |
 | 18B20 temperature | 17 |
@@ -146,9 +165,11 @@ nearer the Mega. Support the overhang at breadboard height.
 | Button on 22, 23, 24, 25 | Across the gap in columns 2–4, 8–10, 14–16, 20–22: the pin into row j of the left column, a black jumper from row a of the right column to the − rail |
 | LED on 26, 27, 28, 29, 30 | Columns 6, 12, 18, 24, 30: the pin into j, 220 Ω from g across the gap to e, the long leg in b, the short leg in b of the next column, a black jumper from a of that column to the − rail |
 | Dimmable LED on 3 | Column 38, laid out like the other LEDs. Lesson 8's optional automatic lamp uses column 34 to leave room beside the photoresistor |
-| Buzzer, active on 12 or passive on 10 | Across the gap in column 33: + in f, − in e, the pin into j; a black jumper (active) or the 220 Ω resistor (passive) from a to the − rail. With the four-digit display's wiring (Lesson 12), column 35, clear of its wires and resistors |
+| Passive buzzer on 10 | Across the gap in column 33: + in f33, − in e33, pin 10 into j33, 220 Ω from a33 to the bottom − rail |
+| Active buzzer on 12 | + in f33, − in e33; h33 to the top + rail. S8050 emitter a29, base a30, collector a31; b29 to bottom −29, b31 to a33. Pin 12 into a32, 1 kΩ c32–c30, 10 kΩ b30–bottom −30. Diode unbanded c33, banded c36; a36 to j33. In Lesson 12 the buzzer moves to column 35, its supply and collector wires follow, and the diode becomes c35–c38 with a38 to j35 |
+| RFID input dividers | For SDA, SCK, MOSI and RST use columns 18, 20, 22 and 24: Mega pin into j, 1 kΩ g–e, reader signal into c, 2 kΩ from a to bottom − rail at 18, 21, 22 and 25 respectively. MISO goes directly to pin 50 |
 | RGB LED on 5, 6, 7 | Legs in a6 (red), a9 (green), a11 (blue), the common leg in the bottom − rail by column 7; a 220 Ω resistor across the gap above each colored leg, and its pin into j. In Lesson 42 the button covers e9, so the green resistor stands in g13–e13, pin 6 enters j13, and a jumper joins b13 to b9 |
-| Light or temperature divider, on A1 or A2 | Column 37: a red jumper from j37 to the top + rail by column 37, the sensor across the gap in f37 and e37, the pin into c37, and 10 kΩ from a37 to the bottom − rail by column 37 |
+| Light or temperature divider, on A1 or A2 | Column 37: a red jumper from j37 to the top + rail by column 37, the sensor across the gap in f37 and e37, the pin into c37, and 10 kΩ from a37 to the bottom − rail by column 37. Lesson 46 uses both: the thermistor moves to f33–e33, A2 into a33, 10 kΩ from c33 to c36, and a jumper from a36 to the bottom − rail by column 36 |
 | Knob on A0 | Across the middle gap: its outer legs in f39 and f41, with jumpers from j39 to the top − rail and j41 to the top + rail; its wiper in d40, A0 into a40 |
 | The screen (LCD, contrast knob, backlight) | Knob across the middle gap (outer legs in f43 and f45, wiper in d44), the LCD's pins in a47–a62, wired by `bench.screen ()` |
 | Rotary encoder | Standing in row a, columns 15–19, its knob toward you: GND, +, SW, DT and CLK from the left; jumpers from e15 to the top − rail by column 18 and e16 to the top + rail by column 19, and 22, 19 and 18 into e17, e18 and e19 |
@@ -186,11 +207,12 @@ outer pair feed the rails.
 | Joystick | Below the Mega, under pins A3 and A4 | The power header's 5V and the inner GND pin |
 | Clock module | Above the board on its side, clear of the screen's wires | GND into the top − rail by column 13, VCC into the top + rail by column 15 |
 | Stepper driver | Below the Mega, under pins A8–A11 | From the power module's bottom rails: + into the bottom + rail by column 5, − into the bottom − rail by column 6 |
+| I2C level shifter | Above the gap between Mega and breadboard, supported on a nonconductive surface; A pins toward the Mega, B pins toward the board. Pin 20 to B1, A1 to h12; pin 21 to B2, A2 to g11 | HV from top +5; Mega 3.3V into a5 and b5 to LV; GND into bottom −12 |
 | RFID reader | Below the Mega, facing up | The Mega's 3.3V and the inner GND pin |
 | Tap sensor | Below the Mega, at its left end | The power header's 5V and GND |
 | Relay | Above the board, its pins toward the Mega and its screw terminals away from it | The inner 5V and GND pins |
 | LoRa modems (RYLR896) | Below the board past the button, aerials down: B (on Serial3) under columns 24–29, A (on Serial1) under columns 33–39. Each modem's TXD comes up into row f (26 for B, 35 for A), beside its RX pin in row j; its TX pin goes into j28 or j37, then 1 kΩ across the gap from g to e and 2 kΩ from a down to the − rail, and its RXD into row c of that column | The power module's bottom rails at 3.3 V: B's VDD into the bottom + rail by column 29 and GND into the bottom − rail by column 24, A's into the bottom + rail by column 39 and the bottom − rail by column 33 |
-| A bridge board's LoRa modem (Lessons 43–54) | Where Lesson 40's modem B lies: below the board under columns 24–29, aerial down, its TXD into f26 beside the RX pin in j26; the TX pin into j28, 1 kΩ from g28 to e28, 2 kΩ from a28 to the bottom − rail by column 28, and its RXD into c28 | Its VDD straight from the Mega's 3.3V pin, GND into the bottom − rail by column 24. Beside the RFID reader, which shares that pin, its VDD comes from the power module's bottom rails at 3.3 V, into the bottom + rail by column 29 (Lesson 51) |
+| A bridge board's LoRa modem (Lessons 43–54) | Where Lesson 40's modem B lies: below the board under columns 24–29, aerial down, its TXD into f26 beside the RX pin in j26; the TX pin into j28, 1 kΩ from g28 to e28, 2 kΩ from a28 to the bottom − rail by column 28, and its RXD into c28 | Its VDD from the Mega’s 3.3V pin, GND into the bottom − rail by column 24. Beside the I2C level shifter in Lesson 50, VDD uses e5 to share the 3.3 V feed at a5. Beside the RFID reader, which shares that pin, its VDD comes from the power module's bottom rails at 3.3 V, into the bottom + rail by column 29 (Lesson 51) |
 | IR LED (KY-005) | Below the board under columns 36–38, its LED pointing away: pin 3 into j38, 220 Ω from g38 across the gap to e38, S into a38 | − into the bottom − rail by column 36; its middle pin empty |
 | LoRa modules (E32) | The same places and dividers as the modems, aerials down. AUX comes up into f25 beside pin 43 (B) or f34 beside pin 41 (A); M0 and M1 into f and g of column 30 beside pin 42 (B) or column 39 beside pin 40 (A) | The power module's bottom rails at 5 V: B's VCC into the bottom + rail by column 24 and GND into the bottom − rail by column 23, A's into the bottom + rail by column 33 and the bottom − rail by column 31 |
 | Meshtastic board | In LoRa modem A's place below the board, its pins up: its 48 into f35, its 47 into c37 through A's divider, its GND into the bottom − rail by column 41 | Its own USB-C cable |

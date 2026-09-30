@@ -194,10 +194,14 @@ settles over the next minute; its temperature moves much less.
 3. **Highs and lows.** Keep the lowest and highest thermistor temperatures
    since the Mega started, in two `float` variables, and show them on the
    bottom row instead.
-4. **Tune your thermistor.** If it disagrees with the 18B20 by more in your
-   warm hand than at room temperature, its beta may not be 3950. Try
+4. **Tune your thermistor.** First let the thermistor and 18B20 settle side
+   by side at room temperature. Then cup both sensors together in your
+   hands and wait until both readings stop changing. They must be at the
+   same temperature: warming only the thermistor, or comparing while one
+   still catches up, would give a false correction. If their disagreement
+   grows when both are warm, the thermistor's beta may not be 3950. Try
    `adk::Thermistor thermistor {A2, 3435};` and other values from 3000 to
-   4300, and keep the one that agrees best.
+   4300, repeating both comparisons, and keep the one that agrees best.
 
 ## Measure it
 
