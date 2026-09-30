@@ -71,9 +71,10 @@ namespace adk {
         uint8_t signal   () const;
         bool    isStereo () const;
 
-        // From 0, silent, to 15. It starts at 8. Only a change is sent to
-        // the radio, so it too can be called from every pass of loop ().
-        void    setVolume (uint8_t volume);
+        // From 0, silent, to 15. It starts at 8. A volume below 0 is 0,
+        // and one above 15 is 15. Only a change is sent to the radio, so it
+        // too can be called from every pass of loop ().
+        void    setVolume (int volume);
         uint8_t volume    () const;
 
         // The station's name, eight characters, and its text, up to 64:

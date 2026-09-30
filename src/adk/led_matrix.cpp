@@ -111,13 +111,13 @@ namespace adk {
         show (rows.data ());
     }
 
-    void LedMatrix::brightness (uint8_t level)
+    void LedMatrix::brightness (int level)
     {
-        level = level < MaxLevel ? level : MaxLevel;
+        auto kept = static_cast<uint8_t> (constrain (level, 0, MaxLevel));
 
-        if (level != level_)
+        if (kept != level_)
         {
-            level_        = level;
+            level_        = kept;
             levelChanged_ = true;
         }
     }

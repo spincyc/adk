@@ -32,8 +32,9 @@ namespace adk {
         Servo (Pin pin, uint16_t minMicros = 544, uint16_t maxMicros = 2400);
 
         // Turn at once, as fast as the servo can: to an angle from 0 to 180,
-        // or to a pulse width kept between minMicros and maxMicros.
-        void write             (uint8_t degrees);
+        // or to a pulse width kept between minMicros and maxMicros. An angle
+        // below 0 turns to 0, and one above 180 to 180.
+        void write             (int degrees);
         void writeMicroseconds (uint16_t micros);
 
         // Glide to an angle at a steady pace, arriving after duration, while
@@ -41,7 +42,7 @@ namespace adk {
         // gliding to changes nothing, so moveTo () can be called from every
         // pass of loop (). A limp servo goes straight there instead, because
         // it may have been pushed anywhere.
-        void moveTo (uint8_t degrees, Millis duration);
+        void moveTo (int degrees, Millis duration);
 
         // Whether a glide is under way, and the angle being sent now: during
         // a glide, how far it has got.
@@ -54,7 +55,7 @@ namespace adk {
         void stop   () override;
 
       private:
-        uint16_t pulseFor (uint8_t degrees) const;
+        uint16_t pulseFor (int degrees) const;
         void     pulse    (uint16_t micros);
 
         StartTime move_;

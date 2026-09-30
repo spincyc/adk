@@ -77,13 +77,13 @@ namespace adk {
         address_ = 0;
     }
 
-    void Lcd::setCursor (uint8_t column, uint8_t row)
+    void Lcd::setCursor (int column, int row)
     {
-        column = column < Columns ? column : Columns - 1;
-        moveTo (static_cast<uint8_t> ((row == 0 ? 0 : SecondRow) + column));
+        auto kept = static_cast<uint8_t> (constrain (column, 0, Columns - 1));
+        moveTo (static_cast<uint8_t> ((row <= 0 ? 0 : SecondRow) + kept));
     }
 
-    Lcd& Lcd::at (uint8_t column, uint8_t row)
+    Lcd& Lcd::at (int column, int row)
     {
         setCursor (column, row);
         return *this;

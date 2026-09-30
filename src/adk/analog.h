@@ -24,12 +24,13 @@ namespace adk {
     };
 
     // A pulse-width-modulated output: 0 is always low, 255 always high, and
-    // values between switch fast enough to dim an LED or slow a motor.
+    // values between switch fast enough to dim an LED or slow a motor. A
+    // duty below 0 is 0, and one above 255 is 255.
     struct PwmOutput : Object
     {
         PwmOutput (Pin pin);
 
-        void    write (uint8_t duty);
+        void    write (int duty);
         uint8_t duty  () const;
         Pin     pin   () const;
 

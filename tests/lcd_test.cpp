@@ -183,6 +183,23 @@ TEST (lcdSetCursorAddressesEachRowAndClamps)
     CHECK (sent (0) == "<C3><80><CF>");
 }
 
+// A column worked out as column - 1 can fall off the left end; it stays at
+// the nearest column, rather than wrapping round to the right.
+TEST (lcdCursorOffTheScreenGoesToTheNearestPlace)
+{
+    adk::Lcd lcd {Rs, Enable, 9, 10, 11, 12};
+
+    adk::setup ();
+    listen ();
+
+    lcd.setCursor (-1, 0);
+    lcd.setCursor (-3, -1);
+    lcd.setCursor (256 + 2, 1);
+    lcd.at (-1, 1);
+
+    CHECK (sent (0) == "<80><80><CF><C0>");
+}
+
 TEST (lcdNewlineMovesToTheOtherRow)
 {
     adk::Lcd lcd {Rs, Enable, 9, 10, 11, 12};

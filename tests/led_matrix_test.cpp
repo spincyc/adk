@@ -223,6 +223,15 @@ TEST (matrixBrightnessIsSentOnceAndLimited)
     matrix.brightness (0);
     adk::update (2);
     CHECK (sent () == "0A00");
+
+    // Past either end stays there, rather than wrapping round.
+    matrix.brightness (-1);
+    adk::update (3);
+    CHECK (sent () == "");
+
+    matrix.brightness (256 + 3);
+    adk::update (4);
+    CHECK (sent () == "0A0F");
 }
 
 TEST (matrixScrollsOneColumnEachStep)

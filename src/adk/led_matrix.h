@@ -36,8 +36,9 @@ namespace adk {
         void show (const uint8_t rows [8]);
         void show (const Array<uint8_t, 8>& rows);
 
-        // 0 is dim, not off, and 15 is brightest.
-        void brightness (uint8_t level);
+        // 0 is dim, not off, and 15 is brightest. A level below 0 is 0, and
+        // one above 15 is 15.
+        void brightness (int level);
 
         // Scroll text in from the right edge until it has left the left
         // edge, one column every step. The text is not copied, so it must

@@ -75,7 +75,7 @@ namespace adk {
         ICR5   = Period;
     }
 
-    void Servo::write (uint8_t degrees)
+    void Servo::write (int degrees)
     {
         writeMicroseconds (pulseFor (degrees));
     }
@@ -95,7 +95,7 @@ namespace adk {
         pulse (micros);
     }
 
-    void Servo::moveTo (uint8_t degrees, Millis duration)
+    void Servo::moveTo (int degrees, Millis duration)
     {
         uint16_t target = pulseFor (degrees);
 
@@ -182,16 +182,12 @@ namespace adk {
         pulsing_ = false;
     }
 
-    uint16_t Servo::pulseFor (uint8_t degrees) const
+    uint16_t Servo::pulseFor (int degrees) const
     {
         uint32_t range = static_cast<uint16_t> (maxMicros_ - minMicros_);
+        uint32_t angle = static_cast<uint32_t> (constrain (degrees, 0, 180));
 
-        if (degrees > 180)
-        {
-            degrees = 180;
-        }
-
-        return static_cast<uint16_t> (minMicros_ + (degrees * range + 90) / 180);
+        return static_cast<uint16_t> (minMicros_ + (angle * range + 90) / 180);
     }
 
     void Servo::pulse (uint16_t micros)

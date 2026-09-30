@@ -282,6 +282,14 @@ TEST (fmRadioSetsTheVolumeAndStopFallsSilent)
     radio.setVolume (40);
     CHECK (radio.volume () == 15);
 
+    // Turning down past silent stays silent rather than wrapping round.
+    radio.setVolume (0);
+    radio.setVolume (radio.volume () - 1);
+    CHECK (radio.volume () == 0);
+    CHECK ((chip.registers[0x05] & 0x0F) == 0);
+    radio.setVolume (256 + 3);
+    CHECK (radio.volume () == 15);
+
     adk::stop ();
     CHECK (!(chip.registers[0x02] & Unmute));
 

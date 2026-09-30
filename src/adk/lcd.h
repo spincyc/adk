@@ -34,11 +34,13 @@ namespace adk {
 
         void clear     ();
         void home      ();
-        void setCursor (uint8_t column, uint8_t row);
+        // Columns run 0-15 and rows 0-1. A place off the screen goes to the
+        // nearest one on it: column -1 is 0, and column 20 is 15.
+        void setCursor (int column, int row);
 
         // Move the cursor and hand the screen back, so printing can follow:
         // adk::print (lcd.at (0, 1), "Temp ", celsius, " C");
-        Lcd& at (uint8_t column, uint8_t row);
+        Lcd& at (int column, int row);
 
         // Draw character 0-7 from eight rows of five dots, bit 4 the leftmost
         // dot. Show it with write (slot); slot 0 needs write (uint8_t (0)),

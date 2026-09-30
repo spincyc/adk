@@ -225,6 +225,21 @@ TEST (waitKeepsObjectsUpdating)
     CHECK (led.isOn ());
 }
 
+TEST (pwmDutyBeyondEitherEndStopsThere)
+{
+    adk::PwmOutput dimmer {5};
+
+    adk::setup ();
+
+    dimmer.write (10 - 20);
+    CHECK (arduino::pin (5).pwm == 0);
+    CHECK (dimmer.duty () == 0);
+
+    dimmer.write (300);
+    CHECK (arduino::pin (5).pwm == 255);
+    CHECK (dimmer.duty () == 255);
+}
+
 TEST (stopPutsEveryObjectInItsSafeState)
 {
     adk::Led       led    {13};

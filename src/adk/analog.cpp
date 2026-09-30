@@ -45,10 +45,10 @@ namespace adk {
         write (0);
     }
 
-    void PwmOutput::write (uint8_t duty)
+    void PwmOutput::write (int duty)
     {
-        analogWrite (pin_, duty);
-        duty_ = duty;
+        duty_ = static_cast<uint8_t> (constrain (duty, 0, 255));
+        analogWrite (pin_, duty_);
     }
 
     uint8_t PwmOutput::duty () const

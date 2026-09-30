@@ -54,6 +54,35 @@ TEST (servoPulseWidthFollowsTheAngle)
     CHECK (servo.angle () == 180);
 }
 
+// A sketch's arithmetic can go past either end, as write (90 - 100) does.
+// Neither end wraps round to the other.
+TEST (servoAnglesBeyondEitherEndStopThere)
+{
+    adk::Servo servo {44};
+
+    adk::setup ();
+
+    servo.write (90 - 100);
+    CHECK (OCR5C == 1088);
+    CHECK (servo.angle () == 0);
+
+    servo.write (-300);
+    CHECK (OCR5C == 1088);
+
+    servo.write (300);
+    CHECK (OCR5C == 4800);
+    CHECK (servo.angle () == 180);
+
+    servo.moveTo (-1, 0);
+    CHECK (OCR5C == 1088);
+
+    servo.moveTo (256 + 10, 100);
+    adk::update (0);
+    adk::update (100);
+    CHECK (OCR5C == 4800);
+    CHECK (servo.angle () == 180);
+}
+
 TEST (servoPulseWidthsAreKeptWithinItsRange)
 {
     adk::Servo servo {45, 1000, 2000};
