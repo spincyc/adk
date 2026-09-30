@@ -18,9 +18,11 @@ namespace adk {
         Pin  pin    () const;
 
         // Flash on and off, a whole period per flash, until on (), off (),
-        // toggle () or set () takes over. Asking again for the same blink
-        // changes nothing, so blink () can be called from every pass of
-        // loop (); a new period starts afresh.
+        // toggle () or set () takes over. The LED is lit for the first half
+        // of each period, and keeps to the beat as an Every does, so it
+        // stays in step with an Every of the same period. Asking again for
+        // the same blink changes nothing, so blink () can be called from
+        // every pass of loop (); a new period starts afresh.
         void blink (Millis period);
 
       protected:

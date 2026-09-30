@@ -23,6 +23,14 @@ namespace adk {
         // start becomes now and this is 0.
         Millis elapsed (Millis now);
 
+        // Whether a whole period has passed since the start: a beat, as an
+        // Every ticks. The start then moves on by one period, so the beat
+        // keeps time however late the update that notices it, except after
+        // a gap of two periods or more, which it never tries to catch up
+        // on: it starts again from now. While it waits for an update, the
+        // start becomes now and no period has passed.
+        bool beat (Millis now, Millis period);
+
       private:
         Millis start_;
         bool   waiting_;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "object.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -23,9 +23,8 @@ namespace adk {
         void update (Millis now) override;
 
       private:
-        Millis period_;
-        Millis last_;
-        bool   ticked_;
-        bool   starting_;
+        StartTime beat_;
+        Millis    period_;
+        bool      ticked_;
     };
 }

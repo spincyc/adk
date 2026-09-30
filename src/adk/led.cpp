@@ -57,12 +57,21 @@ namespace adk {
         light_.set (true);
     }
 
+    // Each flash starts on the beat and lasts half the period, the odd
+    // millisecond of an odd period included.
     void Led::update (Millis now)
     {
-        if (period_ != 0 && flash_.elapsed (now) >= period_ / 2)
+        if (period_ == 0)
         {
-            flash_.restart (now);
-            light_.set (!light_.isOn ());
+            return;
+        }
+
+        flash_.beat (now, period_);
+        bool lit = flash_.elapsed (now) < (period_ + 1) / 2;
+
+        if (lit != light_.isOn ())
+        {
+            light_.set (lit);
         }
     }
 

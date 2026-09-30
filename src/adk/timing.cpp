@@ -29,6 +29,25 @@ namespace adk {
         return now - start_;
     }
 
+    bool StartTime::beat (Millis now, Millis period)
+    {
+        if (waiting_)
+        {
+            restart (now);
+            return false;
+        }
+
+        Millis gone = now - start_;
+
+        if (gone < period)
+        {
+            return false;
+        }
+
+        start_ = (gone - period >= period) ? now : start_ + period;
+        return true;
+    }
+
     uint16_t interpolate (uint16_t from, uint16_t to, Millis elapsed, Millis length)
     {
         if (elapsed >= length)

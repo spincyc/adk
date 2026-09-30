@@ -3,10 +3,9 @@
 namespace adk {
 
     Every::Every (Millis period)
-        : period_   (period)
-        , last_     (0)
-        , ticked_   (false)
-        , starting_ (true)
+        : beat_   ()
+        , period_ (period)
+        , ticked_ (false)
     {
     }
 
@@ -18,7 +17,7 @@ namespace adk {
     // A beat already reported stays reported until the next update.
     void Every::restart ()
     {
-        starting_ = true;
+        beat_.restart ();
     }
 
     void Every::period (Millis period)
@@ -31,23 +30,9 @@ namespace adk {
         return period_;
     }
 
+    // The first beat comes one period after the first update.
     void Every::update (Millis now)
     {
-        ticked_ = false;
-
-        // The first beat comes one period after the first update.
-        if (starting_)
-        {
-            last_     = now;
-            starting_ = false;
-            return;
-        }
-
-        if (now - last_ >= period_)
-        {
-            // Keep to the beat, but never try to catch up on missed ones.
-            last_   = (now - last_ >= 2 * period_) ? now : last_ + period_;
-            ticked_ = true;
-        }
+        ticked_ = beat_.beat (now, period_);
     }
 }
