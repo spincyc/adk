@@ -1,20 +1,10 @@
-// Lesson 56: Close the Loop
-// A red LED on pin 26 blinks when its return path reaches GND.
-
-#include <Adk.h>
-
-adk::Led led {26};
+// E01: the LED runs from USB 5 V through its resistor to GND.
+// No sketch or signal pin is needed for this steady circuit.
 
 void setup ()
 {
-    adk::setup ();
 }
 
 void loop ()
 {
-    led.on ();
-    adk::wait (500);
-
-    led.off ();
-    adk::wait (500);
 }

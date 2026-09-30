@@ -1,6 +1,6 @@
 ---
 lesson: 56
-promise: Break and restore an LED's return path to see why current needs a complete loop.
+promise: Open and close a steady LED circuit to see why current needs a complete loop.
 time: 15 minutes
 level: 1
 parts:
@@ -8,33 +8,40 @@ parts:
   - Breadboard
   - Red LED
   - 220 Ω resistor (red, red, black, black, brown)
-  - 3 jumper wires
+  - 4 jumper wires
 ideas:
-  - Current needs a complete return path
+  - A source, a load, and a return make a complete path
 ---
 
 ## What you'll build
 
 <!-- closeup -->
 
-A red LED blinks while its path back to the Mega is complete. You will open
-that path, see the LED go dark, then close it and see the blink return.
+A red LED lights steadily from the Mega's USB-powered **5 V** supply. You
+will open its path back to **GND**, see what happens, and restore it. This
+first electricity experiment needs no upload: the LED has its own path
+through a resistor.
 
 ## Predict
 
-The sketch turns pin 26 on and off. If you remove the wire from the Mega's
-**GND** to the breadboard, will the LED still blink? Write down your guess.
+Trace the path in the drawing with a finger: from the top **+** rail, through
+the resistor and LED, to the bottom **−** rail, then back to the Mega. If you
+remove the Mega's GND wire from the bottom rail, will the LED stay lit?
+Write down your prediction.
 
 ## Build it
 
-!!! warning "Unplug first"
-    Unplug the USB cable before building or changing any wires. Check the
-    circuit before plugging it back in. Keep the 220 Ω resistor in series
-    with the LED throughout the experiment.
+!!! warning "Unplug before wiring"
+    Unplug the USB cable before building or changing the circuit. Never
+    connect 5 V straight to GND, and never power the LED without its 220 Ω
+    resistor. Check that the LED's short leg points toward GND before
+    plugging in. If anything gets hot or smells, unplug at once.
 
-This is [Lesson 1's LED circuit](../001-blink/index.md). Pin 26 supplies the
-LED when it turns on. Only the bottom **−** rail is grounded; both **+**
-rails are unused.
+Start with an empty breadboard, then put the Mega's GND and 5 V wires in
+their usual rail holes as the steps show. The resistor and red LED go in their
+usual column 6 holes. A short red jumper brings power from the **top +
+rail** to the resistor.
+The black jumper takes the LED's short-leg side to the **bottom − rail**.
 
 <!-- bench -->
 
@@ -44,40 +51,37 @@ The finished circuit makes these connections:
 
 <!-- connections -->
 
-## Code it
+## Test the loop
 
-Open **File → Examples → Adk → lessons → 056-close-the-loop** in the Arduino
-IDE. The sketch switches the LED on for half a second, then off for half a
-second.
+1. Check the whole path and plug the Mega into USB. Predict whether the LED
+   will light immediately. Look at it and record what you see: __________.
+2. **Unplug USB.** Lift only the Mega's GND wire from the bottom − rail.
+   Leave the LED, resistor, and all other wires in place. Plug USB back in.
+   Is the LED on or off? Record it: __________.
+3. **Unplug USB again.** Put the GND wire back in the same bottom − rail
+   hole nearest the Mega. Plug USB back in. Record what you see: __________.
+
+Current can pass only around a complete loop. The GND wire closes the return
+to the Mega. Removing it opens that loop, even though the top + rail still
+has 5 V. The 220 Ω resistor limits current so the LED can stay lit safely.
+Compare the observations with your prediction.
+
+## The example sketch
+
+There is no code to upload for this circuit. The example below has empty
+`setup ()` and `loop ()` functions because Arduino examples need those
+functions. It claims no signal pins. USB alone supplies the power used here.
 
 <!-- sketch -->
 
-## Upload and observe
-
-1. Plug the Mega into your computer.
-2. Choose **Tools → Board → ADK Boards → ADK Mega 2560** and the Mega's
-   **Tools → Port** entry. [Getting started](../../start.md) shows how to add
-   the board if it is missing.
-3. Press **Upload**. Watch the red LED on the breadboard: it should blink.
-
-Now test your prediction:
-
-1. **Unplug** the USB cable. Remove only the black wire that joins the Mega's
-   GND to the bottom − rail. Leave the LED and its resistor in place.
-2. Plug the USB cable back in. The red LED should stay dark.
-3. **Unplug** again. Put that same black wire back in its original holes,
-   then plug in once more. The red LED should blink again.
-
-Current needs a complete loop: from pin 26, through the resistor and LED,
-then back to the Mega's GND. Removing the return wire opens that loop.
-
 ## If it doesn't work
 
-| What you see | Check |
+| What you see | Check after unplugging USB |
 |---|---|
-| The red LED never blinks | Check the upload, pin 26, the LED's direction and its 220 Ω resistor. Check that the bottom − rail reaches the Mega's GND. |
-| The red LED blinks with the GND wire removed | Unplug. Check for another wire joining the LED's return path to GND. The + rails should be empty. |
-| The red LED stays dark after you restore the wire | Unplug. Seat the wire in the same GND pin and bottom − rail hole it used before. |
-| Upload fails | Check the board and port in the **Tools** menu. Try a USB data cable. |
+| The LED never lights | Check the 5 V and GND rail wires, the red jumper to j6, the resistor across the middle gap, and the LED's direction. |
+| The LED stays lit with GND removed | Look for another wire connecting the LED's short-leg side to the Mega's GND. |
+| The LED stays dark after restoring GND | Put the black wire back in the bottom − rail hole nearest the Mega and check the other end is in the Mega's GND. |
 
-Leave the GND wire in place and the LED blinking for the next investigation.
+Leave the complete circuit powered for the next lesson, or unplug it if you
+are stopping now. This is the expected behavior; the circuit has not been
+recorded as tested on hardware.

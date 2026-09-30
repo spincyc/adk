@@ -2,7 +2,7 @@
 lesson: 66
 promise: Watch a coil make current rise gradually instead of all at once.
 time: 25 minutes
-level: 1
+level: 3
 parts:
   - Arduino Mega 2560
   - Breadboard
@@ -40,7 +40,7 @@ a short time? Predict what will change if you replace the coil with a wire.
     Keep its output off the Mega's pins and the + rails. Both scope ground
     clips must go to the bottom − rail, never to a floating signal point.
 
-Take out Lesson 65's button, LED, transistor, and resistors, and remove
+Take out E10's button, LED, transistor, and resistors, and remove
 the Mega's 5 V rail wire. Keep its GND wire in the bottom − rail hole
 nearest the Mega. You may leave the Mega's USB unplugged. Put the coil
 across the breadboard's center gap at **g6–e6**, then the resistor across

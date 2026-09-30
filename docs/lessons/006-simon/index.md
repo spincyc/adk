@@ -60,6 +60,9 @@ a ten-step sequence takes
 
 <p class="formula">10 × (400 ms + 150 ms) = 5500 ms = 5.5 seconds</p>
 
+If you want to see a circuit remember a state without a program, try
+[E20: Remember one bit](../075-set-reset-latch/index.md).
+
 !!! question "Predict"
     Each step can be any of four colors. How many different ten-step
     sequences could Simon choose? About forty? About a thousand? More than a

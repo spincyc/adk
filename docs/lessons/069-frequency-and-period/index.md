@@ -2,7 +2,7 @@
 lesson: 69
 promise: Count one cycle at 100 Hz and ten at 1 kHz in the same 10 ms window.
 time: 20 minutes
-level: 1
+level: 3
 parts:
   - Arduino Mega 2560
   - Breadboard
@@ -20,7 +20,7 @@ ideas:
 
 <!-- closeup -->
 
-Keep [Lesson 68's circuit](../068-alternating-current/index.md). Change only
+Keep [E13's circuit](../068-alternating-current/index.md). Change only
 the isolated generator's frequency while a scope shows the same **10 ms**
 window. At **100 Hz**, expect about **one cycle**; at **1 kHz**, about
 **ten cycles**. The Mega provides its usual GND wire, but no signal pins
@@ -46,7 +46,7 @@ At 1 kHz, 1000 cycles fit in a second, so one takes about **1 ms**.
     off the Mega's pins and the + rails. Put **both** scope ground clips
     on the common bottom − rail, never on either signal point.
 
-Leave Lesson 68's **1 µF nonpolar capacitor at g6–e6**, **1 kΩ resistor
+Leave E13's **1 µF nonpolar capacitor at g6–e6**, **1 kΩ resistor
 at g10–e10**, generator and jumpers in their holes. Keep the Mega's GND
 wire in the bottom − rail hole nearest the Mega; its USB may stay unplugged.
 If you need to rebuild, follow the drawing and generated steps.

@@ -57,6 +57,10 @@ dimmer in Lesson 7: `knob.read (10, 40)` turns the knob's 0 to 1023 into a
 temperature from 10 to 40 °C. Halfway round, 511 becomes
 10 + 30 × 511 / 1023, which is 24 °C (the Mega drops the fraction).
 
+If readings wander when other parts switch, the optional
+[E18: Keep the supply steady](../073-power-integrity/index.md) explores
+noise on a shared power wire.
+
 !!! question "Predict"
     Once it's running, you'll warm the DHT11 by cupping your hands round it and
     breathing gently on it, until the light turns red. Then you'll let it cool.

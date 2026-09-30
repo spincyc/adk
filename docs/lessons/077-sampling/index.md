@@ -39,16 +39,17 @@ write down your guesses:
 ## Build it
 
 !!! warning "Unplug before wiring"
-    Unplug the Mega's USB cable before changing the build. Remove Lesson 76's
-    chip, capacitor, resistor and LED wiring. Use only the Mega's USB power
+    Unplug the Mega's USB cable before changing the build. Start with an
+    empty breadboard. Use only the Mega's USB power
     for this circuit. Check that the knob's lone middle leg reaches **A0
     only**: joining that strip to a supply rail could short 5 V to GND at
     an end of the knob's travel. Every LED needs its 220 Ω resistor.
 
-The knob keeps its home from Lesson 7: the outer legs sit in **f39** and
+The complete steps below place the knob at its Lesson 7 home: its outer
+legs sit in **f39** and
 **f41**, and the wiper in **d40**. Its outer legs reach the top − and +
 rails, and A0 reaches the wiper's lower strip at **a40**. The white LED and
-its resistor keep their home in columns 38–39. Follow the generated steps
+its resistor go in their home at columns 38–39. Follow the generated steps
 for every wire and the two rail feeds.
 
 <!-- bench -->

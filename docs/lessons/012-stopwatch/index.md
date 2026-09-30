@@ -53,6 +53,11 @@ total minus the time counted. To catch the moment it reaches zero, the
 sketch also sets an `adk::Timer`, Lesson 3's countdown, for the time left
 whenever the kitchen timer starts. Its `expired ()` says when.
 
+Compare a software timer with a changing voltage in
+[E07–E08](../../electricity/index.md#3-stored-charge-and-one-way-paths),
+or with a circuit that ticks on its own in
+[E21: Make a clock tick](../076-schmitt-clock/index.md).
+
 !!! question "Predict"
     You start the stopwatch, stop it after 3 seconds, wait 10 seconds, and
     start it again. What will it show 2 seconds later? Write down your

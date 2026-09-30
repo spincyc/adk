@@ -2,7 +2,7 @@
 lesson: 71
 promise: Make a small sine wave about twice as tall with two feedback resistors.
 time: 30 minutes
-level: 1
+level: 3
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -44,7 +44,7 @@ both numbers? Write down your prediction before you switch the circuit on.
     power is disconnected. Connect both scope ground clips only to the
     common bottom − rail.
 
-Take out Lesson 70's filter parts, their jumpers, and the generator's OUT
+Take out E15's filter parts, their jumpers, and the generator's OUT
 wire. Keep the generator, its GND wire, and the Mega's GND wire in the
 bottom − rail hole nearest the Mega. The generated steps add the Mega's
 5 V wire to the top + rail hole nearest it. With the MCP6002's notch

@@ -688,6 +688,20 @@
     line-height: 1.45;
 }
 
+/* Column names stay available to screen readers without adding a visual
+   row above each stage's plain-language build instructions. */
+.md-typeset table.steps .step-headings {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
 .md-typeset table.steps col.step {
     width: 2.4rem;
 }
@@ -1972,7 +1986,7 @@ body.building-along {
 
 @page {
     size: letter;
-    margin: 16mm 16mm 18mm;
+    margin: 12mm 16mm 14mm;
 
     @bottom-right {
         content: counter(page) " / " counter(pages);
@@ -2002,11 +2016,11 @@ body.building-along {
 
     .md-typeset {
         font-size: 10.5pt;
-        line-height: 1.5;
+        line-height: 1.45;
     }
 
     .md-typeset :is(p, ul, ol) {
-        margin-bottom: 0.8em;
+        margin-bottom: 0.7em;
     }
 
     .md-content__inner {
@@ -2041,7 +2055,12 @@ body.building-along {
 
     .md-typeset table:not([class]) :is(th, td) {
         min-width: 0;
+        padding: 0.35em 0.8em;
         overflow-wrap: normal;
+    }
+
+    .md-typeset table:not([class]) + * {
+        margin-top: 0.8em;
     }
 
     /* A small code example may be a picture, such as the seven-segment
@@ -2067,7 +2086,7 @@ body.building-along {
     }
 
     .md-typeset h2 {
-        margin-top: 1.5em;
+        margin-top: 1em;
         clear: both;
         break-after: avoid;
     }
@@ -2162,7 +2181,11 @@ body.building-along {
     .md-typeset .meters {
         grid-template-columns: repeat(auto-fit, 10.5rem);
         gap: 0.4rem 0.8rem;
-        margin: 1rem 0;
+        margin: 0.5rem 0;
+    }
+
+    .md-typeset .meter figcaption {
+        margin-bottom: 0.2rem;
     }
 
     /* A tall close-up is scaled down to fit beside the opening text, rather

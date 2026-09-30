@@ -40,6 +40,10 @@ at its **short leg** (−). The flat edge of its rim marks the short-leg side.
 If you put it in backwards, it stays dark. The **resistor** limits the current
 so the LED and the Mega's pin stay safe. Keep it in the circuit.
 
+Want to see the same loop work **before writing code**? Try
+[E01–E03](../../electricity/index.md#1-dc-paths-and-measurements): power a
+steady LED, open its return path, then measure and change its resistor.
+
 !!! question "Predict"
     If the black wire between the Mega's GND and the − rail were missing,
     would the LED still blink? Write down your guess, then test it after

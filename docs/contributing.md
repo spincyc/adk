@@ -4,6 +4,11 @@ ADK is a library, a set of example sketches, and this website, all in one
 repository. Everything builds with `make`, and everything it builds goes in
 `build/`.
 
+The project course displays Lessons 1–55. The parallel electricity course
+displays E01–E24. Their three-digit lesson directory and example names are
+stable internal identifiers; `course.yml` assigns each page to a track and
+the site derives its public label from its order within that track.
+
 ## Layout
 
 | Path | What |
@@ -49,8 +54,10 @@ that starts with how to wire the part, its source, host tests, and a line in
 
 ## Adding a lesson
 
-1. Add or check its entry in `docs/_theme/course.yml`. The lesson's title
-   and arc come from there, so its page doesn't repeat them.
+1. Add or check its entry in `docs/_theme/course.yml`. The lesson's title,
+   arc and track come from there, so its page doesn't repeat them. Mark an
+   optional entry point `fresh_start: true` so its generated steps build the
+   entire circuit from an empty breadboard.
 2. Write the sketch in `examples/lessons/NNN-name/NNN-name.ino`, named as
    the lesson's folder is: `examples/lessons/013-hello-lcd/013-hello-lcd.ino`
    for `docs/lessons/013-hello-lcd`. The number has three digits, so the
@@ -65,7 +72,9 @@ that starts with how to wire the part, its source, host tests, and a line in
 4. Write `docs/lessons/NNN-name/index.md` from Lesson 1's shape, with the
    markers `<!-- bench -->`, `<!-- closeup -->`, `<!-- steps -->`,
    `<!-- connections -->` and `<!-- sketch -->` where those belong. Its front
-   matter gives `lesson: NN`, the promise, time, level, parts and ideas. The
+   matter gives `lesson: NN` using the global internal sequence number, plus
+   the promise, time, level, parts and ideas. The displayed lesson label is
+   derived from the track; do not add it to the front matter. The
    parts list counts the jumper wires of each kind the build needs, jumpers
    and female-to-male: all the build holds, or, where it carries on from the
    lesson before, the ones its steps add ("5 more jumper wires"). `make site`
@@ -86,11 +95,12 @@ So a wire in the wrong hole, a pin the sketch doesn't use, or an LED swapped
 with a button fails the check. Two pins wired to parts of one kind, such as
 two LEDs, can still be swapped without it noticing.
 
-The build steps show what carries on: when a lesson keeps parts in the same
-holes, or wires between the same two points, as the lesson before, its steps
-say what to keep, what to take out and what to add. When no part carries
-over, they begin "Take out everything from Lesson N except the Mega's GND
-and 5V wires." (naming the power wires that stay), and then build the rest.
+The build steps show what carries on within a track: when a lesson keeps parts
+in the same holes, or wires between the same two points, as the lesson before,
+its steps say what to keep, what to take out and what to add. When no part
+carries over, they tell the learner to remove the previous build and keep the
+power wires that stay. A `fresh_start` lesson instead lists every wire and
+part, including the rail feeds; its prose must start from an empty board.
 If the page tells the learner what to keep or move, make it say the same.
 
 The steps come in stages, each a part and its wires under a heading that

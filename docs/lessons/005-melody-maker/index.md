@@ -61,6 +61,10 @@ is an `adk::Note`, such as `{adk::note::e4, 400}`: E above middle C, for
 400 ms. A whole tune is a list of them, and `speaker.play (tune)` plays it
 while your sketch carries on with other things.
 
+For a closer look at changing signals, the optional scope investigations
+[E13–E15](../../electricity/index.md#5-alternating-signals) show their
+waveforms and what a filter does to them.
+
 !!! question "Predict"
     The G key plays 392 Hz. Hold it down for exactly one second. How many
     times does the buzzer's disc move back and forth? And which key makes

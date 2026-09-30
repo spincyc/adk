@@ -149,12 +149,12 @@
   lessons:
     - {slug: 065-control-with-a-transistor, title: Control with a Transistor, builds: A button that controls a separate LED path}
     - {slug: 066-inductor-current, title: An Inductor Resists Change, builds: A scope trace that rises slowly through a coil}
-    - {slug: 067-coil-diode, title: Give a Coil a Safe Path, builds: A switched coil protected by a diode}
+    - {slug: 067-coil-diode, title: Give a Coil a Safe Path, builds: A switched coil protected by a diode, fresh_start: true}
 
 - arc: Electricity · Alternating signals
   track: electricity
   lessons:
-    - {slug: 068-alternating-current, title: Current Reverses, builds: A low-voltage alternating waveform}
+    - {slug: 068-alternating-current, title: Current Reverses, builds: A low-voltage alternating waveform, fresh_start: true}
     - {slug: 069-frequency-and-period, title: Count a Waveform, builds: A trace with countable cycles}
     - {slug: 070-filter-and-phase, title: Filter and Phase, builds: An RC filter that delays and softens a wave}
 
@@ -168,13 +168,13 @@
 - arc: Electricity · Logic and memory
   track: electricity
   lessons:
-    - {slug: 074-nand-logic, title: Make a Truth Table, builds: A gate whose output follows two buttons}
+    - {slug: 074-nand-logic, title: Make a Truth Table, builds: A gate whose output follows two buttons, fresh_start: true}
     - {slug: 075-set-reset-latch, title: Remember One Bit, builds: A circuit that remembers a button press}
     - {slug: 076-schmitt-clock, title: Make a Clock Tick, builds: A capacitor and gate that blink an LED}
 
 - arc: Electricity · Mega signals
   track: electricity
   lessons:
-    - {slug: 077-sampling, title: Sample a Voltage, builds: Numbered readings from a smooth knob voltage}
+    - {slug: 077-sampling, title: Sample a Voltage, builds: Numbered readings from a smooth knob voltage, fresh_start: true}
     - {slug: 078-pwm-average, title: Average PWM, builds: A filtered voltage from a pulsing pin}
-    - {slug: 079-serial-link, title: Send a Byte Down a Wire, builds: A byte returning through a serial link}
+    - {slug: 079-serial-link, title: Send a Byte Down a Wire, builds: A byte returning through a serial link, fresh_start: true}

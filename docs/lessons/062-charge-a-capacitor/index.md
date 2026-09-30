@@ -2,7 +2,7 @@
 lesson: 62
 promise: Watch a capacitor store charge and give it back through a resistor.
 time: 25 minutes
-level: 1
+level: 2
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -41,7 +41,7 @@ path through the resistor?
     rated **at least 10 V**. Never join its legs directly with a wire or
     probe tips.
 
-Take out Lesson 61's knob and its wires. Keep the Mega's GND wire in the
+Take out E06's knob and its wires. Keep the Mega's GND wire in the
 bottom − rail hole nearest it and its 5 V wire in the top + rail hole
 nearest it. The red wire from the top + rail by column 6 to j6 feeds the
 10 kΩ resistor; the resistor crosses the middle gap in g6–e6. The jumper

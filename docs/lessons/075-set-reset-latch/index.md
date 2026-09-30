@@ -2,7 +2,7 @@
 lesson: 75
 promise: Press Set, let go, and see one bit stay stored in two NAND gates.
 time: 25 minutes
-level: 1
+level: 2
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -21,7 +21,7 @@ ideas:
 
 <!-- closeup -->
 
-Keep the chip, buttons and LED from [Lesson 74](../074-nand-logic/index.md),
+Keep the chip, buttons and LED from [E19](../074-nand-logic/index.md),
 but join two NAND gates so each output feeds the other gate. The red LED
 shows the bit they hold. Press **Set** and it should stay on after you
 let go; press **Reset** and it should stay off. The Mega supplies USB
@@ -34,7 +34,7 @@ let go; press **Reset** and it should stay off. The Mega supplies USB
     series. Check the chip's notch, pin 14 at 5 V and pin 7 at GND
     before plugging USB back in. Press only one button at a time.
 
-Keep Lesson 74's chip across columns 16–22, notch to the left; its
+Keep E19's chip across columns 16–22, notch to the left; its
 100 nF capacitor beside it at column 15; both buttons at columns 2
 and 8; and the red LED and 1 kΩ resistor at columns 6–7. Keep the
 chip's power and capacitor wires, the four wires grounding unused
@@ -42,7 +42,7 @@ inputs **9, 10, 12, 13**, the link between the − rails, and the LED
 path from chip pin 3. Keep the Mega's GND and 5 V wires in their usual
 rail holes.
 
-Remove Lesson 74's two 10 kΩ **pull-down** resistors, both 5 V wires
+Remove E19's two 10 kΩ **pull-down** resistors, both 5 V wires
 to the buttons, both wires from the buttons' right sides to the chip,
 and the two GND wires from chip pins 4 and 5. The generated steps below
 show the complete new build. Put each **10 kΩ pull-up** from the top +

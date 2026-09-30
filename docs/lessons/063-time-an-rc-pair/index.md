@@ -2,7 +2,7 @@
 lesson: 63
 promise: Double the resistance and watch a capacitor take about twice as long to charge.
 time: 30 minutes
-level: 1
+level: 2
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -19,7 +19,7 @@ ideas:
 
 <!-- closeup -->
 
-Add one 10 kΩ resistor to [Lesson 62's capacitor circuit](../062-charge-a-capacitor/index.md).
+Add one 10 kΩ resistor to [E07's capacitor circuit](../062-charge-a-capacitor/index.md).
 Then time how long the capacitor takes to reach about **3.2 V**. With one
 resistor it takes roughly **10 seconds**; with two in series, roughly
 **20 seconds**.
@@ -31,7 +31,7 @@ approaches the supply's roughly 5 V. One useful marker is **63% of the
 final voltage**: about 3.2 V for a 5 V supply. The time to reach that
 marker is called the **time constant** and is written **τ = R × C**.
 
-Lesson 62 used one 10 kΩ resistor and a 1000 µF capacitor. Their time
+E07 used one 10 kΩ resistor and a 1000 µF capacitor. Their time
 constant is about 10 seconds. Putting another 10 kΩ resistor in the same
 path makes 20 kΩ altogether, so the time constant becomes about 20
 seconds. The capacitor and supply stay the same.
@@ -43,7 +43,7 @@ seconds. The capacitor and supply stay the same.
 
 ## Time the starting circuit
 
-If Lesson 62's one-resistor circuit is still assembled, measure its time
+If E07's one-resistor circuit is still assembled, measure its time
 first. Set the meter to **DC volts (V⎓)**, using its 20 V range if needed.
 Put the black lead in **COM** and the red lead in **V**. Keep them in those
 sockets throughout the lesson. Touch the black probe to a free hole in
@@ -69,7 +69,7 @@ Never connect the capacitor's legs directly to discharge it.
     bottom − rail by column 9. Check the stripe before each power-up.
     Never join the capacitor's legs directly with a wire.
 
-Keep Lesson 62's red supply wire from the top + rail by column 6 to j6,
+Keep E07's red supply wire from the top + rail by column 6 to j6,
 the 10 kΩ resistor across the gap from g6 to e6, and the capacitor.
 Keep the Mega's GND and 5 V rail wires in their usual holes nearest the
 Mega. Remove the short jumper from b6 to b8. Add the wire from **b6 to
@@ -96,7 +96,7 @@ time need not be exact.
 
 | Charging path | Predicted time to about 3.2 V | Your time |
 |---|---:|---:|
-| One 10 kΩ resistor, Lesson 62 | 10 s | ____ s |
+| One 10 kΩ resistor, E07 | 10 s | ____ s |
 | Two 10 kΩ resistors, this lesson | 20 s | ____ s |
 
 To start each **two-resistor** run with the capacitor near 0 V:

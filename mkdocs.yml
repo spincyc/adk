@@ -1,7 +1,7 @@
 site_name: ADK
 site_description: >-
-  Fifty-five hands-on lessons for the Arduino Mega 2560, from a blinking LED
-  to Pong between two boards, and the small C++ library that makes them simple.
+  Fifty-five project lessons and twenty-four electricity investigations for
+  the Arduino Mega 2560, with the small C++ library that makes them simple.
 site_url: https://spincyc.github.io/adk/
 repo_url: https://github.com/spincyc/adk
 repo_name: spincyc/adk
@@ -104,6 +104,7 @@ nav:
   - Home: index.md
   - Start:
       - start.md
+      - Guided route: guided.md
       - kit.md
       - safety.md
   - Course:

@@ -2,7 +2,7 @@
 lesson: 79
 promise: Send one byte through a wire and see whether it comes back.
 time: 25 minutes
-level: 1
+level: 2
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -36,9 +36,9 @@ removed? Write down both predictions.
     plain wire. Check that the 10 kΩ resistor reaches the **5 V** rail,
     not GND, before plugging USB back in.
 
-Take out everything from Lesson 78 except the Mega's GND wire in the
-bottom − rail hole nearest it and its 5 V wire in the top + rail hole
-nearest it. This is a new signal path, with no LED or knob.
+Start with an empty breadboard and USB unplugged. The complete steps
+below place the Mega's GND and 5 V wires in their usual rail holes,
+then build this new signal path. It needs no LED or knob.
 
 <!-- bench -->
 

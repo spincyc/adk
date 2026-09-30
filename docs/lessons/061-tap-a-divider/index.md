@@ -29,7 +29,7 @@ the knob moves the wiper along that strip. If you turn it to about the
 middle, what voltage do you expect between the wiper and GND? What A0
 reading do you expect between 0 and 1023? Write down both guesses.
 
-In [Lesson 59](../059-resistors-in-series/index.md), two resistors shared a
+In [E04](../059-resistors-in-series/index.md), two resistors shared a
 voltage. Here the wiper moves the point where you tap that shared voltage.
 
 ## Build it

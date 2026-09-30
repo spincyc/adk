@@ -44,7 +44,7 @@ through another resistor and LED. They meet only at the rails, so they are
 
 Keep the Mega's GND wire in the bottom − rail hole nearest it and its 5 V
 wire in the top + rail hole nearest it. Take out the other parts and wires
-from Lesson 59. The two LED paths start at separate holes of the same top
+from E04. The two LED paths start at separate holes of the same top
 + rail and end at separate holes of the same bottom − rail. The long leg of
 each LED faces its resistor; the short leg faces the − rail.
 
@@ -124,10 +124,7 @@ one-branch trial. Write one sentence explaining the split and the sum.
 
 The circuit lights from the Mega's **5 V power pin**, not a programmable
 signal pin. No upload is needed: plugging in USB powers the build even if
-the Mega has an older sketch. The matching ADK sketch is intentionally
-short and claims no I/O pins:
+the Mega has an older sketch. The matching ADK sketch claims no I/O pins.
+This expected result has not been tested on hardware:
 
 <!-- sketch -->
-
-These are expected results from the circuit design; this lesson has not
-been confirmed on a physical breadboard.

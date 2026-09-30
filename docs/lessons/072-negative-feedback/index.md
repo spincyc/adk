@@ -2,7 +2,7 @@
 lesson: 72
 promise: Turn a knob and watch an op-amp output follow it while feeding a load.
 time: 25 minutes
-level: 1
+level: 3
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -22,7 +22,7 @@ ideas:
 
 <!-- closeup -->
 
-Keep [Lesson 71's MCP6002 amplifier](../071-amplifier-gain/index.md),
+Keep [E16's MCP6002 amplifier](../071-amplifier-gain/index.md),
 its supply capacitors, and its second amplifier's steady connection.
 Change amplifier A into a **voltage follower**: its output connects
 straight back to its − input. A knob sets the + input; a 1 kΩ resistor
@@ -50,7 +50,7 @@ capacitors, and the two 10 kΩ resistors that hold amplifier B's + input
 at a midpoint. Keep B's output (pin 7) joined to its − input (pin 6).
 Keep the Mega's GND and 5 V wires in their usual rail holes nearest it.
 
-Remove Lesson 71's generator and its two wires. Remove **only** the two
+Remove E16's generator and its two wires. Remove **only** the two
 10 kΩ gain resistors near amplifier A and their wires. Connect A's
 output (pin 1) directly to its − input (pin 2). Connect the kit knob's
 wiper to A's + input (pin 3), with the knob's outer legs at GND and 5 V.

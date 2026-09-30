@@ -66,6 +66,11 @@ A diode across the buzzer catches a voltage spike when it switches off. In [Less
 you'll meet its cousin, the passive buzzer, which can play any note but needs
 a resistor and more help from the Mega.
 
+To test the buzzer's supporting parts separately, try
+[E09: One-way diode](../064-one-way-diode/index.md),
+[E10: Control with a transistor](../065-control-with-a-transistor/index.md)
+and [E12: Give a coil a safe path](../067-coil-diode/index.md).
+
 !!! question "Predict"
     Most people react faster to a sound than to a light. Before you play,
     guess your reaction time in milliseconds. Is it nearer 100, 250, or 500?

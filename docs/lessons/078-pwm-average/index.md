@@ -2,7 +2,7 @@
 lesson: 78
 promise: Turn a knob, brighten an LED, and measure a steady voltage made from pulses.
 time: 30 minutes
-level: 1
+level: 2
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -43,7 +43,7 @@ only 0 V and 5 V, or a number between them? Write down both guesses.
     capacitor straight between pin 3 and GND. Keep the meter on **DC
     volts**, with its red lead in **V** and black lead in **COM**.
 
-Keep [Lesson 77's](../077-sampling/index.md) white LED, 220 Ω resistor,
+Keep [E22's](../077-sampling/index.md) white LED, 220 Ω resistor,
 knob, and their wires in place. They use their [Lesson 7](../007-dimmer/index.md)
 homes: the LED in columns 38–39, its resistor across the gap at column
 38, and the knob in columns 39–41 with A0 at its wiper in column 40.
@@ -61,6 +61,11 @@ middle gap from **g44 to e44**. The capacitor's **+ leg** is in **a44**;
 its striped **− leg** is in the bottom − rail by column 45. Column 44's
 lower strip is the filtered meter point. The capacitor does not touch
 pin 3's strip directly.
+
+This is the resistor-and-capacitor charging idea from
+[E08](../063-time-an-rc-pair/index.md), repeated many times per second.
+You can complete the voltage comparison with a DC meter; the later scope
+section shows the individual pulses if that instrument is available.
 
 <!-- connections -->
 

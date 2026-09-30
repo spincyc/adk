@@ -22,8 +22,9 @@ Any page may also use <!-- arcs --> for the course as cards,
 <!-- course --> for the course as a table, <!-- drawing 001-blink closeup -->
 for a drawing from a lesson (with a board's letter after it in a two-board
 lesson), and <!-- api led.h Led --> for a part's reference, read from its
-header. The course comes from course.yml, which also builds the Course
-navigation from the lessons that exist.
+header. Both tracks come from course.yml, which also builds their navigation
+from the lessons that exist. The global lesson number stays in page metadata
+and paths; the visible number belongs to its track.
 
 `make pins` holds each sketch to its circuit (tests/pins.py says exactly
 how): the pins it claims must be the pins the circuit wires, each claimed
@@ -67,8 +68,18 @@ COURSE = yaml.safe_load (open (os.path.join (os.path.dirname (__file__), "course
 LESSONS = [dict (lesson, arc=arc["arc"], boards=arc.get ("boards", 1),
                 track=arc.get ("track", "projects"))
            for arc in COURSE for lesson in arc["lessons"]]
+TRACKS = {"projects": ("Course", "course.md"),
+          "electricity": ("Electricity", "electricity/index.md")}
+ELECTRICITY_GUIDES = [{"Measurement skills": "electricity/skills.md"},
+                      {"Read a schematic": "electricity/schematics.md"},
+                      {"Diagnose a result": "electricity/diagnose.md"},
+                      {"Design challenges": "electricity/challenges.md"}]
+track_counts = {track: 0 for track in TRACKS}
 for number, lesson in enumerate (LESSONS, 1):
     lesson["number"] = number
+    track_counts[lesson["track"]] += 1
+    lesson["track_number"] = track_counts[lesson["track"]]
+ELECTRICITY_LESSONS = [lesson for lesson in LESSONS if lesson["track"] == "electricity"]
 MARKERS = ("bench", "closeup", "steps", "connections", "sketch", "measure")
 CIRCUITS = {}                       # each circuit.py this build has read, by path
 DRAWINGS = {}                       # each drawing in a page, by its digest
@@ -80,26 +91,56 @@ def written (lesson):
     return os.path.exists (os.path.join (ROOT, "docs", "lessons", lesson["slug"], "index.md"))
 
 
-# The Course tab lists every arc that has a written lesson, each lesson by
-# its number, and each arc with the numbers of its lessons: "13 · Hello,
-# LCD" in "Words and weather · 13–15".
+# Each track lists its written lessons under their own visible numbers.
 def on_config (config):
     for item in config["nav"]:
-        if isinstance (item, dict) and "Course" in item:
+        if not isinstance (item, dict):
+            continue
+        for track, (tab, overview) in TRACKS.items ():
+            if tab not in item:
+                continue
             sections = []
             for arc in COURSE:
-                lessons = [lesson for lesson in LESSONS if lesson["arc"] == arc["arc"]]
-                pages = [{f"{lesson['number']}{NBSP}·{NBSP}{lesson['title']}":
+                if arc.get ("track", "projects") != track:
+                    continue
+                lessons = [lesson for lesson in LESSONS
+                           if lesson["arc"] == arc["arc"] and lesson["track"] == track]
+                pages = [{f"{visible_number (lesson)}{NBSP}·{NBSP}{lesson['title']}":
                           f"lessons/{lesson['slug']}/index.md"}
                          for lesson in lessons if written (lesson)]
                 if pages:
                     sections.append ({arc_title (arc, lessons): pages})
-            item["Course"] = ["course.md"] + sections
+            guides = [{"Tools and challenges": ELECTRICITY_GUIDES}] if track == "electricity" else []
+            item[tab] = [overview] + guides + sections
     return config
 
 
+def on_nav (nav, config, files):
+    pages = {page.file.src_uri: page for page in nav.pages}
+    for track, (_, overview) in TRACKS.items ():
+        sequence = [pages[f"lessons/{lesson['slug']}/index.md"]
+                    for lesson in LESSONS if lesson["track"] == track and written (lesson)]
+        pages[overview].previous_page = None
+        pages[overview].next_page = sequence[0] if sequence else None
+        for index, page in enumerate (sequence):
+            page.previous_page = sequence[index - 1] if index else pages[overview]
+            page.next_page = sequence[index + 1] if index + 1 < len (sequence) else pages[overview]
+    return nav
+
+
+def visible_number (lesson):
+    return f"E{lesson['track_number']:02d}" if lesson["track"] == "electricity" else \
+        str (lesson["track_number"])
+
+
+def visible_reference (lesson):
+    return visible_number (lesson) if lesson.get ("track") == "electricity" else \
+        f"Lesson {lesson['number']}"
+
+
 def arc_title (arc, lessons):
-    title = f"{arc['arc']}{NBSP}·{NBSP}{lessons[0]['number']}–{lessons[-1]['number']}"
+    name = arc["arc"].removeprefix ("Electricity · ")
+    title = f"{name}{NBSP}·{NBSP}{visible_number (lessons[0])}–{visible_number (lessons[-1])}"
     return title + (f"{NBSP}·{NBSP}two boards" if arc.get ("boards", 1) == 2 else "")
 
 
@@ -154,17 +195,22 @@ def on_page_markdown (markdown, page, config, files):
     if "lesson" not in meta:
         return words_for_rails (markdown, page.file.src_uri)
 
-    lesson = LESSONS[meta["lesson"] - 1]
+    number = meta["lesson"]
+    if (not isinstance (number, int) or isinstance (number, bool) or
+            not 1 <= number <= len (LESSONS)):
+        raise PluginError (f"{page.file.src_uri}: invalid global lesson number {number!r}")
+    lesson = LESSONS[number - 1]
     where = page.file.src_uri
     if where != f"lessons/{lesson['slug']}/index.md":
         raise PluginError (f"{where}: course.yml calls lesson {meta['lesson']} {lesson['slug']}")
     # The title, arc and sketch come from course.yml and the lesson's name;
     # a page that gives them anyway must agree.
-    derived = {"title": lesson["title"], "arc": lesson["arc"]}
+    derived = {"title": lesson["title"], "arc": lesson["arc"],
+               "track": lesson["track"], "display_id": visible_reference (lesson)}
     if lesson["boards"] == 1:
         derived["sketch"] = example (lesson["slug"])
     for key, value in meta.items ():
-        if key in ("title", "arc", "sketch") and derived.get (key) != value:
+        if key in derived and derived[key] != value:
             raise PluginError (f"{where}: its {key} comes from course.yml and its name "
                                f"({derived.get (key, 'none: each board has its own')}); leave "
                                f"{key}: {value} out")
@@ -253,11 +299,12 @@ def board_pieces (lesson, letter, bench):
         raise PluginError (f"{lesson['slug']}: {error}") from error
 
 
-# "Lesson 7" in running text becomes a link once Lesson 7 is written, and so
-# does each number in "Lessons 10, 11 and 12" or "Lessons 37 to 42". Code,
-# headings, existing links and the page's own number are left alone.
+# Global "Lesson 56" references display as E01, including the page's own
+# number. Written lesson references become links. Code, headings and links
+# with their own label are left alone.
 REFERENCE = re.compile (r"\b(?:(Lesson) (\d{1,2})|(Lessons) (\d{1,2})"
                         r"((?:, \d{1,2})*(?:,? and \d{1,2}|–\d{1,2}| to \d{1,2})?))\b(?!\s*\])")
+E_REFERENCE = re.compile (r"\bE(\d{2})\b")
 
 
 def link_lessons (markdown, page):
@@ -266,10 +313,14 @@ def link_lessons (markdown, page):
     out, fenced = [], False
 
     def linked (text, number):
-        if number == own or not 1 <= number <= len (LESSONS) or not written (LESSONS[number - 1]):
+        if not 1 <= number <= len (LESSONS):
             return text
-        target = f"lessons/{LESSONS[number - 1]['slug']}/index.md"
-        return f"[{text}]({os.path.relpath (target, here or '.')})"
+        lesson = LESSONS[number - 1]
+        shown = visible_number (lesson) if lesson["track"] == "electricity" else text
+        if number == own or not written (lesson):
+            return shown
+        target = f"lessons/{lesson['slug']}/index.md"
+        return f"[{shown}]({os.path.relpath (target, here or '.')})"
 
     def replace (match):
         word, first = match.group (1, 2) if match.group (1) else match.group (3, 4)
@@ -277,15 +328,21 @@ def link_lessons (markdown, page):
         return linked (f"{word} {first}", int (first)) + \
             "".join (between + linked (number, int (number)) for between, number in more)
 
+    def replace_e (match):
+        index = int (match.group (1))
+        return linked (match.group (), ELECTRICITY_LESSONS[index - 1]["number"]) \
+            if 1 <= index <= len (ELECTRICITY_LESSONS) else match.group ()
+
     for line in markdown.split ("\n"):
         if line.lstrip ().startswith (("```", "~~~")):
             fenced = not fenced
         if fenced or line.lstrip ().startswith (("#", "<", "|---")):
             out.append (line)
             continue
-        # Leave inline code and existing links as they are.
-        pieces = re.split (r"(`[^`]*`|\[[^\]]*\]\([^)]*\))", line)
+        # Leave inline code and existing inline or reference-style links as they are.
+        pieces = re.split (r"(`[^`]*`|\[[^\]]*\](?:\([^)]*\)|\[[^\]]*\])|\[E\d{2}\])", line)
         for index in range (0, len (pieces), 2):
+            pieces[index] = re.sub (E_REFERENCE, replace_e, pieces[index])
             pieces[index] = re.sub (REFERENCE, replace, pieces[index])
         out.append ("".join (pieces))
     return "\n".join (out)
@@ -327,7 +384,8 @@ def load_circuit (lesson):
 # lesson after a two-board one carries on from Board A. Returns the lesson,
 # its board's letter and its bench, or None.
 def previous (number, letter=""):
-    if number < 2 or not written (LESSONS[number - 2]):
+    if number < 2 or LESSONS[number - 1].get ("fresh_start") or \
+            not written (LESSONS[number - 2]):
         return None
     lesson = LESSONS[number - 2]
     if lesson["track"] != LESSONS[number - 1]["track"]:
@@ -386,14 +444,14 @@ def steps (bench, before=None, number=1, letter="", title=None):
     head, out = [], []
     if before:
         lesson, letter_before, old = before
-        source = f"[Lesson {lesson['number']}](../{lesson['slug']}/index.md)" + \
+        source = f"[{visible_reference (lesson)}](../{lesson['slug']}/index.md)" + \
             (f"'s Board {letter_before}" if letter_before else "")
         if carries (kept):
             things = kept_words (old, kept)
             head = [f"**Keep from {source}:** {join (things)}, just as "
                     f"{'they are' if len (kept) > 1 else 'it is'}."]
             if len (gone) > 8:
-                head.append (f"**Take out** everything else from Lesson {lesson['number']}.")
+                head.append (f"**Take out** everything else from {visible_reference (lesson)}.")
             else:
                 out = gone
         else:
@@ -429,8 +487,9 @@ def step_stages (bench, out, new, number, letter, title=None):
             count += 1
             rows.append (step_row (str (count), str (count), item, bench))
         whole = {identity (bench, kind, thing) for kind, thing, _ in items} == stages (bench)[stage]
-        earlier = built_before (bench, stage, number) if whole else None
-        where = (f', as in <a href="../{earlier["slug"]}/">Lesson {earlier["number"]}</a>'
+        earlier = built_before (bench, stage, number) if whole and \
+            not LESSONS[number - 1].get ("fresh_start") else None
+        where = (f', as in <a href="../{earlier["slug"]}/">{visible_reference (earlier)}</a>'
                  if earlier else "")
         blocks.append (stage_block (capital (bench.stage_title (stage)), rows,
                                     f"{len (rows)} step{'s' if len (rows) > 1 else ''}{where}",
@@ -448,8 +507,13 @@ def stage_block (title, rows, count="", kind=""):
     folded = "" if kind == "again" else " open"
     return (f'<details class="stage{" " + kind if kind else ""}"{folded}><summary>'
             f'<span class="stage-title">{title}</span>{tally}</summary>\n'
-            '<table class="steps"><colgroup><col class="step"><col class="what"><col>'
-            '<col class="link"><col></colgroup>\n<tbody>\n' + "\n".join (rows) +
+            f'<table class="steps"><caption class="step-headings">{title}: build steps</caption>\n'
+            '<colgroup><col class="step"><col class="what"><col>'
+            '<col class="link"><col></colgroup>\n'
+            '<thead class="step-headings"><tr><th scope="col">Step</th>'
+            '<th scope="col">Part or wire</th><th scope="col">From</th>'
+            '<th scope="col">Connection</th><th scope="col">To</th></tr></thead>\n'
+            '<tbody>\n' + "\n".join (rows) +
             "\n</tbody></table></details>")
 
 
@@ -591,12 +655,14 @@ def stages (bench):
     return STAGES[id (bench)]
 
 
-# The first lesson before this one to build a stage just as this one does,
+# The first lesson in the same track to build a stage just as this one does,
 # on either of its boards, or None.
 def built_before (bench, stage, number):
     held = stages (bench)[stage]
+    track = LESSONS[number - 1]["track"]
     for lesson in LESSONS[:number - 1]:
-        if written (lesson) and any (held in stages (other).values ()
+        if lesson["track"] == track and written (lesson) and \
+                any (held in stages (other).values ()
                                      for other in load_circuit (lesson).values ()):
             return lesson
     return None
@@ -827,7 +893,8 @@ def boards_note (arc):
 
 def arcs ():
     cards = ['<div class="arcs" markdown>']
-    for index, arc in enumerate (COURSE, 1):
+    project_arcs = [arc for arc in COURSE if arc.get ("track", "projects") == "projects"]
+    for index, arc in enumerate (project_arcs, 1):
         note = boards_note (arc)
         cards.append (f'<section class="arc" markdown>\n\n<p class="arc-number">{index}</p>\n\n'
                       f'### {arc["arc"]}\n' + (f"\n{note}" if note else ""))
@@ -844,6 +911,8 @@ def arcs ():
 def course_table ():
     rows = []
     for arc in COURSE:
+        if arc.get ("track", "projects") != "projects":
+            continue
         rows += [f"\n### {arc['arc']}\n", boards_note (arc) + "| | Lesson | You build |",
                  "|--:|---|---|"]
         for lesson in (lesson for lesson in LESSONS if lesson["arc"] == arc["arc"]):

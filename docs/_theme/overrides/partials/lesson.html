@@ -1,11 +1,15 @@
-{% set number = "%02d" | format(page.meta.lesson) %}
+{% if page.meta.track == "projects" %}
+  {% set label = "Lesson %02d" | format(page.meta.lesson) %}
+{% else %}
+  {% set label = page.meta.display_id %}
+{% endif %}
 {% set slug = page.file.src_uri.split("/")[1] %}
 <style media="print">
-  @page { @bottom-left { content: "ADK · Lesson {{ number }} · {{ page.meta.title }}"; } }
+  @page { @bottom-left { content: "ADK · {{ label }} · {{ page.meta.title }}"; } }
 </style>
 <header class="lesson-header">
   <p class="lesson-eyebrow">
-    <span class="lesson-number">Lesson {{ number }}</span>
+    <span class="lesson-number">{{ label }}</span>
     <span class="lesson-arc">{{ page.meta.arc }}</span>
   </p>
   <h1>{{ page.meta.title }}</h1>
@@ -19,6 +23,7 @@
     <li class="lesson-pdf">
       <a href="../../pdf/{{ slug }}.pdf">{% include ".icons/material/printer-outline.svg" %} Printable PDF</a>
     </li>
+    <li class="lesson-guide"><a href="../../guided/">Guided route</a></li>
   </ul>
   <nav class="lesson-sections" aria-label="Sections">
     {% for heading in page.toc %}<a href="{{ heading.url }}">{{ heading.title }}</a>{% endfor %}

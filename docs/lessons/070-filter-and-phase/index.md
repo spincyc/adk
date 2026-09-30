@@ -2,7 +2,7 @@
 lesson: 70
 promise: See a resistor and capacitor shrink a faster wave and move its peaks later.
 time: 25 minutes
-level: 1
+level: 3
 parts:
   - Arduino Mega 2560 (USB cable unplugged)
   - Breadboard
@@ -20,7 +20,7 @@ ideas:
 
 <!-- closeup -->
 
-Move the resistor and film capacitor from [Lesson 69](../069-frequency-and-period/index.md)
+Move the resistor and film capacitor from [E14](../069-frequency-and-period/index.md)
 to make a **low-pass filter**. Compare the generator's 0–4 V sine wave at
 the input with the voltage across the capacitor at the output. At 1 kHz,
 the output wave should be smaller than at 100 Hz, and its peaks should
@@ -38,13 +38,13 @@ output peak.
 
 !!! warning "Switch off before changing parts"
     Switch off and unplug the isolated generator before moving the parts
-    from Lesson 69. Keep the Mega's USB unplugged. Use only a
+    from E14. Keep the Mega's USB unplugged. Use only a
     battery-powered, isolated generator set to **0–4 V**. Keep its OUT
     lead off the Mega's pins and + rails. Both scope ground clips go on
     the common bottom − rail, never on a signal strip.
 
 Keep the generator's **OUT to j6** and **GND to the bottom − rail by
-column 5** connections from Lessons 68–69. Keep the Mega's GND wire in
+column 5** connections from E13–E14. Keep the Mega's GND wire in
 the bottom − rail hole nearest it. Remove the capacitor at g6–e6 and
 the resistor at g10–e10. Put the **1 kΩ resistor at g6–e6** and the
 **1 µF nonpolar film capacitor at g10–e10**, each across the center gap.

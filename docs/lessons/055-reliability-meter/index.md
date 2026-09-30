@@ -96,6 +96,29 @@ the Mega's GND wire, and build this one from the start. Leave the aerials
 off: in the USA and Canada they must stay off, and the two modules hear
 each other easily across the board without them, as in Lesson 38.
 
+!!! warning "Pause points while you build"
+    Stop after each stage in the steps below:
+
+    - **5 V rail:** With the USB cable out, check that the + and − rails
+      are separate and no loose wire touches both.
+    - **Screen:** Check that its header pins sit in separate strips, its
+      contrast knob crosses the middle gap, and its backlight has the
+      220 Ω resistor shown in the drawing.
+    - **Rotary encoder:** Check that its five pins sit in separate strips,
+      and that its + and GND go to the matching top rails. **Predict:**
+      What will one clockwise click change `20 letters` to? With the radio
+      modules still out, upload this lesson's sketch. The screen should
+      show `20 letters` and `Press to test`; one click should change 20 to
+      `25 letters`. Leave the button unpressed until both radios are built. Unplug
+      the USB cable again before you continue wiring.
+    - **Radio receiver:** With the USB cable out again, compare the printed
+      VCC, DATA and GND names with the drawing. DATA2 stays unused; check
+      that its 5 V and GND wires have not been swapped.
+    - **Radio transmitter:** Before plugging in, trace its + wire to the
+      Mega's **3.3V** pin, not 5V. Its DAT must reach pin 46 through the
+      1 kΩ resistor, with 2 kΩ from the DAT side to the − rail. Check its
+      − wire reaches the − rail too.
+
 <!-- bench -->
 
 <!-- steps -->

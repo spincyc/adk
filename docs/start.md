@@ -1,8 +1,10 @@
 # Getting started
 
-You need three things: the kit, the Arduino IDE, and the ADK library. Setting
-them up takes about fifteen minutes, and you only do it once. Then you're
-ready for Lesson 1.
+Start with the kit. For [E01: Close the Loop](lessons/056-close-the-loop/index.md),
+the Mega supplies USB power to a circuit you build by hand. You do not need
+the Arduino IDE, ADK Boards, a sketch or an upload. To follow the project
+lessons from [Lesson 1](lessons/001-blink/index.md), set up the IDE and ADK
+below. You only do that setup once.
 
 ## 1. The kit
 
@@ -13,6 +15,19 @@ and which lessons use it.
 
 Before you build anything, read [Safety](safety.md). It is short, and it
 keeps you and your parts safe.
+
+## Before the first wire
+
+1. Put the breadboard beside the Mega with **column 1 nearest the Mega**.
+   Find the breadboard's **+** and **−** rails and the Mega's **5V** and
+   **GND** labels. Follow the first build's drawing for the exact holes.
+2. Find the LED's long and short legs and the **220 Ω resistor** (red, red,
+   black, black, brown bands). Every LED in this course needs its resistor.
+3. Keep USB **unplugged** while you place or move wires. Before plugging it
+   in, compare each connection with the drawing, especially 5V and GND.
+
+For the circuit-only start, go straight to [E01](lessons/056-close-the-loop/index.md)
+after these checks. For the project lessons, continue with the setup below.
 
 ## 2. The Arduino IDE and ADK Boards
 
@@ -59,17 +74,35 @@ with a newer compiler.
 3. Choose the port under **Tools → Port**. On Windows it is a `COM` port; on
    macOS and Linux its name contains `usbmodem` or `ttyACM`.
 
+## If setup stalls
+
+| What you see | Try this |
+|---|---|
+| The Mega's green **ON** light stays dark | Try another USB cable or computer port. |
+| **ON** lights, but the circuit's LED stays dark | Unplug USB. Check the LED's direction, its resistor, and each wire against the lesson's drawing. |
+| **ADK Boards** is missing from the board menu | Recheck the Boards Manager address above, then install ADK Boards and Arduino AVR Boards. |
+| The port is missing or an upload fails | Use a USB **data** cable, select **ADK Mega 2560** and the Mega's port, then try again. A power-only cable can light **ON** but cannot upload. |
+| The IDE says **ADK needs C++23** | Select **ADK Boards → ADK Mega 2560**, not **Arduino Mega ADK**. |
+
+If a part gets hot or smells, unplug USB at once and check for a wire joining
+5V straight to GND. [Safety](safety.md) has the rules for later parts too.
+
 ## How a lesson works
 
-Every lesson follows the same path, and every lesson is also a printable PDF.
+Each lesson has a printable PDF. Project lessons include code and an upload;
+passive electricity investigations work from their wired circuit and need
+no upload. Both paths ask you to predict, build and check a result.
+The time shown is an estimate. **Level 1** is a starter build with a few
+connections; **Level 2** joins several parts or paths; **Level 3** has dense
+wiring or needs more advanced instruments.
 
 | Section | What happens |
 |---|---|
 | **What you'll build** | A close-up of the finished circuit, so you know where you're heading. |
 | **The idea** | The one new idea, with a question to predict the answer to before you try it. |
 | **Build it** | A drawing of the whole bench, and the wiring step by step. |
-| **Code it** | The sketch, and what each part of it does. |
-| **Upload it** | What you should see when it works. |
+| **Code it** | In programmed builds, the sketch and what each part does. |
+| **Upload it** | In programmed builds, what you should see when it works. |
 | **If it doesn't work** | The usual mistakes, and how to spot them. |
 | **Make it yours** | Challenges, from a small change to something new. |
 | **Measure it** | For anyone with a multimeter: where to touch the probes, and what the meter should say. |

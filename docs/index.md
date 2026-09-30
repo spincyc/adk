@@ -19,6 +19,7 @@ circuits, alternating signals and digital logic.
 
 [Get set up](start.md){ .md-button .md-button--primary }
 [See the whole course](course.md){ .md-button }
+[Follow the guided route](guided.md){ .md-button }
 [Explore electricity](electricity/index.md){ .md-button }
 
 Already set up? [Start with Lesson 1](lessons/001-blink/index.md).
@@ -75,6 +76,9 @@ void loop ()
 The project path has eighteen three-lesson arcs and one extra. The
 electricity path has eight three-investigation modules. Start either path
 at its first lesson and keep each build's parts in their home positions.
+
+The cards below show the project path. See the [Electricity syllabus](electricity/index.md)
+for E01–E24 and the equipment each module needs.
 
 <!-- arcs -->
 

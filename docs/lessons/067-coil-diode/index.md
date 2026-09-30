@@ -49,9 +49,16 @@ the current changes?
     this buzzer directly from a Mega pin. If a part gets hot or smells,
     unplug at once and check the wiring.
 
-Start with only the Mega's GND wire in the bottom − rail hole nearest it
-and its 5 V wire in the top + rail hole nearest it. Remove other parts and
-wires from the previous build while USB is unplugged.
+Start with the breadboard clear and USB unplugged. Remove any previous
+parts and wires before following the complete steps below. They include
+the Mega's GND wire into the bottom − rail hole nearest it and its 5 V
+wire into the top + rail hole nearest it.
+
+This experiment uses the transistor switching idea from
+[E10](../065-control-with-a-transistor/index.md).
+The coil experiment in [E11](../066-inductor-current/index.md) is an
+optional scope comparison; the button, LED and protective diode here make
+a complete experiment on their own.
 
 Use the **passive** buzzer, with the green board visible underneath and a
 **+** mark beside one leg. The S8050 drawing assumes **E–B–C**, left to

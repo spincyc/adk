@@ -2,7 +2,7 @@
 lesson: 65
 promise: Press a button to let a small base current switch a separate LED path.
 time: 25 minutes
-level: 1
+level: 2
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -43,7 +43,7 @@ Write down all three guesses.
 
 Keep the Mega's GND wire in the bottom − rail hole nearest it and its 5 V
 wire in the top + rail hole nearest it. Take out the other parts and wires
-from Lesson 64. The button and red LED go in their familiar positions;
+from E09. The button and red LED go in their familiar positions;
 the transistor goes in the same holes as in Lesson 3.
 
 Before inserting the transistor, read its marking. This drawing is for an

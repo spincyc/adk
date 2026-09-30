@@ -58,6 +58,10 @@ for you to see but not for the Mega, and hands shake. A **smoother** calms
 them: each new reading only moves the value an eighth of the way toward
 itself, so a single odd reading barely nudges the bar.
 
+The optional [E16–E17](../../electricity/index.md#6-gain-feedback-and-clean-power)
+investigations show how a circuit can change or follow a sensor voltage
+before the Mega reads it.
+
 !!! question "Predict"
     What if you swapped the photoresistor and the 10 kΩ resistor, so the
     10 kΩ went to 5 V and the photoresistor to GND? Would the bar still

@@ -2,7 +2,7 @@
 lesson: 74
 promise: Press two buttons to fill in the four rows of a NAND truth table.
 time: 25 minutes
-level: 1
+level: 2
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -40,10 +40,11 @@ your guesses in the table below.
     its USB 5 V supply. Keep the **1 kΩ resistor in series with the LED**.
     Check the chip's notch and all supply wires before plugging in USB.
 
-Take out everything from Lesson 73 except the Mega's GND wire in the
-bottom − rail hole nearest it, its 5 V wire in the top + rail hole
-nearest it, and the red LED in its familiar holes. Replace the LED's
-220 Ω resistor with **1 kΩ**. The buttons go in their familiar positions.
+Start with an empty breadboard and USB unplugged. If you just finished
+another investigation, remove its parts and wires first. The complete
+steps below put the Mega's GND and 5 V wires in their usual rail holes,
+then the red LED in its familiar holes with a **1 kΩ** resistor. The
+buttons go in their familiar positions.
 Place the **14-pin DIP** chip across the center gap with its
 notch facing left. Seen from above, pin 1 is at the lower-left corner;
 numbers run along the lower edge to pin 7, then back along the upper

@@ -69,6 +69,9 @@ Now you can ask a button two different questions:
 A light switch wants the event: one tap, one change. A doorbell wants the
 state. This sketch uses one of each.
 
+For a hands-on look at paths that share a supply, try
+[E05: Branches in parallel](../060-branches-in-parallel/index.md).
+
 !!! question "Predict"
     Press the left button and hold it down for three seconds. Does the red
     LED flicker on and off the whole time, stay on, or change just once? And

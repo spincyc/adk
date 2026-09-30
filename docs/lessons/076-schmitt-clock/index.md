@@ -42,7 +42,7 @@ your guess.
     resistor** between the chip's output and the LED. Never connect an
     output directly to GND.
 
-Carry on from [Lesson 75](../075-set-reset-latch/index.md). The LED and
+Carry on from [E20](../075-set-reset-latch/index.md). The LED and
 its 1 kΩ resistor remain at their home in columns 6 and 7. Keep the
 nearby 100 nF supply capacitor and the standard Mega power wires.
 Follow the generated steps to remove the NAND chip and old button
@@ -95,7 +95,7 @@ blink faster or slower. Write that down before changing anything.
 
 The second resistor makes it take longer for the capacitor to cross each
 threshold. Compare your observations with your predictions. This is the
-same RC timing idea as [Lesson 63](../063-time-an-rc-pair/index.md), now
+same RC timing idea as [E08](../063-time-an-rc-pair/index.md), now
 repeated by the inverter. It is a physical cousin of the timed events in
 [Lesson 12](../012-stopwatch/index.md).
 

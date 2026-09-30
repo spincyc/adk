@@ -36,7 +36,7 @@ and check whether they add to 5 V.
     USB 5 V supply for this build. Check that the + and − rails are not
     joined by a wire before plugging in.
 
-If Lesson 58's LED circuit is still on the breadboard, remove its LED,
+If E03's LED circuit is still on the breadboard, remove its LED,
 resistor and signal wire while power is unplugged. Keep the Mega's GND wire
 in the bottom − rail hole nearest the Mega. Follow the generated steps for
 the whole new circuit, including the standard power wires.

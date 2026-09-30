@@ -75,6 +75,19 @@ Mega's 3.3V pin.
     The four signals going from the Mega to the reader also need their
     **1 kΩ / 2 kΩ dividers**, included in this build. Never bypass them.
 
+!!! warning "Pause points while you build"
+    Keep the USB cable out for these checks:
+
+    - After **the RGB LED** stage, check that each colored leg has its own
+      220 Ω resistor and the longest leg reaches the bottom − rail.
+    - As soon as the reader's two power wires are in, trace its 3.3V wire
+      back to the Mega's **3.3V** pin, and its GND wire back to GND. Check
+      this before adding the signal wires.
+    - After each of SDA, SCK, MOSI and RST, check the divider against that
+      part of the drawing: 1 kΩ between the Mega wire and the reader wire,
+      then 2 kΩ from the reader side to the − rail. All four must be
+      complete before you plug in. The MISO wire has no divider.
+
 <!-- bench -->
 
 <!-- steps -->

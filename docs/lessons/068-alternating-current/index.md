@@ -2,7 +2,7 @@
 lesson: 68
 promise: Watch a resistor's voltage cross zero as current changes direction.
 time: 20 minutes
-level: 1
+level: 3
 parts:
   - Arduino Mega 2560 (USB cable unplugged)
   - Breadboard
@@ -39,10 +39,11 @@ predict whether the voltage at the **top of the resistor** can go below
     Mega input, the 5 V rail, or an AA pack. Keep both scope ground clips
     on the common bottom − rail, never on either signal point.
 
-Remove the parts and wires from the previous build. Keep the Mega's GND
-wire in the bottom − rail hole nearest it. Leave USB unplugged and do not
-connect the Mega's 5 V rail. The generator's GND joins that bottom − rail.
-Use a **nonpolar film** capacitor; either lead can face the generator.
+Start with an empty breadboard. The complete steps below put the Mega's
+GND wire in its usual bottom − rail hole nearest it and join the
+generator's GND to that rail. Leave USB unplugged and do not connect the
+Mega's 5 V rail. Use a **nonpolar film** capacitor; either lead can face
+the generator.
 
 <!-- bench -->
 

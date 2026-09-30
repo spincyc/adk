@@ -53,6 +53,13 @@ divides by 4. The Mega divides whole numbers into whole numbers and drops
 the fraction: 1023 ÷ 4 is 255¾, which becomes 255, and a reading of 512
 becomes 128.
 
+To measure the knob's divider yourself, try
+[E04–E06](../../electricity/index.md#2-sharing-current-and-voltage).
+[E22: Sample a voltage](../077-sampling/index.md) then compares that
+voltage with the Mega's reading. Try the
+[loaded-divider challenge](../../electricity/challenges.md#loaded-divider)
+to see what happens when another part draws from a divider.
+
 !!! question "Predict"
     With the knob exactly halfway, the brightness is 128, so the LED is on
     half the time. Will it *look* half as bright as when the knob is turned

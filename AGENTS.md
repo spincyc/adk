@@ -1,7 +1,8 @@
 # Working on ADK
 
-ADK is an Arduino Mega 2560 library and a 36-lesson course, in one
-repository. Read these before changing anything:
+ADK is an Arduino Mega 2560 library, a 55-lesson project course, and a
+24-investigation electricity course in one repository. Read these before
+changing anything:
 
 1. `docs/ARCHITECTURE.md`: how the library works, and how to add a part.
 2. `docs/STYLE.md`: the C++ style, which `make style` checks.
@@ -21,10 +22,12 @@ repository. Read these before changing anything:
   the pins the sketch claims are exactly the pins the circuit wires. Use each
   part's home pins from `docs/kit.md`, and lay the breadboard out from column
   1 (the end nearest the Mega) in the order the current flows.
-- **Lessons continue each other.** The Mega's GND always lands in the same
+- **Lessons continue within each path.** The Mega's GND always lands in the same
   − rail hole, the one nearest the Mega, and power always comes in the same
   way. A part that recurs keeps its home position on the breadboard, so each
-  lesson adds to or takes from the previous build instead of rewiring it.
+  lesson adds to or takes from the previous build in its path instead of
+  rewiring it. An optional entry point must also be buildable from an empty
+  board.
 - **Lessons are for beginners.** Plain words, one new idea at a time, a
   prediction before each experiment, and something that visibly works at the
   end. Keep sketches short: one screen for a part, about 150 lines for a

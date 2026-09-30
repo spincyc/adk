@@ -91,6 +91,13 @@ messages down. A word takes about a tenth of a second, so its rest is
     transmitter with an aerial: leave the aerials off, and keep both
     modules on one desk. [Safety](../../safety.md#radios) has the details.
 
+For a measured introduction to the divider on DAT, try
+[E04: Resistors in series](../059-resistors-in-series/index.md).
+[E24: Send a byte down a wire](../079-serial-link/index.md) explores
+timed bits before they travel by radio. The
+[loaded-divider challenge](../../electricity/challenges.md#loaded-divider)
+tests why a divider's output depends on what it drives.
+
 !!! question "Predict"
     The receiver's DATA flickers with noise the whole time nothing is being
     sent, and the sketch shows every message the receiver hears, with a

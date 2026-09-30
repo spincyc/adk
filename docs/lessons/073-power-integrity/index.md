@@ -2,7 +2,7 @@
 lesson: 73
 promise: See how nearby capacitors reduce a brief dip in a local supply.
 time: 25 minutes
-level: 1
+level: 3
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -51,7 +51,7 @@ the dip. Write down both predictions before measuring.
 Take out the parts and signal wires from the previous build. Keep the
 Mega's GND wire in the bottom − rail hole nearest it and its 5 V wire in
 the top + rail hole nearest it. Put the red LED in its familiar holes and
-the S8050 in its [Lesson 65](../065-control-with-a-transistor/index.md)
+the S8050 in its [E10](../065-control-with-a-transistor/index.md)
 E–B–C holes. Check the marking and pin order of your transistor before
 inserting it; similar packages differ.
 
