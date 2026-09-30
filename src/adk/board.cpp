@@ -286,6 +286,11 @@ namespace adk {
                 {
                     log.println (F ("adk: a 433 MHz radio stops PWM on pins 11 and 12"));
                 }
+
+                if (unknown || timer == 3)
+                {
+                    log.println (F ("adk: an IrTransmitter stops PWM on pins 2, 3 and 5"));
+                }
                 break;
             }
             case Fault::NotSerial:

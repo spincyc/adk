@@ -80,7 +80,7 @@ Timers matter on the Mega:
 | 0 | 4, 13 | `millis ()`; never taken over |
 | 1 | 11, 12 | `RadioTransmitter` and `RadioReceiver` (433 MHz) |
 | 2 | 9, 10 | `Speaker` (Arduino `tone ()`) |
-| 3 | 2, 3, 5 | |
+| 3 | 2, 3, 5 | `IrTransmitter` (its 38 kHz carrier) |
 | 4 | 6, 7, 8 | |
 | 5 | 44, 45, 46 | `Servo` |
 

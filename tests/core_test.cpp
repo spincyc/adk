@@ -394,10 +394,16 @@ TEST (aTimerFaultNamesOnlyThePartsThatTakeThatTimer)
     CHECK (radio.text.find ("radio") != std::string::npos);
     CHECK (radio.text.find ("Speaker") == std::string::npos);
     CHECK (radio.text.find ("Servo") == std::string::npos);
+    CHECK (radio.text.find ("IrTransmitter") == std::string::npos);
+
+    arduino::Log infrared;
+    adk::explain (infrared, adk::Fault::TimerInUse, 3);
+    CHECK (infrared.text == "adk: pin 3 needs a timer that is already in use\r\n"
+                            "adk: an IrTransmitter stops PWM on pins 2, 3 and 5\r\n");
 
     arduino::Log untaken;
-    adk::explain (untaken, adk::Fault::TimerInUse, 3);
-    CHECK (untaken.text == "adk: pin 3 needs a timer that is already in use\r\n");
+    adk::explain (untaken, adk::Fault::TimerInUse, 6);
+    CHECK (untaken.text == "adk: pin 6 needs a timer that is already in use\r\n");
 }
 
 TEST (aTimerFaultOnAPinWithoutATimerNamesEveryPartThatTakesOne)
@@ -408,6 +414,7 @@ TEST (aTimerFaultOnAPinWithoutATimerNamesEveryPartThatTakesOne)
     CHECK (log.text.find ("Speaker") != std::string::npos);
     CHECK (log.text.find ("Servo") != std::string::npos);
     CHECK (log.text.find ("radio") != std::string::npos);
+    CHECK (log.text.find ("IrTransmitter") != std::string::npos);
 }
 
 TEST (aHaltedBoardBlinksTensLongAndOnesShort)
