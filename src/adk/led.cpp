@@ -47,6 +47,12 @@ namespace adk {
 
     void Led::blink (Millis period)
     {
+        if (period == 0)
+        {
+            off ();
+            return;
+        }
+
         if (period == period_)
         {
             return;

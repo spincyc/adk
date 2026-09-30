@@ -22,7 +22,8 @@ namespace adk {
         // of each period, and keeps to the beat as an Every does, so it
         // stays in step with an Every of the same period. Asking again for
         // the same blink changes nothing, so blink () can be called from
-        // every pass of loop (); a new period starts afresh.
+        // every pass of loop (); a new period starts afresh. A period of 0
+        // is no flash at all: blink (0) turns the LED off, as off () does.
         void blink (Millis period);
 
       protected:

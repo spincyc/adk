@@ -89,6 +89,34 @@ TEST (blinkingAtANewPeriodStartsAfresh)
     CHECK (!led.isOn ());
 }
 
+TEST (blinkZeroTurnsTheLedOffWhateverItWasDoing)
+{
+    adk::Led led {8};
+
+    adk::setup ();
+    led.blink (0);
+    adk::update (0);
+    CHECK (!led.isOn ());
+
+    led.on ();
+    led.blink (0);
+    CHECK (!led.isOn ());
+
+    led.blink (1000);
+    adk::update (100);
+    led.blink (0);
+    CHECK (!led.isOn ());
+    CHECK (arduino::pin (8).output == LOW);
+
+    adk::update (600);
+    adk::update (1100);
+    CHECK (!led.isOn ());
+
+    // And a blink after it starts afresh, lit at once.
+    led.blink (1000);
+    CHECK (led.isOn ());
+}
+
 // Updates come a little late, by a different amount each time, as they do
 // from a busy loop (). Each flash still starts on the beat, as an Every
 // ticks, not from the update that noticed the last one ended, so a
