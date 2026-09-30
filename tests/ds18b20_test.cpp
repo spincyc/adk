@@ -209,13 +209,14 @@ namespace {
         int           sent       = 0;
     };
 
-    // Update once a millisecond over [from, to) and list when readings came.
+    // Update once a millisecond over [from, to), across the wrap of millis ()
+    // if it lies between them, and list when readings came.
     std::vector<adk::Millis> readingsBetween (const adk::Ds18b20& thermometer, adk::Millis from,
                                               adk::Millis to)
     {
         std::vector<adk::Millis> times;
 
-        for (adk::Millis now = from; now < to; ++now)
+        for (adk::Millis now = from; now != to; ++now)
         {
             adk::update (now);
 
@@ -330,6 +331,25 @@ TEST (ds18b20MeasuresEvery750ms)
 
     CHECK (readingsBetween (thermometer, 0, 3000) == (std::vector<adk::Millis> {750, 1500, 2250}));
     CHECK (sensor.resets == 7);
+    CHECK (sensor.faults == 0);
+}
+
+TEST (ds18b20MeasuresEvery750msAcrossTheWrapOfMillis)
+{
+    arduino::setCallCost (3);
+    Sensor       sensor      {7};
+    adk::Ds18b20 thermometer {7};
+
+    adk::setup ();
+    sensor.load (0x0191);
+
+    // The first conversion starts 512 ms before millis () wraps round to
+    // zero, so it is collected 238 ms after.
+    std::vector<adk::Millis> readings {238, 988, 1738};
+
+    CHECK (readingsBetween (thermometer, 0xFFFFFE00, 2000) == readings);
+    CHECK (thermometer.ok ());
+    CHECK (thermometer.celsius () == 25.0625f);
     CHECK (sensor.faults == 0);
 }
 

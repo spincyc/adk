@@ -188,6 +188,56 @@ TEST (irReceiverIgnoresARepeatLongAfterTheButton)
     CHECK (!ir.wasReceived ());
 }
 
+// micros () wraps round to zero after 2^32 us, about 71.6 minutes. The fake
+// core's clock runs on past it, and the receiver keeps the low 32 bits, as
+// the Mega's micros () would give them.
+TEST (irReceiverDecodesACodeAcrossTheWrapOfMicros)
+{
+    adk::IrReceiver ir {Signal};
+    Remote          remote;
+
+    adk::setup ();
+
+    // The code starts 20 ms before the wrap, so it wraps among the bits.
+    arduino::advanceMicros (0x100000000UL - 20000);
+    remote.press (adk::remote::digit8);
+    adk::update (0);
+
+    CHECK (ir.wasReceived ());
+    CHECK (ir.command () == adk::remote::digit8);
+}
+
+TEST (irReceiverTimesRepeatsAcrossTheWrapOfMicros)
+{
+    adk::IrReceiver ir {Signal};
+    Remote          remote;
+
+    adk::setup ();
+
+    // The code takes 68 ms, so it ends 22 ms before the wrap, and the
+    // repeat that follows ends 30 ms after the wrap.
+    arduino::advanceMicros (0x100000000UL - 90000);
+    remote.press (adk::remote::digit8);
+    adk::update (0);
+    CHECK (ir.wasReceived ());
+
+    remote.hold ();
+    adk::update (1);
+    CHECK (ir.wasReceived ());
+    CHECK (ir.isRepeat ());
+
+    // The same again, but the repeat comes too late to be the same button.
+    arduino::advanceMicros (0x100000000UL - arduino::now () % 0x100000000UL - 90000);
+    remote.press (adk::remote::digit8);
+    adk::update (2);
+    CHECK (ir.wasReceived ());
+
+    arduino::advanceMicros (300000);
+    remote.hold ();
+    adk::update (3);
+    CHECK (!ir.wasReceived ());
+}
+
 TEST (irReceiverRejectsACorruptedFrameAndItsRepeats)
 {
     adk::IrReceiver ir {Signal};

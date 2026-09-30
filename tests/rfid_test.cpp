@@ -278,12 +278,13 @@ namespace {
         unsigned long      configuredAt    = 0;
     };
 
-    // Update once a millisecond over [from, to) and count the reads.
+    // Update once a millisecond over [from, to), across the wrap of millis ()
+    // if it lies between them, and count the reads.
     int readsBetween (const adk::Rfid& rfid, adk::Millis from, adk::Millis to)
     {
         int reads = 0;
 
-        for (adk::Millis now = from; now < to; ++now)
+        for (adk::Millis now = from; now != to; ++now)
         {
             adk::update (now);
             reads += rfid.wasRead () ? 1 : 0;
@@ -533,6 +534,45 @@ TEST (rfidGivesUpOnAnExchangeThatNeverEnds)
 
     CHECK (readsBetween (rfid, 0, 1000) == 0);
     CHECK (reader.sent ({Wupa}) == 10);
+}
+
+TEST (rfidGivesUpOnAnExchangeAcrossTheWrapOfMillis)
+{
+    Rc522     reader {9};
+    adk::Rfid rfid   {9, 8};
+
+    adk::setup ();
+    reader.present (0x1A2B3C4D);
+    reader.stuck = true;
+
+    // From 500 ms before millis () wraps round to zero until 500 ms after.
+    CHECK (readsBetween (rfid, 0xFFFFFE0C, 500) == 0);
+    CHECK (reader.sent ({Wupa}) == 10);
+}
+
+TEST (rfidForgetsARemovedTagAcrossTheWrapOfMillis)
+{
+    Rc522     reader {9};
+    adk::Rfid rfid   {9, 8};
+
+    // 200 ms before millis () wraps round to zero, so the looks come at
+    // -200, -100, 0, 100 and 200 ms.
+    constexpr adk::Millis Start = 0xFFFFFF38;
+
+    adk::setup ();
+    reader.present (0x1A2B3C4D);
+    CHECK (readsBetween (rfid, Start, Start + 10) == 1);
+
+    reader.remove ();
+    CHECK (readsBetween (rfid, Start + 10, Start + 150) == 0);
+    CHECK (rfid.isPresent ());
+
+    CHECK (readsBetween (rfid, Start + 150, Start + 250) == 0);
+    CHECK (!rfid.isPresent ());
+
+    reader.present (0x1A2B3C4D);
+    CHECK (readsBetween (rfid, Start + 250, Start + 400) == 1);
+    CHECK (rfid.isPresent ());
 }
 
 TEST (rfidSelectsTheReaderForEachAccessOnly)

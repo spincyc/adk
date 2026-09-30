@@ -285,6 +285,27 @@ TEST (meshNodeSendsAtMostEveryOneAndAHalfSeconds)
     CHECK (Serial1.text == "Lamp is onNow");
 }
 
+TEST (meshNodeKeepsItsGapAcrossTheWrapOfMillis)
+{
+    adk::MeshNode mesh {Serial1};
+
+    adk::setup ();
+
+    // 256 ms before millis () wraps round to zero.
+    adk::update (0xFFFFFF00);
+    CHECK (mesh.send ("Before"));
+
+    adk::update (0);
+    CHECK (!mesh.canSend ());
+
+    adk::update (1243);
+    CHECK (!mesh.send ("Too soon"));
+
+    adk::update (1244);
+    CHECK (mesh.send ("After"));
+    CHECK (Serial1.text == "BeforeAfter");
+}
+
 TEST (meshNodeSplitsTheSenderFromTheMessage)
 {
     adk::MeshNode mesh {Serial1};

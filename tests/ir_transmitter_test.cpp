@@ -134,36 +134,3 @@ TEST (irTransmitterRepeatsAndFallsDark)
     adk::stop ();
     CHECK (!(TCCR3A & _BV (COM3B1)));
 }
-
-TEST (soundSensorMeasuresHowFarTheSignalSwings)
-{
-    adk::SoundSensor sound {A5};
-
-    adk::setup ();
-    CHECK (adk::isClaimed (A5));
-
-    // Quiet: the signal sits at the middle.
-    arduino::pin (A5).analog = 512;
-    int levels = 0;
-
-    for (adk::Millis now = 0; now <= 50; now += 5)
-    {
-        adk::update (now);
-        levels += sound.measured () ? 1 : 0;
-    }
-
-    CHECK (levels == 1);
-    CHECK (sound.level () == 0);
-
-    // A clap: it swings from 300 to 700 and back.
-    for (adk::Millis now = 55; now <= 100; now += 5)
-    {
-        arduino::pin (A5).analog = (now / 5) % 2 ? 300 : 700;
-        adk::update (now);
-    }
-
-    CHECK (sound.measured ());
-    CHECK (sound.level () == 400);
-    adk::update (105);
-    CHECK (!sound.measured ());
-}

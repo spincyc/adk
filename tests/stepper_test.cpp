@@ -353,3 +353,23 @@ TEST (aRevolutionEndsOnThePhaseItStartedFrom)
     CHECK (!stepper.isMoving ());
     CHECK (coils () == "1000");
 }
+
+TEST (stepperKeepsItsPaceAcrossTheWrapOfMillis)
+{
+    adk::Stepper stepper {22, 23, 24, 25};
+    std::string  steps;
+
+    adk::setup ();
+    stepper.speed (300);
+    stepper.step (100);
+
+    // From 5 ms before millis () wraps round to zero until 5 ms after.
+    for (adk::Millis now = 0xFFFFFFFB; now != 6; ++now)
+    {
+        long before = stepper.position ();
+        adk::update (now);
+        steps += stepper.position () != before ? 'S' : '.';
+    }
+
+    CHECK (steps == "S...S..S..S");
+}
