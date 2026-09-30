@@ -181,6 +181,98 @@ class Resistor (Part):
         pencil.polyline (outline, width=0.8, closed=True, layer="top")
 
 
+class Capacitor (Part):
+    # A small two-lead capacitor. On an electrolytic, the stripe marks −;
+    # it is drawn on the second leg's side and named in the build step.
+    LENGTH = 18
+    standing = Resistor.standing
+    geometry = Resistor.geometry
+    labels = Resistor.labels
+
+    def __init__ (self, value, a, b, polarized=False):
+        self.value, self.a, self.b, self.polarized = value, a, b, polarized
+        self.name = f"{value} capacitor"
+
+    def legs (self):
+        if self.polarized:
+            return [("+ leg", self.a), ("striped − leg", self.b)]
+        return [("one leg", self.a), ("other leg", self.b)]
+
+    def shapes (self, bench):
+        if self.standing (bench):
+            return Resistor.shapes (self, bench)
+        (x1, y1), (x2, _) = bench.hole_xy (self.a), bench.hole_xy (self.b)
+        cx, cy = self.geometry (bench)
+        left, right = sorted ((x1, x2))
+        half = self.LENGTH / 2
+        return [("rect", cx - half, cy - 5.2, cx + half, cy + 5.2),
+                lead_shape ((left, y1), (cx - half + 1, cy)),
+                lead_shape ((cx + half - 1, cy), (right, y1))]
+
+    def draw (self, pencil, bench):
+        (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
+        cx, cy = self.geometry (bench)
+        if self.standing (bench):
+            span = math.dist ((x1, y1), (x2, y2))
+            angle = math.degrees (math.atan2 (y2 - y1, x2 - x1))
+            pencil.begin (cx, cy, angle)
+            pencil.lead ((-span / 2, 0), (-self.LENGTH / 2, 0))
+            pencil.lead ((self.LENGTH / 2, 0), (span / 2, 0))
+            self._body (pencil, 0, 0)
+            pencil.end ()
+            return
+        left, right = sorted ((x1, x2))
+        pencil.lead ((left, y1), (cx - self.LENGTH / 2, cy))
+        pencil.lead ((cx + self.LENGTH / 2, cy), (right, y2))
+        self._body (pencil, cx, cy, stripe_side=-1 if x2 < x1 else 1)
+
+    def _body (self, pencil, cx, cy, stripe_side=1):
+        color = "#3f4851" if self.polarized else "#d4ab74"
+        pencil.spot (cx, cy, 8, color)
+        pencil.circle (cx, cy, 8, width=0.8, layer="top")
+        if self.polarized:
+            pencil.band (cx + (4.5 if stripe_side > 0 else -7), cy - 6, 2.5, 12,
+                         "#d8dce0")
+
+
+class Inductor (Part):
+    # A two-lead coil, drawn with its turns visible above the breadboard.
+    LENGTH = 24
+    standing = Resistor.standing
+    geometry = Resistor.geometry
+    shapes = Resistor.shapes
+    labels = Resistor.labels
+
+    def __init__ (self, value, a, b):
+        self.value, self.a, self.b = value, a, b
+        self.name = f"{value} inductor"
+
+    def legs (self):
+        return [("one lead", self.a), ("other lead", self.b)]
+
+    def draw (self, pencil, bench):
+        (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
+        cx, cy = self.geometry (bench)
+        if self.standing (bench):
+            span = math.dist ((x1, y1), (x2, y2))
+            angle = math.degrees (math.atan2 (y2 - y1, x2 - x1))
+            pencil.begin (cx, cy, angle)
+            pencil.lead ((-span / 2, 0), (-self.LENGTH / 2, 0))
+            pencil.lead ((self.LENGTH / 2, 0), (span / 2, 0))
+            self._body (pencil, 0, 0)
+            pencil.end ()
+            return
+        pencil.lead ((x1, y1), (cx - self.LENGTH / 2, cy))
+        pencil.lead ((cx + self.LENGTH / 2, cy), (x2, y2))
+        self._body (pencil, cx, cy)
+
+    def _body (self, pencil, cx, cy):
+        pencil.tint (rounded (cx - 12, cy - 5, 24, 10, 3), "#b48a5b")
+        pencil.rect (cx - 12, cy - 5, 24, 10, width=0.8, radius=3, layer="top")
+        for offset in (-7, -3, 1, 5):
+            pencil.band (cx + offset, cy - 5, 1.6, 10, "#704f33")
+
+
 class Diode (Part):
     # The rectifier's band marks its cathode; unlike a resistor its ends
     # must stay distinguishable in both the drawing and the build steps.
@@ -841,15 +933,19 @@ class HeaderModule (Part):
 
 
 def bands_for (value):
-    # A 1% resistor's five bands: three digits, how many zeros follow, and
-    # brown for 1%. "220 Ω" is red, red, black, black, brown.
+    # A 1% resistor's five bands: three digits, a multiplier (gold for
+    # tenths), and brown for 1%. "220 Ω" is red, red, black, black, brown.
     names = ["black", "brown", "red", "orange", "yellow", "green", "blue", "violet", "grey",
              "white"]
     match = re.fullmatch (r"([\d.]+)\s*(k|M)?\s*Ω", value)
     ohms = float (match.group (1)) * {None: 1, "k": 1e3, "M": 1e6}[match.group (2)]
-    digits = f"{ohms:.0f}"
-    if len (digits) < 3:
-        raise ValueError (f"{value}: five-band resistors below 100 Ω need a gold multiplier")
-    zeros = len (digits) - 3
+    if 10 <= ohms < 100:
+        digits = f"{ohms * 10:.0f}"
+        multiplier = "gold"
+    else:
+        digits = f"{ohms:.0f}"
+        if len (digits) < 3:
+            raise ValueError (f"{value}: five-band resistors below 10 Ω are unsupported")
+        multiplier = names[len (digits) - 3]
     return [names[int (digits[0])], names[int (digits[1])], names[int (digits[2])],
-            names[zeros], "brown"]
+            multiplier, "brown"]

@@ -57,9 +57,9 @@ Mega resets. So the servo takes its power from the **breadboard power
 module**, which turns a 9 V adapter into a steady 5 V, and the Mega sends
 only the signal. Two wires from the module feed only the bottom rails, for
 the servo; the screen, as in Lesson 16, and the knob run on the Mega's own
-5 V, on the top rails. The Mega's GND joins all the rails: a pulse
-is a voltage measured from GND, and the servo can only read it if they share
-the same GND.
+5 V, on the top rails. The Mega's GND and the module's GND share the bottom
+− rail; the top and bottom + rails stay separate. A pulse is a voltage
+measured from GND, so the servo and Mega need that shared GND.
 
 !!! question "Predict"
     Once it's all running, what do you think happens if you switch the power

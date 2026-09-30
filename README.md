@@ -2,13 +2,15 @@
 
 **Build real circuits on an Arduino Mega 2560, and understand every line.**
 
-ADK is fifty-five hands-on lessons, from a blinking LED to a game of Pong
-played between two boards over radio, and the small C++ library that makes
-them simple. Every lesson is a
+ADK has fifty-five project lessons, from a blinking LED to a game of Pong
+played between two boards over radio, plus twenty-four electricity
+investigations that run alongside them. Its small C++ library makes the
+project builds simple. Every lesson is a
 web page and a printable PDF, with pencil drawings of the breadboard that
 match the code pin for pin.
 
-**[Start the course →](https://spincyc.github.io/adk/)**
+**[Start the course →](https://spincyc.github.io/adk/)** ·
+**[Explore electricity →](https://spincyc.github.io/adk/electricity/)**
 
 ```cpp
 #include <Adk.h>
@@ -96,11 +98,10 @@ design, and [the style guide](docs/STYLE.md) the code.
 
 ## Status
 
-All fifty-five lessons are written, each with its sketch, its build drawn
-from one description, and its PDF. The library is complete and host-tested,
-and every sketch compiles for the Mega. None of it has yet been built and
-checked on a real board, so treat a lesson's promises as what it is designed
-to do until someone has.
+All seventy-nine lessons are written, each with its sketch and a build drawn
+from one description. The site can also make each as a PDF. The library is
+host-tested, and every sketch compiles for the Mega. The circuit results are
+predictions and have not yet been checked on physical hardware.
 
 ## License
 

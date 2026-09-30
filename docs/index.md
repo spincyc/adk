@@ -10,16 +10,16 @@ hide:
 
 # Build real circuits. Understand every line.
 
-Thirty-six hands-on lessons for the Arduino Mega 2560 and the parts in the
-Elegoo starter and sensor kits, plus an I2C level shifter. Six more use
-add-on radios, and twelve
-join two boards across a house. Start with one blinking LED; finish with
-games, musical instruments, a weather station, a door that opens for the
-right card, and a game of Pong played between two rooms.
+Fifty-five project lessons for the Arduino Mega 2560 start with one blinking
+LED and grow into games, musical instruments, a weather station, radio links
+and a game of Pong played between two rooms. A parallel set of twenty-four
+electricity investigations starts with a DC loop and works through measured
+circuits, alternating signals and digital logic.
 { .hero-lead }
 
 [Get set up](start.md){ .md-button .md-button--primary }
 [See the whole course](course.md){ .md-button }
+[Explore electricity](electricity/index.md){ .md-button }
 
 Already set up? [Start with Lesson 1](lessons/001-blink/index.md).
 { .hero-aside }
@@ -70,10 +70,11 @@ void loop ()
 
 </div>
 
-## Eighteen builds, three lessons each
+## Two paths through the course
 
-Two lessons each introduce a part; the third puts them together into
-something worth showing off. Extras, at the end, stand on their own.
+The project path has eighteen three-lesson arcs and one extra. The
+electricity path has eight three-investigation modules. Start either path
+at its first lesson and keep each build's parts in their home positions.
 
 <!-- arcs -->
 

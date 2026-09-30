@@ -98,8 +98,8 @@ import re
 from typing import NamedTuple
 
 from modules import STUB, Placed, PowerModule, make as make_module
-from parts import (Button, Buzzer, Chip, Diode, Display, HeaderModule, Led, Potentiometer, Resistor,
-                   RgbLed, Transistor, TwoLegs, bands_for)
+from parts import (Button, Buzzer, Capacitor, Chip, Diode, Display, HeaderModule, Inductor, Led,
+                   Potentiometer, Resistor, RgbLed, Transistor, TwoLegs, bands_for)
 from pencil import DPI
 
 MEGA_WIDTH, MEGA_HEIGHT = 4.0, 2.1
@@ -363,6 +363,20 @@ class Bench:
         self._add (Resistor (value, a, b))
         self._step (Step (f"{value} resistor", (self._at (a), self._at (b)),
                           colors=tuple (bands_for (value))))
+        return self
+
+    def capacitor (self, value, a, b, polarized=False):
+        self._add (Capacitor (value, a, b, polarized))
+        legs = (self._at (a, "+ leg"), self._at (b, "striped − leg")) if polarized else \
+               (self._at (a), self._at (b))
+        note = "check the − stripe before powering" if polarized else "either way round"
+        self._step (Step (f"{value} capacitor", legs, note))
+        return self
+
+    def inductor (self, value, a, b):
+        self._add (Inductor (value, a, b))
+        self._step (Step (f"{value} inductor", (self._at (a), self._at (b)),
+                          "the two leads can go either way round"))
         return self
 
     def led (self, color, anode, cathode):
@@ -1066,13 +1080,15 @@ class Bench:
         used = {parse_hole (hole)[2] for hole in self.used if parse_hole (hole)[0] == "rail"}
         if not used:
             return
-        self._stage = Stage ("power to the rails")
+        mega_5v = "T+" in used or ("B+" in used and not module)
+        self._stage = Stage ("connect GND to the − rail")
         power = [self._power_wire (("GND.long2", "GND.long"), "B-3")]
         # The Mega's 5V feeds the top rails, and the bottom ones too unless
         # the power module does: the screen and sensors run from the Mega,
         # as their signals do, and the module feeds only the bottom rails,
         # for motors.
-        if "T+" in used or ("B+" in used and not module):
+        if mega_5v:
+            self._stage = Stage ("connect 5 V to the + rail")
             power.append (self._power_wire (("5V.long2", "5V.long"), "T+3"))
         links = []
         # The links stay just left of the LCD, clear of the power module's
@@ -1088,6 +1104,7 @@ class Bench:
                 raise ValueError (f"nothing feeds the {side} {rail[1]} rail: wire it from a part "
                                   f"that does")
             self.last = max (self.last, 63)
+            self._stage = Stage (f"join the {'+' if rail[1] == '+' else '−'} rails")
             links.append (self._power_wire (None, a, b))
         # Power first in the build steps, the links after it.
         rest = [item for item in self.items if item not in power + links]

@@ -78,6 +78,11 @@ You're ready. The first lesson makes an LED blink.
 
 [Start Lesson 1](lessons/001-blink/index.md){ .md-button .md-button--primary }
 
+You can also follow the parallel [electricity investigations](electricity/index.md).
+Their first build uses the same LED and shows what happens when its return
+path is open. Later modules add a meter, then other parts and instruments;
+the syllabus lists what each needs.
+
 ## From the command line
 
 If you prefer a terminal to the IDE, the repository's `Makefile` builds and

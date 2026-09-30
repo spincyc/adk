@@ -64,7 +64,8 @@ ROOT = os.path.dirname (os.path.dirname (os.path.dirname (os.path.abspath (__fil
 
 COURSE = yaml.safe_load (open (os.path.join (os.path.dirname (__file__), "course.yml"),
                                encoding="utf-8"))
-LESSONS = [dict (lesson, arc=arc["arc"], boards=arc.get ("boards", 1))
+LESSONS = [dict (lesson, arc=arc["arc"], boards=arc.get ("boards", 1),
+                track=arc.get ("track", "projects"))
            for arc in COURSE for lesson in arc["lessons"]]
 for number, lesson in enumerate (LESSONS, 1):
     lesson["number"] = number
@@ -329,6 +330,8 @@ def previous (number, letter=""):
     if number < 2 or not written (LESSONS[number - 2]):
         return None
     lesson = LESSONS[number - 2]
+    if lesson["track"] != LESSONS[number - 1]["track"]:
+        return None
     boards = load_circuit (lesson)
     for mine, theirs in ((letter, letter), ("A", ""), ("", "A")):
         if letter == mine and theirs in boards:

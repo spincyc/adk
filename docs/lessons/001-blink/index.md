@@ -27,37 +27,32 @@ program, and sent it to a computer the size of a candy bar.
 
 ## The idea
 
-Every numbered pin on the Mega is a switch your program controls. Switched
-**on**, the pin connects to 5 volts; switched **off**, to 0 volts, which is
-called ground, or **GND**.
+In this build, pin 26 acts like a switch your program controls. When it is
+**on**, it is about 5 volts above ground (**GND**); when it is **off**, it is
+at 0 volts. A voltage is always measured between two places.
 
 Electricity only flows around a complete loop. In this circuit it leaves pin
 26, goes through a resistor, through the LED, and back into the Mega at GND.
 Break the loop anywhere and the LED goes dark.
 
-An LED is a one-way street. Current flows in at its **long leg** (+) and out
-at its **short leg** (−), and the rim of the LED has a flat edge on the short
-leg's side. Put one in backwards and it simply stays dark; nothing is harmed.
-
-An LED on its own would let far too much current through and could damage
-the pin. The **resistor** sets the current. A red LED keeps about 2 V for
-itself, so the resistor has the other 3 V across it, and Ohm's law gives the
-current:
-
-<p class="formula">current = <span class="fraction"><span>5 V − 2 V</span><span>220 Ω</span></span> ≈ 14 mA</p>
-
-That is bright, and comfortably below the 20 mA a Mega pin is happy to give.
+An LED lets current through only one way: in at its **long leg** (+) and out
+at its **short leg** (−). The flat edge of its rim marks the short-leg side.
+If you put it in backwards, it stays dark. The **resistor** limits the current
+so the LED and the Mega's pin stay safe. Keep it in the circuit.
 
 !!! question "Predict"
-    If you swapped the 220 Ω resistor for a 1 kΩ one (brown, black, black, brown, brown), would
-    the LED be brighter, dimmer, or the same? Write down your guess. You can
-    test it at the end.
+    If the black wire between the Mega's GND and the − rail were missing,
+    would the LED still blink? Write down your guess, then test it after
+    the first upload.
 
 ## Build it
 
 !!! warning "Unplug first"
     Always unplug the USB cable before you change any wiring, and check your
     wiring before you plug it back in.
+
+Pin 26 will supply the LED when it turns on. Connect only the bottom **−**
+rail to **GND**; leave both **+** rails empty in this build.
 
 <!-- bench -->
 
@@ -68,7 +63,7 @@ That is bright, and comfortably below the 20 mA a Mega pin is happy to give.
     anything pushed into those five holes is joined. Rows **f** to **j** are
     a separate strip, across the gap. The long rows along the top and bottom
     edges, marked **+** and **−**, are the rails: each runs the whole length
-    of the board, ready to carry 5 V and GND to wherever they're needed.
+    of the board. A rail carries 5 V or GND only after you connect it.
     Any hole along a rail will do, but the steps name the one by a column,
     as "the bottom − rail by column 7", to keep each wire short.
 
@@ -117,9 +112,10 @@ Read it from the top:
 
 The LED should flash: on for half a second, off for half a second.
 
-You predicted what a 1 kΩ resistor would do. It makes the LED dimmer: with
-nearly five times the resistance, only about a fifth of the current flows,
-(5 V − 2 V) ÷ 1000 Ω = 3 mA. Try it in the last challenge below.
+Now test your prediction: unplug the USB cable, remove only the black wire
+from the Mega's GND to the bottom − rail, and plug the cable back in. The LED
+stays dark because the path back to GND is broken. Unplug again, replace the
+wire in the same holes, and plug in once more. It blinks again.
 
 !!! tip "From the command line"
     With `arduino-cli` installed, `make upload EXAMPLE=lessons/001-blink` in the
@@ -160,8 +156,10 @@ nearly five times the resistance, only about a fifth of the current flows,
    inside `loop ()`. The LED blinks just the same. Add
    `adk::Led builtIn {LED_BUILTIN};` and make the Mega's own LED blink too,
    at a different speed.
-4. **Test your prediction.** Swap the 220 Ω resistor for a 1 kΩ one, and see
-   how much dimmer 3 mA is than 14 mA.
+4. **Change the resistor.** Predict whether a 1 kΩ resistor (brown, black,
+   black, brown, brown) will make the LED brighter or dimmer. Unplug, swap
+   it for the 220 Ω resistor, then plug in and check. Restore the 220 Ω
+   resistor before Lesson 2.
 
 ## Measure it
 
@@ -189,3 +187,8 @@ What the numbers tell you:
 - Try the 1 kΩ resistor from *Make it yours*. The LED's share barely moves,
   so the resistor still has about 3 V across it, and with five times the
   resistance the current is a fifth: that is why the LED is dimmer.
+
+With the 220 Ω resistor, the red LED keeps about 2 V and the resistor has
+the other 3 V. Ohm's law gives about (5 V − 2 V) ÷ 220 Ω = 14 mA through
+both parts, below the Mega pin's 20 mA operating limit. With 1 kΩ, the
+current is about 3 mA.

@@ -1,8 +1,10 @@
 # Safety
 
-Everything in this course runs on 5 volts from a USB port or a small battery,
-which is safe to touch. These rules keep it that way, and keep your parts
-alive.
+The breadboard circuits use 5 V or 3.3 V, low voltages that are safe to
+touch. The Mega gets power from USB; later project lessons use the kit's
+power module with a 9 V adapter. The electricity investigations also use
+an isolated 0–4 V signal generator. These rules keep the parts and wiring
+safe.
 
 !!! danger "Never mains electricity"
     Nothing in this course connects to a wall socket, and nothing ever
@@ -21,6 +23,18 @@ alive.
   to GND.
 - **Keep the bench dry and tidy.** Loose wire snippets on a desk can bridge
   pins underneath a board.
+
+## Electricity investigations
+
+- **Keep sources separate.** Do not join a generator output to the Mega's
+  5 V or 3.3 V pin. Follow each circuit's ground connection, and keep its
+  output within the stated range.
+- **Mind capacitor polarity.** Put the striped − leg where the drawing says,
+  use the stated voltage rating, and discharge through the stated resistor
+  before moving it. Do not short its legs.
+- **Clip a scope to ground.** In these experiments, both scope ground clips
+  go to the circuit's common GND rail. Keep them off signal points. Use only
+  the isolated instruments named in the [electricity syllabus](electricity/index.md).
 
 ## Motors and servos
 

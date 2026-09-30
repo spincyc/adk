@@ -110,6 +110,8 @@ nav:
       - course.md
       - First light:
           - lessons/001-blink/index.md
+  - Electricity:
+      - electricity/index.md
   - Library:
       - library/index.md
       - library/core.md

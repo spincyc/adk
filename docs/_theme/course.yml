@@ -1,8 +1,9 @@
-# The course: eighteen arcs of three lessons. Two lessons each teach a part;
-# the third is a project that puts them together. The first twelve use the
-# kits' parts; the next two add radios; the next four join two boards over
-# a LoRa bridge (boards: 2). Extras, at the end, are lessons that stand on
-# their own, on one board. This file is the one list of lessons: the
+# The project course has eighteen arcs of three lessons. Two lessons each
+# teach a part; the third is a project that puts them together. The first
+# twelve use the kits' parts; the next two add radios; the next four join
+# two boards over a LoRa bridge (boards: 2). Extras stand on their own. The
+# Electricity track follows as eight arcs of three investigations, and can
+# be started alongside the project course. This file is the one list: the
 # navigation, the course map and the home page are built from it, and a
 # lesson appears as a link once its page exists.
 
@@ -121,3 +122,59 @@
 - arc: Extras
   lessons:
     - {slug: 055-reliability-meter, title: Reliability Meter, builds: A meter that counts how many radio messages get through}
+
+- arc: Electricity · DC paths
+  track: electricity
+  lessons:
+    - {slug: 056-close-the-loop, title: Close the Loop, builds: An LED that proves current needs a return path}
+    - {slug: 057-measure-across-and-through, title: Across and Through, builds: Voltage and current readings from one LED circuit}
+    - {slug: 058-resist-the-flow, title: Resist the Flow, builds: An LED whose current changes with resistance}
+
+- arc: Electricity · Sharing
+  track: electricity
+  lessons:
+    - {slug: 059-resistors-in-series, title: Resistors in Series, builds: Two resistors sharing one voltage}
+    - {slug: 060-branches-in-parallel, title: Branches in Parallel, builds: Two LED branches fed by one supply}
+    - {slug: 061-tap-a-divider, title: Tap a Divider, builds: A knob whose middle voltage follows its turn}
+
+- arc: Electricity · Charge and diodes
+  track: electricity
+  lessons:
+    - {slug: 062-charge-a-capacitor, title: Charge a Capacitor, builds: A stored voltage that rises and falls}
+    - {slug: 063-time-an-rc-pair, title: Time an RC Pair, builds: A charging time set by resistance and capacitance}
+    - {slug: 064-one-way-diode, title: One-Way Diode, builds: A light that tests a diode's direction}
+
+- arc: Electricity · Switches and coils
+  track: electricity
+  lessons:
+    - {slug: 065-control-with-a-transistor, title: Control with a Transistor, builds: A button that controls a separate LED path}
+    - {slug: 066-inductor-current, title: An Inductor Resists Change, builds: A scope trace that rises slowly through a coil}
+    - {slug: 067-coil-diode, title: Give a Coil a Safe Path, builds: A switched coil protected by a diode}
+
+- arc: Electricity · Alternating signals
+  track: electricity
+  lessons:
+    - {slug: 068-alternating-current, title: Current Reverses, builds: A low-voltage alternating waveform}
+    - {slug: 069-frequency-and-period, title: Count a Waveform, builds: A trace with countable cycles}
+    - {slug: 070-filter-and-phase, title: Filter and Phase, builds: An RC filter that delays and softens a wave}
+
+- arc: Electricity · Gain and power
+  track: electricity
+  lessons:
+    - {slug: 071-amplifier-gain, title: Make a Signal Larger, builds: A signal with twice the input voltage}
+    - {slug: 072-negative-feedback, title: Feed Back the Output, builds: A buffered voltage that follows a knob}
+    - {slug: 073-power-integrity, title: Keep the Supply Steady, builds: A local supply whose ripple shrinks}
+
+- arc: Electricity · Logic and memory
+  track: electricity
+  lessons:
+    - {slug: 074-nand-logic, title: Make a Truth Table, builds: A gate whose output follows two buttons}
+    - {slug: 075-set-reset-latch, title: Remember One Bit, builds: A circuit that remembers a button press}
+    - {slug: 076-schmitt-clock, title: Make a Clock Tick, builds: A capacitor and gate that blink an LED}
+
+- arc: Electricity · Mega signals
+  track: electricity
+  lessons:
+    - {slug: 077-sampling, title: Sample a Voltage, builds: Numbered readings from a smooth knob voltage}
+    - {slug: 078-pwm-average, title: Average PWM, builds: A filtered voltage from a pulsing pin}
+    - {slug: 079-serial-link, title: Send a Byte Down a Wire, builds: A byte returning through a serial link}

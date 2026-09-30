@@ -16,6 +16,7 @@ sys.path.insert (0, os.path.join (ROOT, "docs", "_theme"))
 
 from bench import Bench, hole_words, load, pin_words  # noqa: E402
 from drawing import Drawing  # noqa: E402
+from parts import bands_for  # noqa: E402
 
 failures = []
 
@@ -56,6 +57,10 @@ def expect (name, got, wanted):
         failures.append (f"{name}: {got!r}, not {wanted!r}")
 
 
+expect ("10 Ω five-band colors", bands_for ("10 Ω"),
+        ["brown", "black", "black", "gold", "brown"])
+
+
 # What finish () refuses.
 check ("a good circuit", blink)
 check ("a wire in the wrong hole", lambda b: blink (b, hole="j8"), "pin 26 reaches nothing")
@@ -66,6 +71,18 @@ check ("two legs in one strip",
                                                                           cathode="b7"),
        "share column 6 f-j")
 check ("a button's joined legs", button)
+capacitor = check ("a polarized capacitor", lambda b: b.capacitor ("1000 µF", "e6", "f6",
+                                                                    polarized=True), draw=True)
+expect ("capacitor polarity is in its build step", capacitor.items[0][2].places[1][1],
+        "striped − leg")
+reversed_capacitor = check ("a reversed horizontal capacitor",
+                           lambda b: b.capacitor ("10 µF", "c16", "c15", polarized=True),
+                           draw=True)
+expect ("a reversed capacitor's left lead reaches its negative hole",
+        reversed_capacitor.parts[0].shapes (reversed_capacitor)[1][1],
+        reversed_capacitor.hole_xy ("c15")[0])
+coil = check ("an inductor", lambda b: b.inductor ("100 mH", "e6", "f6"), draw=True)
+expect ("inductor build step", coil.items[0][2].what, "100 mH inductor")
 check ("a knob's legs in one row",
        lambda b: b.potentiometer ("e5", "e6", "e7"), "across the gap")
 check ("a knob across the gap",
@@ -293,8 +310,11 @@ staged.led ("yellow", anode="b12", cathode="b13").wire ("a13", "B-13")
 staged.module ("lora_modem", "modem", at=(6.0, 3.45), facing="up").wire ("modem.GND", "B-15")
 staged.stage ("the link").wire ("T-18", "B-18")
 expect ("stage titles", titles (finished (staged)),
-        ["power to the rails", "the red LED on pin 26", "the yellow LED on pin 27",
+        ["connect GND to the − rail", "the red LED on pin 26", "the yellow LED on pin 27",
          "the LoRa modem", "the link"])
+powered = load (os.path.join (ROOT, "docs", "lessons", "007-dimmer", "circuit.py"))[""]
+expect ("each automatic rail connection has an accurate title", titles (powered)[:3],
+        ["connect GND to the − rail", "connect 5 V to the + rail", "join the − rails"])
 expect ("pins in words", pin_words ({"36", "A0", "9", "31", "33", "10", "32", "34", "35"}),
         "pins 9, 10, 31–36 and A0")
 expect ("a pin in words", pin_words ({"A3"}), "pin A3")
