@@ -112,6 +112,19 @@ namespace adk {
             return true;
         }
 
+        // Point the interrupt at a part, or at nothing. The interrupt is
+        // already running by then, from start (), and a pointer is two bytes
+        // on the AVR: written with interrupts on, it could be caught half
+        // written and called through. noInterrupts () also stops the
+        // compiler moving the write past it. The interrupt reads the
+        // pointers afresh each time it runs, so they need no volatile.
+        static void point (auto& pointer, auto part)
+        {
+            noInterrupts ();
+            pointer = part;
+            interrupts ();
+        }
+
         static void tick ()
         {
             if (receiver)
@@ -148,7 +161,7 @@ namespace adk {
     {
         if (RadioClock::transmitter == this)
         {
-            RadioClock::transmitter = nullptr;
+            RadioClock::point (RadioClock::transmitter, nullptr);
         }
     }
 
@@ -162,7 +175,7 @@ namespace adk {
 
         if (claimOutput (pin_) && RadioClock::start (pin_))
         {
-            RadioClock::transmitter = this;
+            RadioClock::point (RadioClock::transmitter, this);
         }
     }
 
@@ -347,7 +360,7 @@ namespace adk {
     {
         if (RadioClock::receiver == this)
         {
-            RadioClock::receiver = nullptr;
+            RadioClock::point (RadioClock::receiver, nullptr);
         }
     }
 
@@ -361,7 +374,7 @@ namespace adk {
 
         if (claimInput (pin_) && RadioClock::start (pin_))
         {
-            RadioClock::receiver = this;
+            RadioClock::point (RadioClock::receiver, this);
         }
     }
 
