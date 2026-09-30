@@ -10,6 +10,7 @@ PORT         ?= /dev/ttyACM0
 CXX          ?= c++
 PYTHON       ?= python3
 CHROMIUM     ?= chromium
+PDF_WORKERS  ?= 2
 ARDUINO_CORE ?= arduino:avr@1.8.8
 
 # The C++23 avr-gcc ------------------------------------------------------------
@@ -423,20 +424,9 @@ $(BUILD_DIR)/steps.ok: tests/build_steps.py tests/navigation_ids.py  \
 
 ## pdf             print every lesson page to build/site/pdf
 pdf: site $(BUILD_DIR)/view.ok $(BUILD_DIR)/print.ok
-	@mkdir -p $(BUILD_DIR)/site/pdf
-	@for page in $(abspath $(BUILD_DIR))/site/lessons/*/index.html; do    \
-	    lesson=$$(basename $$(dirname $$page));                           \
-	    echo "  PDF  $$lesson";                                           \
-	    $(CHROMIUM)                                                       \
-	        --headless=new                                                \
-	        --no-sandbox                                                  \
-	        --disable-gpu                                                 \
-	        --no-pdf-header-footer                                        \
-	        --virtual-time-budget=10000                                   \
-	        --run-all-compositor-stages-before-draw                       \
-	        --print-to-pdf=$(abspath $(BUILD_DIR))/site/pdf/$$lesson.pdf  \
-	        file://$$page 2>/dev/null || exit 1;                          \
-	done
+	@$(VENV)/bin/python docs/_theme/print_pdfs.py \
+	    --site-dir "$(abspath $(BUILD_DIR))/site" \
+	    --chromium "$(CHROMIUM)" --workers "$(PDF_WORKERS)"
 
 $(BUILD_DIR)/view.ok: tests/build_view.html docs/assets/steps.js docs/assets/adk.css
 	@mkdir -p $(BUILD_DIR)

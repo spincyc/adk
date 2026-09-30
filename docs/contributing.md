@@ -44,7 +44,8 @@ the site derives its public label from its order within that track.
 The website needs Python 3: `make site` creates `build/venv` from
 `docs/requirements.txt`, a hashed lock that pip-compile makes from
 `docs/requirements.in` (the command is at its top). The PDFs need Chromium.
-`make deps` installs all of it.
+`make deps` installs all of it. `make pdf` prints two lessons at once by
+default; set `PDF_WORKERS=1` on a computer that needs a smaller workload.
 
 ## Adding a part
 
