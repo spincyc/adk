@@ -56,8 +56,9 @@ After E10, [E11](lessons/066-inductor-current/index.md) shows an inductor's
 changing current on a scope. After E08,
 [E13–E15](lessons/068-alternating-current/index.md) measure isolated
 low-voltage AC. E16–E18 then cover
-[gain, feedback and supply ripple](lessons/071-amplifier-gain/index.md).
-These builds need the isolated
+[gain, feedback and supply ripple](lessons/071-amplifier-gain/index.md);
+E17 needs only a meter if you build its follower without the generator.
+The others need the isolated
 generator, battery-powered scope and extra parts specified in the
 [electricity equipment table](electricity/index.md#equipment-gates); read
 the [scope and generator primer](electricity/skills.md#scope-and-generator)

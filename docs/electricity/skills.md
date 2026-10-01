@@ -40,8 +40,8 @@ use the [diagnosis guide](diagnose.md) to trace the path.
 
 ## Use the scope and generator {#scope-and-generator}
 
-E11 and E13–E18 use a two-channel oscilloscope and a waveform generator;
-E12, E17 and E23 can use the scope too. Read this before the first one,
+E11, E13–E16 and E18 use a two-channel oscilloscope and a waveform
+generator; E12, E17 and E23 can use the scope too, without the generator. Read this before the first one,
 and do the output check below before the generator touches a circuit.
 
 ### Why they must run from batteries
@@ -72,7 +72,7 @@ drawn from left to right as time passes.
 |---|---|
 | **V/div** (volts per division) | The vertical scale: at 1 V/div, each grid square is 1 V tall. |
 | **Timebase** (ms/div or µs/div) | The horizontal scale: at 1 ms/div, each grid square is 1 ms wide. A screen is often ten squares wide, so 1 ms/div shows 10 ms. |
-| **Trigger** | The scope waits until one channel crosses a set level in a set direction, such as channel 1 rising through 2 V, then draws from that moment. Each sweep starts at the same point of the wave, so a repeating wave stands still. Keep the level inside the wave's range. |
+| **Trigger** | The scope waits until one channel crosses a set level in a set direction, such as channel 1 rising through 2 V, then draws from that moment. Each sweep starts at the same point of the wave, so a repeating wave stands still. Keep the level inside the wave's range. In **Auto** mode the scope also draws when nothing triggers, which suits a steady wave; for something that happens once, such as a button's release, choose **Normal** or **Single**: Single waits, draws the first trigger it sees, then holds it on the screen. |
 | **DC coupling** | Shows the whole voltage, including any steady part. Use it unless a page says otherwise. |
 | **AC coupling** | Takes away the steady average and shows only the changes, so a small ripple on 5 V can be enlarged. It always centres the trace on 0 V, so it cannot show whether a signal really goes below 0 V. |
 | **Offset** (vertical position) | Slides the trace up or down without changing it. With DC coupling, an offset of about −5 V brings a trace near 5 V to the middle of the screen, so a small V/div can show its changes. |

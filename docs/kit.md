@@ -57,7 +57,7 @@ US dollar prices, checked in 2026.
 | A digital multimeter that reads DC volts | The *Measure it* section that ends most project lessons, which you can skip without one; the electricity path from E02 on | US$15–35 |
 | A small screwdriver | The relay's screw terminals, in Lessons 35 and 53 | US$2–5 |
 | A soldering iron, its stand and lead-free solder | Header pins on add-on boards that arrive without them fitted: the level shifter (Lesson 28), the FM radio board (Lesson 37), some 433 MHz modules (Lesson 38) and a Heltec board (Lesson 42). Buy them with pins fitted if you can, or ask someone experienced, and read [Soldering](safety.md#soldering) first | US$20–40 |
-| The electricity path's extra parts and instruments | Capacitors, an inductor, logic and amplifier chips, and for E11 and E13–E18 a battery-powered scope and signal generator: the syllabus's [equipment gates](electricity/index.md#equipment-gates) list them module by module | See [What to buy](#what-to-buy) |
+| The electricity path's extra parts and instruments | Capacitors, an inductor, logic and amplifier chips, and for E11, E13–E16 and E18 a battery-powered scope and signal generator: the syllabus's [equipment gates](electricity/index.md#equipment-gates) list them module by module | See [What to buy](#what-to-buy) |
 
 ## I2C level shifter
 
@@ -147,7 +147,7 @@ Besides the pair of RYLR896 modems from Lesson 40:
 | Qty | Item | Rough cost |
 |---|---|---|
 | 1 | A second Elegoo Mega 2560 Most Complete Starter Kit, which covers all of Board B's parts | US$55–70 |
-| | *or* a second Mega 2560 (a compatible board costs less than an Arduino one), USB cable and breadboard, and a second breadboard power module for Lesson 51 | US$30–65 |
+| | *or* a second Mega 2560 (a compatible board costs less than an Arduino one), USB cable and breadboard, a second breadboard power module for Lesson 51, and a second MAX7219 matrix, joystick and passive buzzer for Lessons 54 and 55 | US$40–75 |
 | 1–2 | USB power banks, or a long USB cable, to put the boards in different rooms | US$10–25 |
 
 ### Electricity path, E01 to E24
@@ -159,7 +159,7 @@ Besides the pair of RYLR896 modems from Lesson 40:
 | 1 set | The extra parts in each module's [equipment gate](electricity/index.md#equipment-gates): capacitors, a 100 mH inductor, an MCP6002, a 74HC00 and a 74HC14, a 10 Ω and two 100 kΩ resistors | US$10–20 |
 | | **About** | **US$80–125** |
 
-### Scope extension, for E11 and E13 to E18
+### Scope extension, for E11, E13 to E16 and E18
 
 | Qty | Item | Rough cost |
 |---|---|---|

@@ -216,7 +216,9 @@ Read the [scope and generator primer](../../electricity/skills.md#scope-and-gene
 first. Use a battery-powered scope with its **ground clip only on the GND
 rail**, and put the probe tip in e31, the collector. Start with DC
 coupling, **1 V/div**, about **50 µs/div**, and the trigger on a rising
-edge at about 2.5 V. Release the button: the trace jumps from near 0 V to
+edge at about 2.5 V, in **Single** mode: the release happens once, and
+Single holds it on the screen. Hold the button, arm the trigger, then
+release the button: the trace jumps from near 0 V to
 about **0.7 V above the 5 V supply**, stays there briefly, then settles
 at 5 V. That bump is the coil's current carrying on through the diode,
 which holds the collector one diode drop above the buzzer's + side. To
