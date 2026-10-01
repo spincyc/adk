@@ -374,6 +374,50 @@ expect ("the 10 kΩ stands clear of the transistor's base",
 straight = next (part for part in active.parts if part.name == "1 kΩ resistor")
 expect ("a resistor with nothing between its legs lies between them",
         straight.geometry (active)[0], active.hole_xy ("c31")[0])
+# Its bent lead from behind the base passes between the base and collector
+# legs, clear of both.
+lead = pulldown.shapes (active)[1]
+transistor = next (part for part in active.parts if part.name == "S8050 transistor")
+expect ("the 10 kΩ's lead keeps clear of the transistor's legs",
+        min (segments_apart ((lead[1:3], lead[3:5]), (leg[1:3], leg[3:5]))
+             for leg in transistor.leads (active)) > 2, True)
+
+# Part bodies keep clear of each other where they can, and are drawn back
+# to front where they can't: beside the knob, the white LED's resistor
+# stands aside, and the LED, whose legs stand in front of the knob's, is
+# drawn over it. The LED's lens leaves its resistor's end in e38 in view.
+dimmer = finished (Bench ("test", columns=(1, 50)).home_led ("3", "white").home_knob ())
+knob, resistor, led = (next (part for part in dimmer.parts if part.name == name)
+                       for name in ("potentiometer", "220 Ω resistor", "white LED"))
+expect ("the resistor stands clear of the knob",
+        distance_to (knob.bodies (dimmer)[0], resistor.geometry (dimmer)) > Resistor.GIRTH, True)
+order = back_to_front (dimmer.parts, dimmer)
+expect ("the LED is drawn over the knob", order.index (led) > order.index (knob), True)
+expect ("the LED's lens leaves e38 in view",
+        distance_to (led.bodies (dimmer)[0], dimmer.hole_xy ("e38")) > 1.8, True)
+expect ("the LED's long leg is bent, its short leg straight",
+        [len (leg) for leg in led.bends (dimmer)], [3, 2])
+# A bypass capacitor beside a chip stands clear of the chip's body, and a
+# capacitor on two legs in one row leans back, so both its holes show.
+schmitt = finished (Bench ("test", columns=(1, 24))
+                    .chip ("SN74HC14N", pins=["1A", "1Y", "2A", "2Y", "3A", "3Y", "GND", "4Y", "4A",
+                                              "5Y", "5A", "6Y", "6A", "VCC"], first=16)
+                    .capacitor ("100 nF", "g15", "e15")
+                    .capacitor ("10 µF", "c16", "c15", polarized=True))
+chip, disc, can = schmitt.parts
+expect ("the disc stands clear of the chip",
+        distance_to (chip.bodies (schmitt)[0], disc.geometry (schmitt)) > disc.RADIUS, True)
+expect ("a capacitor in one row shows both its holes",
+        [distance_to (can.bodies (schmitt)[0], schmitt.hole_xy (hole)) > 1.8
+         for hole in ("c15", "c16")], [True, True])
+# Each capacitor looks like what it is.
+expect ("capacitor kinds", [disc.kind, can.kind, Capacitor ("1 µF", "g6", "e6").kind],
+        ["ceramic", "electrolytic", "film"])
+try:
+    Capacitor ("1 µF", "g6", "e6", polarized=True, kind="film")
+    failures.append ("a polarized film capacitor: should have raised")
+except ValueError as error:
+    expect ("a polarized film capacitor", "only an electrolytic" in str (error), True)
 
 # A wire takes a costly short way rather than a cheap one three times as
 # long, as round the far end of the Mega: here a strip that costs much to

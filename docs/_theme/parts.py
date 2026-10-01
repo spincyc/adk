@@ -454,6 +454,7 @@ class Transistor (Part):
     # the hole behind its base, where the active buzzer's 10 kΩ goes, shows.
     name = "S8050 transistor"
     FLAT, DEEP, HALF = 4, 10, 6.5       # the flat face's offset from the legs, and the D's size
+    SPREAD = 5                          # between the legs where they meet the face
 
     def __init__ (self, emitter, base, collector):
         self.holes = (emitter, base, collector)
@@ -479,6 +480,15 @@ class Transistor (Part):
         xs, ys = [px for px, _ in arc], [py for _, py in arc]
         return [("rect", min (xs), min (ys), max (xs), max (ys))]
 
+    # Each leg, from its hole to the flat face: spread as far apart there as
+    # the face allows, so a lead from the next row, such as the active
+    # buzzer's 10 kΩ from behind the base, finds room between two of them.
+    def leads (self, bench):
+        x, _ = bench.hole_xy (self.holes[1])
+        _, face, _ = self.outline (bench)
+        return [lead_shape (bench.hole_xy (hole), (x + (index - 1) * self.SPREAD, face))
+                for index, hole in enumerate (self.holes)]
+
     def labels (self, bench):
         _, x0, y0, x1, y1 = self.shapes (bench)[0]
         return [Label (self.name, spots_round ((x0, y0, x1, y1), self.name,
@@ -487,14 +497,15 @@ class Transistor (Part):
     def draw (self, pencil, bench):
         x, _ = bench.hole_xy (self.holes[1])
         arc, face, back = self.outline (bench)
-        for index, hole in enumerate (self.holes):
-            pencil.lead (bench.hole_xy (hole), (x + (index - 1) * 4, face))
+        for _, ax, ay, bx, by, _ in self.leads (bench):
+            pencil.lead ((ax, ay), (bx, by))
         pencil.tint (arc, "#353535", opacity=0.6)
         pencil.polyline (arc, width=0.8, closed=True)
-        # The flat face, marked, toward the legs' row.
+        # The flat face, marked, toward the legs' row. The marking keeps a
+        # halo of the body's grey, so a lead passing over reads as under it.
         pencil.line ((x - self.HALF, face), (x + self.HALF, face), width=1.3, tone=0.95)
         pencil.text (x, face + back * 0.9, "8050", size=4, kind="silk",
-                     color="#f4f1e8")
+                     color="#f4f1e8", halo="#858585")
 
 
 class Led (Part):
