@@ -20,3 +20,10 @@ bench.home_button ("23")
 bench.home_matrix (pixels=[row[::-1] for row in reversed (DRAWING)])
 
 bench.home_joystick ()
+
+# Readings to take with a multimeter. The joystick's and the matrix's wires
+# run straight to the Mega, so the meter reaches only the clear button.
+bench.measure ("Pin 23, button up", red="23", black="GND", expect="about 5 V",
+               when="button up")
+bench.measure ("Pin 23, button pressed", red="23", black="GND", expect="0 V",
+               when="button held down")

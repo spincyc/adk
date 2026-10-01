@@ -188,6 +188,36 @@ from 0. They are the two bumps on top of the heart.
    `adk::Every` of 300 ms, so it walks. Or make a single dot bounce around
    the edges using `set (x, y)` and `set (x, y, false)`.
 
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../001-blink/index.md#measure-it): DC volts, the black
+lead in **COM** and the red one in **V**.
+
+The matrix's five wires run straight to the Mega, with no hole for a
+probe, and its DIN, CLK and CS change far too fast for a meter anyway.
+What the meter can reach is the button. Nothing in the sketch needs to
+change: leave the smiley showing.
+
+!!! question "Predict"
+    The matrix's current, tens of milliamps for the smiley, flows back to
+    the Mega's GND along the − rail, and a pressed button joins pin 22 to
+    that same rail. Will pin 22 read exactly 0 V while you press, as in
+    Lesson 2, or a little above it, with the matrix's current on the rail?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Pin 22, button up**, reads about 5 V, from the pull-up inside the
+  chip, just as in Lesson 2.
+- **Pin 22, button pressed**, reads 0 V, though the matrix's current runs
+  along the rail beside the button's. The rail is a strip of metal, with
+  only a tiny fraction of an ohm along it, so even that current leaves a
+  voltage far too small for the meter to show. That is why parts can share
+  a rail: a pressed button reads LOW however many dots are lit, and the
+  press that holds it there for 20 ms moves `slide` on.
+
 ## Check yourself
 
 1. The matrix has 64 LEDs, but the Mega uses only three pins for it, and

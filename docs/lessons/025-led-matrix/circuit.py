@@ -18,3 +18,12 @@ SMILEY = ["..####..",
 bench.home_button ("22")
 
 bench.home_matrix (pixels=[row[::-1] for row in reversed (SMILEY)])
+
+# Readings to take with a multimeter. The matrix's wires run straight to
+# the Mega, so the meter reaches only the button's pin. The rail has no
+# free hole between the matrix's GND and the Mega's, B-5 and B-3, so the
+# matrix's return current can't be measured along it either.
+bench.measure ("Pin 22, button up", red="22", black="GND", expect="about 5 V",
+               when="button up, smiley showing")
+bench.measure ("Pin 22, button pressed", red="22", black="GND", expect="0 V",
+               when="button held down, smiley showing")

@@ -177,6 +177,35 @@ little over a second.
    remember the order the dots were drawn in: come back to this after the
    next lesson, whose snake does exactly that with an `adk::Deque`.
 
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../001-blink/index.md#measure-it): DC volts, the black
+lead in **COM** and the red one in **V**.
+
+The joystick is two knobs, and each makes a voltage from 0 to 5 V, about
+2.5 V at rest. But its wires, like the matrix's, run straight to the Mega,
+with no hole for a probe. [Lesson 7's *Measure it*](../007-dimmer/index.md#measure-it)
+shows the same kind of voltage on a knob you can reach. Here the meter can
+reach the clear button.
+
+!!! question "Predict"
+    Which will the meter read on pin 23 while you hold the clear button
+    down, 5 V or 0 V? And will clicking the stick, on pin 22, change that
+    reading?
+
+<!-- measure -->
+
+What the numbers tell you:
+
+- **Pin 23** reads about 5 V with the button up, from the pull-up inside
+  the chip, and 0 V while you hold it down: a pressed button reads LOW, as
+  in Lesson 2. The update in which that 0 V has held for 20 ms is the one
+  where `clearButton.wasPressed ()` is true, and the picture is wiped.
+- Clicking the stick leaves pin 23 alone. The stick's switch is a second
+  button with pin 22 to itself, wired straight to the Mega, and read the
+  same way.
+
 ## Check yourself
 
 1. What is inside the joystick that lets the Mega read where you push it?
