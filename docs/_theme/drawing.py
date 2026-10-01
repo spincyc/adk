@@ -945,8 +945,13 @@ class Drawing:
                 take (text, x, y, anchor, size * 0.9, to, box)
         for label, own, mine in crowded:
             scaled = size * label.size
-            settle (label, placer.place (label.text, scaled, ring (label.at, label.text, scaled, FAR),
-                                         own, mine))
+            best = placer.place (label.text, scaled, ring (label.at, label.text, scaled, FAR), own,
+                                 mine)
+            # A long name finds no gap it can stand in the middle of: let it
+            # start or end at each point instead, and reach further still.
+            if best[0] >= HARD:
+                best = placer.place (label.text, scaled, wide_ring (label.at, scaled), own, mine)
+            settle (label, best)
         for text, at, offset in bench.notes:
             tx, ty = bench.point_xy (at)
             if rough and not (rough[0] < tx < rough[2] and rough[1] < ty < rough[3]):
@@ -1337,6 +1342,24 @@ def ring (at, text, size, reaches=(16, 24, 34, 46, 60)):
             angle = step * math.pi / 8
             x, y = at[0] + math.cos (angle) * reach * 1.4, at[1] + math.sin (angle) * reach
             spots.append ((x, y + size * 0.3, "middle", 40 + reach * 1.2, at))
+    return spots
+
+
+# More spots round a point for a name the ring can't place: in finer steps
+# and further out, each with the name centred on it or, on the side away
+# from the point, starting or ending there.
+def wide_ring (at, size):
+    spots = []
+    for reach in FAR + (175, 200, 250):
+        for step in range (24):
+            angle = step * math.pi / 12
+            x, y = at[0] + math.cos (angle) * reach * 1.4, at[1] + math.sin (angle) * reach
+            cost = 40 + reach * 1.2
+            spots.append ((x, y + size * 0.3, "middle", cost, at))
+            if math.cos (angle) > -0.3:
+                spots.append ((x, y + size * 0.3, "start", cost + 3, at))
+            if math.cos (angle) < 0.3:
+                spots.append ((x, y + size * 0.3, "end", cost + 3, at))
     return spots
 
 
