@@ -170,6 +170,7 @@ What's new:
     pressed together give one answer, not two. And because `held` goes back
     to -1 after every answer, each turn starts with no key held: a button
     you pressed while Simon played doesn't count when you let it go.
+
 - `check ()` compares your answer with `sequence[step]`. Wrong ends the
   game. Right moves `step` on, until the last step: steps are numbered
   from 0, so the last is `sequence.size () - 1`. Then Simon takes its turn
