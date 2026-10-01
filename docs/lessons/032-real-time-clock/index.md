@@ -110,14 +110,17 @@ What's new:
   cell went flat. Only then does the sketch set it, with
   `rtc.set (adk::compiledAt ())`. A clock that is already running is left
   alone, so resetting the Mega never throws away the right time.
-- `adk::Every tick {200};` from Lesson 11 reads the clock five times a
+- `adk::Every tick {200};` from Lesson 11 redraws the screen five times a
   second, so the seconds on the screen change within a fifth of a second of
   the real ones.
-- `auto now = rtc.now ();` asks the chip for the date and time, and keeps
-  them in `now`, an `adk::DateTime`: `now.year`, `now.month`, `now.day`,
-  `now.hour`, `now.minute` and `now.second`, on the 24-hour clock.
-- `rtc.ok ()` says whether the chip answered just then. If it didn't, the
-  screen says so, and which pins to check.
+- `adk::update ()` reads the chip ten times a second, so the sketch never
+  has to wait for it. `auto now = rtc.now ();` gives the date and time from
+  the latest of those readings, never more than a tenth of a second old,
+  and keeps them in `now`, an `adk::DateTime`: `now.year`, `now.month`,
+  `now.day`, `now.hour`, `now.minute` and `now.second`, on the 24-hour
+  clock.
+- `rtc.ok ()` says whether the chip answered the last time it was read. If
+  it didn't, the screen says so, and which pins to check.
 - `showDateAndTime ()` prints each row with one `adk::print` at
   `lcd.at (0, 0)` or `lcd.at (0, 1)`, as in Lesson 15. `now.minute / 10` is
   the tens digit and `now.minute % 10` the ones, the trick from Lesson 10,
@@ -152,9 +155,11 @@ alone.
 ??? note "How it works"
     Inside the DS1307 are seven numbers, one each for seconds, minutes, hours,
     the day of the week, the date, the month and the year, stored the way we
-    write them: each decimal digit in four bits of its own. `rtc.now ()` reads
-    all seven in one go over I2C, which takes about a millisecond, and turns
-    them back into ordinary numbers.
+    write them: each decimal digit in four bits of its own. Ten times a
+    second, inside `adk::update ()`, the clock reads all seven in one go over
+    I2C, which takes about a millisecond, and turns them back into ordinary
+    numbers. `rtc.now ()` hands back the latest of those readings without
+    asking the chip again.
 
     `adk::compiledAt ()` reads two pieces of text the compiler writes into
     every program, `__DATE__` and `__TIME__`, such as `"Sep 24 2026"` and
