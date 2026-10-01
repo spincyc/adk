@@ -31,9 +31,10 @@ of the button, and it's quiet again.
 
 ## The idea
 
-There is no new part here. The FM radio and the two knobs are Lesson 37's,
-the clock is Lesson 32's, and the way the alarm is set comes from the alarm
-clock in Lesson 33, with times of day counted in minutes after midnight:
+There is no new part here. This project builds on two earlier ones: the FM
+radio and its two knobs from Lesson 37, and the clock from Lesson 32. The
+way the alarm is set comes from the alarm clock in Lesson 33, with times of
+day counted in minutes after midnight:
 
 <p class="formula">07:30 → 7 × 60 + 30 = 450</p>
 
@@ -47,6 +48,11 @@ second it sets the volume to the share of the half minute that has gone by:
 With the volume knob at 12, the radio starts at 0, reaches 6 after 15
 seconds, and 12 after 30, where it stays. The radio has sixteen volumes, 0
 to 15, so at 12 it steps up every two and a half seconds.
+
+Lesson 38's 433 MHz radios don't come into it: they carry short messages,
+not music, and the clock radio has no messages to send. If you'd like to
+bring one back, the last challenge in *Make it yours* turns Lesson 38's
+receiver into a wireless snooze button.
 
 ## How the clock radio works
 
@@ -243,6 +249,17 @@ and the time gone by, so the whole fade shrinks to fit.
 5. **Remember the station.** Save the frequency in EEPROM whenever the
    radio switches off, and tune back to it in `setup ()` with
    `radio.tune ()`.
+6. **Wireless snooze.** Bring in Lesson 38's 433 MHz radios, once you have
+   the snooze from the first challenge. On a second Mega, build Lesson 38's
+   transmitter and button, and send `Snooze` when the button is pressed.
+   On the clock radio, wire Lesson 38's receiver to pin 43 again, with its
+   5 V and GND; its home from Lesson 38 is where the FM radio stands now,
+   so plan a free place for it first. Add
+   `adk::RadioReceiver receiver {43};`, and when `receiver.wasReceived ()`
+   and the text is `Snooze`, snooze just as the rotary knob does. Compare
+   the text with `strcmp`, as Lesson 38's doorbell did. Sending is ruled by
+   law: read Lesson 38's warning and [Safety](../../safety.md#radios)
+   before you build it.
 
 ## Measure it
 
