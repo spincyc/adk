@@ -314,7 +314,7 @@ jobs:
     deploy:
         name: Publish Pages
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        needs: [library, firmware, site, boards, arduino-lint]
+        needs: [library, firmware, site, boards, boards-installs, arduino-lint]
         runs-on: ubuntu-24.04
         timeout-minutes: 15
         permissions:
