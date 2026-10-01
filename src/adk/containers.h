@@ -212,6 +212,15 @@ namespace adk {
         size_t size_  = 0;
     };
 
+    // Whether things of type U can be seen as T: the same type, or T with
+    // const added, as std::span asks. A derived type is not enough, because
+    // a view of bases would step through derived things by a base's size.
+    template <typename U, typename T>
+    concept ViewableAs = requires (U (*items) [], void (*view) (T (*) []))
+    {
+        view (items);
+    };
+
     // A view of things stored somewhere else, like std::span: a way to hand
     // a whole array, Array or Vector to a function without copying it.
     template <typename T>
@@ -219,16 +228,24 @@ namespace adk {
     {
         constexpr Span (T* items, size_t size) : items_ (items), size_ (size) {}
 
+        // A pointer to a derived type would convert to T* by itself.
+        template <typename U>
+            requires (!ViewableAs<U, T>)
+        Span (U* items, size_t size) = delete;
+
         template <size_t N>
         constexpr Span (T (&items) [N]) : items_ (items), size_ (N) {}
 
         template <typename U, size_t N>
+            requires ViewableAs<U, T>
         constexpr Span (Array<U, N>& items) : items_ (items.data ()), size_ (N) {}
 
         template <typename U, size_t N>
+            requires ViewableAs<const U, T>
         constexpr Span (const Array<U, N>& items) : items_ (items.data ()), size_ (N) {}
 
         template <typename U, size_t Capacity>
+            requires ViewableAs<U, T>
         constexpr Span (Vector<U, Capacity>& items)
             : items_ (items.data ())
             , size_  (items.size ())
@@ -236,6 +253,7 @@ namespace adk {
         }
 
         template <typename U, size_t Capacity>
+            requires ViewableAs<const U, T>
         constexpr Span (const Vector<U, Capacity>& items)
             : items_ (items.data ())
             , size_  (items.size ())

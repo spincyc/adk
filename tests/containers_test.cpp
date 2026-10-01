@@ -81,6 +81,51 @@ TEST (spanViewsAnArrayWithoutCopying)
     CHECK (view.size () == 3 && view.back () == 6);
 }
 
+namespace {
+
+    struct Base
+    {
+        int value;
+    };
+
+    struct Derived : Base
+    {
+        int more;
+    };
+
+    // Whether a Span of this type can be made from that list, or from a
+    // pointer of that type and a size.
+    template <typename View, typename List>
+    concept Views = requires (List&& list)
+    {
+        View {static_cast<List&&> (list)};
+    };
+
+    template <typename View, typename Pointer>
+    concept ViewsPointer = requires (Pointer items)
+    {
+        View {items, 3};
+    };
+}
+
+// A view adds const, never takes it away, and never sees derived things as
+// bases: it would step through them by a base's size and read garbage.
+static_assert (Views<adk::Span<const int>, int (&) [3]>);
+static_assert (Views<adk::Span<const int>, adk::Array<int, 3>&>);
+static_assert (Views<adk::Span<const int>, const adk::Vector<int, 3>&>);
+static_assert (!Views<adk::Span<int>, const adk::Array<int, 3>&>);
+static_assert (!Views<adk::Span<int>, const adk::Vector<int, 3>&>);
+static_assert (Views<adk::Span<const Base>, adk::Array<Base, 3>&>);
+static_assert (!Views<adk::Span<const Base>, adk::Array<Derived, 3>&>);
+static_assert (!Views<adk::Span<const Base>, const adk::Array<Derived, 3>&>);
+static_assert (!Views<adk::Span<Base>, adk::Vector<Derived, 3>&>);
+static_assert (!Views<adk::Span<const Base>, const adk::Vector<Derived, 3>&>);
+static_assert (!Views<adk::Span<const Base>, Derived (&) [3]>);
+static_assert (ViewsPointer<adk::Span<const int>, int*>);
+static_assert (ViewsPointer<adk::Span<const Base>, Base*>);
+static_assert (!ViewsPointer<adk::Span<int>, const int*>);
+static_assert (!ViewsPointer<adk::Span<const Base>, Derived*>);
+
 TEST (printPutsPartsInARow)
 {
     arduino::Log log;
