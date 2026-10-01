@@ -7,6 +7,23 @@ namespace adk {
         out.print (value, decimals);
     }
 
+    void Dec::printTo (Print& out) const
+    {
+        uint8_t length = 1;
+
+        for (uint32_t rest = value / 10; rest != 0; rest /= 10)
+        {
+            ++length;
+        }
+
+        for (uint8_t zeros = length; zeros < digits; ++zeros)
+        {
+            out.print ('0');
+        }
+
+        out.print (value);
+    }
+
     void Hex::printTo (Print& out) const
     {
         // Eight digits from the highest down, leaving out the zeros in front

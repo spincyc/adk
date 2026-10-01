@@ -59,6 +59,7 @@ call, to `Serial` or an `Lcd`:
 adk::println (Serial, "Red wins in ", time, " ms!");
 lcd.at (0, 1);
 adk::print (lcd, adk::fixed (celsius, 1), " C");
+adk::print (lcd, adk::dec (now.hour, 2), ':', adk::dec (now.minute, 2));
 adk::println (Serial, "Card 0x", adk::hex (card, 8));
 ```
 

@@ -190,6 +190,20 @@ TEST (fixedPrintsASetCountOfDecimals)
     CHECK (log.text == "21.5C 54%");
 }
 
+TEST (decPrintsWholeNumbersPaddedWithZeros)
+{
+    arduino::Log log;
+
+    adk::print (log, adk::dec (8, 2), ':', adk::dec (9, 2), ':', adk::dec (0, 2));
+    CHECK (log.text == "08:09:00");
+
+    arduino::Log bare;
+
+    adk::print (bare, adk::dec (2026, 2), ' ', adk::dec (7), ' ', adk::dec (42, 4), ' ',
+                adk::dec (4294967295UL, 2));
+    CHECK (bare.text == "2026 7 0042 4294967295");
+}
+
 TEST (hexPrintsCapitalDigitsPaddedWithZeros)
 {
     arduino::Log log;

@@ -13,6 +13,15 @@ namespace adk {
         void printTo (Print& out) const;
     };
 
+    // What dec () makes, for print () to print.
+    struct Dec
+    {
+        uint32_t value;
+        uint8_t  digits;
+
+        void printTo (Print& out) const;
+    };
+
     // What hex () makes, for print () to print.
     struct Hex
     {
@@ -29,6 +38,14 @@ namespace adk {
         return {value, decimals};
     }
 
+    // A whole number with zeros in front to make at least a set count of
+    // digits, as a clock shows its minutes: adk::print (lcd, adk::dec (8, 2),
+    // ':', adk::dec (9, 2)) shows 08:09. A bigger number prints in full.
+    constexpr Dec dec (uint32_t value, uint8_t digits = 1)
+    {
+        return {value, digits};
+    }
+
     // A whole number in hexadecimal, with zeros in front to make at least
     // a set count of digits, up to eight: adk::print (Serial, "0x",
     // adk::hex (12, 2)) shows 0x0C. A bigger number prints in full.
@@ -39,7 +56,7 @@ namespace adk {
 
     // Print several things in a row, to Serial or anything else that prints,
     // such as an Lcd. Each prints as Serial.print () would print it alone,
-    // except what fixed () and hex () make.
+    // except what fixed (), dec () and hex () make.
     void print (Print& out, const auto&... parts)
     {
         // Anything with printTo (), such as a Fixed, prints itself.
