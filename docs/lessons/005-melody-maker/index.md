@@ -216,7 +216,7 @@ takes over. That's the sketch carrying on while the tune plays.
    Little Star* starts C C G G A A G. You'll need `adk::note::a4` (440 Hz)
    for the A, and `adk::note::rest` makes a silence.
 3. **Higher and lower.** Move all four keys up an octave, to `c5`, `d5`,
-   `e5` and `g5`, by changing their pitches in `keys`. Then try other notes
+   `e5` and `g5`, as you did for C. Then try other notes
    altogether: which sets make tunes you recognize?
 4. **Echo.** Record what you play, and play it back. Keep the notes in
    `adk::Vector<adk::Note, 50> recording;`, a list with room for 50 notes

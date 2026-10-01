@@ -207,13 +207,13 @@ and the time gone by, so the whole fade shrinks to fit.
 | What you see | Try this |
 |---|---|
 | The time is wrong | The clock keeps whatever time it was set to: see Lesson 32. |
+| The time stands still, perhaps at 00:00:00 | Upload Lesson 32's sketch. It says **No clock found!** if the Mega can't hear the clock: check SDA goes to pin 20 and SCL to pin 21. If the clock had stopped, it starts it again. Then upload this sketch again. |
 | The bottom row stays at ` 87.5` with no name, and the radio is silent | Try Lesson 37's sketch: it says whether the radio answers. Check pins 40, 41 and 42, the 1 kΩ from h29 to h34, and the radio's 3.3V. |
 | The radio never comes on by itself | The alarm only starts as a new minute begins, so set it at least a minute ahead, and press the rotary knob until the bottom row shows the station again. It won't start if the radio is already on. |
 | It comes on, but stays silent | Turn the volume knob up: the fade climbs to the knob's volume, and 0 is silent. |
 | The button does nothing | It must straddle the gap in columns 8 to 10, with pin 23's wire in j8 and the black jumper from a10 to the − rail. |
 | Turning the rotary knob goes the wrong way | Swap its CLK and DT wires, on pins 18 and 19. |
 | A row of solid blocks, or a blank lit screen | Turn the contrast knob beside the LCD, not the volume knob. |
-| The time stands still, perhaps at 00:00:00 | Upload Lesson 32's sketch. It says **No clock found!** if the Mega can't hear the clock: check SDA goes to pin 20 and SCL to pin 21. If the clock had stopped, it starts it again. Then upload this sketch again. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"
