@@ -71,7 +71,7 @@ rail to **GND**; leave both **+** rails empty in this build.
     Any hole along a rail will do, but the steps name the one by a column,
     as "the bottom − rail by column 7", to keep each wire short.
 
-    That is why the circuit climbs down column 6. The orange wire (j6) and
+    That is why the circuit climbs down column 6. The white wire (j6) and
     the resistor's top leg (g6) share the upper strip; the resistor stands
     across the gap, and its lower leg (e6) shares the lower strip with the
     LED's long leg (b6). The LED's short leg (b7) and the black jumper (a7)
@@ -138,8 +138,8 @@ wire in the same holes, and plug in once more. It blinks again.
 | What you see | Try this |
 |---|---|
 | The LED never lights | Turn the LED round: the long leg goes in b6. |
-| Still dark | Check the resistor stands in g6 and e6, the LED's long leg is in the same column (b6), the black jumper joins a7 to the − rail, and the orange wire is in pin 26, not 27. |
-| The LED is always on | The orange wire may be in 5 V instead of pin 26. |
+| Still dark | Check the resistor stands in g6 and e6, the LED's long leg is in the same column (b6), the black jumper joins a7 to the − rail, and the white wire is in pin 26, not 27. |
+| The LED is always on | The white wire may be in 5 V instead of pin 26. |
 | Upload fails | Pick the right board and port in the **Tools** menu, and try a different USB cable: some only carry power. |
 | The little **L** LED on the Mega blinks long and short flashes | ADK found a wiring mistake in the sketch and is blinking the pin number. See [Faults](../../library/index.md#faults). |
 

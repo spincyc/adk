@@ -107,7 +107,7 @@ did in Lesson 38:
     and check your work before you plug them back in.
 
 !!! danger "3.3 V for the modems"
-    The power module's red wire goes from its **3.3V** pin to the
+    The power module's orange wire goes from its **3.3V** pin to the
     bottom + rail by column 42, for the modems, never from its 5V pin: check
     it before you plug anything in. The module lies beside the board, never
     plugged into it, both its jumpers **off**. The modems' VDD pins go to
@@ -225,12 +225,12 @@ means everyone. Put the 2 back when you're done.
 
 | What you see | Try this |
 |---|---|
-| `No reply from A`, or from B | Is the power module on, with its LED lit? Check its red wire goes from its 3.3V pin to the bottom + rail and its black one from GND to the bottom − rail, both by column 42. Check that modem's VDD goes to the bottom + rail and its GND to the − rail. Check its TXD and RXD aren't swapped: TXD goes up to f35 (A) or f26 (B), RXD to c37 (A) or c28 (B). Then press the Mega's reset button, so the sketch sets the modems up again. |
+| `No reply from A`, or from B | Is the power module on, with its LED lit? Check its orange wire goes from its 3.3V pin to the bottom + rail and its black one from GND to the bottom − rail, both by column 42. Check that modem's VDD goes to the bottom + rail and its GND to the − rail. Check its TXD and RXD aren't swapped: TXD goes up to f35 (A) or f26 (B), RXD to c37 (A) or c28 (B). Then press the Mega's reset button, so the sketch sets the modems up again. |
 | Still no reply | Check the divider: pin 18's wire in j37, the 1 kΩ from g37 to e37, the 2 kΩ from a37 to the − rail (for B: pin 14 in j28, g28 to e28, a28 to the − rail). And pin 19's wire in j35, pin 15's in j26. |
 | `A sends:`, but B shows nothing | Check the address in `sendFromA ()` is 2 or 0, and that modem B says it is ready. |
 | `A can't send just now: try again` | Wait a moment, and send again: the last message was still going. If it always says this, modem A didn't answer at the start. |
 | Typing does nothing | Set the Serial Monitor's line ending to **New Line**: the sketch waits for the end of the line. |
-| A modem gets warm | Unplug everything at once, and check the power module's red wire comes from its **3.3V** pin, never 5V. |
+| A modem gets warm | Unplug everything at once, and check the power module's orange wire comes from its **3.3V** pin, never 5V. |
 | A blank lit screen, or a row of blocks | Turn the contrast knob beside the LCD. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 

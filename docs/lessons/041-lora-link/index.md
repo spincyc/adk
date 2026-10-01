@@ -101,16 +101,16 @@ puts it straight on the screen, and a computer could show it just as easily.
 !!! danger "5 V for these modules, and aerials first"
     Screw each module's aerial onto its gold socket before you power
     anything: sending into no aerial can damage a module. These modules
-    take **5 V**, so move the power module's red wire from its 3.3V pin to
-    its **5V** pin, and leave both its jumpers off. Should you go back to
-    Lesson 40's modems, move the wire back to **3.3V** first: 5 V would
-    damage them.
+    take **5 V**, so take the power module's orange wire off its 3.3V pin
+    and put a red one on its **5V** pin, and leave both its jumpers off.
+    Should you go back to Lesson 40's modems, put the orange wire back on
+    **3.3V** first: 5 V would damage them.
 
 Keep the screen, the button, both dividers and the Mega's wires to pins 14,
 15, 18 and 19 from Lesson 40 just as they are, and take out the two modems
 and their wires. The power module stays where it is, with its black wire:
-the steps list its red wire again because it moves from the module's
-**3.3V** pin to its **5V** pin. The DHT11 goes back to its
+the steps take out its orange wire from the module's **3.3V** pin and
+add a red one from its **5V** pin. The DHT11 goes back to its
 home above the board, as in Lesson 15, on the top rails, which the Mega's
 5V feeds as it feeds the screen.
 

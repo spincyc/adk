@@ -108,7 +108,7 @@ work at 3.3 V, and a radio that sends is ruled by law.
   inside draws about 29 mA even at 13 dBm (Semtech's SX1276 datasheet), so
   its VDD goes to the Mega's 3.3V pin; a board that also has the RFID
   reader, which shares that pin, powers its modem from the power module's
-  3.3V pin instead. Check that the module's red wire comes from its 3.3V
+  3.3V pin instead. Check that the module's orange wire comes from its 3.3V
   pin before you switch on: from its 5V pin it would ruin the modem. The
   Meshtastic board runs from its own USB cable.
 - **Fit the aerial before powering a LoRa radio.** Sending into no aerial

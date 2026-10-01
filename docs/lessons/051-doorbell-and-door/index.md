@@ -55,7 +55,7 @@ the latch. Here Board B, at the door, has the reader and a modem, and both
 run on 3.3 V. The Mega's 3.3V pin can give about 50 mA; the reader can
 draw up to about 26 mA, and the modem draws tens of milliamps each time it
 sends. Together they would ask too much of that pin. So on Board B, the
-modem takes its 3.3 V from a power module instead, by a red wire from
+modem takes its 3.3 V from a power module instead, by an orange wire from
 the module's **3.3V** pin to the bottom rails, as in Lesson 40. Those rails
 then can't give a servo its 5 V, so the latch goes inside, to Board A,
 whose own power module feeds its bottom rails from its **5V** pin. That
@@ -101,7 +101,7 @@ Board B's **L** LED is lit while it can hear Board A.
 !!! danger "Two power modules, wired differently"
     - **Board A:** the red wire from the module's **5V** pin to the
       bottom + rail by column 42, for the servo.
-    - **Board B:** the red wire from the module's **3.3V** pin to the
+    - **Board B:** the orange wire from the module's **3.3V** pin to the
       bottom + rail by column 42, for the modem. Never 5V: more than 3.6 V
       damages the modem. Board B's module fed 5 V in Lesson 50, so take
       its red wire off the **5V** pin first, before anything else on
@@ -138,7 +138,8 @@ When you are done, these are the connections Board A makes:
 ### Board B: the door
 
 The LED matrix and the servo come off; the power module and the modem
-stay, but the module's red wire moves to its **3.3V** pin. The Mega's 5V
+stay, but the module's red wire comes off its 5V pin, and an orange wire
+goes from its **3.3V** pin to the bottom + rail by column 42. The Mega's 5V
 wire goes to the top rails again: these power the active buzzer through
 its transistor driver. The reader and the tap sensor lie below the Mega in
 their places from Lesson 36, wired the same way. The doorbell is the button
@@ -223,8 +224,8 @@ Read it from the top:
 
 ## Upload it
 
-1. Check the power modules' red wires: Board A's from its **5V** pin,
-   Board B's from its **3.3V** pin, and both jumpers off on each. Plug in
+1. Check the power modules' supply wires: Board A's red one from its
+   **5V** pin, Board B's orange one from its **3.3V** pin, and both jumpers off on each. Plug in
    both adapters and switch both modules on before you plug in the USB
    cables: Board B's sketch sets its modem up only as it starts.
 2. Upload **Inside** to Board A and **Door** to Board B, each by its own
@@ -250,8 +251,8 @@ never passes them on. Ring once more, and that ring is news.
 
 | What you see | Try this |
 |---|---|
-| Board A says `Can't hear it` | Is Board B's power module on, with its LED lit? If you switched the module on after Board B started, press Board B's **RESET** button. Its modem runs from the bottom rails now: check the module's red wire from its 3.3V pin to the bottom + rail and its black wire from GND to the bottom − rail, both by column 42. Check the modem's VDD wire goes to the bottom + rail by column 29, and each modem's wires as in Lesson 49. |
-| Board B's modem gets warm | Unplug everything at once, and check the red wire of Board B's power module comes from its **3.3V** pin, never 5V. |
+| Board A says `Can't hear it` | Is Board B's power module on, with its LED lit? If you switched the module on after Board B started, press Board B's **RESET** button. Its modem runs from the bottom rails now: check the module's orange wire from its 3.3V pin to the bottom + rail and its black wire from GND to the bottom − rail, both by column 42. Check the modem's VDD wire goes to the bottom + rail by column 29, and each modem's wires as in Lesson 49. |
+| Board B's modem gets warm | Unplug everything at once, and check the orange wire of Board B's power module comes from its **3.3V** pin, never 5V. |
 | Board B's Serial Monitor says `No card reader` | Check the reader's seven wires as in Lesson 34, and that its 3.3V pin goes to the Mega's 3.3V. |
 | Your card always gets `Unknown card` | Copy its number from Board A's Serial Monitor exactly, with `0x` in front, into **Inside**, and upload it to Board A. |
 | Knocks never reach Board A | Check the tap sensor's S goes to A12, + to the power header's 5V and − to its GND, and knock close to it. |

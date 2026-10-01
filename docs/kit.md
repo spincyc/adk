@@ -224,6 +224,13 @@ pins stand at the far right, in a47–a62. Its body hangs off the bottom edge
 and beyond the end of the board, leaving the other parts in their homes
 nearer the Mega. Support the overhang at breadboard height.
 
+The drawings color each wire by what it carries: black for GND, red for
+5 V and orange for 3.3 V, which a 3.3 V module such as the LoRa modem needs
+and 5 V would ruin. Every other color is a signal, and wires that cross or
+sit side by side differ where the kit's colors allow. Your wires needn't
+match, but keeping black, red and orange for those three makes a build easy
+to check.
+
 | Part | Home |
 |---|---|
 | GND from the Mega | The GND at the end of the long header, outer pin, into the bottom − rail by column 3 |
@@ -240,7 +247,7 @@ nearer the Mega. Support the overhang at breadboard height.
 | Knob on A0 | Across the middle gap: its outer legs in f39 and f41, with jumpers from j39 to the top − rail and j41 to the top + rail; its wiper in d40, A0 into a40 |
 | The screen (LCD, contrast knob, backlight) | Knob across the middle gap (outer legs in f43 and f45, wiper in d44), the LCD's pins in a47–a62, wired by `bench.screen ()` |
 | Rotary encoder | Standing in row a, columns 15–19, its knob toward you: GND, +, SW, DT and CLK from the left; jumpers from e15 to the top − rail by column 18 and e16 to the top + rail by column 19, and 22, 19 and 18 into e17, e18 and e19 |
-| Power module | Lying to the right of the breadboard and above the LCD's overhang, never plugged in, both jumpers off: a red wire from its 5V (or 3.3V) pin into the bottom + rail by column 42, a black wire from its GND into the bottom − rail by column 42 |
+| Power module | Lying to the right of the breadboard and above the LCD's overhang, never plugged in, both jumpers off: a red wire from its 5V pin (or an orange one from its 3.3V pin) into the bottom + rail by column 42, a black wire from its GND into the bottom − rail by column 42 |
 | FM radio | Standing in row j, columns 27–34 (GPIO2 in j27 to 3.3V in j34), its board over the top rails: pins 42, 41 and 40 up from below into f29, f31 and f32, the Mega's 3.3V into f34, 1 kΩ from h29 to h34, a black jumper from f33 to the bottom − rail by column 33 |
 | 433 MHz receiver | Standing in row j, columns 30–33 (VCC in j30): 5V from the power header into f30, pin 43 into f31, a black jumper from f33 to the bottom − rail by column 33 |
 | 433 MHz transmitter | Standing in row j, columns 38–41 (EN in j38): pin 46 into f36, 1 kΩ from h36 to h39 and 2 kΩ from g39 to e39, a black jumper from a39 to the bottom − rail by column 39; the Mega's 3.3V into f40, a black jumper from f41 to the bottom − rail by column 41 |

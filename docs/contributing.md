@@ -270,7 +270,7 @@ lessons alike. [The kit page](kit.md#breadboard-homes) gives each part's home.
   header in its middle, which gives 5 V and 3.3 V whatever the jumpers say,
   to the bottom rails:
   a red wire from its 5V pin into `B+42` and a black wire from its GND into
-  `B-42`. `bench.power_module ("3.3V")` takes the red wire from its 3.3V pin
+  `B-42`. `bench.power_module ("3.3V")` takes an orange wire from its 3.3V pin
   instead, for LoRa modems.
 
 A circuit that could never work stops the site: a Mega pin whose wire

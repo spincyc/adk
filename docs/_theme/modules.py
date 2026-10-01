@@ -67,6 +67,7 @@ class Kind:
     reach  = None                   # how far its male pins are drawn sticking out
     blocks = True                   # wires go round it; a flat one they may cross
     sources = {}                    # pins that feed power, by what they give
+    wired  = frozenset ()           # the pins with a wire on them, as Placed draws it
     title_side, title_gap = "top", 8
 
     def __init__ (self, pins=None, label=None, **options):
@@ -924,6 +925,15 @@ class PowerModule (Kind):
         pencil.text (x + 5, y - 9, "3.3V", size=5.5, kind="silk")
         pencil.text (x + 25, y - 9, "5V", size=5.5, kind="silk")
         pencil.text (x + 15, y + 24, "GND", size=5.5, kind="silk")
+        # The supply pin in use, ringed in its wire's color and named large
+        # beside the header, so 3.3 V is never taken for 5 V.
+        for pin in self.header ():
+            if pin.name in self.wired and pin.name != "GND":
+                tint = WIRES["orange" if pin.name == "3.3V" else "red"]
+                pencil.circle (pin.x, pin.y, 4.6, width=1.6, layer="top", passes=1)
+                pencil.spot (pin.x, pin.y, 4.6, tint, opacity=0.45)
+                pencil.text (x + 15, y - 25, f"{pin.name} pin", size=7.5, weight="bold",
+                             color=tint, tone=1.0)
         # The barrel socket, the switch and its LED, the two regulators, the
         # USB socket, which only gives power out.
         pencil.tint (rounded (92, 4, 44, 46, 3), PLASTIC)
@@ -1444,6 +1454,7 @@ class Placed:
                 dx, dy = pin.direction
                 pencil.wire ([(pin.x, pin.y), (pin.x + dx * 14, pin.y + dy * 14)], WIRES[pin.color],
                              width=2.4)
+        self.kind.wired = frozenset (self.wired)
         self.kind.draw (pencil)
         pencil.end ()
         if title:

@@ -55,6 +55,11 @@ and waypoints in line with each other set its corners exactly:
 bench.wire ("36", "e18", via=["j14"]). A hole-to-hole jumper in one row or
 one column lies straight when nothing is in its way.
 
+A wire's color says what it carries, once finish () knows: black for GND,
+red for 5 V, orange for 3.3 V. Any other wire is a signal in a color of
+its own, its pin's (PIN_COLORS) from lesson to lesson, unless that would
+match a wire it crosses or ends beside; color= gives one by hand.
+
 The Mega's pins go by number ("26", "A0") or name. GND and 5V take the free
 pin of that kind nearest the wire's other end; these names pick one:
 
@@ -102,6 +107,7 @@ from modules import STUB, Placed, PowerModule, make as make_module
 from parts import (Button, Buzzer, Capacitor, Chip, Diode, Display, HeaderModule, Inductor, Led,
                    Potentiometer, Resistor, RgbLed, Transistor, TwoLegs, bands_for)
 from pencil import DPI
+from route import segment_distance
 
 MEGA_WIDTH, MEGA_HEIGHT = 4.0, 2.1
 BOARD_HEIGHT = 2.2
@@ -111,28 +117,36 @@ MARGIN = 0.35
 
 # The kit's breadboard jumpers come in black, red, orange, yellow, green,
 # blue and white; its female-to-male wires are a ribbon of ten colors, those
-# and brown, purple and grey. A wire must be one the kit has, and red and
-# black are kept for 5V and GND.
+# and brown, purple and grey. A wire must be one the kit has. Black, red and
+# orange are kept for what a wire carries, as a computer's power supply
+# colors its leads: GND, 5 V and 3.3 V, so a 3.3 V wire, which a LoRa modem
+# or RFID reader needs, never looks like a 5 V one, which would ruin it.
+# finish () colors each wire by what its strip carries.
 JUMPERS = {"black", "red", "orange", "yellow", "green", "blue", "white"}
 RIBBON = JUMPERS | {"brown", "purple", "grey"}
-SIGNAL_COLORS = ["yellow", "green", "blue", "orange", "white"]
-# Each home pin's wire keeps one color in every lesson, chosen so the pins
-# that share a lesson differ where they can: an LED's wire in its LED's
-# color (orange for red), the RGB LED's in its channel's.
+POWER_COLORS = {"GND": "black", "5V": "red", "3.3V": "orange"}
+SIGNAL_COLORS = ["yellow", "green", "blue", "white"]
+RIBBON_COLORS = SIGNAL_COLORS + ["purple", "brown", "grey"]
+# Each home pin's wire keeps one color in every lesson, so no two pins
+# side by side on a header share one: down the long double header the
+# rows take white and yellow, then green and blue, by turns, so that even
+# diagonal neighbors differ, and a run of pins, as the screen's 31 to 36,
+# takes four colors in turn. An LED's wire is in its LED's color (white
+# for red), the RGB LED's in its channel's.
 PIN_COLORS = {
-    "22": "green", "23": "blue", "24": "yellow", "25": "white",
-    "26": "orange", "27": "yellow", "28": "green", "29": "blue", "30": "white",
-    "31": "white", "32": "orange", "33": "yellow", "34": "green", "35": "blue", "36": "white",
-    "37": "yellow", "38": "green", "39": "blue", "40": "orange", "41": "green", "42": "white",
-    "43": "yellow", "44": "orange", "45": "yellow", "46": "orange", "47": "green", "48": "blue",
-    "49": "yellow", "50": "orange", "51": "white", "52": "green", "53": "blue",
-    "2": "white", "3": "orange", "4": "yellow", "5": "orange", "6": "green", "7": "blue",
-    "8": "blue", "9": "white", "10": "orange", "11": "green", "12": "white", "14": "yellow",
-    "15": "green", "16": "orange", "17": "white", "18": "white", "19": "blue", "20": "green",
+    "22": "white", "23": "yellow", "24": "green", "25": "blue",
+    "26": "white", "27": "yellow", "28": "green", "29": "blue", "30": "white",
+    "31": "yellow", "32": "green", "33": "blue", "34": "white", "35": "yellow", "36": "green",
+    "37": "blue", "38": "white", "39": "yellow", "40": "green", "41": "blue", "42": "white",
+    "43": "yellow", "44": "green", "45": "blue", "46": "white", "47": "yellow", "48": "green",
+    "49": "blue", "50": "white", "51": "yellow", "52": "green", "53": "blue",
+    "2": "green", "3": "white", "4": "yellow", "5": "white", "6": "green", "7": "blue",
+    "8": "blue", "9": "white", "10": "yellow", "11": "green", "12": "white", "14": "yellow",
+    "15": "green", "16": "blue", "17": "white", "18": "yellow", "19": "blue", "20": "green",
     "21": "blue",
-    "A0": "blue", "A1": "green", "A2": "yellow", "A3": "yellow", "A4": "white", "A5": "green",
+    "A0": "blue", "A1": "green", "A2": "yellow", "A3": "blue", "A4": "white", "A5": "green",
     "A8": "green", "A9": "blue", "A10": "yellow", "A11": "white",
-    "A12": "orange", "A13": "white", "A14": "yellow", "A15": "green",
+    "A12": "blue", "A13": "white", "A14": "yellow", "A15": "green",
 }
 # The holes of the parts that have a breadboard home, by pin: an LED's column
 # (its resistor's and long leg's) and a button's left column.
@@ -285,6 +299,7 @@ class Bench:
         self.scope_probes = []          # traces to watch on a scope (probe ())
         self.screened = False           # the course's screen is on the board
         self._stage = None              # the stage steps join now
+        self._painted = set ()          # the wires whose color circuit.py gave, by index
 
     def _step (self, step):
         kind, thing = self._last
@@ -1078,6 +1093,7 @@ class Bench:
         self._finished = True
         self._power ()
         self._check ()
+        self._recolor ()
         for index in range (len (self.measurements)):
             self.probes (index)
         for index in range (len (self.scope_probes)):
@@ -1368,6 +1384,10 @@ class Bench:
         leads = [end for end in (start_end, end_end) if self.style (end) == "lead"]
         if len (leads) == 2:
             raise ValueError ("two leads need a wire or a hole between them")
+        # A color circuit.py gives, or a lead's own, stays; finish () sets
+        # the others.
+        if color is not None or leads:
+            self._painted.add (len (self.wires))
         if color is None:
             color = self.module_pin (leads[0][1])[1].color if leads else \
                 self._color ((start_end, end_end))
@@ -1401,15 +1421,19 @@ class Bench:
         jumper = ("", "female-to-male", "female-to-female")[males]
         return Step ("wire", (self.place (start), self.place (end)), jumper, (color,))
 
-    # Black to ground, red to power, and any other wire a color of its own
-    # that never changes from lesson to lesson: a pin's wire by its number,
-    # a jumper by its holes.
+    # A wire's color as it goes in: black to ground, red to 5 V and orange
+    # to 3.3 V by the names of its ends, and any other wire its signal
+    # color. finish () settles them all once the circuit is whole.
     def _color (self, ends):
         kinds = {self._polarity (end) for end in ends}
-        if "ground" in kinds:
-            return "black"
-        if "power" in kinds:
-            return "red"
+        for source in ("GND", "3.3V", "5V"):
+            if source in kinds:
+                return POWER_COLORS[source]
+        return self._signal_color (ends)
+
+    # A signal wire's own color, the same from lesson to lesson: a pin's
+    # wire by its number, a jumper by its holes.
+    def _signal_color (self, ends):
         pins = [canonical (name) for kind, name in ends if kind == "pin"]
         if pins and pins[0] in PIN_COLORS:
             return PIN_COLORS[pins[0]]
@@ -1418,20 +1442,94 @@ class Bench:
         key = "".join (sorted (name for _, name in ends))
         return SIGNAL_COLORS[sum (key.encode ()) % len (SIGNAL_COLORS)]
 
+    # What an end is named for: "GND", "5V", "3.3V" or None. A rail's +
+    # holes count as 5V until finish () finds what feeds them.
     def _polarity (self, end):
         kind, name = end
         if kind == "pin":
             label = canonical (name)
-            return "ground" if label == "GND" else "power" if label in ("5V", "3.3V") else None
+            return label if label in POWER_COLORS else None
         if kind == "hole":
-            return "ground" if name.startswith (("T-", "B-")) else \
-                "power" if name.startswith (("T+", "B+")) else None
-        pin = self.module_pin (name)[1].name.upper ()
-        if pin in ("−", "-", "GND", "G", "VSS"):
-            return "ground"
-        if pin in ("+", "VCC", "5V", "+5V", "3.3V", "VDD", "R"):
-            return "power"
+            return "GND" if name.startswith (("T-", "B-")) else \
+                "5V" if name.startswith (("T+", "B+")) else None
+        placed, pin = self.module_pin (name)
+        label = pin.name.upper ()
+        if label in ("−", "-", "GND", "G", "VSS"):
+            return "GND"
+        if label in ("3.3V", "3V3", "LV"):
+            return "3.3V"
+        if label in ("5V", "+5V", "HV"):
+            return "5V"
+        if label in ("+", "VCC", "VDD", "R"):
+            return placed.kind.supply
         return None
+
+    # Each wire's color, once the circuit is whole. A wire whose strip
+    # carries GND, 5 V or 3.3 V is black, red or orange, whatever its ends
+    # are called. A signal takes its own color (_signal_color) unless a
+    # wire ending beside it on a neighboring pin or hole, or one it crosses
+    # or runs beside, has that color already (clash); then the kit's color
+    # that clashes least. Home pins' wires choose first, then the rest in
+    # the order they went in. So a pin's wire keeps its color from lesson
+    # to lesson where the wires round it let it, and a build carried on
+    # from the lesson before keeps its colors unless something new crowds
+    # them: telling two wires apart where they meet matters more than a
+    # color kept, but with four colors for a jumper a wire that crosses
+    # all four keeps its own. Where wires meet is where the drawing routes
+    # them; its route cache keeps the routes for the drawing itself.
+    def _recolor (self):
+        from drawing import Drawing     # which draws this bench, so is loaded after it
+        routes = Drawing (self)._layout ()
+        net_of = {member: net for net in self.nets () for member in net}
+        colors, signals = {}, []
+        for index, (start, end, color, _) in enumerate (self.wires):
+            net = net_of.get (self._node (start), set ())
+            carried = next ((source for source in ("GND", "3.3V", "5V")
+                             if self._carries (net, source)), None)
+            if index in self._painted:
+                # A part's own leads are as they come. Orange only ever
+                # carries 3.3 V; black and red may also go where a part
+                # switches or feeds GND or 5 V, but never meet the others.
+                given = next ((source for source, tint in POWER_COLORS.items () if tint == color),
+                              None)
+                lead = "lead" in (self.style (start), self.style (end))
+                if given and not lead and given != carried and (carried or given == "3.3V"):
+                    raise ValueError (f"the wire from {self.describe (start)} to "
+                                      f"{self.describe (end)} can't be {color}: {color} is kept "
+                                      f"for {given}")
+                colors[index] = color
+            elif carried:
+                colors[index] = POWER_COLORS[carried]
+            elif self._color ((start, end)) in POWER_COLORS.values ():
+                colors[index] = self._color ((start, end))
+            else:
+                signals.append (index)
+        courses = {index: (points, (self.xy (start), self.xy (end)))
+                   for index, (start, end, points) in enumerate (routes)}
+        decided = [index for index in colors if colors[index] not in POWER_COLORS.values ()]
+        homed = lambda index: any (end[0] == "pin" and canonical (end[1]) in PIN_COLORS
+                                   for end in self.wires[index][:2])
+        for index in sorted (signals, key=lambda index: (not homed (index), index)):
+            start, end, _, _ = self.wires[index]
+            own = self._signal_color ((start, end))
+            males = sum (self.style (end) == "male" for end in (start, end))
+            kit = SIGNAL_COLORS if males == 0 else RIBBON_COLORS
+            # What each color would cost among the wires already colored.
+            cost = {color: 0 for color in kit + [own]}
+            for other in decided:
+                if colors[other] in cost:
+                    cost[colors[other]] += clash (courses[index], courses[other])
+            colors[index] = own if cost[own] == min (cost.values ()) else \
+                min (kit, key=cost.get)
+            decided.append (index)
+        for index, color in colors.items ():
+            old = self.wires[index]
+            if old[2] == color:
+                continue
+            new = (old[0], old[1], color, old[3])
+            self.wires[index] = new
+            self.items = [(kind, new, step._replace (colors=(color,))) if thing is old
+                          else (kind, thing, step) for kind, thing, step in self.items]
 
     # A pin name, a module's pin or a hole. A shared name (GND, 5V) picks the
     # free header pin nearest the wire's other end.
@@ -1849,6 +1947,31 @@ def inside_shapes (shapes, point):
 
 def grow (box, margin):
     return box[0] - margin, box[1] - margin, box[2] + margin, box[3] + margin
+
+
+# How much two routed wires, each its drawn line and where its ends touch
+# down, would be mistaken for each other in one color: most where they
+# end side by side, on neighboring pins or holes; less where one crosses
+# the other or runs beside it; not at all apart.
+def clash (first, second):
+    (line, ends), (other, others) = first, second
+    if any (math.dist (a, b) < 15 for a in ends for b in others):
+        return 100
+    if any (apart (a, b, c, d) < 8 for a, b in zip (line, line[1:])
+            for c, d in zip (other, other[1:])):
+        return 10
+    return 0
+
+
+# How far apart two segments come: nothing where they cross.
+def apart (a, b, c, d):
+    def side (p, q, r):
+        return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+
+    if side (a, b, c) * side (a, b, d) < 0 and side (c, d, a) * side (c, d, b) < 0:
+        return 0.0
+    return min (segment_distance (a, b, c), segment_distance (a, b, d),
+                segment_distance (c, d, a), segment_distance (c, d, b))
 
 
 def overlaps (a, b):

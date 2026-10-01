@@ -20,6 +20,7 @@ sys.path.insert (0, os.path.join (ROOT, "docs", "_theme"))
 from bench import Bench, hole_words, load, pin_words  # noqa: E402
 from drawing import Drawing  # noqa: E402
 from parts import bands_for  # noqa: E402
+from route import Router, node  # noqa: E402
 
 failures = []
 
@@ -291,6 +292,60 @@ expect ("the I2C low supply is 3.3 V",
         "pin 3.3V" in net_of (gyro, "I2C level shifter: LV"), True)
 expect ("the modem can share the shifter's 3.3 V supply",
         "pin 3.3V" in net_of (gyro, "LoRa modem: VDD"), True)
+left_of = lambda bench, a, b: bench.xy (("module", a))[0] < bench.xy (("module", b))[0]
+expect ("the level shifter's B side faces the Mega, its A side the GY-521",
+        left_of (gyro, "levels.B1", "levels.A1") and left_of (gyro, "levels.HV", "levels.LV"), True)
+
+# Wire colors: black, red and orange for GND, 5 V and 3.3 V by what each
+# wire carries, never for a signal; signals that end side by side, or
+# cross, differ.
+def color_of (bench, a, b):
+    return next (color for start, end, color, _ in bench.wires if {start[1], end[1]} == {a, b})
+
+
+expect ("the Mega's 3.3 V wire is orange", color_of (gyro, "3.3V", "a5"), "orange")
+expect ("3.3 V through a strip is orange", color_of (gyro, "b5", "levels.LV"), "orange")
+expect ("the modem's 3.3 V is orange", color_of (gyro, "e5", "modem.VDD"), "orange")
+expect ("5 V from the + rail is red", color_of (gyro, "T+5", "levels.HV"), "red")
+railed_modem = finished (Bench ("test", columns=(1, 63)).power_module ("3.3V")
+                         .home_modem (power="B+29"))
+expect ("a 3.3 V rail's wire is orange", color_of (railed_modem, "B+29", "modem.VDD"), "orange")
+expect ("the power module's 3.3 V wire is orange",
+        color_of (railed_modem, "power.3.3V", "B+42"), "orange")
+check ("an orange signal", lambda b: blink (b).wire ("27", "j12", color="orange")
+       .resistor ("220 Ω", "g12", "e12").led ("yellow", anode="b12", cathode="b13")
+       .wire ("a13", "B-13"), "orange is kept for 3.3V")
+check ("a red wire on GND", lambda b: blink (b).wire ("a10", "B-10", color="red"),
+       "red is kept for 5V")
+pins = [pin.name for pin in reader.modules["rfid"].pins ()]
+for one, other in zip (pins, pins[1:]):
+    colors = {color for start, end, color, _ in reader.wires
+              for pin in (one, other) if f"rfid.{pin}" in (start[1], end[1])}
+    if "IRQ" not in (one, other):
+        expect (f"the RFID reader's {one} and {other} wires differ", len (colors), 2)
+crossing = finished (Bench ("test", columns=(1, 40)).wire ("a4", "a32").wire ("a7", "b33"))
+expect ("two jumpers that cross differ in color",
+        color_of (crossing, "a4", "a32") != color_of (crossing, "a7", "b33"), True)
+
+# A wire takes a costly short way rather than a cheap one three times as
+# long, as round the far end of the Mega: here a strip that costs much to
+# cross, with a way round it 100 units off.
+router = Router ((-200, -200, 200, 200), (0, 0, 0, 0))
+router.cost (("rect", -2, -98, 2, 98), 400)
+path, _ = router.route ([node ((-50, 0)), node ((50, 0))])
+expect ("a wire crosses rather than going far round", max (abs (j) for _, j in path) * 5 < 30, True)
+
+# A trace for the scope: its tip moves off a hole a wire fills, its ground
+# clip finds the − rail, and it goes to channel 1 or 2.
+traced = finished (Bench ("test", columns=(1, 20)).module ("generator", "wave", at=(1, 4))
+                   .wire ("wave.OUT", "j6").resistor ("1 kΩ", "g6", "e6").wire ("a6", "B-6")
+                   .wire ("wave.GND", "B-5").probe ("CH1", tip="j6", ground="GND"))
+(tip, _), (ground, words) = traced.probe_points (0)
+expect ("a probe's tip beside the wire it was aimed at",
+        tip != "j6" and traced.strip_of (tip) == traced.strip_of ("j6"), True)
+expect ("a probe's ground clip on the − rail", ground.startswith ("B-") and "GND" in words, True)
+expect ("the generator's own leads", traced.items[2][2].what, "lead")
+check ("a third channel", lambda b: blink (b).probe ("CH3", tip="j6", channel=3), "channel 1 or 2")
 door = finished (Bench ("test", columns=(1, 63)).power_module ("3.3V")
                  .home_buzzer ("active").home_rfid ().home_modem (power="B+29"))
 expect ("the door's buzzer keeps 5 V beside its 3.3 V modem",
