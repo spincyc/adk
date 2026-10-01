@@ -11,7 +11,6 @@ parts:
   - 100 mH inductor rated for at least 10 mA
   - 1 kΩ resistor (brown, black, black, brown, brown)
   - 3 jumper wires (and one spare for the comparison)
-  - 2 female-to-male wires
 ideas:
   - An inductor slows changes in current
 ---
@@ -45,7 +44,8 @@ the Mega's 5 V rail wire. Keep its GND wire in the bottom − rail hole
 nearest the Mega. You may leave the Mega's USB unplugged. Put the coil
 across the breadboard's center gap at **g6–e6**, then the resistor across
 the gap at **g10–e10**. Follow the generated drawing and steps for the
-generator and jumper wires.
+jumper wires and the generator's own clip leads: red OUT into j6, black
+GND into the bottom − rail by column 5.
 
 <!-- bench -->
 
@@ -64,11 +64,16 @@ If this is your first time with the scope and generator, read the
 [scope and generator primer](../../electricity/skills.md#scope-and-generator)
 and do its output check before you connect the generator to this circuit.
 
-1. With the generator still off, attach **both scope ground clips** to
-   free holes in the bottom − rail. Put channel 1's tip at the generator
-   **OUT** connection (or a free hole in j6's upper strip). Put channel 2's
-   tip at the **top of the resistor**, in a free hole of j10's upper strip.
-   Keep the probe tips apart. Use DC coupling for both channels.
+The two probes go as drawn here: each tip in a free hole, each ground clip
+in a free hole of the bottom − rail.
+
+<!-- probe -->
+
+1. With the generator still off, clip **both scope ground leads** to the
+   bottom − rail, by columns 6 and 9. Put channel 1's tip in **i6**, in the
+   strip of the generator's OUT lead, and channel 2's tip in **i10**, at
+   the **top of the resistor**. Keep the probe tips apart. Use DC coupling
+   for both channels.
 2. Set the generator to a **0–4 V square wave at 100 Hz**. Set the scope
    to trigger on channel 1's rising edge and start near **0.05 ms/div**
    (50 µs/div). Turn on the generator. Sketch both rising edges and record

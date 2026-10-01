@@ -16,7 +16,7 @@ parts:
   - 10 kΩ resistor (brown, black, black, red, brown)
   - 100 µF polarized capacitor rated at least 10 V
   - 100 nF ceramic capacitor
-  - 7 jumper wires and 2 female-to-male wires
+  - 7 jumper wires
 ideas:
   - A changing load briefly lowers its local supply voltage; nearby capacitors reduce the dip
 ---
@@ -70,7 +70,7 @@ names each symbol):
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 440" width="620"
      role="img" aria-labelledby="local-supply-title local-supply-desc">
   <title id="local-supply-title">Local supply schematic</title>
-  <desc id="local-supply-desc">USB 5 volts passes through a 10 ohm resistor to the local supply at column 4, where the scope probe goes. A 100 microfarad capacitor, plus side up, and a 100 nanofarad capacitor join the local supply to ground. The local supply feeds a 220 ohm resistor and red LED to the S8050's collector; its emitter goes to ground. The generator drives the base through 1 kilohm, with 10 kilohms from base to ground.</desc>
+  <desc id="local-supply-desc">USB 5 volts passes through a 10 ohm resistor to the local supply at column 4, which the scope probe touches at h6. A 100 microfarad capacitor, plus side up, and a 100 nanofarad capacitor join the local supply to ground. The local supply feeds a 220 ohm resistor and red LED to the S8050's collector; its emitter goes to ground. The generator drives the base through 1 kilohm, with 10 kilohms from base to ground.</desc>
   <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
     <path d="M50 60 L75.0 60"/>
     <path d="M145.0 60 L170 60"/>
@@ -134,7 +134,7 @@ names each symbol):
     <text x="14" y="66">5 V</text>
     <text x="110" y="40" text-anchor="middle">10 Ω</text>
     <text x="196" y="100" text-anchor="end" font-size="15">local supply</text>
-    <text x="196" y="118" text-anchor="end" font-size="15">column 4 · scope</text>
+    <text x="196" y="118" text-anchor="end" font-size="15">column 4 · probe h6</text>
     <text x="216" y="117.0" font-size="16">+</text>
     <text x="276" y="132">100 µF</text>
     <text x="396" y="132">100 nF</text>
@@ -155,15 +155,22 @@ The [scope and generator primer](../../electricity/skills.md#scope-and-generator
 explains AC coupling and the vertical offset used here; do its output
 check before connecting the generator.
 
-1. With USB unplugged and the generator off, put the scope ground clip
-   in a free bottom − rail hole. Put the probe tip in a free hole of
-   **column 4's lower strip**, beside the capacitor's + leg. Set the
-   scope near **50 mV per division** and about **1 ms across the screen**.
-   Use AC coupling to enlarge the small change, or use DC coupling and
-   shift the roughly 5 V trace into view with the vertical offset.
+The probe goes as drawn here, its ground clip in a free hole of the
+bottom − rail.
+
+<!-- probe -->
+
+1. With USB unplugged and the generator off, clip the scope's ground lead to
+   the bottom − rail by column 6. Put the probe tip in **h6**: the jumper
+   from b4 brings the local supply from column 4's lower strip to the top of
+   the LED's 220 Ω resistor, so this hole is on the local side of the 10 Ω
+   resistor too. Set the scope near **50 mV per division** and about **1 ms
+   across the screen**. Use AC coupling to enlarge the small change, or use
+   DC coupling and shift the roughly 5 V trace into view with the vertical
+   offset.
 2. For the **without capacitors** trace, keep all power unplugged and lift
    **both capacitors** out of their holes. Leave the 10 Ω resistor, LED,
-   transistor, base resistors, generator wires, and other jumpers in place.
+   transistor, base resistors, generator leads, and other jumpers in place.
    Plug in USB, check the generator is set to a **0–4 V square wave at
    1 kHz**, then enable its output. Record the local trace's high-to-low
    change while the LED switches. The dip may be around a tenth of a volt;

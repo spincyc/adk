@@ -11,7 +11,6 @@ parts:
   - 1 µF nonpolar film capacitor
   - 1 kΩ resistor (brown, black, black, brown, brown)
   - 3 jumper wires
-  - 2 female-to-male wires
 ideas:
   - Frequency counts cycles per second, and period is the time for one cycle
 ---
@@ -65,10 +64,16 @@ GND. The generator's ground and both scope clips meet at that common rail.
 The [scope and generator primer](../../electricity/skills.md#scope-and-generator)
 explains the timebase, trigger and generator settings used here.
 
-1. With the generator off, put channel 1's tip on **generator OUT** at
-   column 6's upper strip, and channel 2's tip on the **resistor top** at
-   column 10's upper strip. Attach both ground clips to free bottom − rail
-   holes. Set both channels to **DC coupling** and trigger on channel 1.
+The two probes go as drawn here: each tip in a free hole, each ground clip
+in a free hole of the bottom − rail.
+
+<!-- probe -->
+
+1. With the generator off, put channel 1's tip in **i6**, in the strip of
+   the generator's OUT lead, and channel 2's tip in **i10**, at the
+   **resistor top**. Clip both ground leads to the bottom − rail, by
+   columns 6 and 9. Set both channels to **DC coupling** and trigger on
+   channel 1.
 2. Set the generator to a **0–4 V sine wave at 100 Hz** (2 V offset).
    Set the scope to show **10 ms** across the screen, then turn the
    generator on. Count complete cycles on channel 1. Briefly widen the

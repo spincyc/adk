@@ -5,8 +5,9 @@
 bench = Bench ("An MCP6002 makes a small sine wave about twice as tall",
                columns=(1, 28))
 
-bench.module ("sensor", name="wave", at=(1, 4), pins=["OUT", "GND"],
-              label="isolated generator")
+bench.module ("generator", name="wave", at=(1, 4), label="isolated generator",
+              detail="battery powered; set OUT to a 0.5–1.5 V sine wave at 100 Hz",
+              shows="100.0 Hz")
 
 bench.stage ("the MCP6002 and its supply")
 bench.chip ("MCP6002", pins=["OUTA", "−A", "+A", "VSS",
@@ -33,3 +34,8 @@ bench.wire ("b24", "j25")
 bench.wire ("a25", "B-25")
 bench.wire ("c24", "j18")                     # midpoint to pin 5, +B
 bench.wire ("j17", "j16")                     # pin 6 −B to pin 7 OUTB
+
+bench.probe ("CH1 · + input A, pin 3", tip="d17", ground="GND", channel=1,
+             expect="a sine wave from about 0.5 V to 1.5 V", when="generator on")
+bench.probe ("CH2 · output A, pin 1", tip="b15", ground="GND", channel=2,
+             expect="about 1 V to 3 V, twice the input", when="generator on")

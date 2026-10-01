@@ -10,7 +10,7 @@ parts:
   - Battery-powered two-channel oscilloscope
   - 1 µF nonpolar film capacitor
   - 1 kΩ resistor (brown, black, black, brown, brown)
-  - 3 jumper wires (and one spare for the comparison) and 2 female-to-male wires
+  - 3 jumper wires (and one spare for the comparison)
 ideas:
   - An alternating signal drives current first one way, then the other
 ---
@@ -61,10 +61,15 @@ If this is your first time with the scope and generator, read the
 [scope and generator primer](../../electricity/skills.md#scope-and-generator)
 and do its output check before you connect the generator to this circuit.
 
-1. With the generator output still off, attach **both scope ground clips**
-   to free holes on the bottom − rail. Put channel 1's tip at **j6**, the
-   generator side of the capacitor. Put channel 2's tip at **j10**, the
-   top of the resistor. Set both channels to **DC coupling**.
+The two probes go as drawn here: each tip in a free hole, each ground clip
+in a free hole of the bottom − rail.
+
+<!-- probe -->
+
+1. With the generator output still off, clip **both scope ground leads**
+   to the bottom − rail, by columns 6 and 9. Put channel 1's tip in **i6**,
+   on the generator side of the capacitor. Put channel 2's tip in **i10**,
+   at the top of the resistor. Set both channels to **DC coupling**.
 2. Set the isolated generator to a **1 kHz sine wave from 0 to 4 V**:
    4 V peak-to-peak with a **+2 V DC offset**. Check those settings before
    enabling its output. Wait for the initial transient to settle.
@@ -103,11 +108,11 @@ flows toward GND: it never reverses.
 
 - **Channel 1 goes below 0 V:** Recheck the generator's +2 V offset and
   4 V peak-to-peak setting, and keep channel 1 on DC coupling.
-- **Channel 2 stays above 0 V:** Check its DC coupling, its tip at j10,
+- **Channel 2 stays above 0 V:** Check its DC coupling, its tip in i10,
   and that the capacitor really separates j6 from the resistor's strip.
   Wait for the initial transient to fade.
-- **No trace appears:** With output off, check the OUT-to-j6 wire and
-  generator GND-to-bottom − rail wire. Keep both scope ground clips on
+- **No trace appears:** With output off, check the generator's red OUT
+  lead in j6 and its black GND lead in the bottom − rail. Keep both scope ground clips on
   that same rail, then turn the output on again.
 
 ## About the sketch

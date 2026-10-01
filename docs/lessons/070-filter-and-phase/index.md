@@ -11,7 +11,6 @@ parts:
   - 1 kΩ resistor (brown, black, black, brown, brown)
   - 1 µF nonpolar film capacitor
   - 3 jumper wires
-  - 2 female-to-male wires
 ideas:
   - An RC low-pass filter reduces fast changes and delays its output
 ---
@@ -64,7 +63,7 @@ strip → capacitor → common GND → generator GND**. The output is at
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 230" width="600"
      role="img" aria-labelledby="rc-filter-title rc-filter-desc">
   <title id="rc-filter-title">RC low-pass filter schematic</title>
-  <desc id="rc-filter-desc">The generator's output, the input at j6 and channel 1, passes through a 1 kilohm resistor to the output at j10, channel 2. A 1 microfarad capacitor joins the output to ground, and the generator's ground joins the same ground.</desc>
+  <desc id="rc-filter-desc">The generator's output, the input, where channel 1 probes i6, passes through a 1 kilohm resistor to the output, where channel 2 probes i10. A 1 microfarad capacitor joins the output to ground, and the generator's ground joins the same ground.</desc>
   <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
     <circle cx="150" cy="120" r="24"/>
     <path d="M137 120 q6.5 -12 13 0 q6.5 12 13 0"/>
@@ -88,9 +87,9 @@ strip → capacitor → common GND → generator GND**. The output is at
   <g fill="currentColor" font-size="17" font-family="system-ui, sans-serif">
     <text x="20" y="112">generator</text>
     <text x="20" y="132">0–4 V sine</text>
-    <text x="240" y="36" text-anchor="middle">ch 1 · j6</text>
+    <text x="240" y="36" text-anchor="middle">ch 1 · i6</text>
     <text x="330" y="36" text-anchor="middle">1 kΩ</text>
-    <text x="420" y="36" text-anchor="middle">ch 2 · j10</text>
+    <text x="420" y="36" text-anchor="middle">ch 2 · i10</text>
     <text x="530" y="126">1 µF</text>
     <text x="350" y="214">GND</text>
   </g>
@@ -103,9 +102,14 @@ strip → capacitor → common GND → generator GND**. The output is at
 The [scope and generator primer](../../electricity/skills.md#scope-and-generator)
 explains the scope settings and peak-to-peak heights used here.
 
-1. With the generator still off, clip **both scope grounds** to free
-   holes in the bottom − rail. Touch channel 1's tip to the input at
-   **j6** and channel 2's tip to the output at **j10**. Use **DC
+The two probes go as drawn here: each tip in a free hole, each ground clip
+in a free hole of the bottom − rail.
+
+<!-- probe -->
+
+1. With the generator still off, clip **both scope ground leads** to the
+   bottom − rail, by columns 6 and 9. Put channel 1's tip in **i6**, at
+   the input, and channel 2's tip in **i10**, at the output. Use **DC
    coupling** for both channels and trigger on channel 1.
 2. Set the generator to a **100 Hz sine wave from 0 to 4 V**: 4 V
    peak-to-peak with a +2 V offset. Start near 2 ms/div on the scope.
@@ -154,7 +158,7 @@ filter and phase behavior to look for. Turn off the generator when done.
 - **Channel 2 is flat:** Check the resistor at g6–e6, b6-to-j10 jumper,
   capacitor at g10–e10, and a10-to-bottom − rail jumper.
 - **Channel 2 looks just like channel 1:** Check that channel 2's tip is
-  at j10, not j6, and that no wire bypasses the resistor.
+  in i10, not i6, and that no wire bypasses the resistor.
 - **The waves seem to jump or drift:** Keep both ground clips on the
   bottom − rail, use DC coupling, and wait for the circuit to settle.
 

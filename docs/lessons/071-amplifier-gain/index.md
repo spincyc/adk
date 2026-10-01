@@ -14,7 +14,6 @@ parts:
   - Isolated, battery-powered 0–4 V waveform generator
   - Battery-powered two-channel oscilloscope with two probes
   - 11 jumper wires
-  - 2 female-to-male wires
 ideas:
   - Feedback resistors set the gain of a non-inverting amplifier
 ---
@@ -46,14 +45,14 @@ both numbers? Write down your prediction before you switch the circuit on.
     power is disconnected. Connect both scope ground clips only to the
     common bottom − rail.
 
-Take out E15's filter parts, their jumpers, and the generator's OUT
-wire. Keep the generator, its GND wire, and the Mega's GND wire in the
-bottom − rail hole nearest the Mega. The generated steps add the Mega's
+Take out E15's filter parts and their jumpers, and lift the generator's red
+OUT lead. Keep the generator, its black GND lead, and the Mega's GND wire in
+the bottom − rail hole nearest the Mega. The generated steps add the Mega's
 5 V wire to the top + rail hole nearest it. With the MCP6002's notch
-pointing left,
-pin 1 is its output A, pin 2 its − input A, pin 3 its + input A, pin 4
-GND, pin 5 the second amplifier's + input, pin 6 its − input, pin 7 its
-output, and pin 8 its 5 V supply. Check the chip marking before powering.
+pointing left, pin 1 is its output A, pin 2 its − input A, pin 3 its + input
+A, pin 4 GND, pin 5 the second amplifier's + input, pin 6 its − input, pin 7
+its output, and pin 8 its 5 V supply. Check the chip marking before
+powering.
 
 Follow the generated steps. Pins 8 and 4 sit at opposite corners of the
 chip, so the **100 nF and 10 µF supply capacitors** stand across the top +
@@ -134,10 +133,15 @@ list:
 
 ## Compare input and output
 
+The two probes go as drawn here: each tip in a free hole, each ground clip
+in a free hole of the bottom − rail.
+
+<!-- probe -->
+
 1. With both power sources still off, clip **both scope ground leads** to
-   free holes in the bottom − rail. Put channel 1's tip in a free hole in
-   pin 3's strip, such as b17. Put channel 2's tip in a free hole in pin
-   1's strip, such as b15. Keep the metal tips apart. Set both channels to
+   the bottom − rail, by columns 17 and 15. Put channel 1's tip in **d17**,
+   in pin 3's strip, and channel 2's tip in **b15**, in pin 1's strip.
+   Keep the metal tips apart. Set both channels to
    **DC coupling** and start near **2 ms/div** and **0.5 V/div**.
 2. Check the generator is set to a **0.5–1.5 V sine wave at 100 Hz** with
    its output off. Plug in USB, then turn on the generator. Record the
@@ -197,7 +201,7 @@ extra resistor and put the jumper's end back in a13.
 | Output stays near 0 V or 5 V | Check the MCP6002 notch, pin 8 to 5 V, pin 4 to GND, and both 10 kΩ feedback paths at pin 2. |
 | Input appears but output is about the same size | Check that the output-to-pin-2 resistor and pin-2-to-GND resistor are separate paths, not a wire around a resistor. |
 | Both traces look flat | Check generator OUT and GND, its 100 Hz sine setting, the scope's DC coupling, and the timebase. |
-| Trace changes when a scope clip moves | Put both ground clips on the common bottom − rail and check the generator GND wire reaches it. |
+| Trace changes when a scope clip moves | Put both ground clips on the common bottom − rail and check the generator's black GND lead reaches it. |
 
 ## About the sketch
 

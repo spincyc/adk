@@ -3,9 +3,9 @@
 bench = Bench ("A switched LED load and capacitors on a local 5 V supply",
                columns=(1, 35))
 
-bench.module ("sensor", name="wave", at=(1, 4), pins=["OUT", "GND"],
-              label="isolated generator",
-              detail="battery powered; set OUT to a 0–4 V square wave at 1 kHz")
+bench.module ("generator", name="wave", at=(1, 4), label="isolated generator",
+              detail="battery powered; set OUT to a 0–4 V square wave at 1 kHz",
+              shows="1.000 kHz")
 
 bench.stage ("the 10 Ω feed and local supply")
 bench.wire ("T+4", "j4")
@@ -31,3 +31,7 @@ bench.stage ("the two local supply capacitors")
 bench.capacitor ("100 µF", "c4", "B-4", polarized=True)
 bench.wire ("d4", "b9")
 bench.capacitor ("100 nF", "c9", "B-9")
+
+bench.probe ("CH1 · local supply, after the 10 Ω", tip="h6", ground="GND", channel=1,
+             expect="near 5 V, dipping about 0.1 V as the LED lights",
+             when="generator on; AC coupling at 50 mV/div")
