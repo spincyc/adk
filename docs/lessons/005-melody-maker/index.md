@@ -55,9 +55,11 @@ in series, and the two add up:
 That's at most, and only while the pin is HIGH, which is half of every
 vibration. On average the pin gives about 10 mA. The buzzer is a little
 quieter with the resistor, but still plenty loud. The active buzzer in
-Lesson 3 needed a diode to catch the spike it gives when its current is
-switched off. This one needs none: the 220 Ω resistor keeps the coil's
-current, and so the energy it stores, too small to make a harmful spike.
+Lesson 3 needed a diode: when its transistor switched off, the current in
+the buzzer had nowhere to go, and kicked up a spike. Here the pin itself
+switches, and when it goes LOW it joins the buzzer to GND, so the coil's
+current, which the 220 Ω keeps small, always has a way round. No diode is
+needed.
 
 A **melody** is a list of notes, each a pitch and a length. In ADK one note
 is an `adk::Note`, such as `{adk::note::e4, 400}`: E above middle C, for
