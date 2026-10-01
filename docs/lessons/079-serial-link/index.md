@@ -65,12 +65,27 @@ Arduino IDE:
 
 <!-- sketch -->
 
-The sketch claims TX1 and RX1 as one Serial1 connection. Every two
-seconds it sends `A` and tells the USB Serial Monitor what came back.
-Serial1 uses pins 18 and 19; `Serial` uses the USB cable for the monitor.
-Both are set to **9600 baud**.
+Every two seconds the sketch sends `A` on Serial1 and tells the USB
+Serial Monitor what came back. Serial1 uses pins 18 and 19; `Serial`
+uses the USB cable for the monitor. Both are set to **9600 baud**. A few
+pieces are new:
 
-## Try the complete path
+- **`struct SerialCable : adk::Object`** makes a part of your own. Every
+  ADK part, from an LED to a knob, is an `adk::Object`, and
+  `adk::setup ()` calls each one's `setup ()`. **`override`** says that
+  this `setup ()` takes the place of the empty one every `adk::Object`
+  has.
+- **`adk::claimSerial (Serial1)`** claims pins 18 and 19 for Serial1, just
+  as an LED claims its pin, and is false if another part already has
+  them. Only then does **`Serial1.begin (9600)`** start Serial1, as
+  `Serial.begin (9600)` starts the USB link.
+- **`Serial1.write ('A')`** sends one byte. **`Serial1.available ()`**
+  counts the bytes that have arrived and wait to be read, and
+  **`Serial1.read ()`** takes the oldest of them, as a number.
+- **`static_cast<char> (...)`** turns that number back into a character,
+  so the monitor shows `A` rather than 65, the number that stands for it.
+
+## Try it
 
 1. Check the resistor and wires, then plug the Mega into USB. Choose
    **Tools → Board → ADK Boards → ADK Mega 2560** and the board's
@@ -89,25 +104,55 @@ Both are set to **9600 baud**.
    `No byte returned` before the next send. RX1 stays high, so it sees
    no start of a new byte.
 4. Unplug USB, put the 1 kΩ resistor back in **g6 and e6**, and reconnect.
-   Look for `Received: A` again. Unplug when finished.
+   Look for `Received: A` again.
 
 ## Why it happens
 
 A **bit** is a 0 or 1. Serial1 sends bits one after another on TX1. At
 **9600 baud** in this two-level signal, each bit lasts about 1/9600 of a
-second. A byte travels in a **frame**: a low start bit, eight data bits,
-then a high stop bit. RX1 uses that agreed timing to read the bits back
-into a byte. The wire does not carry the letter `A` all at once.
+second, about 104 µs. A byte travels in a **frame**: a low start bit,
+eight data bits, then a high stop bit. RX1 uses that agreed timing to
+read the bits back into a byte: from the start bit's edge, it looks at
+the wire once every 104 µs. The wire does not carry the letter `A` all at
+once.
 
 The TX1 signal reaches RX1 through the 1 kΩ resistor. The 10 kΩ pull-up
 holds RX1 at the idle high level whenever TX1 is not pulling it low.
 Removing the 1 kΩ resistor breaks the TX1-to-RX1 path; the pull-up then
 keeps RX1 high and no frame arrives. This is a **loopback** on one UART:
-it checks the path, but it cannot test whether two separate devices have
-their baud rates set alike. It is a small wired cousin of the messages in
-[Lesson 38](../038-radio-messages/index.md).
+it checks the path, but Serial1 sends and receives with one clock, so it
+cannot disagree with itself about timing. It is a small wired cousin of
+the messages in [Lesson 38](../038-radio-messages/index.md).
 
-## If the byte does not return
+## Change one thing
+
+Your computer is a second receiver, with a clock of its own. The Mega's
+USB chip reads the bits the Mega sends on pin 1, its TX for `Serial`, at
+the speed set in the Serial Monitor's baud menu, and passes the bytes it
+builds to the monitor.
+
+Predict first: if the Serial Monitor listens at **4800 baud** while the
+sketch still sends at 9600, what will it show?
+
+1. With the sketch running and the link in place, change the Serial
+   Monitor's baud menu from 9600 to **4800**. Watch a few sends.
+2. Change it to **19200** and watch again.
+3. Set it back to **9600**: the lines should be readable again. Unplug
+   when finished.
+
+At the wrong speed, expect a jumble of odd characters, or nothing
+readable, in place of `Sent: A`. The Mega may restart as the monitor
+changes speed; that does no harm. The wire and the bits on it have not
+changed: only the receiver's timing has. Looking at the wire at the
+wrong moments, it reads the wrong bits, so it builds the wrong bytes.
+
+## Check your result
+
+Did each of the three trials, link in place, link out and monitor at the
+wrong speed, match your prediction? In one sentence, explain why the
+monitor can read the Mega's bytes only when both use the same baud rate.
+
+## If it doesn't work
 
 Unplug USB before checking the build:
 

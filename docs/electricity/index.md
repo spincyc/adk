@@ -444,9 +444,11 @@ and an E24 sketch that sends a known byte and prints what Serial1 receives
 to the USB Serial Monitor.
 **Predict, do, see:** The same Serial1 UART sends and receives the byte;
 predict a matching echo. Unplug, remove the link and power again, and no
-byte returns. This loopback checks the path, not timing between two devices.
-The resistor limits current if a pin is accidentally configured as an
-output. **ADK connection:** The wire and shared timing are the small-scale
+byte returns. This loopback checks the path, not timing between two
+devices; for that, set the Serial Monitor to 4800 or 19200 baud while the
+Mega still sends at 9600, and the computer's receiver, timing the bits
+wrongly, shows a jumble. The resistor limits current if a pin is
+accidentally configured as an output. **ADK connection:** The wire and shared timing are the small-scale
 version of the messages in [Lesson 38](../lessons/038-radio-messages/index.md).
 
 ## What could come next
