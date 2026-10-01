@@ -330,7 +330,7 @@ $(TOOLCHAIN)/bin/avr-g++:
 	    x86-64 or arm64, not $(HOST): install avr-gcc 16 and set TOOLCHAIN to its folder))
 	@mkdir -p $(BUILD_DIR)/toolchain
 	curl --fail --location --silent --show-error --output $(TOOLCHAIN).tar.bz2 $(AVR_GCC_URL)
-	echo "$(AVR_GCC_SHA256)  $(TOOLCHAIN).tar.bz2" | $(SHA256SUM) --check --quiet
+	echo "$(AVR_GCC_SHA256)  $(TOOLCHAIN).tar.bz2" | $(SHA256SUM) -c
 	tar -xjf $(TOOLCHAIN).tar.bz2 -C $(BUILD_DIR)/toolchain
 	@rm $(TOOLCHAIN).tar.bz2
 	@touch $@
