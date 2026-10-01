@@ -4,7 +4,8 @@ The project course has eighteen arcs of three lessons. In each arc, the
 first two lessons introduce a part or an idea, and the third, marked ★, is a
 project that builds on them. A project doesn't always use both earlier
 parts, and some bring in something new, such as Lesson 42's Meshtastic
-boards. Take those lessons in order. Lesson 55 is a standalone extra.
+boards. Take those lessons in order. Lesson 55, an extra, measures the radio
+link between the two boards that Lessons 43 to 54 build.
 
 The first twelve arcs use the parts in the kits, plus an
 [I2C level shifter](kit.md#i2c-level-shifter) for Lessons 28 and 30, which
@@ -12,7 +13,7 @@ Lesson 50 uses again. The next two need [add-on radios](kit.md#add-on-radios),
 from about US$3 to US$30 each. Lesson 41's 433 MHz modules need an amateur
 radio license in the USA and Canada, so there Lesson 41 is optional: read
 it, then carry on to Lesson 42 from your Lesson 40 build. The last four
-arcs join [two boards](kit.md#two-boards): two Megas that share what their
+arcs, and Lesson 55, join [two boards](kit.md#two-boards): two Megas that share what their
 sensors see over a LoRa radio, so a dial in one room turns a servo in
 another. They need a second Mega and a second set of the parts each board
 uses. [What to buy](kit.md#what-to-buy) adds up each path.

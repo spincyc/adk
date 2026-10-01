@@ -102,7 +102,7 @@ which bands you may send on where you live. If your resistor card has no
 
 ## Two boards
 
-Lessons 43 to 54 join two boards over radio: a dial on one turns a servo on
+Lessons 43 to 55 join two boards over radio: a dial on one turns a servo on
 the other. Each board is a whole setup of its own, so besides the kit you
 need a second of each thing the other board uses:
 
@@ -133,14 +133,14 @@ and earns nothing from any shop.
 | 1 | Digital multimeter, for *Measure it* (optional) | US$15–35 |
 | | **About** | **US$90–160** |
 
-### Radio arcs, Lessons 37 to 42, and Lesson 55
+### Radio arcs, Lessons 37 to 42
 
 | Qty | Item | Rough cost |
 |---|---|---|
 | 1 set | Each of the [add-on radios](#add-on-radios), with aerials | US$105–160 |
 | | Without Lesson 41's E32 modules, where they need a license | US$90–135 |
 
-### Two boards, Lessons 43 to 54
+### Two boards, Lessons 43 to 55
 
 Besides the pair of RYLR896 modems from Lesson 40:
 
