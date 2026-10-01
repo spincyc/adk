@@ -130,34 +130,29 @@ in another room, bring it back to the computer.
   joystick and the joystick's five wires, and the buzzer, its 220 Ω
   resistor and pin 10's wire.
 
-!!! warning "Pause points while you build"
-    Stop after each board:
-
-    - **Board A's screen:** With the USB cable out, check that the
-      screen's header pins sit in separate strips, its contrast knob
-      crosses the middle gap, and its backlight has the 220 Ω resistor
-      shown in the drawing. Check that the + and − rails are separate and
-      no loose wire touches both. **Predict:** what will holding the stick
-      to the right do to `Quick 20 letters`? Plug in and upload **Meter**
-      to Board A, leaving the stick alone while it starts. The screen
-      should say `Quick 20 letters` and `Click to test`; holding the stick
-      right should count up, `25 letters`, `30 letters`, and holding it
-      left count back down. Don't click yet: Board B isn't answering.
-    - **Board B:** With its USB cable out, check that nothing is left in
-      the holes of the joystick's and buzzer's wires, and that the
-      modem's wires and the matrix's are as they were.
-
 ### Board A
 
 <!-- bench A -->
 
 <!-- steps A -->
 
+!!! warning "Pause: check Board A"
+    Before you go on to Board B, keep Board A's USB cable out and check
+    that the screen's header pins sit in separate strips, its contrast
+    knob crosses the middle gap, and its backlight has the 220 Ω resistor
+    shown in the drawing. Check that the + and − rails are separate and
+    no loose wire touches both.
+
 ### Board B
 
 <!-- bench B -->
 
 <!-- steps B -->
+
+!!! warning "Pause: check Board B"
+    With its USB cable out, check that nothing is left in the holes of the
+    joystick's and buzzer's wires, and that the modem's wires and the
+    matrix's are as they were.
 
 When you are done, these are the connections each board makes. Board A:
 
@@ -231,9 +226,10 @@ Board B's sketch, **Echo**, is short:
 
 1. Plug in Board B, choose its port in **Tools → Port**, and upload
    **Echo**. Its matrix stays dark.
-2. Plug in Board A, choose its port, and upload **Meter**, if it isn't
-   there already, leaving the stick alone while it starts. The screen
-   says `Quick 20 letters` and `Click to test`.
+2. Plug in Board A, choose its port, and upload **Meter**, leaving the
+   stick alone while it starts: if you can't tell the two ports apart,
+   see [Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer).
+   The screen says `Quick 20 letters` and `Click to test`.
 3. With the boards a meter or two apart, click the stick. Dots fill both
    matrices, row by row, and the bottom row of the screen counts:
    `Sent 23 heard 22`, the message just sent and the echoes back so far.
