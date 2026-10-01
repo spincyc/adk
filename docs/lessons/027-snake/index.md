@@ -106,7 +106,10 @@ When you are done, these are the connections your circuit makes:
 
 Open **File → Examples → Adk → lessons → 027-snake**:
 
-Read it in three passes. First follow one pass of `loop ()` while
+At about 190 lines, it is longer than the other projects so far, because
+a whole game has a lot to look after: the stick, the beat, the snake's
+growth, two kinds of crash, the food, three tunes and the score. Each of
+those has its own short function, so read it in three passes. First follow one pass of `loop ()` while
 `playing`: `steer ()` listens to the stick, `blink` flips the food, and
 each beat of `step` calls `moveSnake ()`. Then follow `moveSnake ()` itself:
 the new head from `ahead ()`, the checks for a wall and a bite, then the

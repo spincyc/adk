@@ -105,6 +105,10 @@ When you are done, these are the connections your circuit makes:
 
 Open **File → Examples → Adk → lessons → 022-remote-control**:
 
+It runs a little past one screen, because the lamp answers seven buttons:
+power, two for brightness, and four colors, whose table takes about a
+dozen lines.
+
 <!-- sketch -->
 
 What's new:

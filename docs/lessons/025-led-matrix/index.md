@@ -93,10 +93,12 @@ When you are done, these are the connections your circuit makes:
 
 Open **File → Examples → Adk → lessons → 025-led-matrix**:
 
-Read it in three passes. First follow `fillDotByDot ()`: its two counters
-choose one pixel at a time. Then compare the eight rows of `heart` with the
-picture you predicted. Finally, follow the button presses through `slide`
-to see how the sketch chooses a picture or starts scrolling.
+It runs past one screen because it draws its two pictures right there
+in the code, a line for each of their sixteen rows. Read it in three
+passes. First follow `fillDotByDot ()`: its two counters choose one pixel
+at a time. Then compare the eight rows of `heart` with the picture you
+predicted. Finally, follow the button presses through `slide` to see how
+the sketch chooses a picture or starts scrolling.
 
 <!-- sketch -->
 
