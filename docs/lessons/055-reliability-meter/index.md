@@ -417,3 +417,8 @@ What the numbers tell you:
        chirps let a modem hear a weaker signal. The bridge needed to
        answer quickly, a press in a tenth of a second, and across a house
        Quick at 10 dBm has signal to spare.
+
+!!! tip "What next"
+    That's the end of the project course. [What next](../../next.md)
+    shows how the ideas here map onto plain Arduino code and libraries,
+    and where to go from here.

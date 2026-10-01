@@ -250,7 +250,7 @@ CLI_HINT         := and arduino-cli, as its installation guide explains:  \
 
 all: check
 
-## check           everything CI runs: tests, examples, pins, sizes, the site, PDFs and boards
+## check           what CI runs on Linux: tests, examples, pins, sizes, the site, PDFs and boards
 check: style     \
        test      \
        sanitize  \

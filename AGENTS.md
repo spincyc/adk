@@ -53,4 +53,4 @@ changing anything:
 | `make site` / `make pdf` | The website, and every lesson as a PDF |
 | `make boards` | Install the site's ADK Boards package into `build/` and compile with it |
 | `make style` | The mechanical style rules |
-| `make check` | Everything CI runs |
+| `make check` | What CI runs on Linux; CI also runs arduino-lint and the Windows and macOS installs |
