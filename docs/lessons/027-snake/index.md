@@ -106,6 +106,13 @@ When you are done, these are the connections your circuit makes:
 
 Open **File → Examples → Adk → lessons → 027-snake**:
 
+Read it in three passes. First follow one pass of `loop ()` while
+`playing`: `steer ()` listens to the stick, `blink` flips the food, and
+each beat of `step` calls `moveSnake ()`. Then follow `moveSnake ()` itself:
+the new head from `ahead ()`, the checks for a wall and a bite, then the
+tail off and the head on. Finally, follow a whole game, from the click that
+calls `newGame ()` to `gameOver ()` and the score scrolling past.
+
 <!-- sketch -->
 
 What's new:
@@ -118,11 +125,13 @@ What's new:
   one-byte number like Lesson 4's `uint8_t`, but one that can go below zero,
   from -128 to 127: a head that leaves by the left wall is at `x` -1. One
   byte each keeps the 64-dot snake to 128 bytes of the Mega's 8192.
-- `bool operator== (const Dot&) const = default;` lets you compare two dots
-  with `==` and `!=`, as you would two numbers. `= default` asks the
-  compiler to write the comparison for you: two dots are equal when their
-  `x` and their `y` both are. So `head == food` means the head has reached
-  the food.
+  `{x, 4}` fills in a whole `Dot` at once, as `{angle, cm}` filled in a
+  sighting in Lesson 21.
+- `same (head, food)` asks whether two dots are the same place. Its one
+  line, `return a.x == b.x && a.y == b.y;`, hands back the answer to a
+  question: true when the `x`s match *and* the `y`s match, with `&&` from
+  Lesson 4's box. So `same (head, food)` means the head has reached the
+  food.
 - `adk::Deque<Dot, 64> snake;` is the snake: a line of up to 64 dots, head at
   the front and tail at the back. `snake.front ()` is the head,
   `snake.back ()` the tail, and `snake[1]` the dot just behind the head, its
@@ -132,36 +141,49 @@ What's new:
 - `adk::Joystick::Direction turn` holds one of the stick's directions: `Up`,
   `Down`, `Left`, `Right` or `Center`. `steer ()` saves the stick's
   `direction ()` as the next turn, unless the dot that way is the snake's
-  own neck, so it can never turn straight back on itself.
+  own neck, so it can never turn straight back on itself. `auto way` lets
+  the compiler work out the type, as `auto` did in Lesson 5's range-for.
 - `playing` is the game's state from the table above. While it's `false`,
   `loop ()` scrolls `message` and waits for a click.
-- `ahead ()` finds the dot next to the head in a direction, with a `switch`
-  as in Lesson 3: up takes one from `y`, right adds one to `x`, and so on.
-  `default:` catches every direction without a `case`, here `Center`.
-- `moveSnake ()` runs on every beat of `step`. It finds the new head, checks
-  for the wall and for a bite, then takes the tail off unless the snake is
-  eating, and puts the new head on. If the snake now fills the matrix,
-  `gameOver ()` celebrates the win: there is nowhere left to put food.
-  Otherwise, a bite plays `gulp`, makes the beat 20 ms shorter and places
-  new food.
+- `ahead ()` hands back a whole `Dot`, as `sweep ()` handed back a sighting
+  in Lesson 21: the dot next to the head in a direction. Its `switch`, as
+  in Lesson 3, takes one from `y` for up with `--dot.y`, adds one to `x`
+  for right with `++dot.x` (Lesson 22's `--` and `++`), and so on.
+  `default:`, as in Lesson 15, catches every direction without a `case`,
+  here `Center`.
+- `moveSnake ()` runs on every beat of `step`. It finds the new head, and
+  `bool wall` keeps the answer to a question: is the head off any of the
+  four edges? Each `||`, *or*, adds one more edge. A wall, or a bite of any
+  dot but the tail, calls `gameOver ()`, and `return;` leaves
+  `moveSnake ()` at once, with no value to hand back, so the snake doesn't
+  move. Otherwise it takes the tail off unless the snake is eating, and
+  puts the new head on. If the snake now fills the matrix, `gameOver ()`
+  celebrates the win: there is nowhere left to put food. Otherwise, a bite
+  plays `gulp`, makes the beat 20 ms shorter, never below 120 ms, with
+  `max ()` from Lesson 8, and places new food. `max ()` compares two
+  numbers of the same kind, and the beat is an `unsigned long`, from
+  Lesson 12, so `120UL` writes 120 as one: `UL` stands for *unsigned
+  long*.
 - `for (auto part : snake)` in `onSnake ()` walks the snake from head to
   tail, as range-`for` walks an `adk::Array`.
-- `placeFood ()` uses a `do` ... `while` loop. It is a `while` loop that
-  runs its body first and asks afterwards, so it always picks one dot, and
-  picks again for as long as that dot is on the snake.
+- `placeFood ()` uses a `do` ... `while` loop, as `measure ()` did in
+  Lesson 21: it runs its body first and asks afterwards, so it always picks
+  one dot, and picks again for as long as that dot is on the snake.
   `randomSeed (analogRead (A7))` in `setup ()` makes the food land somewhere
   different every game, as in Lesson 3.
 - `blink` flips the food on and off by asking the matrix whether it is lit
-  with `matrix.get ()`. It checks `playing` again because `moveSnake ()`
-  may just have ended the game.
+  with `matrix.get ()`. It comes before `moveSnake ()`, so when the head
+  lands on the food in the same pass, the head's dot is lit whatever the
+  blink did.
 - `newGame ()` lays out three dots, sets the beat back to 400 ms, and
   `step.restart ()` makes the first step come a whole beat after the click.
 - `adk::Text<24> message` is text you print into, up to 24 characters, the
   way `adk::print` prints to `Serial` or the screen. `gameOver ()` plays the
-  fanfare for a full matrix or the crash otherwise, and leaves the snake on
-  show for a moment. It then empties `message` with `clear ()` and prints
-  the score into it, with *YOU WIN!* in front after a win.
-  `message.c_str ()` hands the text to `matrix.scroll ()`.
+  fanfare for a full matrix or the crash otherwise, choosing with Lesson
+  12's `?:`, and leaves the snake on show for a moment. It then empties
+  `message` with `clear ()` and prints the score into it, with *YOU WIN!*
+  in front after a win. `message.c_str ()` hands the text to
+  `matrix.scroll ()`.
 
 ## Upload it
 
@@ -201,8 +223,8 @@ more than three times the 2½ steps a second it starts with.
 
     `adk::Every step {400}` ticks once every 400 ms, and
     `step.period (step.period () - 20)` changes its beat while the game
-    runs. `max (120UL, …)` keeps it from going below 120 ms; the `UL` makes
-    120 the same kind of number as the period, an unsigned long.
+    runs, as `beeps.period ()` did in Lesson 19. `max (120UL, …)` keeps it
+    from going below 120 ms.
 
     The speaker plays with Timer 2, the Mega's timer that also runs PWM on
     pins 9 and 10, which is why the buzzer lives on pin 10: nothing else in

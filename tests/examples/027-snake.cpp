@@ -10,6 +10,7 @@ void newGame ();
 void steer ();
 void moveSnake ();
 Dot ahead (adk::Joystick::Direction way);
+bool same (Dot a, Dot b);
 bool onSnake (Dot dot);
 void placeFood ();
 void gameOver ();
@@ -27,7 +28,7 @@ int main ()
     food = {7, 7};
     moveSnake ();
     assert (snake.size () == 3);
-    assert ((snake.front () == Dot {4, 4}));
+    assert (same (snake.front (), Dot {4, 4}));
     assert (!matrix.get (1, 4));
 
     food = {5, 4};

@@ -22,8 +22,6 @@ struct Dot
 {
     int8_t x;
     int8_t y;
-
-    bool operator== (const Dot&) const = default;
 };
 
 adk::Deque<Dot, 64>      snake;      // its head at the front, tail at the back
@@ -56,14 +54,14 @@ void loop ()
     {
         steer ();
 
+        if (blink.ticked ())
+        {
+            matrix.set (food.x, food.y, !matrix.get (food.x, food.y));
+        }
+
         if (step.ticked ())
         {
             moveSnake ();
-        }
-
-        if (playing && blink.ticked ())
-        {
-            matrix.set (food.x, food.y, !matrix.get (food.x, food.y));
         }
     }
 }
@@ -93,7 +91,7 @@ void steer ()
 {
     auto way = joystick.direction ();
 
-    if (way != adk::Joystick::Center && ahead (way) != snake[1])
+    if (way != adk::Joystick::Center && !same (ahead (way), snake[1]))
     {
         turn = way;
     }
@@ -103,13 +101,13 @@ void steer ()
 // the snake is eating: then it keeps its tail, and grows.
 void moveSnake ()
 {
-    auto head   = ahead (turn);
-    auto tail   = snake.back ();
-    bool eating = head == food;
+    Dot  head   = ahead (turn);
+    Dot  tail   = snake.back ();
+    bool eating = same (head, food);
     bool wall   = head.x < 0 || head.x > 7 || head.y < 0 || head.y > 7;
 
     // The tail moves on as the head moves, so the head may take its place.
-    if (wall || (onSnake (head) && head != tail))
+    if (wall || (onSnake (head) && !same (head, tail)))
     {
         gameOver ();
         return;
@@ -127,10 +125,8 @@ void moveSnake ()
     if (snake.full ())
     {
         gameOver ();
-        return;
     }
-
-    if (eating)
+    else if (eating)
     {
         speaker.play (gulp);
         step.period (max (120UL, step.period () - 20));
@@ -141,7 +137,7 @@ void moveSnake ()
 // The dot next to the snake's head, the given way.
 Dot ahead (adk::Joystick::Direction way)
 {
-    auto dot = snake.front ();
+    Dot dot = snake.front ();
 
     switch (way)
     {
@@ -155,11 +151,16 @@ Dot ahead (adk::Joystick::Direction way)
     return dot;
 }
 
+bool same (Dot a, Dot b)
+{
+    return a.x == b.x && a.y == b.y;
+}
+
 bool onSnake (Dot dot)
 {
     for (auto part : snake)
     {
-        if (part == dot)
+        if (same (part, dot))
         {
             return true;
         }
