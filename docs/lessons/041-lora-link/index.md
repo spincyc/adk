@@ -1,7 +1,7 @@
 ---
 lesson: 41
 promise: Send the temperature and humidity by radio, as a line of text, from one LoRa module to another.
-time: 60 minutes
+time: 1 hour
 level: 2
 parts:
   - Your circuit from Lesson 40, without its two modems

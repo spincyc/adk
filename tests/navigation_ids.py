@@ -46,6 +46,35 @@ for page in (ROOT / "docs").rglob ("*.md"):
     for number, line in enumerate (page.read_text ().splitlines (), 1):
         assert not re.match (r'(!!!|\?\?\?\+?) \w+(?: "[^"]*")? +[^"\s]', line), f"{page}:{number}: {line}"
 
+# Every electricity investigation has the same sections, in this order;
+# start.md's "How a lesson works" describes them.
+SECTIONS = ["What you'll build", "Predict", "Build it", "Code it", "Try it",
+            "Why it happens", "Change one thing", "Check your result",
+            "If it doesn't work", "About the sketch"]
+NEEDED = {"What you'll build", "Predict", "Build it", "Try it", "Why it happens",
+          "Check your result", "If it doesn't work"}
+for lesson in LESSONS:
+    if lesson["track"] != "electricity":
+        continue
+    page = ROOT / "docs" / "lessons" / lesson["slug"] / "index.md"
+    heads = re.findall (r"(?m)^## (.+)$", page.read_text ())
+    assert all (head in SECTIONS for head in heads), (page, heads)
+    places = [SECTIONS.index (head) for head in heads]
+    assert places == sorted (set (places)), (page, heads)
+    assert NEEDED <= set (heads), (page, sorted (NEEDED - set (heads)))
+    assert ("Code it" in heads) != ("About the sketch" in heads), (page, heads)
+
+# Each lesson's front matter: a time in one form ("45 minutes", "1 hour",
+# "1½ hours", "2 hours"), and lists of plain text: an unquoted "a: b" in
+# a list would turn into a mapping and print as {'a': 'b'} on the page.
+for lesson in LESSONS:
+    page = ROOT / "docs" / "lessons" / lesson["slug"] / "index.md"
+    front = yaml.safe_load (page.read_text ().split ("---\n")[1])
+    assert re.fullmatch (r"([1-5]\d|[1-9]) minutes|1 hour|1½ hours|[2-9]½? hours",
+                         str (front["time"])), (page, front["time"])
+    for key in ("parts", "ideas"):
+        assert all (isinstance (item, str) for item in front[key]), (page, key)
+
 # In course.yml's one-line entries a comma ends a value unless the value is
 # quoted: "builds: A game, with sound" would make a key named "with sound".
 for arc in yaml.safe_load ((ROOT / "docs" / "_theme" / "course.yml").read_text ()):

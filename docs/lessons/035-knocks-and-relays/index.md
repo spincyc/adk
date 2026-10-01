@@ -1,7 +1,7 @@
 ---
 lesson: 35
 promise: Knock a secret rhythm on the table and make a relay click a lamp on.
-time: 60 minutes
+time: 1 hour
 level: 2
 parts:
   - Arduino Mega 2560 and its USB cable

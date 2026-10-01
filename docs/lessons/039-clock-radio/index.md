@@ -1,7 +1,7 @@
 ---
 lesson: 39
 promise: Build a bedside clock radio that wakes you with your favorite station, fading in gently.
-time: 90 minutes
+time: 1½ hours
 level: 3
 parts:
   - Your circuit from Lesson 38, with its screen and button

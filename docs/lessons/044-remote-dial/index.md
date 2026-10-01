@@ -1,7 +1,7 @@
 ---
 lesson: 44
 promise: Turn a knob on one board and a servo on the other turns to match, while the screen shows where the servo has got to.
-time: 90 minutes
+time: 1½ hours
 level: 3
 parts:
   - "Board A: Lesson 43's Board A, with its LoRa modem and divider"

@@ -1,7 +1,7 @@
 ---
 lesson: 52
 promise: Turn a knob on one board and watch a turntable on the other swing to the same angle, then say it has arrived.
-time: 60 minutes
+time: 1 hour
 level: 3
 parts:
   - "Board A: Lesson 51's Board A, with its screen and LoRa modem"

@@ -1,7 +1,7 @@
 ---
 lesson: 33
 promise: Build a bedside clock that wakes you with a tune and a flag, with a knob to set it and a snooze button.
-time: 90 minutes
+time: 1½ hours
 level: 3
 parts:
   - Your clock from Lesson 32, still built

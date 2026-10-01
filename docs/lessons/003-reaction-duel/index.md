@@ -1,7 +1,7 @@
 ---
 lesson: 3
 promise: Build a two-player reflex game, and find out who in your house is fastest.
-time: 1 hour
+time: 1½ hours
 level: 3
 parts:
   - Arduino Mega 2560 and its USB cable

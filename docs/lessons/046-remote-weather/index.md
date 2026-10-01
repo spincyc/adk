@@ -1,7 +1,7 @@
 ---
 lesson: 46
 promise: Put four sensors in the garden and read them indoors, with the time the latest report came, and dashes when the garden goes quiet.
-time: 90 minutes
+time: 1½ hours
 level: 3
 parts:
   - "Board A, indoors: Lesson 45's Board A, with its LoRa modem, divider and screen"

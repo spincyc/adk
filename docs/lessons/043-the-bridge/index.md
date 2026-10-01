@@ -1,7 +1,7 @@
 ---
 lesson: 43
 promise: Join two Megas by radio, so that a button on each lights an LED on the other, and find out what it means for two boards to be connected.
-time: 90 minutes
+time: 1½ hours
 level: 3
 parts:
   - "Board A: the Mega 2560 and breadboard you've used so far, and the USB cable"

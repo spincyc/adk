@@ -1,7 +1,7 @@
 ---
 lesson: 47
 promise: Guard a door with five tripwires and hear about it in another room, where the remote arms and disarms the alarm.
-time: 90 minutes
+time: 1½ hours
 level: 3
 parts:
   - "Board A, in the den: Lesson 46's Board A, with its LoRa modem, screen and clock module"

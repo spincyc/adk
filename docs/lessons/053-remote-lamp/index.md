@@ -1,7 +1,7 @@
 ---
 lesson: 53
 promise: Press the remote in one room, and a lamp clicks on in another, while a TV there obeys your other buttons.
-time: 60 minutes
+time: 1 hour
 level: 3
 parts:
   - "Board A: the Mega, breadboard and screen from Lesson 52"

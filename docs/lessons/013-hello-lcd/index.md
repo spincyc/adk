@@ -1,7 +1,7 @@
 ---
 lesson: 13
 promise: Put words on a real screen, and draw your own little characters.
-time: 60 minutes
+time: 1 hour
 level: 2
 parts:
   - Arduino Mega 2560 and its USB cable

@@ -1,7 +1,7 @@
 ---
 lesson: 14
 promise: Measure the temperature three different ways, and see which thermometer you trust.
-time: 60 minutes
+time: 1 hour
 level: 2
 parts:
   - Arduino Mega 2560 and its USB cable

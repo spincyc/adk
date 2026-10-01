@@ -1,7 +1,7 @@
 ---
 lesson: 50
 promise: Tilt one breadboard and watch a ball roll the same way across another board's matrix, while a servo leans to match.
-time: 60 minutes
+time: 1 hour
 level: 3
 parts:
   - "Both boards: the Mega, breadboard and LoRa modem from Lesson 49, with the modem's divider and wires"

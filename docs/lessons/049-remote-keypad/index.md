@@ -1,7 +1,7 @@
 ---
 lesson: 49
 promise: Type a code on a keypad by the door, and let a board inside decide whether the latch opens.
-time: 90 minutes
+time: 1½ hours
 level: 3
 parts:
   - "Board A, the door: Lesson 48's Board A, with its LoRa modem, divider and screen"

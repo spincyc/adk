@@ -28,12 +28,12 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   The analog-to-digital converter: the part of the Mega that measures a
     voltage from 0 to 5 V on pins A0 to A15 and turns it into a number from
     0 to 1023. Taught in [Lesson 7](lessons/007-dimmer/index.md#the-idea)
-    and [E22](lessons/077-sampling/index.md#explain-what-you-saw).
+    and [E22](lessons/077-sampling/index.md#why-it-happens).
 
 **Alternating current (AC)** { #ac }
 :   Current that flows one way, then the other, again and again. Wall
     sockets give AC; nothing in this course goes near them. Taught in
-    [E13](lessons/068-alternating-current/index.md#watch-both-voltages).
+    [E13](lessons/068-alternating-current/index.md#try-it).
 
 **Amplifier, gain** { #amplifier }
 :   An amplifier makes a signal larger. Its gain is how many times larger:
@@ -44,7 +44,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   A digital pin is either on or off. An analog pin measures any voltage
     from 0 to 5 V, as a number. See [ADC](#adc). Taught in
     [Lesson 7](lessons/007-dimmer/index.md#the-idea) and
-    [E06](lessons/061-tap-a-divider/index.md#upload-and-measure).
+    [E06](lessons/061-tap-a-divider/index.md#try-it).
 
 **Anode, cathode** { #anode }
 :   The two ends of an LED or a diode. Current goes in at the anode (+, an
@@ -99,7 +99,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   A steady beat that says when each bit, or each step of a circuit,
     happens: the clock pin of a shift register, I2C's SCL, or a ticking
     gate. Taught in [Lesson 10](lessons/010-dice/index.md#the-idea) and
-    [E21](lessons/076-schmitt-clock/index.md#watch-the-clock). For the clock
+    [E21](lessons/076-schmitt-clock/index.md#try-it). For the clock
     that tells the time, see [Real-time clock](#real-time-clock).
 
 **Closed loop** { #closed-loop }
@@ -111,7 +111,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   The flow of electricity, which passes only around a complete loop. It is
     measured in amps (A), or thousandths of an amp, milliamps (mA). Taught
     in [Lesson 1](lessons/001-blink/index.md#the-idea) and
-    [E01](lessons/056-close-the-loop/index.md#test-the-loop).
+    [E01](lessons/056-close-the-loop/index.md#try-it).
 
 ## D
 
@@ -135,7 +135,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   A part that lets current through one way only, from its anode to its
     banded cathode. Taught in
     [Lesson 3](lessons/003-reaction-duel/index.md#the-idea) and
-    [E09](lessons/064-one-way-diode/index.md#try-both-directions).
+    [E09](lessons/064-one-way-diode/index.md#try-it).
 
 **Divider** { #divider }
 :   Two resistances in a row across a voltage. The point between them gives
@@ -149,7 +149,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   The share of the time a PWM pin is on: 64 out of 255 is on a quarter of
     the time. See [PWM](#pwm). Taught in
     [Lesson 4](lessons/004-mood-lamp/index.md#the-idea) and
-    [E23](lessons/078-pwm-average/index.md#watch-and-measure).
+    [E23](lessons/078-pwm-average/index.md#try-it).
 
 ## E
 
@@ -197,7 +197,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   How many times a second something repeats, measured in hertz (Hz): a
     note's pitch, or a wave on a scope. Taught in
     [Lesson 5](lessons/005-melody-maker/index.md#the-idea) and
-    [E14](lessons/069-frequency-and-period/index.md#the-idea).
+    [E14](lessons/069-frequency-and-period/index.md#why-it-happens).
 
 ## G
 
@@ -205,7 +205,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   The 0 V side of the circuit, where current returns to the Mega. Every
     voltage is measured from somewhere, usually GND. Taught in
     [Lesson 1](lessons/001-blink/index.md#the-idea) and
-    [E01](lessons/056-close-the-loop/index.md#test-the-loop).
+    [E01](lessons/056-close-the-loop/index.md#try-it).
 
 ## H
 
@@ -251,7 +251,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 **Latch** { #latch }
 :   A circuit that remembers: two gates that feed each other hold one bit
     after the button that set it is let go. Taught in
-    [E20](lessons/075-set-reset-latch/index.md#why-it-remembers).
+    [E20](lessons/075-set-reset-latch/index.md#why-it-happens).
 
 **Level shifter** { #level-shifter }
 :   A small board that joins a 5 V board to a 3.3 V chip, so each side keeps
@@ -317,7 +317,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   Current is the voltage across a part divided by its resistance: 3 V
     across 220 Ω is about 14 mA. Taught in
     [Lesson 1](lessons/001-blink/index.md#measure-it) and
-    [E02](lessons/057-measure-across-and-through/index.md#find-the-current-through-the-path).
+    [E02](lessons/057-measure-across-and-through/index.md#try-it).
 
 **Op-amp** { #op-amp }
 :   An operational amplifier: a chip that changes its output until the
@@ -335,12 +335,12 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 **Parallel** { #parallel }
 :   Paths side by side between the same two points. Each has the same
     voltage across it, and their currents add up. Taught in
-    [E05](lessons/060-branches-in-parallel/index.md#the-idea).
+    [E05](lessons/060-branches-in-parallel/index.md#why-it-happens).
 
 **Period** { #period }
 :   How long one cycle of a repeating signal takes. It is 1 divided by the
     frequency. Taught in
-    [E14](lessons/069-frequency-and-period/index.md#the-idea).
+    [E14](lessons/069-frequency-and-period/index.md#why-it-happens).
 
 **Persistence of vision** { #persistence-of-vision }
 :   Your eye blends flashes too fast to follow into one steady picture,
@@ -378,14 +378,14 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
     pull-ups inside it, which ADK switches on for buttons. Taught in
     [Lesson 2](lessons/002-buttons/index.md#the-idea),
     [E19](lessons/074-nand-logic/index.md#why-it-happens) and
-    [E20](lessons/075-set-reset-latch/index.md#rewire-the-two-buttons).
+    [E20](lessons/075-set-reset-latch/index.md#build-it).
 
 **PWM** { #pwm }
 :   Pulse-width modulation: switching a pin on and off hundreds of times a
     second. The share of the time it is on sets the average, such as an
     LED's brightness. Taught in
     [Lesson 4](lessons/004-mood-lamp/index.md#the-idea) and
-    [E23](lessons/078-pwm-average/index.md#watch-and-measure).
+    [E23](lessons/078-pwm-average/index.md#try-it).
 
 ## R
 
@@ -413,7 +413,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   How strongly a part holds back current, measured in ohms (Ω). More
     resistance in a loop means less current. Taught in
     [Lesson 1](lessons/001-blink/index.md#the-idea) and
-    [E03](lessons/058-resist-the-flow/index.md#change-one-resistor).
+    [E03](lessons/058-resist-the-flow/index.md#try-it).
 
 **RFID, UID** { #rfid }
 :   Radio-frequency identification: a card with no battery that answers a
@@ -424,7 +424,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   The small, quick dips and bumps in a supply's voltage when what it
     powers draws changing current. A capacitor beside the load shrinks them.
     Taught in
-    [E18](lessons/073-power-integrity/index.md#compare-the-ripples).
+    [E18](lessons/073-power-integrity/index.md#try-it).
 
 **Rotary encoder** { #rotary-encoder }
 :   A knob that turns forever and reports each click and its direction,
@@ -440,7 +440,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 **Schmitt trigger** { #schmitt-trigger }
 :   A gate input with two switching levels, so a slow or noisy signal still
     switches cleanly, once. Taught in
-    [E21](lessons/076-schmitt-clock/index.md#watch-the-clock).
+    [E21](lessons/076-schmitt-clock/index.md#try-it).
 
 **Serial port, UART, TX and RX** { #serial-port }
 :   Two wires, one each way, that carry bytes as timed bits. A board's TX
@@ -502,7 +502,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 **Time constant** { #time-constant }
 :   The time a capacitor charging through a resistor takes to reach about 63
     % of the way: R × C. Taught in
-    [E08](lessons/063-time-an-rc-pair/index.md#the-idea).
+    [E08](lessons/063-time-an-rc-pair/index.md#why-it-happens).
 
 **Transistor** { #transistor }
 :   A switch with no moving parts. A small current into its base lets a
@@ -537,4 +537,4 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   The push that drives current, measured in volts (V), and always between
     two points, such as a pin and GND. Taught in
     [Lesson 1](lessons/001-blink/index.md#the-idea) and
-    [E02](lessons/057-measure-across-and-through/index.md#measure-across).
+    [E02](lessons/057-measure-across-and-through/index.md#try-it).

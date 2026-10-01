@@ -1,7 +1,7 @@
 ---
 lesson: 18
 promise: Build a safe that opens only for your secret code, and remembers the code even when it's unplugged.
-time: 120 minutes
+time: 2 hours
 level: 3
 parts:
   - Arduino Mega 2560 and its USB cable

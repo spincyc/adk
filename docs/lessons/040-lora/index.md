@@ -1,7 +1,7 @@
 ---
 lesson: 40
 promise: Send messages from one LoRa modem to another, and see how strong each one arrives.
-time: 60 minutes
+time: 1 hour
 level: 3
 parts:
   - The screen and button from Lesson 39, wired as before

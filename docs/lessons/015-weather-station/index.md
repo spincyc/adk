@@ -1,7 +1,7 @@
 ---
 lesson: 15
 promise: Build a desk weather station with a comfort light and a heat alarm you set with a knob.
-time: 90 minutes
+time: 1½ hours
 level: 2
 parts:
   - Arduino Mega 2560 and its USB cable
