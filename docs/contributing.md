@@ -46,6 +46,14 @@ The website needs Python 3: `make site` creates `build/venv` from
 `docs/requirements.in` (the command is at its top). The PDFs need Chromium.
 `make deps` installs all of it. `make pdf` prints two lessons at once by
 default; set `PDF_WORKERS=1` on a computer that needs a smaller workload.
+Each lesson gets three minutes and a second try, and its PDF must be whole,
+at least two pages, titled as its page is and set in the site's typeface.
+`make pdf` then fails if a PDF is over `PDF_MAX_MB` (8 MB) or the whole
+site over `SITE_MAX_MB` (500 MB), well inside GitHub Pages' 1 GB. The
+drawings print as plain lines: Chromium would print their pencil texture
+as a picture, several megabytes a page. Where poppler's `pdftotext` is
+installed, `make pdf` also lists lessons whose last page is nearly empty
+(`tests/pdf_last_pages.py`), a hint for someone to look at, not a failure.
 
 ## Adding a part
 

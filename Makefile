@@ -11,6 +11,8 @@ CXX          ?= c++
 PYTHON       ?= python3
 CHROMIUM     ?= chromium
 PDF_WORKERS  ?= 2
+PDF_MAX_MB   ?= 8
+SITE_MAX_MB  ?= 500
 ARDUINO_CORE ?= arduino:avr@1.8.8
 
 # The C++23 avr-gcc ------------------------------------------------------------
@@ -423,10 +425,20 @@ $(BUILD_DIR)/steps.ok: tests/build_steps.py tests/navigation_ids.py  \
 	@touch $@
 
 ## pdf             print every lesson page to build/site/pdf
+#
+# Each PDF must be under PDF_MAX_MB and the site under SITE_MAX_MB; GitHub
+# Pages publishes at most 1 GB. With poppler's pdftotext, this also lists
+# lessons whose last page is nearly empty, for someone to look at.
 pdf: site $(BUILD_DIR)/view.ok $(BUILD_DIR)/print.ok
-	@$(VENV)/bin/python docs/_theme/print_pdfs.py \
-	    --site-dir "$(abspath $(BUILD_DIR))/site" \
-	    --chromium "$(CHROMIUM)" --workers "$(PDF_WORKERS)"
+	@$(VENV)/bin/python docs/_theme/print_pdfs.py   \
+	    --site-dir "$(abspath $(BUILD_DIR))/site"   \
+	    --chromium "$(CHROMIUM)"                    \
+	    --workers "$(PDF_WORKERS)"                  \
+	    --max-pdf-mb "$(PDF_MAX_MB)"                \
+	    --max-site-mb "$(SITE_MAX_MB)"
+	@if command -v pdftotext > /dev/null; then                    \
+	    $(PYTHON) tests/pdf_last_pages.py $(BUILD_DIR)/site/pdf;  \
+	fi
 
 $(BUILD_DIR)/view.ok: tests/build_view.html docs/assets/steps.js docs/assets/adk.css
 	@mkdir -p $(BUILD_DIR)
