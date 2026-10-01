@@ -10,7 +10,7 @@ parts:
   - 4×4 membrane keypad
   - 8 more jumper wires
 ideas:
-  - Rows and columns: a key matrix
+  - "Rows and columns: a key matrix"
   - Scanning, one row at a time
   - Building a number from its digits
   - A running total

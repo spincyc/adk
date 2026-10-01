@@ -13,7 +13,7 @@ parts:
   - 2 jumper wires
 ideas:
   - A game loop that moves on a steady beat
-  - The snake as a deque: on at the front, off at the back
+  - "The snake as a deque: on at the front, off at the back"
   - Collisions with the walls and yourself
   - Speeding up, and sound for every event
 ---
