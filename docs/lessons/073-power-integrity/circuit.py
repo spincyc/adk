@@ -5,7 +5,7 @@ bench = Bench ("A switched LED load and capacitors on a local 5 V supply",
 
 bench.module ("generator", name="wave", at=(1, 4), label="isolated generator",
               detail="battery powered; set OUT to a 0–4 V square wave at 1 kHz",
-              shows="1.000 kHz")
+              shows="1.000 kHz", wave="square")
 
 bench.stage ("the 10 Ω feed and local supply")
 bench.wire ("T+4", "j4")

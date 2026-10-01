@@ -5,7 +5,7 @@ bench = Bench ("A coil slows the rise of current through a 1 kΩ resistor",
 
 bench.module ("generator", name="wave", at=(1, 4), label="isolated generator",
               detail="battery powered; set OUT to a 0–4 V square wave at 100 Hz",
-              shows="100.0 Hz")
+              shows="100.0 Hz", wave="square")
 
 bench.stage ("the coil and current-sense resistor")
 bench.wire ("wave.OUT", "j6")

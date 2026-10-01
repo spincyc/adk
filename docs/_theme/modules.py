@@ -979,14 +979,22 @@ class Generator (Kind):
     # A battery-powered signal generator, so it shares no ground with the
     # mains: a small case with its display, a knob for the frequency and
     # one for the size of the wave, and its two clip leads from the jacks
-    # at its end, OUT red and GND black. shows="…" sets what its display
-    # reads.
+    # at its end, GND black and OUT blue, a signal's color, since red would
+    # say 5 V. shows="…" sets what its display reads, and wave="sine" or
+    # "square" the wave drawn beside it.
     title  = "signal generator"
     pins   = ("OUT", "GND")
-    notes  = {"OUT": "red OUT lead", "GND": "black GND lead"}
+    notes  = {"OUT": "blue OUT lead", "GND": "black GND lead"}
     width, height = 150, 104
-    COLORS = {"OUT": "red", "GND": "black"}
+    COLORS = {"OUT": "blue", "GND": "black"}
     CASE   = "#4b4f55"
+    WAVES  = ("sine", "square")
+
+    def __init__ (self, pins=None, label=None, **options):
+        super ().__init__ (pins, label, **options)
+        if options.get ("wave", "sine") not in self.WAVES:
+            raise ValueError (f"a signal generator's wave is sine or square, not "
+                              f"{options['wave']!r}")
 
     def header (self):
         return [Pin (name, 55 + 40 * index, self.height, (0, 1), "lead", self.notes[name],
@@ -1002,8 +1010,17 @@ class Generator (Kind):
         flip = 90 < sum (pencil.turns) % 360 <= 270
         pencil.text (51, 24 - 6.5 * flip, self.options.get ("shows", "1.000 kHz"), size=9,
                      kind="mono", color="#262a22", tone=0.95, rotate=180 if flip else 0)
-        wave = " ".join (f"{'M' if step == 0 else 'L'} {16 + step * 1.75:.1f} "
-                         f"{37 - 5 * math.sin (step * math.pi / 10):.1f}" for step in range (41))
+        if self.options.get ("wave") == "square":
+            # Two cycles, each half high and half low, edges straight up.
+            points = []
+            for half in range (4):
+                height = 42 if half % 2 else 32
+                points += [(16 + half * 17.5, height), (16 + (half + 1) * 17.5, height)]
+        else:
+            points = [(16 + step * 1.75, 37 - 5 * math.sin (step * math.pi / 10))
+                      for step in range (41)]
+        wave = " ".join (f"{'M' if index == 0 else 'L'} {x:.1f} {y:.1f}"
+                         for index, (x, y) in enumerate (points))
         pencil.layers["top"].append (f'<path d="{wave}" fill="none" stroke="#262a22" '
                                      f'stroke-width="0.9"/>')
         # Its knobs, frequency and size.

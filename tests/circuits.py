@@ -337,6 +337,8 @@ expect ("a module's + on a pin is a signal's color",
         color_of (finished (Bench ("test", columns=(1, 20)).module ("sensor", "s", at=(6, 3.6))
                             .wire ("22", "s.+").wire ("23", "s.S").wire ("GND.power", "s.−")),
                   "22", "s.+") in ("black", "red", "orange"), False)
+check ("a generator's sawtooth", lambda b: b.module ("generator", "wave", at=(1, 4),
+                                                     wave="sawtooth"), "sine or square")
 
 # A build carried on keeps the colors of the wires it keeps, as its steps
 # name them: load () hands them on from the lesson before, where the two
