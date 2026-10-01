@@ -47,8 +47,9 @@ namespace adk {
 
         // Tune to a frequency in tenths of a megahertz, tune (1011) for
         // 101.1 MHz, or move a number of stations' spacing up or down, as
-        // step (encoder.turned ()). Both stay in the band, and wrap round
-        // at its ends; a frequency between stations goes to the one below.
+        // step (encoder.turned ()). Both stay in the band: a frequency past
+        // either end tunes to that end, and a step past an end wraps round
+        // to the other. A frequency between stations goes to the one below.
         // Asking for where it already is changes nothing, so both can be
         // called from every pass of loop ().
         void tune (uint16_t frequency);
