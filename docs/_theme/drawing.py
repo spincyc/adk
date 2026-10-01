@@ -374,6 +374,11 @@ class Drawing:
                 router.block (("rect", *placed.reach_box ()))
             else:
                 router.cost (("rect", *placed.reach_box ()), 5)
+                # A wire may cross a module that lies flat, but not over a
+                # pin with no wire on it, as if it went into it.
+                for pin in placed.pins ():
+                    if pin.name not in placed.wired:
+                        router.block (("circle", *placed.anchor (pin)[0], 2))
             router.block (("rect", *placed.title_box ()))
         return router
 
