@@ -12,6 +12,12 @@ docs_dir: docs
 site_dir: build/site
 strict: true
 
+# A link within the site must find its page and its heading: MkDocs only
+# notes a missing anchor unless told to warn, which --strict then fails.
+validation:
+  links:
+    anchors: warn
+
 exclude_docs: |
   _theme/
   *.py

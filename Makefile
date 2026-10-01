@@ -417,9 +417,10 @@ size: $(ARDUINO_LOGS)
 	    printf '%-36s %8s %6s\n' $$example $$flash $$ram;                        \
 	done
 
-## site            build the website into build/site
+## site            build the website into build/site, and check its links
 site: $(VENV)/.installed $(BUILD_DIR)/steps.ok
 	$(VENV)/bin/mkdocs build --strict --site-dir $(abspath $(BUILD_DIR))/site
+	@$(PYTHON) tests/site_links.py $(BUILD_DIR)/site
 
 $(BUILD_DIR)/steps.ok: tests/build_steps.py tests/navigation_ids.py  \
                      $(wildcard docs/_theme/*.py)                    \

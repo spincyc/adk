@@ -33,7 +33,7 @@ the site derives its public label from its order within that track.
 | `make upload-001-blink PORT=…` | Compile one lesson's sketch and upload it to the Mega on `PORT` |
 | `make pins` | Test the circuit model (`tests/circuits.py`), then hold each sketch to its circuit (below) |
 | `make size` | Flash and RAM used by each example |
-| `make site` | Build this website into `build/site` |
+| `make site` | Build this website into `build/site`, then check its links |
 | `make pdf` | Print every lesson to `build/site/pdf` |
 | `make serve` | Preview the website at <http://127.0.0.1:8000> |
 | `make style` | Check the mechanical rules of the [style guide](STYLE.md) |
@@ -43,7 +43,11 @@ the site derives its public label from its order within that track.
 
 The website needs Python 3: `make site` creates `build/venv` from
 `docs/requirements.txt`, a hashed lock that pip-compile makes from
-`docs/requirements.in` (the command is at its top). The PDFs need Chromium.
+`docs/requirements.in` (the command is at its top). MkDocs checks the links
+each page's Markdown makes, headings included; then `tests/site_links.py`
+reads the built pages and fails on any link within the site, from the
+theme and the hooks too, to a file or an anchor that isn't there, and on
+an id used twice in a page. The PDFs need Chromium.
 `make deps` installs all of it. `make pdf` prints two lessons at once by
 default; set `PDF_WORKERS=1` on a computer that needs a smaller workload.
 Each lesson gets three minutes and a second try, and its PDF must be whole,
