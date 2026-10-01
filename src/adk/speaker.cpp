@@ -85,6 +85,8 @@ namespace adk {
             return;
         }
 
+        started_.start (now);
+
         Millis elapsed = started_.elapsed (now);
 
         // A melody note falls silent for the last eighth of its length.

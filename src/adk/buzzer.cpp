@@ -51,6 +51,8 @@ namespace adk {
 
     void Buzzer::update (Millis now)
     {
+        beep_.start (now);
+
         if (length_ != 0 && beep_.elapsed (now) >= length_)
         {
             off ();

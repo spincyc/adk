@@ -173,6 +173,7 @@ namespace adk {
     void LoraModem::update (Millis now)
     {
         received_ = false;
+        sent_.start (now);
 
         if (sending_ && sent_.elapsed (now) >= GiveUp)
         {

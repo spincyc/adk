@@ -1,8 +1,8 @@
 #pragma once
 
 #include "link.h"
-#include "object.h"
 #include "serial_port.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -26,7 +26,8 @@ namespace adk {
         explicit MeshNode (HardwareSerial& port);
 
         // Send text to everyone on the channel. False, and nothing sent,
-        // within 1.5 s of the last message, or if it is over 100 characters.
+        // within 1.5 s of the update after the last message, or if it is
+        // over 100 characters.
         bool send    (const char* text);
         bool canSend () const;
 
@@ -51,8 +52,8 @@ namespace adk {
         LineReader<MaxLength> reader_;
         char                  sender_ [17];
         char                  text_   [MaxLength + 1];
+        StartTime             gap_;
         Millis                now_;
-        Millis                sentAt_;
         bool                  sent_;
         bool                  received_;
     };

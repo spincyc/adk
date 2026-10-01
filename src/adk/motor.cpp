@@ -80,6 +80,8 @@ namespace adk {
 
     void Motor::update (Millis now)
     {
+        spinDown_.start (now);
+
         if (driving_ || spin_ == 0 || spinDown_.elapsed (now) < SpinDown)
         {
             return;

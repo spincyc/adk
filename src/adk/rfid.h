@@ -1,6 +1,6 @@
 #pragma once
 
-#include "object.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -63,13 +63,12 @@ namespace adk {
         enum class Step : uint8_t
         {
             Off,
-            Due,
             Resting,
             Waking,
             Listing
         };
 
-        void    look          (Millis now);
+        void    look          ();
         void    listen        (Millis now);
         void    found         (uint32_t uid);
         void    missed        ();
@@ -80,14 +79,14 @@ namespace adk {
         uint8_t readRegister  (uint8_t address);
         void    writeRegister (uint8_t address, uint8_t value);
 
-        Millis   lookedAt_;
-        uint32_t uid_;
-        Pin      select_;
-        Pin      reset_;
-        Step     step_;
-        uint8_t  misses_;
-        bool     ok_;
-        bool     present_;
-        bool     wasRead_;
+        StartTime looked_;
+        uint32_t  uid_;
+        Pin       select_;
+        Pin       reset_;
+        Step      step_;
+        uint8_t   misses_;
+        bool      ok_;
+        bool      present_;
+        bool      wasRead_;
     };
 }

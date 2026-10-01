@@ -1,7 +1,7 @@
 #pragma once
 
 #include "link.h"
-#include "object.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -77,28 +77,21 @@ namespace adk {
       private:
         friend struct RadioClock;
 
-        enum class Rest : uint8_t
-        {
-            Due,        // after this message, or at the first update
-            Running,    // counting from restStart_
-            Over
-        };
-
         bool        sendLine  (const char* text) override;
         const char* heardLine () const override;
 
         void step ();
 
         uint8_t          frame_ [MaxLength + 7];   // count, header, message, checksum
+        StartTime        rest_;
         Millis           restLength_;
-        Millis           restStart_;
         Millis           now_;
         uint8_t          length_;
         uint8_t          symbol_;
         uint8_t          bit_;
         uint8_t          tick_;
         Pin              pin_;
-        Rest             rest_;
+        bool             rested_;
         volatile bool    sending_;
     };
 

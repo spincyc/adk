@@ -19,14 +19,17 @@ namespace adk {
         waiting_ = false;
     }
 
-    Millis StartTime::elapsed (Millis now)
+    void StartTime::start (Millis now)
     {
         if (waiting_)
         {
             restart (now);
         }
+    }
 
-        return now - start_;
+    Millis StartTime::elapsed (Millis now) const
+    {
+        return waiting_ ? 0 : now - start_;
     }
 
     bool StartTime::beat (Millis now, Millis period)
@@ -51,6 +54,19 @@ namespace adk {
     bool StartTime::due (Millis now, Millis period)
     {
         if (!waiting_ && now - start_ < period)
+        {
+            return false;
+        }
+
+        restart (now);
+        return true;
+    }
+
+    bool StartTime::passed (Millis now, Millis period)
+    {
+        start (now);
+
+        if (now - start_ < period)
         {
             return false;
         }

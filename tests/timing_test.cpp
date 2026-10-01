@@ -6,7 +6,10 @@ TEST (aStartTimeCountsFromTheFirstUpdateItSees)
 {
     adk::StartTime start;
 
+    CHECK (start.elapsed (4000) == 0);  // reading it starts nothing
+    start.start (5000);
     CHECK (start.elapsed (5000) == 0);
+    start.start (5100);                 // already started: no change
     CHECK (start.elapsed (5250) == 250);
 }
 
@@ -14,8 +17,10 @@ TEST (aStartTimeRestartedByACommandCountsFromTheNextUpdate)
 {
     adk::StartTime start;
 
-    start.elapsed (0);
+    start.start (0);
     start.restart ();
+    CHECK (start.elapsed (650) == 0);
+    start.start (700);
     CHECK (start.elapsed (700) == 0);
     CHECK (start.elapsed (900) == 200);
 
@@ -78,6 +83,25 @@ TEST (dueIsTrueAtTheFirstUpdateThenEachPeriodFromTheLast)
     start.restart (0xFFFFFFC0);
     CHECK (!start.due (0x00000023, 100));
     CHECK (start.due (0x00000024, 100));
+}
+
+TEST (passedIsTrueAPeriodAfterTheFirstUpdateThenEachPeriodFromTheLast)
+{
+    adk::StartTime start;
+
+    CHECK (!start.passed (1000, 100));  // the first update only starts it
+    CHECK (!start.passed (1099, 100));
+    CHECK (start.passed (1130, 100));   // 30 ms late, which puts the next back to 1230
+    CHECK (!start.passed (1229, 100));
+    CHECK (start.passed (1230, 100));
+
+    start.restart ();
+    CHECK (!start.passed (1231, 100));
+    CHECK (start.passed (1331, 100));
+
+    start.restart (0xFFFFFFC0);
+    CHECK (!start.passed (0x00000023, 100));
+    CHECK (start.passed (0x00000024, 100));
 }
 
 TEST (interpolateGoesEitherWayAndStopsAtTheEnd)

@@ -54,7 +54,7 @@ namespace adk {
     }
 
     Rfid::Rfid (Pin select, Pin reset)
-        : lookedAt_ (0)
+        : looked_   ()
         , uid_      (0)
         , select_   (select)
         , reset_    (reset)
@@ -104,7 +104,9 @@ namespace adk {
         writeRegister (ModeReg,       0x3D);
         field (true);
 
-        step_ = Step::Due;
+        // The first look comes at the first update.
+        step_ = Step::Resting;
+        looked_.restart ();
     }
 
     bool Rfid::wasRead () const
@@ -138,14 +140,10 @@ namespace adk {
             case Step::Off:
                 break;
 
-            case Step::Due:
-                look (now);
-                break;
-
             case Step::Resting:
-                if (now - lookedAt_ >= LookPeriod)
+                if (looked_.due (now, LookPeriod))
                 {
-                    look (now);
+                    look ();
                 }
                 break;
 
@@ -171,10 +169,9 @@ namespace adk {
         present_ = false;
     }
 
-    void Rfid::look (Millis now)
+    void Rfid::look ()
     {
-        lookedAt_ = now;
-        step_     = Step::Waking;
+        step_ = Step::Waking;
         send (Wupa, sizeof Wupa, 7, Transceive);
     }
 
@@ -185,7 +182,7 @@ namespace adk {
 
         // The reader's timer ends every exchange within 25 ms. One still
         // going when the next look is due has gone wrong, and counts as silence.
-        if (length == Pending && now - lookedAt_ < LookPeriod)
+        if (length == Pending && looked_.elapsed (now) < LookPeriod)
         {
             return;
         }

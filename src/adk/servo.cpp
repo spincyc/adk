@@ -141,6 +141,8 @@ namespace adk {
             return;
         }
 
+        move_.start (now);
+
         Millis elapsed = move_.elapsed (now);
 
         pulse (interpolate (from_, to_, elapsed, moveLength_));

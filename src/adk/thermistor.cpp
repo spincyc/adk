@@ -36,9 +36,8 @@ namespace adk {
     // first update.
     void Thermistor::update (Millis now)
     {
-        if (sampled_.elapsed (now) >= SamplePeriod)
+        if (sampled_.passed (now, SamplePeriod))
         {
-            sampled_.restart (now);
             sample ();
         }
     }

@@ -144,15 +144,15 @@ namespace adk {
 
     RadioTransmitter::RadioTransmitter (Pin data)
         : frame_      {}
+        , rest_       ()
         , restLength_ (LongestRest)
-        , restStart_  (0)
         , now_        (0)
         , length_     (0)
         , symbol_     (0)
         , bit_        (0)
         , tick_       (0)
         , pin_        (data)
-        , rest_       (Rest::Due)
+        , rested_     (false)
         , sending_    (false)
     {
     }
@@ -188,7 +188,7 @@ namespace adk {
 
     bool RadioTransmitter::send (const uint8_t* bytes, uint8_t length)
     {
-        if (rest_ != Rest::Over || length > MaxLength)
+        if (!rested_ || length > MaxLength)
         {
             return false;
         }
@@ -219,7 +219,8 @@ namespace adk {
         frame_[size++] = static_cast<uint8_t> (crc >> 8);
 
         restLength_ = restAfter (size);
-        rest_       = Rest::Due;
+        rested_     = false;
+        rest_.restart ();
         length_     = size;
         symbol_     = 0;
         bit_        = 0;
@@ -247,19 +248,12 @@ namespace adk {
 
     bool RadioTransmitter::isReady () const
     {
-        return rest_ == Rest::Over;
+        return rested_;
     }
 
     Millis RadioTransmitter::restLeft () const
     {
-        switch (rest_)
-        {
-            case Rest::Due:     return restLength_;
-            case Rest::Running: return restLength_ - (now_ - restStart_);
-            case Rest::Over:    return 0;
-        }
-
-        return 0;
+        return rested_ ? 0 : restLength_ - rest_.elapsed (now_);
     }
 
     // The rest counts from the first update that finds the message gone,
@@ -270,15 +264,10 @@ namespace adk {
     {
         now_ = now;
 
-        if (rest_ == Rest::Due && !sending_)
+        if (!rested_ && !sending_)
         {
-            restStart_ = now;
-            rest_      = Rest::Running;
-        }
-
-        if (rest_ == Rest::Running && now - restStart_ >= restLength_)
-        {
-            rest_ = Rest::Over;
+            rest_.start (now);
+            rested_ = rest_.elapsed (now) >= restLength_;
         }
     }
 

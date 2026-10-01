@@ -50,11 +50,10 @@ namespace adk {
 
     void Ultrasonic::update (Millis now)
     {
-        measured_ = pinged_.elapsed (now) >= PingPeriod;
+        measured_ = pinged_.passed (now, PingPeriod);
 
         if (measured_)
         {
-            pinged_.restart (now);
             ping ();
         }
     }

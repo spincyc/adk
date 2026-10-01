@@ -91,15 +91,17 @@ Time enters an object only through `update (now)`. An object never calls
 the same result every time.
 
 A command that starts something timed (`blink ()`, `beep ()`, `fadeTo ()`,
-`play ()`) sets a flag, and the next `update ()` records the start time. The
-effect that can happen immediately, such as the first flash, does. A new part
-keeps that start in a `StartTime` (`timing.h`) rather than a time and a flag
-of its own, as `Led`, `Timer`, `Every` and the displays do; a few older parts,
-such as `Stopwatch`, `Ds18b20` and `Rfid`, still keep their own. With a
-`StartTime`, `restart ()` comes from the command, then in `update (now)`
-either `elapsed (now)`, `beat (now, period)` for a steady beat that keeps time
-as `Every` does, or `due (now, period)` for something done at the first update
-and then each period from the last, as a display's scan.
+`play ()`, a `Timer`'s `start ()`) sets a flag, and the next update records
+the start. The effect that can happen immediately, such as the first flash,
+does. Every part keeps that start in a `StartTime` (`timing.h`), never in a
+time and a flag of its own. The command calls `restart ()`. Then in
+`update (now)`, a part that times one thing calls `start (now)`, which takes
+the start if it is waiting, and reads `elapsed (now)`, which changes nothing.
+A part that acts each period makes one call that takes the start itself:
+`beat (now, period)` for a steady beat that keeps time, as `Every` does;
+`due (now, period)` for something done at the first update and then each
+period from the last, as a display's scan; or `passed (now, period)`, the
+same but first a period after the first update, as a sensor's readings.
 
 Asking a part for what it is already doing changes nothing, so commands such
 as `blink ()`, `beep ()`, `fadeTo ()`, `play ()`, `moveTo ()`, `tune ()` and

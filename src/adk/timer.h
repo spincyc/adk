@@ -54,10 +54,9 @@ namespace adk {
         void update (Millis now) override;
 
       private:
-        Millis startedAt_;
-        Millis banked_;
-        Millis now_;
-        bool   running_;
-        bool   starting_;
+        StartTime started_;
+        Millis    banked_;      // the time before the latest start
+        Millis    now_;
+        bool      running_;
     };
 }

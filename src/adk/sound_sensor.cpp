@@ -46,13 +46,12 @@ namespace adk {
             highest_         = max (highest_, reading);
         }
 
-        if (window_.elapsed (now) >= Window)
+        if (window_.passed (now, Window))
         {
             level_    = highest_ >= lowest_ ? static_cast<uint16_t> (highest_ - lowest_) : 0;
             lowest_   = 1023;
             highest_  = 0;
             measured_ = true;
-            window_.restart (now);
         }
     }
 }

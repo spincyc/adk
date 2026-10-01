@@ -119,11 +119,10 @@ namespace adk {
     // the chip time to wake.
     void Mpu6050::update (Millis now)
     {
-        measured_ = read_.elapsed (now) >= Period;
+        measured_ = read_.passed (now, Period);
 
         if (measured_)
         {
-            read_.restart (now);
             ok_ = (ok_ || configure ()) && measure ();
         }
     }

@@ -43,10 +43,10 @@ namespace adk {
     }
 
     Ds18b20::Ds18b20 (Pin pin)
-        : startedAt_  (0)
+        : started_    ()
         , sixteenths_ (0)
         , pin_        (pin)
-        , phase_      (Phase::Starting)
+        , converting_ (false)
         , ok_         (false)
         , measured_   (false)
         , fresh_      (true)
@@ -73,29 +73,29 @@ namespace adk {
         return measured_;
     }
 
-    // The sensor converts on its own once told to. Each conversion's result
-    // is collected 750 ms later, and the next conversion started at once.
+    // The sensor converts on its own once told to. The first conversion
+    // starts at the first update; each one's result is collected 750 ms
+    // later, and the next conversion started at once.
     void Ds18b20::update (Millis now)
     {
         measured_ = false;
 
-        if (phase_ != Phase::Starting && now - startedAt_ < ConversionTime)
+        if (!started_.due (now, ConversionTime))
         {
             return;
         }
 
-        if (phase_ == Phase::Converting)
+        if (converting_)
         {
             ok_       = collect ();
             measured_ = true;
         }
 
-        startedAt_ = now;
-        phase_     = command (ConvertT) ? Phase::Converting : Phase::Missing;
+        converting_ = command (ConvertT);
 
         // With no sensor to start one, a reading fails at once, unless one
         // has just finished.
-        if (phase_ == Phase::Missing && !measured_)
+        if (!converting_ && !measured_)
         {
             ok_       = false;
             measured_ = true;

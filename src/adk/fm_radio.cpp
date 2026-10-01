@@ -290,12 +290,10 @@ namespace adk {
                     : seek_ != 0                ? Seeking
                                                 : Tuning;
 
-        if (polled_.elapsed (now) < wait)
+        if (!polled_.passed (now, wait))
         {
             return;
         }
-
-        polled_.restart (now);
 
         if (state_ == State::Idle)
         {

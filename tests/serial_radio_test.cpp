@@ -278,9 +278,12 @@ TEST (meshNodeSendsAtMostEveryOneAndAHalfSeconds)
     CHECK (!mesh.canSend ());
     CHECK (!mesh.send ("Too soon"));
 
-    adk::update (2499);
-    CHECK (!mesh.send ("Still too soon"));
+    // The gap counts from the update after the message, as every timed
+    // thing a command starts does.
+    adk::update (1001);
     adk::update (2500);
+    CHECK (!mesh.send ("Still too soon"));
+    adk::update (2501);
     CHECK (mesh.send ("Now"));
     CHECK (Serial1.text == "Lamp is onNow");
 }
@@ -291,9 +294,10 @@ TEST (meshNodeKeepsItsGapAcrossTheWrapOfMillis)
 
     adk::setup ();
 
-    // 256 ms before millis () wraps round to zero.
-    adk::update (0xFFFFFF00);
+    // The gap starts 256 ms before millis () wraps round to zero.
+    adk::update (0xFFFFFEFF);
     CHECK (mesh.send ("Before"));
+    adk::update (0xFFFFFF00);
 
     adk::update (0);
     CHECK (!mesh.canSend ());

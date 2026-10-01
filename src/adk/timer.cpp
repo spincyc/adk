@@ -52,6 +52,7 @@ namespace adk {
             return;
         }
 
+        started_.start (now);
         elapsed_ = started_.elapsed (now);
 
         if (elapsed_ >= duration_)
@@ -62,41 +63,40 @@ namespace adk {
     }
 
     Stopwatch::Stopwatch ()
-        : startedAt_ (0)
-        , banked_    (0)
-        , now_       (0)
-        , running_   (false)
-        , starting_  (false)
+        : started_ ()
+        , banked_  (0)
+        , now_     (0)
+        , running_ (false)
     {
     }
 
+    // Like every command that starts something timed, start (), reset ()
+    // and restart () count from the next update.
     void Stopwatch::start ()
     {
         if (!running_)
         {
-            running_  = true;
-            starting_ = true;
+            running_ = true;
+            started_.restart ();
         }
     }
 
     void Stopwatch::stop ()
     {
-        banked_   = elapsed ();
-        running_  = false;
-        starting_ = false;
+        banked_  = elapsed ();
+        running_ = false;
     }
 
     void Stopwatch::reset ()
     {
-        banked_    = 0;
-        startedAt_ = now_;
+        banked_ = 0;
+        started_.restart ();
     }
 
     void Stopwatch::restart ()
     {
-        banked_   = 0;
-        running_  = true;
-        starting_ = true;
+        reset ();
+        running_ = true;
     }
 
     bool Stopwatch::isRunning () const
@@ -106,22 +106,12 @@ namespace adk {
 
     Millis Stopwatch::elapsed () const
     {
-        if (!running_ || starting_)
-        {
-            return banked_;
-        }
-
-        return banked_ + (now_ - startedAt_);
+        return running_ ? banked_ + started_.elapsed (now_) : banked_;
     }
 
     void Stopwatch::update (Millis now)
     {
         now_ = now;
-
-        if (starting_)
-        {
-            startedAt_ = now;
-            starting_  = false;
-        }
+        started_.start (now);
     }
 }

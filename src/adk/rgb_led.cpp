@@ -78,6 +78,8 @@ namespace adk {
             return;
         }
 
+        fade_.start (now);
+
         Millis elapsed = fade_.elapsed (now);
 
         if (elapsed >= fadeLength_)

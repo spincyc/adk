@@ -64,6 +64,8 @@ TEST (stopwatchCountsWhileRunningAndCarriesOn)
     watch.reset ();
     CHECK (watch.elapsed () == 0);
     adk::update (3150);
+    CHECK (watch.elapsed () == 0);
+    adk::update (3200);
     CHECK (watch.elapsed () == 50);
 }
 

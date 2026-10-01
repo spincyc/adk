@@ -132,6 +132,8 @@ namespace adk {
 
     void Dht11::update (Millis now)
     {
+        signalled_.start (now);
+
         Millis waited = signalled_.elapsed (now);
 
         measured_ = false;

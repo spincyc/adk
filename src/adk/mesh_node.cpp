@@ -14,8 +14,8 @@ namespace adk {
         : port_     (port)
         , sender_   {}
         , text_     {}
+        , gap_      ()
         , now_      (0)
-        , sentAt_   (0)
         , sent_     (false)
         , received_ (false)
     {
@@ -38,8 +38,8 @@ namespace adk {
 
         // No newline: the node would send it as part of the message.
         port_.print (text);
-        sentAt_ = now_;
-        sent_   = true;
+        gap_.restart ();
+        sent_ = true;
         return true;
     }
 
@@ -55,7 +55,7 @@ namespace adk {
 
     bool MeshNode::canSend () const
     {
-        return !sent_ || now_ - sentAt_ >= Gap;
+        return !sent_ || gap_.elapsed (now_) >= Gap;
     }
 
     bool MeshNode::wasReceived () const
@@ -78,6 +78,7 @@ namespace adk {
     {
         now_      = now;
         received_ = false;
+        gap_.start (now);
 
         while (reader_.read (port_))
         {

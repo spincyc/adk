@@ -1,6 +1,6 @@
 #pragma once
 
-#include "object.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -44,13 +44,6 @@ namespace adk {
         void update (Millis now) override;
 
       private:
-        enum class Phase : uint8_t
-        {
-            Starting,
-            Converting,
-            Missing
-        };
-
         bool    collect ();
         bool    command (uint8_t function);
         bool    reset   ();
@@ -58,12 +51,12 @@ namespace adk {
         void    drive   ();
         void    release ();
 
-        Millis  startedAt_;
-        int16_t sixteenths_;
-        Pin     pin_;
-        Phase   phase_;
-        bool    ok_;
-        bool    measured_;
-        bool    fresh_;
+        StartTime started_;
+        int16_t   sixteenths_;
+        Pin       pin_;
+        bool      converting_;
+        bool      ok_;
+        bool      measured_;
+        bool      fresh_;
     };
 }
