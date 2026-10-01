@@ -16,8 +16,7 @@ ideas:
   - Random numbers, and a random seed
   - Measuring time with a timer and a stopwatch
   - A game as a set of states
-  - A player's parts grouped together, and handed to a function
-  - The active buzzer
+  - The active buzzer, switched by a transistor
 ---
 
 ## What you'll build
@@ -151,23 +150,21 @@ changes who wins; the three states stay the same.
 
 What's new:
 
-- `struct Player` makes a new type that bundles what belongs together: a
-  player's name, button and light. `const char* name` holds a piece of
-  text, such as `"Red"`. `Player red {"Red", 22, 26};` fills them in, in
-  order: the name, the button's pin, the light's pin. Then `red.button` and
-  `red.light` reach inside, so the red player's button and light can never
-  get mixed up with green's.
-- `pressed (red, green)` hands `pressed ()` two players: the one who
-  pressed, and the one they are up against. In
-  `void pressed (Player& player, Player& rival)`, the `&` means the
-  function works on those very players, not copies of them, so
-  `winner.light.blink (200)` flashes the real light.
 - `enum class State { Waiting, Ready, Go };` makes a new kind of value with
   three names, one for each state, and `State state` is a variable that
-  holds one of them. `state == State::Go` says what it means, which a
-  number never would.
-- `switch (state)` jumps to the `case` for the current state and runs it,
-  up to its `break`. Those three lines are the whole game.
+  holds one of them. `state = State::Ready;` moves the game on, and says
+  what it means, which a number never would.
+- `switch (state)` in `redPressed ()` jumps to the `case` for the current
+  state and runs its lines, down to its `break`, which ends the `switch`.
+  So the same press starts a round, loses it or wins it, depending on the
+  state: those three cases are the whole game.
+- `greenPressed ()` is `redPressed ()` again with the colors swapped.
+  Writing it out twice keeps each player's lines plain to read. In
+  [Lesson 5](../005-melody-maker/index.md) you'll meet a `struct`, which
+  bundles parts that belong together, such as a button and a light, so
+  that one piece of code can serve them all.
+- `falseStart ()` and `endRound ()` hold the lines both players share, so
+  they are written once.
 - `adk::Timer suspense;` counts down. `suspense.start (random (2000, 5000))`
   sets it going, and `suspense.expired ()` is true for the one update in
   which it runs out, just as a button's `wasPressed ()` is true once per
@@ -221,7 +218,7 @@ are faster to a sound, try the first challenge below.
     real reaction is about 20 ms quicker than the number on screen. Both
     players get the same 20 ms, so the duel stays fair.
 
-    `celebrate ()` ends with `adk::wait (1000)`, which gives the loser a
+    `endRound ()` ends with `adk::wait (1000)`, which gives the loser a
     second to finish their too-late press. A press during `adk::wait ()`
     still updates its button, but no `loop ()` is looking, so it is simply
     let go by instead of starting the next round.
@@ -237,9 +234,10 @@ are faster to a sound, try the first challenge below.
    with your eyes shut. Which way are you faster, and by how much?
 2. **Record time.** Keep the fastest time since power-up in a variable, and
    print *New record!* whenever somebody beats it.
-3. **Best of five.** Add `int wins = 0;` to `Player`, and count each
-   player's wins. The first to three wins the match: make their light blink
-   slowly, and start a new match on the next press.
+3. **Best of five.** Add `int redWins = 0;` and `int greenWins = 0;` beside
+   `state`, and count each player's wins. The first to three wins the
+   match: make their light blink slowly, and start a new match on the next
+   press.
 4. **A fair tie.** Both players could, just possibly, press in the same
    update. Right now red would win, because `loop ()` asks red's button
    first. In the *Go* state, check whether both were pressed, and call it a

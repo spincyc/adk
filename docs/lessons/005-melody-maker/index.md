@@ -112,8 +112,11 @@ Open **File → Examples → Adk → lessons → 005-melody-maker**:
 
 What's new:
 
-- `struct Key` bundles a button with the pitch it plays, as Lesson 3's
-  `Player` bundled a button with a light.
+- `struct Key` makes a new type that bundles what belongs together: a
+  button, and the pitch it plays. Every `Key` holds both, and `key.button`
+  and `key.pitch` reach inside. In Lesson 3 each player's parts had names
+  of their own, and the code for red was written again for green; with a
+  `struct`, one set of lines can look after all four keys.
 - `uint16_t pitch` is a whole number from 0 to 65 535: room for any pitch
   you can hear. A `uint8_t`, which stops at 255, would be too small.
 - `adk::Array keys {Key {22, adk::note::c4}, ...};` is an `adk::Array` of
@@ -135,8 +138,12 @@ What's new:
 - `for (auto& key : keys)` is a **range-for**: it runs the lines inside
   once for each key in the list, in order, with `key` standing for that
   key. One set of lines looks after all four. `auto` lets the compiler work
-  out that each one is a `Key`, and the `&` means `key` is the real key, not
-  a copy, as in Lesson 3.
+  out that each one is a `Key`, and the `&` makes `key` the real key in the
+  list, not a copy of it, so `key.button` is the real button.
+- `else if` gives an `if` a second question, asked only when the first
+  answer is no: a key that has just gone down can't also have just come
+  up. `&&` needs both answers to be yes (see Lesson 4's box): this key came
+  up, *and* its pitch is the one sounding.
 - `speaker.tone (key.pitch);` sounds a note until `speaker.stop ();`. The
   variable `sounding` remembers the pitch of the key that is playing, or
   `adk::note::rest` (0) for none, so letting go of a key only stops its own

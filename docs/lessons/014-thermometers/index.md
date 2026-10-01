@@ -128,7 +128,9 @@ What's new:
   number.
 - `char (223)` is the character with code 223, which on this screen is a
   little degree sign, and `constexpr char degree` gives it a name. A `char`
-  is one character; `const char*`, from Lesson 3, is a whole piece of text.
+  is one character, written in single quotes like Lesson 13's `' '`. A
+  piece of text in double quotes, such as `"C  "`, is a row of characters,
+  and its type is written `const char*`, which later sketches use.
 - `adk::print (lcd, degree, "C  ");` prints its pieces in a row, like
   `adk::println ()` from Lesson 2, but on the screen and without ending the
   line.

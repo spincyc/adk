@@ -154,10 +154,11 @@ What's new:
   pieces. `ringing ? "TOO HOT! " : "Alarm at "` picks how the bottom row
   starts.
 - `colorOf ()` and `nameOf ()` turn a mood into a color and a word, each with
-  a `switch`. A `case` that `return`s needs no `break`, because `return`
-  leaves the function at once. `default:` catches every value without a
-  `case` of its own, here Comfy. The words are padded with spaces, so a short
-  word rubs out a longer one.
+  a `switch`. `nameOf ()` hands back a piece of text, so its type is
+  `const char*`, as Lesson 14 said. A `case` that `return`s needs no
+  `break`, because `return` leaves the function at once. `default:` catches
+  every value without a `case` of its own, here Comfy. The words are padded
+  with spaces, so a short word rubs out a longer one.
 
 ## Upload it
 
