@@ -103,7 +103,7 @@ level that is, and `activated ()` is true for the one moment it changes.
 
 ??? info "Setting up the PIR and the obstacle module"
     The PIR has two orange knobs. Turn the **time** knob (often marked Tx)
-    fully anticlockwise, so its output stays on for only about 3 seconds
+    fully counterclockwise, so its output stays on for only about 3 seconds
     after the last movement; leave the **sensitivity** knob (Sx) in the
     middle. If it has a jumper with **L** and **H** beside it, put it on
     **H**, so that continued movement keeps the output on.
@@ -167,7 +167,7 @@ LED shows a tilt, even though the switch says "upright".
 |---|---|
 | An LED is on while nothing is happening, and goes **off** when you trip it | That module is the other way round from most. Swap `adk::ActiveHigh` in or out of its line in the sketch. |
 | The red LED keeps coming on by itself | Give the PIR a minute to settle, keep warm air and sunny windows out of its view, and turn its sensitivity knob down a little. |
-| The red LED stays on for ages | Turn the PIR's time knob fully anticlockwise. |
+| The red LED stays on for ages | Turn the PIR's time knob fully counterclockwise. |
 | Yellow never lights, though the obstacle module's own LED does | Check its OUT pin goes to A13, not EN. |
 | The obstacle module's own LED never lights | Check its + and GND reach the bottom rails, then turn its knob to see further. |
 | Green never changes | Check A14's wire and the tilt switch's other leg's wire to the − rail. Tip it right over: some switches need more than a tilt. |

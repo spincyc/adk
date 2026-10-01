@@ -39,8 +39,10 @@ them **one at a time**: digit 1's pattern on the segment lines with digit 1
 switched on, then, 2 milliseconds later, digit 2's pattern with digit 2 on,
 and so on round all four, 125 times a second. This is called
 **multiplexing**. Your eye can't follow flashes that fast, and blends them
-into four steady digits. That's **persistence of vision**, the same reason
-a film projector's flickering light looks steady.
+into what looks like four steady digits. That's **persistence of vision**,
+the same reason a film projector's flickering light looks steady. The price
+is brightness: each digit is lit only a quarter of the time, so it looks
+dimmer than it would lit all the time.
 
 The segment lines come from the 74HC595, as in Lesson 10, each through its
 2 kΩ resistor, about 1.5 mA per lit segment. A digit pin carries the current
@@ -123,8 +125,12 @@ What's new:
 Upload the sketch. The display shows **HI** for a second and a half, then
 counts: 1, 2, 3, and on, ten a second. The right-hand digit changes too
 fast to read, the next one once a second, and the left-hand one only every
-100 seconds. Look closely: all four digits seem steady and equally bright,
-though each is dark three quarters of the time.
+100 seconds. A digit stays blank until the count reaches it, so all four
+are lit only after 100 seconds, at 1000. Look closely at the lit digits:
+they should look steady, though each is dark three quarters of the time.
+They are not bright. Each lit segment gets about 1.5 mA for a quarter of
+the time, about 0.4 mA on average, so shade the display from a bright lamp
+or window if it is hard to read.
 
 You predicted what a new digit every half second would look like. The trick
 would give itself away: you would see one digit lit at a time, stepping from
@@ -211,7 +217,8 @@ What the numbers tell you:
 ??? note "Answers"
     1. It lights one digit at a time, with that digit's pattern on the
        segment lines, then the next, round all four many times a second.
-       Your eye blends the flashes into four steady digits.
+       Your eye blends the flashes into what looks like four steady
+       digits.
     2. At that segment's resistor and wire from the chip. Every digit shares
        the same segment line, so one loose resistor takes that segment out
        of all four.

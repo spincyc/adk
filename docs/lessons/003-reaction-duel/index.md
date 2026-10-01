@@ -205,7 +205,7 @@ are faster to a sound, try the first challenge below.
 | The loser's light flashes, not the winner's | The LED wires may be swapped: pin 26 goes to j6 (red, on the left), pin 28 to j18 (green, on the right). |
 | No beep | The buzzer may be the wrong way round: its **+** leg goes in f33, above the gap. Check h33 reaches the top + rail, pin 12 reaches a32, and the S8050’s emitter reaches GND. Check its E–B–C order and the diode’s band at column 36. |
 | Only a faint click instead of a beep | That is the passive buzzer. Unplug the USB cable at once and swap it for the sealed, active one. |
-| The same wait every game | Make sure nothing is plugged into A7: the seed only changes if the pin is left floating. |
+| The first wait is the same every time the Mega starts | Make sure nothing is plugged into A7: the seed only changes if the pin is left floating. |
 
 ??? note "How it works"
     `buzzer.beep (200)` switches the buzzer on at once and remembers the
@@ -292,8 +292,10 @@ What the numbers tell you:
 ??? note "Answers"
     1. `random ()` makes the same list of numbers every time the Mega starts
        unless it gets a different seed, and A7's floating reading wanders,
-       so the seed changes nearly every game. With something plugged in, the
-       reading would hold still and you would get the same wait every game.
+       so the seed changes nearly every time the Mega starts. With something
+       plugged in, the reading would hold still, and every time the Mega
+       started, the rounds would bring back the same waits in the same
+       order.
     2. The game's state. The sketch only does what the current state
        allows: in *Ready* a press is a false start, and in *Go* the first
        press wins.

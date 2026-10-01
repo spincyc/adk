@@ -123,6 +123,10 @@ Open the Arduino IDE and choose **File → Examples → Adk → lessons → 009-
 What's new:
 
 - `adk::Speaker speaker {10};` is the passive buzzer, as in Lesson 5.
+- `adk::Smoother light {2};` is Lesson 8's smoother with a 2 in place of
+  the 3: each reading moves it a quarter of the way instead of an eighth.
+  The bar could take its time, but a note has to follow your hand, so this
+  one catches up twice as fast, and still calms the flicker.
 - `scale` is an `adk::Array` of ten pitches, using the note names from
   Lesson 5: `adk::note::c4` is the C in the middle of a piano, 262 Hz.
   Written as `adk::Array scale {...}`, with no `<...>`, it takes its type

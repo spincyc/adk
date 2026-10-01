@@ -10,7 +10,7 @@ adk::Array<adk::Led, 5> bar     {26, 27, 28, 29, 30};
 adk::AnalogInput        knob    {A0};
 adk::Speaker            speaker {10};
 
-adk::Smoother light {2};
+adk::Smoother light {2};    // quicker than Lesson 8's {3}, to follow a hand
 adk::Timer    learning;
 
 // Two octaves of the pentatonic scale, C D E G A: five notes that sound

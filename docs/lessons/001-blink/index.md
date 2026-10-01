@@ -130,8 +130,16 @@ stays dark because the path back to GND is broken. Unplug again, replace the
 wire in the same holes, and plug in once more. It blinks again.
 
 !!! tip "From the command line"
-    With `arduino-cli` installed, `make upload EXAMPLE=lessons/001-blink` in the
-    ADK folder compiles and uploads the same sketch.
+    In a git clone of ADK, with `arduino-cli` installed and the compiler
+    fetched once with `make toolchain`, this compiles the same sketch and
+    uploads it to the Mega on `/dev/ttyACM0` (put your Mega's port there):
+
+    ```sh
+    make upload-001-blink PORT=/dev/ttyACM0
+    ```
+
+    The library from **Download ZIP** has no `Makefile`.
+    [Getting started](../../start.md#from-the-command-line) has more.
 
 ## If it doesn't work
 

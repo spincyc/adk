@@ -78,8 +78,9 @@ The chip keeps a volt or two for itself, so the motor sees about 3 V of
 the module's 5 V: plenty for this 3–6 V motor.
 
 !!! question "Predict"
-    The fan is spinning fast and you press the button. Does it flip round
-    instantly, or will you see something happen in between?
+    You'll upload the sketch before you switch the power module on. With
+    the Mega running and the module still off, what will the fan do when
+    you turn the knob? Write down your guess, and why.
 
 ## Build it
 
@@ -100,7 +101,7 @@ the module's 5 V: plenty for this 3–6 V motor.
 
 ??? info "The L293D's pins, all sixteen"
     Seen from above with its notch on the left, pin 1 is at the bottom left
-    and the numbers run anticlockwise, along the bottom row and back along
+    and the numbers run counterclockwise, along the bottom row and back along
     the top:
 
     | Pin | Name | Here | Pin | Name | Here |
@@ -144,18 +145,22 @@ What's new:
 
 ## Upload it
 
-1. Plug in the USB cable and upload the sketch.
-2. Plug the adapter into the power module and press its switch: its small
+1. Plug in the USB cable and upload the sketch, with the power module
+   still off.
+2. Turn the knob about halfway and watch the fan. Then turn the knob back
+   to the start.
+3. Plug the adapter into the power module and press its switch: its small
    LED lights.
-3. Turn the knob. For the first tenth of its turn the fan stays still, then
+4. Turn the knob. For the first tenth of its turn the fan stays still, then
    it starts, slowly, and speeds up as you keep turning.
-4. Press the button. The fan slows, stops for a moment, and spins the other
-   way, blowing the air backwards. Press it again to swap back.
+5. Press the button. The fan doesn't flip round at once: it slows, nearly
+   stops, and then speeds up the other way, blowing the air backwards.
+   Press it again to swap back.
 
-You predicted what a press does to a fast fan. It doesn't flip round at
-once: ADK lets it coast for half a second, slowing right down, before it
-drives it the other way. Watch the blade: it slows, nearly stops, then
-speeds up backwards.
+You predicted what the fan would do with the module off. It stays still,
+however far you turn the knob. The Mega runs, and the chip hears it
+through VCC1, but the motor's power comes only from the bottom + rail
+through VCC2, and nothing feeds that rail until the module is on.
 
 Switch the power module off when you finish, before you unplug the USB.
 

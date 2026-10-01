@@ -207,7 +207,7 @@ sequences. More than a million.
 | The lights blink, but one button never starts a game | Push that button firmly in, all four legs, and check its black wire from row a to the − rail. |
 | In your turn, a button does nothing | Are you still holding another one? Only one button counts at a time: let go of the first. |
 | No sound | Follow pin 10: j33, the buzzer's **+** leg in f33 and its other leg in e33, and the resistor from a33 down into the − rail. |
-| Every game starts with the same steps | Leave A7 unconnected: the random seed comes from it floating. |
+| The first game is the same every time the Mega starts | Leave A7 unconnected: the random seed comes from it floating. |
 | The Mega's **L** LED blinks long and short flashes | A pin in the sketch is wrong. The Serial Monitor says which. |
 
 ??? note "How it works"
