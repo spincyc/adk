@@ -37,7 +37,7 @@ import meter
 from bench import (BOARD_HEIGHT, END, MARGIN, MEGA_HEIGHT, MEGA_PINS, MEGA_WIDTH, ROWS, canonical,
                    load, numbered, parse_hole, rail_column)
 from modules import HOUSING, Lcd1602, Matrix
-from parts import HeaderModule, Label, Led, Resistor, spots_round
+from parts import HeaderModule, Label, Led, Resistor, back_to_front, spots_round
 from pencil import DPI, WIRES, Pencil, leader_start
 from route import (HARD, Placer, Router, bounds_of, corners, direction, node, segment_distance,
                    segment_meets_box, text_box, text_width)
@@ -479,7 +479,7 @@ class Drawing:
             thing ()
             pencil.done ()
 
-        for part in bench.parts:
+        for part in back_to_front (bench.parts, bench):
             draw (lambda: part.draw (pencil, bench), keys[id (part)])
         # A module lying flat, as the power module does, goes under the
         # wires that cross it; the others over them.
@@ -683,7 +683,7 @@ class Drawing:
         pencil = Pencil (bench.seed, f"{prefix}{index}")
         self._draw_mega (pencil)
         self._draw_board (pencil, detail)
-        for part in bench.parts:
+        for part in back_to_front (bench.parts, bench):
             part.draw (pencil, bench)
         for module in bench.modules.values ():
             if not module.kind.blocks:

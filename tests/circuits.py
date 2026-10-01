@@ -19,9 +19,9 @@ sys.path.insert (0, os.path.join (ROOT, "docs", "_theme"))
 
 import meter  # noqa: E402
 from bench import Bench, hole_words, load, pin_words  # noqa: E402
-from drawing import Drawing  # noqa: E402
-from parts import bands_for  # noqa: E402
-from route import Router, distance_to, node  # noqa: E402
+from drawing import Drawing, leader_from  # noqa: E402
+from parts import Capacitor, Resistor, back_to_front, bands_for, segments_apart  # noqa: E402
+from route import Router, distance_to, node, shape_crosses_segment, text_box  # noqa: E402
 
 failures = []
 

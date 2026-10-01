@@ -12,7 +12,7 @@ import re
 
 from modules import Placed, rounded
 from pencil import DPI
-from route import segment_distance, text_width
+from route import distance_to, segment_distance, text_width
 
 RAINBOW = ["#eab0aa", "#efdca6", "#b5d6ad", "#adc4e6"]
 METAL   = "#d3d3cf"
@@ -78,6 +78,14 @@ class Part:
     def shapes (self, bench):
         return [("rect", *s[1:]) if s[0] == "rect" else s for s in self.footprint (bench)]
 
+    # Its body without its leads, and its leads alone, which a standing
+    # part beside it keeps clear of (aside).
+    def bodies (self, bench):
+        return [s for s in self.shapes (bench) if not is_lead (s)]
+
+    def leads (self, bench):
+        return [s for s in self.shapes (bench) if is_lead (s)]
+
     # A body off the board, which grows the drawing and wires go round.
     def box (self, bench):
         return None
@@ -89,15 +97,32 @@ class Part:
         pass
 
 
+# The parts in the order they are drawn: seen a little from the front, a
+# part whose legs stand nearer the front edge stands in front, over any
+# part behind it that it overlaps, as an LED in row b does over the knob
+# whose wiper is in row d. Parts level with each other keep the build's
+# order.
+def back_to_front (parts, bench):
+    def front (part):
+        return max ((bench.hole_xy (hole)[1] for _, hole in part.legs ()), default=0)
+    return sorted (parts, key=front)
+
+
 def lead_shape (a, b):
     return ("segment", a[0], a[1], b[0], b[1], LEAD)
 
 
+def is_lead (shape):
+    return shape[0] == "segment" and shape[5] <= LEAD
+
+
 # Where a standing two-lead part's body stands (Resistor.geometry): halfway
-# between its legs, or, where that would lie over a hole in use, half a
-# column aside, wherever along keeps the body (about 4 across each way) and
-# its bent leads clearest of the holes in use. Nearer the middle and the
-# right-hand side win a tie.
+# between its legs, or, where that would lie over a hole in use, or over
+# another part's body or legs, half a column aside, wherever along keeps
+# the body (about 4 across each way, a disc 8 round) and its bent leads
+# clearest of them. Nearer the middle, half a column aside rather than more,
+# and the right-hand side win a tie. Other standing two-lead parts don't
+# count: each finds its own place.
 BOW = 5
 
 
@@ -107,6 +132,10 @@ def aside (part, bench):
     ux, uy = (x2 - x1) / span, (y2 - y1) / span
     half = part.LENGTH / 2
     held = [bench.hole_xy (hole) for hole in bench.used if hole not in (part.a, part.b)]
+    others = [other for other in bench.parts if other is not part
+              and not isinstance (other, (Resistor, Capacitor, Inductor, Diode))]
+    bodies = [shape for other in others for shape in other.bodies (bench)]
+    legs = [shape for other in others for shape in other.leads (bench)]
 
     def at (along, off):
         return x1 + ux * along - uy * off, y1 + uy * along + ux * off
@@ -114,18 +143,44 @@ def aside (part, bench):
     def room (along, off):
         ends = at (along - half, off), at (along + half, off)
         pieces = (((x1, y1), ends[0], LEAD), (*ends, 4.0), (ends[1], (x2, y2), LEAD))
-        return min ((segment_distance (a, b, hole) - reach for a, b, reach in pieces
-                     for hole in held), default=math.inf)
+        holes = min ((segment_distance (a, b, hole) - reach for a, b, reach in pieces
+                      for hole in held), default=math.inf)
+        # The body as drawn, a disc or a stadium, against other bodies; the
+        # bent leads against other parts' legs.
+        if part.RADIUS:
+            outline = [(at (along, off), part.RADIUS)]
+        else:
+            outline = [(at (along + half * k / 4, off), part.GIRTH) for k in range (-4, 5)]
+        clear = min ((distance_to (shape, point) - reach for point, reach in outline
+                      for shape in bodies), default=math.inf)
+        apart = min ((segments_apart ((a, b), (shape[1:3], shape[3:5])) - 2 * LEAD
+                      for a, b, _ in pieces[::2] for shape in legs), default=math.inf)
+        return holes, clear, apart
 
-    if room (span / 2, 0) > 2.5:
+    if all (amount > least for amount, least in zip (room (span / 2, 0), (2.5, 1, 1.5))):
         return at (span / 2, 0)
-    tries = [(along, off) for off in (-BOW, BOW)
+    tries = [(along, off) for off in (-BOW - 1, -BOW, BOW, BOW + 1)
              for along in range (math.ceil (half + 2), math.floor (span - half - 2) + 1)]
     if not tries:
         return at (span / 2, 0)
-    along, off = max (tries, key=lambda t: (round (room (*t), 1), -abs (t[0] - span / 2),
-                                            at (*t)[0]))
+    along, off = max (tries, key=lambda t: (round (min (room (*t)), 1), -abs (t[0] - span / 2),
+                                            -abs (abs (t[1]) - BOW), at (*t)[0]))
     return at (along, off)
+
+
+# The least distance between two segments, each given by its two ends.
+def segments_apart (one, other):
+    (a, b), (p, q) = one, other
+    if segments_cross (a, b, p, q):
+        return 0.0
+    return min (segment_distance (a, b, p), segment_distance (a, b, q),
+                segment_distance (p, q, a), segment_distance (p, q, b))
+
+
+def segments_cross (a, b, p, q):
+    def side (o, s, t):
+        return (s[0] - o[0]) * (t[1] - o[1]) - (s[1] - o[1]) * (t[0] - o[0])
+    return side (a, b, p) * side (a, b, q) < 0 and side (p, q, a) * side (p, q, b) < 0
 
 
 # A standing part's leads from each hole to its body's ends, reach from its
@@ -152,6 +207,7 @@ class Resistor (Part):
              "grey": "#999997", "white": "#f1eee6", "gold": "#b39448"}
     BANDS = (-0.68, -0.46, -0.24, -0.02, 0.64)
     LENGTH = 25
+    GIRTH, RADIUS = 4.9, None           # its body's half width; no disc
 
     def __init__ (self, value, a, b):
         self.value, self.a, self.b = value, a, b
@@ -234,45 +290,78 @@ class Resistor (Part):
 
 
 class Capacitor (Part):
-    # A small two-lead capacitor. On an electrolytic, the stripe marks −;
-    # it is drawn on the second leg's side and named in the build step.
+    # A small two-lead capacitor: an electrolytic can, a ceramic disc or a
+    # film box. On an electrolytic, the stripe marks −; it is drawn on the
+    # second leg's side and named in the build step. Unless kind says, a
+    # polarized one is electrolytic, and a nonpolar one is a film box from
+    # 1 µF up, a ceramic disc below.
     LENGTH = 18
+    KINDS = ("electrolytic", "ceramic", "film")
     standing = Resistor.standing
-    geometry = Resistor.geometry
     labels = Resistor.labels
 
-    def __init__ (self, value, a, b, polarized=False):
+    def __init__ (self, value, a, b, polarized=False, kind=None):
         self.value, self.a, self.b, self.polarized = value, a, b, polarized
         self.name = f"{value} capacitor"
+        if kind is None:
+            kind = "electrolytic" if polarized else "film" if farads (value) >= 1e-6 else "ceramic"
+        if kind not in self.KINDS or (kind == "electrolytic") != polarized:
+            raise ValueError (f"a {value} capacitor is {', '.join (self.KINDS)}, and only an "
+                              f"electrolytic is polarized: not {kind!r}")
+        self.kind = kind
+        # A can or disc is round, 8 across each way; a film box 4.5 thick.
+        self.RADIUS = None if kind == "film" else 8
+        self.GIRTH = 4.5
 
     def legs (self):
         if self.polarized:
             return [("+ leg", self.a), ("striped − leg", self.b)]
         return [("one leg", self.a), ("other leg", self.b)]
 
+    # Standing across rows, as a resistor does. In one row, upright on legs
+    # side by side, it leans back a row, as an LED does, so both holes show
+    # in front of it.
+    def geometry (self, bench):
+        if self.standing (bench):
+            return Resistor.geometry (self, bench)
+        (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
+        return (x1 + x2) / 2, (y1 + y2) / 2 - (8.5 if self.kind == "film" else 10)
+
+    # Where each leg, in one row, meets the body's underside: the left leg
+    # first.
+    def _feet (self, bench):
+        left, right = sorted ((bench.hole_xy (self.a), bench.hole_xy (self.b)))
+        cx, cy = self.geometry (bench)
+        spread, low = (4, 4.5) if self.kind == "film" else (2.5, 5)
+        return [(left, (cx - spread, cy + low)), (right, (cx + spread, cy + low))]
+
     def shapes (self, bench):
         if self.standing (bench):
             return Resistor.shapes (self, bench)
-        (x1, y1), (x2, _) = bench.hole_xy (self.a), bench.hole_xy (self.b)
         cx, cy = self.geometry (bench)
-        left, right = sorted ((x1, x2))
-        half = self.LENGTH / 2
-        return [("rect", cx - half, cy - 5.2, cx + half, cy + 5.2),
-                lead_shape ((left, y1), (cx - half + 1, cy)),
-                lead_shape ((cx + half - 1, cy), (right, y1))]
+        w, h = (9, 4.5) if self.kind == "film" else (8, 8)
+        return [("rect", cx - w, cy - h, cx + w, cy + h)] + [lead_shape (a, b)
+                                                          for a, b in self._feet (bench)]
 
     def draw (self, pencil, bench):
-        (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
-        cx, cy = self.geometry (bench)
+        (x1, _), (x2, _) = bench.hole_xy (self.a), bench.hole_xy (self.b)
         if self.standing (bench):
             stand (self, pencil, bench, self.LENGTH / 2, lambda: self._body (pencil, 0, 0))
             return
-        left, right = sorted ((x1, x2))
-        pencil.lead ((left, y1), (cx - self.LENGTH / 2, cy))
-        pencil.lead ((cx + self.LENGTH / 2, cy), (right, y2))
-        self._body (pencil, cx, cy, stripe_side=-1 if x2 < x1 else 1)
+        for a, b in self._feet (bench):
+            pencil.lead (a, b)
+        self._body (pencil, *self.geometry (bench), stripe_side=-1 if x2 < x1 else 1)
 
     def _body (self, pencil, cx, cy, stripe_side=1):
+        if self.kind == "film":
+            # A red box with a sheen along it.
+            pencil.tint (rounded (cx - 9, cy - 4.5, 18, 9, 1.5), "#c4574d")
+            pencil.layers["top"].append (
+                f'<path d="M {cx - 6.5:.1f} {cy - 2.4:.1f} L {cx + 6.5:.1f} {cy - 2.4:.1f}" '
+                f'stroke="#ffffff" stroke-opacity="0.4" stroke-width="0.9" '
+                f'stroke-linecap="round"/>')
+            pencil.rect (cx - 9, cy - 4.5, 18, 9, width=0.8, radius=1.5, layer="top")
+            return
         color = "#3f4851" if self.polarized else "#d4ab74"
         pencil.spot (cx, cy, 8, color)
         pencil.circle (cx, cy, 8, width=0.8, layer="top")
@@ -281,9 +370,19 @@ class Capacitor (Part):
                          "#d8dce0")
 
 
+# A capacitor's value in farads: "100 nF" is 1e-7.
+def farads (value):
+    match = re.fullmatch (r"([\d.]+)\s*([pnuµμ]?)F", value)
+    if not match:
+        raise ValueError (f"a capacitor's value is a number and pF, nF, µF or F, not {value!r}")
+    scale = {"p": 1e-12, "n": 1e-9, "u": 1e-6, "µ": 1e-6, "μ": 1e-6, "": 1}
+    return float (match.group (1)) * scale[match.group (2)]
+
+
 class Inductor (Part):
     # A two-lead coil, drawn with its turns visible above the breadboard.
     LENGTH = 24
+    GIRTH, RADIUS = 5, None
     standing = Resistor.standing
     geometry = Resistor.geometry
     shapes = Resistor.shapes
@@ -317,6 +416,7 @@ class Diode (Part):
     # The rectifier's band marks its cathode; unlike a resistor its ends
     # must stay distinguishable in both the drawing and the build steps.
     LENGTH = 18
+    GIRTH, RADIUS = 4.5, None
     standing = Resistor.standing
     geometry = Resistor.geometry
     shapes = Resistor.shapes

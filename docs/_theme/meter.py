@@ -18,6 +18,7 @@ import math
 import re
 
 from modules import rounded
+from parts import back_to_front
 from pencil import GRAPHITE, WIRES, Pencil
 from route import HARD, Placer, bounds_of, distance_to, text_width
 
@@ -328,7 +329,7 @@ def probe_svg (drawing, index, prefix="probe"):
     pencil = Pencil (bench.seed, f"{prefix}{index}")
     drawing._draw_mega (pencil)
     drawing._draw_board (pencil, detail)
-    for part in bench.parts:
+    for part in back_to_front (bench.parts, bench):
         part.draw (pencil, bench)
     for module in bench.modules.values ():
         if not module.kind.blocks:
