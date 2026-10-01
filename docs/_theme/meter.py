@@ -19,6 +19,7 @@ import re
 
 from modules import rounded
 from pencil import GRAPHITE, WIRES, Pencil
+from route import HARD, Placer, bounds_of, distance_to, text_width
 
 WIDTH, HEIGHT = 70, 112
 SCALE = 0.72
@@ -138,23 +139,70 @@ def lead (pencil, start, touch, color, side):
 # Each channel's band, as most scopes color their inputs: yellow, then cyan.
 CHANNELS = {1: "#d9b43c", 2: "#3fa7c4"}
 PROBE   = "#3c3f44"
+LENGTH  = 62                        # from the tip to the probe's back end
+TILTS   = (32, 22, 44)              # how far from upright it may lean, best first
 
 
-# A scope probe touching point with its hook tip, leaning in from below at
-# its side (-1 from the left, 1 from the right), its cable running down to
-# bottom; returns where its ground lead leaves it.
-def scope_probe (pencil, touch, channel, side, bottom):
+# A probe leaning in on touch from below: side -1 from the left, 1 from
+# the right, tilt degrees from upright. Returns a function giving a point
+# back along it and across it.
+def lie (touch, side, tilt):
     tx, ty = touch
-    angle = math.radians (-90 + 32 * side * -1)
+    angle = math.radians (-90 - tilt * side)
     ux, uy = math.cos (angle), math.sin (angle)
-    at = lambda back, across=0.0: (tx - ux * back - uy * across, ty - uy * back + ux * across)
+    return lambda back, across=0.0: (tx - ux * back - uy * across, ty - uy * back + ux * across)
+
+
+# What lying a probe there would hide, as a cost: most for a part's body or
+# a module, then a wire, a used hole, and a little for leaning further.
+def hides (bench, routes, touch, side, tilt):
+    at = lie (touch, side, tilt)
+    body = ("segment", *at (7), *at (LENGTH + 20), 5.5)
+    cost = 3 * TILTS.index (tilt)
+    for part in bench.parts:
+        cost += 100 * any (shape_meets (body, shape) for shape in part.shapes (bench)[:1])
+        cost += 10 * any (shape_meets (body, shape) for shape in part.shapes (bench)[1:])
+    for placed in bench.modules.values ():
+        cost += 100 * shape_meets (body, ("rect", *placed.box ()))
+    for _, _, points in routes:
+        cost += 8 * any (segments_cross (a, b, at (7), at (LENGTH + 20))
+                         for a, b in zip (points, points[1:]))
+    for hole in bench.used:
+        cost += 4 * (distance_to (body, bench.hole_xy (hole)) < 1)
+    return cost
+
+
+# Whether the segment from a to b crosses the one from c to d.
+def segments_cross (a, b, c, d):
+    def turn (p, q, r):
+        return (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+    return turn (a, b, c) * turn (a, b, d) < 0 and turn (c, d, a) * turn (c, d, b) < 0
+
+
+# Whether a shape comes within a body's half width of its middle line,
+# a body being a ("segment", ...) shape.
+def shape_meets (body, shape):
+    _, ax, ay, bx, by, half = body
+    steps = max (2, int (math.dist ((ax, ay), (bx, by)) / 2))
+    return any (distance_to (shape, (ax + (bx - ax) * k / steps, ay + (by - ay) * k / steps)) < half
+                for k in range (steps + 1))
+
+
+# A scope probe lying as lie () has it, its hook tip on touch and its cable
+# running down to bottom; returns where its ground lead leaves it, and its
+# band's middle.
+def scope_probe (pencil, touch, channel, side, tilt, bottom):
+    tx, ty = touch
+    at = lie (touch, side, tilt)
+    ux, uy = (at (0)[0] - at (1)[0]), (at (0)[1] - at (1)[1])
     # The cable, from the probe's back end down out of the view.
-    end = at (62)
+    end = at (LENGTH)
     path = (f"M {end[0]:.1f} {end[1]:.1f} C {end[0] - ux * 30:.1f} {end[1] - uy * 30:.1f} "
             f"{end[0] - side * 10:.1f} {bottom - 30:.1f} {end[0] - side * 14:.1f} {bottom + 4:.1f}")
     pencil.wire ([], "#2d2f33", width=3.2, layer="top", path=path)
     # The body, its channel's band, the ground collar and the nose.
-    for (front, back), half, tint in (((22, 62), 4.6, PROBE), ((48, 54), 4.8, CHANNELS[channel]),
+    for (front, back), half, tint in (((22, LENGTH), 4.6, PROBE),
+                                      ((48, 54), 4.8, CHANNELS[channel]),
                                       ((17, 22), 3.6, "#c9c9c4"), ((7, 17), 2.6, PROBE)):
         points = band (at (front), at (back), half)
         pencil.solid (points, tint)
@@ -165,21 +213,38 @@ def scope_probe (pencil, touch, channel, side, bottom):
         f'<path d="M {at (1.5)[0]:.1f} {at (1.5)[1]:.1f} Q {tx + uy * 3:.1f} {ty - ux * 3:.1f} '
         f'{tx:.1f} {ty:.1f}" fill="none" stroke="#c9c9c4" stroke-width="1.1"/>'
         f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="1.3" fill="{GRAPHITE}" fill-opacity="0.8"/>')
-    # Its channel, beside the band.
-    x, y = at (51, side * 13)
-    pencil.text (x, y + 2.5, f"CH{channel}", size=6, kind="silk", weight="bold", tone=0.85)
-    return at (19)
+    return at (19), at (51)
 
 
-# The probe's short ground lead from its collar to a crocodile clip, its
-# jaws on the ground point.
-def ground_clip (pencil, start, touch):
+# The ground lead's curve from the probe's collar to the clip, bowed to
+# whichever side, and by however much, crosses fewest parts' bodies:
+# (start, middle, end of the lead, the clip's sleeve end).
+def ground_way (bench, start, touch):
     (sx, sy), (tx, ty) = start, touch
     length = max (1e-9, math.dist (start, touch))
     ux, uy = (tx - sx) / length, (ty - sy) / length
-    jaws = (tx - ux * 3, ty - uy * 3)
     back = (tx - ux * 15, ty - uy * 15)
-    middle = ((sx + back[0]) / 2 + uy * 14, (sy + back[1]) / 2 - ux * 14)
+    bodies = [part.shapes (bench)[0] for part in bench.parts if part.shapes (bench)]
+
+    def way (bow):
+        middle = ((sx + back[0]) / 2 + uy * bow, (sy + back[1]) / 2 - ux * bow)
+        curve = [((1 - t) ** 2 * sx + 2 * (1 - t) * t * middle[0] + t * t * back[0],
+                  (1 - t) ** 2 * sy + 2 * (1 - t) * t * middle[1] + t * t * back[1])
+                 for t in (k / 16 for k in range (17))]
+        crossed = sum (any (distance_to (body, point) < 2.5 for point in curve) for body in bodies)
+        return crossed * 100 + abs (bow), middle
+
+    _, middle = min ((way (bow) for bow in (14, -14, 8, -8, 24, -24, 36, -36)),
+                     key=lambda found: found[0])
+    return middle, back, (ux, uy)
+
+
+# The probe's short ground lead from its collar to a crocodile clip, its
+# jaws on the ground point, round what it can.
+def ground_clip (pencil, bench, start, touch):
+    (sx, sy), (tx, ty) = start, touch
+    middle, back, (ux, uy) = ground_way (bench, start, touch)
+    jaws = (tx - ux * 3, ty - uy * 3)
     path = (f"M {sx:.1f} {sy:.1f} Q {middle[0]:.1f} {middle[1]:.1f} {back[0]:.1f} {back[1]:.1f}")
     pencil.wire ([], WIRES["black"], width=2.0, layer="top", path=path)
     # The clip: a black sleeve, then its two steel jaws, open on the point.
@@ -192,34 +257,72 @@ def ground_clip (pencil, start, touch):
                      width=1.3, tone=0.6, layer="top", passes=1, wobble=0)
     pencil.layers["top"].append (
         f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="1.3" fill="{GRAPHITE}" fill-opacity="0.8"/>')
+    curve = [((1 - t) ** 2 * sx + 2 * (1 - t) * t * middle[0] + t * t * back[0],
+              (1 - t) ** 2 * sy + 2 * (1 - t) * t * middle[1] + t * t * back[1])
+             for t in (k / 8 for k in range (9))]
+    return curve + [touch]
+
+
+# The view's frame: the tip and the ground point, the probe as far as its
+# band, the part the tip probes and any part beside the tip, whole, and
+# room for the probe's label, within the board's height above.
+def framing (bench, hole, touches, at):
+    tip = touches[0]
+    boxes = [(x - 30, y - 30, x + 30, y + 20) for x, y in touches]
+    probe = [at (0), at (LENGTH)]
+    boxes.append ((min (x for x, _ in probe) - 12, min (y for _, y in probe) - 12,
+                   max (x for x, _ in probe) + 12, max (y for _, y in probe) + 12))
+    strip = bench.strip_of (hole)
+    for part in bench.parts:
+        legs = [hole for _, hole in part.legs ()]
+        shapes = part.shapes (bench)
+        if not shapes:
+            continue
+        near = any (distance_to (shape, tip) < 22 for shape in shapes)
+        probed = any (bench.strip_of (leg) == strip for leg in legs)
+        if near or probed:
+            for shape in shapes:
+                x0, y0, x1, y1 = bounds_of (shape)
+                boxes.append ((x0 - 8, y0 - 8, x1 + 8, y1 + 8))
+    left = min (box[0] for box in boxes)
+    right = max (box[2] for box in boxes)
+    _, by0, _, _ = bench.board_box ()
+    top = max (by0 - 12, min (box[1] for box in boxes))
+    # No narrower than the meter's views, so the board keeps one scale.
+    if right - left < 190:
+        middle = (left + right) / 2
+        left, right = middle - 95, middle + 95
+    return left, top, right
 
 
 # A trace to watch (bench.probe): the breadboard round its two points, the
-# probe leaning in on its tip and its ground lead clipped to the ground
-# point, drawn on the bench as drawing's Drawing draws it, and labeled
-# only by the page's caption and table.
+# probe leaning in on its tip from the side where it hides least, its
+# ground lead clipped to the ground point, and its channel named beside
+# its band where that covers nothing. Everything else is left to the
+# page's caption and table. drawing is the bench's Drawing, which draws
+# the board, parts and wires under it as its other views do.
 def probe_svg (drawing, index, prefix="probe"):
     bench = drawing.bench
     routes = drawing._layout ()
     taken = bench.scope_probes[index]
     (tip, _), (ground, _) = bench.probe_points (index)
-    points = {"tip": bench.hole_xy (tip), "ground": bench.hole_xy (ground)}
-    side = -1 if points["ground"][0] >= points["tip"][0] else 1
-    xs = [x for x, _ in points.values ()]
-    ys = [y for _, y in points.values ()]
+    touches = (bench.hole_xy (tip), bench.hole_xy (ground))
+    sides = {"left": (-1,), "right": (1,), None: (-1, 1)}[taken.get ("side")]
+    # The ground on the far side breaks a tie: its lead then runs clear of the probe.
+    toward = 1 if touches[1][0] < touches[0][0] else -1
+    side, tilt = min (((side, tilt) for side in sides for tilt in TILTS),
+                      key=lambda lying: (hides (bench, routes, touches[0], *lying),
+                                         lying[0] != toward))
+    at = lie (touches[0], side, tilt)
+    left, top, right = framing (bench, tip, touches, at)
+    # The top edge takes in whole any part it would cut through.
     _, by0, _, _ = bench.board_box ()
-    left, right = min (xs) - 100, max (xs) + 80
-    top = min (ys) - 30
-    bottom = max (ys) + 80
     for part in bench.parts:
-        for shape in part.footprint (bench):
-            if shape[0] == "rect":
-                x0, y0, x1, y1 = shape[1:5]
-            else:
-                cx, cy, r = shape[1:4]
-                x0, y0, x1, y1 = cx - r, cy - r, cx + r, cy + r
+        for shape in part.footprint (bench) + part.shapes (bench)[:1]:
+            x0, y0, x1, y1 = bounds_of (shape)
             if x0 < right and x1 > left and y0 < top < y1:
-                top = max (by0 - 4, min (top, y0 - 8))
+                top = max (by0 - 12, min (top, y0 - 8))
+    bottom = max (max (y for _, y in touches), at (LENGTH)[1]) + 30
     bench.label_size = 6.4
     detail = (drawing._column_at (left), drawing._column_at (right))
     pencil = Pencil (bench.seed, f"{prefix}{index}")
@@ -235,6 +338,52 @@ def probe_svg (drawing, index, prefix="probe"):
     for module in bench.modules.values ():
         if module.kind.blocks:
             module.draw (pencil)
-    collar = scope_probe (pencil, points["tip"], taken["channel"], side, bottom)
-    ground_clip (pencil, collar, points["ground"])
+    collar, middle = scope_probe (pencil, touches[0], taken["channel"], side, tilt, bottom)
+    lead = ground_clip (pencil, bench, collar, touches[1])
+    view = (left, top, right, bottom)
+    channel (pencil, drawing, routes, view, detail, f"CH{taken['channel']}", at, side, lead)
     return pencil.svg ((left, top, right - left, bottom - top), f"{bench.title}: {taken['label']}")
+
+
+# The probe's channel, named where it covers nothing: beside its band on
+# either side, or a little further along it, inside the view, or failing
+# that further out on a leader to the band.
+def channel (pencil, drawing, routes, view, detail, text, at, side, lead):
+    bench, size = drawing.bench, 7
+    placer = Placer (view)
+    for part in bench.parts:
+        for shape in part.shapes (bench):
+            placer.avoid (shape)
+    for placed in bench.modules.values ():
+        placer.avoid (("rect", *placed.reach_box ()))
+    for _, _, points in routes:
+        for a, b in zip (points, points[1:]):
+            placer.avoid (("segment", *a, *b, 2.4))
+    for hole in bench.used:
+        placer.avoid (("circle", *bench.hole_xy (hole), 3.4))
+    for x, y, w in drawing._print_marks (detail):
+        placer.avoid (("rect", x - w / 2, y - 6, x + w / 2, y), 150)
+    for x, y, w in drawing._board_signs ():
+        placer.taken ((x - w / 2, y - 7, x + w / 2, y + 1))
+    x0, y0, x1, y1 = bench.board_box ()
+    for edge in ((x0, y0, x1, y0), (x0, y1, x1, y1), (x0, y0, x0, y1), (x1, y0, x1, y1)):
+        placer.avoid (("segment", *edge, 0.6), 60)
+    placer.avoid (("segment", *at (0), *at (LENGTH + 40), 6.5))
+    for a, b in zip (lead, lead[1:]):
+        placer.avoid (("segment", *a, *b, 2))
+    spots = []
+    for along in (51, 40, 30, 60):
+        for across in (14, 20, 28):
+            for way in (-side, side):
+                x, y = at (along, way * across)
+                spots.append ((x, y + size * 0.35, "middle",
+                               abs (along - 51) + across + (5 if way == side else 0)))
+    best = placer.place (text, size, spots)
+    point = at (51)
+    if best[0] >= HARD:
+        far = [(point[0] + dx, point[1] + dy, "middle", 40 + math.hypot (dx, dy), point)
+               for dx in range (-80, 81, 10) for dy in range (-60, 41, 10)]
+        best = placer.place (text, size, far, own=[("segment", *at (0), *at (LENGTH + 40), 6.5)])
+    _, x, y, anchor, box = best
+    to = point if math.dist (((box[0] + box[2]) / 2, (box[1] + box[3]) / 2), point) > 32 else None
+    pencil.label (x, y, text, size=size, anchor=anchor, to=to, width=text_width (text, size) - 1)

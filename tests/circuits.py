@@ -17,6 +17,7 @@ ROOT = os.path.dirname (os.path.dirname (os.path.abspath (__file__)))
 sys.dont_write_bytecode = True
 sys.path.insert (0, os.path.join (ROOT, "docs", "_theme"))
 
+import meter  # noqa: E402
 from bench import Bench, hole_words, load, pin_words  # noqa: E402
 from drawing import Drawing  # noqa: E402
 from parts import bands_for  # noqa: E402
@@ -346,6 +347,29 @@ expect ("a probe's tip beside the wire it was aimed at",
 expect ("a probe's ground clip on the − rail", ground.startswith ("B-") and "GND" in words, True)
 expect ("the generator's own leads", traced.items[2][2].what, "lead")
 check ("a third channel", lambda b: blink (b).probe ("CH3", tip="j6", channel=3), "channel 1 or 2")
+check ("a probe leaning in from above", lambda b: blink (b).probe ("CH1", tip="j6", side="up"),
+       "the left or the right")
+# A rail's hole reads one way, whether named or asked for as GND.
+named = finished (blink (Bench ("test", columns=(1, 20))).probe ("CH1", tip="i6", ground="B-9")
+                  .probe ("CH2", tip="i6"))
+expect ("a named rail hole says what it carries", named.probe_points (0)[1][1],
+        "GND, at the bottom − rail by column 9")
+expect ("GND says where", named.probe_points (1)[1][1].startswith ("GND, at the bottom − rail"),
+        True)
+# A standing capacitor's body lies over the hole between its legs.
+check ("a probe under a capacitor",
+       lambda b: blink (b).capacitor ("100 µF", "c12", "B-12", polarized=True)
+       .probe ("CH1", tip="a12"), "under a part")
+# The probe leans in on the side where it hides least: here, away from
+# the resistor standing below and to the left of its tip.
+leaning = finished (Bench ("test", columns=(1, 20)).resistor ("1 kΩ", "b6", "B-6")
+                    .wire ("a8", "B-7").probe ("CH1", tip="c8"))
+drawing = Drawing (leaning)
+meter.probe_svg (drawing, 0)
+routes, tip = drawing._layout (), leaning.hole_xy ("c8")
+expect ("a probe leans in clear of a part",
+        meter.hides (leaning, routes, tip, 1, 32) + 50 < meter.hides (leaning, routes, tip, -1, 32),
+        True)
 door = finished (Bench ("test", columns=(1, 63)).power_module ("3.3V")
                  .home_buzzer ("active").home_rfid ().home_modem (power="B+29"))
 expect ("the door's buzzer keeps 5 V beside its 3.3 V modem",

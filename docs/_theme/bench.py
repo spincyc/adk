@@ -107,7 +107,7 @@ from modules import STUB, Placed, PowerModule, make as make_module
 from parts import (Button, Buzzer, Capacitor, Chip, Diode, Display, HeaderModule, Inductor, Led,
                    Potentiometer, Resistor, RgbLed, Transistor, TwoLegs, bands_for)
 from pencil import DPI
-from route import segment_distance
+from route import distance_to, segment_distance
 
 MEGA_WIDTH, MEGA_HEIGHT = 4.0, 2.1
 BOARD_HEIGHT = 2.2
@@ -1277,13 +1277,17 @@ class Bench:
     # aimed at a hole a wire fills moves to a free hole in the same strip,
     # and GND finds a free hole of the − rail nearest the tip. channel is
     # the scope input the probe plugs into, 1 or 2, which colors its band.
-    # The page shows each in a drawing of its own (meter.probe_svg) and a
+    # The drawing leans the probe in from whichever side below the tip it
+    # covers least of the build; side="left" or "right" says which. The
+    # page shows each in a drawing of its own (meter.probe_svg) and a
     # table, where it has <!-- probe -->.
-    def probe (self, label, tip, ground="GND", channel=1, expect=None, when=None):
+    def probe (self, label, tip, ground="GND", channel=1, expect=None, when=None, side=None):
         if channel not in (1, 2):
             raise ValueError (f"a scope probe goes to channel 1 or 2, not {channel!r}")
+        if side not in (None, "left", "right"):
+            raise ValueError (f"a scope probe leans in from the left or the right, not {side!r}")
         self.scope_probes.append (dict (label=label, tip=tip, ground=ground, channel=channel,
-                                        expect=expect, when=when))
+                                        expect=expect, when=when, side=side))
         return self
 
     # Where a scope probe's tip and ground clip touch: (hole, words) each.
@@ -1314,7 +1318,7 @@ class Bench:
                 raise ValueError (f"a probe on {point} needs a free hole in a {point} rail")
             x = self.hole_xy (near)[0] if near else 0
             hole = min (holes, key=lambda h: abs (self.hole_xy (h)[0] - x))
-            return hole, f"{point}, at {self.describe (('hole', hole))}"
+            return hole, self._rail_point (hole)
         if point in MEGA_PINS or point in PIN_NAMES:
             name = PIN_NAMES.get (point, point)
             landed = [e for s, f, _, _ in self.wires for p, e in ((s, f), (f, s))
@@ -1322,8 +1326,9 @@ class Bench:
             if not landed:
                 raise ValueError (f"a probe on pin {point} needs its wire to land in a hole")
             hole = landed[0][1]
+            covered = self._covered ()
             strip = [h for h in self.holes () if self.strip_of (h) == self.strip_of (hole)
-                     and h not in self.used]
+                     and h not in self.used and h not in covered]
             if strip:
                 near = self.hole_xy (landed[0][1])
                 hole = min (strip, key=lambda h: math.dist (self.hole_xy (h), near))
@@ -1354,7 +1359,19 @@ class Bench:
                 spot = self.hole_xy (point)
                 near = min (legs, key=lambda hole: math.dist (self.hole_xy (hole), spot))
                 return point, f"{point}, in the same strip as {self.used[near]}'s leg in {near}"
+        if parse_hole (point)[0] == "rail":
+            return point, self._rail_point (point)
         return point, self.describe (("hole", point))
+
+    # A probe's hole in a rail, in words: what the rail carries, then where,
+    # "GND, at the bottom − rail by column 6", whether circuit.py named the
+    # hole or asked for GND.
+    def _rail_point (self, hole):
+        rail = parse_hole (hole)[2]
+        source = next ((source for source in ("GND", "5V", "3.3V")
+                        if self._powered (rail, source)), None)
+        where = self.describe (("hole", hole))
+        return f"{source}, at {where}" if source else where
 
     # The rail a GND or 5V probe goes in: one the build has joined to it.
     def _rail_of (self, point):
@@ -1680,11 +1697,17 @@ class Bench:
                     yield f"{rail}{column}"
 
     # Holes a probe can't reach, under a part's body or a module lying on the
-    # board. The kit's jumpers are flexible and arch clear of the holes.
+    # board: a chip's or a button's, and the body a resistor, capacitor,
+    # coil or diode lies with over the holes between its legs. The kit's
+    # jumpers are flexible and arch clear of the holes.
     def _covered (self):
         covered = set ()
         for part in self.parts:
             covered |= self._under (part.footprint (self))
+            if isinstance (part, (Resistor, Capacitor, Inductor, Diode)):
+                body = part.shapes (self)[0]
+                covered |= {hole for hole in self.holes ()
+                            if distance_to (body, self.hole_xy (hole)) < 1}
         for placed in self.modules.values ():
             covered |= self._under ([("rect", *placed.box ())])
         return covered - set (self.used)
