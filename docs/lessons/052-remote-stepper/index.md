@@ -4,14 +4,11 @@ promise: Turn a knob on one board and watch a turntable on the other swing to th
 time: 60 minutes
 level: 3
 parts:
-  - "Board A: Arduino Mega 2560, its USB cable and a breadboard"
-  - "Board A: the LCD1602 screen, with its 10 kΩ contrast knob and 220 Ω resistor, wired as in Lesson 13"
+  - "Board A: Lesson 51's Board A, with its screen and LoRa modem"
   - "Board A: a 10 kΩ potentiometer, the knob"
-  - "Board B: a second Mega 2560 and breadboard (not in one kit), and a USB power bank or charger"
-  - "Board B: the power module and its 9 V adapter"
+  - "Board B: Lesson 51's Board B, with its LoRa modem and its power module and 9 V adapter, and a USB power bank or charger"
   - "Board B: the 28BYJ-48 stepper and ULN2003 driver, and a paper disc about 6 cm across"
-  - "Each board: a REYAX RYLR896 LoRa modem (add-on, not in the kit), a 1 kΩ and a 2 kΩ resistor, at the bridge's home"
-  - "Board A: 23 jumper wires and 4 female-to-male; Board B: 3 jumper wires and 12 female-to-male"
+  - "Board A: 23 jumper wires and 4 female-to-male in total; Board B: 3 jumper wires and 12 female-to-male in total"
 ideas:
   - A machine that reports back
   - Two values, one going each way
@@ -82,33 +79,35 @@ degrees from it. Between those points, a tiny wobble changes nothing.
 ## Build it
 
 !!! warning "Unplug first"
-    Unplug both boards' USB cables, and Board B's power module adapter,
-    before you change any wiring. Board B's power module stays beside the
-    board as in Lesson 51, never plugged into it, both its jumpers **off**,
-    its red wire from **5V** to the bottom + rail by column 42, for the
-    motor, and its black wire from **GND** to the bottom − rail by column
-    42.
+    Unplug both boards' USB cables, and both power modules' adapters,
+    before you change any wiring. Board A's power module comes off. Board
+    B's stays beside the board as in Lesson 51, never plugged into it, both
+    its jumpers **off**, its black wire from **GND** to the bottom − rail by
+    column 42, and its red wire to the bottom + rail by column 42, but now
+    from its **5V** pin, for the motor.
 
 Each board keeps its LoRa modem at the bridge's home: lying below the
 breadboard under columns 24 to 29, its spring pointing down, its divider in
-column 28 and its VDD fed from the Mega's 3.3V pin. On Board A, the power
-module and the modem's red wire to the bottom + rail by column 29 come off,
-and the modem's VDD goes back to the Mega's 3.3V pin, as in Lesson 50:
-without the card reader, that pin has enough for it. The steps begin with
-what to keep from Lesson 51 and what to take out.
+column 28 and its VDD fed from the Mega's 3.3V pin. On Board B, the
+modem's red wire to the bottom + rail by column 29 comes off, and its VDD
+goes back to the Mega's 3.3V pin: without the card reader, that pin has
+enough for it. The steps begin with what to keep from Lesson 51 and what
+to take out.
 
 !!! danger "3.3 V for the modems"
     The modem's VDD takes 3.3 V, never 5 V, and gets it by a wire from the
     Mega's **3.3V** pin. Its RXD only ever sees the Mega's TX pin through
     the 1 kΩ, with the 2 kΩ to GND. [Safety](../../safety.md#radios) says
-    why.
+    why. On Board B, take the modem's VDD wire off the bottom + rail
+    before you move the power module's red wire to its **5V** pin, so the
+    modem never sees 5 V.
 
 ### Board A: the knob
 
-The screen goes at its far-right home, exactly as in Lesson 13, and the
-knob stands in columns 39 to 41, as in Lesson 7. Both leave the modem and
-its divider in place. The screen shows the angle you ask for and the angle
-the turntable has reached.
+The screen stays at its home from Lesson 51; the button, the buzzer, the
+servo and the power module come off. The knob stands in columns 39 to 41,
+as in Lesson 7, clear of the modem and its divider. The screen shows the
+angle you ask for and the angle the turntable has reached.
 
 <!-- bench A -->
 
@@ -120,11 +119,12 @@ When you are done, these are the connections Board A makes:
 
 ### Board B: the turntable
 
-The driver board lies below the Mega, wired as in Lesson 31, and takes its
-power from the bottom rails, which the power module beside the breadboard
-feeds. The
-modem's GND joins the same bottom − rail, and the Mega's GND reaches it at
-the bottom − rail by column 3, so every part agrees where 0 V is.
+Lesson 51's door comes off: the reader, the tap sensor, the button and the
+buzzer. The driver board lies below the Mega, wired as in Lesson 31, and
+takes its power from the bottom rails, which the power module beside the
+breadboard feeds. The modem's GND joins the same bottom − rail, and the
+Mega's GND reaches it at the bottom − rail by column 3, so every part
+agrees where 0 V is.
 
 <!-- bench B -->
 
@@ -226,14 +226,14 @@ good.
     moves, Board A's modem sends:
 
     ```text
-    @angle=90
+    @1/1 angle=90
     ```
 
     and while the turntable turns, Board B's sends a new position each
     time the bridge may, at most ten times a second:
 
     ```text
-    @at=23
+    @1/1 at=23
     ```
 
     A value that hasn't changed isn't sent again, so a still knob and a
@@ -284,3 +284,21 @@ What the numbers tell you:
 - **At 180°** it reads about 2.5 V, half of 5 V. Every volt is 72 degrees,
   so the angle on the far side of the house is set by a voltage on this
   side, turned into a number, sent through the air and turned into steps.
+
+## Check yourself
+
+1. When the screen says **Arrived: 90°**, how does Board A know, and can
+   it be sure?
+2. Why does the bottom row jump 4 or 5 degrees at a time while the
+   turntable turns?
+3. Why does Board A change its angle only once the knob has moved
+   5 degrees from it?
+
+??? note "Answers"
+    1. Board B shares `at`, its own count of the steps it has sent, and
+       when that matches `angle`, Board A says it has arrived. It can't be
+       sure: with the motor unplugged, Board B would still say so.
+    2. The turntable turns about 44 degrees a second, and the bridge sends
+       at most ten messages a second.
+    3. A knob resting on the line between two angles would flick between
+       them, and the turntable would twitch with it.

@@ -4,11 +4,11 @@ promise: Build a model room monitor that graphs sound levels, detects wet traces
 time: 2 hours
 level: 3
 parts:
-  - "Board A, the nursery: Lesson 47's Board A, with its LoRa modem, divider and green LED"
-  - "Board A: the sound sensor module and the water level sensor, both from the Mega kit, and the photoresistor and a 10 kΩ resistor, as in Lesson 46"
-  - "Board A: 2 jumper wires, 6 female-to-male jumper wires, and a small cup of water"
-  - "Board B, the parent: Lesson 47's Board B, with its LoRa modem, screen, clock module and IR receiver, and the kit's remote"
-  - "Board B: the LED matrix, the passive buzzer and a 220 Ω resistor, 1 jumper wire and 5 female-to-male jumper wires"
+  - "Board A, the listener: Lesson 47's Board A, with its LoRa modem, screen, clock module and IR receiver, and the kit's remote"
+  - "Board A: the LED matrix, the passive buzzer and a 220 Ω resistor, 1 jumper wire and 5 female-to-male jumper wires"
+  - "Board B, in the room: Lesson 47's Board B, with its LoRa modem, divider and green LED"
+  - "Board B: the sound sensor module and the water level sensor, both from the Mega kit, and the photoresistor and a 10 kΩ resistor, as in Lesson 46"
+  - "Board B: 2 jumper wires, 6 female-to-male jumper wires, and a small cup of water"
 ideas:
   - A microphone's swing, as a loudness
   - The loudest moment in each half second
@@ -18,21 +18,21 @@ ideas:
 
 ## What you'll build
 
-<!-- closeup B -->
+<!-- closeup A -->
 
-A model monitor for two rooms. Board A measures sound level, water on a
-sensor and light. Board B draws the latest sound levels as a moving bar
-graph and shows whether the room sounds quiet or loud, is lit or dark,
-and whether the water sensor is wet. A loud sound chimes; wet traces start
-an alarm you can hush with the remote. Losing the radio link brings a
-warning beep.
+A model monitor for two rooms. Board B, in the room, measures sound level,
+water on a sensor and light. Board A, the listener, draws the latest sound
+levels as a moving bar graph and shows whether the room sounds quiet or
+loud, is lit or dark, and whether the water sensor is wet. A loud sound
+chimes; wet traces start an alarm you can hush with the remote. Losing the
+radio link brings a warning beep.
 
 !!! warning "A learning model"
     This is not a dependable baby monitor, leak alarm or safety device.
-    A microphone level cannot identify a baby crying, and a lost radio
-    message can lose a brief sound. A working radio does not prove its
-    sensors work. Try the experiments on the desk; never rely on this
-    build to supervise a child or protect a room.
+    A sound level can't tell a baby crying from a door banging, a radio
+    message can be lost, and a working radio doesn't prove the sensors
+    work. Try the experiments on the desk; never rely on this build to
+    look after a child or protect a room.
 
 This project puts Lessons 46 and 47 together, and adds the two sensors in
 the kit that no lesson has used yet. As before, send on 915 MHz only where
@@ -53,11 +53,10 @@ loud, not what: no voice crosses the bridge, only a number.
 
 **The loudest in each half second.** Ten levels come every half second.
 Sending every one would keep the radio busy ten times a second, as
-Lesson 46 found. Sending an average could hide a short sound among quiet moments.
-So the nursery keeps the loudest level of each half second and sends that:
-a brief peak is retained until that report. A lost report can still lose
-the peak before the next quiet one replaces it. In Europe, send the sound once
-a second instead (`adk::Every halfSecond {1000}`), to stay well inside a
+Lesson 46 found, and an average could hide a short sound among quiet
+moments. So the room board keeps the loudest level of each half second and sends
+that, and a short clap still shows. In Europe, send the sound once a
+second instead (`adk::Every halfSecond {1000}`), to stay well inside a
 tenth of the time.
 
 **Feeling for water.** The water sensor is a comb of copper traces, every
@@ -74,12 +73,13 @@ away, and a sensor left powered in water all day soon corrodes. So its
 The sensor needs up to 20 mA, by Elegoo's figure: within what a pin can
 give, and only for those 10 ms.
 
-**Fail loud.** Lesson 46 showed stale news on the screen. This model adds a radio-loss warning: silence on the radio can mean a
-power cut rather than a quiet room. The warning covers the link only, not
-a broken microphone or water sensor. So the parent's board treats "not
-heard for five seconds" as news in itself: the screen says `No news!`, the
-graph drops to nothing instead of showing the last sound forever, and it
-beeps every five seconds until the nursery is heard again.
+**Fail loud.** Lesson 46 showed old news as dashes. Here that isn't
+enough: silence on the radio can mean a power cut rather than a quiet
+room. So the listener treats "not heard for five seconds" as news in
+itself: the screen says `No news!`, the graph drops to nothing instead of
+showing the last sound forever, and it beeps every five seconds until the
+room board is heard again. It can only tell that the radio went quiet,
+though, not that a microphone or water sensor broke.
 
 !!! question "Predict"
     Once it's all running, you'll dip the tip of the water sensor in a cup
@@ -95,16 +95,14 @@ beeps every five seconds until the nursery is heard again.
     part with its parts and pins. Neither board has a motor or a servo, so
     neither needs the power module.
 
-### Board A, the nursery
+### Board A, the listener
 
-Keep the modem, its divider and the green LED from Lesson 47, and take out
-the five tripwires, the red LED and their wires. The light sensor's
-divider comes back to its home in column 37, as in Lesson 46. The sound
-sensor lies below the Mega where the PIR was, its **+** and **G** on the
-power header's 5V and GND and its **AO** on A5; its **DO** stays
-unconnected. The water sensor lies beside it: **S** to A6, **+** to A7, and
-**−** to the power header's other GND. Their wires cross on the way to the
-pins; that's fine.
+Keep the modem, the screen, the clock module and the IR receiver from
+Lesson 47. The passive buzzer takes the active buzzer's place in column 33,
+on pin 10 now, with its 220 Ω resistor from a33 down to the − rail, as in
+Lesson 33. The LED matrix lies at its home below the gap between the Mega
+and the board, as in Lesson 25, with its GND in the bottom − rail by
+column 5. The modem's 3.3 V wire runs below the matrix.
 
 <!-- bench A -->
 
@@ -114,14 +112,16 @@ When you are done, these are the connections Board A makes:
 
 <!-- connections A -->
 
-### Board B, the parent
+### Board B, in the room
 
-Keep the modem, the screen, the clock module and the IR receiver from
-Lesson 47. The passive buzzer takes the active buzzer's place in column 33,
-on pin 10 now, with its 220 Ω resistor from a33 down to the − rail, as in
-Lesson 33. The LED matrix lies at its home below the gap between the Mega
-and the board, as in Lesson 25, with its GND in the bottom − rail by
-column 5. The modem's 3.3 V wire runs below the matrix.
+Keep the modem, its divider and the green LED from Lesson 47, and take out
+the five tripwires, the red LED and their wires. The light sensor's
+divider comes back to its home in column 37, as in Lesson 46. The sound
+sensor lies below the Mega where the PIR was, its **+** and **G** on the
+power header's 5V and GND and its **AO** on A5; its **DO** stays
+unconnected. The water sensor lies beside it: **S** to A6, **+** to A7, and
+**−** to the power header's other GND. Their wires cross on the way to the
+pins; that's fine.
 
 <!-- bench B -->
 
@@ -133,10 +133,10 @@ When you are done, these are the connections Board B makes:
 
 ## Code it
 
-Open **File → Examples → Adk → lessons → 048-baby-monitor → Nursery** for
-Board A:
+Open **File → Examples → Adk → lessons → 048-baby-monitor → Room** for
+Board B:
 
-<!-- sketch A -->
+<!-- sketch B -->
 
 What's new:
 
@@ -153,40 +153,41 @@ What's new:
   Lesson 3, counts 10 ms. When it `expired ()`, the sketch reads the water
   on A6, shares the reading, and switches A7 off again.
 
-Then **File → Examples → Adk → lessons → 048-baby-monitor → Parent** for Board B:
+Then **File → Examples → Adk → lessons → 048-baby-monitor → Listener** for
+Board A:
 
-<!-- sketch B -->
+<!-- sketch A -->
 
 What's new:
 
 - `perDot`, `loudLevel`, `wetAbove` and `litAbove` are yours to tune: each
   sensor is a little different.
-- `chime` and `alarm` are melodies for the passive buzzer, as in Lesson 6.
+- `chime` and `alarm` are melodies for the passive buzzer, as in Lesson 5.
   `speaker.play (alarm)` on every pass keeps the alarm going: a melody that
   has finished plays again when asked again.
 - `hushed` becomes `true` when POWER is pressed, and
-  `hushed = hushed && wet;` clears it when Board B receives a dry
-  reading. A later wet reading can then ring again.
+  `hushed = hushed && wet;` clears it when a dry reading arrives, so the
+  next wet one rings again.
 - `listen ()` runs every half second. It moves each column of `bars` one
   place to the left, and puts the newest sound on the right: `level /
   perDot` dots, but never more than 8, which is what `min (..., 8L)`
   makes sure of (the `L` makes 8 a `long`, like `level`). Then two loops,
   one inside the other, light each column's dots from the bottom up:
   `y < bars[x]` is `true` for the lit ones.
-- The parent draws a column every half second whether a new message came
-  or not. The bridge sends only a change, so a nursery that stays at the
+- The listener draws a column every half second whether a new message
+  came or not. The bridge sends only a change, so a room that stays at the
   same level sends nothing new, and `bridge.value ("sound")` is still the
-  latest. With no news, though, `level` is 0: a silent nursery isn't
+  latest. With no news, though, `level` is 0: a silent room board isn't
   allowed to look like a steady one.
-- `loud && !loudNow` is true only for the half second a loud sound begins, so the
-  chime sounds once and the clock is read once.
+- `loud && !loudNow` is true only for the half second a loud sound
+  begins, so the chime sounds once and the clock is read once.
 - `beat` ticks every five seconds, and while `!bridge.isConnected ()`, the
   buzzer beeps.
 
 ## Check the two new sensors locally
 
-Before using the radio display, upload **Nursery** to Board A and open its
-Serial Monitor at 9600 baud. Board B can stay off. The sketch prints a
+Before using the radio display, upload **Room** to Board B and open its
+Serial Monitor at 9600 baud. Board A can stay off. The sketch prints a
 `Peak` every half second and a `Water` reading every two seconds.
 
 !!! question "Predict"
@@ -194,7 +195,7 @@ Serial Monitor at 9600 baud. Board B can stay off. The sketch prints a
     a clap? Will dry traces and wet traces give the same water reading?
 
 1. Leave the room quiet and note several `Peak` readings. Speak, then clap
-   near the microphone. Choose `perDot` in **Parent** so a clap gives a
+   near the microphone. Choose `perDot` in **Listener** so a clap gives a
    useful tall bar, and `loudLevel` above the quiet readings but below
    the sounds you want to flag. A number alone cannot tell their source.
 2. Note the water reading with dry traces. Dip only the copper tip in the
@@ -203,12 +204,14 @@ Serial Monitor at 9600 baud. Board B can stay off. The sketch prints a
    or kind of water. If the ranges overlap, fix that before continuing.
 3. Unplug before correcting any wires. Keep the cup away from the boards.
 
-Now the radio experiment has known local readings to compare with.
+You predicted the peaks: silence is lowest and a clap highest, and wet
+traces read far above dry ones. Now the radio experiment has your own
+readings to compare with.
 
 ## Upload it
 
-1. Upload **Nursery** to Board A and **Parent** to Board B. Until Board B
-   hears Board A, it says `No news!` and beeps every five seconds.
+1. Upload **Listener** to Board A and **Room** to Board B. Until Board A
+   hears Board B, it says `No news!` and beeps every five seconds.
 2. Once they hear each other, the top row says something like
    `Quiet  Lit  Dry`, and the matrix fills with low bars from the right.
 3. Talk near the sound sensor: the bars jump with your voice. Clap: a tall
@@ -219,10 +222,10 @@ Now the radio experiment has known local readings to compare with.
 5. Now test your prediction. Dip the water sensor's traces in the cup: in
    up to two seconds, `WET!` and the alarm. Press POWER: the alarm stops,
    though the screen still says `WET!`. Lift the sensor out and dry it:
-   `Dry`. Dip it again: the alarm rings again. Hushing lasts only until the
-   receiver gets a dry reading; a later wet reading can then ring again.
-6. Unplug Board A. After five seconds, the screen says `No news!`, the
-   graph runs down to nothing, and Board B beeps every five seconds.
+   `Dry`. Dip it again: the alarm rings again. Hushing lasts only until a
+   dry reading arrives.
+6. Unplug Board B. After five seconds, the screen says `No news!`, the
+   graph runs down to nothing, and Board A beeps every five seconds.
 
 ## If it doesn't work
 
@@ -240,13 +243,13 @@ Now the radio experiment has known local readings to compare with.
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"
-    The nursery sends two kinds of message: every half second the sound
-    and the light, and every two seconds the water, each only if it
+    The room board sends two kinds of message: every half second the
+    sound and the light, and every two seconds the water, each only if it
     changed:
 
     ```text
-    @sound=37 light=64
-    @water=0
+    @1/1 sound=37 light=64
+    @1/1 water=0
     ```
 
     A quiet room's level wobbles by a few, so most half seconds bring a
@@ -258,22 +261,24 @@ Now the radio experiment has known local readings to compare with.
     sketch ever waits: even the water sensor's 10 ms is a `Timer`, not a
     `delay ()`.
 
-    The parent's own half-second beat and the nursery's aren't in step,
+    The listener's own half-second beat and the room's aren't in step,
     so a bar can appear up to half a second late, or a level can show in
     two columns. A graph doesn't mind.
 
 ## Make it yours
 
-1. **A steadier threshold.** A level that wobbles around `loudLevel` chimes again and
-   again. Give it Lesson 15's gap: enter the loud state at `loudLevel`, but leave it
-   only below half of it.
-2. **Sounds as a count.** Make the loud/quiet decision on Board A and send
-   a count of loud events, as in Lesson 47. The count can recover an
-   event after a lost packet; it still cannot identify what made the sound.
-3. **Too warm.** Put the DHT11 back on the nursery's Board A, as in
-   Lesson 46, and show the temperature on the parent's screen, in tenths.
-4. **A night light.** When the parent's screen says `Dark`, share a
-   setting back to the nursery, as the den did in Lesson 47, and light an
+1. **A steadier threshold.** A level that wobbles around `loudLevel`
+   chimes again and again. Give it Lesson 15's gap: enter the loud state
+   at `loudLevel`, but leave it only below half of it.
+2. **Sounds as a count.** Make the loud or quiet decision on Board B and
+   send a count of loud sounds, as Lesson 47 counted its tripwires. A
+   lost message can't lose a loud sound then; it still can't say what
+   made it.
+3. **Too warm.** Put the DHT11 back on Board B, in the room, as in
+   Lesson 46, and show the temperature on the listener's screen, in
+   tenths.
+4. **A night light.** When the listener's screen says `Dark`, share a
+   setting back to the room, as the den did in Lesson 47, and light an
    LED there as a model night light.
 5. **Quiet hours.** Make POWER also silence the chime for ten minutes with
    an `adk::Timer`, while the graph and the leak alarm carry on.
@@ -282,7 +287,7 @@ Now the radio experiment has known local readings to compare with.
 
 This part is for anyone with a multimeter; there isn't one in the kit. Set
 it up as in [Lesson 1](../001-blink/index.md#measure-it): DC volts (**V⎓**),
-the black lead in **COM** and the red one in **V**. Measure Board B while
+the black lead in **COM** and the red one in **V**. Measure Board A while
 the water sensor is in the cup.
 
 !!! question "Predict"
@@ -290,12 +295,31 @@ the water sensor is in the cup.
     in Lesson 5. What will the meter show while the alarm plays, and once
     POWER has hushed it?
 
-<!-- measure B -->
+<!-- measure A -->
 
 What the numbers tell you:
 
 - **While the alarm sounds**, pin 10 is high half of each wave, which
   would average 2.5 V, but each note is silent for its last eighth, so the
   meter settles a little lower, about 2.2 V.
-- **Hushed**, the pin rests at 0 V, even though the nursery still says
-  `WET!`: the choice to be quiet was made on Board B, not by the sensor.
+- **Hushed**, the pin rests at 0 V, even though the room board still
+  says `WET!`: the choice to be quiet was made on Board A, not by the
+  sensor.
+
+## Check yourself
+
+1. Why does the room board send the loudest level of each half second,
+   rather than every level, or their average?
+2. Why does the water sensor's **+** go to pin A7 instead of a rail?
+3. When Board B goes quiet, why does the graph run down to nothing
+   instead of showing the last sound?
+
+??? note "Answers"
+    1. Every level would keep the radio busy ten times a second, and an
+       average could hide a short sound among quiet ones. The loudest
+       keeps a single clap.
+    2. Current through wet copper slowly eats it away. On A7 the sensor is
+       powered only for 10 ms every two seconds, long enough to read.
+    3. Silence might mean the room board has lost its power. Showing its
+       last level forever would make a silent board look like a steady
+       room: no news isn't good news.

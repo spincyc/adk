@@ -48,15 +48,15 @@ That fixed first server gives the game one ball even if both players click
 at once. After a miss, only the player who missed may serve.
 
 **Handing over with a count.** When the ball leaves the top of your
-matrix, your board shares three things about it: the column it crossed
-at, its **drift**, −1, 0 or 1 for which way it was going across, and its
-**pace**, the milliseconds between steps. And it adds one to a count
-called `ball`. The other board watches that count, and when it goes up,
-the ball is its own. The count and all three flight details travel in
-one `shareEvent ()` record, so a lost packet cannot attach old flight
-details to a new crossing. The count is what matters: a ball can leave twice
-from the same column, the same way, at the same pace, and then only the
-count is new. Lesson 53 counted its presses the same way.
+matrix, your board adds one to its count of crossings, and shares it with
+three things about the ball: the column it crossed at, its **drift**, −1,
+0 or 1 for which way it was going across, and its **pace**, the
+milliseconds between steps. It packs the three into one number, the
+**flight**, and shares count and flight together as one event,
+`shareEvent ("ball", crossings, flight)`, as Lesson 53 shared a press.
+When a new crossing arrives, the ball is the other board's. The count is
+what matters: a ball can leave twice from the same column, the same way,
+at the same pace, and then only the count is new.
 
 **Mirroring.** Picture a table between the two rooms, with the two
 matrices at its ends and the players facing each other. Your left is
@@ -128,21 +128,19 @@ What's new:
 
 - `enum class Ball { Serving, Here, There };` names the three states from
   the table above, as Lesson 24 named its alarm's.
-- `wentUp ()` is Lesson 51's. `wentUp ("ball", theirCrossings)` is true
-  when the other board's count of crossings goes up: a ball is coming.
-  `theirCrossings` starts at −1. `firstBall` also accepts a first positive
-  crossing count, because the startup zero may have been lost. For
-  `theirMisses`, a first count remains only a baseline for the cheer.
-  Reset both boards to start a new game; restarting one mid-rally can
-  replay an old crossing. `catchBall ()` unpacks and mirrors the flight.
-- `flight = pace * 32 + (drift + 1) * 8 + column` packs bounded whole
-  numbers, as Lesson 53 packed an IR command: column is 0–7, drift + 1
-  is 0–2, and pace is 100–250. `% 8` recovers the column, `/ 8 % 4 - 1`
-  the drift, and `/ 32` the pace. The flight travels with its crossing
-  count through `shareEvent ("ball", crossings, flight)`.
-- The shared flight and miss count are kept apart from the ball's own
-  `x` and `y`. The ball moves every step, but `column`, `drift`, `pace`
-  and the counts only change when something happens, and the bridge only
+- `bridge.changed ("ball")` is true once for each new crossing from the
+  other board: a ball is coming, and `catchBall ()` unpacks its flight
+  and mirrors it.
+- `bridge.changed ("misses")` is true when the other player's count of
+  misses changes, and `bridge.value ("misses") > 0` leaves out the 0 that
+  comes when a board starts: then it's a point to this side.
+- The flight is `pace * 32 + (drift + 1) * 8 + column`, three small
+  numbers packed into one, as Lesson 53 packed an IR code: the column is
+  0 to 7, the drift + 1 is 0 to 2, and the pace 100 to 250. `% 8` gets
+  the column back, `/ 8 % 4 - 1` the drift, and `/ 32` the pace.
+- What crosses the bridge, `crossings`, `flight` and `misses`, is kept
+  apart from the ball's own `x` and `y`. The ball moves every step, but
+  those three only change when something happens, and the bridge only
   sends what has changed. So nothing goes over the air while the ball is
   in play on one side, but for the bridge's check every two seconds.
 - `paddle + joystick.x () / 60` moves the paddle one dot every 80 ms
@@ -153,14 +151,13 @@ What's new:
 - `random (-1, 2)` picks −1, 0 or 1 for the serve, as `random ()` picked
   in Lesson 3: never the top number itself.
 - In `moveBall ()`, the ball bounces off a side by turning its drift
-  round and stepping back inside. On row 6, the row above the paddle,
-  moving down, over one of the paddle's three dots, it goes back up,
-  its new drift `x - paddle - 1`: −1 over the left dot, 0 over the
-  middle, 1 over the right. On row 7 it has got past.
+  round and stepping back inside. Off the top, it goes over the bridge:
+  one more crossing, with its flight. When `bridge.isConnected ()` is
+  false, nobody would catch it, so it bounces back instead. On row 6, the
+  row above the paddle, moving down, over one of the paddle's three dots,
+  it goes back up, its new drift `x - paddle - 1`: −1 over the left dot,
+  0 over the middle, 1 over the right. On row 7 it has got past.
   `ballStep.period (max (100UL, ...))` speeds up the beat as in Snake.
-- `sendOver ()` shares the ball and hands it over. When
-  `bridge.isConnected ()` is false, nobody would catch it, so it bounces
-  back instead.
 - `showScore ()` prints your points, a dash and the other player's into
   an `adk::Text`, and scrolls it, as Snake scrolled its score.
 - `draw ()` makes a picture of eight rows, all dark to begin with, and
@@ -207,9 +204,9 @@ again with its next check. That's the radio, not you.
 | The ball goes over, but never comes down on the other matrix | Wait two seconds for the bridge to send it again. If the other **L** LED is dark, that board has lost the link. |
 | The paddle moves the wrong way | Hold the joystick with its pins to your left. |
 | The picture is upside down or back to front | Turn the matrix, as Lesson 25 says, until the paddle is along the bottom. |
-| Two balls at once | Check `firstServer`: true only on Board A, false on Board B. Reset both boards after correcting it. |
-| The score looks wrong after a board was reset | Each board counts its own misses from when it started. Press both reset buttons together for a new game. |
-| The ball never comes back, and your board's **L** LED is dark | The other board may have been switched off with the ball. Reset both boards for a new game. To practise alone, reset Board A: it is the first server. |
+| Two balls at once | Check `firstServer`: true only on Board A, false on Board B, and upload the right sketch to each. |
+| The score looks wrong after a board was reset | Each board counts its own misses from when it started, so a board that restarts starts again from 0. For a new game, press both reset buttons. |
+| The ball never comes back | The other board may have been switched off with the ball, and the ball went with it. Press Board A's reset button: it starts with the ball again. |
 | No sound | Check the buzzer's + leg is in f33, beside pin 10's wire in j33, and its 220 Ω from a33 to the − rail. |
 | The matrix shows junk | Check its wires, especially CLK on 48 and CS on 49. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
@@ -220,25 +217,24 @@ again with its next check. That's the radio, not you.
     ball crosses, Board A's modem sends one message:
 
     ```text
-    @ball=12:6098
+    @1/1 ball=12:6098
     ```
 
     Here `6098 = 190 × 32 + (1 + 1) × 8 + 2`: pace, drift and column
-    together. A miss sends `@misses=3`. That is the whole game on the
+    together. A miss sends `@1/1 misses=3`. That is the whole game on the
     air: a few messages a rally, each in about a twentieth of a second.
     Sending the ball's place at every step instead would keep both modems
     busy, and two modems sending at once lose both messages.
 
-    Every two seconds each board repeats everything it shares. If a
-    handover was lost and a later repeat arrives, the complete crossing
-    is still new to the other board, so the ball comes down late. Repeats
-    improve the chance of delivery; the bridge does not acknowledge or
-    guarantee delivery. Persistent loss can stop a rally.
+    Every two seconds each board repeats everything it shares. If the
+    message that carried the ball was lost, the repeat still brings the
+    new crossing, so the ball comes down late, but it comes. If the radio
+    keeps losing messages, though, a rally can stall.
 
-    Both players cannot serve at startup: Board B starts in `There` and
-    ignores its serve button until it has received and missed a ball.
-    Choosing one initial owner avoids two handovers crossing in flight
-    and leaving both boards with a ball. Reset both boards for a new game.
+    Only Board A starts with the ball: Board B starts in `There`, and its
+    stick does nothing until a ball has come and it has missed. With one
+    ball from the start, two hand-overs can never cross in mid-air and
+    leave both boards with a ball.
 
 ## Make it yours
 
@@ -252,7 +248,7 @@ again with its next check. That's the radio, not you.
    ball being hit back before it arrives.
 4. **Aim the bounce.** If the paddle is moving when it hits the ball,
    set the drift to −1 or 1 in that direction. Keep it between −1 and 1:
-   those are the limits of the packed flight record.
+   the packed flight has room for no more.
 
 ## Measure it
 
@@ -277,3 +273,20 @@ What the numbers tell you:
   2 kΩ share the 5 V between them, so the modem's pin never sees more
   than it can take. It is the same divider as on every board since
   Lesson 40.
+
+## Check yourself
+
+1. Why does only one board ever move the ball?
+2. The ball leaves Board A at column 2, heading right. Where does it come
+   in on Board B, and which way does it go there?
+3. Why does nothing cross the air while the ball is in play on one side?
+
+??? note "Answers"
+    1. If both moved it, they would soon disagree about where it was. The
+       board whose matrix the ball is on owns it, and hands it over.
+    2. At column 7 − 2 = 5, heading left as Board B's player sees it: the
+       players face each other.
+    3. What crosses is the count of crossings, the flight and the misses,
+       and they change only when the ball goes over or someone misses. The
+       bridge sends only what changes, but for its check every two
+       seconds.

@@ -4,14 +4,15 @@ promise: Type a code on a keypad by the door, and let a board inside decide whet
 time: 90 minutes
 level: 3
 parts:
-  - "Both boards: an Arduino Mega 2560 with its USB cable, a breadboard, and the LoRa modem with its 1 kΩ and 2 kΩ resistors from Lesson 48 (the modems are add-ons; the second Mega and breadboard aren't in one kit)"
-  - "Board A: the LCD, knob and 220 Ω resistor from Lesson 13, and the 4×4 keypad from Lesson 16"
+  - "Board A, the door: Lesson 48's Board A, with its LoRa modem, divider and screen"
+  - "Board A: the 4×4 keypad from Lesson 16, and 8 jumper wires"
+  - "Board B, inside: Lesson 48's Board B, with its LoRa modem and divider"
   - "Board B: the SG90 servo, the breadboard power module and its 9 V adapter, and the RGB LED with three 220 Ω resistors"
-  - "10 female-to-male and 37 jumper wires in all, the modems' among them"
+  - "Board B: 6 jumper wires and 2 female-to-male jumper wires"
   - "A small box and some tape, if you want a real latch"
 ideas:
   - Which board should decide, and why
-  - A key press crosses the air as a count
+  - A key press crosses the air as a count, with its key
   - An answer that comes back
   - A secret that stays on one board
 ---
@@ -31,10 +32,9 @@ says **Wrong! Tries: 1**, while Board B glows red. The code itself is only
 ever on Board B.
 
 !!! warning "A classroom model"
-    This is a model latch, not dependable door security. The radio does
-    not authenticate messages or prove that they belong to a fresh
-    session. If either board restarts, reset **both** boards, then wait
-    until `Calling B...` clears before typing the whole code again.
+    This is a model latch, not a lock to trust. Anyone nearby with a LoRa
+    modem could read the keys as they cross the air: *How it works* says
+    more.
 
 ## The idea
 
@@ -48,33 +48,35 @@ says. Board B, inside, keeps the code, compares the keys with it, and
 works the latch. Take Board A away and all you have is a keypad and a
 screen.
 
-**A key press is an event, and an event crosses as a count.** The bridge
-from Lesson 43 keeps a value the same on both boards, and sends it only
-when it changes. That is just right for a knob or a tilt, but not for a
-key: press **1** twice, and the second **1** is no change at all. So
-Board A keeps count of every key pressed, `presses`, and sends the count
-and key together with `bridge.shareEvent ("key", presses, lastKey)`.
-An event is one record: even a repeated key sends its character with the
-new count. A lost message cannot leave a new count attached to an old key.
+**A key press crosses as a count.** The bridge sends a value only when it
+changes. That suits a knob, but not a key: press **1** twice, and the
+second **1** is no change at all. Lesson 47 had the answer: count. Board A
+counts every key pressed, `presses`, and the count goes up even when the
+key is the same.
 
-Board A starts by sharing count zero and waiting to receive `ack=0`.
-Board B clears its partial entry when it receives a first count or a
-count decrease. After that, a count exactly one higher means one new key;
-a gap also clears the entry, so type the whole code again.
+But Board B needs the key too, not just the count. Shared under two
+names, the count and the key could travel in different messages, and a
+lost message could leave a new count with an old key. So the bridge has a
+way to share the two together, as one **event**:
 
-The zero reply helps the boards start together, but a delayed reply from
-an earlier run could also be `ack=0`. This bridge keeps and repeats the
-latest values; it cannot prove a fresh session or queue every key.
-Reset both boards after either restarts, even if the screen already
-looks ready, and wait until `Calling B...` clears before entering a code.
+```cpp
+bridge.shareEvent ("key", presses, lastKey);
+```
 
-**An answer comes back.** The bridge works both ways, so Board B shares
-four numbers of its own: `ack`, the last event count heard; `typed`, how
-many digits it holds; `door`, 1 while the latch is open; and `wrong`, how
-many wrong codes in a row. `ack=0` releases Board A's startup wait; it
-neither proves which run the reply came from nor guarantees later keys.
-Board A's screen shows those, not what it thinks it has sent: a star
-appears only once Board B has heard the key.
+The first number is the count, and the second is what the event carries,
+its **payload**: here, the key. On Board B, `bridge.changed ("key")` is
+true once for each new key, even the same key twice, and
+`bridge.payload ("key")` is the key that came with it. The bridge also remembers when the two boards found each other, so a
+key pressed before then, or before either board restarted, never arrives
+later as a surprise.
+
+**An answer comes back.** Board B shares three numbers of its own:
+`typed`, how many digits it holds; `door`, 1 while the latch is open; and
+`wrong`, how many wrong codes in a row. Board A's screen shows those, not
+what it thinks it has sent: a star appears only once Board B has the
+digit. So if a key is lost on the way, as
+[Lesson 43](../043-the-bridge/index.md#what-the-bridge-can-lose) says one
+can be, you see it: its star never comes.
 
 !!! question "Predict"
     Type a digit on Board A and watch the screen. Will the star appear the
@@ -119,10 +121,10 @@ keep and what to take out.
 
 ### Board A: the door
 
-Board A carries the screen at its home, wired as in Lesson 13, and the
-keypad high above the Mega on pins 22 to 29, as in Lesson 16. The
-keypad's eight wires rise beside the Mega, and the wires from pins 14 and
-15 to the modem's divider cross them just below the keypad's plug.
+Board A keeps its screen from Lesson 48, and everything else comes out.
+The keypad goes high above the Mega on pins 22 to 29, as in Lesson 16. Its
+eight wires rise beside the Mega, and the wires from pins 14 and 15 to the
+modem's divider cross them just below the keypad's plug.
 
 <!-- bench A -->
 
@@ -134,10 +136,11 @@ When you are done, these are the connections Board A makes:
 
 ### Board B: inside
 
-Board B carries the RGB LED at its home, as in Lesson 34, and the servo
-below the board, powered from the bottom rails as in Lesson 17. The servo
-keeps its Lesson 17 home below the modem, and pin 44's wire
-runs down beside the board and under the modem to reach it.
+Lesson 48's sensors and green LED come out. Board B carries the RGB LED
+at its home, as in Lesson 34, and the servo below the board, powered from
+the bottom rails as in Lesson 17. The servo keeps its Lesson 17 home below
+the modem, and pin 44's wire runs down beside the board and under the
+modem to reach it.
 
 <!-- bench B -->
 
@@ -170,13 +173,13 @@ What's new:
 
 - The modem and the bridge are Lesson 43's: address 1, talking to address
   2, at the Quick speed and 10 dBm.
-- `readyForKeys` waits for a received `ack=0`; until then the screen says
-  `Calling B...`. The reply has no session identifier, so it is not proof
-  that B saw this run's zero. Follow the both-board reset procedure above.
-  `presses` counts keys and `lastKey` remembers the latest.
-  `shareEvent ("key", presses, lastKey)` sends both as one indivisible
-  record, including when the character repeats. Calling it again with
-  the same record changes nothing; a heartbeat repeats the whole record.
+- `presses` counts keys and `lastKey` remembers the latest. A key counts
+  only while `bridge.isConnected ()`: one pressed while Board B can't hear
+  would otherwise arrive much later, when nobody expects it.
+- `bridge.shareEvent ("key", presses, lastKey)` shares the count and the
+  key together, on every pass; the bridge sends them only when they
+  change. A `char` is a number underneath, `'5'` is 53, so it crosses like
+  any other.
 - `bridge.changed ("typed")`, `"door"` and `"wrong"` say when Board B's
   answer changes, and `bridge.isConnected () != linked` when Board B is
   lost or found. Either way, `showAnswer ()` draws the screen again.
@@ -193,21 +196,21 @@ What's new:
 
 - `code` is the secret, as in Lesson 18. It is in this sketch only, and
   nothing ever sends it.
-- `presses` starts at −1, meaning no count heard. `bridge.value ("key")`
-  is the event count. Exactly one higher passes the character to
-  `takeKey ()`; a first count, gap or count decrease clears the partial entry
-  and establishes the new count.
-- `bridge.payload ("key")` is the key's character code: `'1'`
-  is 49 and `'#'` is 35. Handing it to `takeKey (char key)` turns it back
-  into a character.
+- `bridge.changed ("key")` is true once for each new key from Board A.
+  `bridge.payload ("key")` is the key as a number: `'1'` is 49 and `'#'`
+  is 35. `char (...)` makes it a character again, just as `char (223)`
+  made the degree sign in Lesson 14: a type's name with a value in
+  brackets makes a value of that type.
 - `takeKey ()` is the table above, in code. `adk::equal (typed, code)`
   compares the digits with the code, as in Lesson 18.
-- `presses` goes back as `ack`. `typed.size ()`, `unlocked` and `wrong`
-  go back to Board A through the bridge. A `bool` crosses as 1 or 0.
+- `typed.size ()`, `unlocked` and `wrong` go back to Board A through the
+  bridge. A `bool` crosses as 1 or 0.
 - `latch.moveTo ()` and `light.fadeTo ()` are called on every pass: asking
   for what they are already doing changes nothing, so the latch and the
-  light simply follow `unlocked`, `wrong` and the link. The `? :` chain
-  picks the first color whose question is true, top to bottom.
+  light simply follow `unlocked`, `wrong` and the link. The light's color
+  is a chain of `? :` from Lesson 22: each `?` asks a question, and if the
+  answer is no, the `:` goes on to the next. The first question answered
+  yes picks the color, and `waiting` is what's left when none is.
 
 ## Upload it
 
@@ -224,14 +227,21 @@ What's new:
 4. Type **5 5 5 5 #**: `Wrong! Tries: 1`, and a red light. Another wrong
    code makes it `Tries: 2`; the right one sets it back to none.
 
-Now your prediction. Each star comes a tenth of a second or two after the
-key: Board A's bridge sends the key, the radio carries it, Board B adds
-the digit and shares its new `typed`, and the radio carries that back.
-Unplug Board B, and after five seconds of silence Board A's screen says
-`Calling B...`. Keys pressed now add no new stars. The bridge can retain
-the latest key for later, so reconnect Board B and reset both boards
-before continuing. Wait for `Calling B...` to clear, then re-enter the
-whole code.
+You predicted when the star would come. It comes a tenth of a second or
+two after the key: Board A's bridge sends the key, the radio carries it,
+Board B adds the digit and shares its new `typed`, and the radio carries
+that back. Unplug Board B, and after five seconds of silence Board A's
+screen says `Calling B...`. Keys pressed now go nowhere. Plug Board B back
+in: once it has started, the screen says `Locked. Code?` again, and you can
+type straight away.
+
+!!! question "Predict: a restart"
+    Type **1 2**, then press Board A's **RESET** button. When Board A has
+    started again, how many stars will its screen show?
+
+Two. Board A forgot everything, but Board B didn't restart: it still holds
+the two digits, and Board A's screen shows what Board B says. Press **\***
+to rub them out. Neither board needed resetting to carry on.
 
 ## If it doesn't work
 
@@ -239,8 +249,8 @@ whole code.
 |---|---|
 | Board A always says `Calling B...` | Is Board B's sketch running, with its light on? Check each modem as Lesson 43 did: VDD on the 3.3V pin, GND in the bottom − rail by column 24, TXD in f26 beside pin 15's wire in j26, RXD in c28, and the divider in column 28. |
 | Board B's light stays dim orange | Board B can't hear Board A. The same checks, on Board A's modem; and are both sketches from this lesson, with addresses 1 and 2? |
-| Keys don't make stars | Check the keypad as in Lesson 16: its ribbon on pins 22 to 29, in order. After a restart or disconnection, reset both boards and wait for `Calling B...` to clear before entering the whole code. |
-| A key is sometimes missed | Two keys pressed within a tenth of a second can share a message, and Board B skips a jump in the count. Type at a steady pace and watch the stars. A gap clears the entry: type the whole code again. |
+| Keys don't make stars | Check the keypad as in Lesson 16: its ribbon on pins 22 to 29, in order. |
+| A key is sometimes missed | Two keys pressed within a tenth of a second travel as one, and only the second arrives. Type at a steady pace and watch the stars; if one is missing, press **\*** and start again. |
 | The servo doesn't move | Is the power module on, with its LED lit? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 42, then the servo's red wire in the bottom + rail by column 35, its brown in the bottom − rail by column 36, and pin 44's wire to its orange. |
 | A blank lit screen, or a row of blocks | Turn the contrast knob. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
@@ -250,23 +260,21 @@ whole code.
     third key, Board A's modem sends:
 
     ```text
-    @key=3:53
+    @1/1 key=3:53
     ```
 
     and Board B answers:
 
     ```text
-    @typed=3
+    @1/1 typed=3
     ```
 
-    The colon keeps the count and character in one token. A packet never
-    contains a new count without its character. A gap still means some
-    keys were lost, so Board B clears the partial code.
-
-    Only what changed goes in each message. Every two seconds each board
-    sends everything it shares again, `@typed=3 door=0 wrong=0`, so a
-    message lost to noise is soon made good, and each knows the other is
-    still there.
+    The colon keeps the count, 3, and the key, 53, in one word, so they
+    always arrive together. Only what changed goes in each message. Every
+    two seconds each board sends everything it shares again,
+    `@1/1 typed=3 door=0 wrong=0`, so a message lost to noise is soon made
+    good, and each knows the other is still there. A repeat brings no new
+    count, so it is never a new key.
 
     That also shows the weak spot of this lock: anyone nearby with a LoRa
     modem on the same settings could read the keys as they cross the air.
@@ -307,3 +315,19 @@ What the numbers tell you:
   Lesson 7, and the meter shows the average.
 - **The green pin, open,** reads about 5 V: green at full brightness is
   on all the time.
+
+## Check yourself
+
+1. Why does Board A share each key with a count, and not just the key?
+2. Why does Board A's screen show the stars Board B says it holds, and
+   not the keys Board A has sent?
+3. Why does the code live only on Board B?
+
+??? note "Answers"
+    1. The bridge sends a value only when it changes, so pressing **1**
+       twice would send nothing new. The count goes up with every press,
+       and `shareEvent ()` keeps each key with its own count.
+    2. A key can be lost on the way. Showing Board B's answer means a lost
+       key shows as a missing star, and you can start again.
+    3. Board A is outside, where anyone can reach it. A burglar could read
+       the code out of it, or make it say open. Board B, inside, decides.

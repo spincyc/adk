@@ -74,11 +74,11 @@ changed or not, and a lost change is made good within two seconds. The
 messages are plain text, which you'll see in the Serial Monitor:
 
 ```text
-@button=0
+@1/1 button=0
 ```
 
-The `@` says it's a bridge's message; then comes each name, `=`, and its
-value.
+The `@` says it's a bridge's message. Then come two start numbers, `1/1`,
+which *How it works* explains, and then each name, `=`, and its value.
 
 **Connected.** Those messages every two seconds mean that each board
 hears from the other at least that often, even when nothing changes. So
@@ -221,8 +221,8 @@ address 2, and its partner is 1.
 3. Hold Board A's button: Board B's red LED lights at once, and goes out
    when you let go. Board B's button does the same to Board A.
 4. Open the Serial Monitor at 9600 baud, on either board's port. Every two
-   seconds it says `Heard: @button=0`. Press the other board's button,
-   and `Heard: @button=1` arrives straight away.
+   seconds it says `Heard: @1/1 button=0`. Press the other board's button,
+   and `Heard: @1/1 button=1` arrives straight away.
 5. Once a board has its sketch, any USB power will run it. Plug Board B
    into a phone charger or a power bank, carry it into another room, and
    try the buttons again.
@@ -239,6 +239,29 @@ A's red LED stays lit, even after its yellow LED goes out. The bridge
 keeps the last value it heard, and nothing ever came to say the button
 was let go. A board that must act safely when the other goes quiet has
 to check `isConnected ()` as well: Lesson 45's fan does.
+
+!!! note "What the bridge can lose"
+    A radio message can go missing, and the bridge is built for that. This
+    is everything it can lose, and what the sketches do about it. Later
+    lessons point back here.
+    {: #what-the-bridge-can-lose }
+
+    - **A lost message.** Noise, or both boards sending at once, can lose
+      one. Every two seconds the bridge sends everything again, so a lost
+      value is back within two seconds.
+    - **A quick change.** The bridge sends at most ten messages a second,
+      and only the latest value. A number that goes 1, 2, 3 within a
+      tenth of a second arrives as 3.
+    - **A moment.** A press lasts one pass of `loop ()`, too short to
+      share. A sketch sends a count of presses instead, and the other
+      board watches it go up: *Make it yours* shows how.
+    - **Old news.** When the other board goes quiet, its last values stay,
+      as you just saw. A sketch that must not trust them checks
+      `isConnected ()`.
+    - **A restart.** When either board restarts, both notice, and each
+      sends the other everything again at once. Nothing from before the
+      restart is taken for new, and you never need to reset the other
+      board.
 
 ## If it doesn't work
 
@@ -265,19 +288,29 @@ to check `isConnected ()` as well: Lesson 45's fan does.
     time on the air, and needs a stronger signal to be heard.
 
     When Board A's button is pressed, the bridge hands its modem the
-    line `@button=1`, and ADK sends it to the partner, address 2:
+    line `@1/1 button=1`, and ADK sends it to the partner, address 2:
 
     ```text
-    AT+SEND=2,9,@button=1
+    AT+SEND=2,13,@1/1 button=1
     ```
 
     Board B's modem hears it and tells its Mega
-    `+RCV=1,9,@button=1,-35,11`, and Board B's bridge reads each name and
-    value after the `@`. A board with several numbers to share sends
-    them in one line, such as `@angle=90 fan=1`, as many as fit in 56
-    letters. Every two seconds each bridge counts everything as changed
-    and sends it all again; a board with nothing to share sends a bare
-    `@`, just so the other still hears from it.
+    `+RCV=1,13,@1/1 button=1,-35,11`, and Board B's bridge reads each
+    name and value after the start numbers. A board with several numbers
+    to share sends them in one line, such as `@1/1 angle=90 fan=1`, as
+    many as fit in 56 letters. Every two seconds each bridge counts
+    everything as changed and sends it all again; a board with nothing to
+    share sends just its start numbers, `@1/1`, so the other still hears
+    from it.
+
+    The start numbers are how the boards notice a restart. A board that
+    has just started has none, and says `@0/0`. It takes one from the
+    first message it hears: one more than the other board remembers for
+    it, so never the one it had before. In every message the first number
+    is the sender's own, and the second the other board's, as the sender
+    last heard it. When Board B restarts, Board A sees a new number and
+    sends everything again at once, and Board B ignores any message that
+    still carries its old number: that was meant for it as it was before.
 
 ## Make it yours
 
@@ -321,3 +354,23 @@ What the numbers tell you:
 - **The modem's RXD** reads about 3.3 V: two thirds of 5 V, as the
   divider shares it out, safe for the modem's 3.3 V pin. The 1 kΩ takes
   the other 1.7 V.
+
+## Check yourself
+
+1. You unplug Board B. Why does Board A's yellow LED go out a few seconds
+   later, and not at once?
+2. You hold Board B's button and unplug Board B. Why does Board A's red LED
+   stay lit, and what should a careful sketch also check?
+3. In Lesson 40 the modems ran from the power module. Why can each modem
+   here run from its Mega's 3.3V pin?
+
+??? note "Answers"
+    1. `bridge.isConnected ()` turns false only after five seconds with
+       nothing heard. Board B's last message came up to two seconds before
+       you unplugged it, so the LED goes out three to five seconds later.
+    2. The bridge keeps the last value it heard, and no message ever came to
+       say the button was let go. A sketch that must act safely checks
+       `bridge.isConnected ()` as well.
+    3. Each board has just one modem, and it sends at lower power, so it
+       draws less current than a modem at full power. That fits within what
+       the Mega's 3.3V pin can give.
