@@ -18,7 +18,6 @@ constexpr adk::Color waiting     {0, 0, 40};              // dim blue
 constexpr adk::Color alone       {40, 20, 0};             // dim orange
 
 adk::Vector<char, 4> typed;             // the digits heard so far
-long                 presses  = -1;     // -1 until Board A's first count
 int                  wrong    = 0;      // wrong codes in a row
 bool                 unlocked = false;
 
@@ -31,25 +30,14 @@ void loop ()
 {
     adk::update ();
 
-    // One more press is a new key. Any other jump means a board restarted
-    // or a message was lost: discard the incomplete entry and start again.
+    // A new key from Board A, even the same key again: its count went up.
+    // The key itself is the payload, a number, so char () makes it a
+    // character again.
     if (bridge.changed ("key"))
     {
-        long count = bridge.value ("key");
-
-        if (presses >= 0 && count == presses + 1)
-        {
-            takeKey (static_cast<char> (bridge.payload ("key")));
-        }
-        else
-        {
-            typed.clear ();
-        }
-
-        presses = count;
+        takeKey (char (bridge.payload ("key")));
     }
 
-    bridge.share ("ack", presses);    // latest count, not a session proof
     bridge.share ("typed", typed.size ());
     bridge.share ("door", unlocked);
     bridge.share ("wrong", wrong);

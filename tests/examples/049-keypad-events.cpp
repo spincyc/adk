@@ -9,31 +9,33 @@ int main ()
     using namespace lesson_test;
     prepare ();
     setup ();
-    hear ("@key=0:0");
-    hear ("@key=1:49");
-    // The first 2 (count 2) was lost. A repeat must still carry its own key.
-    hear ("@key=3:50");
-    expect (typed.empty (), "a sequence gap clears the partial entry");
-    hear ("@key=4:50");
-    expect (typed.size () == 1 && typed[0] == '2', "repeat uses its own payload");
-    hear ("@key=0:0");
-    expect (typed.empty (), "sender restart clears the partial entry");
+    hear ("@1/0");
+    hear ("@1/1 key=0:0");
+    expect (typed.empty (), "a count of 0 is no key");
+    hear ("@1/1 key=1:49");
+    hear ("@1/1 key=2:50");
+    hear ("@1/1 key=2:50");
+    expect (typed.size () == 2 && typed[1] == '2', "the refresh is not another key");
+    hear ("@1/1 key=3:50");
+    expect (typed.size () == 3 && typed[2] == '2', "the same key again is a new key");
 
-    hear ("@key=1:49");
-    hear ("@key=2:50");
-    hear ("@key=3:51");
-    // User typed 9 then 4 too quickly; the bridge retained only count 5.
-    hear ("@key=5:52");
-    hear ("@key=6:52");
-    hear ("@key=7:35");
-    expect (!unlocked, "123944# cannot open after the middle events coalesce");
+    // Board A restarts: its count starts again, and B hears its first key.
+    hear ("@0/0 key=0:0");
+    hear ("@1/1 key=1:42");
+    expect (typed.empty (), "after A restarts, its first key arrives");
 
-    hear ("@key=0:0");
-    hear ("@key=1:49");
-    hear ("@key=2:50");
-    hear ("@key=3:51");
-    hear ("@key=4:52");
-    hear ("@key=5:35");
-    expect (unlocked, "a complete ordered correct entry still opens");
+    // 9 then 4 typed too quickly: only the 4 arrives, and the code is wrong.
+    hear ("@1/1 key=2:49 key=3:50 key=4:51");
+    hear ("@1/1 key=6:52");
+    hear ("@1/1 key=7:52");
+    hear ("@1/1 key=8:35");
+    expect (!unlocked && wrong == 1, "a lost key makes a wrong code, never a right one");
+
+    hear ("@1/1 key=9:49");
+    hear ("@1/1 key=10:50");
+    hear ("@1/1 key=11:51");
+    hear ("@1/1 key=12:52");
+    hear ("@1/1 key=13:35");
+    expect (unlocked && wrong == 0, "the right code opens");
     return result ();
 }

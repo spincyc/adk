@@ -1,10 +1,11 @@
-// Lesson 46: Remote Weather, Board A, the garden
+// Lesson 46: Remote Weather, Board B, the garden
 // Four sensors measure the garden, and every five seconds the bridge
-// carries a report indoors: every reading as a whole number.
+// carries a report indoors: its number, then every reading as a whole
+// number.
 
 #include <Adk.h>
 
-adk::LoraModem radio  {Serial3, 1, {.partner = 2,
+adk::LoraModem radio  {Serial3, 2, {.partner = 1,
                                     .speed   = adk::LoraSpeed::Quick,
                                     .power   = 10}};
 adk::Bridge    bridge {radio};
@@ -16,9 +17,9 @@ adk::AnalogInput light      {A1};
 adk::Led         online     {28};    // lit while indoors is heard
 adk::Every       report     {5000};
 
-constexpr long noReading = -10000;    // outside either thermometer's range
+constexpr long noReading = -10000;    // a thermometer that didn't answer
 
-long reports = 0;    // how many reports have gone, which marks a new one
+long reports = 0;    // how many reports have gone: 0 means none yet
 
 void setup ()
 {
@@ -34,14 +35,15 @@ void loop ()
     if (report.ticked ())
     {
         ++reports;
-        bridge.shareEvent ("air", reports, dht.ok ()
-                        ? tenths (dht.temperature ()) : noReading);
-        bridge.shareEvent ("humid", reports, dht.ok ()
-                        ? lround (dht.humidity ()) : noReading);
-        bridge.shareEvent ("probe", reports, probe.ok ()
-                        ? tenths (probe.celsius ()) : noReading);
-        bridge.shareEvent ("ntc", reports, tenths (thermistor.celsius ()));
-        bridge.shareEvent ("light", reports, light.read (0, 100));
+        bridge.share ("report", reports);
+        bridge.share ("air", dht.ok () ? tenths (dht.temperature ())
+                                       : noReading);
+        bridge.share ("humid", dht.ok () ? lround (dht.humidity ())
+                                         : noReading);
+        bridge.share ("probe", probe.ok () ? tenths (probe.celsius ())
+                                           : noReading);
+        bridge.share ("ntc", tenths (thermistor.celsius ()));
+        bridge.share ("light", light.read (0, 100));
     }
 }
 

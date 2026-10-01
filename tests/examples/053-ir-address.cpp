@@ -15,7 +15,7 @@ int main ()
     expect (button == adk::remote::power && address == 1234, "address is retained");
     runFor (1);
     runFor (120);
-    expect (Serial3.text.find ("@lamp=0 press=1:315973") != std::string::npos,
+    expect (Serial3.text.find ("@0/0 lamp=0 press=1:315973") != std::string::npos,
             "count, address and command travel in one event record");
     obey (adk::remote::power, 0);
     expect (lampOn && presses == 1, "only kit power toggles the lamp");

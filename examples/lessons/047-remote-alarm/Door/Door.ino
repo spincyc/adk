@@ -1,11 +1,11 @@
-// Lesson 47: Remote Alarm, Board A, by the door
+// Lesson 47: Remote Alarm, Board B, by the door
 // Five tripwires each count how many times they have gone off, and the
 // bridge carries the counts to the den. The red LED shows whether the den
 // has armed the alarm.
 
 #include <Adk.h>
 
-adk::LoraModem radio  {Serial3, 1, {.partner = 2,
+adk::LoraModem radio  {Serial3, 2, {.partner = 1,
                                     .speed   = adk::LoraSpeed::Quick,
                                     .power   = 10}};
 adk::Bridge    bridge {radio};

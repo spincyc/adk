@@ -1,11 +1,11 @@
-// Lesson 51: Doorbell and Door, Board B (inside)
-// Board A, at the door, counts rings, knocks and cards. This board says
+// Lesson 51: Doorbell and Door, Board A (inside)
+// Board B, at the door, counts rings, knocks and cards. This board says
 // who's there and chimes, and it opens the latch for a friend's card, or
 // when you press the button to let someone in.
 
 #include <Adk.h>
 
-adk::LoraModem radio  {Serial3, 2, {.partner = 1,
+adk::LoraModem radio  {Serial3, 1, {.partner = 2,
                                     .speed   = adk::LoraSpeed::Quick,
                                     .power   = 10}};
 adk::Bridge    bridge {radio};
@@ -40,11 +40,7 @@ constexpr adk::Millis newsTime    = 10000;    // how long news stays shown
 
 adk::Timer unlocked;      // runs while the door is open
 adk::Timer news;          // runs while the screen shows news
-
-long rings  = -1;         // Board A's counts as last heard, -1 before any
-long knocks = -1;
-long cards  = -1;
-bool linked = false;      // whether Board A could be heard, as shown
+bool       linked = false;    // whether Board B could be heard, as shown
 
 void setup ()
 {
@@ -57,20 +53,18 @@ void loop ()
 {
     adk::update ();
 
-    bool rang    = wentUp ("rings", rings);
-    bool knocked = wentUp ("knocks", knocks);
-    bool swiped  = wentUp ("cards", cards);
-
-    if (swiped)
+    // Each is true once for each new event at the door. When two come
+    // together, a card comes first, then the bell, then a knock.
+    if (bridge.changed ("cards"))
     {
         checkCard (uint32_t (bridge.payload ("cards")));
     }
-    else if (rang)
+    else if (bridge.changed ("rings"))
     {
         tell ("Ding dong!", "Press to let in");
         chime.play (dingDong);
     }
-    else if (knocked)
+    else if (bridge.changed ("knocks"))
     {
         tell ("Knock knock!", "Press to let in");
         chime.play (knock);
@@ -82,7 +76,7 @@ void loop ()
         unlocked.start (openTime);
     }
 
-    // Quiet again once the news is old, or when A is lost or found.
+    // Quiet again once the news is old, or when B is lost or found.
     bool linkChanged = bridge.isConnected () != linked;
 
     if (news.expired () || (linkChanged && !news.isRunning ()))
@@ -92,23 +86,6 @@ void loop ()
 
     latch.moveTo (unlocked.isRunning () ? openAngle : lockedAngle, 500);
     bridge.share ("door", unlocked.isRunning ());
-}
-
-// Whether Board A's count by this name has gone up: something happened.
-// The first count heard, or one that went down because A restarted, only
-// tells this board where A has got to.
-bool wentUp (const char* name, long& seen)
-{
-    if (!bridge.changed (name))
-    {
-        return false;
-    }
-
-    long count = bridge.value (name);
-    bool up    = seen >= 0 && count > seen;
-
-    seen = count;
-    return up;
 }
 
 void checkCard (uint32_t card)

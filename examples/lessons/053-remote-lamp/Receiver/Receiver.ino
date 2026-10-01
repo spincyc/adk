@@ -19,7 +19,7 @@ bool lampOn = false;        // what the power button last asked for
 
 // The latest button to pass on, and the remote it came from. A press is
 // an event, so a count goes with it: Board B sends a code each time the
-// count changes, even for the same button twice.
+// count goes up, even for the same button twice.
 long button  = 0;
 long address = 0;
 long presses = 0;

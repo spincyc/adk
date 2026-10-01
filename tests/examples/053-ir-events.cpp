@@ -40,16 +40,17 @@ int main ()
     prepare ();
     setup ();
     arduino::setCallCost (1);
-    hear ("@press=0:0");
-    hear ("@press=1:12");
+    hear ("@1/0");
+    hear ("@1/1 press=0:0");
+    hear ("@1/1 press=1:12");
     expect (sentFrame () == 0xF30CFF00, "first command reaches the IR LED");
     TCCR3A.history.clear ();
     // Lose count 2: a different address and command, repeated at count 3.
-    hear ("@press=3:1193042");
+    hear ("@1/1 press=3:1193042");
     expect (sentFrame () == 0xAD521234,
             "repeat after loss forwards its own address and command");
     TCCR3A.history.clear ();
-    hear ("@press=3:1193042");
+    hear ("@1/1 press=3:1193042");
     expect (TCCR3A.history.empty (), "refresh does not replay an old press");
     return result ();
 }

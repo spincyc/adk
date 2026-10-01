@@ -28,26 +28,36 @@ the other board has gone.
 
 <!-- api bridge.h Bridge -->
 
-Use `share ("angle", angle)` for a value such as a dial position. For an
-event such as a key press, use `shareEvent ("key", sequence, key)`, changing
-`sequence` for every press, even when the same key is pressed again. The
-receiver checks `changed ("key")`, reads the sequence with `value ("key")`
-and the key with `payload ("key")`. The sequence and payload travel together
-as one token, such as `@key=3:7`; a receiver accepts both or neither.
-An identical repeat or refresh does not set `changed ()` again.
+Use `share ("angle", angle)` for a value, such as a dial's position: the
+other board reads the latest with `value ("angle")`. Use
+`shareEvent ("key", presses, key)` for something that happens, such as a
+key press: add one to `presses` for every press, even when the same key is
+pressed twice. On the other board, `changed ("key")` is true once for each
+new event that arrives, and `payload ("key")` is the key that came with it.
+The count and the key travel together, as `key=3:53`, so a key never
+arrives with another press's count.
 
-A bridge keeps only the latest value or event for each of its eight names.
-While the radio is busy, several events can become one, and a lost packet
-can leave a gap in the sequence. The two-second refresh repeats the latest
-pair; it cannot recover the events before it. There is no acknowledgement
-or ordering guarantee. Use this for projects that can tolerate missed
-events, not for counting every press or confirming that an action happened.
+Each message starts with two start numbers, as in `@1/2 angle=90`: the
+sending board's own, then the other board's, as the sender last heard it.
+A board takes its start number from the first message it hears, one more
+than the other board remembers, so when either board restarts, the other
+notices at once and sends everything again. From then on each counts the
+other's events from zero: an event from before the restart never arrives
+again, and a reply meant for a board as it was before it restarted is
+ignored. Neither board needs resetting by hand.
+
+What a bridge can't do: it keeps only the latest value or event for each of
+its eight names. Two events within a tenth of a second, or one whose message
+is lost before the next is sent, arrive as one, and the event's `value ()`,
+its count since the boards found each other, goes up by two. Nothing says
+whether a message arrived, so let the other board share back what it did, as
+Lesson 49's lock shares how many digits it holds.
 
 Both numbers use the Mega's signed 32-bit range, −2147483648 to 2147483647.
 For a 32-bit RFID ID, send `static_cast<int32_t> (reader.uid ())` as the
-payload. Recover its bits with
+payload, and recover its bits with
 `static_cast<uint32_t> (bridge.payload ("card"))`.
-A scalar's payload is zero, as is an unknown name's payload.
+A value's payload is zero, as is an unknown name's payload.
 
 <!-- api link.h Link -->
 

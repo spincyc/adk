@@ -11,10 +11,9 @@ adk::Bridge    bridge {radio};
 adk::Keypad    keypad {{22, 23, 24, 25}, {26, 27, 28, 29}};
 adk::Lcd       lcd    {31, 32, 33, 34, 35, 36};
 
-long presses = 0;        // keys pressed since the sketch started
-char lastKey = '\0';     // the latest of them
-bool readyForKeys = false;    // wait for a zero reply; it has no session ID
-bool linked  = false;    // whether Board B could be heard, as shown
+long presses = 0;       // keys passed on since the sketch started
+char lastKey = '\0';    // the latest of them
+bool linked  = false;   // whether Board B could be heard, as shown
 
 void setup ()
 {
@@ -26,24 +25,17 @@ void loop ()
 {
     adk::update ();
 
-    // A delayed zero reply is possible: reset both boards after a restart.
-    if (!readyForKeys && bridge.changed ("ack")
-        && bridge.value ("ack") == 0)
-    {
-        readyForKeys = true;
-        showAnswer ();
-    }
-
+    // A key goes only while Board B can hear it; otherwise it could
+    // arrive much later, out of the blue.
     char key = keypad.key ();
 
-    if (readyForKeys && key != '\0')
+    if (key != '\0' && bridge.isConnected ())
     {
         ++presses;
         lastKey = key;
     }
 
-    // A press is an event, so it crosses as a count: B takes the key
-    // when the count goes up by one.
+    // A press is an event, so it crosses as a count, with its key.
     bridge.shareEvent ("key", presses, lastKey);
 
     if (bridge.changed ("typed") || bridge.changed ("door")
@@ -62,7 +54,7 @@ void showAnswer ()
 
     lcd.clear ();
 
-    if (!linked || !readyForKeys)
+    if (!linked)
     {
         lcd.print ("Calling B...");
     }

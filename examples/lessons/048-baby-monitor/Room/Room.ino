@@ -1,11 +1,11 @@
-// Lesson 48: Room Monitor, Board A, in the nursery
+// Lesson 48: Room Monitor, Board B, in the room
 // Listens, feels for water and watches the light, and sends what it finds
 // across the bridge: the loudest sound in each half second, the water
 // sensor's reading every two seconds, and how bright the room is.
 
 #include <Adk.h>
 
-adk::LoraModem radio  {Serial3, 1, {.partner = 2,
+adk::LoraModem radio  {Serial3, 2, {.partner = 1,
                                     .speed   = adk::LoraSpeed::Quick,
                                     .power   = 10}};
 adk::Bridge    bridge {radio};
@@ -14,7 +14,7 @@ adk::SoundSensor   sound      {A5};
 adk::AnalogInput   water      {A6};
 adk::DigitalOutput waterPower {A7};    // on only while the water is felt
 adk::AnalogInput   light      {A1};
-adk::Led           online     {28};    // lit while the parent is heard
+adk::Led           online     {28};    // lit while the listener is heard
 adk::Every         halfSecond {500};
 adk::Every         feel       {2000};
 adk::Timer         settle;             // the water sensor's power is on
@@ -34,7 +34,7 @@ void loop ()
     online.set (bridge.isConnected ());
 
     // A new level comes every 50 ms, ten in each half second, and only
-    // the loudest goes. A lost radio packet can still lose this peak.
+    // the loudest goes.
     if (sound.measured ())
     {
         loudest = max (loudest, sound.level ());

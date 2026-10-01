@@ -1,11 +1,11 @@
-// Lesson 47: Remote Alarm, Board B, in the den
+// Lesson 47: Remote Alarm, Board A, in the den
 // The door's tripwires arrive as counts. When one rises, the screen names
 // the tripwire and the time, and if the alarm is armed the siren sounds.
 // POWER on the remote arms and disarms it, and the door shows which.
 
 #include <Adk.h>
 
-adk::LoraModem radio  {Serial3, 2, {.partner = 1,
+adk::LoraModem radio  {Serial3, 1, {.partner = 2,
                                     .speed   = adk::LoraSpeed::Quick,
                                     .power   = 10}};
 adk::Bridge    bridge {radio};

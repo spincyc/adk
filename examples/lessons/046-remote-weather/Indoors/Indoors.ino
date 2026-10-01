@@ -1,10 +1,11 @@
-// Lesson 46: Remote Weather, Board B, indoors
-// Each reading carries its own report number. Missing or old readings
-// show as dashes; only fresh, valid air data drives the comfort light.
+// Lesson 46: Remote Weather, Board A, indoors
+// The garden's report arrives every five seconds. The screen shows its
+// readings one after another, with the time the latest report came, and
+// the light glows blue, green or red for a cold, mild or hot garden.
 
 #include <Adk.h>
 
-adk::LoraModem radio  {Serial3, 2, {.partner = 1,
+adk::LoraModem radio  {Serial3, 1, {.partner = 2,
                                     .speed   = adk::LoraSpeed::Quick,
                                     .power   = 10}};
 adk::Bridge    bridge {radio};
@@ -14,15 +15,11 @@ adk::Rtc    rtc;
 adk::RgbLed light {5, 6, 7};
 adk::Every  page  {3000};    // the next reading on the top row
 
-constexpr adk::Array names {"air", "humid", "probe", "ntc", "light"};
-adk::Array<adk::Stopwatch, 5> age;    // each reading's new report number
-constexpr char degree = char (223);
-constexpr long noReading = -10000;
-constexpr adk::Millis staleAfter = 10000;
+constexpr long noReading = -10000;        // a thermometer that didn't answer
+constexpr char degree    = char (223);    // the LCD's own degree sign
 
-adk::DateTime heardAt {};    // when any new sensor record last arrived
-bool          heardAny = false;
-int           shown = 0;
+adk::DateTime heardAt {};    // when the latest report arrived
+int           shown = 0;     // which reading the top row shows
 
 void setup ()
 {
@@ -38,19 +35,17 @@ void loop ()
 {
     adk::update ();
 
-    for (uint8_t sensor = 0; sensor < names.size (); ++sensor)
+    // A new report number: the garden has measured again, even if every
+    // reading is the same as last time.
+    if (bridge.changed ("report"))
     {
-        if (bridge.changed (names[sensor]))
-        {
-            age[sensor].restart ();
-            heardAt = rtc.now ();
-            heardAny = true;
-        }
+        heardAt = rtc.now ();
     }
 
-    long air = bridge.payload ("air");
-    light.fadeTo (fresh (0) && air != noReading
-                   ? comfortOf (air) : adk::color::off, 1000);
+    // The light needs a temperature: it fades out without one.
+    long air   = bridge.value ("air");
+    bool known = hasNews () && air != noReading;
+    light.fadeTo (known ? comfortOf (air) : adk::color::off, 1000);
 
     if (page.ticked ())
     {
@@ -59,64 +54,60 @@ void loop ()
     }
 }
 
-// Every displayed value has its own freshness and validity check.
+// Readings are worth showing once a report has come, and while the
+// garden can still be heard.
+bool hasNews ()
+{
+    return bridge.isConnected () && bridge.value ("report") > 0;
+}
+
+// One reading at a time on the top row; below it, when the latest report
+// came, or that the garden has gone quiet.
 void showWeather ()
 {
-    lcd.at (0, 0).print ("                ");
-    lcd.at (0, 0);
-
-    if (!heardAny)
-    {
-        lcd.print ("Waiting for data");
-        lcd.at (0, 1).print ("No report yet   ");
-        return;
-    }
+    lcd.clear ();
 
     switch (shown)
     {
         case 0:
             lcd.print ("Air ");
-            printReading (0, true);
+            showReading ("air", true);
             adk::print (lcd, degree, "C ");
-            printReading (1, false);
+            showReading ("humid", false);
             lcd.print ('%');
             break;
         case 1:
             lcd.print ("DS ");
-            printReading (2, true);
+            showReading ("probe", true);
             lcd.print (" NTC ");
-            printReading (3, true);
+            showReading ("ntc", true);
             break;
         default:
             lcd.print ("Light ");
-            printReading (4, false);
+            showReading ("light", false);
             lcd.print ('%');
     }
 
-    bool allFresh = true;
-    for (uint8_t sensor = 0; sensor < names.size (); ++sensor)
+    lcd.at (0, 1);
+
+    if (bridge.value ("report") == 0)
     {
-        allFresh = allFresh && fresh (sensor);
+        lcd.print ("No report yet");
+        return;
     }
-    auto at = heardAt;
-    auto news = !bridge.isConnected () ? "No news "
-                  : allFresh ? "Heard   " : "Stale   ";
-    adk::print (lcd.at (0, 1), news, at.hour / 10, at.hour % 10, ':',
-                at.minute / 10, at.minute % 10, ':',
-                at.second / 10, at.second % 10);
+
+    lcd.print (bridge.isConnected () ? "Heard   " : "No news ");
+    adk::print (lcd, heardAt.hour / 10, heardAt.hour % 10, ':',
+                heardAt.minute / 10, heardAt.minute % 10, ':',
+                heardAt.second / 10, heardAt.second % 10);
 }
 
-// Another sensor's record or a heartbeat cannot freshen this reading.
-bool fresh (uint8_t sensor)
+// A temperature in tenths shows with its fraction: 215 is 21.5.
+void showReading (const char* name, bool temperature)
 {
-    return bridge.isConnected () && age[sensor].isRunning ()
-        && age[sensor].elapsed () < staleAfter;
-}
+    long value = bridge.value (name);
 
-void printReading (uint8_t sensor, bool temperature)
-{
-    long value = bridge.payload (names[sensor]);
-    if (!fresh (sensor) || value == noReading)
+    if (!hasNews () || value == noReading)
     {
         lcd.print ("----");
     }
@@ -126,7 +117,7 @@ void printReading (uint8_t sensor, bool temperature)
     }
     else
     {
-        adk::print (lcd, value);
+        lcd.print (value);
     }
 }
 

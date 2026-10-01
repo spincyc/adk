@@ -1,13 +1,13 @@
-// Lesson 48: Room Monitor, Board B, with the parent
-// The matrix graphs the nursery's sound, a column every half second. The
-// screen says whether the nursery is quiet, lit and dry, and when it was
-// last loud. A loud sound brings a chime; water on the sensor, an alarm that
-// POWER on the remote hushes; and a silent nursery, a beep, because no
+// Lesson 48: Room Monitor, Board A, the listener
+// The matrix graphs the room's sound, a column every half second. The
+// screen says whether the room is quiet, lit and dry, and when it was last
+// loud. A loud sound brings a chime; water on the sensor, an alarm that
+// POWER on the remote hushes; and a silent room board, a beep, because no
 // news isn't good news.
 
 #include <Adk.h>
 
-adk::LoraModem radio  {Serial3, 2, {.partner = 1,
+adk::LoraModem radio  {Serial3, 1, {.partner = 2,
                                     .speed   = adk::LoraSpeed::Quick,
                                     .power   = 10}};
 adk::Bridge    bridge {radio};
@@ -18,20 +18,20 @@ adk::IrReceiver receiver {2};
 adk::Speaker    speaker  {10};
 adk::LedMatrix  matrix   {47, 48, 49};
 adk::Every      step     {500};     // the graph moves on a column
-adk::Every      beat     {5000};    // a beep while the nursery is silent
+adk::Every      beat     {5000};    // a beep while the room is silent
 
-constexpr long perDot   = 25;     // how much more sound lights one more dot
+constexpr long perDot    = 25;     // how much more sound lights one more dot
 constexpr long loudLevel = 150;    // the threshold for a loud sound
-constexpr long wetAbove = 100;    // the water sensor reads less when dry
-constexpr long litAbove = 30;     // the light, in percent
+constexpr long wetAbove  = 100;    // the water sensor reads less when dry
+constexpr long litAbove  = 30;     // the light, in percent
 
 constexpr adk::Note chime [] = {{adk::note::e5, 150}, {adk::note::c5, 300}};
 constexpr adk::Note alarm [] = {{adk::note::a5, 200}, {adk::note::e5, 200}};
 
 adk::Array<long, 8> bars    {};    // dots in each column, oldest first
-adk::DateTime       loudAt {};    // when the latest loud sound began
+adk::DateTime       loudAt  {};    // when the latest loud sound began
 bool                loudNow = false;
-bool                hushed = false;
+bool                hushed  = false;
 
 void setup ()
 {
@@ -54,7 +54,7 @@ void loop ()
         hushed = true;
     }
 
-    // A received dry reading clears hush before a later wet reading.
+    // A dry reading ends the hush, so the next wet one rings again.
     hushed = hushed && wet;
 
     if (wet && !hushed)
@@ -65,7 +65,7 @@ void loop ()
     if (step.ticked ())
     {
         listen ();
-        showNursery (wet);
+        showRoom (wet);
     }
 
     if (beat.ticked () && !bridge.isConnected ())
@@ -75,7 +75,7 @@ void loop ()
 }
 
 // Each half second: move the graph on a column, add the loudest sound the
-// nursery heard, and chime when a loud sound begins. With no news, the nursery
+// room heard, and chime when a loud sound begins. With no news, the room
 // counts as silent rather than as whatever it last said.
 void listen ()
 {
@@ -109,7 +109,7 @@ void listen ()
 
 // The top row: quiet or loud, lit or dark, dry or wet, or no news. The
 // bottom row: when the latest loud sound began, 00:00:00 until the first.
-void showNursery (bool wet)
+void showRoom (bool wet)
 {
     lcd.at (0, 0);
 
