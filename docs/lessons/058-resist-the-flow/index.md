@@ -70,7 +70,7 @@ trials. Make each brightness note before the next swap.
 
 For each voltage reading, set the meter to **DC volts (V⎓)**, black lead in
 **COM**, red lead in **V**, and 20 V range if needed. Touch red to **h6**
-and black to **a6**. Those free holes are on opposite sides of whichever
+and black to **d6**. Those free holes are on opposite sides of whichever
 resistor is fitted. Keep the meter leads in the voltage jacks. Never put
 a meter set to current across the supply.
 
@@ -108,7 +108,7 @@ works without code. It claims no signal pins.
 |---|---|
 | The LED stays dark with every resistor | Check the 5 V feed, LED direction, and GND return. |
 | It goes dark after a swap | Check the resistor value and make sure its legs cross the middle gap in g6 and e6. |
-| The meter stays near zero | Check DC volts, the V jack, and the h6 and a6 probe holes. |
+| The meter stays near zero | Check DC volts, the V jack, and the h6 and d6 probe holes. |
 | Brightness is hard to judge | Use the calculated currents; small visual changes can be difficult to see. |
 
 These are expected results; the circuit has not been recorded as tested on

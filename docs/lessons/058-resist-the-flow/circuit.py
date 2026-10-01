@@ -7,4 +7,4 @@ bench.resistor ("220 Ω", "g6", "e6")
 bench.led ("red", anode="b6", cathode="b7")
 bench.wire ("a7", "B-7")
 
-bench.measure ("Across the resistor", red="h6", black="a6", expect="about 3 V")
+bench.measure ("Across the resistor", red="h6", black="d6", expect="about 3 V")
