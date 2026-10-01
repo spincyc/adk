@@ -1069,10 +1069,12 @@ class Drawing:
             if pin.header == "top":
                 pencil.text (hx + 2.4, hy + 8, label, rotate=-90, anchor="end", **common)
             elif pin.header == "bottom":
-                pencil.text (hx + 2.4, hy - 8, label, rotate=-90, anchor="start", **common)
+                pencil.text (hx + 2.4, hy - 7, label, rotate=-90, anchor="start", **common)
         # The double header's names both sit on its inner side, away from
         # the wires that leave it to the right: the left pin's name, then the
-        # right pin's.
+        # right pin's. The last row's GND stands a little high, and the bottom
+        # header's names start a little low, so A14 and A15 read whole.
+        last = min (pin.y for pin in MEGA_PINS.values () if pin.header == "double")
         for name, pin in MEGA_PINS.items ():
             if pin.header != "double" or pin.outer:
                 continue
@@ -1084,9 +1086,10 @@ class Drawing:
             if canonical (odd) == canonical (name):
                 # Both 5V, or both GND: one name for the row.
                 pair = [(canonical (name), name if name in bench.taken else odd, 0)]
+            y = hy + (2.5 if pin.y > last else -1)
             for label, pin, offset in pair:
                 weight, tone = ("bold", 0.95) if pin in bench.taken else ("normal", 0.7)
-                pencil.text (hx - 7 - offset, hy + 2.5, label, size=7, anchor="end", kind="silk",
+                pencil.text (hx - 7 - offset, y, label, size=7, anchor="end", kind="silk",
                              halo=MEGA_TINT, weight=weight, tone=tone)
 
     def _draw_board (self, pencil, detail=None):
