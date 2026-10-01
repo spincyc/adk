@@ -66,9 +66,10 @@ For a closer look at changing signals, the optional scope investigations
 waveforms and what a filter does to them.
 
 !!! question "Predict"
-    The G key plays 392 Hz. Hold it down for exactly one second. How many
-    times does the buzzer's disc move back and forth? And which key makes
-    it move the slowest?
+    The C key plays middle C, `c4`, at 262 Hz, and the G key plays 392 Hz.
+    The next C up, `c5`, is 523 Hz. If the C key played `c5` instead, would
+    it sound higher or lower than the G key? Would it still sound like a C?
+    Write down your guesses.
 
 ## Build it
 
@@ -156,8 +157,11 @@ D D D, E G G. Notice that the three Es are three separate notes, not one long
 one. Then press the keys, left to right: C, D, E and G, each a step higher.
 Each note lasts exactly as long as you hold its key.
 
-You predicted how often the disc moves. Holding G for a second moves it back
-and forth 392 times, and C, at 262 Hz, is the slowest.
+Now test your prediction. In `keys`, change the first key's
+`adk::note::c4` to `adk::note::c5` and upload again. The C key now sounds
+higher than G: 523 Hz is faster than 392 Hz. Yet it still sounds like a C,
+the same note as before, one octave up. Twice the frequency is the same
+note, higher. Put `c4` back before you play the tune.
 
 Now play the tune yourself. The keys are C, D, E, G from left to right, so
 it starts: third, second, first, second, third, third, third.

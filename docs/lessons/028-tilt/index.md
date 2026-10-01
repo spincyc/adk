@@ -58,9 +58,11 @@ side the Y arrow points to. ADK works them out for you in degrees with
 `tilt.pitch ()` and `tilt.roll ()`.
 
 !!! question "Predict"
-    The breadboard lies flat, so z reads about 1000 and x and y about 0.
-    What will z read if you stand the breadboard on one of its long edges?
-    And what about x or y?
+    The sketch draws a bubble on the matrix that moves with the tilt. Lift
+    the far edge of the breadboard, the long edge away from you: will the
+    bubble move toward the raised edge or away from it? And if you keep
+    lifting until the board stands on its near long edge, where will the
+    bubble end up?
 
 ## Build it
 
@@ -150,15 +152,19 @@ What's new:
 
 Upload the sketch and lay the breadboard flat on a table. A 2 × 2 bubble
 sits in the middle of the matrix; if the table is level, the frame lights up
-around it. Lift the right-hand end of the breadboard, the end away from the
-Mega: the bubble slides right. Lift the far edge: the bubble slides up. The
-bubble always rises to the high side, like a real bubble in a real level.
+around it. Whenever you lift the breadboard, keep the Mega flat on the
+table beside it, support the level shifter on the table too, and leave
+their wires slack, so nothing pulls loose.
 
-You predicted the readings with the breadboard stood on a long edge. Now no
-part of gravity lies along z, so z reads about 0. The whole 1000 mg moves to
-the axis that now points up, y, which reads about 1000, or −1000 on the
-other edge; x stays near 0. The bubble shows it: the roll is 90°, so the
-bubble runs to the top or bottom edge of the matrix and stays there. To see
+Lift the right-hand end of the breadboard, the end away from the Mega: the
+bubble slides right. Now test your prediction and lift the far edge: the
+bubble slides up, toward the raised edge. The bubble always rises to the
+high side, like a real bubble in a real level.
+
+Keep lifting until the board stands on its near long edge. Now no part of
+gravity lies along z, so z reads about 0, and the whole 1000 mg moves to
+the axis that points up, y. The roll is 90°, far past the 9° the bubble
+can show, so it runs to the top edge of the matrix and stays there. To see
 the numbers themselves, try the second challenge below.
 
 ## If it doesn't work

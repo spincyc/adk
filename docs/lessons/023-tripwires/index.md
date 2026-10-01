@@ -76,8 +76,9 @@ level that is, and `activated ()` is true for the one moment it changes.
 !!! question "Predict"
     The tilt switch is `adk::Switch upright {A14};`, active while it stands
     upright. The sketch lights the green LED with
-    `green.set (!upright.isActive ())`. With the switch standing up, is the
-    green LED on or off? What about lying on its side?
+    `green.set (!upright.isActive ())`, and `!` means *not*, as in Lesson
+    4's box: it turns true into false and false into true. With the switch
+    standing up, is the green LED on or off? What about lying on its side?
 
 ## Build it
 
