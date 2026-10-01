@@ -10,7 +10,7 @@ parts:
   - Battery-powered two-channel oscilloscope
   - 1 µF nonpolar film capacitor
   - 1 kΩ resistor (brown, black, black, brown, brown)
-  - 3 jumper wires and 2 female-to-male wires
+  - 3 jumper wires (and one spare for the comparison) and 2 female-to-male wires
 ideas:
   - An alternating signal drives current first one way, then the other
 ---
@@ -36,8 +36,8 @@ predict whether the voltage at the **top of the resistor** can go below
     Turn the generator output off and unplug the Mega's USB cable before
     moving anything. Use only a battery-powered, isolated generator set to
     **0–4 V**; do not use a negative supply or connect its output to a
-    Mega input, the 5 V rail, or an AA pack. Keep both scope ground clips
-    on the common bottom − rail, never on either signal point.
+    Mega input or the 5 V rail. Keep both scope ground clips on the common
+    bottom − rail, never on either signal point.
 
 Start with an empty breadboard. The complete steps below put the Mega's
 GND wire in its usual bottom − rail hole nearest it and join the
@@ -57,6 +57,10 @@ breadboard's middle gap.
 
 ## Watch both voltages
 
+If this is your first time with the scope and generator, read the
+[scope and generator primer](../../electricity/skills.md#scope-and-generator)
+and do its output check before you connect the generator to this circuit.
+
 1. With the generator output still off, attach **both scope ground clips**
    to free holes on the bottom − rail. Put channel 1's tip at **j6**, the
    generator side of the capacitor. Put channel 2's tip at **j10**, the
@@ -65,14 +69,35 @@ breadboard's middle gap.
    4 V peak-to-peak with a **+2 V DC offset**. Check those settings before
    enabling its output. Wait for the initial transient to settle.
 3. Record each trace's highest and lowest voltage. Channel 1 should stay
-   near **0–4 V**. Channel 2 should swing **above and below 0 V**. Compare
-   what you see with your prediction, then turn the output off.
+   near **0–4 V**. Channel 2 should swing **above and below 0 V**, about
+   2 V each way. Compare what you see with your prediction, then turn the
+   output off.
 
-The capacitor blocks the generator's steady +2 V offset after it settles.
-As the sine wave rises, current through the resistor goes toward GND, so
-the top of the resistor is positive. As it falls, current reverses and
-the top becomes negative relative to GND. The capacitor is what lets this
-happen even though generator OUT itself stays between 0 and 4 V.
+Within a few milliseconds the capacitor charges to the generator's
+**2 V average** and then holds it, so channel 2 is roughly the input with
+that 2 V taken away. While the input is **above** its 2 V average, current
+flows down through the resistor toward GND and the top of the resistor is
+positive. While the input is **below** 2 V, the current reverses and the
+top of the resistor is negative relative to GND, by up to about 2 V. The
+capacitor is what lets this happen even though generator OUT itself stays
+between 0 and 4 V. At 1 kHz, channel 2's peaks come very slightly before
+channel 1's, by about a fortieth of a cycle (25 µs); you may not notice it.
+
+## Change one thing
+
+Predict first: if the capacitor is replaced by a plain wire, will channel
+2 still go below 0 V?
+
+1. **Turn the generator output off.** Lift out only the capacitor and
+   bridge its two strips with a spare jumper from **g6 to e6**, the holes
+   its legs used.
+2. Turn the output on with the same settings. Channel 2 should now match
+   channel 1: a 0–4 V wave that never goes below 0 V.
+3. Turn the output off and put the capacitor back in g6 and e6.
+
+Without the capacitor, the generator's 2 V average reaches the resistor
+too. The current still grows and shrinks, up to about 4 mA, but it always
+flows toward GND: it never reverses.
 
 ## If the traces surprise you
 

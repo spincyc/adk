@@ -32,4 +32,9 @@ bench.wire ("a4", "a32")
 bench.resistor ("1 kΩ", "c32", "c30")
 bench.resistor ("10 kΩ", "b30", "B-30")
 
+bench.measure ("Collector to GND, button held", red="e31", black="GND",
+               expect="about 0.1 V", when="Hold the button down")
+bench.measure ("Collector to GND, button released", red="e31", black="GND",
+               expect="about 5 V", when="Button released")
+
 bench.closeup (1, 38)

@@ -1,5 +1,6 @@
-# Keep Lesson 71's MCP6002 supply, bypass capacitors, and B follower.
-# Change A's feedback to a direct wire and feed it from the knob at home.
+# Keep E16's MCP6002 supply, bypass capacitors, and B follower. Change A's
+# feedback to a direct wire and feed it from the knob at home. The page
+# first moves the load's b15 end to c40, on the knob's wiper, and back.
 bench = Bench ("An MCP6002 output follows a knob while feeding a 1 kΩ load",
                columns=(1, 42))
 
@@ -8,9 +9,9 @@ bench.chip ("MCP6002", pins=["OUTA", "−A", "+A", "VSS",
                               "+B", "−B", "OUTB", "VDD"], first=15)
 bench.wire ("a18", "B-18")
 bench.wire ("j15", "T+15")
-bench.capacitor ("100 nF", "h15", "b18")
-bench.wire ("B-13", "T-13")
+bench.wire ("B-9", "T-9")
 bench.capacitor ("10 µF", "T+16", "T-16", polarized=True)
+bench.capacitor ("100 nF", "T+17", "T-17")
 
 bench.stage ("amplifier B's steady midpoint")
 bench.resistor ("10 kΩ", "g24", "e24")
@@ -34,6 +35,6 @@ bench.wire ("b40", "a17")
 bench.measure ("Knob wiper at +A", red="a17", black="GND",
                expect="about 2 V", when="Knob set near 2 V")
 bench.measure ("Loaded output at OUTA", red="a15", black="GND",
-               expect="close to the wiper voltage", when="Knob set near 2 V")
+               expect="about 2 V, close to the wiper", when="Knob set near 2 V")
 
 bench.closeup (13, 42)

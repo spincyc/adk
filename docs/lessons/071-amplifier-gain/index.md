@@ -7,12 +7,13 @@ parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
   - MCP6002 in an 8-pin PDIP package
-  - 4 × 10 kΩ resistors (brown, black, black, red, brown)
+  - 5 × 10 kΩ resistors (brown, black, black, red, brown), and a sixth
+    for the comparison
   - 100 nF ceramic capacitor
   - 10 µF electrolytic capacitor rated at least 10 V
   - Isolated, battery-powered 0–4 V waveform generator
   - Battery-powered two-channel oscilloscope with two probes
-  - 14 jumper wires
+  - 11 jumper wires
   - 2 female-to-male wires
 ideas:
   - Feedback resistors set the gain of a non-inverting amplifier
@@ -22,8 +23,9 @@ ideas:
 
 <!-- closeup -->
 
-An MCP6002 amplifier takes a small sine wave from an isolated generator.
-Two equal **10 kΩ feedback resistors** set its gain to about two. On the
+An MCP6002 amplifier takes a small sine wave from an isolated generator,
+through a 10 kΩ input resistor. Two equal **10 kΩ feedback resistors** set
+its gain to about two. On the
 scope, its output wave should be about twice as tall as the input wave.
 The Mega supplies USB 5 V but uses no signal pins.
 
@@ -53,9 +55,15 @@ pin 1 is its output A, pin 2 its − input A, pin 3 its + input A, pin 4
 GND, pin 5 the second amplifier's + input, pin 6 its − input, pin 7 its
 output, and pin 8 its 5 V supply. Check the chip marking before powering.
 
-Follow the generated steps. Put the **100 nF capacitor in the nearest free
-strips of pins 8 and 4**, and the **10 µF capacitor across the nearby +
-and − rails**, with its + leg on 5 V and striped − leg on GND. The second
+Follow the generated steps. Pins 8 and 4 sit at opposite corners of the
+chip, so the **100 nF and 10 µF supply capacitors** stand across the top +
+and − rails right beside pin 8's supply wire, the 10 µF with its + leg on
+5 V and striped − leg on GND. A black wire at column 9 joins the top −
+rail to GND. Amplifier A's three resistors lie just below the chip. The
+generator reaches pin 3 only through the **10 kΩ input resistor**: the
+op-amp's input takes almost no current, so the resistor costs nothing
+here, but if the generator were ever on while the chip had no power it
+would keep the current into pin 3 below about 0.4 mA. The second
 amplifier is held steady: two other 10 kΩ resistors make a midpoint near
 2.5 V for its + input, while its output joins its − input.
 
@@ -63,9 +71,64 @@ amplifier is held steady: two other 10 kΩ resistors make a midpoint near
 
 <!-- steps -->
 
-The generator's OUT reaches **+ input A (pin 3)**. One feedback resistor
-joins **output A (pin 1)** to **− input A (pin 2)**; the other joins pin 2
-to GND. Check these three nodes against the generated connection list:
+In schematic form, with the chip's pin numbers (the
+[schematic key](../../electricity/schematics.md) names each symbol):
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 420" width="620"
+     role="img" aria-labelledby="gain-two-title gain-two-desc">
+  <title id="gain-two-title">Non-inverting amplifier schematic</title>
+  <desc id="gain-two-desc">The generator feeds the MCP6002's + input A, pin 3, through a 10 kilohm input resistor. Output A, pin 1, feeds back through a 10 kilohm resistor to the − input A, pin 2, and another 10 kilohm resistor joins pin 2 to ground. Channel 1 watches pin 3 and channel 2 watches pin 1.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M300 90.0 L410 150 L300 210.0 Z"/>
+    <path d="M310 180 H324"/>
+    <path d="M310 120 H324 M317 113 V127"/>
+    <circle cx="130" cy="200" r="24"/>
+    <path d="M117 200 q6.5 -12 13 0 q6.5 12 13 0"/>
+    <path d="M130 176 L130 120 L150 120"/>
+    <path d="M150 120 L165.0 120"/>
+    <path d="M235.0 120 L250 120"/>
+    <rect x="165.0" y="107" width="70" height="26"/>
+    <path d="M250 120 L300 120"/>
+    <path d="M410 150 L480 150"/>
+    <path d="M480 150 L480 250"/>
+    <path d="M260 250 L335.0 250"/>
+    <path d="M405.0 250 L480 250"/>
+    <rect x="335.0" y="237" width="70" height="26"/>
+    <path d="M300 180 L260 180 L260 250"/>
+    <path d="M260 250 L260 260.0"/>
+    <path d="M260 330.0 L260 340"/>
+    <rect x="247" y="260.0" width="26" height="70"/>
+    <path d="M260 340 V348 M240 348 H280 M247 356 H273 M254 364 H266"/>
+    <path d="M130 224 L130 340"/>
+    <path d="M130 340 V348 M110 348 H150 M117 356 H143 M124 364 H136"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="250" cy="120" r="5"/>
+    <circle cx="480" cy="150" r="5"/>
+    <circle cx="260" cy="250" r="5"/>
+  </g>
+  <g fill="currentColor" font-size="17" font-family="system-ui, sans-serif">
+    <text x="318" y="76">MCP6002 A</text>
+    <text x="16" y="196">generator</text>
+    <text x="16" y="216">0.5–1.5 V</text>
+    <text x="200" y="158" text-anchor="middle">10 kΩ</text>
+    <text x="200" y="178" text-anchor="middle" font-size="15">input</text>
+    <text x="242" y="96" text-anchor="middle">pin 3 · ch 1</text>
+    <text x="480" y="126" text-anchor="middle">pin 1 · ch 2</text>
+    <text x="370" y="288" text-anchor="middle">10 kΩ</text>
+    <text x="250" y="236" text-anchor="end">pin 2</text>
+    <text x="240" y="302" text-anchor="end">10 kΩ</text>
+    <text x="330" y="360" font-size="15">Pin 8 to 5 V, pin 4 to GND, with 100 nF</text>
+    <text x="330" y="380" font-size="15">and 10 µF across them. Amplifier B,</text>
+    <text x="330" y="400" font-size="15">pins 5–7, holds 2.5 V; not drawn.</text>
+  </g>
+</svg>
+
+The generator's OUT reaches **+ input A (pin 3)** through the input
+resistor. One feedback resistor joins **output A (pin 1)** to **− input A
+(pin 2)**, through the short jumper from pin 1's strip; the other joins
+pin 2 to GND. Check these three nodes against the generated connection
+list:
 
 <!-- connections -->
 
@@ -73,8 +136,8 @@ to GND. Check these three nodes against the generated connection list:
 
 1. With both power sources still off, clip **both scope ground leads** to
    free holes in the bottom − rail. Put channel 1's tip in a free hole in
-   pin 3's strip, alongside generator OUT. Put channel 2's tip in a free
-   hole in pin 1's strip. Keep the metal tips apart. Set both channels to
+   pin 3's strip, such as b17. Put channel 2's tip in a free hole in pin
+   1's strip, such as b15. Keep the metal tips apart. Set both channels to
    **DC coupling** and start near **2 ms/div** and **0.5 V/div**.
 2. Check the generator is set to a **0.5–1.5 V sine wave at 100 Hz** with
    its output off. Plug in USB, then turn on the generator. Record the
@@ -90,8 +153,10 @@ The amplifier raises its output until the voltage fed back to its − input
 is close to the voltage at its + input. The two equal resistors split the
 output voltage in half before it reaches that − input. So the output needs
 to be about **twice the input**: gain = 1 + 10 kΩ ÷ 10 kΩ = **2**. This is
-one way an analog sensor can make a small voltage easier to measure, as
-in [Lesson 8's light meter](../008-light-meter/index.md).
+how a sensor with a small output voltage can be made easier to measure.
+[Lesson 8's light meter](../008-light-meter/index.md) needs no amplifier:
+its photoresistor divider already swings across a large part of the
+0–5 V range.
 
 The actual peaks may be a little different. Resistors have tolerances,
 the generator may not deliver its exact setting, and the chip has a small
@@ -106,6 +171,25 @@ runs near 0.5–1.5 V, the feedback resistors are setting gain near two.
 Record your own four endpoint readings; this page gives predictions, not
 a recorded hardware result.
 
+## Change one thing
+
+Predict first: if the resistor from output A to pin 2 becomes **20 kΩ**,
+twice as large, what range will the output cover for the same 0.5–1.5 V
+input? Write it down.
+
+1. Turn off the generator output, then unplug USB.
+2. Move the **a13** end of the short jumper from pin 1's strip to
+   **a10**. Lay the sixth 10 kΩ resistor along row b from **b10 to b13**.
+   Output A now reaches pin 2 through two 10 kΩ resistors in series.
+3. Plug in USB, turn on the generator with the same settings, and record
+   both channels' lowest and highest voltages again.
+
+Gain = 1 + 20 kΩ ÷ 10 kΩ = **3**, so the output should span about
+**1.5–4.5 V**: three times the input, and still inside the 0–5 V supply.
+A larger input would push the output into the 5 V rail, where it flattens
+the tops of the wave. Turn off the generator, unplug USB, then take out the
+extra resistor and put the jumper's end back in a13.
+
 ## If the traces surprise you
 
 | What you see | Check with USB unplugged and generator off |
@@ -117,8 +201,8 @@ a recorded hardware result.
 
 ## About the sketch
 
-This is a passive analog experiment. The matching ADK sketch claims no
-Mega signal pins and needs no upload:
+The analog circuit does all the work here, without code. The matching ADK
+sketch claims no Mega signal pins and needs no upload:
 
 <!-- sketch -->
 

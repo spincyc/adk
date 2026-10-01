@@ -41,13 +41,13 @@ the current changes?
 
 ## Build it
 
-!!! warning "Unplug first"
-    Unplug USB before changing any wiring. Keep the **220 Ω resistor in
-    series with the passive buzzer**: its coil is only about 16 Ω. Keep
-    the LED's own **1 kΩ resistor in series** too. Fit the diode before
-    powering the circuit and never remove it while powered. Never run
-    this buzzer directly from a Mega pin. If a part gets hot or smells,
-    unplug at once and check the wiring.
+!!! warning "Unplug first" Unplug USB before changing any wiring. Keep the
+**220 Ω resistor in series with the passive buzzer**: its coil is only about
+16 Ω. Keep the LED's own **1 kΩ resistor in series** too. Fit the diode
+before powering the circuit and never remove it: it is the coil's safe path,
+and without it each release could put a large voltage spike on the
+transistor. Never run this buzzer directly from a Mega pin. If a part gets
+hot or smells, unplug at once and check the wiring.
 
 Start with the breadboard clear and USB unplugged. Remove any previous
 parts and wires before following the complete steps below. They include
@@ -76,7 +76,90 @@ collector**. The button feeds the base through the other 1 kΩ. A 10 kΩ
 resistor holds the base at GND when the button is released. The 1N4007
 goes **directly across the buzzer**, after the 220 Ω resistor: its banded
 end reaches buzzer + and its unbanded end reaches buzzer − and the
-collector. Check these three connections before plugging in USB.
+collector. Check these three connections before plugging in USB. The
+schematic shows the same paths; the [schematic key](../../electricity/schematics.md)
+names each symbol.
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 460" width="560"
+     role="img" aria-labelledby="coil-diode-title coil-diode-desc">
+  <title id="coil-diode-title">Coil, flyback diode and transistor switch schematic</title>
+  <desc id="coil-diode-desc">Five volts feeds three branches. A 220 ohm resistor feeds the buzzer coil, whose other end is the collector of the S8050 transistor; the 1N4007 diode sits across the coil with its band at the 220 ohm side. A 1 kilohm resistor and red LED also feed the collector. The push button and a 1 kilohm resistor feed the base, and a 10 kilohm resistor joins the base to ground. The emitter goes to ground.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M70 50 H370"/>
+    <path d="M70 50 L70 330"/>
+    <path d="M70 330 L84 330"/>
+    <path d="M136 330 L150 330"/>
+    <circle cx="88" cy="330" r="4"/>
+    <circle cx="132" cy="330" r="4"/>
+    <path d="M80 316 H140 M110.0 316 V302 M102.0 302 H118.0"/>
+    <path d="M150 330 L175.0 330"/>
+    <path d="M245.0 330 L270 330"/>
+    <rect x="175.0" y="317" width="70" height="26"/>
+    <path d="M270 330 L270 340.0"/>
+    <path d="M270 410.0 L270 420"/>
+    <rect x="257" y="340.0" width="26" height="70"/>
+    <path d="M270 420 V428 M250 428 H290 M257 436 H283 M264 444 H276"/>
+    <path d="M270 330 L288 330"/>
+    <path d="M288 310 V350"/>
+    <path d="M288 321 L370 300 L370 280"/>
+    <path d="M288 339 L370 360 L370 420"/>
+    <path d="M333.1 350.6 L323.5 353.4"/>
+    <path d="M333.1 350.6 L326.1 343.4"/>
+    <circle cx="331.0" cy="330" r="30"/>
+    <path d="M370 420 V428 M350 428 H390 M357 436 H383 M364 444 H376"/>
+    <path d="M370 50 L370 65.0"/>
+    <path d="M370 135.0 L370 150"/>
+    <rect x="357" y="65.0" width="26" height="70"/>
+    <path d="M370 150 L370 159.0"/>
+    <path d="M370 159.0 a9 9 0 0 1 0 18 a9 9 0 0 1 0 18 a9 9 0 0 1 0 18 a9 9 0 0 1 0 18"/>
+    <path d="M370 231.0 L370 240"/>
+    <path d="M370 240 L370 280"/>
+    <path d="M370 150 L470 150"/>
+    <path d="M470 240 L370 240"/>
+    <path d="M470 240 L470.0 208.0"/>
+    <path d="M470.0 182.0 L470 150"/>
+    <path d="M485.0 208.0 L455.0 208.0 L470.0 182.0 Z"/>
+    <path d="M485.0 182.0 L455.0 182.0"/>
+    <path d="M220 50 L220 55.0"/>
+    <path d="M220 125.0 L220 130"/>
+    <rect x="207" y="55.0" width="26" height="70"/>
+    <path d="M220 140 L220.0 162.0"/>
+    <path d="M220.0 188.0 L220 210"/>
+    <path d="M205.0 162.0 L235.0 162.0 L220.0 188.0 Z"/>
+    <path d="M205.0 188.0 L235.0 188.0"/>
+    <path d="M200.0 169.0 L184.0 177.0"/>
+    <path d="M184.0 177.0 L187.8 171.1"/>
+    <path d="M184.0 177.0 L191.0 177.5"/>
+    <path d="M200.0 181.0 L184.0 189.0"/>
+    <path d="M184.0 189.0 L187.8 183.1"/>
+    <path d="M184.0 189.0 L191.0 189.5"/>
+    <path d="M220 130 L220 140"/>
+    <path d="M220 210 L220 280 L370 280"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="270" cy="330" r="5"/>
+    <circle cx="370" cy="150" r="5"/>
+    <circle cx="370" cy="240" r="5"/>
+    <circle cx="370" cy="280" r="5"/>
+  </g>
+  <g fill="currentColor" font-size="17" font-family="system-ui, sans-serif">
+    <text x="20" y="56">5 V</text>
+    <text x="82" y="285">button</text>
+    <text x="210" y="310" text-anchor="middle">1 kΩ</text>
+    <text x="215" y="385" text-anchor="end">10 kΩ</text>
+    <text x="410" y="345">S8050</text>
+    <text x="388" y="106">220 Ω</text>
+    <text x="386" y="190" font-size="15">buzzer</text>
+    <text x="386" y="208" font-size="15">coil</text>
+    <text x="490" y="188">1N4007</text>
+    <text x="490" y="208" font-size="15">band</text>
+    <text x="490" y="224" font-size="15">at top</text>
+    <text x="352" y="143" text-anchor="end" font-size="15">+</text>
+    <text x="150" y="96">1 kΩ</text>
+    <text x="238" y="180">red LED</text>
+    <text x="384" y="274" font-size="14">collector, column 31</text>
+  </g>
+</svg>
 
 <!-- connections -->
 
@@ -100,16 +183,48 @@ button is held. At release, the coil drives current the other way around
 the short diode-and-coil loop. Keep the diode connected throughout the
 experiment.
 
+## Measure the switch
+
+Predict first: with the button **held**, will the collector read near 0 V
+or near 5 V? With it **released**? Write down both guesses.
+
+Set the meter to **DC volts (V⎓)**, black lead in **COM**, red lead in
+**V**. Put the black probe in a free hole of the bottom − rail and the red
+probe in **e31**, a free hole in the collector's strip at column 31. Hold
+the button and read the meter, then release it and read again. Keep the
+probe tips apart.
+
+<!-- measure -->
+
+| Button | Your collector reading |
+|---|---:|
+| Held | ____ V |
+| Released | ____ V |
+
+Held, the transistor is a closed switch: the collector sits near GND,
+about **0.1 V**, and the 220 Ω resistor and coil share the rest of the
+supply. About 4.9 V across 236 Ω means roughly **21 mA** through the coil.
+Released, the switch is open, no current flows, and the collector reads
+close to the **5 V** supply. A meter shows only these two steady states.
+The diode's work at each release is over in well under a millisecond, far
+too quickly for a meter; a scope can show it.
+
 ### If you have an oscilloscope
 
-Use a battery-powered scope with its **ground clip only on the GND rail**.
-Put the probe tip on the collector node at a free hole in column 31's
-lower strip. Set DC coupling, trigger on the rising edge, and begin around
-100 µs/div; adjust the time and voltage scales until you can see the brief
-release event. The collector should rise from near GND when the button is
-held, show a brief diode-clamped transient when you let go, then settle
-near the 5 V supply. The exact trace depends on the coil, resistor and
-scope. Never attach the ground clip to the collector or buzzer legs.
+Read the [scope and generator primer](../../electricity/skills.md#scope-and-generator)
+first. Use a battery-powered scope with its **ground clip only on the GND
+rail**, and put the probe tip in e31, the collector. Start with DC
+coupling, **1 V/div**, about **50 µs/div**, and the trigger on a rising
+edge at about 2.5 V. Release the button: the trace jumps from near 0 V to
+about **0.7 V above the 5 V supply**, stays there briefly, then settles
+at 5 V. That bump is the coil's current carrying on through the diode,
+which holds the collector one diode drop above the buzzer's + side. To
+enlarge it, set **0.2 V/div**, use the vertical offset to bring the 5 V
+level to the middle of the screen, and move the trigger level to about
+5.3 V. How long the bump lasts depends on the coil: expect tens to a few
+hundred microseconds. The diode is what keeps it this small, which is why
+it never comes out. Never attach the ground clip to the collector or
+buzzer legs.
 
 ## If it doesn't work
 
