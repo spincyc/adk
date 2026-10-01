@@ -32,8 +32,8 @@ says **Wrong! Tries: 1**, while Board B glows red. The code itself is only
 ever on Board B.
 
 As before, send on 915 MHz only where it's allowed: see
-[Radios](../../safety.md#radios). In Europe the band allows a tenth of the time, far more
-than a keypad's few messages need.
+[Radios](../../safety.md#radios). In Europe the band allows a tenth of the
+time, far more than a keypad's few messages need.
 
 !!! warning "A classroom model"
     This is a model latch, not a lock to trust. Anyone nearby with a LoRa
@@ -223,9 +223,10 @@ What's new:
 2. Plug in Board B and the power module's adapter, and switch the module
    on. Open **Inside**, choose Board B's port, and upload it. (With one
    computer, both can stay plugged in: each has its own port, and
-   [Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer) says which is which.) The servo
-   swings to 0°. Within a second or two, Board B's light turns dim blue
-   and Board A's screen says `Locked. Code?`.
+   [Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer)
+   says which is which.) The servo swings to 0°. Within a second or two,
+   Board B's light turns dim blue and Board A's screen says
+   `Locked. Code?`.
 3. Type **1 2 3 4** on Board A. A star appears for each key, a moment
    after you press it. Press **#**: the latch swings open, the light turns
    green, and the screen says `Open! # locks`. Press **#** again to lock.

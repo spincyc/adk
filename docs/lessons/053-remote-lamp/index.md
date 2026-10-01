@@ -34,8 +34,8 @@ board with an IR receiver, obeys as if you were standing in front of it.
 <!-- closeup A -->
 
 As before, send on 915 MHz only where it's allowed: see
-[Radios](../../safety.md#radios). In Europe the band allows a tenth of the time, far more
-than a few presses of the remote need.
+[Radios](../../safety.md#radios). In Europe the band allows a tenth of the
+time, far more than a few presses of the remote need.
 
 ## The idea
 
@@ -194,7 +194,8 @@ What's new:
 
 1. Upload **Receiver** to Board A and **Repeater** to Board B, choosing
    each board's port in **Tools → Port**, as in
-   [Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer). Clip Board B's battery back on.
+   [Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer).
+   Clip Board B's battery back on.
 2. Board B's **L** LED lights within a couple of seconds, and Board A's
    screen says **Sent 0x00, #0**, nothing sent yet, and **Lamp is off**.
 3. Aim the kit's remote at Board A and press **POWER**. Board B's relay

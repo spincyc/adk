@@ -247,9 +247,10 @@ Read it from the top:
    the module's button, so its LED lights. The **L** LED stays dark, the
    servo lies limp, and the fan stays still.
 2. Plug in Board A, choose its port, and upload **Joystick**: if you
-   can't tell the two ports apart, see [Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer). Leave the
-   stick alone while it starts: the sketch takes where it rests as the
-   middle. The top row says `Aim 90°  Fan off`.
+   can't tell the two ports apart, see
+   [Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer).
+   Leave the stick alone while it starts: the sketch takes where it rests
+   as the middle. The top row says `Aim 90°  Fan off`.
 3. Board B's **L** LED lights, and the turret turns to 90°. Within a
    couple of seconds the bottom row shows what the sensor sees, such as
    `Ahead  85 cm`.

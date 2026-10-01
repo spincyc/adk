@@ -31,8 +31,8 @@ little faster. With nobody at the other end, Board A's top row is a wall, so you
 practice alone on Board A. Board B waits for an incoming ball.
 
 As before, send on 915 MHz only where it's allowed: see
-[Radios](../../safety.md#radios). In Europe the band allows a tenth of the time, far more
-than a game needs: the ball crosses in one short message.
+[Radios](../../safety.md#radios). In Europe the band allows a tenth of the
+time, far more than a game needs: the ball crosses in one short message.
 
 ## The idea
 

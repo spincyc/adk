@@ -30,8 +30,8 @@ turntable follows, while the screen keeps you told.
 <!-- closeup B -->
 
 As before, send on 915 MHz only where it's allowed: see
-[Radios](../../safety.md#radios). In Europe the band allows a tenth of the time, so don't
-keep the knob turning for long.
+[Radios](../../safety.md#radios). In Europe the band allows a tenth of the
+time, so don't keep the knob turning for long.
 
 ## The idea
 

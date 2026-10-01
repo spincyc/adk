@@ -30,9 +30,9 @@ while Board B's servo arm leans with it. Board A is the pilot's stick and
 Board B the plane.
 
 As before, send on 915 MHz only where it's allowed: see
-[Radios](../../safety.md#radios). In Europe the band allows a tenth of the time, six
-minutes in an hour. While you tilt Board A it sends up to ten messages
-a second, about half the time, so there tilt it for no more than
+[Radios](../../safety.md#radios). In Europe the band allows a tenth of the
+time, six minutes in an hour. While you tilt Board A it sends up to ten
+messages a second, about half the time, so there tilt it for no more than
 about eight minutes in an hour, and lay it flat in between.
 
 ## The idea
@@ -173,10 +173,11 @@ What's new:
 1. Plug in Board A, open **Tilt**, choose its port under **Tools → Port**,
    and upload it.
 2. Plug in Board B and the power module's adapter, switch the module on,
-   open **Ball**, choose Board B's port ([Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer) says which is which), and
-   upload it. The matrix scrolls
-   `CALLING A` for a moment; then the ball appears in the middle, and
-   Board A's **L** LED lights.
+   open **Ball**, choose Board B's port, and upload it: if you can't
+   tell the two ports apart, see
+   [Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer).
+   The matrix scrolls `CALLING A` for a moment; then the ball appears in
+   the middle, and Board A's **L** LED lights.
 3. Open the Serial Monitor on Board B's port at 9600 baud.
 4. Lay Board A's breadboard flat, the Mega's end on your left. Now lift
    its right-hand end: the ball rolls left, downhill, and stops against
