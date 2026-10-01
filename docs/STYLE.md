@@ -46,12 +46,12 @@ void Led::show (bool lit)
   `ticked ()`, `measured ()`, `turned ()`, `pressedKey ()`. One that
   reports how things are now names the state: `isPressed ()`,
   `heldKey ()`, `isConnected ()`.
-- A setting is set and read by one bare noun, `volume (8)` and
-  `volume ()`, as `speed ()`, `period ()` and `brightness ()` are, never
-  `setVolume ()`. A call that copies an Arduino library's, such as the
-  LCD's `setCursor ()` and `createChar ()` or the servo's
-  `writeMicroseconds ()`, keeps that library's name, so what a reader
-  learned there still works.
+- A setting is set by a bare noun, `volume (8)`, never `setVolume (8)`,
+  and read by the same noun where it can be read, `volume ()`, as
+  `speed ()`, `period ()` and `brightness ()` are. A call that copies an
+  Arduino library's, such as the LCD's `setCursor ()` and `createChar ()`
+  or the servo's `writeMicroseconds ()`, keeps that library's name, so
+  what a reader learned there still works.
 
 ## Language
 
