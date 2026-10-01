@@ -169,9 +169,9 @@ wire in the same holes, and plug in once more. It blinks again.
    `adk::Led builtIn {LED_BUILTIN};` and make the Mega's own LED blink too,
    at a different speed.
 4. **Change the resistor.** Predict whether a 1 kΩ resistor (brown, black,
-   black, brown, brown) will make the LED brighter or dimmer. Unplug, swap
-   it for the 220 Ω resistor, then plug in and check. Restore the 220 Ω
-   resistor before Lesson 2.
+   black, brown, brown) will make the LED brighter or dimmer. Unplug, take
+   out the 220 Ω resistor and put the 1 kΩ one in its place, then plug in
+   and check. Put the 220 Ω resistor back before Lesson 2.
 
 ## Measure it
 

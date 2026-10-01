@@ -66,8 +66,11 @@ Read along the bottom row and you have the byte: `0b01100110`.
 
 Each segment has its own 1 kΩ resistor. A red segment keeps about 2 V for
 itself, so it takes about (5 V − 2 V) ÷ 1 kΩ = 3 mA. All seven together take
-about 21 mA through the chip, comfortably under the 70 mA it can handle. With
-220 Ω resistors it would be nearly 100 mA: too much.
+about 21 mA through the chip. The chip's datasheet gives 70 mA as its
+**absolute maximum**: the most its supply pins can ever take without
+damage, a limit to stay well away from, not a level to work at. 21 mA
+leaves a wide margin. With 220 Ω resistors it would be nearly 100 mA, past
+even that limit.
 
 !!! question "Predict"
     The sketch spins the lit bar with `1 << step`, which means a 1 moved

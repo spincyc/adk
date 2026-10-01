@@ -227,5 +227,6 @@ What the numbers tell you:
   the pull-up holds it up. So for this switch 0 V means active (upright)
   and 5 V means not active: that is what active low means.
 - **The bottom rails** read about 5 V, though the Mega's 5 V goes only into
-  the top + rail by column 3. The red wire between the + rails by column 42, carries it round to the bottom rails, where the
-  beam-break and obstacle sensors take their power.
+  the top + rail by column 3. The red wire between the + rails by column
+  42 carries it round to the bottom rails, where the beam-break and
+  obstacle sensors take their power.

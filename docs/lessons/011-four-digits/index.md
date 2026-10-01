@@ -84,11 +84,12 @@ every 100 milliseconds, and the rest of the time `loop ()` just carries on.
     | Display pin | 11 | 7 | 4 | 2 | 1 | 10 | 5 | 3 |
 
     The chip stays where Lesson 10 had it. Replace its 1 kΩ segment
-    resistors with **2 kΩ** ones in the same holes; the steps show which
-    to take out and add. The wires that step up over the gap for e, d and c
-    stay, with a fourth resistor beside theirs for the dot. g's resistor lies in row b. The lower
-    legs of that row of four drop into the display's bottom pins in turn, so
-    no two wires cross. The steps give every hole.
+    resistors with **2 kΩ** ones; the steps show which to take out and add.
+    All but g's go back in the same holes. The wires that step up over the
+    gap for e, d and c stay, with a fourth resistor beside theirs for the
+    dot. The lower legs of that row of four drop into the display's bottom
+    pins in turn, so no two wires cross. g's resistor moves from column 30
+    to lie along row b. The steps give every hole.
 
 When you are done, these are the connections your circuit makes:
 

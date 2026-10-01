@@ -86,8 +86,9 @@ zones, and makes the gap between beeps 10 ms for every centimeter:
 
 ??? info "Joining the two − rails"
     The black link by column 41, from the bottom − rail to the top − rail,
-    is new. The Mega's GND comes into the
-    bottom − rail by column 3, but the sensor's GND goes into the top one,
+    comes back from Lessons 7 and 9 to 12; Lesson 18 didn't need it. The
+    Mega's GND comes into the bottom − rail by column 3, but the sensor's
+    GND goes into the top one,
     close to the sensor. The two rails aren't joined inside the breadboard,
     so this wire joins them, and the sensor, the LEDs and the buzzer all
     share the Mega's GND. The sensor's VCC wire takes a 5V pin of its own,

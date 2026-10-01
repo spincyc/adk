@@ -58,10 +58,12 @@ when two modems send at once, they drown each other out and neither is
 heard. While you turn the knob, Board A sends up to ten messages a
 second, which fills about half the time on the air. If Board B reported
 every step of the servo's glide at the same time, many messages each way
-would be lost. So Board B shares a new `at` only once its servo has stopped. This leaves
-more airtime for Board A while you turn. Board B still repeats its previous
-`at` every two seconds as a heartbeat; this reduces traffic, rather than
-reserving the air. A lost message can be recovered by a later refresh.
+would be lost. So Board B shares a new `at` only once its servo has
+stopped, which leaves the air to Board A while you turn. After that it
+repeats its last `at` once every two seconds, as a heartbeat that says it
+is still there. That is only a few short messages, so it seldom gets in
+Board A's way, but nothing keeps the air clear for it either: now and then
+a message is still lost, and the next repeat puts it right.
 
 **What a servo knows.** An SG90 can't tell the Mega where its horn
 really points. `servo.angle ()` is the angle ADK last told it to go to,

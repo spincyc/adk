@@ -112,7 +112,8 @@ the buzzer and its driver.
     its other leg in e35 reaches the transistor’s collector through a35.
     Its usual home is column 33, but here it moves two columns along to
     clear the display’s wires. The diode moves with it: unbanded end c35,
-    banded end c38; a38 connects to j35. The transistor stays in a29–a31.
+    banded end c38; a38 connects to j35. The transistor keeps its usual
+    home, a29–a31.
 
 When you are done, these are the connections your circuit makes:
 
@@ -163,9 +164,9 @@ What's new:
   Lesson 10's `/` and `%`, `ms / 100` is the time in whole tenths of a
   second, and `% 10000` makes the stopwatch start again from 0.0 after
   999.9 seconds; the sketch keeps the answer in `tenths`.
-  `display.show (tenths, 1)` shows that number with one decimal, the way
-  `Serial.print ()` writes decimals: 123 tenths show as `12.3`, with the
-  dot lit after the seconds.
+  `display.show (tenths, 1)` shows that number with one digit after the
+  decimal point: 123 tenths show as `12.3`, with the dot lit after the
+  seconds.
 - `finish ()` uses `adk::wait ()` between beeps, so the display stays lit
   while the buzzer sounds.
 
