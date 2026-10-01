@@ -260,5 +260,6 @@ What the numbers tell you:
   really at 2 V for 60% of the time and at 0 V for the rest, and 60% of 2 V
   is 1.2 V. PWM never dims the LED's voltage; it switches the LED fully on
   and off, and your eye, like the meter, sees the average.
-- Now try **Blink**, with Level back at 60%: the meter jumps between
-  about 3 V and 0 V, half a second each, too quick for it to settle.
+- Now set Mode to **Off**: pin 3 reads 0 V, whatever Level says. Set it
+  back to **Steady** and the reading returns, because Level kept its
+  setting all along.

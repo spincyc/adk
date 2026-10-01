@@ -183,7 +183,7 @@ from 0. They are the two bumps on top of the heart.
 4. **Brightness.** Add `matrix.brightness (1);` after `adk::setup ();`. Try
    0 and 15. Then put a potentiometer on A0, as in Lesson 7, and set the
    brightness with it.
-4. **Animate.** Draw a second invader with its legs the other way and swap
-   between the two on each tick of an `adk::Every` of 300 ms, so it walks.
-   Or make a single dot bounce around the edges using `set (x, y)` and
-   `set (x, y, false)`.
+5. **Animate.** Draw a second invader, like the first challenge's but with
+   its legs the other way, and swap between the two on each tick of an
+   `adk::Every` of 300 ms, so it walks. Or make a single dot bounce around
+   the edges using `set (x, y)` and `set (x, y, false)`.
