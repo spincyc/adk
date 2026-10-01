@@ -4,8 +4,10 @@
   {% set label = page.meta.display_id %}
 {% endif %}
 {% set slug = page.file.src_uri.split("/")[1] %}
+{#- A printed page names the library's version, so a class can match its
+    handouts to the ADK it installed. -#}
 <style media="print">
-  @page { @bottom-left { content: "ADK · {{ label }} · {{ page.meta.title }}"; } }
+  @page { @bottom-left { content: "ADK {{ config.extra.library_version }} · {{ label }} · {{ page.meta.title }}"; } }
 </style>
 <header class="lesson-header">
   <p class="lesson-eyebrow">

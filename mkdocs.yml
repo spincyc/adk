@@ -80,6 +80,7 @@ extra_javascript:
 hooks:
   - docs/_theme/hooks.py
   - docs/_theme/boards.py
+  - docs/_theme/pages.py
 
 markdown_extensions:
   - abbr
@@ -116,6 +117,7 @@ nav:
       - safety.md
       - cpp.md
       - builds.md
+      - changelog.md
   - Course:
       - course.md
       - First light:

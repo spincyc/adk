@@ -22,7 +22,8 @@ useful as one that did. The form asks for:
 - **Which lesson**: its number and title, such as *Lesson 3, Reaction
   Duel* or *E07, Charge a Capacitor*.
 - **What you built it with**: a genuine Arduino Mega or a compatible board,
-  your kit and its version, and any part you swapped for another.
+  your kit and its version, and any part you swapped for another, and the
+  ADK version in the footer of the lesson's page or PDF.
 - **What happened**: whether it did what *What you'll build* and *Upload
   it* describe, and any *Measure it* readings beside the ones the lesson
   expects.

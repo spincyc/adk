@@ -1,0 +1,15 @@
+{#- The footer names the library's version, from library.properties
+    (pages.py), and links it to what changed, so a class can tell which
+    ADK a page describes. -#}
+<div class="md-copyright">
+  <div class="md-copyright__highlight">
+    <a href="{{ 'changelog/' | url }}">ADK {{ config.extra.library_version }}</a>
+    · {{ config.copyright }}
+  </div>
+  {% if not config.extra.generator == false %}
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  {% endif %}
+</div>

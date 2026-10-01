@@ -146,6 +146,24 @@ that is), then open the IDE and add the ZIP again.
 When ADK Boards has a new version, Boards Manager shows **Update** under it.
 Update the library and ADK Boards together.
 
+To keep a class on one version all term, use a release instead of the
+newest ADK. The [changelog](changelog.md) lists the releases, and the
+footer of every page names the version the site describes.
+
+1. Download the release's ZIP from GitHub:
+   [ADK 0.4.0](https://github.com/spincyc/adk/archive/refs/tags/0.4.0.zip),
+   or any release under [Tags](https://github.com/spincyc/adk/tags). If an
+   `adk-main` folder is already in your `libraries` folder, delete it first,
+   so the IDE has only one ADK. Then add the ZIP as in
+   [3. The ADK library](#3-the-adk-library).
+2. In Boards Manager, pick the same version from the list under **ADK
+   Boards**, install it, and leave **Update** alone until the class moves
+   on.
+
+The website always shows the newest lessons, so a page may change after
+your release. Where a page and its sketch under **File → Examples → Adk**
+differ, the sketch is the one that matches your library.
+
 ## From the command line
 
 If you prefer a terminal to the IDE, the repository's `Makefile` builds and
