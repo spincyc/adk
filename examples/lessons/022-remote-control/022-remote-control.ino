@@ -18,9 +18,7 @@ constexpr adk::Array choices
     Choice {adk::remote::digit1, adk::color::red},
     Choice {adk::remote::digit2, adk::color::green},
     Choice {adk::remote::digit3, adk::color::blue},
-    Choice {adk::remote::digit4, adk::color::yellow},
-    Choice {adk::remote::digit5, adk::color::purple},
-    Choice {adk::remote::digit6, adk::color::white}
+    Choice {adk::remote::digit4, adk::color::white}
 };
 
 adk::Color color      = adk::color::white;
@@ -40,24 +38,23 @@ void loop ()
     if (receiver.wasReceived ())
     {
         uint8_t button = receiver.command ();
-        bool    held   = receiver.isRepeat ();
 
-        if (!held)
+        if (!receiver.isRepeat ())
         {
-            // Remote codes are usually written in hexadecimal, as 0x45.
             adk::println (Serial, "Button code 0x", adk::hex (button, 2));
         }
 
-        obey (button, held);
-        showLamp ();
+        obey (button);
+
+        auto dimmed = adk::blend (adk::color::off, color, brightness, 8);
+        lamp.fadeTo (lit ? dimmed : adk::color::off, 200);
     }
 }
 
-// Power switches the lamp on or off, the volume buttons dim and brighten it
-// (hold one down to keep going), and the number buttons choose a color.
-void obey (uint8_t button, bool held)
+// Holding power must not make the lamp flicker; holding volume keeps going.
+void obey (uint8_t button)
 {
-    if (button == adk::remote::power && !held)
+    if (button == adk::remote::power && !receiver.isRepeat ())
     {
         lit = !lit;
     }
@@ -78,13 +75,4 @@ void obey (uint8_t button, bool held)
             lit   = true;
         }
     }
-}
-
-// Glide to the chosen color at the chosen brightness, some eighths of the
-// way up from off, or to off.
-void showLamp ()
-{
-    auto dimmed = adk::blend (adk::color::off, color, brightness, 8);
-
-    lamp.fadeTo (lit ? dimmed : adk::color::off, 200);
 }

@@ -1,6 +1,5 @@
 // Lesson 25: LED Matrix
-// The matrix fills dot by dot, then each press of the button shows the next
-// picture, and after the last picture a message scrolls past.
+// Fill dot by dot, then show the next picture, or a message, at each press.
 
 #include <Adk.h>
 
@@ -34,19 +33,7 @@ constexpr Picture heart
     0b00000000
 };
 
-constexpr Picture invader
-{
-    0b00011000,
-    0b00111100,
-    0b01111110,
-    0b11011011,
-    0b11111111,
-    0b00100100,
-    0b01011010,
-    0b10100101
-};
-
-constexpr adk::Array pictures {smiley, heart, invader};
+constexpr adk::Array pictures {smiley, heart};
 
 uint8_t slide = 0;    // which picture shows; one past the last is the message
 

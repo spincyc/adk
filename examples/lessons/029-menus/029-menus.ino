@@ -1,6 +1,5 @@
 // Lesson 29: Menus
-// Turn the knob to move the arrow between the settings on the LCD. Click to
-// change the one it points at, turn to adjust it, and click again to go back.
+// Turn to move the arrow, click to change what it points at, click to go back.
 
 #include <Adk.h>
 
@@ -8,11 +7,10 @@ adk::Lcd           lcd   {31, 32, 33, 34, 35, 36};
 adk::RotaryEncoder knob  {18, 19};
 adk::Button        click {22};
 adk::PwmOutput     lamp  {3};
-adk::Every         blink {500};
 
 constexpr adk::Array levels {"0%", "10%", "20%", "30%", "40%", "50%",
                              "60%", "70%", "80%", "90%", "100%"};
-constexpr adk::Array modes  {"Steady", "Blink"};
+constexpr adk::Array modes  {"Steady", "Off"};
 
 // A menu item: its name, the choices it offers, and which one is set.
 struct Item
@@ -33,7 +31,6 @@ Item& mode  = menu[1];
 
 int  current = 0;        // the item the arrow points at
 bool editing = false;    // turning changes its setting, not the item
-bool blinkOn = true;     // blinking, whether the lamp is in its lit half
 
 void setup ()
 {
@@ -57,18 +54,10 @@ void loop ()
         showMenu ();
     }
 
-    if (blink.ticked ())
-    {
-        blinkOn = !blinkOn;
-    }
-
-    bool lit = mode.setting == 0 || blinkOn;    // Steady, or Blink's lit half
-
-    lamp.write (lit ? level.setting * 255 / 10 : 0);
+    lamp.write (mode.setting == 0 ? level.setting * 255 / 10 : 0);
 }
 
-// Editing, turn the setting through its choices; browsing, move the arrow
-// from item to item. Either way, stop at the first and the last.
+// Editing moves the setting, browsing moves the arrow; neither wraps round.
 void turnKnob (int clicks)
 {
     if (editing)
@@ -86,8 +75,7 @@ void turnKnob (int clicks)
     }
 }
 
-// Each item on a row of its own, with its setting, then the arrow in front
-// of what the knob will change: the current item's name, or its setting.
+// The arrow goes in front of what the knob will change: a name or a setting.
 void showMenu ()
 {
     lcd.clear ();

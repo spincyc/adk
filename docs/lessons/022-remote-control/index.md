@@ -23,10 +23,9 @@ ideas:
 <!-- closeup -->
 
 A lamp you control from the sofa. Press the remote's power button and an
-RGB LED fades up to white; press 1 to 6 for red, green, blue, yellow,
-purple or white; hold volume down and it dims step by step, volume up and it
-brightens. And on the way, the Serial Monitor shows you the secret number
-each button sends.
+RGB LED fades up to white; press 1 to 4 for red, green, blue or white; hold
+volume down and it dims step by step, volume up and it brightens. And on
+the way, the Serial Monitor shows you the secret number each button sends.
 
 ## The idea
 
@@ -117,16 +116,25 @@ What's new:
   button, so each button sits beside its color.
 - `receiver.wasReceived ()` is true for one pass of `loop ()` each time a
   code arrives, and `receiver.isRepeat ()` says whether it was a repeat
-  from a held button. `receiver.command ()` is the button's number.
+  from a held button. `receiver.command ()` is the button's number, and
+  a repeat keeps the number of the button being held.
+- `adk::hex (button, 2)` prints each new code in hexadecimal, with at
+  least two digits, so 0x0C keeps the 0 in front. Repeats aren't printed,
+  so holding a button doesn't fill the Serial Monitor.
 - `obey ()` decides what each button does. Power only toggles on a fresh
   press, so holding it doesn't make the lamp flicker; volume works on
   repeats too, so holding it keeps going. The `for` loop looks through the
-  choices for the button, and takes its color.
-- `showLamp ()` uses `adk::blend ()` to find the color some eighths of the
-  way up from off, and `lamp.fadeTo ()` from Lesson 4 glides to it, or to
-  off, in 200 ms.
-- `adk::hex (button, 2)` prints each new code in hexadecimal, with at
-  least two digits, so 0x0C keeps the 0 in front.
+  choices for the button, and takes its color. Without the `&` of
+  Lesson 5, `choice` is a copy of each row, which is all that reading one
+  needs.
+- `++brightness` adds one to `brightness`, and `--brightness` takes one
+  away. The `++` works just like `presses++` in Lesson 2, and `--` is its
+  opposite. On a line of their own, `++x` and `x++` do exactly the same
+  thing; this sketch puts them in front.
+- The last two lines of `loop ()` show the result. `adk::blend ()` finds
+  the color some eighths of the way up from off, and `lamp.fadeTo ()` from
+  Lesson 4 glides to it in 200 ms, or, with the `?:` from Lesson 12, to off
+  while `lit` is false.
 
 ## Upload it
 
@@ -135,7 +143,7 @@ What's new:
    turn. Each press prints a line such as `Button code 0x45`; check them
    against the table above. If the receiver has a small LED, it flickers as
    each code arrives.
-3. Press POWER: the lamp fades up to white. Press 1 to 6 to change its
+3. Press POWER: the lamp fades up to white. Press 1 to 4 to change its
    color, hold VOL− to dim it and VOL+ to brighten it, and press POWER to
    fade it out.
 
@@ -172,9 +180,11 @@ big room, or from far away, the bounce may be too faint.
    with `adk::wheel ()`, as in Lesson 4, and any number button stop it.
 2. **Sleep timer.** Make ⏯ (`adk::remote::play`) fade the lamp slowly to
    off over a minute, with `lamp.fadeTo (adk::color::off, 60000)` in place
-   of `showLamp ()`.
-3. **More colors.** Add three more rows to `choices`, so buttons 7, 8 and 9
-   give orange, cyan and pink (`adk::color::orange`, `cyan` and `pink`).
+   of the 200 ms fade at the end of `loop ()`.
+3. **More colors.** Add more rows to `choices`, so buttons 5 to 9 give
+   yellow, purple, orange, cyan and pink (`adk::color::yellow`, `purple`,
+   `orange`, `cyan` and `pink`). The `for` loop finds the new rows with no
+   other change.
 4. **Another remote.** Try a TV remote from home. Some speak NEC and will
    print codes; many use other languages that ADK doesn't decode, and print
    nothing at all.

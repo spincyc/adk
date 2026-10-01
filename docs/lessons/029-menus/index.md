@@ -26,8 +26,8 @@ ideas:
 A lamp with a control panel. The screen shows a menu of two items,
 **Level** and **Mode**. Turn the knob and the arrow moves from one to the
 other; click it and the arrow jumps across to the setting, so turning now
-changes it: brighter or dimmer, steady or blinking. Click again to go back
-to the items. It is how the menus on cookers, printers and car radios
+changes it: brighter or dimmer, steady or off. Click again to go back to
+the items. It is how the menus on cookers, printers and car radios
 work.
 
 ## The idea
@@ -143,21 +143,27 @@ What's new:
   structs as in Lesson 5. Writing `Item` in front of each one says what they
   are, so the array knows its type without being told.
 - `Item& level = menu[0];` makes `level` another name for the first item,
-  with `&` just as in Lesson 3. So `level.setting` in `loop ()` says
-  which setting it means, where `menu[0].setting` wouldn't.
+  with `&` meaning the real item, as in Lesson 5's `auto& key`. So
+  `level.setting` in `loop ()` says which setting it means, where
+  `menu[0].setting` wouldn't.
 - `current` is the item the arrow points at, and `editing` says which
   state the menu is in.
 - `turnKnob ()` does the right thing for the state. Editing, it adds the
   clicks to the setting; browsing, it adds them to `current`. Either way
-  `constrain` stops it at the first and the last.
+  `constrain`, from Lesson 8, stops it at the first and the last: the last
+  choice is number `item.choices.size () - 1`, and the last item
+  `menu.size () - 1`. `auto& item = menu[current];` makes `item`
+  another name for the current item, as `level` is for the first, so
+  changing `item.setting` changes the menu itself.
 - `showMenu ()` redraws the screen only when something changed: each item
   on its own row with its setting beside it, then the arrow in front of
   either the current item's name or its setting. `lcd.at (9, row)` moves to
   column 9 of that row and hands back the screen, so `.print ()` can follow
-  straight on.
-- The last lines of `loop ()` light the lamp. `blink` flips `blinkOn` every
-  half second. The lamp is lit if the mode is Steady, choice 0, or if
-  `blinkOn` is true, and then it gets `level.setting * 255 / 10`.
+  straight on. `editing ? 8 : 0`, a `?:` as in Lesson 12, puts the arrow,
+  the single character `'>'`, in column 8 while editing and column 0 while
+  browsing.
+- The last line of `loop ()` lights the lamp. While the mode is Steady,
+  choice 0, it gets `level.setting * 255 / 10`; set to Off, it gets 0.
 
 ## Upload it
 
@@ -166,9 +172,9 @@ below, and the LED glows at a bit over half brightness. If the text is faint
 or missing, turn the potentiometer until it's sharp.
 
 Turn the knob one click clockwise: the arrow moves down to `>Mode`. Click
-the knob: the arrow jumps to `>Steady`. Turn it to `Blink`, and the LED
-blinks, once a second. Click again, turn back up to `Level`, click, and
-turn it down to 0%, or up to 100%. It blinks at whatever level you set.
+the knob: the arrow jumps to `>Steady`. Turn it to `Off`, and the LED goes
+out; turn back to `Steady`, and it comes back just as bright. Click again,
+turn back up to `Level`, click, and turn it down to 0%, or up to 100%.
 
 You predicted how far to turn from 0% to 100%. That's 10 clicks, and with
 about 20 clicks in a turn it is about half a turn. Keep turning past 100%
@@ -185,7 +191,7 @@ first click back brings it straight down to 90%.
 | Turning clockwise goes backwards | CLK and DT are swapped: CLK goes to 18, DT to 19. |
 | It takes two clicks to move Level one step | Your encoder makes two changes per click. Try `adk::RotaryEncoder knob {18, 19, 2};`. |
 | Clicking does nothing | Push the knob straight in, toward the breadboard, until it clicks, with a finger behind the encoder's board to steady it, and check SW goes to pin 22. |
-| The menu works but the LED never lights | Check pin 3's wire goes to j38, the resistor runs from g38 across the gap to e38, the LED's long leg is in b38 and its short leg in b39, and the black jumper runs from a39 to the − rail. |
+| The menu works but the LED never lights | Check Mode says `Steady`. Then check pin 3's wire goes to j38, the resistor runs from g38 across the gap to e38, the LED's long leg is in b38 and its short leg in b39, and the black jumper runs from a39 to the − rail. |
 
 ??? note "How it works"
     On every `adk::update ()` the encoder reads both contacts and compares
@@ -202,18 +208,23 @@ first click back brings it straight down to 90%.
 
 ## Make it yours
 
-1. **Breathe.** Add a third mode, `Breathe`, in which the lamp rises and
+1. **Blink.** Add `Blink` to `modes`, so the lamp can blink once a second.
+   Give the sketch an `adk::Every blink {500};` and a `bool blinkOn`, and
+   flip `blinkOn` with `!` each time `blink.ticked ()`. In Blink, the lamp
+   gets the level while `blinkOn` is true, and 0 while it is false.
+2. **Breathe.** Add another mode, `Breathe`, in which the lamp rises and
    falls smoothly. Time it with an `adk::Stopwatch`, as in Lesson 3:
    `elapsed () % 2000` counts from 0 to 1999 and starts again, so it says
    how far through a two-second breath the lamp is. Rise through the first
    second and fall through the next.
-2. **A third item.** Add `Speed`, with the choices `Slow` and `Fast`, and
-   set the blink's beat from it with `blink.period ()`. The screen has only
-   two rows, so make the menu scroll: the current item on the top row, the
-   next one below it.
-3. **Finer steps.** Let Level go from 0% to 100% in steps of 5%: give
+3. **A third item.** Once you have Blink, add `Speed`, with the choices
+   `Slow` and `Fast`, and set the blink's beat from it with
+   `blink.period ()`. Browsing stops at `menu.size () - 1`, so it reaches
+   the new item by itself. The screen has only two rows, so make the menu
+   scroll: the current item on the top row, the next one below it.
+4. **Finer steps.** Let Level go from 0% to 100% in steps of 5%: give
    `levels` 21 choices, and divide by 20 instead of 10 in `loop ()`.
-4. **Remember.** Save each item's `setting` in EEPROM, as the safe in
+5. **Remember.** Save each item's `setting` in EEPROM, as the safe in
    Lesson 18 saved its code, so the lamp wakes up the way you left it.
 
 ## Measure it
@@ -223,9 +234,10 @@ it up as in [Lesson 1](../001-blink/index.md#measure-it): DC volts (**V⎓**),
 the black lead in **COM** and the red one in **V**, never in **10A**. Keep
 each probe tip in its own hole, so it can't bridge two.
 
-These readings are on the lamp, where the menu's settings end up. Leave Mode on **Steady**, so the brightness holds still, and set
-Level with the knob before each reading. The black probe goes in the bottom
-− rail at column 40, to the left of the LCD.
+These readings are on the lamp, where the menu's settings end up. Leave
+Mode on **Steady**, so the lamp is lit, and set Level with the knob before
+each reading. The black probe goes in the bottom − rail at column 40, to
+the left of the LCD.
 
 !!! question "Predict"
     At 60% the lamp gets 153 out of 255: as in Lesson 7, pin 3 switches

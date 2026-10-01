@@ -23,10 +23,10 @@ ideas:
 <!-- closeup -->
 
 A grid of 64 red LEDs wakes up by filling itself dot by dot, then smiles at
-you. Press the button and the smile becomes a heart, then a space invader,
-and then HELLO! slides across the grid like a sign in a shop window. It is
-your first screen made of pixels, and the start of three lessons that end
-with a game.
+you. Press the button and the smile becomes a heart, and then HELLO!
+slides across the grid like a sign in a shop window. It is your first
+screen made of pixels, and the start of three lessons that end with a
+game.
 
 ## The idea
 
@@ -109,15 +109,17 @@ What's new:
   and from here on the sketch can simply say `Picture`.
 - `constexpr Picture heart { ... };` writes the heart's eight rows one under
   another, so the 1s draw the heart right there in the code.
-- `adk::Array pictures {smiley, heart, invader};` is an **array of arrays**:
-  three pictures, each made of eight rows. `pictures[1]` is the heart, and
+- `adk::Array pictures {smiley, heart};` is an **array of arrays**: two
+  pictures, each made of eight rows. `pictures[1]` is the heart, and
   `pictures[1][0]` is its top row.
-- `fillDotByDot ()` has one `for` loop inside another. The outer loop picks a
-  row, `y`; the inner one walks along it, `x` from 0 to 7, lighting each dot
-  with `matrix.set (x, y)`. `adk::wait (30)` keeps the matrix updating, so
-  you can watch every dot arrive.
-- `slide` counts button presses. 0, 1 and 2 are the pictures; 3, one past
-  the last picture, is the message. `% (pictures.size () + 1)` wraps it back
+- `fillDotByDot ()` has one counting `for` loop, from Lesson 6, inside
+  another. The outer loop picks a row, `y`; the inner one walks along it,
+  `x` from 0 to 7, lighting each dot with `matrix.set (x, y)`. `++y` adds
+  one to `y` after each row, as in Lesson 22, just as `y++` would.
+  `adk::wait (30)` keeps the matrix updating, so you can watch every dot
+  arrive.
+- `slide` counts button presses. 0 and 1 are the pictures; 2, one past the
+  last picture, is the message. `% (pictures.size () + 1)` wraps it back
   to 0, just as `% 5` counted the moods round in Lesson 4.
 - `matrix.show (pictures[slide])` puts a whole picture up at once. Calling
   it on every pass of `loop ()` costs almost nothing: the matrix only sends
@@ -125,15 +127,14 @@ What's new:
 - `matrix.scroll ("HELLO!")` slides the text in from the right, one column
   every 80 milliseconds. Asking again while it scrolls changes nothing, and
   asking once it has finished starts it over, so the message repeats for as
-  long as `slide` is 3.
+  long as `slide` is 2.
 
 ## Upload it
 
 Upload the sketch. The matrix fills from the top-left corner, dot by dot
 along each row, row after row, in about two seconds. Half a second later the
-smiley appears. Press the button: a heart. Again: a space invader. Again:
-HELLO! scrolls past, over and over, until the next press brings back the
-smiley.
+smiley appears. Press the button: a heart. Again: HELLO! scrolls past,
+over and over, until the next press brings back the smiley.
 
 You predicted the heart's top row, `0b01100110`. Reading from the left, the
 dots are off, on, on, off, off, on, on, off: dots 1, 2, 5 and 6, counting
@@ -168,13 +169,18 @@ from 0. They are the two bumps on top of the heart.
 
 ## Make it yours
 
-1. **Your own picture.** Draw an 8 × 8 grid on paper, shade a design, and
+1. **A space invader.** Add a third `Picture`, `invader`, with these rows
+   from the top: `0b00011000`, `0b00111100`, `0b01111110`, `0b11011011`,
+   `0b11111111`, `0b00100100`, `0b01011010` and `0b10100101`. Add its name
+   to the end of `pictures`. The button shows it after the heart, with no
+   other change: the sketch counts the pictures with `pictures.size ()`,
+   so the message moves along to slide 3 by itself.
+2. **Your own picture.** Draw an 8 × 8 grid on paper, shade a design, and
    turn each row into a `0b` number. Make it a `Picture` of its own and add
-   its name to `pictures`. The button shows it too, with no other change:
-   the sketch counts the pictures with `pictures.size ()`.
-2. **Your message.** Change `"HELLO!"` to your name. Scroll it faster with
+   its name to `pictures`, just as you did the invader.
+3. **Your message.** Change `"HELLO!"` to your name. Scroll it faster with
    `matrix.scroll ("SAM", 40);`, where 40 is the milliseconds per step.
-3. **Brightness.** Add `matrix.brightness (1);` after `adk::setup ();`. Try
+4. **Brightness.** Add `matrix.brightness (1);` after `adk::setup ();`. Try
    0 and 15. Then put a potentiometer on A0, as in Lesson 7, and set the
    brightness with it.
 4. **Animate.** Draw a second invader with its legs the other way and swap
