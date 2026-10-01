@@ -12,7 +12,7 @@ import re
 
 from modules import Placed, rounded
 from pencil import DPI
-from route import text_width
+from route import segment_distance, text_width
 
 RAINBOW = ["#eab0aa", "#efdca6", "#b5d6ad", "#adc4e6"]
 METAL   = "#d3d3cf"
@@ -93,6 +93,55 @@ def lead_shape (a, b):
     return ("segment", a[0], a[1], b[0], b[1], LEAD)
 
 
+# Where a standing two-lead part's body stands (Resistor.geometry): halfway
+# between its legs, or, where that would lie over a hole in use, half a
+# column aside, wherever along keeps the body (about 4 across each way) and
+# its bent leads clearest of the holes in use. Nearer the middle and the
+# right-hand side win a tie.
+BOW = 5
+
+
+def aside (part, bench):
+    (x1, y1), (x2, y2) = bench.hole_xy (part.a), bench.hole_xy (part.b)
+    span = math.dist ((x1, y1), (x2, y2))
+    ux, uy = (x2 - x1) / span, (y2 - y1) / span
+    half = part.LENGTH / 2
+    held = [bench.hole_xy (hole) for hole in bench.used if hole not in (part.a, part.b)]
+
+    def at (along, off):
+        return x1 + ux * along - uy * off, y1 + uy * along + ux * off
+
+    def room (along, off):
+        ends = at (along - half, off), at (along + half, off)
+        pieces = (((x1, y1), ends[0], LEAD), (*ends, 4.0), (ends[1], (x2, y2), LEAD))
+        return min ((segment_distance (a, b, hole) - reach for a, b, reach in pieces
+                     for hole in held), default=math.inf)
+
+    if room (span / 2, 0) > 2.5:
+        return at (span / 2, 0)
+    tries = [(along, off) for off in (-BOW, BOW)
+             for along in range (math.ceil (half + 2), math.floor (span - half - 2) + 1)]
+    if not tries:
+        return at (span / 2, 0)
+    along, off = max (tries, key=lambda t: (round (room (*t), 1), -abs (t[0] - span / 2),
+                                            at (*t)[0]))
+    return at (along, off)
+
+
+# A standing part's leads from each hole to its body's ends, reach from its
+# middle, and then its body (body (), drawn at the origin), turned along it.
+def stand (part, pencil, bench, reach, body):
+    a, b = bench.hole_xy (part.a), bench.hole_xy (part.b)
+    cx, cy = part.geometry (bench)
+    angle = math.atan2 (b[1] - a[1], b[0] - a[0])
+    ux, uy = math.cos (angle), math.sin (angle)
+    pencil.lead (a, (cx - ux * reach, cy - uy * reach))
+    pencil.lead ((cx + ux * reach, cy + uy * reach), b)
+    pencil.begin (cx, cy, math.degrees (angle))
+    body ()
+    pencil.end ()
+
+
 class Resistor (Part):
     # A quarter-watt resistor as the Elegoo kits ship them: a pale blue 1%
     # metal-film body, fatter at its end caps, lying just above its legs, with
@@ -117,11 +166,20 @@ class Resistor (Part):
         (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
         return abs (y2 - y1) > abs (x2 - x1) * 0.2
 
+    # Standing, its body would lie over any hole between its legs. Where one
+    # holds another part's leg or a wire's end, as a30 holds the S8050's
+    # base under the active buzzer's 10 kΩ from b30, the body would hide it
+    # and seem to plug into it, so the leads bend and the body stands half a
+    # column aside, as far along as keeps it clearest of the holes in use,
+    # and on the side that does that better.
     def geometry (self, bench):
         (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
-        if self.standing (bench):
-            return (x1 + x2) / 2, (y1 + y2) / 2
-        return (x1 + x2) / 2, (y1 + y2) / 2 - 7
+        if not self.standing (bench):
+            return (x1 + x2) / 2, (y1 + y2) / 2 - 7
+        key = (id (bench), len (bench.used))
+        if getattr (self, "_placed", (None,))[0] != key:
+            self._placed = key, aside (self, bench)
+        return self._placed[1]
 
     def shapes (self, bench):
         (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
@@ -152,13 +210,7 @@ class Resistor (Part):
         length = self.LENGTH
         cx, cy = self.geometry (bench)
         if self.standing (bench):
-            span = math.dist ((x1, y1), (x2, y2))
-            angle = math.degrees (math.atan2 (y2 - y1, x2 - x1))
-            pencil.begin (cx, cy, angle)
-            pencil.lead ((-span / 2, 0), (-length / 2 + 1, 0))
-            pencil.lead ((length / 2 - 1, 0), (span / 2, 0))
-            self._body (pencil, 0, 0, length)
-            pencil.end ()
+            stand (self, pencil, bench, length / 2 - 1, lambda: self._body (pencil, 0, 0, length))
             return
         pencil.lead ((x1, y1), (cx - length / 2 + 1, cy))
         pencil.lead ((cx + length / 2 - 1, cy), (x2, y2))
@@ -213,13 +265,7 @@ class Capacitor (Part):
         (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
         cx, cy = self.geometry (bench)
         if self.standing (bench):
-            span = math.dist ((x1, y1), (x2, y2))
-            angle = math.degrees (math.atan2 (y2 - y1, x2 - x1))
-            pencil.begin (cx, cy, angle)
-            pencil.lead ((-span / 2, 0), (-self.LENGTH / 2, 0))
-            pencil.lead ((self.LENGTH / 2, 0), (span / 2, 0))
-            self._body (pencil, 0, 0)
-            pencil.end ()
+            stand (self, pencil, bench, self.LENGTH / 2, lambda: self._body (pencil, 0, 0))
             return
         left, right = sorted ((x1, x2))
         pencil.lead ((left, y1), (cx - self.LENGTH / 2, cy))
@@ -254,13 +300,7 @@ class Inductor (Part):
         (x1, y1), (x2, y2) = bench.hole_xy (self.a), bench.hole_xy (self.b)
         cx, cy = self.geometry (bench)
         if self.standing (bench):
-            span = math.dist ((x1, y1), (x2, y2))
-            angle = math.degrees (math.atan2 (y2 - y1, x2 - x1))
-            pencil.begin (cx, cy, angle)
-            pencil.lead ((-span / 2, 0), (-self.LENGTH / 2, 0))
-            pencil.lead ((self.LENGTH / 2, 0), (span / 2, 0))
-            self._body (pencil, 0, 0)
-            pencil.end ()
+            stand (self, pencil, bench, self.LENGTH / 2, lambda: self._body (pencil, 0, 0))
             return
         pencil.lead ((x1, y1), (cx - self.LENGTH / 2, cy))
         pencil.lead ((cx + self.LENGTH / 2, cy), (x2, y2))
@@ -306,12 +346,14 @@ class Diode (Part):
 class Transistor (Part):
     # TO-92 S8050, emitter/base/collector with the marked flat face toward
     # the learner. Spread the three leads to adjacent breadboard columns.
-    # Seen from above it is a D, 4.8 mm across and 3.8 mm deep, its flat
-    # face toward the legs' row and its round back away from it, leaning
-    # back a little: the holes of the next row show through it, and the
-    # leads and wires in them lie over it.
+    # Seen from above it is a D, its flat face toward the legs' row and its
+    # round back away from it, leaning back a little: the holes of the next
+    # row show through it, and the leads and wires in them lie over it. It
+    # is drawn smaller than its 4.8 mm by 3.8 mm, so that a wire's end in
+    # the next row beside it reads as the wire's, not as a fourth leg, and
+    # the hole behind its base, where the active buzzer's 10 kΩ goes, shows.
     name = "S8050 transistor"
-    FLAT, DEEP, HALF = 5, 12, 9         # the flat face's offset from the legs, and the D's size
+    FLAT, DEEP, HALF = 4, 10, 6.5       # the flat face's offset from the legs, and the D's size
 
     def __init__ (self, emitter, base, collector):
         self.holes = (emitter, base, collector)
@@ -346,12 +388,12 @@ class Transistor (Part):
         x, _ = bench.hole_xy (self.holes[1])
         arc, face, back = self.outline (bench)
         for index, hole in enumerate (self.holes):
-            pencil.lead (bench.hole_xy (hole), (x + (index - 1) * 5, face))
-        pencil.tint (arc, "#353535", opacity=0.82)
+            pencil.lead (bench.hole_xy (hole), (x + (index - 1) * 4, face))
+        pencil.tint (arc, "#353535", opacity=0.6)
         pencil.polyline (arc, width=0.8, closed=True)
         # The flat face, marked, toward the legs' row.
         pencil.line ((x - self.HALF, face), (x + self.HALF, face), width=1.3, tone=0.95)
-        pencil.text (x, face + back * self.DEEP * 0.42 + 2, "8050", size=5, kind="silk",
+        pencil.text (x, face + back * 0.9, "8050", size=4, kind="silk",
                      color="#f4f1e8")
 
 

@@ -21,7 +21,7 @@ import meter  # noqa: E402
 from bench import Bench, hole_words, load, pin_words  # noqa: E402
 from drawing import Drawing  # noqa: E402
 from parts import bands_for  # noqa: E402
-from route import Router, node  # noqa: E402
+from route import Router, distance_to, node  # noqa: E402
 
 failures = []
 
@@ -363,6 +363,15 @@ expect ("a new build's wire takes its own color", color_of (fresh, "26", "j6"), 
 expect ("a build that keeps no part starts its colors afresh", color_of (apart, "26", "j6"),
         "white")
 expect ("a drawing is kept by its colors", kept.source != fresh.source, True)
+
+# A standing resistor's body stands clear of a hole that holds something
+# else between its legs, as the 10 kΩ does of the S8050's base in a30.
+pulldown = next (part for part in active.parts if part.name == "10 kΩ resistor")
+expect ("the 10 kΩ stands clear of the transistor's base",
+        distance_to (pulldown.shapes (active)[0], active.hole_xy ("a30")) > 0, True)
+straight = next (part for part in active.parts if part.name == "1 kΩ resistor")
+expect ("a resistor with nothing between its legs lies between them",
+        straight.geometry (active)[0], active.hole_xy ("c31")[0])
 
 # A wire takes a costly short way rather than a cheap one three times as
 # long, as round the far end of the Mega: here a strip that costs much to
