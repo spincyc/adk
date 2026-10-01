@@ -1322,6 +1322,11 @@ body.building-along {
     filter: drop-shadow(0 0 1.5px #b93a22);
 }
 
+/* A close-up leaves out the names it would cut (steps.js). */
+.workbench-crop .workbench-cut {
+    display: none;
+}
+
 /* SVGs retain their paper palette in either site theme. */
 .workbench-endpoint {
     fill: rgb(185 58 34 / 8%);

@@ -79,6 +79,20 @@
         return {svg, layer, crop};
     }
 
+    // A close-up crops the whole drawing, so it would cut a name standing
+    // at its edge to a stray "ive buzzer". It shows only the names it holds
+    // whole; one outside, or cut, goes with its leader. Call it once the
+    // copy is on the page, where its words can be measured.
+    function trimLabels (svg, box) {
+        const [left, top, width, height] = box;
+        for (const label of svg.querySelectorAll ("g.label")) {
+            const words = label.querySelector ("text")?.getBBox ();
+            const whole = words && words.x >= left && words.y >= top &&
+                words.x + words.width <= left + width && words.y + words.height <= top + height;
+            label.classList.toggle ("workbench-cut", !whole);
+        }
+    }
+
     function bounds (source, item) {
         // The renderer tags groups in drawing coordinates; part rotations
         // live inside those groups and getBBox already includes them. Root
@@ -387,6 +401,7 @@
                     figure.append (caption);
                 }
                 views.append (figure);
+                trimLabels (copy.svg, crop);
                 const rect = document.createElementNS (ns, "rect");
                 ["x", "y", "width", "height"].forEach ((name, j) =>
                     rect.setAttribute (name, crop[j]));

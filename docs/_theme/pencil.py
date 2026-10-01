@@ -243,12 +243,14 @@ class Pencil:
     # A small printed label that keeps a halo of paper, with a fine leader
     # line to what it names when that is not right beside it.
     # It sits on a little patch of paper, so the holes and lines under it
-    # never show through its letters.
+    # never show through its letters. Its pieces are one group, which a
+    # close-up of the drawing hides whole where it would cut the words.
     def label (self, x, y, content, size=10, anchor="middle", to=None, width=None, patch=None):
         width = width or len (content) * size * 0.5
         left = {"start": x, "end": x - width}.get (anchor, x - width / 2)
         # The paper under it, from patch's left to its right when given.
         under = patch or (left - 1.2, left + width + 1.2)
+        self.layers["text"].append ('<g class="label">')
         if to:
             self._path (straight ([leader_start (left, width, y, size, to), to]), 0.45, 0.7, "text")
             self.layers["text"].append (
@@ -258,6 +260,7 @@ class Pencil:
             f'<rect x="{under[0]:.1f}" y="{y - size * 0.78:.1f}" width="{under[1] - under[0]:.1f}" '
             f'height="{size * 1.02:.1f}" rx="{size * 0.25:.1f}" fill="{PAPER}" fill-opacity="0.92"/>')
         self.text (x, y, content, size=size, anchor=anchor, kind="label")
+        self.layers["text"].append ("</g>")
 
     # Words: "label" names things on the drawing and stays level, "silk" is
     # the printing on a board and turns with it but never reads upside

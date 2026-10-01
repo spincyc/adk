@@ -18,6 +18,11 @@ svg { width: 100%; height: auto; }
     <g data-item="1"><path d="M 100 100 L 800 100 L 800 400"
       fill="none" stroke="red"/></g>
     <g data-item="2"><rect x="120" y="70" width="30" height="20" fill="blue"/></g>
+    <!-- Names on the drawing: the first close-up cuts the one, and holds
+         the other whole. -->
+    <g class="label"><path d="M 168 98 L 150 110" stroke="black"/>
+      <text x="168" y="100" font-size="10" text-anchor="start">active buzzer</text></g>
+    <g class="label"><text x="80" y="150" font-size="9" text-anchor="start">pin 22</text></g>
     <!-- Like Lesson 13, placement geometry is in drawing coordinates;
          the LCD rotates inside its tagged groups, some of which are empty. -->
     <g data-item="3"><rect x="953" y="150" width="34" height="40" fill="blue"/></g>
@@ -99,6 +104,13 @@ try {
     assert (Math.abs (boxes[0][0] + boxes[0][2] / 2 - 120) < 1 &&
         Math.abs (boxes[0][1] + boxes[0][3] / 2 - 110) < 1,
         "the close-up is centred on the connections");
+    const shown = svg => [...svg.querySelectorAll ("g.label")]
+        .filter (label => getComputedStyle (label).display !== "none")
+        .map (label => label.textContent.trim ()).join (",");
+    assert (shown (document.querySelector (".workbench-crop svg")) === "pin 22",
+        "a close-up leaves out a name it would cut, and keeps one it holds whole");
+    assert (shown (document.querySelector (".workbench-map svg")) === "active buzzer,pin 22",
+        "the whole board keeps every name");
     document.querySelector (".workbench-done").click ();
     boxes = crops ();
     assert (boxes.length === 2 && contains (boxes[0], 100, 100) &&
