@@ -217,9 +217,22 @@ address 2, and its partner is 1.
 
 ## Upload it
 
+!!! tip "Two Megas on one computer"
+    Each Mega plugged in gets a port of its own, and **Tools → Port** lists
+    both, with names that don't say which is which. To tell them apart,
+    plug in one board at a time and see which port appears; or, with both
+    in, unplug one and watch which port goes. A label on each Mega's USB
+    cable saves asking again.
+    {: #two-megas-on-one-computer }
+
+    Each Arduino IDE window keeps its own Board, Port and Serial Monitor,
+    so open each board's sketch in a window of its own and choose that
+    board's port there: then the two never mix.
+
 1. Plug in Board A, choose its port in **Tools → Port**, and upload
    **BoardA**. Its yellow LED stays dark: there's nobody to hear yet.
-2. Plug in Board B, choose its port (a different one), and upload
+2. Plug in Board B, choose its port (a different one: see
+   [Two Megas on one computer](#two-megas-on-one-computer)), and upload
    **BoardB**. Within a second or two, both yellow LEDs light.
 3. Hold Board A's button: Board B's red LED lights at once, and goes out
    when you let go. Board B's button does the same to Board A.

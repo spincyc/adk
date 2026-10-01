@@ -167,7 +167,8 @@ What's new:
 1. Plug in Board A, open **Tilt**, choose its port under **Tools → Port**,
    and upload it.
 2. Plug in Board B and the power module's adapter, switch the module on,
-   open **Ball**, choose Board B's port, and upload it. The matrix scrolls
+   open **Ball**, choose Board B's port ([Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer) says which is which), and
+   upload it. The matrix scrolls
    `CALLING A` for a moment; then the ball appears in the middle, and
    Board A's **L** LED lights.
 3. Open the Serial Monitor on Board B's port at 9600 baud.

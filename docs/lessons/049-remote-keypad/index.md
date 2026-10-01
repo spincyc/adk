@@ -218,7 +218,8 @@ What's new:
    under **Tools → Port**, and upload it. The screen says `Calling B...`.
 2. Plug in Board B and the power module's adapter, and switch the module
    on. Open **Inside**, choose Board B's port, and upload it. (With one
-   computer, both can stay plugged in: each has its own port.) The servo
+   computer, both can stay plugged in: each has its own port, and
+   [Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer) says which is which.) The servo
    swings to 0°. Within a second or two, Board B's light turns dim blue
    and Board A's screen says `Locked. Code?`.
 3. Type **1 2 3 4** on Board A. A star appears for each key, a moment

@@ -189,7 +189,8 @@ What's new:
    and upload **Servo**. Plug in its power module's adapter and press the
    module's button, so its LED lights. The yellow LED stays dark, and the
    servo lies limp, waiting for its first angle.
-2. Plug in Board A, choose its port, and upload **Dial**. The top row
+2. Plug in Board A, choose its port, and upload **Dial**: if you can't
+   tell the two ports apart, see [Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer). The top row
    says `Asked  90°`. Board B's yellow LED lights, and the servo moves to
    90°, if it wasn't there already. Within two seconds the bottom row
    says `Servo  90°`.

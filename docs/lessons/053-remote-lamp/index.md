@@ -189,7 +189,8 @@ What's new:
 ## Upload it
 
 1. Upload **Receiver** to Board A and **Repeater** to Board B, choosing
-   each board's port in **Tools → Port**. Clip Board B's battery back on.
+   each board's port in **Tools → Port**, as in
+   [Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer). Clip Board B's battery back on.
 2. Board B's **L** LED lights within a couple of seconds, and Board A's
    screen says **Sent 0x00, #0**, nothing sent yet, and **Lamp is off**.
 3. Aim the kit's remote at Board A and press **POWER**. Board B's relay

@@ -173,7 +173,8 @@ What's new:
 ## Upload it
 
 1. Upload **Ping** to Board A and **Pong** to Board B, choosing each
-   board's port in **Tools → Port**.
+   board's port in **Tools → Port**, as in
+   [Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer).
 2. Power each board from its own USB cable, a power bank or a phone
    charger, and put them in two rooms, or at least with their players
    back to back. Within a couple of seconds both **L** LEDs light.

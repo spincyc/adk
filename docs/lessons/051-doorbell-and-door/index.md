@@ -229,7 +229,7 @@ Read it from the top:
    both adapters and switch both modules on before you plug in the USB
    cables: Board B's sketch sets its modem up only as it starts.
 2. Upload **Inside** to Board A and **Door** to Board B, each by its own
-   port. Board A's latch swings to 0°, its screen says `Front door` and,
+   port, as in [Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer). Board A's latch swings to 0°, its screen says `Front door` and,
    once it hears Board B, `All quiet`. Board B's **L** LED lights.
 3. Press the doorbell: `Ding dong!` and the chime. Press Board A's button:
    `Door open`, the latch swings open, and Board B buzzes. Five seconds

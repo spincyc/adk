@@ -182,7 +182,8 @@ What's new:
 
 1. Plug Board A into your computer and upload **Knob** to it. If both
    Megas are plugged in at once, each has its own port: choose the right
-   one in **Tools → Port** before each upload.
+   one in **Tools → Port** before each upload, as in
+   [Two Megas on one computer](../043-the-bridge/index.md#two-megas-on-one-computer).
 2. Plug Board B in, and upload **Turntable** to it. Then unplug it, carry
    it to another room, and power it there from a USB power bank or a phone
    charger. Plug in its power module's adapter and press the module's
