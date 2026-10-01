@@ -283,8 +283,8 @@ the middle, and the fan stays still until you press the stick.
 
 ??? note "How it works"
     While you push the stick, Board A's bridge sends a line like
-    `@aim=94` every tenth of a second, and every two seconds everything,
-    `@aim=94 fan=1`. Board B sends `@dist=85` when the distance it
+    `@1/1 aim=94` every tenth of a second, and every two seconds
+    everything, `@1/1 aim=94 fan=1`. Board B sends `@1/1 dist=85` when the distance it
     shares changes, twice a second at most, and everything every two
     seconds too.
 

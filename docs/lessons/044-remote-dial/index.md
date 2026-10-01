@@ -60,8 +60,8 @@ second, which fills about half the time on the air. If Board B reported
 every step of the servo's glide at the same time, many messages each way
 would be lost. So Board B shares a new `at` only once its servo has
 stopped, which leaves the air to Board A while you turn. After that it
-repeats its last `at` once every two seconds, as a heartbeat that says it
-is still there. That is only a few short messages, so it seldom gets in
+repeats its last `at` once every two seconds, so Board A keeps hearing
+that it is still there. That is only a few short messages, so it seldom gets in
 Board A's way, but nothing keeps the air clear for it either: now and then
 a message is still lost, and the next repeat puts it right.
 
@@ -230,19 +230,20 @@ the module back on, and the servo jumps to the angle it was sent.
     Turn the knob from 90° to 95°, and Board A's bridge sends one line:
 
     ```text
-    @angle=95
+    @1/1 angle=95
     ```
 
     Board B's bridge reads it, and in that pass of `loop ()`
     `bridge.changed ("angle")` is true, so the servo starts a 300 ms
     glide. When the glide ends, `at` changes from 90 to 95, and Board B's
-    bridge sends `@at=95` back. Each message takes about 0.05 s on the
+    bridge sends `@1/1 at=95` back. (`1/1` are the two boards' start
+    numbers, from Lesson 43.) Each message takes about 0.05 s on the
     air.
 
     Every two seconds, whether anything changed or not, Board A sends
-    `@angle=95` and Board B sends `@at=95`. So if Board B restarts, it
-    has the angle again within two seconds; and if one of the messages
-    is lost, the next brings it.
+    `@1/1 angle=95` and Board B sends `@1/1 at=95`. So if one of the
+    messages is lost, the next brings it. And if Board B restarts, Board
+    A sees its new start number and sends the angle again at once.
 
 ## Make it yours
 
