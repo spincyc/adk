@@ -209,15 +209,15 @@ you can see it step.
     air, a tenth of a second or so apart, as the smoothed tilt catches up:
 
     ```text
-    @pitch=5
-    @pitch=16
-    @pitch=19
-    @pitch=20
+    @1/1 pitch=5
+    @1/1 pitch=16
+    @1/1 pitch=19
+    @1/1 pitch=20
     ```
 
     Then nothing, until Board A moves again, except that every two seconds
-    each board repeats everything it shares, `@pitch=20 roll=0 sensor=1`,
-    so each knows the other is still there.
+    each board repeats everything it shares, `@1/1 pitch=20 roll=0
+    sensor=1`, so each knows the other is still there.
 
     The smoothing costs a little time: a sudden tilt reaches Board B about
     a tenth of a second later than it would unsmoothed. Every smoothing
@@ -236,3 +236,44 @@ you can see it step.
 4. **Slow mail.** Change both sketches' `adk::LoraSpeed::Quick` to
    `adk::LoraSpeed::Far`, whose messages take about 0.3 s. How often does
    Board B hear a new tilt now, and how does the ball feel?
+
+## Measure it
+
+This part is for anyone with a multimeter; there isn't one in the kit. Set
+it up as in [Lesson 1](../001-blink/index.md#measure-it): DC volts (**V⎓**),
+the black lead in **COM** and the red one in **V**. Take both readings on
+Board A while both boards run, and keep each probe tip in its own hole.
+
+!!! question "Predict"
+    The Mega's 3.3V pin now feeds two things at once: the modem, and the
+    level shifter's low side, LV. What will that feed read? And the top
+    + rail, which feeds the shifter's high side, HV?
+
+<!-- measure A -->
+
+What the numbers tell you:
+
+- **The 3.3 V feed** reads about 3.3 V, from the Mega's own 3.3 V
+  regulator. The modem draws more while it sends, but only for a twentieth
+  of a second at a time, too quickly for the meter to show.
+- **The top + rail** reads about 5 V, the Mega's 5V. The level shifter
+  stands between the two: the Mega's I2C pins talk at 5 V on its high
+  side, the GY-521's at 3.3 V on its low side, and the shifter passes each
+  signal across without letting 5 V reach the low side.
+
+## Check yourself
+
+1. Why does Board A smooth the tilt before sharing it?
+2. Board B hears at most ten new tilts a second. Why does the ball still
+   roll smoothly?
+3. What does the level shifter do on Board A?
+
+??? note "Answers"
+    1. Each reading wobbles a little. Unsmoothed, the rounded tilt would
+       flick between two degrees and send a message every time, even with
+       the board held still.
+    2. Board B rolls the ball fifty times a second whatever arrives, and
+       the servo glides to each new angle, so they fill in between.
+    3. It passes the I2C signals between the Mega's pins, which work at
+       5 V, and the GY-521's, which work at 3.3 V, without letting 5 V
+       reach the 3.3 V side.

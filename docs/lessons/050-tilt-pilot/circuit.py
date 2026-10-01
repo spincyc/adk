@@ -40,3 +40,11 @@ ball.home_servo ()
 ball.closeup (38, 63)
 
 boards = {"A": tilt, "B": ball}
+
+# Readings to take with a multimeter on Board A: the Mega's 3.3V feed,
+# which the modem and the level shifter's low side share, and the top +
+# rail at 5 V, which feeds its high side.
+tilt.measure ("The 3.3 V feed, shared by the modem and LV", red="3.3V", black="GND",
+              expect="about 3.3 V", when="both boards running")
+tilt.measure ("The top + rail, for HV and the GY-521", red="5V", black="GND",
+              expect="about 5 V", when="both boards running")
