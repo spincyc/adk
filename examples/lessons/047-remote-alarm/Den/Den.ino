@@ -87,9 +87,8 @@ void heard (Tripwire& wire)
     {
         auto at = rtc.now ();
 
-        adk::print (lcd.at (0, 1), wire.label, at.hour / 10, at.hour % 10,
-                    ':', at.minute / 10, at.minute % 10, ':',
-                    at.second / 10, at.second % 10);
+        adk::print (lcd.at (0, 1), wire.label, adk::dec (at.hour, 2), ':',
+                    adk::dec (at.minute, 2), ':', adk::dec (at.second, 2));
         sounding = sounding || armed;
     }
 

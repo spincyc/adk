@@ -92,7 +92,7 @@ What's new:
 
 - `adk::Keypad keypad {{22, 23, 24, 25}, {26, 27, 28, 29}};` names the
   keypad: its four row pins, then its four column pins.
-- `keypad.key ()` is the key pressed in this pass of `loop ()`, or `'\0'`, "no
+- `keypad.pressedKey ()` is the key pressed in this pass of `loop ()`, or `'\0'`, "no
   key", in every other pass. Like `wasPressed ()` in Lesson 2, it's an event:
   each press gives it once.
 - `char key` holds one character, as in Lesson 14. In single quotes, `'7'` is
@@ -153,7 +153,7 @@ keypad's sixth contact.
 
     Each scan finds the first key held down, or keeps the one already held.
     A new key must read the same for 20 ms before it counts, which is the
-    debounce. When it does, `key ()` returns it for exactly one update. That's
+    debounce. When it does, `pressedKey ()` returns it for exactly one update. That's
     why holding both **1** and **2**, then releasing **1** first, gives the
     **2** only after **1** is let go: until then, **1** is still the key held.
 
@@ -229,6 +229,6 @@ What the numbers tell you:
     2. Characters are codes, and `'0'` to `'9'` come one after another.
        Taking away the code of `'0'` leaves how far along the digits `'7'`
        is: 7.
-    3. `keypad.key ()` is an event: it gives each press once, in one pass
+    3. `keypad.pressedKey ()` is an event: it gives each press once, in one pass
        of `loop ()`, and `'\0'` in every other pass, just as `wasPressed ()`
        does for a button.

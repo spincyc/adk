@@ -38,7 +38,7 @@ are the usual ones; search for the name.
 | LED matrix | `adk::LedMatrix` | LedControl |
 | DHT11 | `adk::Dht11` | DHT sensor library |
 | 18B20 | `adk::Ds18b20` | OneWire and DallasTemperature |
-| Ultrasonic sensor | `adk::Ultrasonic` | NewPing, or `pulseIn ()` |
+| Ultrasonic sensor | `adk::Ultrasonic` | NewPing, or `pulseInLong ()`, which keeps counting while interrupts run |
 | Remote control and IR LED | `adk::IrReceiver`, `adk::IrTransmitter` | IRremote |
 | RFID reader | `adk::Rfid` | MFRC522 |
 | Real-time clock | `adk::Rtc` | RTClib |

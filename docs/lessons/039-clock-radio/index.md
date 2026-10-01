@@ -296,7 +296,7 @@ What the numbers tell you:
    already?
 
 ??? note "Answers"
-    1. `radio.setVolume (full * faded / fadeLength);` in `setVolume ()`:
+    1. `radio.volume (full * faded / fadeLength);` in `setVolume ()`:
        the knob's 12, times the 10 seconds gone by, out of the fade's 30.
     2. The radio would come back quiet and carry on fading in, because
        the fade would still be running. Stopping it makes

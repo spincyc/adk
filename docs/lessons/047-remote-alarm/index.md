@@ -157,7 +157,9 @@ What's new:
 - `for (auto& wire : tripwires)` goes through the five, and
   `bridge.changed (wire.name)` is true when a new count has arrived.
   `heard ()` compares it with the one remembered: only a higher count is a
-  trip. Then the bottom row gets the name and the time, and
+  trip. Then the bottom row gets the name and the time:
+  `adk::dec (at.minute, 2)` prints a number with at least two digits,
+  so 7 minutes shows as `07`, as a clock does. And
   `sounding = sounding || armed;` starts the siren if the alarm is armed,
   and leaves it going if it already was.
 - POWER on the remote swaps `armed` between `true` and `false` with `!`,

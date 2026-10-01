@@ -171,7 +171,7 @@ What's new:
 - Tuning takes about 60 ms, and a seek up to a few seconds, but neither
   stops the sketch: the radio gets on with it while `loop ()` carries on.
   `radio.isTuning ()` is true meanwhile, and the screen says `Tuning`.
-- `radio.setVolume (volumeKnob.read (0, 15))` turns the knob's 0 to 1023
+- `radio.volume (volumeKnob.read (0, 15))` turns the knob's 0 to 1023
   into the radio's volumes, 0 for silent to 15, with `read (0, 15)` as in
   Lesson 7. Each change is a message on the wires, so ADK only sends one
   when the number changes: the sketch can ask five times a second.
