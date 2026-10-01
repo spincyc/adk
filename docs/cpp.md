@@ -123,6 +123,8 @@ more strictly; E24's sketch uses `static_cast<char> (...)`.
 | `Serial.begin (9600);` | Opens the USB link to your computer, at 9600 bits a second | Lesson 2 |
 | `adk::println (Serial, "Presses: ", presses);` | Prints its pieces in a row and ends the line; `adk::print ()` leaves the line open | Lessons 2 and 14 |
 | `Serial1`, `Serial2`, `Serial3` | The Mega's three other serial links, on pins 14 to 19 | Lessons 40 and 45 |
+| `Serial1.begin (9600)` | Starts one of the Mega's extra serial ports at a baud rate | E24 |
+| `adk::claimSerial (Serial1)` | Claims a serial port's two pins in `setup ()`, as a part claims its pins | E24 |
 | `Serial1.available ()`, `.read ()`, `.write ()` | How many characters have arrived, take one, and send one | E24 |
 | `adk::Text<24> message;` | Text you print into, with room for 24 characters | Lesson 27 |
 | `message.c_str ()` | The text inside, for a function that wants a `const char*`; `message.c_str ()[at]` is one character of it | Lessons 27 and 42 |
