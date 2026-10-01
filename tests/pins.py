@@ -23,6 +23,9 @@ import os
 import sys
 
 ROOT = os.path.dirname (os.path.dirname (os.path.abspath (__file__)))
+# Nothing may be written outside build/, so the theme's modules leave no
+# byte-code in docs/_theme.
+sys.dont_write_bytecode = True
 sys.path.insert (0, os.path.join (ROOT, "docs", "_theme"))
 
 import bench  # noqa: E402

@@ -1,6 +1,6 @@
 """Check that public lesson IDs and navigation stay within their tracks.
 
-Run with build/venv/bin/python -B tests/navigation_ids.py.
+Run with build/venv/bin/python tests/navigation_ids.py.
 """
 
 import sys
@@ -10,6 +10,9 @@ from types import SimpleNamespace
 import yaml
 
 ROOT = Path (__file__).resolve ().parents[1]
+# Nothing may be written outside build/, so the theme's modules leave no
+# byte-code in docs/_theme.
+sys.dont_write_bytecode = True
 sys.path.insert (0, str (ROOT / "docs" / "_theme"))
 
 from hooks import (LESSONS, arcs, check_wires, course_table, link_lessons,  # noqa: E402
