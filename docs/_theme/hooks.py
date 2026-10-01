@@ -58,7 +58,7 @@ sys.path.insert (0, os.path.dirname (__file__))
 from api import document  # noqa: E402
 from bench import canonical, example, hole_words, load  # noqa: E402
 from drawing import Drawing, draw_all  # noqa: E402
-from parts import Led, Resistor  # noqa: E402
+from parts import Chip, Led, Resistor  # noqa: E402
 from pencil import WIRES  # noqa: E402
 
 ROOT = os.path.dirname (os.path.dirname (os.path.dirname (os.path.abspath (__file__))))
@@ -447,10 +447,21 @@ def steps (bench, before=None, number=1, letter="", title=None):
         source = f"[{visible_reference (lesson)}](../{lesson['slug']}/index.md)" + \
             (f"'s Board {letter_before}" if letter_before else "")
         if carries (kept):
-            things = kept_words (old, kept)
-            head = [f"**Keep from {source}:** {join (things)}, just as "
-                    f"{'they are' if len (kept) > 1 else 'it is'}."]
-            if len (gone) > 8:
+            # Where anything is taken out, each wire kept is named, since a
+            # count can't say which. A chip swapped for another in its holes
+            # would meet any wire left on its old pins, so then every one
+            # taken out is listed too, however many.
+            swapped = any (isinstance (thing, Chip) for kind, thing, _ in gone)
+            things = kept_words (old, kept, named=bool (gone))
+            still = f"just as {'they are' if len (kept) > 1 else 'it is'}"
+            # A few things read as a sentence; more, or any that list what
+            # they hold, as a list.
+            if len (things) <= 3 and not any (", " in thing for thing in things):
+                head = [f"**Keep from {source}:** {join (things)}, {still}."]
+            else:
+                head = [f"**Keep from {source}**, {still}:",
+                        "\n".join (f"- {thing}" for thing in things)]
+            if len (gone) > 8 and not swapped:
                 head.append (f"**Take out** everything else from {visible_reference (lesson)}.")
             else:
                 out = gone
@@ -781,15 +792,30 @@ def identity (bench, kind, thing):
     return ("wire", frozenset (bench.end_key (end) for end in thing[:2]))
 
 
-# What is kept, in words: the parts, each module with its own wires, the
-# Mega's power wires, and the other wires. A part that leaves others of its
-# kind behind is named by its holes, and a few other wires one by one where
-# some are taken out, so the learner knows which to keep.
-def kept_words (bench, kept):
+# What is kept, in words. A stage kept whole goes by its heading in the
+# lesson before, with what else it holds: "the red LED on pin 26 with its
+# 220 Ω resistor and 2 wires". Then the other parts, each module with its
+# own wires, the Mega's power wires, and the other wires: each named, where
+# named asks for it, or else counted. A part that leaves others of its kind
+# behind is named by its holes.
+def kept_words (bench, kept, named=False):
+    held = {id (thing) for _, thing in kept}
+    whole = []
+    for stage, items in group (bench.items):
+        things = [thing for _, thing, _ in items]
+        modules = [thing for kind, thing, _ in items if kind == "module"]
+        # A module and its own wires already read as one, as below.
+        alone = len (modules) == 1 and all (kind != "part" for kind, _, _ in items)
+        if all (id (thing) in held for thing in things) and not alone and \
+                any (kind != "wire" for kind, _, _ in items):
+            whole.append ((stage, items))
+    inside = {id (thing) for _, items in whole for _, thing, _ in items}
+    kept = [(kind, thing) for kind, thing in kept if id (thing) not in inside]
     modules = {thing.name: thing for kind, thing in kept if kind == "module"}
     kept_parts = [thing for kind, thing in kept if kind == "part"]
     everywhere = [part.name for part in bench.parts]
     staying = [part.name for part in kept_parts]
+    staying += [thing.name for _, items in whole for kind, thing, _ in items if kind == "part"]
     parts = [describe (bench, "part", part) if everywhere.count (part.name) > staying.count (part.name)
              else f"the {part.name}" for part in kept_parts]
     wires = [thing for kind, thing in kept if kind == "wire"]
@@ -804,12 +830,11 @@ def kept_words (bench, kept):
             counts[owners[0]] = counts.get (owners[0], 0) + 1
         else:
             rest.append (wire)
-    others = [wire for wire in bench.wires if not bench.is_standard (wire) and
-              not any (end[0] == "module" for end in wire[:2])]
-    things = gather (parts)
+    things = [stage_words (bench, stage, items) for stage, items in whole]
+    things += gather (parts)
     for key, placed in modules.items ():
         count = counts.get (key, 0)
-        things.append (f"the {placed.title}" + (f" and its {count} wire{'s' if count > 1 else ''}"
+        things.append (f"the {placed.title}" + (f" with its {count} wire{'s' if count > 1 else ''}"
                                                  if count else ""))
     feeds = [canonical (end[1]) for wire in power for end in wire[:2] if end[0] == "pin"]
     if feeds:
@@ -818,11 +843,29 @@ def kept_words (bench, kept):
     if len (power) > len (feeds):
         links = len (power) - len (feeds)
         things.append (f"the link{'s' if links > 1 else ''} between the rails")
-    if rest and len (rest) <= 3 and len (others) > len (rest):
+    if rest and named:
         things += [describe (bench, "wire", wire) for wire in rest]
     elif rest:
         things.append (f"{len (rest)} {'other ' if things else ''}wire{'s' if len (rest) > 1 else ''}")
     return things
+
+
+# A stage kept whole, by its heading in the lesson that built it and what
+# else it holds: "the screen on pins 31–36, with its potentiometer, LCD,
+# 220 Ω resistor and 16 wires". A part the heading names goes unsaid.
+def stage_words (bench, stage, items):
+    title = bench.stage_title (stage)
+    names = [thing.name for kind, thing, _ in items if kind == "part"]
+    names += [thing.title for kind, thing, _ in items if kind == "module"]
+    kinds = [name.split (" at column")[0] for name in names]
+    names = [name for name, kind in zip (names, kinds) if not re.search (
+        rf"\b({re.escape (kind)}|{re.escape (kind.split ()[-1])}s?)\b", title)]
+    count = sum (kind == "wire" for kind, _, _ in items)
+    held = gather (names) + ([f"{count} wire{'s' if count > 1 else ''}"] if count else [])
+    if not held:
+        return title
+    whose = "their" if " and its " in title else "its"
+    return f"{title}{',' if len (held) > 1 or whose == 'their' else ''} with {whose} {join (held)}"
 
 
 # The Mega's power wires and the rails' links, in words: "the Mega's GND and

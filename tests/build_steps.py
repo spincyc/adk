@@ -166,6 +166,33 @@ html = steps (new, ({"number": 1, "slug": "001-blink"}, "", old), number=1)
 assert 'class="build-context"' in html and "Keep from" in html
 assert html.index ('class="build-context"') < html.index ('class="build-steps"')
 
+# A chip swapped for another in the same holes must not meet a wire left
+# on its old pins: every wire kept is named by its holes, and every one
+# taken out is listed, however many.
+def nand (bench, ties):
+    bench.chip ("SN74HC00N", pins=["1A", "1B", "1Y", "2A", "2B", "2Y", "GND",
+                                   "3Y", "3A", "3B", "4Y", "4A", "4B", "VCC"], first=16)
+    bench.wire ("j16", "T+16").wire ("a22", "B-22").capacitor ("100 nF", "g15", "e15")
+    for hole, rail in ties:
+        bench.wire (hole, rail)
+    return bench.finish ()
+
+
+ties = [("j17", "T-17"), ("j18", "T-18"), ("j20", "T-19"), ("j21", "T-21"), ("a17", "B-17"),
+        ("a18", "B-18"), ("a19", "B-19"), ("a21", "B-21"), ("j19", "T-22"), ("j22", "T-23")]
+old = nand (Bench ("NAND", columns=(1, 30)), ties)
+new = Bench ("Schmitt", columns=(1, 30))
+new.chip ("SN74HC14N", pins=["1A", "1Y", "2A", "2Y", "3A", "3Y", "GND",
+                             "4Y", "4A", "5Y", "5A", "6Y", "6A", "VCC"], first=16)
+new.wire ("j16", "T+16").wire ("a22", "B-22").capacitor ("100 nF", "g15", "e15")
+new.wire ("j17", "T-17").wire ("j21", "T-21").finish ()
+html = steps (new, ({"number": 75, "slug": "075-set-reset-latch"}, "", old), number=76)
+context = html[:html.index ('class="build-steps"')]
+for words in ("100 nF capacitor", "j16", "a22", "j17 to the top − rail by column 17", "j21"):
+    assert words in context, f"a chip swap names the kept wire {words}"
+assert "everything else" not in context, "a chip swap lists what it takes out"
+assert html.count ("Take-out step") == 9, "a chip swap lists every wire and part it takes out"
+
 # Each board needs its own drawing, even when two boards have identical
 # wiring. Sharing only Board A's figure left Board B without a guided view.
 for page in sorted ((ROOT / "docs" / "lessons").glob ("*/index.md")):
