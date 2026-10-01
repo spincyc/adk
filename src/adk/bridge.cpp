@@ -335,9 +335,10 @@ namespace adk {
     }
 
     // This board takes its start number from the first line it hears: one
-    // more than the other board remembers, so never the one it had before.
-    // When that, or the other board's start number, changes, the two boards
-    // have just found each other.
+    // more than the other board remembers for it. That is usually a new
+    // number, but not always: if this board restarted and spoke first, the
+    // other heard 0 and offers 1 again. Either way the other board sees a
+    // change, 0 in between, so it knows they have just found each other.
     void Bridge::meet (uint8_t run, uint8_t echo)
     {
         bool met = false;

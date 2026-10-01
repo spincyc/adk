@@ -183,7 +183,7 @@ What's new:
   comes the count, so you can see each press go.
 - Board B shares `relay.isOn ()` back as `relay`, and Board A's screen
   shows that, not its own `lampOn`: the screen only says the lamp is on
-  once the far board has switched it. The `? :` from Lesson 22 picks
+  once the far board has switched it. The `? :` from Lesson 12 picks
   **on** or **off**.
 
 ## Upload it

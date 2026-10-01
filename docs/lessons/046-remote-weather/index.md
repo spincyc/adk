@@ -168,7 +168,7 @@ What's new:
 - `tenths ()` turns a temperature in degrees into whole tenths:
   `lround ()` rounds to the nearest whole number, so 21.46 °C becomes
   214.6 and then 215.
-- `dht.ok () ? ... : noReading` is the `? :` from Lesson 22: the reading
+- `dht.ok () ? ... : noReading` is the `? :` from Lesson 12: the reading
   while the thermometer answers, and `noReading`, −10000, when it doesn't.
 - Six names on the bridge: `report`, `air`, `humid`, `probe`, `ntc` and
   `light`. A bridge holds up to eight, each up to seven letters.

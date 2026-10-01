@@ -208,7 +208,7 @@ What's new:
 - `latch.moveTo ()` and `light.fadeTo ()` are called on every pass: asking
   for what they are already doing changes nothing, so the latch and the
   light simply follow `unlocked`, `wrong` and the link. The light's color
-  is a chain of `? :` from Lesson 22: each `?` asks a question, and if the
+  is a chain of `? :` from Lesson 12: each `?` asks a question, and if the
   answer is no, the `:` goes on to the next. The first question answered
   yes picks the color, and `waiting` is what's left when none is.
 

@@ -136,7 +136,8 @@ A new start, built on the library's original 2021 design.
   the build needs. The site's Python comes from a hashed lock, and a
   published board package version can never change. Lesson PDFs print
   their drawings as lines, a few megabytes each instead of up to twenty;
-  each is checked page by page and held to a size budget. CI also installs
+  each is checked for a whole file, its pages, title and font, and held to
+  a size budget. CI also installs
   ADK Boards on Windows and macOS and compiles Blink with it.
 - **Removed** the 0.3 library, its 74 lessons, their PDFs and drawings, and
   the research, audit and agent-process documents. They remain in the git

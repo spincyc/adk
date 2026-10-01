@@ -41,8 +41,9 @@ again. The parts themselves, such as `adk::Led` and `adk::Timer`, are in
 | `const` | A promise not to change something | Lesson 18 |
 | `char (223)`, `int (...)` | Turns a value into another type | Lessons 10 and 14 |
 
-`static_cast<int> (...)` changes a type too, more carefully; it is
-explained where it first appears, in Lesson 49.
+Lesson 49 uses the same form, `char (...)` and `uint32_t (...)`, to carry a
+key and a card's number across the radio. Arduino code elsewhere often
+writes `static_cast<int> (...)`, which does the same more strictly.
 
 ## Sums
 

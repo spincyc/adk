@@ -92,11 +92,13 @@ the same result every time.
 
 A command that starts something timed (`blink ()`, `beep ()`, `fadeTo ()`,
 `play ()`) sets a flag, and the next `update ()` records the start time. The
-effect that can happen immediately, such as the first flash, does. A part
+effect that can happen immediately, such as the first flash, does. A new part
 keeps that start in a `StartTime` (`timing.h`) rather than a time and a flag
-of its own: `restart ()` from the command, then in `update (now)` either
-`elapsed (now)`, `beat (now, period)` for a steady beat that keeps time as
-`Every` does, or `due (now, period)` for something done at the first update
+of its own, as `Led`, `Timer`, `Every` and the displays do; a few older parts,
+such as `Stopwatch`, `Ds18b20` and `Rfid`, still keep their own. With a
+`StartTime`, `restart ()` comes from the command, then in `update (now)`
+either `elapsed (now)`, `beat (now, period)` for a steady beat that keeps time
+as `Every` does, or `due (now, period)` for something done at the first update
 and then each period from the last, as a display's scan.
 
 Asking a part for what it is already doing changes nothing, so commands such
