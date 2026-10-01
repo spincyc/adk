@@ -20,3 +20,8 @@ bench.transistor ("a29", "a30", "a31")
 bench.resistor ("1 kΩ", "c32", "c30")
 bench.resistor ("10 kΩ", "b30", "B-30")
 bench.wire ("b29", "B-29")
+
+bench.measure ("Across the LED's 220 Ω resistor", red="h6", black="d6",
+               expect="about 3.0 V", when="Button held")
+bench.measure ("Across the 1 kΩ base resistor", red="c4", black="b30",
+               expect="about 4.2 V", when="Button held")

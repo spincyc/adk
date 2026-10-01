@@ -217,11 +217,15 @@ same diode appears across the buzzer in [Lesson
 
 **Idea:** A small base current controls a larger collector current.
 **Before:** E09. **Use:** E10's Mega USB 5 V build: S8050, button, red
-LED, 220 Ω LED resistor, 1 kΩ base resistor and 10 kΩ base pull-down.
-Check the marked S8050's E–B–C pin order. **Predict, do, see:** Put the
-LED and its resistor between + and collector, emitter at GND, and the
-button through 1 kΩ from + to base. Predict the LED state before pressing;
-it is off until the button supplies base current. **ADK connection:**
+LED, 220 Ω LED resistor, 1 kΩ base resistor and 10 kΩ base pull-down,
+a second 10 kΩ resistor and a meter. Check the marked S8050's E–B–C pin
+order. **Predict, do, see:** Put the LED and its resistor between + and
+collector, emitter at GND, and the button through 1 kΩ from + to base.
+Predict the LED state before pressing; it is off until the button
+supplies base current. With the button held, the resistor voltages give
+about 14 mA through the LED and 4.2 mA into the base. Swap the 1 kΩ base
+resistor for 10 kΩ: the LED stays as bright while the base current falls
+to about 0.36 mA, a fortieth of the collector current. **ADK connection:**
 Isolates the switch used for the [Lesson 3 buzzer](../lessons/003-reaction-duel/index.md).
 
 ### E11 — [An inductor resists a change][e11-guide] {#e11-inductor-current}

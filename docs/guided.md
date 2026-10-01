@@ -20,7 +20,9 @@ each module.
    program now switches a path you have seen work steadily.
 3. **[E09–E10: diode and transistor](lessons/064-one-way-diode/index.md).**
    Test the diode's direction and switch a separate path with the S8050:
-   the two parts Lesson 3 put beside its buzzer. Neither needs a meter.
+   the two parts Lesson 3 put beside its buzzer. Only E10's measured
+   comparison needs a meter; without one, still swap its base resistor
+   and watch the LED.
    Clear Lesson 3's parts first, keeping the Mega's two power wires; E09's
    steps build the rest.
 4. **[Lessons 4–6: color and sound](lessons/004-mood-lamp/index.md).**
