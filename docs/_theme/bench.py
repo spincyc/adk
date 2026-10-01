@@ -216,10 +216,11 @@ class Stage:
 # What a finished bench hands on to the build that carries it on
 # (Bench.legacy ()): its parts and modules, by identity (), which tell the
 # next build whether it carries this one on at all, and each wire's color
-# by the wire's identity.
+# and its way across the drawing's grid, by the wire's identity.
 class Legacy (NamedTuple):
     things: frozenset
     colors: dict
+    ways: dict = {}
 
 
 # A home_* call's steps make one stage, named for its part: "the {color}
@@ -312,6 +313,7 @@ class Bench:
         self._stage = None              # the stage steps join now
         self._painted = set ()          # the wires whose color circuit.py gave, by index
         self.inherited = {}             # the colors of the build it carries on, which load () gives
+        self.ways = {}                  # and its wires' ways across the drawing, which it keeps
 
     def _step (self, step):
         kind, thing = self._last
@@ -1261,9 +1263,11 @@ class Bench:
 
     # What a finished bench hands on to the build that carries it on.
     def legacy (self):
+        from drawing import Drawing     # which draws this bench, so is loaded after it
         things = frozenset (identity (self, kind, thing) for kind, thing, _ in self.items
                             if kind != "wire")
-        return Legacy (things, {identity (self, "wire", wire): wire[2] for wire in self.wires})
+        return Legacy (things, {identity (self, "wire", wire): wire[2] for wire in self.wires},
+                       Drawing (self).ways () if self._finished else {})
 
     # Whether a rail is joined to a Mega pin or a power module leg of this
     # kind: "GND", "5V" or, from a power module, "3.3V".
@@ -1859,10 +1863,12 @@ class Bench:
 # lesson's board is "". before is what the lesson before hands on,
 # {letter: Legacy}, where this one carries its build on: a board that
 # keeps any part or module of the board it carries on (carried_from) keeps
-# the colors of the wires it keeps, as its steps say. Each board's source,
-# by which its drawings are kept, is its circuit's digest, its letter and
-# its wires' colors.
+# the colors of the wires it keeps, as its steps say, and their ways across
+# the drawing where they are still clear (Drawing._carry). Each board's
+# source, by which its drawings are kept, is its circuit's digest, its
+# letter, its wires' colors and the ways it keeps.
 def load (path, before=None):
+    from drawing import ways_digest     # which draws a bench, so is loaded after this
     scope = {"Bench": Bench, "HC595": HC595, "L293D": L293D}
     text = open (path, encoding="utf-8").read ()
     exec (compile (text, path, "exec"), scope)
@@ -1889,9 +1895,11 @@ def load (path, before=None):
         theirs = carried_from (letter, before or {})
         if theirs is not None and before[theirs].things & bench.legacy ().things:
             bench.inherited = before[theirs].colors
+            bench.ways = before[theirs].ways
         bench.finish ()
         colors = " ".join (color for _, _, color, _ in bench.wires)
-        bench.source = digest + letter + hashlib.sha256 (colors.encode ()).hexdigest ()[:16]
+        drawn = colors + ways_digest (bench.ways)
+        bench.source = digest + letter + hashlib.sha256 (drawn.encode ()).hexdigest ()[:16]
     return boards
 
 

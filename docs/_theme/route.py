@@ -367,6 +367,14 @@ class Router:
                     push (queue, (total + guess, total, there, e))
         return None, heading, 0.0
 
+    # Whether a wire may lie along a grid path as it is, such as one it
+    # kept from the lesson before: nothing blocks it, and it passes no
+    # other wire's plug.
+    def free (self, path, allow=()):
+        own = {path[0], path[-1]}
+        return all (self._own_cost (n, own, set (allow) | own) is not None and
+                    not self.plugs.get (n, set ()) - own for n in path[1:-1])
+
     # Taking a way -------------------------------------------------------
 
     def claim (self, path, wire):

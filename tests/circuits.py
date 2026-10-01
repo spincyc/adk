@@ -18,7 +18,7 @@ sys.dont_write_bytecode = True
 sys.path.insert (0, os.path.join (ROOT, "docs", "_theme"))
 
 import meter  # noqa: E402
-from bench import Bench, hole_words, load, pin_words  # noqa: E402
+from bench import Bench, hole_words, identity, load, pin_words  # noqa: E402
 from drawing import Drawing, leader_from  # noqa: E402
 from parts import Capacitor, Resistor, back_to_front, bands_for, segments_apart  # noqa: E402
 from route import Router, distance_to, node, shape_crosses_segment, text_box  # noqa: E402
@@ -397,6 +397,34 @@ expect ("a new build's wire takes its own color", color_of (fresh, "26", "j6"), 
 expect ("a build that keeps no part starts its colors afresh", color_of (apart, "26", "j6"),
         "white")
 expect ("a drawing is kept by its colors", kept.source != fresh.source, True)
+
+# A wire kept keeps its way across the drawing too, where that is still
+# clear, though the build on its own would route it another way; never
+# through the Mega's solid middle.
+drawn = Drawing (fresh)
+index = next (i for i, w in enumerate (fresh.wires) if w[0] == ("pin", "26"))
+wire, own = identity (fresh, "wire", fresh.wires[index]), drawn.ways ()
+router, plan = drawn._router (), drawn._plan (*fresh.wires[index])
+for other, path in drawn._paths.items ():
+    if other != index:
+        router.claim (path, other)
+for n in drawn._paths[index][4:-4]:
+    router.extra[n] = 1000
+detour, _ = router.route (plan["points"], plan["first"], plan["allow"], plan["keep_off"], index)
+mega = node (((fresh.mega_box ()[0] + fresh.mega_box ()[2]) / 2,
+              (fresh.mega_box ()[1] + fresh.mega_box ()[3]) / 2))
+blocked = [detour[0], (detour[0][0], mega[1]), mega, (detour[-1][0], mega[1]), detour[-1]]
+with tempfile.NamedTemporaryFile ("w", suffix=".py", delete=False) as file:
+    file.write (CARRIED)
+try:
+    legacy = fresh.legacy ()
+    moved, through = (load (file.name, {"": legacy._replace (ways={**own, wire: way})})[""]
+                      for way in (detour, blocked))
+finally:
+    os.unlink (file.name)
+expect ("a wire kept keeps its way", Drawing (moved).ways ()[wire] == detour != own[wire], True)
+expect ("a kept way through the Mega is left", Drawing (through).ways ()[wire] != blocked, True)
+expect ("a drawing is kept by the ways it keeps", moved.source != through.source, True)
 
 # A standing resistor's body stands clear of a hole that holds something
 # else between its legs, as the 10 kΩ does of the S8050's base in a30.

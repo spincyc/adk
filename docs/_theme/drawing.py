@@ -36,12 +36,13 @@ import sys
 import meter
 
 from bench import (BOARD_HEIGHT, END, MARGIN, MEGA_HEIGHT, MEGA_PINS, MEGA_WIDTH, ROWS, canonical,
-                   load, numbered, parse_hole, rail_column)
+                   identity, load, numbered, parse_hole, rail_column)
 from modules import HOUSING, Lcd1602, Matrix, Motor, Servo, Stepper
 from parts import HeaderModule, Label, Led, Resistor, back_to_front, spots_round
 from pencil import DPI, WIRES, Pencil, leader_start
-from route import (HARD, Placer, Router, bounds_of, corners, direction, node, segment_distance,
-                   segment_meets_box, shape_crosses_segment, text_box, text_width)
+from route import (HARD, STEP, Placer, Router, bounds_of, corners, direction, node,
+                   segment_distance, segment_meets_box, shape_crosses_segment, text_box,
+                   text_width)
 
 MEGA_TINT = "#dfe6e8"
 CLOSEUP_COLUMNS = 16                # the narrowest close-up, so parts keep one scale
@@ -187,6 +188,7 @@ class Drawing:
     def __init__ (self, bench):
         self.bench = bench
         self._routes = None
+        self._paths = None
         self._placed_boxes = []
 
     # Routing -------------------------------------------------------------
@@ -207,6 +209,8 @@ class Drawing:
         if paths is None:
             paths = self._negotiate_all (plans)
             self._remember (plans, paths)
+        paths = self._carry (plans, paths)
+        self._paths = paths
         routes = []
         for index, plan in enumerate (plans):
             drawn = corners (paths[index])
@@ -258,6 +262,67 @@ class Drawing:
                 if not plans[index]["straight"]:
                     paths[index] = self._negotiate (router, plans[index], index, None)
                     router.claim (paths[index], index)
+        return paths
+
+    # Each wire's way across the grid, by what makes it the same wire in
+    # the next lesson (bench.load), for that lesson to keep.
+    def ways (self):
+        self._layout ()
+        return {identity (self.bench, "wire", wire): self._paths[index]
+                for index, wire in enumerate (self.bench.wires)}
+
+    # A wire kept from the lesson before keeps its way there, where that is
+    # still clear and shares no grid with the others', so a build changes
+    # as little on paper as on the bench. Every lesson is routed on its own
+    # first, all at once (route_all), and only then are kept ways put back,
+    # in course order; what that gives is kept too.
+    def _carry (self, plans, paths):
+        bench = self.bench
+        if not bench.ways:
+            return paths
+        name = f"{self._fingerprint (plans)}-{ways_digest (bench.ways)}.json"
+        try:
+            kept = json.loads (recall (name) or "")
+            return {int (index): [tuple (n) for n in path] for index, path in kept.items ()}
+        except ValueError:
+            pass
+        router = self._router ()
+        for index, path in paths.items ():
+            router.claim (path, index)
+        paths = dict (paths)
+        ways = {}
+        for index, plan in enumerate (plans):
+            way = [tuple (n) for n in bench.ways.get (identity (bench, "wire", bench.wires[index]),
+                                                      ())]
+            if way and way[0] != plan["points"][0]:
+                way.reverse ()
+            if way and way[0] == plan["points"][0] and way[-1] == plan["points"][-1] and \
+                    router.free (way, plan["allow"]):
+                ways[index] = way
+        # One kept way can stand in another's new one: put them back until
+        # none more will go. A way that would reach further out than
+        # anything else drawn went round something no longer there.
+        x0, y0, x1, y1 = (v / STEP for v in self._extent ())
+        moved = True
+        while moved:
+            moved = False
+            for index, way in ways.items ():
+                if paths[index] == way:
+                    continue
+                others = [n for other, path in paths.items () if other != index for n in path]
+                if min (n[0] for n in way) < min ([x0] + [n[0] for n in others]) or \
+                        max (n[0] for n in way) > max ([x1] + [n[0] for n in others]) or \
+                        min (n[1] for n in way) < min ([y0] + [n[1] for n in others]) or \
+                        max (n[1] for n in way) > max ([y1] + [n[1] for n in others]):
+                    continue
+                router.unclaim (index)
+                router.claim (way, index)
+                if any (index in router.occupied[n] for n in router.clashes ()[0]):
+                    router.unclaim (index)
+                    router.claim (paths[index], index)
+                else:
+                    paths[index], moved = way, True
+        keep (name, json.dumps (paths))
         return paths
 
     # Routes worked out before are kept (keep) by everything the router is
@@ -1454,6 +1519,12 @@ def shape_crosses (shape, a, b):
             if segment_distance (shape[1:3], shape[3:5], p) < shape[5] + 2:
                 return True
     return False
+
+
+# The ways a bench keeps from the lesson before, as one short digest.
+def ways_digest (ways):
+    text = repr (sorted ((sorted (key[1]), path) for key, path in ways.items ()))
+    return hashlib.sha256 (text.encode ()).hexdigest ()[:16]
 
 
 def boxes_meet (a, b):
