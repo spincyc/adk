@@ -55,6 +55,19 @@ from xml.sax.saxutils import escape, quoteattr
 import yaml
 from mkdocs.exceptions import PluginError
 
+# Nothing may be written outside build/, where make has Python keep its
+# caches. Run by hand, the theme's modules keep theirs there too, as do the
+# processes that draw, and the copy of this file that MkDocs cached in
+# docs/_theme before it ran goes.
+if not sys.pycache_prefix:
+    sys.pycache_prefix = os.path.join (os.path.dirname (os.path.dirname (os.path.dirname (
+        os.path.abspath (__file__)))), "build", "pycache")
+    os.environ["PYTHONPYCACHEPREFIX"] = sys.pycache_prefix
+    try:
+        os.remove (__spec__.cached)
+        os.rmdir (os.path.dirname (__spec__.cached))
+    except (AttributeError, TypeError, OSError):
+        pass                            # not cached, or the folder holds more
 sys.path.insert (0, os.path.dirname (__file__))
 
 from api import document  # noqa: E402

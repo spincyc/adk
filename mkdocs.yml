@@ -70,6 +70,7 @@ extra_javascript:
   - assets/steps.js
   - assets/print.js
 
+# hooks.py goes first: it keeps Python's caches in build/ for the others.
 hooks:
   - docs/_theme/hooks.py
   - docs/_theme/boards.py
