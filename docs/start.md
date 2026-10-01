@@ -144,6 +144,10 @@ An electricity investigation follows the steps on the
 | **If it doesn't work** | The usual mistakes, and how to spot them. |
 | **About the sketch** | In investigations without an upload: why the matching example needs no code. |
 
+A section that relies on a law, such as Ohm's law, ends with a link to it
+in [Laws and formulas](laws/index.md), which states each law directly and
+lists every lesson that relies on it.
+
 You're ready. The first lesson makes an LED blink.
 
 [Start Lesson 1](lessons/001-blink/index.md){ .md-button .md-button--primary }

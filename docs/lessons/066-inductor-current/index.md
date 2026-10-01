@@ -13,6 +13,13 @@ parts:
   - 3 jumper wires (and one spare for the comparison)
 ideas:
   - An inductor slows changes in current
+laws:
+  - {law: prefixes, section: try-it, for: "Turns 0.1 H over about 1 kΩ into microseconds"}
+  - {law: ohms-law, section: why-it-happens, for: "Reads the coil current from the resistor's voltage"}
+  - {law: series, section: try-it, for: "Adds resistor, generator and winding resistance for L ÷ R"}
+  - {law: loading, section: try-it, for: "Blames source and winding resistance for levelling below 4 V"}
+  - {law: budgets, section: build-it, for: "Keeps steady current under the coil's 10 mA rating"}
+  - {law: inductor, section: why-it-happens, for: "Explains current building gradually through the coil"}
 ---
 
 ## What you'll build

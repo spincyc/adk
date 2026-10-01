@@ -29,6 +29,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
     voltage from 0 to 5 V on pins A0 to A15 and turns it into a number from
     0 to 1023. Taught in [Lesson 7](lessons/007-dimmer/index.md#the-idea)
     and [E22](lessons/077-sampling/index.md#why-it-happens).
+    Explained in [Sampling a voltage](laws/signals.md#sampling).
 
 **Alternating current (AC)** { #ac }
 :   Current that flows one way, then the other, again and again. Wall
@@ -39,6 +40,8 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   An amplifier makes a signal larger. Its gain is how many times larger:
     the output's height divided by the input's. Taught in
     [E16](lessons/071-amplifier-gain/index.md#why-it-happens).
+    Explained in
+    [The op-amp with feedback](laws/diodes-transistors-op-amps.md#gain).
 
 **Analog, digital** { #analog }
 :   A digital pin is either on or off. An analog pin measures any voltage
@@ -52,6 +55,8 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
     banded end). Taught in [Lesson 1](lessons/001-blink/index.md#the-idea),
     [Lesson 4](lessons/004-mood-lamp/index.md#the-idea) and
     [E09](lessons/064-one-way-diode/index.md#build-it).
+    Explained in
+    [Forward voltage](laws/diodes-transistors-op-amps.md#forward-voltage).
 
 ## B
 
@@ -59,6 +64,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   How many bits a second a serial port sends. At 9600 baud each bit lasts
     1/9600 of a second, and both ends must agree on it. Taught in
     [E24](lessons/079-serial-link/index.md#why-it-happens).
+    Explained in [Serial timing](laws/digital.md#serial).
 
 **Bit, byte** { #bit }
 :   A bit is a single 0 or 1: off or on. Eight bits make a byte, which can
@@ -82,12 +88,20 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   A part that stores charge. Its voltage rises as charge gathers and falls
     as it leaves. Taught in
     [E07](lessons/062-charge-a-capacitor/index.md#predict).
+    Explained in
+    [A capacitor stores charge](laws/capacitors-and-coils.md#capacitor).
 
 **Channel** { #channel }
 :   A radio setting that radios must share to hear each other: a frequency
     for the E32 modules, or a named group with its own key in Meshtastic.
     Taught in [Lesson 41](lessons/041-lora-link/index.md#the-idea) and
     [Lesson 42](lessons/042-mesh-messenger/index.md#the-idea).
+
+**Charge, coulomb** { #charge }
+:   An amount of electricity, measured in coulombs (C). A current is charge
+    flowing, one coulomb a second for each amp, and a capacitor stores it.
+    Taught in [E07](lessons/062-charge-a-capacitor/index.md#why-it-happens).
+    Explained in [Charge and current](laws/units.md#charge).
 
 **Checksum** { #checksum }
 :   A number made from every byte of a message. The receiver works it out
@@ -112,6 +126,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
     measured in amps (A), or thousandths of an amp, milliamps (mA). Taught
     in [Lesson 1](lessons/001-blink/index.md#the-idea) and
     [E01](lessons/056-close-the-loop/index.md#try-it).
+    Explained in [Charge and current](laws/units.md#charge).
 
 ## D
 
@@ -119,6 +134,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   Radio signal strength in decibels compared with one milliwatt. Received
     signals are negative numbers, and every 10 dBm lower is ten times
     weaker. Taught in [Lesson 40](lessons/040-lora/index.md#the-idea).
+    Explained in [Decibels and dBm](laws/units.md#decibels).
 
 **Dead zone** { #dead-zone }
 :   A small range around a joystick's middle that counts as zero, so a stick
@@ -136,6 +152,8 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
     banded cathode. Taught in
     [Lesson 3](lessons/003-reaction-duel/index.md#the-idea) and
     [E09](lessons/064-one-way-diode/index.md#try-it).
+    Explained in
+    [Forward voltage](laws/diodes-transistors-op-amps.md#forward-voltage).
 
 **Divider** { #divider }
 :   Two resistances in a row across a voltage. The point between them gives
@@ -144,12 +162,16 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
     [Lesson 7](lessons/007-dimmer/index.md#the-idea),
     [Lesson 38](lessons/038-radio-messages/index.md#the-idea) and
     [E06](lessons/061-tap-a-divider/index.md#what-youll-build).
+    Explained in [Voltage dividers](laws/dividers.md).
 
 **Duty cycle** { #duty-cycle }
 :   The share of the time a PWM pin is on: 64 out of 255 is on a quarter of
     the time. See [PWM](#pwm). Taught in
     [Lesson 4](lessons/004-mood-lamp/index.md#the-idea) and
     [E23](lessons/078-pwm-average/index.md#try-it).
+    Explained in [PWM average](laws/signals.md#pwm). A radio's duty cycle
+    is the share of the time it sends: see
+    [Radio airtime](laws/digital.md#airtime).
 
 ## E
 
@@ -175,11 +197,13 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   A circuit that lets slow changes through and smooths fast ones, such as
     a resistor and a capacitor. Taught in
     [E15](lessons/070-filter-and-phase/index.md#why-it-happens).
+    Explained in [RC filters](laws/signals.md#filter).
 
 **Floating** { #floating }
 :   An input joined to nothing. It picks up stray electricity and reads high
     or low at random; a [pull-up](#pull-up) cures it. Taught in
     [Lesson 2](lessons/002-buttons/index.md#the-idea).
+    Explained in [Pull-up and pull-down resistors](laws/digital.md#pull).
 
 **Flyback diode** { #flyback-diode }
 :   A diode across a coil, in a buzzer, a motor or a relay. When the coil is
@@ -187,17 +211,27 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
     it a safe loop. Taught in
     [Lesson 3](lessons/003-reaction-duel/index.md#the-idea) and
     [E12](lessons/067-coil-diode/index.md#try-it).
+    Explained in [Flyback](laws/capacitors-and-coils.md#flyback).
 
 **FM** { #fm }
 :   Frequency modulation: radio that carries sound by wobbling the wave's
     frequency in step with it. Taught in
     [Lesson 37](lessons/037-fm-radio/index.md#the-idea).
 
+**Forward voltage** { #forward-voltage }
+:   The nearly fixed voltage a diode or LED keeps across itself while it
+    conducts: about 0.7 V for a silicon diode, about 2 V for a red LED and
+    about 3 V for a white or blue one. Taught in
+    [Lesson 1](lessons/001-blink/index.md#measure-it) and
+    [E03](lessons/058-resist-the-flow/index.md#why-it-happens).
+    Explained in [Forward voltage](laws/diodes-transistors-op-amps.md#forward-voltage).
+
 **Frequency, hertz** { #frequency }
 :   How many times a second something repeats, measured in hertz (Hz): a
     note's pitch, or a wave on a scope. Taught in
     [Lesson 5](lessons/005-melody-maker/index.md#the-idea) and
     [E14](lessons/069-frequency-and-period/index.md#why-it-happens).
+    Explained in [Frequency and period](laws/signals.md#frequency).
 
 ## G
 
@@ -206,6 +240,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
     voltage is measured from somewhere, usually GND. Taught in
     [Lesson 1](lessons/001-blink/index.md#the-idea) and
     [E01](lessons/056-close-the-loop/index.md#try-it).
+    Explained in [A shared ground](laws/digital.md#ground).
 
 ## H
 
@@ -223,6 +258,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   Two thresholds with a gap between them, so a reading that wobbles near
     one doesn't flip the result back and forth. Taught in
     [Lesson 15](lessons/015-weather-station/index.md#the-idea).
+    Explained in [Schmitt triggers](laws/digital.md#schmitt).
 
 ## I
 
@@ -235,6 +271,8 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   A coil of wire. It pushes back against any change in the current through
     it. Taught in
     [E11](lessons/066-inductor-current/index.md#why-it-happens).
+    Explained in
+    [A coil resists a change in current](laws/capacitors-and-coils.md#inductor).
 
 **Infrared** { #infrared }
 :   Light just beyond red, which eyes can't see. A remote control flickers
@@ -245,6 +283,16 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   A signal that makes the Mega drop what it is doing for a moment to note
     a change on a pin. Taught in
     [Lesson 22](lessons/022-remote-control/index.md#if-it-doesnt-work).
+
+## K
+
+**Kirchhoff's laws** { #kirchhoff }
+:   Two rules for whole circuits. Around any loop, the parts' voltages add
+    up to the supply's; at any junction, the currents in equal the currents
+    out. Taught in
+    [E02](lessons/057-measure-across-and-through/index.md#why-it-happens) and
+    [E05](lessons/060-branches-in-parallel/index.md#why-it-happens).
+    Explained in [Kirchhoff's laws](laws/kirchhoff.md).
 
 ## L
 
@@ -257,6 +305,8 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   A small board that joins a 5 V board to a 3.3 V chip, so each side keeps
     its own voltage. A 3.3 V chip's pins must never see 5 V. Taught in
     [Lesson 28](lessons/028-tilt/index.md#the-idea).
+    Explained in
+    [3.3 V parts beside a 5 V Mega](laws/digital.md#three-volts).
 
 **Library** { #library }
 :   Ready-made code that a sketch brings in with `#include`. ADK is a
@@ -273,6 +323,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   How far a received signal stands above the radio noise, in decibels. A
     LoRa modem reports it with each message. Taught in
     [Lesson 40](lessons/040-lora/index.md#the-idea).
+    Explained in [Decibels and dBm](laws/units.md#decibels).
 
 **Mesh, node** { #mesh }
 :   In a mesh, each radio, or node, passes on any message it hasn't heard
@@ -314,15 +365,18 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 ## O
 
 **Ohm's law** { #ohms-law }
-:   Current is the voltage across a part divided by its resistance: 3 V
+:   Current is the voltage across a resistor divided by its resistance: 3 V
     across 220 Ω is about 14 mA. Taught in
     [Lesson 1](lessons/001-blink/index.md#measure-it) and
     [E02](lessons/057-measure-across-and-through/index.md#try-it).
+    Explained in [Ohm's law](laws/ohms-law.md).
 
 **Op-amp** { #op-amp }
 :   An operational amplifier: a chip that changes its output until the
     voltages at its two inputs, + and −, nearly match. Taught in
     [E17](lessons/072-negative-feedback/index.md#why-it-happens).
+    Explained in
+    [The op-amp with feedback](laws/diodes-transistors-op-amps.md#op-amp).
 
 **Oscilloscope** { #oscilloscope }
 :   A meter that draws a voltage as it changes over time, so you can see a
@@ -336,11 +390,13 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   Paths side by side between the same two points. Each has the same
     voltage across it, and their currents add up. Taught in
     [E05](lessons/060-branches-in-parallel/index.md#why-it-happens).
+    Explained in [Resistors in parallel](laws/kirchhoff.md#parallel).
 
 **Period** { #period }
 :   How long one cycle of a repeating signal takes. It is 1 divided by the
     frequency. Taught in
     [E14](lessons/069-frequency-and-period/index.md#why-it-happens).
+    Explained in [Frequency and period](laws/signals.md#frequency).
 
 **Persistence of vision** { #persistence-of-vision }
 :   Your eye blends flashes too fast to follow into one steady picture,
@@ -351,6 +407,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   How far one wave runs behind another. A filter's output has a phase lag:
     its peaks come late. Taught in
     [E15](lessons/070-filter-and-phase/index.md#why-it-happens).
+    Explained in [RC filters](laws/signals.md#filter).
 
 **Photoresistor** { #photoresistor }
 :   A resistor that light controls: the more light falls on it, the lower
@@ -371,6 +428,13 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
     along the strip and picks off a share of the voltage across it. Taught
     in [Lesson 7](lessons/007-dimmer/index.md#the-idea) and
     [E06](lessons/061-tap-a-divider/index.md#what-youll-build).
+    Explained in [The voltage divider](laws/dividers.md#divider).
+
+**Power, watt** { #power }
+:   How fast a part turns electricity into light, heat or motion: the
+    voltage across it times the current through it, in watts (W). 3 V and
+    14 mA make 42 mW, about 0.04 W. Explained in
+    [Power and heat](laws/power.md).
 
 **Pull-up, pull-down** { #pull-up }
 :   A resistor that holds an input high (a pull-up, to 5 V) or low (a
@@ -379,6 +443,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
     [Lesson 2](lessons/002-buttons/index.md#the-idea),
     [E19](lessons/074-nand-logic/index.md#why-it-happens) and
     [E20](lessons/075-set-reset-latch/index.md#build-it).
+    Explained in [Pull-up and pull-down resistors](laws/digital.md#pull).
 
 **PWM** { #pwm }
 :   Pulse-width modulation: switching a pin on and off hundreds of times a
@@ -386,6 +451,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
     LED's brightness. Taught in
     [Lesson 4](lessons/004-mood-lamp/index.md#the-idea) and
     [E23](lessons/078-pwm-average/index.md#try-it).
+    Explained in [PWM average](laws/signals.md#pwm).
 
 ## R
 
@@ -414,6 +480,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
     resistance in a loop means less current. Taught in
     [Lesson 1](lessons/001-blink/index.md#the-idea) and
     [E03](lessons/058-resist-the-flow/index.md#try-it).
+    Explained in [Ohm's law](laws/ohms-law.md).
 
 **RFID, UID** { #rfid }
 :   Radio-frequency identification: a card with no battery that answers a
@@ -425,6 +492,8 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
     powers draws changing current. A capacitor beside the load shrinks them.
     Taught in
     [E18](lessons/073-power-integrity/index.md#try-it).
+    Explained in
+    [Supply capacitors](laws/capacitors-and-coils.md#decoupling).
 
 **Rotary encoder** { #rotary-encoder }
 :   A knob that turns forever and reports each click and its direction,
@@ -436,26 +505,31 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 **Sample** { #sample }
 :   One reading of a voltage, taken at one moment. Taught in
     [E22](lessons/077-sampling/index.md#code-it).
+    Explained in [Sampling a voltage](laws/signals.md#sampling).
 
 **Schmitt trigger** { #schmitt-trigger }
 :   A gate input with two switching levels, so a slow or noisy signal still
     switches cleanly, once. Taught in
     [E21](lessons/076-schmitt-clock/index.md#try-it).
+    Explained in [Schmitt triggers](laws/digital.md#schmitt).
 
 **Serial port, UART, TX and RX** { #serial-port }
 :   Two wires, one each way, that carry bytes as timed bits. A board's TX
     pin sends and its RX pin listens, so the wires cross over: TX to RX.
     Taught in [Lesson 40](lessons/040-lora/index.md#the-idea) and
     [E24](lessons/079-serial-link/index.md#why-it-happens).
+    Explained in [Serial timing](laws/digital.md#serial).
 
 **Series** { #series }
 :   Parts one after another in a single path. The same current passes
     through each, and they share the voltage. Taught in
     [E04](lessons/059-resistors-in-series/index.md#why-it-happens).
+    Explained in [Resistors in series](laws/kirchhoff.md#series).
 
 **Servo** { #servo }
 :   A motor you give an angle, not a speed: it turns to that angle and holds
     it. Taught in [Lesson 17](lessons/017-servo/index.md#the-idea).
+    Explained in [Servo pulses](laws/signals.md#servo-pulses).
 
 **Seven-segment display** { #seven-segment }
 :   A digit made of seven bar-shaped LEDs, a to g, plus a dot. Taught in
@@ -470,6 +544,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   A path with almost no resistance, such as a wire from 5 V straight to
     GND. It lets far too much current flow and can damage the Mega. Taught
     in [Lesson 7](lessons/007-dimmer/index.md#measure-it).
+    Explained in [A short circuit](laws/power.md#short-circuit).
 
 **Sketch** { #sketch }
 :   A program for an Arduino board. The Arduino IDE compiles it and uploads
@@ -503,12 +578,15 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   The time a capacitor charging through a resistor takes to reach about 63
     % of the way: R × C. Taught in
     [E08](lessons/063-time-an-rc-pair/index.md#why-it-happens).
+    Explained in [The time constant](laws/capacitors-and-coils.md#rc-time).
 
 **Transistor** { #transistor }
 :   A switch with no moving parts. A small current into its base lets a
     larger one flow from its collector to its emitter. Taught in
     [Lesson 3](lessons/003-reaction-duel/index.md#the-idea) and
     [E10](lessons/065-control-with-a-transistor/index.md#try-it).
+    Explained in
+    [The transistor switch](laws/diodes-transistors-op-amps.md#transistor-switch).
 
 **Truth table** { #truth-table }
 :   A list of every combination of a circuit's inputs, with the output each
@@ -532,9 +610,13 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   An op-amp whose output feeds straight back to its − input, so its output
     copies its input without loading it. Taught in
     [E17](lessons/072-negative-feedback/index.md#what-youll-build).
+    Explained in
+    [The follower](laws/diodes-transistors-op-amps.md#follower).
 
 **Voltage, volt** { #voltage }
 :   The push that drives current, measured in volts (V), and always between
     two points, such as a pin and GND. Taught in
     [Lesson 1](lessons/001-blink/index.md#the-idea) and
     [E02](lessons/057-measure-across-and-through/index.md#try-it).
+    Explained in [Quantities and units](laws/units.md#quantities) and
+    [Kirchhoff's voltage law](laws/kirchhoff.md#voltage-law).

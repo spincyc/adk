@@ -11,6 +11,10 @@ parts:
   - 5 jumper wires
 ideas:
   - A serial receiver finds bits by their timing and needs a complete signal path
+laws:
+  - {law: frequency, section: why-it-happens, for: "Turns 9600 baud into a 104 µs bit"}
+  - {law: pull, section: why-it-happens, for: "Holds RX1 at idle high when the link opens"}
+  - {law: serial, section: why-it-happens, for: "Explains UART frames and the receiver's bit timing"}
 ---
 
 ## What you'll build

@@ -14,6 +14,11 @@ ideas:
   - The loudest moment in each half second
   - A water sensor powered only while it reads
   - Alarms that fail loud, because no news isn't good news
+laws:
+  - {law: budgets, section: the-idea, for: "Powers the water sensor's 20 mA from pin A7"}
+  - {law: pwm, section: measure-it, for: "Explains pin 10 averaging about 2.2 V during the alarm"}
+  - {law: sampling, section: the-idea, for: "Measures loudness as the swing of A5's readings"}
+  - {law: airtime, section: the-idea, for: "Sends less often in Europe to stay within a tenth"}
 ---
 
 ## What you'll build

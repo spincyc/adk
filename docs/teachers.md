@@ -152,4 +152,6 @@ after you update ADK: the site always shows the newest lessons.
   [design challenges](electricity/challenges.md) make good assessments.
 
 The [glossary](glossary.md) lists the words the course teaches, each with
-the lesson that teaches it.
+the lesson that teaches it, and [Laws and formulas](laws/index.md) states
+each law the lessons use, with worked examples, questions to check
+understanding and every lesson that relies on it.

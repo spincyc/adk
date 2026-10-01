@@ -14,6 +14,13 @@ ideas:
   - Modes chosen with two pins
   - Channels and power, set by law
   - Sending numbers as text
+laws:
+  - {law: decibels, section: the-idea, for: "Converts 10 mW and 100 mW into dBm"}
+  - {law: divider, section: build-it, for: "Keeps RXD's divider for the modules' 3.3 V pins"}
+  - {law: budgets, section: build-it, for: "Gives the modules' 100 mA the power module's 5 V"}
+  - {law: logic-levels, section: measure-it, for: "Reads AUX's 3.3 V as high"}
+  - {law: pull, section: the-idea, for: "Lifts M0 and M1 to 3.3 V with weak pull-ups"}
+  - {law: airtime, section: the-idea, for: "Keeps each module sending a tenth of the time"}
 ---
 
 ## What you'll build

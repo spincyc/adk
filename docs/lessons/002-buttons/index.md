@@ -17,6 +17,12 @@ ideas:
   - Events and states, wasPressed () and isPressed ()
   - Deciding with if and else
   - Counting in a variable, and the Serial Monitor
+laws:
+  - {law: prefixes, section: the-idea, for: "Names milliseconds as thousandths of a second"}
+  - {law: ohms-law, section: the-idea, for: "Shows a pressed button draws at most 0.25 mA"}
+  - {law: logic-levels, section: the-idea, for: "Reads 5 V as HIGH and 0 V as LOW"}
+  - {law: pull, section: the-idea, for: "Holds each button's pin HIGH with the internal pull-up"}
+  - {law: serial, section: count-the-presses, for: "Matches the Serial Monitor to 9600 bits a second"}
 ---
 
 ## What you'll build

@@ -1,0 +1,187 @@
+# The laws and formulas the lessons rely on, page by page, in the order the
+# navigation lists them. Each page is docs/laws/<page>.md, and each law is a
+# section there that starts with <!-- law <id> -->, which shows the law's
+# words, formula and units from here. Which lessons rely on a law is said by
+# the lessons themselves, in their front matter (docs/contributing.md,
+# Adding a lesson); docs/_theme/laws.py builds the tables and links.
+
+- page: units
+  title: Quantities and units
+  laws:
+    - id: prefixes
+      name: Units and prefixes
+      formula: 1 kΩ = 1000 Ω · 1 mA = 0.001 A · 1 µF = 0.000001 F
+      units: k is a thousand, m a thousandth, µ a millionth, n a billionth
+      words: Write each number in its plain unit, work it out, then put a prefix back.
+    - id: charge
+      name: Charge and current
+      formula: I = Q ÷ t
+      units: I in amps, Q in coulombs, t in seconds
+      words: A current is charge flowing; one amp is one coulomb each second.
+    - id: decibels
+      name: Decibels and dBm
+      formula: power in mW = 10<sup>dBm ÷ 10</sup>
+      units: dBm is decibels compared with one milliwatt
+      words: Every 10 dB is ten times the power; every 3 dB about twice.
+
+- page: ohms-law
+  title: Ohm's law
+  laws:
+    - id: ohms-law
+      name: Ohm's law
+      formula: V = I × R
+      units: V in volts, I in amps, R in ohms; or V, mA and kΩ
+      words: The voltage across a resistor is the current through it times its resistance.
+
+- page: kirchhoff
+  title: Kirchhoff's laws, series and parallel
+  laws:
+    - id: voltage-law
+      name: Kirchhoff's voltage law
+      formula: supply voltage = sum of the voltages across the parts in a loop
+      units: all in volts
+      words: Parts in one loop share the supply's voltage.
+    - id: current-law
+      name: Kirchhoff's current law
+      formula: current into a junction = sum of the currents out
+      units: all in amps, or all in mA
+      words: Branch currents add up to the current that feeds them.
+    - id: series
+      name: Resistors in series
+      formula: R = R₁ + R₂ + …
+      units: all in ohms
+      words: Parts in a row carry the same current, and their resistances add.
+    - id: parallel
+      name: Resistors in parallel
+      formula: R = R₁ × R₂ ÷ (R₁ + R₂)
+      units: all in ohms
+      words: Parts side by side share the same voltage, and together resist less than either.
+
+- page: dividers
+  title: Voltage dividers
+  laws:
+    - id: divider
+      name: The voltage divider
+      formula: V<sub>out</sub> = V<sub>in</sub> × R₂ ÷ (R₁ + R₂)
+      units: voltages in volts; R₂ is the resistor from the output to GND
+      words: Two resistors in series give a fixed fraction of a voltage between them.
+    - id: loading
+      name: Loading a divider
+      formula: a divider acts like V<sub>out</sub> behind R₁ ∥ R₂
+      units: voltages in volts, resistances in ohms
+      words: A load on a divider's middle pulls its voltage down; keep loads much larger than the divider.
+
+- page: power
+  title: Power and heat
+  laws:
+    - id: power
+      name: The power law
+      formula: P = V × I = I² × R = V² ÷ R
+      units: P in watts, V in volts, I in amps; or mW, V and mA
+      words: Power is the voltage across a part times the current through it.
+    - id: budgets
+      name: Ratings and current budgets
+      formula: total current on a supply ≤ what the supply can give
+      units: currents in mA
+      words: Each part and supply has a limit; add up what a supply feeds and keep under it.
+
+- page: capacitors-and-coils
+  title: Capacitors and coils
+  laws:
+    - id: capacitor
+      name: A capacitor stores charge
+      formula: Q = C × V
+      units: Q in coulombs, C in farads, V in volts
+      words: A capacitor holds charge in proportion to its voltage, and passes current only while that voltage changes.
+    - id: rc-time
+      name: The time constant τ = R × C
+      formula: τ = R × C
+      units: τ in seconds, R in ohms, C in farads; or ms, kΩ and µF
+      words: Through a resistor, a capacitor goes 63 % of the way to a new voltage in one τ.
+    - id: inductor
+      name: A coil resists a change in current
+      formula: τ = L ÷ R
+      units: τ in seconds, L in henrys, R in ohms
+      words: A coil's current can't jump; through a resistor it changes over a time constant L ÷ R.
+    - id: flyback
+      name: Flyback
+      formula: a diode across the coil, banded end to the supply
+      units: the spike stays within about 0.7 V of the supply
+      words: A coil switched off makes a spike unless a diode gives its current a path.
+
+- page: diodes-transistors-op-amps
+  title: Diodes, transistors and op-amps
+  laws:
+    - id: forward-voltage
+      name: Forward voltage
+      formula: about 0.7 V for silicon · about 2 V for a red LED · about 3 V for white or blue
+      units: volts, at a few milliamps
+      words: A diode conducts one way, keeping a nearly fixed voltage, so something else must set its current.
+    - id: transistor-switch
+      name: The transistor switch
+      formula: I<sub>collector</sub> ≤ β × I<sub>base</sub>, with the base about 0.7 V above the emitter
+      units: currents in mA; β is a hundred or more for the S8050
+      words: A small base current switches a much larger collector current.
+    - id: op-amp
+      name: The op-amp with feedback
+      formula: gain = 1 + R<sub>f</sub> ÷ R<sub>g</sub>
+      units: R<sub>f</sub> from the output to the − input, R<sub>g</sub> from there to GND
+      words: With feedback, an op-amp moves its output until its two inputs match.
+
+- page: signals
+  title: Waves, PWM and sampling
+  laws:
+    - id: frequency
+      name: Frequency and period
+      formula: f = 1 ÷ T
+      units: f in hertz, T in seconds; or kHz and ms
+      words: Frequency is cycles each second, and the period is the time for one.
+    - id: pwm
+      name: PWM average
+      formula: average voltage = duty cycle × 5 V
+      units: volts; the duty cycle is a fraction, level ÷ 255
+      words: A pin switched fast looks, on average, like the fraction of time it is on.
+    - id: servo-pulses
+      name: Servo pulses
+      formula: 544 µs → 0° · 2400 µs → 180° · a pulse every 20 ms
+      units: pulse widths in µs, millionths of a second
+      words: A servo turns to the angle that the length of each pulse asks for.
+    - id: sampling
+      name: Sampling a voltage
+      formula: reading ≈ V ÷ 5 V × 1023
+      units: one step is about 4.9 mV
+      words: The Mega turns 0 to 5 V into a number from 0 to 1023, one sample at a time.
+    - id: filter
+      name: RC filters
+      formula: f<sub>c</sub> = 1 ÷ (2π × R × C)
+      units: f<sub>c</sub> in hertz, R in ohms, C in farads
+      words: A resistor and capacitor pass slow changes and smooth fast ones, or the other way round.
+
+- page: digital
+  title: Logic levels and serial
+  laws:
+    - id: logic-levels
+      name: Logic levels
+      formula: LOW below about 1.5 V · HIGH above about 3 V, on the Mega at 5 V
+      units: volts
+      words: A digital input reads HIGH or LOW by which side of a threshold its voltage is.
+    - id: pull
+      name: Pull-up and pull-down resistors
+      formula: at most 5 V ÷ R flows while the button is pressed
+      units: R in kΩ gives mA
+      words: A resistor to 5 V or GND holds an input at a known level until something overrides it.
+    - id: schmitt
+      name: Schmitt triggers
+      formula: switch up at about 2.7 V · switch down at about 1.7 V, for a 74HC14 at 5 V
+      units: volts
+      words: Two thresholds instead of one stop a slow or noisy input from flickering.
+    - id: serial
+      name: Serial timing
+      formula: one bit lasts 1 ÷ baud rate · a byte takes ten bits
+      units: baud is bits each second; 9600 baud is about 104 µs a bit
+      words: Both ends of a serial link must agree on how long each bit lasts.
+    - id: airtime
+      name: Radio airtime
+      formula: share of airtime = time sending ÷ total time
+      units: a fraction; in Europe a tenth on most of the course's bands, a hundredth at 868.1 MHz
+      words: A radio that shares a band must keep the fraction of time it sends under the limit.

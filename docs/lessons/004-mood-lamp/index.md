@@ -16,6 +16,11 @@ ideas:
   - Colors as numbers, and fading between them
   - A list of colors, and constants that never change
   - The color wheel
+laws:
+  - {law: ohms-law, section: measure-it, for: "Works out blue's 8 mA through its 220 Ω resistor"}
+  - {law: voltage-law, section: measure-it, for: "Finds what each LED leaves for its resistor"}
+  - {law: forward-voltage, section: the-idea, for: "Explains green and blue LEDs keeping about 3.2 V"}
+  - {law: pwm, section: the-idea, for: "Sets each color's brightness by its share of time on"}
 ---
 
 ## What you'll build

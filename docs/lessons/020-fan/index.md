@@ -18,6 +18,12 @@ ideas:
   - The H-bridge, which turns a motor either way
   - PWM on the enable pin sets the speed
   - A separate supply for the motor, with a shared GND
+laws:
+  - {law: voltage-law, section: the-idea, for: "Leaves the motor about 3 V after the chip's share"}
+  - {law: budgets, section: the-idea, for: "Keeps the motor's 200 mA off a 20 mA pin"}
+  - {law: flyback, section: the-idea, for: "Explains the motor coil's kick when switched off"}
+  - {law: transistor-switch, section: the-idea, for: "Turns the motor either way with the L293D's H-bridge"}
+  - {law: pwm, section: measure-it, for: "Shows the enable pin's PWM as an average voltage"}
 ---
 
 ## What you'll build

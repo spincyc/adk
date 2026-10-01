@@ -17,6 +17,12 @@ ideas:
   - Setting an angle with the width of a pulse
   - Why motors need their own power supply
   - Jumping or gliding to a position
+laws:
+  - {law: prefixes, section: the-idea, for: "Gives pulse widths in µs, millionths of a second"}
+  - {law: divider, section: measure-it, for: "Reads the knob's wiper voltage as an angle"}
+  - {law: budgets, section: the-idea, for: "Gives the servo its own supply for its current bursts"}
+  - {law: servo-pulses, section: the-idea, for: "Turns an angle into a pulse of 544 to 2400 µs"}
+  - {law: sampling, section: build-it, for: "Feeds the knob from the Mega's own reference 5 V"}
 ---
 
 ## What you'll build

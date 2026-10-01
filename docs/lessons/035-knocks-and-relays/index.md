@@ -19,6 +19,12 @@ ideas:
   - A rhythm written as letters, and checked letter by letter
   - Relays, and circuits that are separate
   - Never mains
+laws:
+  - {law: ohms-law, section: the-idea, for: "Works out the battery lamp's 7 mA through 1 kΩ"}
+  - {law: voltage-law, section: measure-it, for: "Adds resistor and LED readings back to the battery's"}
+  - {law: flyback, section: if-it-doesnt-work, for: "Puts a diode across the relay coil for its kick"}
+  - {law: forward-voltage, section: the-idea, for: "Takes the red LED's 2 V from 9 V"}
+  - {law: transistor-switch, section: if-it-doesnt-work, for: "Switches the relay coil's 70 mA from a few mA"}
 ---
 
 ## What you'll build

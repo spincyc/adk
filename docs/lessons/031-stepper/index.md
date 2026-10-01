@@ -17,6 +17,9 @@ ideas:
   - Half-steps and gearing
   - Why the motor needs a driver and its own power
   - Counting steps to reach an exact angle
+laws:
+  - {law: budgets, section: the-idea, for: "Keeps the coils' 200 mA off the Mega's pins"}
+  - {law: transistor-switch, section: build-it, for: "Lets a pin's milliamp switch a coil's 200 mA"}
 ---
 
 ## What you'll build

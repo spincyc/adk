@@ -11,6 +11,9 @@ parts:
   - Digital multimeter with DC volts
 ideas:
   - A potentiometer's wiper gives an adjustable fraction of its supply voltage
+laws:
+  - {law: divider, section: why-it-happens, for: "Explains the wiper's voltage as a fraction of 5 V"}
+  - {law: sampling, section: why-it-happens, for: "Maps the wiper's fraction of 5 V onto 0–1023"}
 ---
 
 ## What you'll build

@@ -1827,6 +1827,41 @@ body.building-along {
     font-weight: 600;
 }
 
+/* Laws ------------------------------------------------------------------- */
+
+/* A law's statement, at the start of its section: what it says, its
+   formula and its units, from docs/_theme/laws.yml. */
+.md-typeset .law-statement {
+    margin: 1rem 0 1.5rem;
+    padding: 0.8rem 1.25rem 0.2rem;
+    border: 1px solid var(--adk-rule);
+    border-left: 3px solid var(--adk-red);
+    border-radius: 0.5rem;
+    background: var(--adk-card);
+}
+
+.md-typeset .law-statement > p:first-child {
+    margin-top: 0;
+    font-weight: 600;
+}
+
+.md-typeset .law-statement .formula {
+    margin: 0.6rem 0;
+}
+
+.md-typeset .law-units {
+    margin-top: 0;
+    font-size: 0.8em;
+    text-align: center;
+    color: var(--adk-muted);
+}
+
+/* The link at the end of a lesson's section to the laws it relies on. */
+.md-typeset .law-links {
+    font-size: 0.8em;
+    color: var(--adk-muted);
+}
+
 /* Home page -------------------------------------------------------------- */
 
 .hero {

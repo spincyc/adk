@@ -14,6 +14,12 @@ ideas:
   - Which way round an LED goes
   - Why an LED needs a resistor
   - setup () and loop ()
+laws:
+  - {law: prefixes, section: code-it, for: "Counts 500 milliseconds as half a second"}
+  - {law: ohms-law, section: measure-it, for: "Works out the LED's 14 mA through 220 Ω"}
+  - {law: voltage-law, section: measure-it, for: "Shows the resistor and LED share the pin's 5 V"}
+  - {law: budgets, section: measure-it, for: "Keeps the LED's 14 mA under a pin's 20 mA"}
+  - {law: forward-voltage, section: measure-it, for: "Explains the LED keeping about 2 V whatever the resistor"}
 ---
 
 ## What you'll build

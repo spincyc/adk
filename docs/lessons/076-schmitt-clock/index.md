@@ -18,6 +18,12 @@ parts:
   - Stopwatch
 ideas:
   - An RC path and Schmitt thresholds can make a repeating clock
+laws:
+  - {law: prefixes, section: predict, for: "Multiplies 100 kΩ by 10 µF to get 1 second"}
+  - {law: series, section: change-one-thing, for: "Doubles R with two 100 kΩ in series"}
+  - {law: rc-time, section: why-it-happens, for: "Times the charge and fall between the two thresholds"}
+  - {law: frequency, section: try-it, for: "Times ten blinks to find one blink's period"}
+  - {law: schmitt, section: why-it-happens, for: "Uses the 2.7 V and 1.7 V switching thresholds"}
 ---
 
 ## What you'll build

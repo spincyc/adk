@@ -20,6 +20,9 @@ ideas:
   - A machine that works in steps
   - A function that answers with a struct
   - Two motors sharing one supply
+laws:
+  - {law: budgets, section: the-idea, for: "Keeps servo and fan within the module's 700 mA"}
+  - {law: pwm, section: measure-it, for: "Works out the enable pin's average voltage from distance"}
 ---
 
 ## What you'll build

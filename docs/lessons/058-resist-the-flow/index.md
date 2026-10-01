@@ -14,6 +14,11 @@ parts:
   - Digital multimeter with DC volts
 ideas:
   - More resistance reduces current in the same LED path
+laws:
+  - {law: prefixes, section: try-it, for: "Converts kΩ to Ω before finding each current in mA"}
+  - {law: ohms-law, section: why-it-happens, for: "Shows more resistance gives less current for 3 V"}
+  - {law: voltage-law, section: why-it-happens, for: "Gives each resistor the 3 V the LED leaves"}
+  - {law: forward-voltage, section: why-it-happens, for: "Uses the LED's steady 2 V to find resistor voltage"}
 ---
 
 ## What you'll build

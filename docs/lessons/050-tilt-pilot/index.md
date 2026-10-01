@@ -14,6 +14,8 @@ ideas:
   - How often a value can cross the air
   - Smoothing before sending, and gliding after
   - Sending only what has changed
+laws:
+  - {law: logic-levels, section: measure-it, for: "Shifts I2C between the Mega's 5 V and 3.3 V"}
 ---
 
 ## What you'll build

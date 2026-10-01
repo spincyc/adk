@@ -13,6 +13,11 @@ parts:
   - Digital multimeter with DC volts
 ideas:
   - Parallel branches share a voltage, and their currents add
+laws:
+  - {law: prefixes, section: why-it-happens, for: "Reads 10 mV across 10 Ω as 1 mA"}
+  - {law: ohms-law, section: why-it-happens, for: "Finds branch and feed currents from resistor voltages"}
+  - {law: current-law, section: why-it-happens, for: "Adds two 3 mA branch currents to 6 mA"}
+  - {law: power, section: build-it, for: "Warns the 10 Ω feed heats if joined across 5 V"}
 ---
 
 ## What you'll build

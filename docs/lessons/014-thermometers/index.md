@@ -18,6 +18,12 @@ ideas:
   - A whole thermometer on one chip
   - Comparing sensors
   - Numbers with decimals, float
+laws:
+  - {law: ohms-law, section: measure-it, for: "Works the thermistor's resistance back from its voltage"}
+  - {law: voltage-law, section: measure-it, for: "Adds the divider's two shares back to 5 V"}
+  - {law: divider, section: the-idea, for: "Turns the thermistor's resistance into a voltage on A2"}
+  - {law: sampling, section: the-idea, for: "Works out A2's reading at 25 °C and 30 °C"}
+  - {law: pull, section: build-it, for: "Explains the pull-up on each module's data wire"}
 ---
 
 ## What you'll build

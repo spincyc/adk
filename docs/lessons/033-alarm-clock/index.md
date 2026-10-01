@@ -19,6 +19,10 @@ ideas:
   - Times of day as one number
   - Setting a value with a knob
   - Playing a tune and moving a flag while the clock keeps going
+laws:
+  - {law: loading, section: measure-it, for: "Explains the pin sagging below 5 V under the buzzer"}
+  - {law: budgets, section: build-it, for: "Keeps the buzzer's current within what a pin should give"}
+  - {law: pwm, section: measure-it, for: "Explains the buzzer pin averaging about half of 5 V"}
 ---
 
 ## What you'll build

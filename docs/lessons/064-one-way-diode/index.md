@@ -12,6 +12,8 @@ parts:
   - 3 jumper wires
 ideas:
   - A diode conducts mainly in one direction
+laws:
+  - {law: forward-voltage, section: why-it-happens, for: "Explains the reversed diode blocking current"}
 ---
 
 ## What you'll build

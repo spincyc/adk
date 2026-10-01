@@ -15,6 +15,10 @@ ideas:
   - Why the latch lives inside
   - A card's number in a long
   - Putting two arcs together
+laws:
+  - {law: current-law, section: the-idea, for: "Adds the reader's and modem's draws on 3.3 V"}
+  - {law: divider, section: board-b-the-door, for: "Keeps the reader's four inputs behind 1 kΩ/2 kΩ dividers"}
+  - {law: budgets, section: the-idea, for: "Keeps the 3.3 V pin within its 50 mA"}
 ---
 
 ## What you'll build

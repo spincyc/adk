@@ -19,6 +19,10 @@ ideas:
   - Grouping a card and a name together
   - A device as a set of states
   - Putting a whole course together
+laws:
+  - {law: divider, section: build-it, for: "Keeps the reader's four 1 kΩ/2 kΩ input dividers"}
+  - {law: budgets, section: build-it, for: "Keeps the servo on the module, reader on 3.3 V"}
+  - {law: transistor-switch, section: measure-it, for: "Switches the buzzer's rail current from pin 12's few mA"}
 ---
 
 ## What you'll build

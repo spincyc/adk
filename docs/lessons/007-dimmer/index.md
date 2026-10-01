@@ -15,6 +15,15 @@ ideas:
   - The potentiometer as a voltage divider
   - Scaling a reading to the range you need
   - Dimming with PWM, and the Serial Plotter
+laws:
+  - {law: ohms-law, section: build-it, for: "Works out the white LED's 8 mA through 220 Ω"}
+  - {law: voltage-law, section: measure-it, for: "Adds the knob's two shares back to 5 V"}
+  - {law: divider, section: the-idea, for: "Makes the knob's wiper voltage from 5 V"}
+  - {law: power, section: build-it, for: "Warns a wiper joined to 5 V or GND heats"}
+  - {law: forward-voltage, section: build-it, for: "Gives the white LED about 3.2 V"}
+  - {law: pwm, section: measure-it, for: "Shows pin 3 averaging a quarter of 5 V"}
+  - {law: sampling, section: the-idea, for: "Reads the knob's voltage as 0 to 1023"}
+  - {law: serial, section: code-it, for: "Allows for each line's sending time at 9600 baud"}
 ---
 
 ## What you'll build

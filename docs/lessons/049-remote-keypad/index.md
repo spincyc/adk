@@ -15,6 +15,10 @@ ideas:
   - A key press crosses the air as a count, with its key
   - An answer that comes back
   - A secret that stays on one board
+laws:
+  - {law: divider, section: build-it, for: "Keeps RXD behind its 1 kΩ/2 kΩ divider"}
+  - {law: budgets, section: build-it, for: "Keeps the servo on the power module, never the Mega"}
+  - {law: pwm, section: measure-it, for: "Works out the blue pin's 0.8 V average"}
 ---
 
 ## What you'll build

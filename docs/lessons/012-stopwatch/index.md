@@ -16,6 +16,10 @@ ideas:
   - Counting down, and a beep at zero
   - Splitting a time into seconds and tenths
   - "Choosing between two values with ?:"
+laws:
+  - {law: transistor-switch, section: build-it, for: "Switches the active buzzer through an S8050 driver"}
+  - {law: pwm, section: measure-it, for: "Averages the dot's line, lit a quarter of the time"}
+  - {law: pull, section: measure-it, for: "Shows the pull-up holding start/stop's pin at 5 V"}
 ---
 
 ## What you'll build

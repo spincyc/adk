@@ -23,6 +23,9 @@ ideas:
   - Exit and entry delays
   - Keying in a code, digit by digit
   - Combining a sensor, a remote, a screen and sound
+laws:
+  - {law: transistor-switch, section: build-it, for: "Switches the buzzer's rail current from pin 12"}
+  - {law: pwm, section: measure-it, for: "Reads each state's color as average pin voltages"}
 ---
 
 ## What you'll build

@@ -13,6 +13,10 @@ parts:
   - Stopwatch
 ideas:
   - Resistance times capacitance sets the charging timescale
+laws:
+  - {law: prefixes, section: why-it-happens, for: "Multiplies kΩ by µF to get seconds"}
+  - {law: series, section: why-it-happens, for: "Doubles the resistance with two 10 kΩ in series"}
+  - {law: rc-time, section: why-it-happens, for: "Predicts 10 s and 20 s from R × C"}
 ---
 
 ## What you'll build

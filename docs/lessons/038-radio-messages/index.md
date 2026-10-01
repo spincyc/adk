@@ -19,6 +19,12 @@ ideas:
   - A checksum that throws damaged messages away
   - A rest after every message, set by law
   - A divider that turns 5 V into 3.3 V
+laws:
+  - {law: series, section: build-it, for: "Makes 2 kΩ from two 1 kΩ in a row"}
+  - {law: divider, section: the-idea, for: "Drops pin 46's 5 V to 3.3 V for DAT"}
+  - {law: pwm, section: measure-it, for: "Reads the receiver's noisy DATA as about 2.5 V"}
+  - {law: logic-levels, section: the-idea, for: "Drives the 3.3 V transmitter's DAT high without 5 V"}
+  - {law: serial, section: the-idea, for: "Sends 2000 bits a second, each letter as balanced groups"}
 ---
 
 ## What you'll build

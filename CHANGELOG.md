@@ -27,6 +27,15 @@
   compiles; two-board lessons say how to tell two Megas' ports apart and
   remind Europe of its airtime; Lesson 42 is optional. Longer sketches say
   on their page why they need the length.
+- **Laws and formulas.** Nine new pages state the laws the lessons rely
+  on: units and decibels, Ohm's law, Kirchhoff's laws with series and
+  parallel, dividers, power, capacitors and coils, diodes, transistors and
+  op-amps, waves and sampling, and logic levels and serial. Each works
+  through the course's own circuits and ends with questions. Each lesson
+  lists the laws it relies on in its front matter; the section that relies
+  on one ends with a link to it, and the law's page lists every lesson
+  that does. The glossary links to them and gains charge, forward voltage,
+  Kirchhoff's laws and power.
 - **Electricity.** Every investigation has the same sections and a change
   to try; E05, E10, E18, E21 and E24 now show their idea rather than state
   it; E07, E09, E10, E11 and E13 have schematics.

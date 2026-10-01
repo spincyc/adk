@@ -22,6 +22,9 @@ ideas:
   - Stopping guessers with a lockout
   - Memory that survives the power going off (EEPROM)
   - A servo as a latch
+laws:
+  - {law: budgets, section: build-it, for: "Keeps the servo on the power module's own supply"}
+  - {law: transistor-switch, section: build-it, for: "Lets pin 12 switch the buzzer through a transistor"}
 ---
 
 ## What you'll build

@@ -17,6 +17,9 @@ ideas:
   - Walls stored as bits, and testing one bit
   - Choosing a level with the encoder
   - Putting a whole game together
+laws:
+  - {law: pwm, section: measure-it, for: "Shows high and low notes both average 2.5 V"}
+  - {law: logic-levels, section: measure-it, for: "Keeps SDA at the sensor's 3.3 V through the shifter"}
 ---
 
 ## What you'll build

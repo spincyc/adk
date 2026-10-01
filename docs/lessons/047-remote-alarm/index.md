@@ -14,6 +14,9 @@ ideas:
   - Why the first number heard isn't news
   - A setting sent back the other way
   - Tripwires far from the alarm
+laws:
+  - {law: transistor-switch, section: board-a-in-the-den, for: "Switches the buzzer through the S8050 driver"}
+  - {law: pull, section: measure-it, for: "Shows the pull-up holding the tilt switch's pin high"}
 ---
 
 ## What you'll build

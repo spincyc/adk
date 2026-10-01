@@ -1,3 +1,8 @@
+---
+laws:
+  - {law: divider, section: checkpoint-diagnose-a-divider, for: "Traces a tap reading 5 V to a missing return"}
+---
+
 # When the result surprises you
 
 Begin with the exact symptom, then trace the circuit one node at a time.

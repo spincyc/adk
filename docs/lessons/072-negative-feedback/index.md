@@ -16,6 +16,13 @@ parts:
   - 6 more jumper wires, or 16 in all if you start here
 ideas:
   - Negative feedback makes an output follow an input while feeding a load
+laws:
+  - {law: ohms-law, section: why-it-happens, for: "Gives the 2 mA the follower supplies to 1 kΩ"}
+  - {law: parallel, section: why-it-happens, for: "Combines the load and lower track into 800 Ω"}
+  - {law: divider, section: why-it-happens, for: "Places 2.0 V at 40% along the knob's track"}
+  - {law: loading, section: why-it-happens, for: "Predicts the wiper's fall to 0.59 V under 1 kΩ"}
+  - {law: op-amp, section: why-it-happens, for: "Explains the follower holding 2.0 V under load"}
+  - {law: sampling, section: try-it, for: "Expects A0 near 410 for a 2.0 V wiper"}
 ---
 
 ## What you'll build

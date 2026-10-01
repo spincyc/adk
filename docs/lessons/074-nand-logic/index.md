@@ -15,6 +15,9 @@ parts:
   - 17 jumper wires
 ideas:
   - A NAND gate gives a low output only when both inputs are high
+laws:
+  - {law: logic-levels, section: why-it-happens, for: "Treats 5 V as high and GND as low"}
+  - {law: pull, section: why-it-happens, for: "Holds released button inputs low"}
 ---
 
 ## What you'll build

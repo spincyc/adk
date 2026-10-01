@@ -17,6 +17,13 @@ ideas:
   - Measuring time with a timer and a stopwatch
   - A game as a set of states
   - The active buzzer, switched by a transistor
+laws:
+  - {law: voltage-law, section: measure-it, for: "Shows the buzzer taking nearly all the 5 V rail"}
+  - {law: budgets, section: build-it, for: "Keeps the buzzer's 30 mA off a 20 mA pin"}
+  - {law: flyback, section: build-it, for: "Puts a diode across the buzzer for its switch-off spike"}
+  - {law: forward-voltage, section: measure-it, for: "Shows the yellow LED keeping about 2 V"}
+  - {law: transistor-switch, section: build-it, for: "Switches the active buzzer through an S8050 from pin 12"}
+  - {law: pull, section: build-it, for: "Holds the transistor off with 10 kΩ at start-up"}
 ---
 
 ## What you'll build

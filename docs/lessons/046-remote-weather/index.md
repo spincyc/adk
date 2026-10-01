@@ -14,6 +14,9 @@ ideas:
   - How often to send
   - A report number, to tell a new report from an old one
   - Saying when the news is old
+laws:
+  - {law: divider, section: measure-it, for: "Explains A1 falling when the photoresistor is covered"}
+  - {law: sampling, section: measure-it, for: "Turns A1's 2.5 V into Light 50%"}
 ---
 
 ## What you'll build

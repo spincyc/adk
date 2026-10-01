@@ -1,3 +1,8 @@
+---
+laws:
+  - {law: divider, section: trace-one-divider, for: "Predicts 2.5 V at the equal-resistor tap"}
+---
+
 # Follow the nodes
 
 A schematic shows **which points are connected**. A breadboard shows

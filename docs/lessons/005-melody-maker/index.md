@@ -17,6 +17,16 @@ ideas:
   - A list of keys, and one loop for them all
   - Playing a tune while the sketch carries on
   - Why a sounding buzzer stops pins 9 and 10 dimming
+laws:
+  - {law: ohms-law, section: the-idea, for: "Shows the bare 16 Ω coil would draw 310 mA"}
+  - {law: voltage-law, section: measure-it, for: "Adds buzzer and resistor voltages back to pin 10's"}
+  - {law: series, section: the-idea, for: "Adds the coil's 16 Ω to its 220 Ω resistor"}
+  - {law: divider, section: measure-it, for: "Shares pin 10's voltage by resistance between coil and resistor"}
+  - {law: loading, section: measure-it, for: "Explains pin 10 sagging below 5 V under the buzzer"}
+  - {law: budgets, section: the-idea, for: "Keeps the buzzer coil under a pin's 20 mA"}
+  - {law: flyback, section: the-idea, for: "Explains why the passive buzzer needs no flyback diode"}
+  - {law: frequency, section: the-idea, for: "Sets each note's pitch in vibrations a second"}
+  - {law: pwm, section: measure-it, for: "Explains pin 10 reading about half of 5 V"}
 ---
 
 ## What you'll build

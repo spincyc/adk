@@ -13,6 +13,9 @@ parts:
   - 3 jumper wires
 ideas:
   - Frequency counts cycles per second, and period is the time for one cycle
+laws:
+  - {law: frequency, section: why-it-happens, for: "Shows period as one second divided by frequency"}
+  - {law: filter, section: why-it-happens, for: "Explains the high-pass shrinking the 100 Hz output"}
 ---
 
 ## What you'll build

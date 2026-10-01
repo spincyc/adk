@@ -15,6 +15,9 @@ parts:
   - 17 jumper wires
 ideas:
   - Feedback between two NAND gates holds a bit after a button is released
+laws:
+  - {law: logic-levels, section: why-it-happens, for: "Traces high and low levels round the latch"}
+  - {law: pull, section: why-it-happens, for: "Holds released Set and Reset inputs high"}
 ---
 
 ## What you'll build

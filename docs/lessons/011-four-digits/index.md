@@ -15,6 +15,12 @@ ideas:
   - Persistence of vision
   - adk::Every, doing something on a steady beat
   - Showing numbers and words
+laws:
+  - {law: ohms-law, section: the-idea, for: "Sets about 1.5 mA per segment with 2 kΩ"}
+  - {law: current-law, section: the-idea, for: "Adds a digit's lit segments to about 12 mA"}
+  - {law: budgets, section: the-idea, for: "Keeps a digit pin's 12 mA under 20 mA"}
+  - {law: frequency, section: the-idea, for: "Refreshes four 2 ms digits 125 times a second"}
+  - {law: pwm, section: measure-it, for: "Averages a digit pin lit a quarter of the time"}
 ---
 
 ## What you'll build

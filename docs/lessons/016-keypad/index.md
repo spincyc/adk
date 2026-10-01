@@ -14,6 +14,8 @@ ideas:
   - Scanning, one row at a time
   - Building a number from its digits
   - A running total
+laws:
+  - {law: pull, section: the-idea, for: "Holds the keypad's columns high while rows are scanned"}
 ---
 
 ## What you'll build

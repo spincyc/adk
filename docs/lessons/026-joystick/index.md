@@ -15,6 +15,11 @@ ideas:
   - Reading an axis from −100 to 100
   - The dead zone in the middle
   - Directions for games
+laws:
+  - {law: divider, section: the-idea, for: "Reads each joystick axis as a knob's wiper voltage"}
+  - {law: sampling, section: the-idea, for: "Reads each axis as 0 to 1023, 512 at rest"}
+  - {law: pull, section: measure-it, for: "Shows the pull-up holding the clear button's pin high"}
+  - {law: schmitt, section: the-idea, for: "Uses two thresholds so a held stick doesn't flicker"}
 ---
 
 ## What you'll build

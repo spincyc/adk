@@ -17,6 +17,9 @@ ideas:
   - A state and an event, shared in different ways
   - Sending a remote's code with an infrared LED
   - Which codes a TV will obey
+laws:
+  - {law: ohms-law, section: if-it-doesnt-work, for: "Gives the IR LED about 17 mA through 220 Ω"}
+  - {law: frequency, section: the-idea, for: "Flickers the IR LED 38,000 times a second for receivers"}
 ---
 
 ## What you'll build

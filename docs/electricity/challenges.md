@@ -1,3 +1,10 @@
+---
+laws:
+  - {law: parallel, section: loaded-divider, for: "Combines two 1 kΩ resistors into 500 Ω"}
+  - {law: divider, section: loaded-divider, for: "Finds the tap from 1 kΩ over 500 Ω"}
+  - {law: loading, section: loaded-divider, for: "Predicts the tap's fall to 1.67 V under load"}
+---
+
 # Change one thing, then explain it
 
 A design challenge starts with a working circuit and a prediction. Draw

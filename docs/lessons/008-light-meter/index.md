@@ -18,6 +18,11 @@ ideas:
   - Smoothing a jumpy reading
   - Keeping a number in range with min, max and constrain
   - Big whole numbers, with long
+laws:
+  - {law: voltage-law, section: measure-it, for: "Adds the divider's two shares back to 5 V"}
+  - {law: current-law, section: build-it, for: "Totals five LEDs' currents against what the Mega supplies"}
+  - {law: divider, section: the-idea, for: "Turns the photoresistor's resistance into a voltage at A1"}
+  - {law: sampling, section: the-idea, for: "Works out A1's reading in room light and lamplight"}
 ---
 
 ## What you'll build

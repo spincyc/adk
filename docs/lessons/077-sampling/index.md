@@ -14,6 +14,11 @@ parts:
 ideas:
   - A sample is one voltage reading taken at one moment
   - The Mega's 10-bit ADC reports whole numbers from 0 to 1023
+laws:
+  - {law: prefixes, section: why-it-happens, for: "Converts 0.0049 V into a 4.9 mV step"}
+  - {law: frequency, section: code-it, for: "Relates a 20 ms wait to 50 samples a second"}
+  - {law: sampling, section: why-it-happens, for: "Computes 4.9 mV levels and expected counts"}
+  - {law: serial, section: code-it, for: "Explains why printing at 9600 baud slows sampling"}
 ---
 
 ## What you'll build

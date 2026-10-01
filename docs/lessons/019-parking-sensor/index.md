@@ -19,6 +19,15 @@ ideas:
   - Measuring distance with an echo
   - The speed of sound, as microseconds per centimeter
   - Turning a distance into a beep rate
+laws:
+  - {law: prefixes, section: the-idea, for: "Converts 343 m/s into 0.0343 cm per µs"}
+  - {law: ohms-law, section: measure-it, for: "Works out the green LED's 8 mA from 1.8 V"}
+  - {law: voltage-law, section: measure-it, for: "Leaves the resistor what the LED doesn't keep"}
+  - {law: flyback, section: build-it, for: "Catches the buzzer's switch-off kick with a diode"}
+  - {law: forward-voltage, section: measure-it, for: "Shows green keeping 3.2 V against red's 2 V"}
+  - {law: transistor-switch, section: build-it, for: "Switches the buzzer's path to GND from a few mA"}
+  - {law: frequency, section: the-idea, for: "Pings at 40,000 vibrations a second, above hearing"}
+  - {law: pull, section: build-it, for: "Holds the transistor off with 10 kΩ at start-up"}
 ---
 
 ## What you'll build

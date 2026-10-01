@@ -16,8 +16,8 @@ the site derives its public label from its order within that track.
 | `src/Adk.h`, `src/adk/` | The library: one header and one source file per part |
 | `examples/` | One sketch per lesson (one per board in a two-board lesson), also the library's Arduino examples |
 | `tests/` | Host tests, a fake Arduino core, the pins check, the circuit model's tests and the style check |
-| `docs/` | This website: pages in Markdown, lessons in `docs/lessons/` |
-| `docs/_theme/` | The site's theme, build hooks, circuit model (`bench.py`), drawing engine and course list |
+| `docs/` | This website: pages in Markdown, lessons in `docs/lessons/`, the laws and formulas they rely on in `docs/laws/` |
+| `docs/_theme/` | The site's theme, build hooks, circuit model (`bench.py`), drawing engine, course list (`course.yml`) and list of laws (`laws.yml`) |
 | `boards/` | ADK Boards, the Arduino IDE board package: `avr/` is the platform, `toolchain.json` its compiler downloads, `published.txt` every version the site has published |
 
 ## Commands
@@ -104,7 +104,25 @@ that starts with how to wire the part, its source, host tests, and a line in
    and female-to-male: all the build holds, or, where it carries on from the
    lesson before, the ones its steps add ("5 more jumper wires"). `make site`
    checks a one-board lesson's counts.
-5. `make pins site` must pass.
+5. List in its front matter the [laws and formulas](laws/index.md) its
+   sections rely on: where a section works out a number with one, explains
+   a behavior or a design choice by it, or needs it for a stated number or
+   a safety rule, not where it merely mentions one.
+
+    ```yaml
+    laws:
+      - {law: ohms-law, section: measure-it, for: "Works out the LED's 14 mA through 220 Ω"}
+    ```
+
+   `law` is an id from `docs/_theme/laws.yml`, `section` the anchor of the
+   heading whose section relies on it, and `for` what for, in ten words or
+   fewer. The site ends that section with a link to the law, and lists the
+   lesson on the law's page. A guide page, such as the electricity
+   challenges, may list its laws the same way. A new law goes in
+   `laws.yml` and on its page in `docs/laws/`, at the start of its section
+   as `<!-- law id -->`; the build stops on a law nobody relies on, a law
+   `laws.yml` doesn't have, or a section that isn't on its page.
+6. `make pins site` must pass.
 
 `make pins` runs each sketch's `setup ()` on the host and holds it to its
 circuit. It fails unless:

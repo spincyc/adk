@@ -14,6 +14,12 @@ ideas:
   - The pentatonic scale, and octaves as doubling
   - Asking for the same note again, which changes nothing
   - Growing a project from a circuit that already works
+laws:
+  - {law: loading, section: measure-it, for: "Explains the buzzer's current pulling pin 10 below 5 V"}
+  - {law: budgets, section: build-it, for: "Keeps the buzzer within what pin 10 should give"}
+  - {law: frequency, section: the-idea, for: "Doubles a note's frequency to go up an octave"}
+  - {law: pwm, section: measure-it, for: "Explains pin 10 reading about half of 5 V"}
+  - {law: sampling, section: measure-it, for: "Turns the octave cut at 342 into 1.7 V"}
 ---
 
 ## What you'll build

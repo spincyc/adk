@@ -17,6 +17,16 @@ parts:
 ideas:
   - PWM changes the share of time a pin is on
   - A resistor and capacitor smooth PWM into an average voltage
+laws:
+  - {law: ohms-law, section: build-it, for: "Finds the LED's 8 mA and the filter's 0.5 mA"}
+  - {law: voltage-law, section: build-it, for: "Leaves 5 − 3.2 V across the LED's resistor"}
+  - {law: budgets, section: build-it, for: "Keeps pin 3's total current under its 20 mA limit"}
+  - {law: rc-time, section: why-it-happens, for: "Compares the 1 s time constant with one cycle"}
+  - {law: forward-voltage, section: build-it, for: "Uses the white LED's 3.2 V to find its current"}
+  - {law: frequency, section: why-it-happens, for: "Gives the 490 Hz PWM a 2 ms cycle"}
+  - {law: pwm, section: why-it-happens, for: "Explains 1.25 V on the meter at quarter on-time"}
+  - {law: sampling, section: code-it, for: "Scales the 0–1023 knob reading to a 0–255 duty"}
+  - {law: filter, section: why-it-happens, for: "Smooths the pulses into their average with little ripple"}
 ---
 
 ## What you'll build

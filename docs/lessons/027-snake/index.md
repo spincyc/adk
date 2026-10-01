@@ -16,6 +16,15 @@ ideas:
   - "The snake as a deque: on at the front, off at the back"
   - Collisions with the walls and yourself
   - Speeding up, and sound for every event
+laws:
+  - {law: ohms-law, section: build-it, for: "Shows the bare 16 Ω coil would draw 300 mA"}
+  - {law: voltage-law, section: measure-it, for: "Adds buzzer and resistor readings back to the pin's"}
+  - {law: series, section: build-it, for: "Adds the coil's 16 Ω to its 220 Ω resistor"}
+  - {law: divider, section: measure-it, for: "Shares pin 10's voltage 16 Ω to 220 Ω"}
+  - {law: loading, section: measure-it, for: "Explains the pin sagging as it pushes 20 mA"}
+  - {law: budgets, section: build-it, for: "Keeps the buzzer far below a pin's damaging 40 mA"}
+  - {law: frequency, section: upload-it, for: "Turns a 120 ms beat into 8 steps a second"}
+  - {law: pwm, section: measure-it, for: "Explains pin 10 averaging about half of 5 V"}
 ---
 
 ## What you'll build

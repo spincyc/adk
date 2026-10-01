@@ -17,6 +17,14 @@ parts:
   - 10 jumper wires
 ideas:
   - A flyback diode gives coil current a path when its switch opens
+laws:
+  - {law: ohms-law, section: try-it, for: "Finds 21 mA from 4.9 V across 236 Ω"}
+  - {law: voltage-law, section: try-it, for: "Gives resistor and coil the supply less 0.1 V"}
+  - {law: series, section: try-it, for: "Adds 220 Ω and the 16 Ω coil"}
+  - {law: budgets, section: build-it, for: "Justifies 220 Ω in series with the 16 Ω coil"}
+  - {law: flyback, section: why-it-happens, for: "Explains why the coil's current needs the flyback diode"}
+  - {law: forward-voltage, section: why-it-happens, for: "Puts the collector 0.7 V above the supply at release"}
+  - {law: transistor-switch, section: try-it, for: "Reads the switched-on collector near 0.1 V"}
 ---
 
 ## What you'll build

@@ -16,6 +16,11 @@ ideas:
   - Infrared light, which you can't see
   - How a remote sends a code, and how to read yours
   - Choosing what to do from the code
+laws:
+  - {law: ohms-law, section: measure-it, for: "Works out blue's 8 mA through 220 Ω"}
+  - {law: forward-voltage, section: measure-it, for: "Shows blue keeping 3.2 V where red keeps 2 V"}
+  - {law: frequency, section: the-idea, for: "Picks out the remote by its 38,000-a-second flicker"}
+  - {law: pwm, section: measure-it, for: "Works out the red pin's average after four dimmer presses"}
 ---
 
 ## What you'll build

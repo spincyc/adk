@@ -15,6 +15,9 @@ ideas:
   - Steering by how far a stick is pushed
   - Staying safe when the link is lost
   - Sharing a sensor's readings sparingly
+laws:
+  - {law: budgets, section: the-idea, for: "Lets servo and fan take turns on one power module"}
+  - {law: pwm, section: measure-it, for: "Works out pin 4's 3.9 V average at speed 200"}
 ---
 
 ## What you'll build

@@ -16,6 +16,9 @@ ideas:
   - An accelerometer feels gravity
   - Pitch and roll from three readings
   - A spirit level on the matrix
+laws:
+  - {law: logic-levels, section: the-idea, for: "Shifts I2C between 5 V and the sensor's 3.3 V"}
+  - {law: pull, section: the-idea, for: "Holds the I2C wires high with pull-up resistors"}
 ---
 
 ## What you'll build

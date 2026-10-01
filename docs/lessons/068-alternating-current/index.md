@@ -13,6 +13,11 @@ parts:
   - 3 jumper wires (and one spare for the comparison)
 ideas:
   - An alternating signal drives current first one way, then the other
+laws:
+  - {law: ohms-law, section: change-one-thing, for: "Gives the uncoupled current's peak of about 4 mA"}
+  - {law: capacitor, section: why-it-happens, for: "Holds the 2 V average so current can reverse"}
+  - {law: frequency, section: why-it-happens, for: "Converts the peaks' fortieth-cycle lead into 25 µs"}
+  - {law: filter, section: why-it-happens, for: "Explains AC coupling removing the 2 V average"}
 ---
 
 ## What you'll build

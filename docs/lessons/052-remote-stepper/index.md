@@ -14,6 +14,10 @@ ideas:
   - Two values, one going each way
   - Degrees into half-steps, and back
   - A knob that doesn't twitch
+laws:
+  - {law: divider, section: measure-it, for: "Reads the knob's wiper as 72 degrees a volt"}
+  - {law: budgets, section: build-it, for: "Returns the modem to the 3.3 V pin"}
+  - {law: sampling, section: measure-it, for: "Turns 0 to 5 V into 0 to 360 degrees"}
 ---
 
 ## What you'll build

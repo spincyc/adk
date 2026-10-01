@@ -14,6 +14,9 @@ ideas:
   - Putting a radio, a clock and two knobs together
   - A device as a set of states, again
   - A volume that fades in over half a minute
+laws:
+  - {law: sampling, section: measure-it, for: "Turns the volume knob's 2.5 V into volume 7"}
+  - {law: logic-levels, section: if-it-doesnt-work, for: "Keeps the radio off the Mega's 5 V I2C pull-ups"}
 ---
 
 ## What you'll build

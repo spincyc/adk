@@ -18,6 +18,14 @@ ideas:
   - Tuning, and seeking the next station
   - A 3.3 V chip that the Mega only ever pulls down
   - Two resistors in a tug-of-war
+laws:
+  - {law: prefixes, section: code-it, for: "Turns tenths of a megahertz into 98.8 MHz"}
+  - {law: decibels, section: the-idea, for: "Rates station strength in dBµV, clear above about 25"}
+  - {law: divider, section: measure-it, for: "Works out RST's 3.0 V from its two resistors"}
+  - {law: budgets, section: measure-it, for: "Keeps the radio within the 3.3 V pin's current"}
+  - {law: frequency, section: the-idea, for: "Reads 98.8 MHz as 98.8 million swings a second"}
+  - {law: logic-levels, section: the-idea, for: "Reads the radio's 3.3 V as a 1"}
+  - {law: pull, section: the-idea, for: "Lifts the radio's wires to 3.3 V with pull-ups"}
 ---
 
 ## What you'll build

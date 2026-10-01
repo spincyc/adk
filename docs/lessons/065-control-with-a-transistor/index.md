@@ -16,6 +16,12 @@ parts:
   - Digital multimeter with DC volts, for the measurements
 ideas:
   - A small current into a transistor's base switches a separate path through its collector
+laws:
+  - {law: ohms-law, section: try-it, for: "Finds LED and base currents from resistor voltages"}
+  - {law: current-law, section: change-one-thing, for: "Splits base-resistor current between base and pull-down"}
+  - {law: forward-voltage, section: try-it, for: "Expects 4.2 V, not 5 V, across the base resistor"}
+  - {law: transistor-switch, section: why-it-happens, for: "Explains a small base current switching the LED path"}
+  - {law: pull, section: why-it-happens, for: "Keeps the base at GND so the switch stays off"}
 ---
 
 ## What you'll build

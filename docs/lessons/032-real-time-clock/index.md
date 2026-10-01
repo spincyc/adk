@@ -17,6 +17,8 @@ ideas:
   - Counting seconds with a quartz crystal
   - The I2C bus again, for a second chip
   - Setting the clock from the moment you compiled
+laws:
+  - {law: frequency, section: the-idea, for: "Halves a 32,768-a-second crystal into one tick a second"}
 ---
 
 ## What you'll build

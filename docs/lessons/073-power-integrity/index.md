@@ -19,6 +19,14 @@ parts:
   - 7 jumper wires
 ideas:
   - A switching load steps its local supply voltage down; nearby capacitors smooth short steps
+laws:
+  - {law: prefixes, section: why-it-happens, for: "Multiplies ohms by µF and nF to get time"}
+  - {law: charge, section: why-it-happens, for: "Explains the slow sag as capacitors give up charge"}
+  - {law: ohms-law, section: why-it-happens, for: "Finds the 0.13 V drop from 13 mA"}
+  - {law: loading, section: why-it-happens, for: "Shows the 10 Ω feed sagging under the LED's load"}
+  - {law: capacitor, section: why-it-happens, for: "Explains nearby capacitors supplying the LED's current at once"}
+  - {law: rc-time, section: why-it-happens, for: "Compares 10 Ω × 100 µF with the LED's on-time"}
+  - {law: frequency, section: why-it-happens, for: "Finds the LED's half-millisecond on-time at 1 kHz"}
 ---
 
 ## What you'll build

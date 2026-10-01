@@ -21,6 +21,12 @@ ideas:
   - Putting sensors, lights and a screen together
   - Thresholds with a gap between them, so nothing flickers
   - A setting chosen with a knob
+laws:
+  - {law: divider, section: measure-it, for: "Reads the alarm setting as the knob's wiper voltage"}
+  - {law: transistor-switch, section: build-it, for: "Switches the active buzzer through the S8050 driver"}
+  - {law: pwm, section: measure-it, for: "Explains pin readings gliding while the light fades"}
+  - {law: sampling, section: the-idea, for: "Scales the alarm knob's reading into 10 to 40 °C"}
+  - {law: schmitt, section: the-idea, for: "Gives the comfort light two thresholds so it can't flicker"}
 ---
 
 ## What you'll build

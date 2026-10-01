@@ -17,6 +17,9 @@ ideas:
   - How the encoder tells which way it turned
   - Browsing a menu, and editing a setting
   - A menu as an array of items, each with its own choices
+laws:
+  - {law: forward-voltage, section: measure-it, for: "Explains a red LED needs about 2 V to light"}
+  - {law: pwm, section: measure-it, for: "Works out pin 3's average voltage at each Level"}
 ---
 
 ## What you'll build

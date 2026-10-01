@@ -17,6 +17,13 @@ ideas:
   - Seven-segment patterns, one byte per picture
   - Animation by shifting a bit along
   - Splitting a number with / and %
+laws:
+  - {law: ohms-law, section: the-idea, for: "Works out each segment's 3 mA through 1 kΩ"}
+  - {law: voltage-law, section: measure-it, for: "Shows g's resistor taking what the segment leaves"}
+  - {law: current-law, section: the-idea, for: "Adds seven segments to about 21 mA through the chip"}
+  - {law: budgets, section: the-idea, for: "Keeps the chip far below its 70 mA absolute maximum"}
+  - {law: capacitor, section: build-it, for: "Suggests a 100 nF capacitor to smooth the chip's supply"}
+  - {law: forward-voltage, section: the-idea, for: "Leaves 3 V after a red segment's 2 V"}
 ---
 
 ## What you'll build

@@ -15,6 +15,8 @@ ideas:
   - Acting only when a new value arrives
   - Taking turns on the air
   - What a servo knows about where it is
+laws:
+  - {law: budgets, section: build-it, for: "Keeps the servo on the power module, off USB"}
 ---
 
 ## What you'll build

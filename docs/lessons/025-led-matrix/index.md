@@ -16,6 +16,9 @@ ideas:
   - Pictures written as binary numbers
   - An array of pictures, each an array of rows
   - Scrolling text
+laws:
+  - {law: ohms-law, section: measure-it, for: "Shows the rail's tiny resistance leaves no visible voltage"}
+  - {law: budgets, section: build-it, for: "Budgets the matrix's 330 mA against what USB gives"}
 ---
 
 ## What you'll build

@@ -36,7 +36,8 @@ Use the [measurement skills](skills.md) when recording a result, the
 [schematic key](schematics.md) to trace a path, and the
 [diagnosis guide](diagnose.md) when a reading surprises you. The
 [design challenges](challenges.md) give you a way to change one circuit
-and check your own prediction.
+and check your own prediction. [Laws and formulas](../laws/index.md)
+states each law these investigations measure, once you have measured it.
 
 ## Equipment gates
 

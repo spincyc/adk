@@ -19,6 +19,10 @@ ideas:
   - Active-high and active-low outputs
   - Why a bare switch needs the pull-up and a module doesn't
   - adk::Switch and its polarity
+laws:
+  - {law: ohms-law, section: measure-it, for: "Shows the pull-up passes at most 0.25 mA"}
+  - {law: logic-levels, section: the-idea, for: "Counts the PIR's 3.3 V output as HIGH"}
+  - {law: pull, section: the-idea, for: "Holds the bare tilt switch's pin at 5 V"}
 ---
 
 ## What you'll build

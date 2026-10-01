@@ -13,6 +13,11 @@ parts:
 ideas:
   - Parts in one path carry the same current
   - Series resistors share the supply voltage
+laws:
+  - {law: ohms-law, section: why-it-happens, for: "Finds 2.5 mA from 5 V across 2 kΩ"}
+  - {law: voltage-law, section: why-it-happens, for: "Shows the two resistor drops add to the pair's"}
+  - {law: series, section: why-it-happens, for: "Adds two 1 kΩ resistors to 2 kΩ"}
+  - {law: divider, section: change-one-thing, for: "Predicts the 1.7 V and 3.3 V shares"}
 ---
 
 ## What you'll build

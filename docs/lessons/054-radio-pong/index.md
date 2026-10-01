@@ -14,6 +14,9 @@ ideas:
   - Handing over with a count that changes
   - Mirroring, for a player who faces you
   - One sketch on two boards, one line apart
+laws:
+  - {law: divider, section: measure-it, for: "Drops TX3's 5 V to about 3.3 V for RXD"}
+  - {law: serial, section: measure-it, for: "Explains TX3 resting high between messages"}
 ---
 
 ## What you'll build

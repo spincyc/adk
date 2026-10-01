@@ -13,6 +13,9 @@ parts:
   - 3 jumper wires
 ideas:
   - An RC low-pass filter reduces fast changes and delays its output
+laws:
+  - {law: rc-time, section: why-it-happens, for: "Gives the pair's 1 ms time constant"}
+  - {law: filter, section: why-it-happens, for: "Explains the shrinking output, phase lag and 159 Hz cutoff"}
 ---
 
 ## What you'll build

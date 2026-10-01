@@ -16,6 +16,11 @@ parts:
   - 11 jumper wires
 ideas:
   - Feedback resistors set the gain of a non-inverting amplifier
+laws:
+  - {law: ohms-law, section: build-it, for: "Bounds pin 3's current to 0.4 mA if unpowered"}
+  - {law: series, section: change-one-thing, for: "Makes 20 kΩ feedback from two 10 kΩ in series"}
+  - {law: divider, section: why-it-happens, for: "Halves the output to feed the − input"}
+  - {law: op-amp, section: why-it-happens, for: "Derives a gain of 2 from the feedback resistors"}
 ---
 
 ## What you'll build

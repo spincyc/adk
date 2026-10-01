@@ -12,6 +12,11 @@ parts:
   - Digital multimeter with DC volts
 ideas:
   - A capacitor stores separated charge
+laws:
+  - {law: charge, section: why-it-happens, for: "Explains the capacitor's voltage as separated charge"}
+  - {law: ohms-law, section: hold-the-charge-then-let-it-go, for: "Sizes the 0.3 mA leak into the unpowered Mega"}
+  - {law: capacitor, section: why-it-happens, for: "Explains the capacitor holding its voltage with no path"}
+  - {law: rc-time, section: why-it-happens, for: "Explains the fast-then-slow charge and the slow fall"}
 ---
 
 ## What you'll build

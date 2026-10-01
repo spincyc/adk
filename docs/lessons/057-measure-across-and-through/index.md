@@ -13,6 +13,11 @@ parts:
 ideas:
   - Voltage is measured between two points
   - Current passes through a complete path
+laws:
+  - {law: prefixes, section: try-it, for: "Scales volts per ohm into milliamps with 1000 ×"}
+  - {law: ohms-law, section: try-it, for: "Finds the loop current from the resistor's voltage"}
+  - {law: voltage-law, section: why-it-happens, for: "Explains why resistor and LED voltages add to supply"}
+  - {law: forward-voltage, section: try-it, for: "Expects about 2 V across the lit red LED"}
 ---
 
 ## What you'll build

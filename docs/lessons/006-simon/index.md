@@ -16,6 +16,10 @@ ideas:
   - Taking turns, as states
   - Counting loops, and functions that hand back an answer
   - Keeping a high score
+laws:
+  - {law: ohms-law, section: measure-it, for: "Works out 14 mA and 8 mA per LED"}
+  - {law: voltage-law, section: measure-it, for: "Gives each resistor the rest of the 5 V"}
+  - {law: forward-voltage, section: measure-it, for: "Shows an LED's color setting the voltage it keeps"}
 ---
 
 ## What you'll build

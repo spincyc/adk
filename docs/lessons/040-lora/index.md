@@ -16,6 +16,15 @@ ideas:
   - Addresses and a network number
   - Signal strength in dBm
   - Commanding a modem in words
+laws:
+  - {law: decibels, section: the-idea, for: "Gives signal strength in dBm, tenfold per 10 dB"}
+  - {law: ohms-law, section: measure-it, for: "Works out the divider's current, 5 V ÷ 3 kΩ"}
+  - {law: series, section: measure-it, for: "Adds the divider's 1 kΩ and 2 kΩ"}
+  - {law: divider, section: build-it, for: "Drops each TX pin's 5 V to 3.3 V"}
+  - {law: loading, section: measure-it, for: "Notes the modem's input may shift the divider's reading"}
+  - {law: budgets, section: build-it, for: "Powers the 50 mA modems from the module"}
+  - {law: logic-levels, section: build-it, for: "Keeps the 3.3 V modems' pins below 3.6 V"}
+  - {law: serial, section: the-idea, for: "Compares 115,200 bits a second on wires with LoRa's 1,000"}
 ---
 
 ## What you'll build

@@ -15,6 +15,12 @@ ideas:
   - Testing a link by sending messages you know and counting what comes back
   - The time every message costs, however short
   - Trading speed for range
+laws:
+  - {law: decibels, section: the-idea, for: "Sends at 0 dBm, one milliwatt"}
+  - {law: divider, section: measure-it, for: "Drops pin 14's 5 V to 3.3 V for RXD"}
+  - {law: budgets, section: make-it-yours, for: "Limits the modem to 10 dBm on 3.3 V"}
+  - {law: logic-levels, section: measure-it, for: "Reads the modem's 3.3 V as high, above 3 V"}
+  - {law: airtime, section: the-idea, for: "Works out each message's time on the air"}
 ---
 
 ## What you'll build

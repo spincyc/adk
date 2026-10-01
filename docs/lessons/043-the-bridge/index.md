@@ -16,6 +16,12 @@ ideas:
   - Changes that go at once, but at most ten a second
   - Everything sent again every two seconds
   - What "connected" means
+laws:
+  - {law: decibels, section: the-idea, for: "Sends at 10 dBm, about a third of full power"}
+  - {law: divider, section: measure-it, for: "Drops TX3's 5 V to about 3.3 V for RXD"}
+  - {law: budgets, section: the-idea, for: "Fits one 10 dBm modem on the 3.3 V pin"}
+  - {law: logic-levels, section: build-it, for: "Keeps the 3.3 V modem's RXD off 5 V"}
+  - {law: serial, section: measure-it, for: "Explains TX3 resting high between messages"}
 ---
 
 ## What you'll build

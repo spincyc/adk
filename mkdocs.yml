@@ -81,6 +81,7 @@ hooks:
   - docs/_theme/hooks.py
   - docs/_theme/boards.py
   - docs/_theme/pages.py
+  - docs/_theme/laws.py
 
 markdown_extensions:
   - abbr

@@ -15,6 +15,11 @@ ideas:
   - Contrast and backlight
   - Writing with print (), and moving with at ()
   - Drawing your own characters
+laws:
+  - {law: ohms-law, section: the-idea, for: "Works out the backlight's 9 mA through 220 Ω"}
+  - {law: voltage-law, section: measure-it, for: "Adds the backlight's and its resistor's shares to 5 V"}
+  - {law: divider, section: the-idea, for: "Sets the LCD's contrast voltage with the knob"}
+  - {law: forward-voltage, section: the-idea, for: "Gives the backlight LED about 3 V"}
 ---
 
 ## What you'll build

@@ -1,3 +1,13 @@
+---
+laws:
+  - {law: prefixes, section: set-up-a-voltage-reading, for: "Converts 0.014 A into 14 mA"}
+  - {law: ohms-law, section: set-up-a-voltage-reading, for: "Finds current from a series resistor's voltage"}
+  - {law: voltage-law, section: checkpoint-one-led-path, for: "Checks that part readings add to the whole path"}
+  - {law: loading, section: set-the-generator, for: "Explains why a 50 Ω setting doubles High-Z output"}
+  - {law: frequency, section: read-the-screen, for: "Turns timebase settings into the screen's time span"}
+  - {law: filter, section: read-the-screen, for: "Explains AC coupling removing a trace's steady average"}
+---
+
 # Measure, calculate, explain
 
 Use this short routine for each [electricity investigation](index.md). The

@@ -17,6 +17,11 @@ ideas:
   - A card's unique number, in hexadecimal
   - The SPI bus
   - A module that runs on 3.3 V
+laws:
+  - {law: divider, section: build-it, for: "Drops 5 V signals to 3.3 V for the reader"}
+  - {law: budgets, section: build-it, for: "Powers the reader from 3.3 V, never 5 V"}
+  - {law: pwm, section: measure-it, for: "Works out the blue pin's 0.8 V average"}
+  - {law: logic-levels, section: build-it, for: "Keeps the reader's inputs within its 3.3 V supply"}
 ---
 
 ## What you'll build

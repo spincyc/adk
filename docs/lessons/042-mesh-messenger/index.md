@@ -18,6 +18,10 @@ ideas:
   - A second computer that does one job for the Mega
   - Messages as commands
   - A private channel
+laws:
+  - {law: divider, section: measure-it, for: "Drops pin 18's 5 V to 3.3 V for GPIO47"}
+  - {law: logic-levels, section: build-it, for: "Lets the Mega read board 1's 3.3 V output directly"}
+  - {law: serial, section: set-up-the-two-boards, for: "Sets the Serial module to the Mega's 38400 baud"}
 ---
 
 ## What you'll build
