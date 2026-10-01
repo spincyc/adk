@@ -13,7 +13,8 @@ namespace adk {
     };
 
     // A GY-521 module: an MPU-6050 accelerometer and gyroscope, read every
-    // 20 ms. It goes on the I2C bus:
+    // 20 ms. It reads the QMI8658 board some kits have in its place too, as
+    // below. It goes on the I2C bus:
     //
     //   VCC -> 5 V (the module has its own 3.3 V regulator), GND -> GND,
     //   SCL -> pin 21, SDA -> pin 20, both through an I2C level shifter
