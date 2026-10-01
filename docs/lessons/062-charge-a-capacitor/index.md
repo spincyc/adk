@@ -8,7 +8,7 @@ parts:
   - Breadboard
   - 1000 µF polarized capacitor rated at least 10 V
   - 10 kΩ resistor (brown, black, black, red, brown)
-  - 4 jumper wires
+  - 5 jumper wires
   - Digital multimeter with DC volts
 ideas:
   - A capacitor stores separated charge
@@ -20,8 +20,9 @@ ideas:
 
 The Mega's USB 5 V charges a **1000 µF capacitor** through a 10 kΩ
 resistor. A meter across the capacitor shows its voltage rising. Then you
-disconnect USB and let the capacitor send charge back through the same
-resistor. The meter shows the voltage falling.
+disconnect the supply and watch the capacitor hold its charge. Last, you
+give that charge a path back through the same resistor, and the meter
+shows the voltage falling.
 
 ## Predict
 
@@ -29,8 +30,8 @@ The capacitor has two legs. Charge gathers on one side while charge leaves
 the other. Its voltage changes as that separation grows or shrinks. Before
 you power the build, predict the meter reading just after plugging in USB
 and about 10 seconds later. Will it jump straight to 5 V, or rise toward it?
-What will the meter show after you unplug USB and give the stored charge a
-path through the resistor?
+What will the meter show when the capacitor is connected to nothing, and
+then when the stored charge has a path through the resistor?
 
 ## Build it
 
@@ -47,7 +48,10 @@ nearest it. The red wire from the top + rail by column 6 to j6 feeds the
 10 kΩ resistor; the resistor crosses the middle gap in g6–e6. The jumper
 from b6 to b8 leads to the capacitor's **+ leg in a8**. Its striped − leg
 goes into the **bottom − rail by column 9**. The resistor
-stays in the path for both charging and discharging.
+stays in the path for both charging and discharging. A black wire from the
+bottom − rail to the top − rail at column 11 makes the top − rail GND too,
+one hole above the red wire's rail end; you will use it to discharge the
+capacitor.
 
 <!-- bench -->
 
@@ -64,8 +68,8 @@ the resistor. These are the finished connections:
 Set the meter to **DC volts (V⎓)**, with black lead in **COM** and red lead
 in **V**; choose a 20 V range if the meter needs one. Keep it in voltage
 mode throughout this lesson. Put the black probe in a free hole of the
-bottom − rail and the red probe in a free hole in column 8's lower strip,
-beside the capacitor's + leg. Keep the metal probe tips apart.
+bottom − rail and the red probe in **d8**, a free hole in column 8's lower
+strip with the capacitor's + leg. Keep the metal probe tips apart.
 
 <!-- measure -->
 
@@ -76,26 +80,38 @@ the supply's roughly **5 V**. Record the reading near 10 seconds and
 after it has nearly stopped changing. The exact values depend on the USB
 voltage and the parts.
 
-## Let it discharge
+## Hold the charge, then let it go
 
-Predict first: after USB is unplugged, will the meter fall immediately to
-0 V or gradually? Write down your guess.
+Predict first: when the red jumper connects the capacitor to nothing, will
+the meter fall to 0 V, fall gradually, or stay nearly still? When that
+jumper then reaches GND, how will the reading change? Write down both
+guesses. Leave the meter across the capacitor throughout.
 
-1. **Unplug USB.** Leave the meter across the capacitor and leave the
-   resistor, short jumper, and capacitor where they are.
-2. Move **only the rail end of the red jumper** from the top + rail by
-   column 6 to the **bottom − rail by column 6**. Its other end stays in
-   j6. This closes a path from the capacitor's + leg through the 10 kΩ
-   resistor to its − leg, with no USB power connected.
-3. Watch the meter fall gradually toward 0 V. Record its reading about
-   10 seconds after moving the wire. Compare the rise and fall with your
-   predictions.
-4. Keep USB **unplugged** and put that red rail end back in the **top +
-   rail by column 6** before continuing to the next lesson.
+1. **Unplug USB**, then straight away lift **only the rail end of the red
+   jumper** out of the top + rail and push it into **j7**, a free hole
+   whose strip holds nothing else. Its other end stays in j6. Until you
+   lift it, the capacitor can push charge back through the resistor into
+   the Mega's own unpowered 5 V circuits, so the reading may drop a little
+   in those few seconds.
+2. Watch the meter for 30 seconds and record the reading at the start and
+   the end: ____ V, ____ V. With nowhere for its charge to go, the
+   capacitor should hold its voltage: it may creep down a little, through
+   the meter itself and a tiny leak inside the capacitor.
+3. Now move that same end from j7 into the **top − rail by column 6**,
+   one hole above where it started. The black wire at column 11 joins this
+   rail to GND, so the jumper closes a path from the capacitor's + leg
+   through the 10 kΩ resistor to its − leg, with no USB power connected.
+4. Watch the meter fall gradually. About 10 seconds after moving the wire it
+   should read about a third of its starting value, and after 30 seconds
+   only a few tenths of a volt. Record the 10-second reading and compare the
+   rise, the hold and the fall with your predictions.
+5. Keep USB **unplugged** and put that red rail end back in the **top +
+   rail by column 6** before continuing to E08.
 
-The meter falls because the capacitor held separated charge after USB
-was removed. The 10 kΩ resistor gives that charge a limited path back.
-Never short the capacitor's legs to make the reading fall faster.
+The meter held still while the capacitor had no path, and fell once the
+resistor gave its separated charge a way back. The 10 kΩ resistor keeps
+that current small, so the fall takes several seconds. Never short the
+capacitor's legs to make the reading fall faster.
 
 ## If it doesn't work
 
@@ -103,7 +119,8 @@ Never short the capacitor's legs to make the reading fall faster.
 |---|---|
 | The meter never rises | Check the Mega's 5 V and GND rail wires, the red wire from top + to j6, the resistor in g6–e6, and the jumper from b6 to b8. Check the meter is on DC volts with its red lead in V. |
 | The reading has a minus sign | Swap the meter probes. The capacitor's + leg belongs in a8 and its striped − leg in the bottom − rail. |
-| The reading does not fall after moving the wire | Check that USB is unplugged and that **only the rail end** of the red jumper moved to the bottom − rail by column 6; j6 must still meet the resistor. |
+| The reading falls fast while the jumper's end is in j7 | Check that the end is in j7, not in a rail, and that nothing else is in column 7's upper strip. Check the meter is on DC volts. |
+| The reading does not fall after moving the wire to the top − rail | Check that **only the rail end** of the red jumper moved, into the top − rail by column 6, and that the black wire joins the bottom − rail to the top − rail at column 11; j6 must still meet the resistor. |
 | A part gets warm or smells | Unplug immediately. Check the capacitor's stripe, its rating, and that the 10 kΩ resistor separates 5 V from its + leg. |
 
 ## About the sketch
@@ -114,3 +131,6 @@ rails even if the Mega has an older sketch. The matching ADK sketch is
 short because the meter, rather than code, shows the change:
 
 <!-- sketch -->
+
+These are expected results; the circuit has not been recorded as tested on
+hardware.
