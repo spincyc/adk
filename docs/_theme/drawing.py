@@ -697,8 +697,7 @@ class Drawing:
             if module.kind.blocks:
                 module.draw (pencil)
         meter.draw (pencil, mx, my, taken["expect"])
-        # The lower jack's lead, the black, runs outside the red one.
-        for color, side in (("red", -1), ("black", 1)):
+        for color, side in meter.probe_sides (bench, routes, points).items ():
             meter.lead (pencil, meter.jack (mx, my, color), points[color], color, side)
         return pencil.svg (box, f"{bench.title}: {taken['label']}")
 

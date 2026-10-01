@@ -492,6 +492,17 @@ routes, tip = drawing._layout (), leaning.hole_xy ("c8")
 expect ("a probe leans in clear of a part",
         meter.hides (leaning, routes, tip, 1, 32) + 50 < meter.hides (leaning, routes, tip, -1, 32),
         True)
+# A meter's probes lean in apart, each from its own side, never crossing
+# over what they measure: across the LED with the red on its right-hand
+# leg, the red leans in from the right.
+for red, black, sides in (("b6", "b7", {"red": -1, "black": 1}),
+                          ("b7", "b6", {"red": 1, "black": -1})):
+    measured = finished (blink (Bench ("test", columns=(1, 20)))
+                         .measure ("Across the LED", red=red, black=black, expect="2 V"))
+    expect (f"meter probes on {red} and {black}",
+            meter.probe_sides (measured, Drawing (measured)._layout (),
+                               {"red": measured.hole_xy (red), "black": measured.hole_xy (black)}),
+            sides)
 door = finished (Bench ("test", columns=(1, 63)).power_module ("3.3V")
                  .home_buzzer ("active").home_rfid ().home_modem (power="B+29"))
 expect ("the door's buzzer keeps 5 V beside its 3.3 V modem",

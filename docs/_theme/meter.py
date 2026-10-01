@@ -5,8 +5,8 @@ touch the exact holes being measured.
 The meter is drawn in its own frame, 70 by 112 drawing units, and set down
 at SCALE. Like the common DT830 its jacks stand in a column at the right of
 its face, 10A at the top, then V, then COM; it lies below and to the left of
-what it measures, so its leads leave to the right and the one from the
-lower jack stays outside the other.
+what it measures, so its leads leave to the right. Its two probes lean in
+apart, each from its own side, whichever way hides less (probe_sides).
 
 An oscilloscope's probe is drawn here too (probe_svg): a slim probe with a
 hook tip on the point it watches, a band in its channel's color, and a
@@ -29,6 +29,8 @@ FACE    = "#3c4046"
 SCREEN  = "#c9d2b6"
 JACKS   = {"10A": 60, "red": 77, "black": 94}      # down the right of the face
 JACK_X  = 57
+LEAN    = 30                        # a meter probe's tilt from upright, in degrees
+PROBE_LENGTH = 34                   # from its tip to where its lead leaves it
 
 
 # What the display shows for an expected reading: its first number, to two
@@ -105,9 +107,8 @@ def band (a, b, half):
 def lead (pencil, start, touch, color, side):
     (sx, sy), (tx, ty) = start, touch
     # The probe: a slim handle, a guard, and a metal tip ending at the hole,
-    # leaning in from below: the red from the left and the black from the
-    # right, so two probes on neighboring holes stand apart.
-    angle = math.radians (-90 + 30 * side * -1)
+    # leaning in from below, from the left (side -1) or the right (1).
+    angle = math.radians (-90 + LEAN * side * -1)
     ux, uy = math.cos (angle), math.sin (angle)
     tip = (tx - ux * 1.5, ty - uy * 1.5)
     shoulder = (tip[0] - ux * 7, tip[1] - uy * 7)
@@ -135,6 +136,24 @@ def lead (pencil, start, touch, color, side):
         f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="1.3" fill="{GRAPHITE}" fill-opacity="0.8"/>')
 
 
+# How a measurement's two probes lean in, {"red": side, "black": side}, each
+# -1 from the left or 1 from the right: apart, so they never cross over
+# what they measure, the red from the left and the black from the right
+# unless the other way round hides less of the build, as when the red's
+# point is the right-hand one.
+def probe_sides (bench, routes, points):
+    def cost (red, black):
+        bodies = [lie (points[color], side, LEAN)
+                  for color, side in (("red", red), ("black", black))]
+        crossed = segments_cross (bodies[0] (1.5), bodies[0] (PROBE_LENGTH),
+                                  bodies[1] (1.5), bodies[1] (PROBE_LENGTH))
+        return (1000 * crossed + hides (bench, routes, points["red"], red, LEAN, PROBE_LENGTH)
+                + hides (bench, routes, points["black"], black, LEAN, PROBE_LENGTH))
+
+    red, black = min (((-1, 1), (1, -1)), key=lambda sides: cost (*sides))
+    return {"red": red, "black": black}
+
+
 # An oscilloscope probe --------------------------------------------------
 
 # Each channel's band, as most scopes color their inputs: yellow, then cyan.
@@ -156,17 +175,17 @@ def lie (touch, side, tilt):
 
 # What lying a probe there would hide, as a cost: most for a part's body or
 # a module, then a wire, a used hole, and a little for leaning further.
-def hides (bench, routes, touch, side, tilt):
+def hides (bench, routes, touch, side, tilt, length=LENGTH):
     at = lie (touch, side, tilt)
-    body = ("segment", *at (7), *at (LENGTH + 20), 5.5)
-    cost = 3 * TILTS.index (tilt)
+    body = ("segment", *at (7), *at (length + 20), 5.5)
+    cost = 3 * TILTS.index (tilt) if tilt in TILTS else 0
     for part in bench.parts:
         cost += 100 * any (shape_meets (body, shape) for shape in part.shapes (bench)[:1])
         cost += 10 * any (shape_meets (body, shape) for shape in part.shapes (bench)[1:])
     for placed in bench.modules.values ():
         cost += 100 * shape_meets (body, ("rect", *placed.box ()))
     for _, _, points in routes:
-        cost += 8 * any (segments_cross (a, b, at (7), at (LENGTH + 20))
+        cost += 8 * any (segments_cross (a, b, at (7), at (length + 20))
                          for a, b in zip (points, points[1:]))
     for hole in bench.used:
         cost += 4 * (distance_to (body, bench.hole_xy (hole)) < 1)
