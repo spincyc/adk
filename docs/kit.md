@@ -5,7 +5,9 @@ Kit**. A few lessons also use modules from the **Elegoo 37 in 1 Sensor
 Modules Kit**; those are marked below and in each lesson's parts list. The
 drawings show that kit's black boards, as its first two versions have them;
 the blue boards of its third version carry the same parts, so check each
-one’s printed pin names. Lesson 28 also needs the I2C level shifter below.
+one’s printed pin names. Lessons 28, 30 and 50 also need the I2C level
+shifter below. [What to buy](#what-to-buy) adds up each path's parts, with
+rough costs.
 
 ## The parts
 
@@ -41,8 +43,21 @@ one’s printed pin names. Lesson 28 also needs the I2C level shifter below.
 | DS1307 real-time clock | Keeps time when unplugged | Lesson 32 |
 | RC522 RFID reader, card and fob | Knows which card is which | Lesson 34 |
 | Tap sensor and relay *(37 in 1)* | Knocks, and switching a separate circuit | Lesson 35 |
+| 9 V battery and its snap lead | Powers the circuit the relay switches | Lesson 35 |
 | Sound sensor module and water level sensor | How loud it is, and water on the floor | Lesson 48 |
 | IR LED module (KY-005) *(37 in 1)* | Sends a remote's codes | Lesson 53 |
+
+## Other equipment
+
+Some lessons need things that don't go on the breadboard. Costs are rough
+US dollar prices, checked in 2026.
+
+| Equipment | Used for | Rough cost |
+|---|---|---|
+| A digital multimeter that reads DC volts | The *Measure it* section that ends most project lessons, which you can skip without one; the electricity path from E02 on | US$15–35 |
+| A small screwdriver | The relay's screw terminals, in Lessons 35 and 53 | US$2–5 |
+| A soldering iron, its stand and lead-free solder | Header pins on add-on boards that arrive without them fitted: the level shifter (Lesson 28), the FM radio board (Lesson 37), some 433 MHz modules (Lesson 38) and a Heltec board (Lesson 42). Buy them with pins fitted if you can, or ask someone experienced, and read [Soldering](safety.md#soldering) first | US$20–40 |
+| The electricity path's extra parts and instruments | Capacitors, an inductor, logic and amplifier chips, and for E11 and E13–E18 a battery-powered scope and signal generator: the syllabus's [equipment gates](electricity/index.md#equipment-gates) list them module by module | See [What to buy](#what-to-buy) |
 
 ## I2C level shifter
 
@@ -64,16 +79,19 @@ building the active-buzzer lessons.
 
 ## Add-on radios
 
-Lessons 37 to 55 use radios that aren't in either kit. Each costs a few
-dollars; the LoRa radios come in pairs, because it takes two to talk.
+Lessons 37 to 55 use radios that aren't in either kit. The LoRa radios
+come in pairs, because it takes two to talk. Costs are rough US dollar
+prices for the pair or set, checked in 2026; they vary by shop and
+country. Sending is ruled by law, and the last column says what you may
+need: [Safety](safety.md#radios) has the details.
 
-| Part | What it does | First used |
-|---|---|---|
-| Si4703 FM radio board (CJMCU-470) and wired earbuds | FM stations, their names and songs | Lesson 37 |
-| 433 MHz transmitter (WL102-341) and receiver (RX470C) | Short messages, one every 10 seconds at most | Lesson 38 |
-| Two REYAX RYLR896 LoRa modems | Messages across a kilometer or more, on 915 MHz | Lesson 40 |
-| Two Ebyte E32-433T20D LoRa modules | A 433 MHz link that passes on lines of text | Lesson 41 |
-| Two Heltec WiFi LoRa 32 V3 boards, the 863–928 MHz version, running Meshtastic, and a phone | Text messages from a phone, across a mesh | Lesson 42 |
+| Part | What it does | First used | Rough cost | To send |
+|---|---|---|---|---|
+| Si4703 FM radio board (CJMCU-470) and wired earbuds | FM stations, their names and songs | Lesson 37 | US$5–15 | Receives only |
+| 433 MHz transmitter (WL102-341) and receiver (RX470C) | Short messages, one every 10 seconds at most | Lesson 38 | US$3–8 | No license, within the limits; in the USA and Canada, aerials off |
+| Two REYAX RYLR896 LoRa modems | Messages across a kilometer or more, on 915 MHz | Lesson 40 | US$32–50 | No license, within the limits |
+| Two Ebyte E32-433T20D LoRa modules, with aerials *(optional)* | A 433 MHz link that passes on lines of text | Lesson 41 | US$12–25 | **An amateur radio license** in the USA and Canada, so there Lesson 41 is optional: read it, and carry on to Lesson 42 from Lesson 40's build |
+| Two Heltec WiFi LoRa 32 V3 boards, the 863–928 MHz version, running Meshtastic, and a phone | Text messages from a phone, across a mesh | Lesson 42 | US$52–60, besides the phone | No license, within the limits |
 
 Their pins work at 3.3 V, so the Mega's signals reach them through a
 resistor divider, 1 kΩ and 2 kΩ; [Safety](safety.md#radios) explains why, and
@@ -97,6 +115,55 @@ need a second of each thing the other board uses:
 
 Each board's page says what it needs. A second Elegoo kit covers all of
 Board B's parts.
+
+## What to buy
+
+Each path's shopping list, with rough US dollar prices checked in 2026.
+Prices vary by shop and country, and postage is extra. ADK sells nothing
+and earns nothing from any shop.
+
+### Project path, Lessons 1 to 36
+
+| Qty | Item | Rough cost |
+|---|---|---|
+| 1 | Elegoo Mega 2560 Most Complete Starter Kit: the Mega, USB cable, breadboard, parts, power module, 9 V adapter and 9 V battery | US$55–70 |
+| 1 | Elegoo 37 in 1 Sensor Modules Kit, for the modules marked *(37 in 1)* in [the parts](#the-parts) | US$30–40 |
+| 1 | BSS138 I2C level shifter with its headers fitted, such as Adafruit 757, for Lessons 28, 30 and 50 | US$4–8 |
+| 1 | Small screwdriver | US$2–5 |
+| 1 | Digital multimeter, for *Measure it* (optional) | US$15–35 |
+| | **About** | **US$90–160** |
+
+### Radio arcs, Lessons 37 to 42, and Lesson 55
+
+| Qty | Item | Rough cost |
+|---|---|---|
+| 1 set | Each of the [add-on radios](#add-on-radios), with aerials | US$105–160 |
+| | Without Lesson 41's E32 modules, where they need a license | US$90–135 |
+
+### Two boards, Lessons 43 to 54
+
+Besides the pair of RYLR896 modems from Lesson 40:
+
+| Qty | Item | Rough cost |
+|---|---|---|
+| 1 | A second Elegoo Mega 2560 Most Complete Starter Kit, which covers all of Board B's parts | US$55–70 |
+| | *or* a second Mega 2560 (a compatible board costs less than an Arduino one), USB cable and breadboard, and a second breadboard power module for Lesson 51 | US$30–65 |
+| 1–2 | USB power banks, or a long USB cable, to put the boards in different rooms | US$10–25 |
+
+### Electricity path, E01 to E24
+
+| Qty | Item | Rough cost |
+|---|---|---|
+| 1 | Elegoo Mega 2560 Most Complete Starter Kit, the same as the project path's | US$55–70 |
+| 1 | Digital multimeter with DC volts, from E02 on | US$15–35 |
+| 1 set | The extra parts in each module's [equipment gate](electricity/index.md#equipment-gates): capacitors, a 100 mH inductor, an MCP6002, a 74HC00 and a 74HC14, a 10 Ω and two 100 kΩ resistors | US$10–20 |
+| | **About** | **US$80–125** |
+
+### Scope extension, for E11 and E13 to E18
+
+| Qty | Item | Rough cost |
+|---|---|---|
+| 1 | A battery-powered two-channel oscilloscope and a battery-powered, floating signal generator, as the [syllabus](electricity/index.md#equipment-gates) describes them; some handheld scopes have both | US$60–150 |
 
 ## Home pins
 
