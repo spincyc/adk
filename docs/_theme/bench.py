@@ -56,9 +56,10 @@ bench.wire ("36", "e18", via=["j14"]). A hole-to-hole jumper in one row or
 one column lies straight when nothing is in its way.
 
 A wire's color says what it carries, once finish () knows: black for GND,
-red for 5 V, orange for 3.3 V. Any other wire is a signal in a color of
-its own, its pin's (PIN_COLORS) from lesson to lesson, unless that would
-match a wire it crosses or ends beside; color= gives one by hand.
+red for 5 V, orange for 3.3 V, and those three for nothing else. Any other
+wire is a signal in a color of its own, its pin's (PIN_COLORS) from lesson
+to lesson, unless that would match a wire it crosses or ends beside;
+color= gives one by hand.
 
 The Mega's pins go by number ("26", "A0") or name. GND and 5V take the free
 pin of that kind nearest the wire's other end; these names pick one:
@@ -646,7 +647,7 @@ class Bench:
             self.resistor ("1 kΩ", "c32", "c30")
             self.resistor ("10 kΩ", "b30", "B-30")
             self.wire ("b29", "B-29")
-            self.wire ("b31", f"a{column}", color="black")
+            self.wire ("b31", f"a{column}")
             self.wire (f"h{column}", f"T+{column}")
             self.diode (f"c{column}", f"c{column + 3}")
             self.wire (f"a{column + 3}", f"j{column}", color="red")
@@ -1483,10 +1484,10 @@ class Bench:
 
     # Each wire's color, once the circuit is whole. A wire whose strip
     # carries GND, 5 V or 3.3 V is black, red or orange, whatever its ends
-    # are called. A signal takes its own color (_signal_color) unless a
-    # wire ending beside it on a neighboring pin or hole, or one it crosses
-    # or runs beside, has that color already (clash); then the kit's color
-    # that clashes least. Home pins' wires choose first, then the rest in
+    # are called, and no other wire is. A signal takes its own color
+    # (_signal_color) unless a wire ending beside it on a neighboring pin
+    # or hole, or one it crosses or runs beside, has that color already
+    # (clash); then the kit's color that clashes least. Home pins' wires choose first, then the rest in
     # the order they went in. So a pin's wire keeps its color from lesson
     # to lesson where the wires round it let it, and a build carried on
     # from the lesson before keeps its colors unless something new crowds
@@ -1504,21 +1505,18 @@ class Bench:
             carried = next ((source for source in ("GND", "3.3V", "5V")
                              if self._carries (net, source)), None)
             if index in self._painted:
-                # A part's own leads are as they come. Orange only ever
-                # carries 3.3 V; black and red may also go where a part
-                # switches or feeds GND or 5 V, but never meet the others.
+                # A part's own leads are as they come. Black, red and orange
+                # go only where GND, 5 V and 3.3 V do.
                 given = next ((source for source, tint in POWER_COLORS.items () if tint == color),
                               None)
                 lead = "lead" in (self.style (start), self.style (end))
-                if given and not lead and given != carried and (carried or given == "3.3V"):
+                if given and not lead and given != carried:
                     raise ValueError (f"the wire from {self.describe (start)} to "
                                       f"{self.describe (end)} can't be {color}: {color} is kept "
                                       f"for {given}")
                 colors[index] = color
             elif carried:
                 colors[index] = POWER_COLORS[carried]
-            elif self._color ((start, end)) in POWER_COLORS.values ():
-                colors[index] = self._color ((start, end))
             else:
                 signals.append (index)
         courses = {index: (points, (self.xy (start), self.xy (end)))

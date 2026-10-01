@@ -327,6 +327,16 @@ for one, other in zip (pins, pins[1:]):
 crossing = finished (Bench ("test", columns=(1, 40)).wire ("a4", "a32").wire ("a7", "b33"))
 expect ("two jumpers that cross differ in color",
         color_of (crossing, "a4", "a32") != color_of (crossing, "a7", "b33"), True)
+check ("a black wire on a signal", lambda b: blink (b).wire ("c6", "c10", color="black"),
+       "black is kept for GND")
+check ("a red wire on a signal", lambda b: blink (b).wire ("c6", "c10", color="red"),
+       "red is kept for 5V")
+expect ("the transistor's collector wire is a signal's color",
+        color_of (active, "b31", "a33") in ("black", "red", "orange"), False)
+expect ("a module's + on a pin is a signal's color",
+        color_of (finished (Bench ("test", columns=(1, 20)).module ("sensor", "s", at=(6, 3.6))
+                            .wire ("22", "s.+").wire ("23", "s.S").wire ("GND.power", "s.−")),
+                  "22", "s.+") in ("black", "red", "orange"), False)
 
 # A wire takes a costly short way rather than a cheap one three times as
 # long, as round the far end of the Mega: here a strip that costs much to

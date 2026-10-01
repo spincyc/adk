@@ -14,7 +14,7 @@ bench.wire ("a7", "b33")
 bench.stage ("the passive buzzer and its 220 Ω resistor")
 bench.wire ("T+36", "j36")
 bench.resistor ("220 Ω", "g36", "e36")
-bench.wire ("a36", "j33", color="red")
+bench.wire ("a36", "j33")
 bench.buzzer ("f33", "e33", kind="passive")
 
 bench.stage ("the flyback diode")
@@ -22,7 +22,7 @@ bench.diode (anode="c33", cathode="c36")
 
 bench.stage ("the S8050 transistor")
 bench.transistor ("a29", "a30", "a31")
-bench.wire ("a33", "b31", color="black")
+bench.wire ("a33", "b31")
 bench.wire ("b29", "B-29")
 
 bench.stage ("the button and base resistors")

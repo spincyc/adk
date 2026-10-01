@@ -195,7 +195,7 @@ start/stop or lap/reset to set it back to `10.0`, or mode for `60.0`,
 | A button does nothing | Its wire from the Mega goes in row j of its left legs (j2, j8, j14) and its black wire from row a of its right legs to the − rail. Check it straddles the gap. |
 | The buttons do the wrong jobs | The wires from pins 22, 23 and 24 are crossed: 22 goes to the first button. |
 | No beep, but the timer shows donE | The active buzzer’s + leg goes in f35, powered through h35 from the top + rail. Pin 12 goes to a32. Check the transistor’s E–B–C order, emitter to GND, collector to a35, and diode band at column 38. |
-| The buzzer never stops | Its + leg is meant to have 5 V all the time: the transistor sounds it by joining its − leg to GND. So the − leg must reach GND only through the transistor. Check the black wire from b31, the collector, goes to a35, not to the − rail, and that no bare leads touch. Check the S8050’s E–B–C order, and that pin 12’s wire is in a32. |
+| The buzzer never stops | Its + leg is meant to have 5 V all the time: the transistor sounds it by joining its − leg to GND. So the − leg must reach GND only through the transistor. Check the wire from b31, the collector, goes to a35, not to the − rail, and that no bare leads touch. Check the S8050’s E–B–C order, and that pin 12’s wire is in a32. |
 | The mode button does nothing | It only works while the clock is stopped. Stop it first. |
 
 ??? note "How it works"
