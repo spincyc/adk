@@ -71,8 +71,8 @@ state. This sketch uses one of each.
 
 !!! question "Predict"
     Press the left button and hold it down for three seconds. Does the red
-    LED flicker on and off the whole time, stay on, or change just once? And
-    how many presses will the screen count? Write down your guesses.
+    LED flicker on and off the whole time, stay on, or change just once?
+    Write down your guess.
 
 ## Build it
 
@@ -113,14 +113,12 @@ Open **File → Examples → Adk → lessons → 002-buttons**:
 
 <!-- sketch -->
 
-What's new:
+The sketch does two jobs: the buttons work the lights, and the left
+button's taps are counted on your computer's screen. Take them one at a
+time. First, the lights:
 
 - `adk::Button leftButton {22};` says there is a button between pin 22 and
   GND. ADK switches on the pull-up and does the debouncing.
-- `Serial.begin (9600);` opens the USB link to your computer, at 9600 bits a
-  second. `adk::setup (Serial);` does everything `adk::setup ()` does, and if
-  it finds a mistake in your sketch, it also explains it in words (see *How
-  it works* below).
 - `adk::update ();` comes first in `loop ()`. This is the moment ADK reads
   every button, so everything `wasPressed ()` and `isPressed ()` tell you
   comes from here. In Lesson 1, `adk::wait ()` did it for you while it
@@ -146,6 +144,33 @@ What's new:
     }
     ```
 
+`setup ()` gets every part ready, as in Lesson 1. The lines that mention
+`Serial`, `presses` and `countPress ()` do the counting. Leave them for
+now: once the lights work, [Count the presses](#count-the-presses)
+explains them.
+
+## Upload it
+
+Upload the sketch as in Lesson 1. Then:
+
+1. Hold down the right button. The yellow LED lights, and goes out the moment
+   you let go.
+2. Tap the left button. The red LED comes on and stays on. Tap it again and
+   it goes off.
+
+You predicted what holding the left button for three seconds would do. It
+changes the red LED once: a press is one event, however long it lasts.
+
+## Count the presses
+
+With the lights working, the second job: the sketch counts the left
+button's taps and sends the count to your computer, which shows it in the
+Arduino IDE's **Serial Monitor**. These are the lines that do it:
+
+- `Serial.begin (9600);` opens the USB link to your computer, at 9600 bits a
+  second. `adk::setup (Serial);` does everything `adk::setup ()` does, and if
+  it finds a mistake in your sketch, it also explains it in words over that
+  link (see *How it works* below).
 - `int presses = 0;` makes a **variable**, a named box that holds a whole
   number (an `int`), starting at 0. It sits outside the functions, so it
   keeps its number from one pass of `loop ()` to the next.
@@ -157,23 +182,20 @@ What's new:
   the words and then the number, and ends the line: *Presses: 3*. The `ln`
   means "and start a new line".
 
-## Upload it
+!!! question "Predict"
+    Hold the left button down for three seconds again. How many presses
+    will the count go up by? Write down your guess.
 
-Upload the sketch as in Lesson 1. Then:
+The sketch is already on the Mega, so there is nothing more to upload.
+Open the **Serial Monitor**: **Tools → Serial Monitor**, or the magnifying
+glass at the top right of the IDE. Set its speed menu to **9600 baud**.
+Each tap of the left button adds a line: *Presses: 1*, *Presses: 2*, and so
+on. Opening the Serial Monitor usually restarts the Mega, so the count may
+start again from 1.
 
-1. Hold down the right button. The yellow LED lights, and goes out the moment
-   you let go.
-2. Tap the left button. The red LED comes on and stays on. Tap it again and
-   it goes off.
-3. Open the **Serial Monitor**: **Tools → Serial Monitor**, or the magnifying
-   glass at the top right of the IDE. Set its speed menu to **9600 baud**.
-   Each tap of the left button adds a line: *Presses: 1*, *Presses: 2*, and
-   so on. Opening the Serial Monitor usually restarts the Mega, so the count
-   may start again from 1.
-
-You predicted what holding the left button for three seconds would do. It
-changes the red LED once, and counts once: a press is one event, however
-long it lasts.
+Now hold the left button down for three seconds. The count goes up by just
+one, as the red LED changed just once: `countPress ()` runs only when
+`wasPressed ()` says yes, once per press.
 
 ## If it doesn't work
 
