@@ -101,8 +101,7 @@ void checkCard (uint32_t card)
         }
     }
 
-    Serial.print ("Card 0x");
-    Serial.println (card, HEX);
+    adk::println (Serial, "Card 0x", adk::hex (card, 8));
     tell ("Unknown card", "at the door");
     chime.play (stranger);
 }

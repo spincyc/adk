@@ -200,7 +200,7 @@ Read it from the top:
   air back into a card's number, as *The idea* explains, and
   `checkCard ()` looks it up in `friends`, as in Lesson 36. A friend is
   welcomed and the door opens; a stranger's number goes to the Serial
-  Monitor.
+  Monitor as eight hex digits, `adk::hex (card, 8)`, as in Lesson 34.
 - `tell ()` puts news on the screen for ten seconds, and `showQuiet ()`
   says the door is quiet, or that Board B can't be heard.
 - `bridge.share ("door", unlocked.isRunning ())` tells Board B whether the
