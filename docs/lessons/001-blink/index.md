@@ -175,7 +175,8 @@ wire in the same holes, and plug in once more. It blinks again.
    `led.blink (1000);` at the end of `setup ()`, then add `adk::update ();`
    inside `loop ()`. The LED blinks just the same. Add
    `adk::Led builtIn {LED_BUILTIN};` and make the Mega's own LED blink too,
-   at a different speed.
+   at a different speed: `LED_BUILTIN` is Arduino's name for pin 13, which
+   has the **L** LED on the board.
 4. **Change the resistor.** Predict whether a 1 kΩ resistor (brown, black,
    black, brown, brown) will make the LED brighter or dimmer. Unplug, take
    out the 220 Ω resistor and put the 1 kΩ one in its place, then plug in

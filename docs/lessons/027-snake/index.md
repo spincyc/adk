@@ -142,7 +142,7 @@ What's new:
   `Down`, `Left`, `Right` or `Center`. `steer ()` saves the stick's
   `direction ()` as the next turn, unless the dot that way is the snake's
   own neck, so it can never turn straight back on itself. `auto way` lets
-  the compiler work out the type, as `auto` did in Lesson 5's range-for.
+  the compiler work out the type, as `auto total` did in Lesson 12.
 - `playing` is the game's state from the table above. While it's `false`,
   `loop ()` scrolls `message` and waits for a click.
 - `ahead ()` hands back a whole `Dot`, as `sweep ()` handed back a sighting
