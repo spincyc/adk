@@ -39,6 +39,13 @@ assert arc_title ({"arc": "Extras", "boards": 2}, [LESSONS[54]]) == \
     f"Extras{NBSP}·{NBSP}55{NBSP}·{NBSP}two boards"
 assert arc_title ({"arc": "First light"}, LESSONS[0:3]) == f"First light{NBSP}·{NBSP}1–3"
 
+# An admonition's text goes on the indented lines below its title; text on
+# the title line makes the page show the raw "!!! warning" instead of a box.
+import re  # noqa: E402
+for page in (ROOT / "docs").rglob ("*.md"):
+    for number, line in enumerate (page.read_text ().splitlines (), 1):
+        assert not re.match (r'(!!!|\?\?\?\+?) \w+(?: "[^"]*")? +[^"\s]', line), f"{page}:{number}: {line}"
+
 # In course.yml's one-line entries a comma ends a value unless the value is
 # quoted: "builds: A game, with sound" would make a key named "with sound".
 for arc in yaml.safe_load ((ROOT / "docs" / "_theme" / "course.yml").read_text ()):

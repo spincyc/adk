@@ -41,13 +41,14 @@ the current changes?
 
 ## Build it
 
-!!! warning "Unplug first" Unplug USB before changing any wiring. Keep the
-**220 Ω resistor in series with the passive buzzer**: its coil is only about
-16 Ω. Keep the LED's own **1 kΩ resistor in series** too. Fit the diode
-before powering the circuit and never remove it: it is the coil's safe path,
-and without it each release could put a large voltage spike on the
-transistor. Never run this buzzer directly from a Mega pin. If a part gets
-hot or smells, unplug at once and check the wiring.
+!!! warning "Unplug first"
+    Unplug USB before changing any wiring. Keep the **220 Ω resistor in
+    series with the passive buzzer**: its coil is only about 16 Ω. Keep the
+    LED's own **1 kΩ resistor in series** too. Fit the diode before powering
+    the circuit and never remove it: it is the coil's safe path, and without
+    it each release could put a large voltage spike on the transistor. Never
+    run this buzzer directly from a Mega pin. If a part gets hot or smells,
+    unplug at once and check the wiring.
 
 Start with the breadboard clear and USB unplugged. Remove any previous
 parts and wires before following the complete steps below. They include

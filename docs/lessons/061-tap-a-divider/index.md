@@ -34,9 +34,10 @@ voltage. Here the wiper moves the point where you tap that shared voltage.
 
 ## Build it
 
-!!! warning "Unplug first" Unplug the Mega before moving any wires. This
-knob uses only the Mega's USB 5 V. Keep the wiper on A0 alone: joining it to
-a power rail could short 5 V to GND when the knob reaches an end.
+!!! warning "Unplug first"
+    Unplug the Mega before moving any wires. This knob uses only the Mega's
+    USB 5 V. Keep the wiper on A0 alone: joining it to a power rail could
+    short 5 V to GND when the knob reaches an end.
 
 Use the knob's home from Lesson 7: its outer legs go in **f39** and **f41**,
 across the breadboard gap from the wiper in **d40**. The black jumper from
