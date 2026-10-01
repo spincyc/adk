@@ -65,14 +65,17 @@ namespace adk {
             uint16_t emphasis;
         };
 
-        constexpr Band Bands [] = {
+        // In flash; bandOf () copies out the one a radio needs.
+        constexpr Band Bands [] PROGMEM = {
             {875, 1080, 1, 0x0u << 6 | 0x1u << 4, Europe},
             {875, 1080, 2, 0x0u << 6 | 0x0u << 4, 0},
             {760,  900, 1, 0x2u << 6 | 0x1u << 4, Europe}};
 
-        const Band& bandOf (FmBand band)
+        Band bandOf (FmBand band)
         {
-            return Bands[static_cast<uint8_t> (band)];
+            Band chosen;
+            memcpy_P (&chosen, &Bands[static_cast<uint8_t> (band)], sizeof chosen);
+            return chosen;
         }
 
         // RDS error counts: 0, 1-2 corrected, 3-5 corrected, too many.
@@ -152,7 +155,7 @@ namespace adk {
         write (PowerConfig);
         delay (PowerUp);
 
-        const Band& band = bandOf (band_);
+        Band band = bandOf (band_);
         registers_[SysConfig1] = Rds | band.emphasis;
         registers_[SysConfig2] = SeekThreshold | band.settings | InitialVolume;
         registers_[SysConfig3] = SeekQuality;
@@ -169,9 +172,9 @@ namespace adk {
 
     void FmRadio::tune (uint16_t frequency)
     {
-        const Band& band = bandOf (band_);
-        frequency        = constrain (frequency, band.bottom, band.top);
-        wanted_          = static_cast<uint16_t> ((frequency - band.bottom) / band.spacing);
+        Band band = bandOf (band_);
+        frequency = constrain (frequency, band.bottom, band.top);
+        wanted_   = static_cast<uint16_t> ((frequency - band.bottom) / band.spacing);
 
         if (state_ == State::Idle && wanted_ != channel_)
         {
@@ -203,7 +206,7 @@ namespace adk {
 
     uint16_t FmRadio::frequency () const
     {
-        const Band& band = bandOf (band_);
+        Band band = bandOf (band_);
         return static_cast<uint16_t> (band.bottom + wanted_ * band.spacing);
     }
 
@@ -479,7 +482,7 @@ namespace adk {
 
     uint16_t FmRadio::channels () const
     {
-        const Band& band = bandOf (band_);
+        Band band = bandOf (band_);
         return static_cast<uint16_t> ((band.top - band.bottom) / band.spacing + 1);
     }
 

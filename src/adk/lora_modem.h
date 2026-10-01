@@ -94,8 +94,9 @@ namespace adk {
         bool        sendLine  (const char* text) override;
         const char* heardLine () const override;
 
-        bool command (const char* line);
-        bool heard   (const char* fields);
+        bool command  (const auto&... parts);
+        bool answered ();
+        bool heard    (const char* fields);
 
         HardwareSerial& port_;
         LineReader<100> reader_;

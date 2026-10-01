@@ -135,8 +135,14 @@ header. A multiplexed display will flicker while they do.
 
 The Mega has 8 KB of RAM and 256 KB of flash. Objects stay small: store pins
 as `Pin` (one byte), times as `Millis`, and flags as `bool`. Tables larger than
-a few bytes (fonts, glyphs, step sequences) live in flash with `PROGMEM`. The
-library never allocates, and neither do its containers: `adk::Array`,
+a few bytes (fonts, glyphs, step sequences, the FM radio's bands) live in
+flash with `PROGMEM`, and so does fixed text (`F ()` and `PSTR ()`), such as
+the LoRa modem's commands. Melodies are the one exception, on purpose: a
+sketch writes one as a plain array of `adk::Note`, which costs 4 bytes of
+RAM a note, because `Speaker::play ()` takes any span of notes, an array,
+an `adk::Array` or a `Vector` built while the sketch runs, and a beginner's
+sketch needs no `PROGMEM`. The course's melodies are a few notes each, tens
+of bytes. The library never allocates, and neither do its containers: `adk::Array`,
 `Vector`, `Deque` and `Span` reserve all their room where they are declared,
 so the compiler's RAM report counts it. Nothing costs anything unless a
 sketch declares it:

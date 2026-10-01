@@ -14,9 +14,51 @@ namespace adk {
         constexpr unsigned long Answer = 200;   // for +OK to a command
         constexpr Millis        GiveUp = 3000;  // for +OK to a message
 
-        // Spreading factor, bandwidth (7: 125 kHz), coding rate 4/5 and
-        // preamble. Far is REYAX's choice for up to 3 km.
-        constexpr const char* Speeds [] = {"AT+PARAMETER=10,7,1,7", "AT+PARAMETER=7,7,1,4"};
+        // The modem's words stay in flash, F () and PSTR (), so they cost
+        // no RAM: a sketch with a modem would otherwise copy them all there.
+        bool isOk (const char* line)
+        {
+            return strcmp_P (line, PSTR ("+OK")) == 0;
+        }
+
+        bool isError (const char* line)
+        {
+            return strncmp_P (line, PSTR ("+ERR"), 4) == 0;
+        }
+    }
+
+    // Send a command and wait for the modem to say +OK.
+    bool LoraModem::command (const auto&... parts)
+    {
+        print (port_, parts..., F ("\r\n"));
+        return answered ();
+    }
+
+    // Anything else the modem says meanwhile, such as +READY after starting
+    // up, is passed over.
+    bool LoraModem::answered ()
+    {
+        unsigned long start = millis ();
+
+        while (millis () - start < Answer)
+        {
+            if (!reader_.read (port_))
+            {
+                continue;
+            }
+
+            if (isOk (reader_.line ()))
+            {
+                return true;
+            }
+
+            if (isError (reader_.line ()))
+            {
+                return false;
+            }
+        }
+
+        return false;
     }
 
     LoraModem::LoraModem (HardwareSerial& port, uint16_t address, LoraSettings settings)
@@ -49,21 +91,18 @@ namespace adk {
 
         while (!ok_ && millis () - start < Waking)
         {
-            ok_ = command ("AT");
+            ok_ = command (F ("AT"));
         }
 
-        Text<32> address;
-        Text<32> network;
-        Text<32> band;
-        Text<32> power;
-        print (address, "AT+ADDRESS=", address_);
-        print (network, "AT+NETWORKID=", settings_.network);
-        print (band, "AT+BAND=", settings_.band);
-        print (power, "AT+CRFOP=", min (settings_.power, uint8_t {15}));
+        // Spreading factor, bandwidth (7: 125 kHz), coding rate 4/5 and
+        // preamble. Far is REYAX's choice for up to 3 km.
+        auto speed = settings_.speed == LoraSpeed::Far ? F ("10,7,1,7") : F ("7,7,1,4");
 
-        ok_ = ok_ && command (address.c_str ()) && command (network.c_str ())
-                  && command (band.c_str ()) && command (power.c_str ())
-                  && command (Speeds[static_cast<uint8_t> (settings_.speed)]);
+        ok_ = ok_ && command (F ("AT+ADDRESS="), address_)
+                  && command (F ("AT+NETWORKID="), settings_.network)
+                  && command (F ("AT+BAND="), settings_.band)
+                  && command (F ("AT+CRFOP="), min (settings_.power, uint8_t {15}))
+                  && command (F ("AT+PARAMETER="), speed);
     }
 
     bool LoraModem::ok () const
@@ -80,7 +119,7 @@ namespace adk {
             return false;
         }
 
-        print (port_, "AT+SEND=", to, ',', length, ',', text, "\r\n");
+        print (port_, F ("AT+SEND="), to, ',', length, ',', text, F ("\r\n"));
         sending_ = true;
         sent_.restart ();
         return true;
@@ -144,44 +183,16 @@ namespace adk {
         {
             const char* line = reader_.line ();
 
-            if (strcmp (line, "+OK") == 0 || strncmp (line, "+ERR", 4) == 0)
+            if (isOk (line) || isError (line))
             {
                 sending_ = false;
             }
-            else if (strncmp (line, "+RCV=", 5) == 0 && heard (line + 5))
+            else if (strncmp_P (line, PSTR ("+RCV="), 5) == 0 && heard (line + 5))
             {
                 received_ = true;
                 return;
             }
         }
-    }
-
-    // Send a command and wait for the modem to say +OK. Anything else it
-    // says meanwhile, such as +READY after starting up, is passed over.
-    bool LoraModem::command (const char* line)
-    {
-        print (port_, line, "\r\n");
-        unsigned long start = millis ();
-
-        while (millis () - start < Answer)
-        {
-            if (!reader_.read (port_))
-            {
-                continue;
-            }
-
-            if (strcmp (reader_.line (), "+OK") == 0)
-            {
-                return true;
-            }
-
-            if (strncmp (reader_.line (), "+ERR", 4) == 0)
-            {
-                return false;
-            }
-        }
-
-        return false;
     }
 
     // "address,length,text,signal,margin". The text may hold commas, so it

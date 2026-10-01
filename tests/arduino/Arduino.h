@@ -87,6 +87,9 @@ inline constexpr uint8_t SS   = 53;
 #define F(text)               (reinterpret_cast<const __FlashStringHelper*> (text))
 #define pgm_read_byte(address) (*reinterpret_cast<const uint8_t*> (address))
 #define pgm_read_word(address) (*reinterpret_cast<const uint16_t*> (address))
+#define memcpy_P              memcpy
+#define strcmp_P              strcmp
+#define strncmp_P             strncmp
 #define _BV(bit)              (1 << (bit))
 
 class __FlashStringHelper;
