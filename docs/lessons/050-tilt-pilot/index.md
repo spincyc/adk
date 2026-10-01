@@ -29,6 +29,12 @@ across Board B's matrix, speeding up downhill and stopping at the edge,
 while Board B's servo arm leans with it. Board A is the pilot's stick and
 Board B the plane.
 
+As before, send on 915 MHz only where it's allowed: see
+[Radios](../../safety.md#radios). In Europe the band allows a tenth of the time, six
+minutes in an hour. While you tilt Board A it sends up to ten messages
+a second, about half the time, so there tilt it for no more than
+about eight minutes in an hour, and lay it flat in between.
+
 ## The idea
 
 **A value that never stops changing.** A button or a key changes now and

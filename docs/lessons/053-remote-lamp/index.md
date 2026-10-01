@@ -33,6 +33,10 @@ board with an IR receiver, obeys as if you were standing in front of it.
 
 <!-- closeup A -->
 
+As before, send on 915 MHz only where it's allowed: see
+[Radios](../../safety.md#radios). In Europe the band allows a tenth of the time, far more
+than a few presses of the remote need.
+
 ## The idea
 
 **Light, then radio, then light again.** Infrared is light, and light

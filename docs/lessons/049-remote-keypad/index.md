@@ -31,6 +31,10 @@ and Board A's screen says **Open! # locks**. Get it wrong and the screen
 says **Wrong! Tries: 1**, while Board B glows red. The code itself is only
 ever on Board B.
 
+As before, send on 915 MHz only where it's allowed: see
+[Radios](../../safety.md#radios). In Europe the band allows a tenth of the time, far more
+than a keypad's few messages need.
+
 !!! warning "A classroom model"
     This is a model latch, not a lock to trust. Anyone nearby with a LoRa
     modem could read the keys as they cross the air: *How it works* says

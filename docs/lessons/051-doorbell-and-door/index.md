@@ -34,6 +34,10 @@ and Board A says **Welcome home, Ada**, plays a little tune, and opens the
 door by itself. A card it doesn't know gets **Unknown card**, and the door
 stays shut.
 
+As before, send on 915 MHz only where it's allowed: see
+[Radios](../../safety.md#radios). In Europe the band allows a tenth of the time, far more
+than a doorbell's few messages need.
+
 ## The idea
 
 Almost every piece is one you know: the card and the knock from Lessons
