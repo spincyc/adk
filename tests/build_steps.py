@@ -17,8 +17,9 @@ sys.dont_write_bytecode = True
 sys.path.insert (0, str (ROOT / "docs" / "_theme"))
 
 from bench import Bench  # noqa: E402
-from hooks import (LESSONS, carries, continuity, load_all, load_circuit, previous,  # noqa: E402
-                   recolored, step_points, step_row, step_stages, steps, written)
+from hooks import (LESSONS, board_caption, carries, continuity, load_all,  # noqa: E402
+                   load_circuit, previous, recolored, step_points, step_row, step_stages, steps,
+                   written)
 from drawing import Drawing  # noqa: E402
 
 
@@ -155,6 +156,10 @@ assert block["data-title"] == 'Board A · Dial & "counter"'
 assert block["data-board"] == "A" and block["data-revision"]
 same = Tags (step_stages (left, [], left.items, 1, "A")).first ("div")
 assert same["data-revision"] == block["data-revision"]
+# A caption names its board once, whether or not the title does.
+assert board_caption ("A", "Board A, the meter: the LCD") == "Board A, the meter: the LCD"
+assert board_caption ("B", "a button on pin 22") == "Board B · a button on pin 22"
+assert board_caption ("", "Board games") == "Board games"
 changed = Tags (step_stages (right, [], right.items, 1, "A")).first ("div")
 assert changed["data-revision"] != block["data-revision"]
 
@@ -216,6 +221,9 @@ if __name__ == "__main__":
     compared = 0
     for lesson in filter (written, LESSONS):
         for letter, bench in load_circuit (lesson).items ():
+            caption = board_caption (letter, bench.title)
+            assert not letter or caption.count (f"Board {letter}") == 1, \
+                f"{lesson['slug']}{letter}: its caption names its board twice: {caption}"
             before = previous (lesson["number"], letter)
             if before is None:
                 continue

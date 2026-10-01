@@ -311,9 +311,7 @@ def board_pieces (lesson, letter, bench):
         return {
             "bench": (figure (whole, bench.title, "bench", letter) +
                       '<div class="print-details" markdown="0">' + "".join (details) + "</div>"),
-            "closeup": figure (closeup,
-                               f"{'Board ' + letter + ' · ' if letter else ''}{bench.title}",
-                               "opening", letter),
+            "closeup": figure (closeup, board_caption (letter, bench.title), "opening", letter),
             "steps": steps (bench, previous (lesson["number"], letter), lesson["number"], letter,
                             f"Board {letter} · {bench.sketch}" if letter else lesson["title"]),
             "connections": connections (bench),
@@ -324,6 +322,14 @@ def board_pieces (lesson, letter, bench):
         }
     except ValueError as error:
         raise PluginError (f"{lesson['slug']}: {error}") from error
+
+
+# A board's caption names its board once: "Board A: the LCD on …" says it
+# already, where "a button on pin 22" needs "Board A · " before it.
+def board_caption (letter, title):
+    if not letter or re.match (rf"Board {letter}\b", title):
+        return title
+    return f"Board {letter} · {title}"
 
 
 # Global "Lesson 56" references display as E01, including the page's own
