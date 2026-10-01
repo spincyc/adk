@@ -269,17 +269,17 @@ next. Put the `500` back when you're done.
 
 What the numbers tell you:
 
-- **Pin 10 during a note** reads about 2.5 V: the meter can only show the
-  average, and 5 V for half the time and 0 V for the other half averages to
-  half of 5 V. Yours may read a little less, nearer 2.3 V, because a pin's
-  5 V sags slightly while it pushes 20 mA. Between notes the pin rests at
-  0 V.
-- **Across the buzzer** is tiny, about 0.2 V, and **across the resistor** is
-  nearly all the rest, about 2.3 V: add the two and you get the pin's
+- **Pin 10 during a note** reads about 2.3 V, as it did in Lesson 5: the
+  meter can only show the average, and 5 V for half the time and 0 V for
+  the other half averages to half of 5 V, a little less because a pin's
+  5 V sags slightly while it pushes 20 mA. Anything from 2.3 V to 2.5 V is
+  normal. Between notes the pin rests at 0 V.
+- **Across the buzzer** is tiny, about 0.15 V, and **across the resistor**
+  is nearly all the rest, about 2.1 V: add the two and you get the pin's
   reading back. The same current flows through both, so they share the
   voltage as their resistances do, 16 Ω to 220 Ω, just as *Why the buzzer
   needs 220 Ω* works out.
-- The resistor's reading gives that current: 2.3 V ÷ 220 Ω is about 10 mA,
+- The resistor's reading gives that current: 2.1 V ÷ 220 Ω is about 10 mA,
   the 20 mA of each high half-wave averaged with the silent half.
 - The buzzer's small share is still plenty. It is the current that moves its
   disc, not the voltage: those 20 mA switch on and off with every wave, and

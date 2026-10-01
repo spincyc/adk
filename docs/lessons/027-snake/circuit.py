@@ -22,9 +22,9 @@ bench.closeup (1, 40)
 
 # Readings to take with a multimeter while a long note plays: the pin's
 # average, and how the buzzer and the resistor share it.
-bench.measure ("Pin 10 during a note", red="10", black="GND", expect="about 2.5 V",
+bench.measure ("Pin 10 during a note", red="10", black="GND", expect="about 2.3 V",
                when="a long note")
-bench.measure ("Across the buzzer", red="i33", black="b33", expect="about 0.2 V",
+bench.measure ("Across the buzzer", red="i33", black="b33", expect="about 0.15 V",
                when="a long note")
-bench.measure ("Across the resistor", red="b33", black="GND", expect="about 2.3 V",
+bench.measure ("Across the resistor", red="b33", black="GND", expect="about 2.1 V",
                when="a long note")
