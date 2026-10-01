@@ -8,9 +8,8 @@ bench.chip ("SN74HC00N", first=16,
                   "3Y", "3A", "3B", "4Y", "4A", "4B", "VCC"])
 bench.wire ("T+16", "j16")               # pin 14, VCC
 bench.wire ("a22", "B-22")               # pin 7, GND
-bench.capacitor ("100 nF", "g15", "e15")
-bench.wire ("T+15", "j15")               # bypass capacitor to VCC
-bench.wire ("a15", "B-15")               # bypass capacitor to GND
+bench.wire ("B-23", "T-23")              # the top − rail is GND too
+bench.capacitor ("100 nF", "T+15", "T-15")  # beside pin 14's supply wire
 
 bench.stage ("the Set button and its pull-up")
 bench.button (2)
@@ -25,11 +24,10 @@ bench.wire ("a10", "B-10")
 bench.wire ("a8", "c19")                 # reset_N, gate 2 pin 4
 
 bench.stage ("the two feedback paths")
-bench.wire ("a21", "c17")               # pin 6 (Qbar) to pin 2
-bench.wire ("a18", "c20")               # pin 3 (Q) to pin 5
+bench.wire ("a21", "c17", color="white")   # pin 6 (Q-bar) to pin 2
+bench.wire ("a18", "c20", color="yellow")  # pin 3 (Q) to pin 5, as Q to the LED
 
 bench.stage ("the unused gate inputs")
-bench.wire ("B-23", "T-23")             # nearby top ground rail
 bench.wire ("j17", "T-17")              # pin 13
 bench.wire ("j18", "T-18")              # pin 12
 bench.wire ("j20", "T-19")              # pin 10

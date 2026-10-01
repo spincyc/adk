@@ -12,7 +12,7 @@ parts:
   - 2 10 kΩ resistors (brown, black, black, red, brown)
   - 1 kΩ resistor (brown, black, black, brown, brown)
   - 100 nF ceramic capacitor
-  - 19 jumper wires
+  - 17 jumper wires
 ideas:
   - Feedback between two NAND gates holds a bit after a button is released
 ---
@@ -35,11 +35,11 @@ let go; press **Reset** and it should stay off. The Mega supplies USB
     before plugging USB back in. Press only one button at a time.
 
 Keep E19's chip across columns 16–22, notch to the left; its
-100 nF capacitor beside it at column 15; both buttons at columns 2
-and 8; and the red LED and 1 kΩ resistor at columns 6–7. Keep the
-chip's power and capacitor wires, the four wires grounding unused
-inputs **9, 10, 12, 13**, the link between the − rails, and the LED
-path from chip pin 3. Keep the Mega's GND and 5 V wires in their usual
+100 nF capacitor across the top rails by column 15; both buttons at
+columns 2 and 8; and the red LED and 1 kΩ resistor at columns 6–7. Keep
+the chip's power wires, the link between the − rails at column 23, the
+four wires grounding unused inputs **9, 10, 12, 13**, and the LED path
+from chip pin 3. Keep the Mega's GND and 5 V wires in their usual
 rail holes.
 
 Remove E19's two 10 kΩ **pull-down** resistors, both 5 V wires
@@ -55,10 +55,13 @@ holds its input high; a press pulls that input low.
 
 <!-- steps -->
 
-Complete the two feedback paths: chip **pin 6 (Q-bar) → pin 2**, and
-**pin 3 (Q) → pin 5**. Q at pin 3 also feeds the 1 kΩ resistor and
-the LED's long leg; the short leg reaches GND. Unused outputs **8 and
-11** remain open. The [SN74HC00N datasheet](https://www.ti.com/lit/ds/symlink/sn54hc00.pdf)
+Complete the two feedback paths: the white wire from chip **pin 6
+(Q-bar) → pin 2**, and the yellow one from **pin 3 (Q) → pin 5**. They
+end close together, so check each end against the drawing: swapped,
+they make no latch. Q at pin 3 also feeds the 1 kΩ resistor and the
+LED's long leg, through the other yellow wire; the short leg reaches
+GND. Unused outputs **8 and 11** remain open. The
+[SN74HC00N datasheet](https://www.ti.com/lit/ds/symlink/sn54hc00.pdf)
 shows the 14-pin layout and an active-low set/reset latch example. The
 schematic shows the two gates and their feedback (the
 [schematic key](../../electricity/schematics.md) names each symbol):
@@ -181,7 +184,7 @@ Unplug USB before checking a connection.
 | What you see | Check |
 |---|---|
 | The LED never lights | Check pin 14 to 5 V, pin 7 to GND, Q at pin 3 through 1 kΩ to the LED's long leg, and its short leg to GND. |
-| Set or Reset works only while held | Check both feedback jumpers: pin 6 to pin 2, and pin 3 to pin 5. |
+| Set or Reset works only while held | Check both feedback jumpers: white from pin 6 to pin 2, and yellow from pin 3 to pin 5. |
 | A button does the opposite job | Set's left strip goes to pin 1; Reset's left strip goes to pin 4. Each right strip goes to GND. |
 | The LED changes without a press | Check both 10 kΩ pull-ups from 5 V to the left button strips, all four unused inputs at GND, and the 100 nF capacitor near the chip. |
 
