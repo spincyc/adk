@@ -349,28 +349,6 @@ such as someone walking between the boards.
     modem adds a few bytes of its own, such as who the message is from,
     so the real time is a little longer.
 
-## Check yourself
-
-1. Why does the meter send 64 messages in a test, and not 5?
-2. After a test, Board B's matrix has the dot for message 41 lit, but
-   Board A's doesn't. What happened to message 41?
-3. In one place, Quick got 38 of 64 back and Far all 64. What did Far
-   give up to get them through? Why did the bridge use Quick anyway?
-
-??? note "Answers"
-    1. With five messages, one lost is 20%, and two tests in the same
-       place can differ that much by luck alone. With 64, one lost
-       message is less than 2%, so a real difference between two settings
-       stands out.
-    2. It reached Board B, which lit its dot and sent it back, but the
-       echo was lost on the way back to Board A, or came back after Board
-       A had given up waiting for it.
-    3. Time: each message took about seven times as long on the air, so
-       a test took most of a minute instead of a few seconds. Far's longer
-       chirps let a modem hear a weaker signal. The bridge needed to
-       answer quickly, a press in a tenth of a second, and across a house
-       Quick at 10 dBm has signal to spare.
-
 ## Make it yours
 
 1. **Long or short, at the edge.** Go back to a place where Quick loses
@@ -417,3 +395,25 @@ What the numbers tell you:
   datasheet), so the modem's 3.3 V gets through with 0.3 V to spare: a
   margin, like the radio's margin above the noise. While a test runs,
   both lines flicker far too fast for the meter to follow.
+
+## Check yourself
+
+1. Why does the meter send 64 messages in a test, and not 5?
+2. After a test, Board B's matrix has the dot for message 41 lit, but
+   Board A's doesn't. What happened to message 41?
+3. In one place, Quick got 38 of 64 back and Far all 64. What did Far
+   give up to get them through? Why did the bridge use Quick anyway?
+
+??? note "Answers"
+    1. With five messages, one lost is 20%, and two tests in the same
+       place can differ that much by luck alone. With 64, one lost
+       message is less than 2%, so a real difference between two settings
+       stands out.
+    2. It reached Board B, which lit its dot and sent it back, but the
+       echo was lost on the way back to Board A, or came back after Board
+       A had given up waiting for it.
+    3. Time: each message took about seven times as long on the air, so
+       a test took most of a minute instead of a few seconds. Far's longer
+       chirps let a modem hear a weaker signal. The bridge needed to
+       answer quickly, a press in a tenth of a second, and across a house
+       Quick at 10 dBm has signal to spare.
