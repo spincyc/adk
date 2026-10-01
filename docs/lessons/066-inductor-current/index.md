@@ -85,12 +85,15 @@ in a free hole of the bottom − rail.
    the generator, and compare the same rising edges at the same scope
    settings.
 
-With the coil, channel 2 should rise more gradually than channel 1. With
-the jumper, channel 2 should follow channel 1 much more sharply. The
-approximate rise timescale is **L ÷ R = 0.1 H ÷ 1000 Ω = 0.1 ms**; the
-actual trace also depends on the coil's winding resistance and the
-generator. Record what you observe before deciding whether it matches
-your prediction.
+With the coil, channel 2 should rise more gradually than channel 1:
+about two thirds of the way up within roughly **0.1 ms**, and level by
+about **0.3 ms**. It levels off below 4 V, at roughly **2.6–3.8 V**,
+because the coil's own winding resistance and the generator's output
+resistance, often 50 Ω, take part of the 4 V. With the jumper, channel 2
+should follow channel 1 much more sharply, levelling near 3.8 V. The rise
+timescale is **L ÷ R**: 0.1 H ÷ (1000 Ω + 50 Ω + the coil's winding
+resistance, a few hundred ohms at most) is about **65–95 µs**. Record
+what you observe before deciding whether it matches your prediction.
 
 ## Why it happens
 

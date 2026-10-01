@@ -120,7 +120,7 @@ charge back during each low part. More on-time lets it settle higher.
 ## See the pulses, if you have a scope
 
 Use a **battery-powered two-channel scope**. With USB unplugged, put
-both probe ground clips on the bottom − rail, channel 1's tip at **h38**
+both probe ground clips on the bottom − rail, channel 1's tip at **i38**
 and channel 2's tip at **c44**. Never put a ground clip on either signal
 point. Plug in USB and set the knob near halfway. Before looking,
 predict which trace will jump between 0 V and 5 V and which will sit

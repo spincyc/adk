@@ -83,14 +83,18 @@ each second.
 2. Open **Tools → Serial Plotter** at **9600 baud**. Watch the `knob` trace
    while turning slowly from the GND end to the 5 V end. It should rise
    from near 0 to near 1023; the `brightness` trace follows lower down.
+   The graph's scale has to fit both traces, so a step of one count is far
+   too small to see there; step 4 shows those.
 3. Return slowly toward the middle, then hold still. Compare that section
    of the graph with a faster turn over the same distance. Does the faster
-   turn leave fewer plotted points or skip more numbers? The Plotter joins
-   points with lines; the Mega measured only at those separate moments.
+   turn leave fewer plotted points along the way? The Plotter joins points
+   with lines; the Mega measured only at those separate moments.
 4. Close the Plotter and open **Tools → Serial Monitor** at 9600 baud to
-   see exact whole numbers. Holding the knob still, write down three
-   nearby readings. Switch back to the Plotter when finished; only one
-   window can use the port at a time.
+   see the exact whole numbers. Turn the knob very slowly and watch the
+   `knob` number change one whole step at a time, never by a fraction.
+   Then hold the knob still and write down three nearby readings. Switch
+   back to the Plotter when finished; only one window can use the port at
+   a time.
 
 ## Measure the voltage
 
@@ -118,7 +122,8 @@ one of **1024** numbered levels, 0 through 1023. With a nominal 5 V
 reference, one level spans about **5 V ÷ 1024 ≈ 0.0049 V**, or **4.9 mV**.
 That makes 2.5 V read near 512, 1 V near 205 and 4 V near 819. The
 meter voltage can move smoothly while the printed number stays the same,
-then changes by one. That is why the slow turn shows whole steps.
+then changes by one. That is why, in the Serial Monitor, a slow turn
+shows whole steps.
 
 When you turn faster, the knob can pass several levels between two reads.
 The graph connects the readings, but it has no measurement of the voltage

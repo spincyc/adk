@@ -11,7 +11,7 @@ bench.wire ("h38", "j44")
 bench.resistor ("10 kΩ", "g44", "e44")
 bench.capacitor ("100 µF", "a44", "B-45", polarized=True)
 
-bench.measure ("Pin 3 before the filter", red="h38", black="GND",
+bench.measure ("Pin 3 before the filter", red="i38", black="GND",
                expect="about 1.25 V", when="Knob reading about 256")
 bench.measure ("Filtered point at the capacitor", red="c44", black="GND",
                expect="about 1.25 V", when="Knob reading about 256; wait 3 seconds")

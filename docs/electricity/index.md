@@ -240,8 +240,10 @@ build: 0–4 V square wave, 1 kΩ resistor, 100 mH inductor, two-channel scope.
 across the 1 kΩ resistor, which stands for current. Wire generator output →
 inductor → 1 kΩ → GND. Put both scope ground clips at GND, channel 1 on
 generator output and channel 2 at the inductor/resistor junction. With the
-inductor, channel 2 rises over roughly 0.1 ms; replace the inductor with a
-wire and the edge is much sharper. **ADK connection:** The coil in [Lesson
+inductor, channel 2 rises most of the way in roughly 0.1 ms and levels at
+about 2.6–3.8 V, below 4 V because the coil's winding and the generator
+take a share; replace the inductor with a wire and the edge is much
+sharper. **ADK connection:** The coil in [Lesson
 3's buzzer](../lessons/003-reaction-duel/index.md) is why its switch has a
 protective diode.
 
@@ -415,12 +417,13 @@ follow it between about 1.7 V and 2.7 V, the chip's two thresholds.
 **Idea:** Sampling turns a changing voltage into separate numbered readings.
 **Before:** E06. **Use:** E22's version of
 [Lesson 7's Dimmer build](../lessons/007-dimmer/index.md),
-meter and Serial Plotter. **Predict, do, see:** Turn the knob slowly and
-compare the wiper voltage with the plotted 0–1023 reading; near 2.5 V it
-is near 512. The printed readings move in whole steps while
-the voltage changes smoothly. At a boundary, adjacent numbers may flicker
-because of electrical noise. **ADK connection:** Reuses
-Lesson 7's sketch and wiring exactly.
+meter, Serial Plotter and Serial Monitor. **Predict, do, see:** Turn the
+knob slowly and compare the wiper voltage with the plotted 0–1023
+reading; near 2.5 V it is near 512. In the Serial Monitor the printed
+readings move in whole steps while the voltage changes smoothly; on the
+Plotter's 0–1023 scale a step of one is too small to see. At a boundary,
+adjacent numbers may flicker because of electrical noise. **ADK
+connection:** Reuses Lesson 7's sketch and wiring exactly.
 
 ### E23 — [Average PWM](../lessons/078-pwm-average/index.md) {#e23-pwm-average}
 

@@ -18,4 +18,5 @@ bench.wire ("wave.GND", "B-5")
 bench.probe ("CH1 · generator OUT", tip="i6", ground="GND", channel=1,
              expect="a 0–4 V square wave with sharp edges", when="generator on")
 bench.probe ("CH2 · top of the 1 kΩ resistor", tip="i10", ground="B-9", channel=2,
-             expect="rises over about 0.1 ms at each rising edge", when="generator on")
+             expect="rises most of the way in about 0.1 ms, levelling at 2.6–3.8 V",
+             when="generator on")
