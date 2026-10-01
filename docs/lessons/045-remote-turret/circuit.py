@@ -40,7 +40,7 @@ turret.home_motor ()
 turret.home_modem ()
 
 turret.home_servo ()
-turret.note ("tape the sensor and the fan to the horn", "servo.horn", offset=(1.4, -0.3))
+turret.note ("tape the sensor and the fan to the horn", "servo.horn", offset=(1.0, -0.3))
 
 boards = {"A": stick, "B": turret}
 

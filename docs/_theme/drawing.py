@@ -1013,11 +1013,11 @@ class Drawing:
                     if kind == "hole"]
             text = canonical (start[1])
             wrong = rails["+"] if text == "GND" else rails["−"] if text in ("5V", "3.3V") else ()
-            others = [(x - 8, y - 8, x + 8, y + 8) for (x, y), wire in ends if wire != (start, end)]
+            others = [(x - 6, y - 6, x + 6, y + 6) for (x, y), wire in ends if wire != (start, end)]
             text = f"pin {text}" if numbered (text) else text
             spots = along (points if end[0] != "hole" else points[::-1], size * 0.9)
             spots = [(x, y, anchor, cost + 100 * any (boxes_meet (box, rail) for rail in wrong)
-                      + 600 * any (boxes_meet (box, other) for other in others), to)
+                      + 150 * any (boxes_meet (box, other) for other in others), to)
                      for x, y, anchor, cost, to in spots
                      for box in [text_box (x, y, text, size * 0.9, anchor)]]
             best = placer.place (text, size * 0.9, spots, own)
