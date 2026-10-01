@@ -31,7 +31,7 @@ void setup ()
 
     if (!reader.ok ())
     {
-        Serial.println ("No card reader: check its wires and its 3.3 V.");
+        adk::println (Serial, "No card reader: check its wires and its 3.3 V.");
     }
 }
 

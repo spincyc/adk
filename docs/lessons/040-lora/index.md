@@ -176,8 +176,8 @@ What's new:
   `Serial3`, pins 14 (TX3) and 15 (RX3), with address 2. `Serial` itself
   belongs to the USB cable and the Serial Monitor. Settings in braces
   after the address could choose the network, 6 unless you say otherwise,
-  or the band. Name only the ones you change, and keep them in this
-  order, or the sketch won't compile: partner, speed, power, network,
+  or the band. Name only the ones you change, each with a dot, as in
+  `{.band = 921500000}`, and keep them in this order, or the sketch won't compile: partner, speed, power, network,
   band.
 - `modemA.ok ()` says whether the modem answered when the sketch started;
   the screen says which did.

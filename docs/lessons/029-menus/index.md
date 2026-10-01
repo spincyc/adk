@@ -43,12 +43,12 @@ Turning clockwise, CLK changes first and DT follows; turning the other way,
 DT changes first. So by watching which contact changes first, the Mega knows
 the direction:
 
-<p class="formula">clockwise: 11 → 01 → 00 → 10 → 11 &nbsp;&nbsp; anticlockwise: 11 → 10 → 00 → 01 → 11</p>
+<p class="formula">clockwise: 11 → 01 → 00 → 10 → 11 &nbsp;&nbsp; counterclockwise: 11 → 10 → 00 → 01 → 11</p>
 
 Each pair of digits is CLK then DT: 1 while the contact is open, 0 while it's
 closed. Only one digit changes at a time, and on this encoder one detent is
 four changes. ADK counts them for you: `knob.turned ()` is 1 in the update
-where the knob clicked clockwise, −1 anticlockwise, and 0 the rest of the
+where the knob clicked clockwise, −1 counterclockwise, and 0 the rest of the
 time. Pressing the knob's shaft works a push switch, **SW**, which is just a
 button.
 
@@ -196,7 +196,7 @@ first click back brings it straight down to 90%.
 ??? note "How it works"
     On every `adk::update ()` the encoder reads both contacts and compares
     them with the last reading. A table of the sixteen possible pairs says
-    whether that change was a step clockwise (+1), anticlockwise (−1), or
+    whether that change was a step clockwise (+1), counterclockwise (−1), or
     no step at all. When the contacts bounce, a step forward is followed by
     a step back, and the two cancel out. Four steps in the same direction
     make a detent, and `turned ()` reports it.
@@ -267,7 +267,7 @@ What the numbers tell you:
 ## Check yourself
 
 1. The encoder never says where it is, only that it has turned. How does
-   it tell clockwise from anticlockwise?
+   it tell clockwise from counterclockwise?
 2. The same turn of the knob sometimes moves the arrow and sometimes
    changes a setting. Which variable decides, and what changes it?
 3. What would happen at 100% if `turnKnob ()` wrapped the setting round
@@ -276,7 +276,7 @@ What the numbers tell you:
 
 ??? note "Answers"
     1. By which of its two contacts changes first. Turning clockwise, CLK
-       changes before DT; turning anticlockwise, DT changes first.
+       changes before DT; turning counterclockwise, DT changes first.
     2. `editing`. `turnKnob ()` checks it, and each press of the knob's
        shaft flips it with `editing = !editing`.
     3. One more click would jump straight from 100% to 0%, and the lamp

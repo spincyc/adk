@@ -114,7 +114,7 @@ wire goes round the left of the PIR now, to keep clear of its wires.
 <!-- steps B -->
 
 ??? info "Setting up the PIR and the obstacle sensor"
-    As in Lesson 23: turn the PIR's time knob fully anticlockwise, leave its
+    As in Lesson 23: turn the PIR's time knob fully counterclockwise, leave its
     sensitivity in the middle, and give it a minute to settle after
     power-up. Turn the obstacle sensor's blue knob until its own LED just
     lights with your hand 10 cm away.

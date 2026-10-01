@@ -222,7 +222,7 @@ good.
 | The screen counts, but the turntable doesn't move | Is Board B's power module on, with its LED lit? Check its red wire goes from its **5V** pin to the bottom + rail and its black one from GND to the bottom − rail, both by column 42. Push the motor's white plug fully into its socket. |
 | The motor hums or shakes but hardly turns | Two of Board B's IN wires are swapped: IN1 to A8, IN2 to A9, IN3 to A10, IN4 to A11. |
 | **Arrived** shows the wrong place on the table | Board B counts from where the arrow was when it started. Point the arrow at 0 and press Board B's reset button. |
-| The turntable goes anticlockwise | That's fine: it is the way positive steps turn your motor. Lesson 31 says more. |
+| The turntable goes counterclockwise | That's fine: it is the way positive steps turn your motor. Lesson 31 says more. |
 | The count stops for a moment, then catches up | A message was lost, and the bridge sent it again. If it happens all the time, move the boards closer, or keep their aerials upright. |
 | A blank lit screen, or a row of blocks | Turn the screen's contrast knob, the one in columns 43 to 45. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |

@@ -91,13 +91,6 @@ messages down. A word takes about a tenth of a second, so its rest is
     transmitter with an aerial: leave the aerials off, and keep both
     modules on one desk. [Safety](../../safety.md#radios) has the details.
 
-For a measured introduction to the divider on DAT, try
-[E04: Resistors in series](../059-resistors-in-series/index.md).
-[E24: Send a byte down a wire](../079-serial-link/index.md) explores
-timed bits before they travel by radio. The
-[loaded-divider challenge](../../electricity/challenges.md#loaded-divider)
-tests why a divider's output depends on what it drives.
-
 !!! question "Predict"
     The receiver's DATA flickers with noise the whole time nothing is being
     sent, and the sketch shows every message the receiver hears, with a
@@ -322,3 +315,12 @@ What the numbers tell you:
     3. The law lets the transmitter send only now and then, so after each
        message it rests for at least 10 seconds. While it rests,
        `transmitter.send ()` says `false` and sends nothing.
+
+!!! tip "Go deeper"
+    For a measured look at the divider on DAT, try
+    [E04: Resistors in series](../059-resistors-in-series/index.md), and the
+    [loaded-divider challenge](../../electricity/challenges.md#loaded-divider)
+    shows why a divider's output depends on what it drives.
+    [E24: Send a byte down a wire](../079-serial-link/index.md) times bits
+    on a wire before they travel by radio. All three need only the kit and
+    a multimeter.

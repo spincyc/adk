@@ -137,7 +137,7 @@ You'll measure that in the third challenge below.
 
 Which way does it turn? Motors differ: watch which way yours turns. ADK
 means positive steps to turn the shaft clockwise, seen from the shaft end;
-if yours goes anticlockwise, that's fine, and you now know which way
+if yours goes counterclockwise, that's fine, and you now know which way
 positive means for your motor.
 
 ## If it doesn't work
@@ -177,7 +177,8 @@ positive means for your motor.
 4. **A second hand.** Make the arrow tick round once a minute, one step every
    second, like a clock's second hand. Use an `adk::Every tick {1000};` and
    count seconds, then move to `seconds * 4096L / 60` each tick, so the
-   rounding never builds up.
+   rounding never builds up. The `L` makes the sum a `long`, big enough
+   for 59 × 4096.
 
 ## Measure it
 

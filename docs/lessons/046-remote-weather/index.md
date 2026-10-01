@@ -138,7 +138,9 @@ What's new:
 
 - `bridge.changed ("report")` is true in the one pass of `loop ()` in
   which a new report number arrives. Then `rtc.now ()` notes the time in
-  `heardAt`, for the bottom row.
+  `heardAt`, for the bottom row. `adk::DateTime heardAt {};` starts it
+  with empty braces: every part of the date and time is 0 until a report
+  comes.
 - `hasNews ()` is true once a report has come, while the garden can be
   heard. `bridge.value ("report")` is 0 until the first report, as every
   value is until it arrives.

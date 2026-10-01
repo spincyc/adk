@@ -122,8 +122,6 @@ more strictly; E24's sketch uses `static_cast<char> (...)`.
 |---|---|---|
 | `Serial.begin (9600);` | Opens the USB link to your computer, at 9600 bits a second | Lesson 2 |
 | `adk::println (Serial, "Presses: ", presses);` | Prints its pieces in a row and ends the line; `adk::print ()` leaves the line open | Lessons 2 and 14 |
-| `Serial.println ("...")` | Arduino's own printing, one piece at a time | Lesson 34 |
-| `Serial.print (card, HEX)` | Prints a number in hexadecimal | Lesson 51 |
 | `Serial1`, `Serial2`, `Serial3` | The Mega's three other serial links, on pins 14 to 19 | Lessons 40 and 45 |
 | `Serial1.available ()`, `.read ()`, `.write ()` | How many characters have arrived, take one, and send one | E24 |
 | `adk::Text<24> message;` | Text you print into, with room for 24 characters | Lesson 27 |

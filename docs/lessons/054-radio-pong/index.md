@@ -139,6 +139,8 @@ sounds for each. `catchBall ()`, `moveBall ()`, `showScore ()` and
 
 What's new:
 
+- `int8_t x = 3, y = 6;` declares two variables of the same type in one
+  line, each with its own starting value.
 - `enum class Ball { Serving, Here, There };` names the three states from
   the table above, as Lesson 24 named its alarm's.
 - `bridge.changed ("ball")` is true once for each new crossing from the

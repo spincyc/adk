@@ -139,8 +139,11 @@ What's new:
 - `rollBall ()` runs once per reading. It updates the speed, then tries the
   move in x and in y separately, so a ball rolling along a wall keeps
   sliding the way it's free to go. When a wall is in the way, that speed
-  becomes 0 and the ball stops dead. `ball.x += ball.speedX` adds the speed
-  to the place, with Lesson 21's `+=`.
+  becomes 0 and the ball stops dead. `ball.speedX * 0.9` keeps nine tenths
+  of the speed each time, so the ball slows down by itself; written with
+  its decimal point, the number keeps its fraction in the sum.
+  `ball.x += ball.speedX` adds the speed to the place, with Lesson 21's
+  `+=`.
 - After each roll, `loop ()` draws the game: the maze, then the exit, lit
   only while `exitLit` is on, then the ball.
 - `isFree ()` rounds the ball's position to a dot with `lround ()`, as in

@@ -23,7 +23,7 @@ void setup ()
     else
     {
         light.show (adk::color::yellow);
-        Serial.println ("No reader: check its wires and its 3.3 V.");
+        adk::println (Serial, "No reader: check its wires and its 3.3 V.");
     }
 }
 

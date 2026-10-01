@@ -156,7 +156,7 @@ What's new:
   Board A is 1, and its partner is 2.
 - `angle` is the angle asked for, starting in the middle, 90°.
   `knob.turned ()` is 1 for a click clockwise, −1 for a click
-  anticlockwise and 0 otherwise, as in Lesson 29, so each click moves the
+  counterclockwise and 0 otherwise, as in Lesson 29, so each click moves the
   angle by `step`, 5°. `constrain` stops it at 0 and 180.
 - `click` is the knob's push switch: a press puts `angle` back to 90.
 - `bridge.share ("angle", angle)` shares it on every pass of `loop ()`.

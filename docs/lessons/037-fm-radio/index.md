@@ -166,7 +166,7 @@ What's new:
   potentiometer beside the LCD only sets the contrast: on this page, *the
   rotary knob* is the encoder and *the volume knob* is the one on A0.
 - `radio.step (dial.turned ())` moves one step for each click, up for
-  clockwise and down for anticlockwise, and round from the top of the band
+  clockwise and down for counterclockwise, and round from the top of the band
   to the bottom. `radio.seekUp ()` finds the next station up.
 - Tuning takes about 60 ms, and a seek up to a few seconds, but neither
   stops the sketch: the radio gets on with it while `loop ()` carries on.
