@@ -2,6 +2,7 @@
 
 #include "containers.h"
 #include "object.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -60,8 +61,8 @@ namespace adk {
         void send    (uint8_t address, uint8_t value);
 
         const char* text_;
+        StartTime   stepped_;
         Millis      step_;
-        Millis      stepStart_;
         uint16_t    offset_;
         uint8_t     rows_ [8];
         uint8_t     dirty_;
@@ -70,6 +71,5 @@ namespace adk {
         Pin         clock_;
         Pin         load_;
         bool        levelChanged_;
-        bool        starting_;
     };
 }

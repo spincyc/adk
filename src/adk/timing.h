@@ -31,6 +31,12 @@ namespace adk {
         // start becomes now and no period has passed.
         bool beat (Millis now, Millis period);
 
+        // Whether it is time to act again: at the first update after a
+        // restart, and then once a period has passed since it last said so.
+        // Each time, it starts again from now, so a late update puts the
+        // next one back, as a multiplexed display or a scroll wants.
+        bool due (Millis now, Millis period);
+
       private:
         Millis start_;
         bool   waiting_;

@@ -48,6 +48,17 @@ namespace adk {
         return true;
     }
 
+    bool StartTime::due (Millis now, Millis period)
+    {
+        if (!waiting_ && now - start_ < period)
+        {
+            return false;
+        }
+
+        restart (now);
+        return true;
+    }
+
     uint16_t interpolate (uint16_t from, uint16_t to, Millis elapsed, Millis length)
     {
         if (elapsed >= length)

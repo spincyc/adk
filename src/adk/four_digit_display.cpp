@@ -22,12 +22,11 @@ namespace adk {
 
     FourDigitDisplay::FourDigitDisplay (Pin data, Pin clock, Pin latch,
                                         Pin digit1, Pin digit2, Pin digit3, Pin digit4)
-        : switchedAt_ (0)
-        , segments_   {data, clock, latch}
-        , digits_     {digit1, digit2, digit3, digit4}
-        , glyphs_     {0, 0, 0, 0}
-        , current_    (Digits - 1)
-        , starting_   (true)
+        : switched_ ()
+        , segments_ {data, clock, latch}
+        , digits_   {digit1, digit2, digit3, digit4}
+        , glyphs_   {0, 0, 0, 0}
+        , current_  (Digits - 1)
     {
     }
 
@@ -139,13 +138,10 @@ namespace adk {
 
     void FourDigitDisplay::update (Millis now)
     {
-        if (!starting_ && now - switchedAt_ < DigitTime)
+        if (!switched_.due (now, DigitTime))
         {
             return;
         }
-
-        starting_   = false;
-        switchedAt_ = now;
 
         // Darken the lit digit before the segment lines change, or the next
         // digit's pattern would flash on it.

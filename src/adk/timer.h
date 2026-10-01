@@ -1,6 +1,6 @@
 #pragma once
 
-#include "object.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -25,12 +25,11 @@ namespace adk {
         void update (Millis now) override;
 
       private:
-        Millis startedAt_;
-        Millis duration_;
-        Millis now_;
-        bool   running_;
-        bool   starting_;
-        bool   expired_;
+        StartTime started_;
+        Millis    duration_;
+        Millis    elapsed_;     // as of the latest update
+        bool      running_;
+        bool      expired_;
     };
 
     // Measures time while it runs, as of the latest adk::update (). Stopping

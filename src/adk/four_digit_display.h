@@ -2,6 +2,7 @@
 
 #include "object.h"
 #include "shift_register.h"
+#include "timing.h"
 
 namespace adk {
 
@@ -68,11 +69,10 @@ namespace adk {
         void showNumber (long long number, uint8_t decimals);
         void dashes     ();
 
-        Millis    switchedAt_;
+        StartTime switched_;
         ShiftPins segments_;
         Pin       digits_ [4];
         uint8_t   glyphs_ [4];
         uint8_t   current_;
-        bool      starting_;
     };
 }

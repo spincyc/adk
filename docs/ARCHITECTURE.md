@@ -92,7 +92,12 @@ the same result every time.
 
 A command that starts something timed (`blink ()`, `beep ()`, `fadeTo ()`,
 `play ()`) sets a flag, and the next `update ()` records the start time. The
-effect that can happen immediately, such as the first flash, does.
+effect that can happen immediately, such as the first flash, does. A part
+keeps that start in a `StartTime` (`timing.h`) rather than a time and a flag
+of its own: `restart ()` from the command, then in `update (now)` either
+`elapsed (now)`, `beat (now, period)` for a steady beat that keeps time as
+`Every` does, or `due (now, period)` for something done at the first update
+and then each period from the last, as a display's scan.
 
 Asking a part for what it is already doing changes nothing, so commands such
 as `blink ()`, `beep ()`, `fadeTo ()`, `play ()`, `moveTo ()`, `tune ()` and
@@ -101,9 +106,11 @@ blink on every pass keeps blinking in step. A different request starts
 afresh.
 
 Compare times by subtraction, `now - start >= length`, which stays correct when
-`millis ()` wraps round to zero after 49.7 days. The tests of `Timer`,
-`Stopwatch`, `Every`, `Debouncer`, `FourDigitDisplay` and `LedMatrix` cross
-the wrap.
+`millis ()` wraps round to zero after 49.7 days. The tests of `StartTime`,
+`Timer`, `Stopwatch`, `Every`, `Led`, `Debouncer`, `FourDigitDisplay`,
+`LedMatrix`, `Stepper`, `Ds18b20`, `Rfid`, `Rtc`, `SoundSensor`, `MeshNode`
+and the 433 MHz radio cross the wrap, and those of `IrReceiver` cross the
+wrap of `micros ()`, after 71.6 minutes.
 
 ## Events
 

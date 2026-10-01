@@ -3,22 +3,24 @@
 namespace adk {
 
     Timer::Timer ()
-        : startedAt_ (0)
-        , duration_  (0)
-        , now_       (0)
-        , running_   (false)
-        , starting_  (false)
-        , expired_   (false)
+        : started_  ()
+        , duration_ (0)
+        , elapsed_  (0)
+        , running_  (false)
+        , expired_  (false)
     {
     }
 
     // Neither start () nor stop () clears expired (): an event lasts until
-    // the next update, whatever the sketch does after reading it.
+    // the next update, whatever the sketch does after reading it. The
+    // countdown starts on the next update, so it runs its full length
+    // whatever the sketch did in between.
     void Timer::start (Millis duration)
     {
         duration_ = duration;
+        elapsed_  = 0;
         running_  = true;
-        starting_ = true;
+        started_.restart ();
     }
 
     void Timer::stop ()
@@ -38,17 +40,11 @@ namespace adk {
 
     Millis Timer::remaining () const
     {
-        if (!running_)
-        {
-            return 0;
-        }
-
-        return starting_ ? duration_ : duration_ - (now_ - startedAt_);
+        return running_ ? duration_ - elapsed_ : 0;
     }
 
     void Timer::update (Millis now)
     {
-        now_     = now;
         expired_ = false;
 
         if (!running_)
@@ -56,15 +52,9 @@ namespace adk {
             return;
         }
 
-        // The countdown starts on the first update after start (), so it runs
-        // its full length whatever the sketch did in between.
-        if (starting_)
-        {
-            startedAt_ = now;
-            starting_  = false;
-        }
+        elapsed_ = started_.elapsed (now);
 
-        if (now - startedAt_ >= duration_)
+        if (elapsed_ >= duration_)
         {
             running_ = false;
             expired_ = true;

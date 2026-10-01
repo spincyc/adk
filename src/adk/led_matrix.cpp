@@ -24,8 +24,8 @@ namespace adk {
 
     LedMatrix::LedMatrix (Pin data, Pin clock, Pin load)
         : text_         (nullptr)
+        , stepped_      ()
         , step_         (0)
-        , stepStart_    (0)
         , offset_       (0)
         , rows_         {}
         , dirty_        (0)
@@ -34,7 +34,6 @@ namespace adk {
         , clock_        (clock)
         , load_         (load)
         , levelChanged_ (false)
-        , starting_     (false)
     {
     }
 
@@ -129,10 +128,10 @@ namespace adk {
             return;
         }
 
-        text_     = (text && *text) ? text : nullptr;
-        step_     = step;
-        offset_   = 0;
-        starting_ = true;
+        text_   = (text && *text) ? text : nullptr;
+        step_   = step;
+        offset_ = 0;
+        stepped_.restart ();
     }
 
     bool LedMatrix::isScrolling () const
@@ -142,10 +141,9 @@ namespace adk {
 
     void LedMatrix::update (Millis now)
     {
-        if (text_ && (starting_ || now - stepStart_ >= step_))
+        // The first step comes in the update after scroll ().
+        if (text_ && stepped_.due (now, step_))
         {
-            stepStart_ = now;
-            starting_  = false;
             advance ();
         }
 
