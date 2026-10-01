@@ -393,8 +393,10 @@ class Bench:
                           colors=tuple (bands_for (value))))
         return self
 
-    def capacitor (self, value, a, b, polarized=False):
-        self._add (Capacitor (value, a, b, polarized))
+    # kind is "electrolytic", "ceramic" or "film"; left out, Capacitor
+    # chooses by value and polarity, and the drawing shows which.
+    def capacitor (self, value, a, b, polarized=False, kind=None):
+        self._add (Capacitor (value, a, b, polarized, kind))
         legs = (self._at (a, "+ leg"), self._at (b, "striped − leg")) if polarized else \
                (self._at (a), self._at (b))
         note = "check the − stripe before powering" if polarized else "either way round"
