@@ -21,7 +21,7 @@ rough costs.
 | S8050 transistor and 1N4007 diode | Switch and protect the active buzzer | Lesson 3 |
 | RGB LED | Any color, mixed from red, green and blue | Lesson 4 |
 | Passive buzzer | Plays any note you ask for | Lesson 5 |
-| 10 kΩ potentiometer | A knob that sets a voltage | Lesson 7 |
+| Two 10 kΩ potentiometers | A knob that sets a voltage; with the screen, one sets its contrast | Lesson 7 |
 | Photoresistor | Senses light | Lesson 8 |
 | 74HC595 shift register | Eight outputs from three pins | Lesson 10 |
 | One- and four-digit 7-segment displays | Numbers in light | [Lesson 10](lessons/010-dice/index.md), [Lesson 11](lessons/011-four-digits/index.md) |

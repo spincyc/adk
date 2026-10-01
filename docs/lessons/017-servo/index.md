@@ -113,6 +113,12 @@ measured from GND, so the servo and Mega need that shared GND.
     bottom + rail, and the Mega's only the top one. Only their GNDs join, at
     the − rails.
 
+    The kit comes with two 10 kΩ potentiometers: one sets the screen's
+    contrast, and this one the angle. If one has gone missing, use the one
+    you have here, and give the screen a fixed contrast with a 1 kΩ
+    resistor instead, as the *Two knobs* note in
+    [Lesson 15](../015-weather-station/index.md#build-it) shows.
+
 When you are done, these are the connections your circuit makes:
 
 <!-- connections -->
