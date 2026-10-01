@@ -27,7 +27,15 @@ shows the bit they hold. Press **Set** and it should stay on after you
 let go; press **Reset** and it should stay off. The Mega supplies USB
 5 V and GND. No Mega signal pin or upload controls this latch.
 
-## Rewire the two buttons
+## Predict
+
+In E19 the LED followed the buttons only while you held them. Here each
+button pulls its own input low, and each gate's output also feeds the
+other gate. Predict what the LED will show **while Set is held**, **after
+Set is released**, and **after Reset is released**. Write your three
+guesses in the table under *Try it*.
+
+## Build it
 
 !!! warning "Unplug before moving wires"
     Unplug the Mega's USB cable first. Keep the LED's 1 kΩ resistor in
@@ -145,7 +153,7 @@ schematic shows the two gates and their feedback (the
 
 <!-- connections -->
 
-## Start from a known state
+## Try it
 
 When USB power first arrives, the latch's bit is **unknown**. Either
 state may appear because the two gates can settle in different orders.
@@ -153,12 +161,8 @@ Plug in USB, press **Reset** once, then release it. This starts with the
 LED off. Keep Set and Reset released between trials, and never press
 them together.
 
-## Predict, then try
-
-Before the first trial, predict what the LED will show **while Set is
-held**, **after Set is released**, and **after Reset is released**. Write
-your three guesses. Then press Set and release it; press Reset and
-release it. Record what you see after each action.
+Then press Set and release it; press Reset and release it. Record what
+you see after each action.
 
 | Action | Your prediction | LED you see | Expected LED |
 |---|---|---|---|
@@ -167,7 +171,7 @@ release it. Record what you see after each action.
 | Hold Reset | ____ | ____ | Off |
 | Release Reset | ____ | ____ | Still off |
 
-## Why it remembers
+## Why it happens
 
 Each 10 kΩ resistor holds its released input high. A Set press pulls
 **pin 1 low**, so the first NAND output **Q goes high** and lights the
@@ -177,7 +181,12 @@ Reset pulls **pin 4 low**, making Q-bar high and Q low; the feedback then
 holds the LED off. This is one bit of state made by wires and gates,
 similar to the remembered state in [Lesson 6's Simon game](../006-simon/index.md).
 
-## If the LED surprises you
+## Check your result
+
+Compare the four rows you saw with your predictions. In one sentence,
+explain what keeps the LED on after you let go of Set.
+
+## If it doesn't work
 
 Unplug USB before checking a connection.
 

@@ -75,7 +75,9 @@ takes one **sample**: a measurement of the voltage at that moment. The
 each line also takes time, so the sketch does not take exactly 50 samples
 each second.
 
-## Watch the samples
+## Try it
+
+### Watch the samples
 
 1. Check the knob's three legs, the LED's resistor and the rail wires. Plug
    the Mega into USB. Select **Tools → Board → ADK Boards → ADK Mega 2560**
@@ -96,7 +98,7 @@ each second.
    back to the Plotter when finished; only one window can use the port at
    a time.
 
-## Measure the voltage
+### Measure the voltage
 
 Set a digital meter to **DC volts** (V⎓), with its black lead in **COM**
 and red lead in **V**. Leave it on volts: a current setting across the
@@ -115,7 +117,7 @@ setting; unplug USB before moving any wires.
 | Near 2.5 V | ____ V | ____ |
 | Near 4 V | ____ V | ____ |
 
-## Explain what you saw
+## Why it happens
 
 The Mega's **analog-to-digital converter** (ADC) puts each voltage into
 one of **1024** numbered levels, 0 through 1023. With a nominal 5 V
@@ -135,14 +137,19 @@ rather than expecting its display to match every changing count. The
 Mega's supply may differ from exactly 5 V, so the expected counts are
 approximate too.
 
-**Check your prediction:** Were your middle reading and the slow and fast
-turns close to what you guessed? Explain why a line on the Plotter does
-not mean the Mega measured every point on that line.
+## Check your result
 
-These are expected results from the circuit and the Mega's ADC; no physical
-hardware trial has been recorded for this lesson.
+Were your middle reading and the slow and fast turns close to what you
+guessed? Explain why a line on the Plotter does not mean the Mega measured
+every point on that line.
 
-## If the result surprises you
+Then test the explanation: hold the knob until the Serial Monitor shows a
+reading near **600**. Predict the meter voltage using **600 × 4.9 mV**
+before looking at the meter. How close is it? Try a slower and a faster
+turn across that setting and count how many different numbers you catch
+in each pass.
+
+## If it doesn't work
 
 | What you see | Check |
 |---|---|
@@ -151,9 +158,5 @@ hardware trial has been recorded for this lesson.
 | The meter reads 0 V while A0 changes | Check DC volts, black probe on the − rail, and red probe on the wiper's lower strip in column 40. |
 | The knob or a wire gets warm | Unplug at once. Check that the wiper's strip joins only A0 and that its outer legs reach opposite rails. |
 
-## Challenge
-
-Hold the knob until the Serial Monitor shows a reading near **600**.
-Predict the meter voltage using **600 × 4.9 mV** before looking at the
-meter. How close is it? Try a slower and a faster turn across that setting
-and count how many different numbers you catch in each pass.
+These are expected results from the circuit and the Mega's ADC; no physical
+hardware trial has been recorded for this lesson.

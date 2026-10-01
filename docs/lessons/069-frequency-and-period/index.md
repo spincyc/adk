@@ -15,7 +15,7 @@ ideas:
   - Frequency counts cycles per second, and period is the time for one cycle
 ---
 
-## What you'll see
+## What you'll build
 
 <!-- closeup -->
 
@@ -25,7 +25,7 @@ window. At **100 Hz**, expect about **one cycle**; at **1 kHz**, about
 **ten cycles**. The Mega provides its usual GND wire, but no signal pins
 or USB power are needed.
 
-## The idea
+## Predict
 
 One **cycle** goes from a point on the wave to the next matching point,
 such as one rising crossing to the next. **Frequency** says how many
@@ -33,11 +33,10 @@ cycles happen in one second. **Period** says how long one cycle takes.
 At 100 Hz, 100 cycles fit in a second, so one takes about **10 ms**.
 At 1 kHz, 1000 cycles fit in a second, so one takes about **1 ms**.
 
-!!! question "Predict"
-    Sketch a 10 ms window at 100 Hz and at 1 kHz. How many complete cycles
-    should each contain? Mark the time from one peak to the next on each.
+Sketch a 10 ms window at 100 Hz and at 1 kHz. How many complete cycles
+should each contain? Mark the time from one peak to the next on each.
 
-## Keep the build
+## Build it
 
 !!! warning "Power off before touching wires"
     Switch off and unplug the generator before changing any connection.
@@ -59,7 +58,7 @@ GND. The generator's ground and both scope clips meet at that common rail.
 
 <!-- connections -->
 
-## Count and measure
+## Try it
 
 The [scope and generator primer](../../electricity/skills.md#scope-and-generator)
 explains the timebase, trigger and generator settings used here.
@@ -86,26 +85,25 @@ in a free hole of the bottom − rail.
 
 Your counts should be near **1 and 10**, and the periods near **10 ms
 and 1 ms**. Use channel 1 for counting if channel 2 is hard to see.
-The capacitor and resistor make a high-pass RC path: at 100 Hz the
-resistor's signal is attenuated more than at 1 kHz, so the two output
-heights need not match. The cycle timing should still match the input.
 
-## Check your prediction
+## Why it happens
 
-Compare your two counts and periods with the sketches you made first.
-The 1 kHz wave repeats ten times as often, so each cycle takes one tenth
-as long. Changing a note's frequency in
+Frequency and period describe the same wave from two sides: the period is
+one second divided by the frequency. The 1 kHz wave repeats ten times as
+often as the 100 Hz one, so each cycle takes one tenth as long, and ten
+of them fit where one did. The capacitor and resistor make a high-pass RC
+path: at 100 Hz the resistor's signal is attenuated more than at 1 kHz,
+so the two output heights need not match. The cycle timing should still
+match the input. Changing a note's frequency in
 [Lesson 5's melody maker](../005-melody-maker/index.md) changes its pitch
 for the same reason.
 
-## About the sketch
+## Check your result
 
-This passive circuit needs no upload or Mega signal pin. The matching
-sketch claims none:
+Compare your two counts and periods with the sketches you made first.
+In one sentence, explain why the higher frequency has the shorter period.
 
-<!-- sketch -->
-
-## If the trace surprises you
+## If it doesn't work
 
 - **Neither trace appears:** Check the 0–4 V sine setting, OUT at j6,
   generator GND at the bottom − rail, scope trigger and 10 ms window.
@@ -116,6 +114,13 @@ sketch claims none:
   10 ms window. Count from one rising crossing to the next.
 - **Traces shift when a clip moves:** Keep both ground clips and generator
   GND on the common bottom − rail.
+
+## About the sketch
+
+This passive circuit needs no upload or Mega signal pin. The matching
+sketch claims none:
+
+<!-- sketch -->
 
 These counts are calculated expectations. This lesson has not been
 recorded as tried on hardware.

@@ -131,7 +131,7 @@ list:
 
 <!-- connections -->
 
-## Compare input and output
+## Try it
 
 The two probes go as drawn here: each tip in a free hole, each ground clip
 in a free hole of the bottom − rail.
@@ -167,14 +167,6 @@ the generator may not deliver its exact setting, and the chip has a small
 input error. Compare the **measured** output range with twice the
 **measured** input range, rather than expecting perfect numbers.
 
-## Check your result
-
-The output should follow the input at about twice its voltage throughout
-the wave. If its trough is near 1 V and its peak near 3 V while the input
-runs near 0.5–1.5 V, the feedback resistors are setting gain near two.
-Record your own four endpoint readings; this page gives predictions, not
-a recorded hardware result.
-
 ## Change one thing
 
 Predict first: if the resistor from output A to pin 2 becomes **20 kΩ**,
@@ -194,7 +186,16 @@ A larger input would push the output into the 5 V rail, where it flattens
 the tops of the wave. Turn off the generator, unplug USB, then take out the
 extra resistor and put the jumper's end back in a13.
 
-## If the traces surprise you
+## Check your result
+
+The output should follow the input at about twice its voltage throughout
+the wave. If its trough is near 1 V and its peak near 3 V while the input
+runs near 0.5–1.5 V, the feedback resistors are setting gain near two;
+with 20 kΩ in the feedback path, near 1.5 V and 4.5 V means a gain near
+three. Compare your endpoint readings with both predictions; this page
+gives predictions, not a recorded hardware result.
+
+## If it doesn't work
 
 | What you see | Check with USB unplugged and generator off |
 |---|---|

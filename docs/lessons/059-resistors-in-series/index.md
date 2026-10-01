@@ -87,7 +87,7 @@ voltage readings. Expect about **1.7 V** across the 1 kΩ resistor and
 5 V. The one path still carries the same current everywhere, now about
 5 V ÷ 3 kΩ = **1.7 mA**.
 
-## Check your explanation
+## Check your result
 
 Complete this sentence: “The 2 kΩ resistor gets about twice the voltage
 of the 1 kΩ resistor because both carry the same \_\_\_\_\_\_\_\_, and the 2 kΩ
@@ -97,16 +97,7 @@ readings. The missing words are **current** and **resistance**.
 This is the fixed-resistor version of the divider inside the knob in
 [Lesson 7](../007-dimmer/index.md): its middle point moves as you turn it.
 
-## Code it
-
-This passive circuit works as soon as USB powers the Mega. It does not need
-a sketch upload. If you open the matching example in the Arduino IDE, it
-contains the usual ADK `setup ()` and `update ()` calls, but claims no
-signal pins:
-
-<!-- sketch -->
-
-## If the readings surprise you
+## If it doesn't work
 
 | What you see | What to check |
 |---|---|
@@ -114,6 +105,15 @@ signal pins:
 | One resistor reads near 0 V and the other near 5 V | Unplug and check that their legs meet in one column, with each resistor's legs in different strips. |
 | The readings have minus signs | Swap the red and black probes; the size of the reading should stay about the same. |
 | The changed readings do not divide about 1.7 V and 3.3 V | Unplug and check the 2 kΩ resistor's bands and that you replaced only the second resistor. |
+
+## About the sketch
+
+This passive circuit works as soon as USB powers the Mega. It does not need
+a sketch upload. If you open the matching example in the Arduino IDE, it
+contains the usual ADK `setup ()` and `update ()` calls, but claims no
+signal pins:
+
+<!-- sketch -->
 
 These are expected readings from the circuit design. They have not been
 confirmed on a physical breadboard for this lesson.

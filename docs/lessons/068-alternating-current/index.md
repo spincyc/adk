@@ -55,7 +55,7 @@ breadboard's middle gap.
 
 <!-- connections -->
 
-## Watch both voltages
+## Try it
 
 If this is your first time with the scope and generator, read the
 [scope and generator primer](../../electricity/skills.md#scope-and-generator)
@@ -75,8 +75,9 @@ in a free hole of the bottom − rail.
    enabling its output. Wait for the initial transient to settle.
 3. Record each trace's highest and lowest voltage. Channel 1 should stay
    near **0–4 V**. Channel 2 should swing **above and below 0 V**, about
-   2 V each way. Compare what you see with your prediction, then turn the
-   output off.
+   2 V each way. Turn the output off.
+
+## Why it happens
 
 Within a few milliseconds the capacitor charges to the generator's
 **2 V average** and then holds it, so channel 2 is roughly the input with
@@ -104,7 +105,13 @@ Without the capacitor, the generator's 2 V average reaches the resistor
 too. The current still grows and shrinks, up to about 4 mA, but it always
 flows toward GND: it never reverses.
 
-## If the traces surprise you
+## Check your result
+
+Compare channel 2's lowest voltage, with the capacitor and with the wire,
+with your predictions. In one sentence, explain how the capacitor lets
+the current reverse while the generator's output never goes below 0 V.
+
+## If it doesn't work
 
 - **Channel 1 goes below 0 V:** Recheck the generator's +2 V offset and
   4 V peak-to-peak setting, and keep channel 1 on DC coupling.

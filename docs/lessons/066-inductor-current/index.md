@@ -58,7 +58,7 @@ steady current to at most about 4 mA with a 4 V input, below the coil's
 
 <!-- connections -->
 
-## Compare the edges
+## Try it
 
 If this is your first time with the scope and generator, read the
 [scope and generator primer](../../electricity/skills.md#scope-and-generator)
@@ -109,9 +109,10 @@ beside its switch.
 
 Which channel rose first with the coil in place? Did channel 2 become
 sharper after you bridged the coil? Those two observations show whether
-the coil slowed the current change in your build.
+the coil slowed the current change in your build; compare them with your
+prediction.
 
-## If the trace surprises you
+## If it doesn't work
 
 | What you see | Check with the generator off and unplugged |
 |---|---|

@@ -97,7 +97,7 @@ strip → capacitor → common GND → generator GND**. The output is at
 
 <!-- connections -->
 
-## Try two speeds
+## Try it
 
 The [scope and generator primer](../../electricity/skills.md#scope-and-generator)
 explains the scope settings and peak-to-peak heights used here.
@@ -125,14 +125,11 @@ in a free hole of the bottom − rail.
 | 100 Hz | ____ V | ____ V | ____ |
 | 1 kHz | ____ V | ____ V | ____ |
 
-## What to expect
-
 The output should swing around roughly **2 V** at both frequencies.
 Its wave should be a little smaller than the input at 100 Hz and much
 smaller at 1 kHz. At each frequency, a channel 2 peak should occur
-after the matching channel 1 peak. Compare your readings with your
-prediction; use the peaks' order, rather than an exact delay, to check
-the phase shift.
+after the matching channel 1 peak. Use the peaks' order, rather than an
+exact delay, to check the phase shift.
 
 ## Why it happens
 
@@ -149,9 +146,10 @@ example of the smoothing idea behind [Lesson 7's dimmer](../007-dimmer/index.md)
 
 Is channel 2's wave smaller at 1 kHz than at 100 Hz? At both speeds, do
 its peaks come after channel 1's peaks? Those two comparisons are the
-filter and phase behavior to look for. Turn off the generator when done.
+filter and phase behavior to look for; compare them with your prediction.
+Turn off the generator when done.
 
-## If the traces surprise you
+## If it doesn't work
 
 - **Channel 1 is flat:** Check the generator's 0–4 V sine setting and
   its OUT lead at j6. Keep its GND lead in the bottom − rail by column 5.

@@ -51,7 +51,7 @@ The finished circuit makes these connections:
 
 <!-- connections -->
 
-## Test the loop
+## Try it
 
 1. Check the whole path and plug the Mega into USB. Predict whether the LED
    will light immediately. Look at it and record what you see: __________.
@@ -61,18 +61,17 @@ The finished circuit makes these connections:
 3. **Unplug USB again.** Put the GND wire back in the same bottom − rail
    hole nearest the Mega. Plug USB back in. Record what you see: __________.
 
+## Why it happens
+
 Current can pass only around a complete loop. The GND wire closes the return
 to the Mega. Removing it opens that loop, even though the top + rail still
 has 5 V. The 220 Ω resistor limits current so the LED can stay lit safely.
-Compare the observations with your prediction.
 
-## The example sketch
+## Check your result
 
-There is no code to upload for this circuit. The example below has empty
-`setup ()` and `loop ()` functions because Arduino examples need those
-functions. It claims no signal pins. USB alone supplies the power used here.
-
-<!-- sketch -->
+Compare your three observations with your prediction. In one sentence,
+explain why lifting only the GND wire turned the LED off while the top +
+rail still had 5 V.
 
 ## If it doesn't work
 
@@ -81,6 +80,14 @@ functions. It claims no signal pins. USB alone supplies the power used here.
 | The LED never lights | Check the 5 V and GND rail wires, the red jumper to j6, the resistor across the middle gap, and the LED's direction. |
 | The LED stays lit with GND removed | Look for another wire connecting the LED's short-leg side to the Mega's GND. |
 | The LED stays dark after restoring GND | Put the black wire back in the bottom − rail hole nearest the Mega and check the other end is in the Mega's GND. |
+
+## About the sketch
+
+There is no code to upload for this circuit. The example below has empty
+`setup ()` and `loop ()` functions because Arduino examples need those
+functions. It claims no signal pins. USB alone supplies the power used here.
+
+<!-- sketch -->
 
 Leave the complete circuit in place for E02, and unplug USB if you are
 stopping now. This is the expected behavior; the circuit has not been

@@ -16,7 +16,7 @@ ideas:
   - More resistance reduces current in the same LED path
 ---
 
-## What you'll compare
+## What you'll build
 
 <!-- closeup -->
 
@@ -31,7 +31,7 @@ Which resistor will give the brightest LED and largest current: **220 Ω**,
 your notes before changing anything. Predict whether the LED will still
 light with 2 kΩ.
 
-## Keep the circuit
+## Build it
 
 Unplug USB before building if you are starting here. Keep the 5 V and GND
 rail wires, red LED, and its two short jumpers in the same holes as E02.
@@ -53,7 +53,7 @@ The drawing and connections show the starting circuit with 220 Ω:
 
 <!-- connections -->
 
-## Change one resistor
+## Try it
 
 Keep the same USB source, LED, room light, and viewing angle for all three
 trials. Make each brightness note before the next swap.
@@ -86,21 +86,23 @@ Calculate each current from **its own** resistor voltage:
 | 1 kΩ = 1000 Ω | | ____ V | ____ mA |
 | 2 kΩ = 2000 Ω | | ____ V | ____ mA |
 
-A larger resistor makes less current pass through the same unbranched
-path, so the LED usually looks dimmer. The LED's own voltage can shift a
-little as current changes; the three currents need not be in exact
-resistance ratios. Which change did the meter show more clearly than your
-eyes? Compare your observations with the order you predicted.
-
 **Leave USB unplugged.** Put the 220 Ω resistor back in g6 and e6, so the
 build matches the drawing again.
 
-## The example sketch
+## Why it happens
 
-The example has empty Arduino functions because the USB-powered circuit
-works without code. It claims no signal pins.
+The LED keeps roughly 2 V across it, so each resistor has roughly the
+other 3 V. A larger resistor lets less current through for the same
+voltage: about 14 mA with 220 Ω, 3 mA with 1 kΩ and 1.5 mA with 2 kΩ.
+That current passes through the same unbranched path, LED included, so
+the LED usually looks dimmer. The LED's own voltage can shift a little as
+current changes, so the three currents need not be in exact resistance
+ratios.
 
-<!-- sketch -->
+## Check your result
+
+Compare your observations with the order you predicted. Which change did
+the meter show more clearly than your eyes?
 
 ## If it doesn't work
 
@@ -110,6 +112,13 @@ works without code. It claims no signal pins.
 | It goes dark after a swap | Check the resistor value and make sure its legs cross the middle gap in g6 and e6. |
 | The meter stays near zero | Check DC volts, the V jack, and the h6 and d6 probe holes. |
 | Brightness is hard to judge | Use the calculated currents; small visual changes can be difficult to see. |
+
+## About the sketch
+
+The example has empty Arduino functions because the USB-powered circuit
+works without code. It claims no signal pins.
+
+<!-- sketch -->
 
 These are expected results; the circuit has not been recorded as tested on
 hardware.

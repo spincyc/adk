@@ -108,21 +108,41 @@ If a part gets hot or smells, unplug USB at once and check for a wire joining
 
 Each lesson has a printable PDF. Project lessons include code and an upload;
 most electricity investigations work from their wired circuit alone and
-need no upload. Both paths ask you to predict, build and check a result.
-The time shown is an estimate. **Level 1** is a starter build with a few
+need no upload. Both paths ask you to predict, build and check a result,
+and each has its own set of sections, always in the same order. The time
+shown is an estimate. **Level 1** is a starter build with a few
 connections; **Level 2** joins several parts or paths; **Level 3** has dense
 wiring or needs more advanced instruments.
+
+A project lesson:
 
 | Section | What happens |
 |---|---|
 | **What you'll build** | A close-up of the finished circuit, so you know where you're heading. |
 | **The idea** | The one new idea, with a question to predict the answer to before you try it. |
 | **Build it** | A drawing of the whole bench, and the wiring step by step. |
-| **Code it** | In programmed builds, the sketch and what each part does. |
-| **Upload it** | In programmed builds, what you should see when it works. |
+| **Code it** | The sketch and what each part does. |
+| **Upload it** | What you should see when it works. |
 | **If it doesn't work** | The usual mistakes, and how to spot them. |
 | **Make it yours** | Challenges, from a small change to something new. |
 | **Measure it** | For anyone with a multimeter: where to touch the probes, and what the meter should say. |
+| **Check yourself** | A few questions on the idea, with answers to open when you've tried them. |
+
+An electricity investigation follows the steps on the
+[syllabus](electricity/index.md#how-to-work-through-one-investigation):
+
+| Section | What happens |
+|---|---|
+| **What you'll build** | A close-up of the finished circuit, and what you'll see or measure. |
+| **Predict** | The question to answer, in writing, before you power anything. |
+| **Build it** | A drawing of the whole bench, and the wiring step by step. |
+| **Code it** | Only in investigations with an upload: the sketch and what its new pieces do. |
+| **Try it** | Power the circuit, watch it and measure it, and record what you see. |
+| **Why it happens** | The one idea, explained from what you saw. |
+| **Change one thing** | In some investigations: one more change, with its own prediction, that tests the explanation. |
+| **Check your result** | Compare your results with your predictions, and explain them in a sentence. |
+| **If it doesn't work** | The usual mistakes, and how to spot them. |
+| **About the sketch** | In investigations without an upload: why the matching example needs no code. |
 
 You're ready. The first lesson makes an LED blink.
 

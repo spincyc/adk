@@ -137,7 +137,7 @@ schematic shows gate 1 with its pin numbers (the
 
 <!-- connections -->
 
-## Try all four inputs
+## Try it
 
 Plug in USB after checking the wiring. For each row, hold the named
 button or buttons, record what the LED actually does, then release them.
@@ -155,11 +155,15 @@ Try the rows in this order:
 The chip's gate is called **NAND**, short for “not AND.” Its output is
 low only when **both** inputs are high. The 10 kΩ resistors hold released
 inputs low; a press connects that input to 5 V. A high output sends a
-small current through the 1 kΩ resistor and LED. Compare the four rows
-you saw with your prediction. This is the button decision from
-[Lesson 2](../002-buttons/index.md) made in hardware.
+small current through the 1 kΩ resistor and LED. This is the button
+decision from [Lesson 2](../002-buttons/index.md) made in hardware.
 
-## If the LED surprises you
+## Check your result
+
+Compare the four rows you saw with your prediction. Which row is the only
+one with the LED off, and why does the name “not AND” fit it?
+
+## If it doesn't work
 
 Unplug USB before checking a connection:
 

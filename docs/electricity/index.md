@@ -72,14 +72,19 @@ run from their own batteries.
 ## How to work through one investigation
 
 1. **Predict:** write down what the LED, meter or trace will do.
-2. **Build or use:** unplug power, make the stated circuit or open the linked
-   ADK build, check it, then power it.
-3. **Observe:** record what actually happens, including a number when there
+2. **Build it:** unplug power, make the stated circuit, check it, then
+   power it.
+3. **Try it:** record what actually happens, including a number when there
    is one.
-4. **Explain:** point to the path and use the one idea for that investigation.
+4. **Why it happens:** point to the path and use the one idea for that
+   investigation.
 5. **Change one thing:** make the stated comparison with power unplugged.
-6. **Check:** compare the two results with the prediction and fix the
-   explanation if needed.
+   Where the comparison is the experiment itself, it is part of *Try it*.
+6. **Check your result:** compare the results with the prediction and fix
+   the explanation if needed.
+
+Each investigation's page has a section for each step, in this order;
+[Getting started](../start.md#how-a-lesson-works) lists them all.
 
 Use [Getting started](../start.md) when a lesson calls for an upload, and
 read [Safety](../safety.md) before wiring. Each investigation's example

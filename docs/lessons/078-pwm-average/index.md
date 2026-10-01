@@ -89,7 +89,7 @@ controls both the LED and the filtered branch. The Serial Monitor shows
 the knob reading and duty setting at **9600 baud**. The resistor and
 capacitor do the smoothing; there is no second output pin.
 
-## Watch and measure
+## Try it
 
 First turn the knob slowly from the GND end to the 5 V end. Predict the
 LED's direction before you turn it. It should brighten as the printed
@@ -112,12 +112,9 @@ wait, then record what you see.
 <!-- measure -->
 
 The meter on pin 3 before the filter can also show about 1.25 V at
-one-quarter on-time: a meter is too slow to show each pulse. The filtered
-point gives a similar DC reading **and** changes only a few millivolts
-between pulses. The capacitor charges during each high part and gives
-charge back during each low part. More on-time lets it settle higher.
+one-quarter on-time.
 
-## See the pulses, if you have a scope
+### See the pulses, if you have a scope
 
 Use a **battery-powered two-channel scope**. With USB unplugged, put
 both probe ground clips on the bottom − rail, channel 1's tip at **i38**
@@ -130,10 +127,27 @@ with DC coupling; adjust to see the roughly 490 Hz pulses.
 Channel 1 should still switch almost the full 0–5 V while channel 2
 stays near the average, with only a small ripple. Turning the knob
 changes the width of channel 1's high part and the level of channel 2.
-The filter did not turn pin 3 into a true analog output; it made a
-smoothed voltage at the capacitor's own point.
 
-## If the reading surprises you
+## Why it happens
+
+Pin 3 is only ever at 0 V or 5 V; PWM changes how much of each cycle it
+spends at 5 V. A meter on pin 3 itself is too slow to show each pulse,
+so it shows about their average: 1.25 V at one-quarter on-time. The
+filtered point gives a similar DC reading **and** changes only a few
+millivolts between pulses. The capacitor charges through the 10 kΩ
+resistor during each high part and gives charge back during each low
+part; with a time constant of about a second, far longer than one
+2 ms cycle, it settles at the average. More on-time lets it settle
+higher. The filter did not turn pin 3 into a true analog output; it made
+a smoothed voltage at the capacitor's own point.
+
+## Check your result
+
+Compare your two filtered readings with your predictions: did three
+times the on-time give about three times the voltage? In one sentence,
+explain why the capacitor's voltage barely moves between pulses.
+
+## If it doesn't work
 
 | What you see | Check with USB unplugged |
 |---|---|

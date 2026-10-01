@@ -65,7 +65,7 @@ Plotter.
 0 near GND and 1023 near 5 V. `adk::wait (50)` leaves a short pause between
 points on the graph.
 
-## Upload and measure
+## Try it
 
 1. Check the knob's three wires and the rail feeds. Plug the Mega into USB.
 2. In the Arduino IDE, select **Tools → Board → ADK Boards → ADK Mega 2560**
@@ -88,11 +88,24 @@ points on the graph.
 
 At the GND end, the wiper should be near **0 V** and A0 near **0**. At the
 5 V end, it should be near **5 V** and A0 near **1023**. Around **2.5 V**,
-expect about **512**. The wiper taps a fraction of the voltage across the
-strip, so the plotted number and meter voltage rise together. A mechanical
+expect about **512**.
+
+## Why it happens
+
+The knob's strip has the whole 5 V across it, from its GND end to its
+5 V end. The wiper taps a fraction of that voltage: the part of the strip
+between it and GND makes the lower half of a divider, as E04's second
+resistor did. A0 reports the same fraction of its 0–1023 range, so the
+plotted number and the meter voltage rise together. A mechanical
 half-turn may not put the wiper at exactly half the electrical range; the
 USB supply and meter readings may also differ a little from these rounded
-values. Compare the measured pairs, not an exact halfway position.
+values.
+
+## Check your result
+
+Compare your middle reading with your prediction, and compare the
+measured pairs rather than an exact halfway position. In one sentence,
+explain why the A0 number and the meter voltage rise together.
 
 ## If it doesn't work
 

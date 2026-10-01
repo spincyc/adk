@@ -63,7 +63,9 @@ the resistor. These are the finished connections:
 
 <!-- connections -->
 
-## Measure the charge
+## Try it
+
+### Charge it
 
 Set the meter to **DC volts (V⎓)**, with black lead in **COM** and red lead
 in **V**; choose a 20 V range if the meter needs one. Keep it in voltage
@@ -80,7 +82,7 @@ the supply's roughly **5 V**. Record the reading near 10 seconds and
 after it has nearly stopped changing. The exact values depend on the USB
 voltage and the parts.
 
-## Hold the charge, then let it go
+### Hold the charge, then let it go
 
 Predict first: when the red jumper connects the capacitor to nothing, will
 the meter fall to 0 V, fall gradually, or stay nearly still? When that
@@ -106,15 +108,27 @@ guesses. Leave the meter across the capacitor throughout.
    through the 10 kΩ resistor to its − leg, with no USB power connected.
 4. Watch the meter fall gradually. About 10 seconds after moving the wire it
    should read about a third of its starting value, and after 30 seconds
-   only a few tenths of a volt. Record the 10-second reading and compare the
-   rise, the hold and the fall with your predictions.
+   only a few tenths of a volt. Record the 10-second reading.
 5. Keep USB **unplugged** and put that red rail end back in the **top +
    rail by column 6** before continuing to E08.
 
-The meter held still while the capacitor had no path, and fell once the
-resistor gave its separated charge a way back. The 10 kΩ resistor keeps
-that current small, so the fall takes several seconds. Never short the
+## Why it happens
+
+While USB is plugged in, current flows through the resistor and piles
+charge up on the capacitor's + side, while as much leaves its − side. The
+capacitor's voltage grows with that separated charge, quickly at first,
+then more slowly as it nears the supply's 5 V. The meter held still while
+the capacitor had no path, because the charge had nowhere to go: the
+capacitor stored it after the source left. It fell once the resistor gave
+that charge a way back round to the − side. The 10 kΩ resistor keeps that
+current small, so the fall takes several seconds. Never short the
 capacitor's legs to make the reading fall faster.
+
+## Check your result
+
+Compare the rise, the hold and the fall with your predictions. In one
+sentence, explain how the hold shows that the charge was still stored in
+the capacitor after USB was unplugged.
 
 ## If it doesn't work
 

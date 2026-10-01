@@ -129,7 +129,16 @@ at GND.
 
 <!-- connections -->
 
-## Compare the voltages
+## Code it
+
+Open **File → Examples → Adk → lessons → 072-negative-feedback** in the
+Arduino IDE. The analog feedback happens in the MCP6002. The sketch only
+reads the knob on A0 and prints its position, to help you set it; it
+does not drive the output:
+
+<!-- sketch -->
+
+## Try it
 
 Use the scope or a meter. On the scope, put both ground clips on the
 bottom − rail, channel 1's tip on a free hole in **pin 3's lower strip**
@@ -139,9 +148,9 @@ height are what to expect. With a meter, set DC volts, black lead in
 **COM** and red lead in **V**, leave the black probe on GND, and touch the
 red probe to those two strips in turn. Keep the metal tips apart.
 
-1. **Set the knob.** Plug in USB, upload this investigation's sketch, and
-   open **Tools → Serial Monitor** at **9600** baud: it prints the knob's
-   A0 reading ten times a second. As built, nothing draws current from the
+1. **Set the knob.** Plug in USB, upload the sketch, and open
+   **Tools → Serial Monitor** at **9600** baud: it prints the knob's A0
+   reading ten times a second. As built, nothing draws current from the
    wiper: the op-amp's + input takes almost none. Turn the knob until the
    wiper reads about **2.0 V**, then leave it there. The output should
    read about 2.0 V too. Note the A0 number the sketch prints; it should
@@ -164,6 +173,8 @@ red probe to those two strips in turn. Keep the metal tips apart.
 | 2.0 V, load on the output | ____ V | ____ V |
 | Near 1 V, load on the output | ____ V | ____ V |
 | Near 3 V, load on the output | ____ V | ____ V |
+
+<!-- measure -->
 
 The A0 number helps you return to a setting; the scope or meter compares
 the actual voltages. The chip's output is not connected to a Mega signal
@@ -189,14 +200,12 @@ at 0 V or 5 V.
 
 ## Check your result
 
-<!-- measure -->
+Compare your four rows with your predictions. The input and loaded
+output should rise together and be close at each middle setting; their
+difference need not be zero. In one sentence, explain why the knob's
+voltage fell when it fed the load itself, but not when the follower did.
 
-The input and loaded output should rise together and be close at each
-middle setting. Their difference need not be zero. This expected result
-comes from the circuit and [MCP6002 datasheet](https://ww1.microchip.com/downloads/en/devicedoc/mcp6001-1r-1u-2-4-1-mhz-low-power-op-amp-ds20001733l.pdf);
-no physical hardware trial has been recorded for this lesson.
-
-## If the readings surprise you
+## If it doesn't work
 
 | What you see | Check with USB unplugged |
 |---|---|
@@ -205,9 +214,6 @@ no physical hardware trial has been recorded for this lesson.
 | Input changes but output differs greatly | Check the 1 kΩ load reaches output and GND, and that neither output nor the wiper is shorted to a supply rail. |
 | A scope trace moves when a ground clip moves | Put both ground clips on the common bottom − rail and use DC coupling. |
 
-## About the sketch
-
-The analog feedback happens in the MCP6002. The sketch reads the knob
-on A0 and prints its position; it does not drive the output:
-
-<!-- sketch -->
+This expected result comes from the circuit and
+[MCP6002 datasheet](https://ww1.microchip.com/downloads/en/devicedoc/mcp6001-1r-1u-2-4-1-mhz-low-power-op-amp-ds20001733l.pdf);
+no physical hardware trial has been recorded for this lesson.

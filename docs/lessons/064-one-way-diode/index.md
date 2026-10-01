@@ -56,7 +56,7 @@ The finished forward-facing circuit makes these connections:
 
 <!-- connections -->
 
-## Try both directions
+## Try it
 
 1. Check the path, then plug the Mega into USB. With the band in j6,
    toward the LED, the red LED should light. Record what you see.
@@ -68,25 +68,20 @@ The finished forward-facing circuit makes these connections:
    in the + rail and its banded end in j6. Plug in once more. Leave the
    LED lit.
 
-Compare each observation with your prediction. The 1N4007 lets current
-pass mainly from its unbanded end to its banded end. In the first and last
+## Why it happens
+
+The 1N4007 lets current pass mainly from its unbanded end to its banded
+end. In the first and last
 builds, current can go from + through the 1N4007, resistor and LED to GND.
 Turning the 1N4007 around blocks that path, so the LED goes dark even
 though the wires stay connected. The red LED also has a direction; its
 short leg stays toward GND throughout this test.
 
-## About the sketch
-
-The LED gets power from the Mega's **5 V power pin**, not a programmable
-signal pin. No upload is needed. The matching ADK example claims no I/O
-pins:
-
-<!-- sketch -->
-
 ## Check your result
 
-Complete this sentence: “With the 1N4007's band toward the resistor and
-LED, the LED is \_\_\_\_\_\_; with the band in the + rail, the LED is \_\_\_\_\_\_.” The
+Compare each observation with your prediction, then complete this
+sentence: “With the 1N4007's band toward the resistor and LED, the LED is
+\_\_\_\_\_\_; with the band in the + rail, the LED is \_\_\_\_\_\_.” The
 expected words are **lit** and **dark**. The 1N4007 is also used as a
 protective diode beside [Lesson 3's buzzer](../003-reaction-duel/index.md).
 
@@ -97,6 +92,14 @@ protective diode beside [Lesson 3's buzzer](../003-reaction-duel/index.md).
 | Dark in both directions | Check the 5 V and GND rail wires, the diode from the + rail to j6, the resistor in g6 and e6, and the return jumper from a7 to the − rail. Check that the LED's short leg is in b7. |
 | Lit in both directions | Make sure you turned the 1N4007, not the LED, and that its legs are in the + rail by column 6 and j6. Look for a wire that bypasses the diode. |
 | Dark after restoring the diode | Put its unbanded end in the + rail and its banded end in j6. Check that both legs are seated. |
+
+## About the sketch
+
+The LED gets power from the Mega's **5 V power pin**, not a programmable
+signal pin. No upload is needed. The matching ADK example claims no I/O
+pins:
+
+<!-- sketch -->
 
 These are expected observations from the circuit design; this lesson has
 not been recorded as tried on hardware.

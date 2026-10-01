@@ -34,4 +34,4 @@ bench.wire ("a7", "B-7")
 
 bench.measure ("The timing capacitor, slowed", red="d16", black="GND",
                expect="rises to about 2.7 V, falls to about 1.7 V, and again",
-               when="With two 100 kΩ resistors, as in Slow it down")
+               when="With two 100 kΩ resistors, as in Change one thing")
