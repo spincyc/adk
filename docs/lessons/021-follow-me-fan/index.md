@@ -186,9 +186,11 @@ Read it from the top:
 
 ## Upload it
 
-1. Plug in the USB cable, then the power module's adapter, and switch the
-   module on so its LED lights.
-2. Upload the sketch.
+1. Plug in the USB cable and upload the sketch, with the power module
+   still off. Until the upload finishes, the Mega runs Lesson 20's sketch,
+   which would read the knob's empty pin and could spin the fan.
+2. Plug the adapter into the power module and switch it on, so its LED
+   lights.
 3. The turret swings to 30° and starts its sweep, stepping steadily to 150°,
    which takes a little over two seconds.
 4. Stand in front of it, 30 to 60 cm away. At the end of the sweep it turns

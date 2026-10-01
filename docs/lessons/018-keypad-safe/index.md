@@ -181,9 +181,11 @@ What's new:
 
 ## Upload it
 
-Plug in the USB cable, then the power module's adapter, and switch the module
-on. Upload the sketch. The arm swings to 0° and the screen says
-`Locked. Code?`.
+Plug in the USB cable and upload the sketch first, with the power module
+still off: until the upload finishes, the Mega runs Lesson 17's sketch,
+which would steer the arm by the knob's empty pin. Then plug in the power
+module's adapter and switch it on. The arm swings to 0° and the screen
+says `Locked. Code?`.
 
 Type **1 2 3 4** and press **#**. Each key clicks and puts a star on the
 screen; then the arm swings to 90° and the screen says `Open. # locks` and
