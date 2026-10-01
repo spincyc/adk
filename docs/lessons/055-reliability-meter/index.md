@@ -1,293 +1,419 @@
 ---
 lesson: 55
-promise: Measure a radio link. Choose how long each message is, send five, and see how long each took and how many got through.
-time: 1 hour
-level: 2
+promise: Measure the radio link between your two boards. Send 64 messages, count how many come back, and find out what the modem's slow, far-reaching setting buys you, and what it costs.
+time: 2 hours
+level: 3
 parts:
-  - Arduino Mega 2560 and its USB cable
-  - Breadboard
-  - LCD1602 display
-  - 10 kΩ potentiometer
-  - 220 Ω resistor (red, red, black, black, brown)
-  - Rotary encoder module
-  - 433 MHz receiver, RX470C, and transmitter, WL102-341, from Lesson 38 (add-ons, not in the kit)
-  - 1 kΩ resistor (brown, black, black, brown, brown)
-  - 2 kΩ resistor (red, black, black, brown, brown), or two more 1 kΩ
-  - For the last experiment, three female-to-male jumper wires
-  - 30 jumper wires
-  - For the last experiment, a small metal tin with a lid, and a plastic bag
+  - "Board A: the Mega, breadboard, LoRa modem, LED matrix, joystick and passive buzzer from Lesson 54"
+  - "Board A: the LCD1602 screen, its 10 kΩ contrast knob and a 220 Ω resistor (red, red, black, black, brown), wired as in Lesson 53"
+  - "Board A: 17 more jumper wires"
+  - "Board B: the Mega, breadboard, LoRa modem and LED matrix from Lesson 54"
+  - "A USB power bank, to carry Board A about"
+  - "Paper and a pencil, for a table of results"
+  - "Perhaps, for a small home: a metal biscuit tin big enough for Board B, and a sheet of card"
 ideas:
-  - The time every message costs, however short
   - Testing a link by sending messages you know and counting what comes back
-  - Why long messages are the first to fail when the signal is weak
+  - The time every message costs, however short
+  - Trading speed for range
 ---
 
 ## What you'll build
 
-<!-- closeup -->
+<!-- closeup A -->
 
-A meter for a radio link. Turn the rotary knob to choose how many letters
-each message carries, from 5 to 60, and press it. The Mega sends five
-messages through the transmitter and listens for them with the receiver,
-as in [Lesson 38](../038-radio-messages/index.md), and while the
-transmitter rests between them, the screen counts down to the next. Then
-the top row shows how long one message took to send, and the bottom row
-how many of the five came back whole: **Heard 5/5 100%**.
+A meter for the radio link between your two boards. Click the joystick
+on Board A, the meter, and it sends 64 numbered messages to Board B, one
+after another. Board B sends each one straight back. Every message that
+makes it there and back lights its own dot on Board A's matrix, so a test
+fills the matrix like a page of writing, and a lost message leaves a dark
+gap. Then the screen says what share came back and how long one took
+there and back: **95% back 112ms**. Board B's matrix shows which messages
+reached it.
 
-Then you make the radio struggle, and find out which messages it loses
-first.
+Then you carry Board A away until messages start to go missing, and find
+out what the modem's slow setting, **Far**, can do there, and what it
+costs. This is the course's last lesson: it puts the two boards, the
+modems, the screen and the matrix you have built up to work on one
+question, how good is the link?
+
+!!! warning "915 MHz is for the Americas and Australia"
+    The RYLR896 modems send on 915 MHz, which anyone may use in the USA
+    and Canada. In Australia, add `.band = 921500000` to the settings on
+    both boards, after `.power`. In Europe, add `.band = 869525000`, as
+    for the bridge: that band lets each radio send for a tenth of each
+    hour, six minutes. A test at Far keeps each board on the air for up
+    to about 45 seconds, so there run no more than seven Far tests in an
+    hour; Quick tests use far less. Receiving is fine anywhere; before you
+    send, read [Radios](../../safety.md#radios) on the safety page.
 
 ## The idea
 
-**Every message pays a toll.** In Lesson 38 each letter went out as two
-groups of six bits: 12 bits, at 2000 bits a second, so 6 ms a letter. But a
-message is more than its letters. It starts with the warm-up the receiver
-locks onto, 48 bits, and it carries seven bytes of its own: its length,
-four bytes of RadioHead's own header (who it's to and from, and two more),
-and the two-byte checksum. That
-is 66 ms before the first letter, whether the message is one letter long
-or sixty:
+**Testing a link.** The bridge in Lessons 43 to 54 hid its lost
+messages: it sent everything again every two seconds, so a lost change
+came a moment late, and you hardly noticed. To find out how good a link
+really is, send messages you know and count the ones that come back.
+Each of the meter's messages starts with its number, from 1 to 64, so a
+late one can't be counted as the next. And the modem's checksum throws
+away any message that noise got into, so every message arrives whole or
+not at all. Board B sends back whatever it hears; a message lost on the
+way there, or on the way back, leaves a gap on Board A's matrix.
 
-<p class="formula">time on the air = 66 ms + 6 ms × letters</p>
+Why 64? With five messages, one lost is 20%, and two tests in the same
+place could differ by 20% by luck alone. With 64, one lost message is
+less than 2%, so a difference between two settings of more than a few
+percent means something.
 
-**Testing a link.** To find out how good a link is, send messages you know
-and count the ones that come back. The checksum from Lesson 38 makes the
-count honest: a message that noise got into is thrown away, so every
-message arrives whole or not at all. Each of the meter's messages carries
-its number, `#1` to `#5`, so one that turns up late can't be counted as
-the next.
+**Every message pays a toll.** In [Lesson 40](../040-lora/index.md) a
+LoRa modem sent each piece of a message as a chirp. Before the first
+letter, it sends a warm-up of chirps for the other modem to lock onto,
+and a header that says how long the message is: a toll, paid by a
+message of one letter or sixty. Then each letter costs a little more. The
+two speeds from Lesson 43 chirp at different rates: a chirp at **Quick**
+lasts about 1 ms, and at **Far**, 8 ms. From the radio chip's datasheet,
+in round numbers:
 
-**A rest after every message.** As in Lesson 38, the transmitter rests
-after each message, because the law lets it send only now and then: 30
-times as long as the message took, and never less than 10 seconds. So
-the meter sends only when you press the knob, and only five messages,
-one each time the rest is over. [Lesson 38](../038-radio-messages/index.md#the-idea)
-and [Safety](../../safety.md#radios) have the details.
+<p class="formula">Quick: time on the air ≈ 20 ms + 1.5 ms × letters</p>
+
+<p class="formula">Far: time on the air ≈ 200 ms + 8 ms × letters</p>
+
+The meter times each message there and back: twice its time on the air,
+and a little more while the Megas and the modems pass it along their
+wires.
+
+**Speed for range.** At Far, every chirp lasts eight times as long, so
+the receiving modem has eight times as long to pick it out of the hiss.
+Lesson 40 said LoRa can still hear a message whose margin above the noise
+is as low as −15 dB: that was at Far. At Quick the margin must stay above
+about −7.5 dB, by Semtech's datasheet for the chip. So Far can hear a
+signal between five and six times weaker than Quick can: further away,
+or through more walls. The price is time. Lessons 43 to 54 chose Quick,
+so a button press crossed the house in a tenth of a second.
+
+**The lowest power.** The meter's two modems send at 0 dBm, one
+milliwatt: a tenth of the bridge's 10 dBm. That brings the edge of the
+link close enough to find on foot.
 
 !!! question "Predict"
-    Use the toll to work it out before you build: how long will one
-    20-letter message take to send? And a 60-letter one? Then use the
-    rest: about how long will a whole test of five 20-letter messages
-    take? Write down your answers.
+    Use the toll to work it out before you build. At Quick, about how
+    long will a 20-letter message take there and back? And a 60-letter
+    one? About how long will a whole test of 64 twenty-letter messages
+    take? Then the same test at Far? Write down your answers.
 
 ## Build it
 
 !!! warning "Unplug first"
-    Unplug the USB cable before you change any wiring, and check your work
-    before you plug it back in.
+    Unplug each board's USB cable, or its power bank, before you change
+    any wiring, and check your work before you plug it back in.
 
-!!! danger "3.3 V for the transmitter"
-    The transmitter's **+** pin goes to the Mega's **3.3V** pin, never to
-    5V, and its DAT only ever sees pin 46 through the 1 kΩ, with the 2 kΩ to
-    GND. The receiver's VCC takes 5 V.
+!!! danger "3.3 V for the modems"
+    Each modem's VDD stays on its Mega's **3.3V** pin, never 5V: more than
+    3.6 V damages it. Its RXD only ever sees the Mega's TX3 through the
+    1 kΩ, with the 2 kΩ to GND. Never power a modem without its spring
+    aerial.
 
-!!! warning "Soldered pins only"
-    Each module's pins must be soldered to its board. Pins that are only
-    pushed through the holes don't make a connection, and the module will
-    stay silent.
+Both boards carry on from Lesson 54, and both modems stay at the
+bridge's home, with their dividers, just as they are. If Board B is still
+in another room, bring it back to the computer.
 
-Everything goes back to a home it has had before: the screen at its home
-from Lesson 13, the rotary encoder in row a, columns 15 to 19, as in
-Lesson 29, and the receiver and transmitter in row j, as in Lesson 38,
-with their wires coming up into row f. The screen stays at the far right;
-the encoder and the radios stand nearer the Mega.
-None of Lesson 54's parts stay, so take its Board A apart first, all but
-the Mega's GND wire, and build this one from the start. Leave the aerials
-off: in the USA and Canada they must stay off, and the two modules hear
-each other easily across the board without them, as in Lesson 38.
+- **Board A**, the meter, keeps everything: the modem, the matrix, the
+  joystick and the buzzer. The screen comes back to its home, as in
+  Lesson 53: its contrast knob across the middle gap in columns 43 to 45,
+  its pins in a47 to a62, and its six signal wires from pins 31 to 36.
+  Its body hangs off the bottom edge beyond the end of the breadboard:
+  prop it up at breadboard height. The screen takes its power from the
+  top rails, so a red wire comes from the Mega's 5V into the top + rail
+  by column 3, as in Lesson 3.
+- **Board B**, the echo, keeps its modem and its matrix. Take out its
+  joystick and the joystick's five wires, and the buzzer, its 220 Ω
+  resistor and pin 10's wire.
 
 !!! warning "Pause points while you build"
-    Stop after each stage in the steps below:
+    Stop after each board:
 
-    - **5 V rail:** With the USB cable out, check that the + and − rails
-      are separate and no loose wire touches both.
-    - **Screen:** Check that its header pins sit in separate strips, its
-      contrast knob crosses the middle gap, and its backlight has the
-      220 Ω resistor shown in the drawing.
-    - **Rotary encoder:** Check that its five pins sit in separate strips,
-      and that its + and GND go to the matching top rails. **Predict:**
-      What will one clockwise click change `20 letters` to? With the radio
-      modules still out, upload this lesson's sketch. The screen should
-      show `20 letters` and `Press to test`; one click should change 20 to
-      `25 letters`. Leave the button unpressed until both radios are built. Unplug
-      the USB cable again before you continue wiring.
-    - **Radio receiver:** With the USB cable out again, compare the printed
-      VCC, DATA and GND names with the drawing. DATA2 stays unused; check
-      that its 5 V and GND wires have not been swapped.
-    - **Radio transmitter:** Before plugging in, trace its + wire to the
-      Mega's **3.3V** pin, not 5V. Its DAT must reach pin 46 through the
-      1 kΩ resistor, with 2 kΩ from the DAT side to the − rail. Check its
-      − wire reaches the − rail too.
+    - **Board A's screen:** With the USB cable out, check that the
+      screen's header pins sit in separate strips, its contrast knob
+      crosses the middle gap, and its backlight has the 220 Ω resistor
+      shown in the drawing. Check that the + and − rails are separate and
+      no loose wire touches both. **Predict:** what will holding the stick
+      to the right do to `Quick 20 letters`? Plug in and upload **Meter**
+      to Board A, leaving the stick alone while it starts. The screen
+      should say `Quick 20 letters` and `Click to test`; holding the stick
+      right should count up, `25 letters`, `30 letters`, and holding it
+      left count back down. Don't click yet: Board B isn't answering.
+    - **Board B:** With its USB cable out, check that nothing is left in
+      the holes of the joystick's and buzzer's wires, and that the
+      modem's wires and the matrix's are as they were.
 
-<!-- bench -->
+### Board A
 
-<!-- steps -->
+<!-- bench A -->
 
-??? info "The encoder's and the modules' pins"
-    | Part | Pin | Goes to |
-    |---|---|---|
-    | Encoder | CLK | Pin 18 |
-    | Encoder | DT | Pin 19 |
-    | Encoder | SW | Pin 22 |
-    | Encoder | + | e16 to the top + rail by column 19 |
-    | Encoder | GND | e15 to the top − rail by column 18 |
-    | Receiver | VCC | 5V, on the power header |
-    | Receiver | DATA | Pin 43 |
-    | Receiver | GND | The bottom − rail |
-    | Transmitter | DAT | The middle of the divider: pin 46 through 1 kΩ, and 2 kΩ to the − rail |
-    | Transmitter | + | 3.3V, on the power header |
-    | Transmitter | − | The bottom − rail |
+<!-- steps A -->
 
-    The receiver's DATA2 and the transmitter's EN connect to nothing. The
-    boards print their pin names on the back: go by the names.
+### Board B
 
-When you are done, these are the connections your circuit makes:
+<!-- bench B -->
 
-<!-- connections -->
+<!-- steps B -->
+
+When you are done, these are the connections each board makes. Board A:
+
+<!-- connections A -->
+
+Board B:
+
+<!-- connections B -->
 
 ## Code it
 
-Open **File → Examples → Adk → lessons → 055-reliability-meter**:
+Open **File → Examples → Adk → lessons → 055-reliability-meter → Meter**
+for Board A:
 
-<!-- sketch -->
+<!-- sketch A -->
 
 What's new:
 
-- `adk::Stopwatch onAir;` times each message, as the stopwatch timed your
-  reactions in Lesson 3. `onAir.restart ()` starts it from zero as a
-  message goes out, and once `transmitter.isSending ()` turns false the
-  message has gone, so `onAir.stop ()` holds the time: `onAir.elapsed ()`.
-- `transmitter.isReady ()` is true when the transmitter will take a
-  message: nothing is going out, and its rest is over. The sketch sends
-  the next message as soon as it is.
-- `adk::Every refresh {250};` beats four times a second, as `tick` beat in
-  Lesson 11, and on each beat `showRest ()` shows how much of the rest is
-  left: `transmitter.restLeft ()`, rounded up to whole seconds as in
-  Lesson 38.
-- `adk::Timer pause;` waits 50 ms after the last message before the
-  result shows. `pause.start (50)` sets it going, and `pause.expired ()`
-  is true once, when the time is up. The pause lets the receiver finish
-  with the last message.
-- `sendMessage ()` builds each message in an `adk::Text<60>`, as Snake's
-  message was built in Lesson 27: its number, such as `#3 `, and then
-  letters of the alphabet over and over, until it is exactly as long as the dial
-  says. `message.size ()` is how many letters it has so far. It shows
-  `Sent 3 of 5` before it sends, so the stopwatch times only the message.
-- `message == receiver.text ()` is true when what arrived is exactly what
-  went out. Only then does `heard` count it.
-- While `testing` is true the knob is ignored, so the length can't change
-  in the middle of a test. `tested` says whether the length on the screen
-  has been tested yet.
+- `constexpr adk::LoraSpeed speed = adk::LoraSpeed::Quick;` names the
+  speed once, at the top, and the modem's settings use it: `.speed =
+  speed`. Board B's sketch has the same line. Two modems at different
+  speeds can't hear each other at all, so to try Far you change it in
+  both sketches.
+- `.power = 0` is the modem's lowest power, 0 dBm.
+- There is no bridge. The meter talks to the modem itself, with
+  `radio.send ()`, `radio.wasReceived ()` and `radio.text ()`, as in
+  Lesson 40. A bridge sends everything again every two seconds, which
+  would cover up the very losses the meter is there to count.
+- `sendNext ()` builds each message in an `adk::Text<60>`, as Lesson 54
+  built its score: its number, such as `17 `, and then letters of the
+  alphabet until it is as long as the screen says. If the modem takes it,
+  `++sent` counts it, and `trip.restart ()` starts the stopwatch.
+- `adk::Timer giveUp;` is how long to wait for an echo:
+  `2 * airTime () + 500`, the formula's time on the air there and back,
+  and half a second to spare. `airTime ()` is the formula from
+  [The idea](#the-idea), in code. Whole numbers can't hold 1.5, so
+  `length * 3 / 2` stands for 1.5 × letters.
+- `message == radio.text ()` is true when what arrived is exactly the
+  message that is out. Then `back = trip.elapsed ()` keeps its time there
+  and back, `giveUp.stop ()` stops the wait, and `++heard` counts it. A
+  late echo of message 2 starts with a 2, so it can't count as message 3.
+- `!giveUp.isRunning ()` is true when nothing is out: the echo came back
+  and stopped the timer, or the timer ran out and the message is lost.
+  Either way, the next one goes, until all 64 have gone.
+- `matrix.set ((sent - 1) % 8, (sent - 1) / 8)` lights the dot for
+  message number `sent`. As in Lesson 54's flight, `% 8` is what is left
+  over after dividing by 8, which counts 0 to 7 along a row, and `/ 8`,
+  a whole-number division, says which row: messages 1 to 8 light the top row, 9 to 16 the next,
+  and 64 the bottom right corner.
+- `joystick.x () / 60` is −1, 0 or 1, as it moved the paddle in
+  Lesson 54. Every quarter second while the stick is held, the length
+  goes up or down by 5, and `constrain ()` keeps it from 5 to 60.
+- `finish ()` shows `heard * 100 / tries`, the share that came back in
+  percent, and the latest time there and back. It beeps high when all 64
+  came back and low when any were lost, so you can tell without looking.
+
+Board B's sketch, **Echo**, is short:
+
+<!-- sketch B -->
+
+- `radio.send (radio.text ())` sends every message straight back, word
+  for word, to its partner, Board A.
+- `atoi (radio.text ())` reads the number at the start of the message.
+  `atoi`, short for "ASCII to integer", reads digits until the first thing
+  that isn't one, so `17 defg` gives 17.
+- `showHeard ()` lights that message's dot, worked out as on Board A.
+  A number lower than the last one means a new test has begun, so it
+  clears the matrix first.
 
 ## Upload it
 
-1. Upload the sketch. The screen says `20 letters` and `Press to test`.
-2. Press the knob. The top row says `Sent 1 of 5`, and the bottom row
-   counts down to the next message: `Next in 10 s`. If the transmitter
-   is still resting, from its last message or from when the sketch
-   started, the countdown comes first.
-3. After the fifth message, about 41 seconds in all, the screen shows the
-   result: `20 letters 186ms`, or a millisecond either side, and
-   `Heard 5/5 100%`.
-4. Turn the knob to 60 and press again. Each rest is longer this time,
-   `Next in 13 s`, and the top row says about `426ms`.
+1. Plug in Board B, choose its port in **Tools → Port**, and upload
+   **Echo**. Its matrix stays dark.
+2. Plug in Board A, choose its port, and upload **Meter**, if it isn't
+   there already, leaving the stick alone while it starts. The screen
+   says `Quick 20 letters` and `Click to test`.
+3. With the boards a meter or two apart, click the stick. Dots fill both
+   matrices, row by row, and the bottom row of the screen counts:
+   `Sent 23 heard 22`, the message just sent and the echoes back so far.
+   About ten seconds later the meter beeps, and the screen shows the
+   result, such as `100% back 117ms`.
+4. Hold the stick right until the screen says `60 letters`, and click
+   again; then try `5 letters`.
 
-Did you predict 186 ms and 426 ms? A 60-letter message carries twelve
-times the letters of a 5-letter one, but takes less than five times as
-long, because the 66 ms toll is paid either way. Long messages carry
-letters more cheaply. And the whole test? Four rests of 10 seconds, and
-five messages of 186 ms: about 41 seconds. From 45 letters up, the rest
-is 30 times the message instead, 12.78 seconds after a 60-letter one, so
-that test takes about 53 seconds.
+Did you predict about 100 ms for 20 letters? Each way, the toll is 20 ms
+and twenty letters add 30 ms: 50 ms, so 100 ms there and back. Your
+meter shows a little more, for the time the Megas and the modems take
+to pass each message along their wires. Sixty letters take about 220 ms
+there and back, five about 55 ms. Sixty letters carry twelve times as
+much as five, but take only about four times as long, because the toll
+is paid either way: long messages carry their letters more cheaply. A
+whole test of 64 twenty-letter messages takes 64 times 100 ms, between
+six and seven seconds, and a little more. At Far, a 20-letter message
+takes 200 + 160 = 360 ms each way, 720 ms there and back, about seven
+times as long, and a test most of a minute.
 
-With the two modules a few centimeters apart, every test should say
-5/5. The signal is far stronger than the noise, so nothing goes missing.
+On the desk, every test should say 100%: the signal is far stronger than
+the noise.
 
-## Make it struggle
+## Find the edge
 
 !!! question "Predict"
-    When the signal is only just strong enough, noise now and then flips a
-    bit, and one flipped bit loses the whole message. Which will lose more:
-    5-letter messages or 60-letter ones? Why?
+    Somewhere away from Board B, the link at Quick will start to lose
+    messages. In that same place, will Far lose more of the 64, fewer, or
+    the same? And how long will each test take? Write down your answers.
 
-1. Unplug the USB cable. Take the receiver out of the breadboard, and join
-   its pins to the holes it came out of with three female-to-male jumper
-   wires: **VCC** to j30, **DATA** to j31, **GND** to j33.
-2. Plug in, and test 5 letters and then 60 letters with the receiver lying
-   beside the board. Both should still say 5/5. Each test takes most of a
-   minute, so let the countdown run.
-3. Put the receiver in the plastic bag, so none of its pins can touch
-   metal, and shut it in the tin, its wires coming out under the lid.
-   Metal all round stops most of a radio wave. Test 5 and 60 letters again.
-4. Move the tin as far from the transmitter as its wires let you, and turn
-   it round, testing 60 letters each time, until some messages go missing.
-   Then test 5 letters in the same place.
+1. Leave Board B where it is, plugged into the computer. Unplug Board A,
+   and run it from the power bank instead: it keeps its sketch.
+2. Carry Board A away from Board B, testing at Quick (20 letters) every
+   few steps: into the next room, through more walls, up or down stairs,
+   to the far end of the home or the garden. Concrete and metal stop the
+   most; a body between the boards stops some too.
+3. Stop at the first place where a test comes back below 100%, and test
+   twice more there. Between about 30% and 90% is best: move a little
+   further or closer to find it. Mark the place, and write down what each
+   test said, in a table like this:
 
-Where the signal is weak, the 60-letter messages go missing first. Each
-has more than four times the bits of a 5-letter one, so noise has more
-than four times the chances to spoil it. That is why radios that must get
-through, such as the LoRa radios in Lessons 40 to 54, send short messages.
-With only five messages a test, one lost message is 20%, so test each
-length twice or more in one place before you compare them.
+    | Place | Quick | Far |
+    |---|---|---|
+    | On the desk | 100%, 100% | |
+    | By the back door | 64%, 58%, 70% | |
 
-How much the tin holds back depends on the tin, and these modules hear
-each other easily, so on one board you may never see a message go
-missing. Then the experiment waits for a second Mega: see
-[Make it yours](#make-it-yours).
+4. Change the speed to `adk::LoraSpeed::Far` in both sketches. Upload
+   **Echo** to Board B, and bring Board A back to upload **Meter** too.
+   The screen says `Far 20 letters`.
+5. Take Board A back to the mark, and test there twice. Each test takes
+   most of a minute now: wait for the beep.
+6. If you like, carry on further until Far starts to lose messages too.
+
+If even the far end of your home gets 100% at Quick, the edge is
+further than you can walk. Then make it harder for the signal: stand
+Board B on a sheet of card, so nothing on it can touch metal, and put it
+inside a metal biscuit tin, its USB cable out under the lid. Metal all
+round stops most of a radio wave. Start again from step 2.
+
+You predicted what Far would do. In the place where Quick lost some of
+its messages, Far should get most or all of them back, but each test
+takes far longer: most of a minute instead of a few seconds, because
+every message is about seven times as long on the air. That is the
+trade the modem's two settings offer. Far waits longer on every chirp,
+so it can pick out a weaker signal, and reach further; Quick answers
+fast, and needs the stronger signal. The bridge chose Quick, at ten times
+the meter's power, because a house is well within its reach.
+
+Radio is changeable: the same place can give 60% one minute and 80% the
+next, as people move and doors open and close. That's why each test sends
+64 messages, and why you test more than once before you compare. Look at
+the gaps on the matrix too. Gaps scattered one by one are noise at the
+edge; a long run of dark dots means something changed while the test ran,
+such as someone walking between the boards.
 
 ## If it doesn't work
 
 | What you see | Try this |
 |---|---|
-| Pressing the knob does nothing | Check the encoder's SW goes to pin 22, its + through e16 to the top + rail by column 19, and its GND through e15 to the top − rail by column 18. |
-| Turning the knob does nothing | Check CLK goes to pin 18 and DT to pin 19. If it counts the wrong way, swap those two wires. |
-| `Heard 0/5` | Check the receiver's DATA goes to pin 43, its VCC to 5V and its GND to the − rail; then the transmitter's + to 3.3V, its − to the − rail, and the divider: pin 46's wire in f36, the 1 kΩ from h36 to h39, the 2 kΩ from g39 to e39, and the black jumper from a39 to the − rail. |
-| Still `Heard 0/5` | Check the modules' pins are soldered to their boards, not just pushed through. |
-| The test seems stuck on `Next in` | It isn't: the transmitter rests 10 seconds or more after every message, so a test of five takes most of a minute. |
-| Fewer than 5 heard with both modules on the board | Keep them away from the computer and its cable, and from other 433 MHz gadgets: a doorbell or weather station sending at the same moment spoils a message. |
-| Nothing on the screen, or a row of blocks | Turn the contrast knob beside the LCD. |
+| `None came back`, and Board B's matrix stays dark | Board B hears nothing. Check that Board B runs **Echo** and Board A **Meter**, and that `speed` is the same in both sketches: at different speeds, the modems can't hear each other at all. Then check Board B's modem against the steps. |
+| Board B's matrix fills, but Board A's stays dark | Board B hears the messages and sends them back, but Board A hears nothing. Check Board A's modem: its TXD up into f26, and pin 15's wire in j26. |
+| The screen says `No modem reply` | Check Board A's modem: VDD to the Mega's 3.3V pin, GND to the bottom − rail by column 24, TXD up to f26 and RXD to c28, not swapped. Then the divider: pin 14 in j28, the 1 kΩ from g28 to e28, the 2 kΩ from a28 to the − rail. Press the reset button to try again. |
+| A test crawls, every dot dark | Nothing is answering, so the meter waits for each message in turn, up to two seconds at Far. Press Board A's reset button to stop it, and see the first row of this table. |
+| Fewer than 100% with the boards side by side | Keep them a meter or two apart, away from the computer and its cable, and keep the springs straight, pointing down. Another LoRa radio on 915 MHz nearby can spoil a message now and then. |
+| Holding the stick does nothing, or works the wrong way | Hold the joystick with its pins to your left, as in Lesson 54, and leave it alone while the sketch starts: where it rests then is its middle. Check its VRx goes to A3 and VRy to A4. |
+| Clicking does nothing | Check the joystick's SW goes to pin 22. A click is ignored while a test runs. |
+| No beep | Check the buzzer's + leg is in f33, beside pin 10's wire in j33, and its 220 Ω from a33 to the − rail. |
+| A blank lit screen, or a row of blocks | Turn the contrast knob beside the LCD. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
+
+??? note "How it works"
+    With the screen at `Quick 20 letters`, message 17 goes from Board A to
+    its modem as this line:
+
+    ```text
+    AT+SEND=2,20,17 defghijklmnopqrst
+    ```
+
+    Board B's modem hears it and tells its Mega the sender, the length,
+    the text, the signal in dBm and the margin in dB:
+
+    ```text
+    +RCV=1,20,17 defghijklmnopqrst,-58,9
+    ```
+
+    Board B sends the text straight back with `AT+SEND=1,20,...`, and
+    Board A's modem tells its Mega `+RCV=2,20,17 defghijklmnopqrst,...`.
+
+    Where the formula comes from: at Quick, each chirp sweeps the 125 kHz
+    band in 1.024 ms and carries 7 bits; at Far, 8.192 ms and 10 bits. For
+    every four bits of message the modem adds a spare one, to put right
+    what noise gets wrong, so a letter, 8 bits, needs 10: about one and a
+    half chirps at Quick, 1.5 ms, and one chirp at Far, 8 ms. The warm-up
+    is about 8 chirps at Quick and 11 at Far, and the header and the
+    checksum take about a dozen more: the toll, about 20 ms or 200 ms. The
+    modem adds a few bytes of its own, such as who the message is from,
+    so the real time is a little longer.
+
+## Check yourself
+
+1. Why does the meter send 64 messages in a test, and not 5?
+2. After a test, Board B's matrix has the dot for message 41 lit, but
+   Board A's doesn't. What happened to message 41?
+3. In one place, Quick got 38 of 64 back and Far all 64. What did Far
+   give up to get them through? Why did the bridge use Quick anyway?
+
+??? note "Answers"
+    1. With five messages, one lost is 20%, and two tests in the same
+       place can differ that much by luck alone. With 64, one lost
+       message is less than 2%, so a real difference between two settings
+       stands out.
+    2. It reached Board B, which lit its dot and sent it back, but the
+       echo was lost on the way back to Board A, or came back after Board
+       A had given up waiting for it.
+    3. Time: each message took about seven times as long on the air, so
+       a test took most of a minute instead of a few seconds. Far's longer
+       chirps let a modem hear a weaker signal. The bridge needed to
+       answer quickly, a press in a tenth of a second, and across a house
+       Quick at 10 dBm has signal to spare.
 
 ## Make it yours
 
-1. **Two boards.** Build Lesson 38's circuit on a second Mega, and make
-   it send five numbered messages when its button is pressed, each one as
-   soon as `transmitter.isReady ()`. Change this sketch to count what
-   arrives without sending. Where the rules allow aerials and distance, in
-   Europe or with an amateur radio license and your call sign in the
-   messages, fit 17 cm wires to both modules' ANT holes and carry one Mega
-   further away between tests, to find how far the link reaches.
-2. **Letters a second.** Add a line that shows how many letters a second
-   each length carries: `length * 1000 / onAir.elapsed ()`. Which length
-   carries the most?
-3. **Your own toll.** Work out the time for every length from 5 to 60 from
-   the formula, and the rest after it, and check each against the meter.
+1. **Long or short, at the edge.** Go back to a place where Quick loses
+   some messages, and test 5 letters and then 60 letters there, twice
+   each. Which loses more? A long message has more chirps for noise to
+   spoil, and the modem's spare bits can put right only so much.
+2. **More power.** Change `.power = 0` to `.power = 10` on both boards,
+   the bridge's power, and find Quick's edge again. How much further is
+   it? Never go above 10: the modem's VDD comes from the Mega's 3.3V pin,
+   which can't feed it at full power.
+3. **How close to the edge.** At the end of `finish ()`, show the
+   margin of the latest echo over the top row:
+   `adk::print (lcd.at (0, 0), "Margin ", radio.margin (), " dB   ")`.
+   At Quick, messages start to go missing as it nears −7.5 dB; at Far,
+   nearer −15.
+4. **Letters a second.** After a test in which some came back, show how
+   many letters a second it carried one way: `length * 2000 / back`.
+   Which length and which speed carries the most?
 
 ## Measure it
 
 This part is for anyone with a multimeter; there isn't one in the kit. Set
 it up as in [Lesson 1](../001-blink/index.md#measure-it): DC volts (**V⎓**),
-the black lead in **COM** and the red one in **V**. Keep each probe tip in
-its own hole.
+the black lead in **COM** and the red one in **V**. Take the readings on
+Board A between tests, while the serial lines to the modem rest, and keep
+each probe tip in its own hole.
 
 !!! question "Predict"
-    While a message goes out, the transmitter's radio is on for half of its
-    bits and off for the other half. But a message lasts less than half a
-    second, and then the transmitter rests for 10 seconds or more. What
-    will the meter read on DAT through a test of 60-letter messages?
+    The modem's RXD gets the Mega's 5 V through the divider. Its TXD goes
+    straight to pin 15, with no divider. Between messages, both lines
+    rest high. What will each read? Is the modem's high enough for the
+    Mega to read as high?
 
-<!-- measure -->
-
-Press the knob with the probes already in place, and watch the meter
-while the bottom row counts down.
+<!-- measure A -->
 
 What the numbers tell you:
 
-- **The transmitter's DAT** reads 0 V between messages, which is nearly
-  all of a test: pin 46 is low, and the radio is off. A 60-letter message
-  is on the air for 0.43 seconds in every 13, about 3% of the time, so as
-  one goes out the meter may twitch, or may not move at all: it is too
-  quick for the meter to settle on.
-- **The receiver's DATA** reads about 2.5 V between messages, as it did in
-  Lesson 38: with nothing to hear, it turns itself up until noise sets it
-  high about half the time.
+- **The modem's RXD** reads about 3.3 V: the divider shares pin 14's 5 V
+  between the 1 kΩ and the 2 kΩ, so the modem's pin never sees more than
+  it can take.
+- **The modem's TXD** reads about 3.3 V too, but this is the modem's own
+  high, from its 3.3 V supply, and nothing divides it. The Mega reads
+  anything above 3 V as high (0.6 × 5 V, by the ATmega2560's
+  datasheet), so the modem's 3.3 V gets through with 0.3 V to spare: a
+  margin, like the radio's margin above the noise. While a test runs,
+  both lines flicker far too fast for the meter to follow.

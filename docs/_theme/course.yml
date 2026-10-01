@@ -121,8 +121,9 @@
     - {slug: 054-radio-pong, title: Radio Pong, builds: Pong played between two rooms, project: true}
 
 - arc: Extras
+  boards: 2
   lessons:
-    - {slug: 055-reliability-meter, title: Reliability Meter, builds: A meter that counts how many radio messages get through}
+    - {slug: 055-reliability-meter, title: Reliability Meter, builds: A meter that tests the radio link between your two boards}
 
 - arc: Electricity · DC paths
   track: electricity
