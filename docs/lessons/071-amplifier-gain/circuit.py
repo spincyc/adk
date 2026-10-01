@@ -14,9 +14,9 @@ bench.chip ("MCP6002", pins=["OUTA", "−A", "+A", "VSS",
                               "+B", "−B", "OUTB", "VDD"], first=15)
 bench.wire ("a18", "B-18")                    # pin 4, VSS
 bench.wire ("j15", "T+15")                    # pin 8, VDD
-bench.wire ("B-9", "T-9")                     # the top − rail is GND too
-bench.capacitor ("10 µF", "T+16", "T-16", polarized=True)
-bench.capacitor ("100 nF", "T+17", "T-17")    # beside pin 8's supply wire
+bench.wire ("B-21", "T-21")                   # the top − rail is GND, near pin 4
+bench.capacitor ("100 nF", "T+16", "T-16")    # beside pin 8's supply wire
+bench.capacitor ("10 µF", "T+13", "T-13", polarized=True)
 
 bench.stage ("amplifier A and its feedback resistors")
 bench.wire ("a15", "a13")                     # pin 1, OUTA

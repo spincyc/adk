@@ -45,7 +45,7 @@ both numbers? Write down your prediction before you switch the circuit on.
     power is disconnected. Connect both scope ground clips only to the
     common bottom − rail.
 
-Take out E15's filter parts and their jumpers, and lift the generator's red
+Take out E15's filter parts and their jumpers, and lift the generator's blue
 OUT lead. Keep the generator, its black GND lead, and the Mega's GND wire in
 the bottom − rail hole nearest the Mega. The generated steps add the Mega's
 5 V wire to the top + rail hole nearest it. With the MCP6002's notch
@@ -56,9 +56,9 @@ powering.
 
 Follow the generated steps. Pins 8 and 4 sit at opposite corners of the
 chip, so the **100 nF and 10 µF supply capacitors** stand across the top +
-and − rails right beside pin 8's supply wire, the 10 µF with its + leg on
-5 V and striped − leg on GND. A black wire at column 9 joins the top −
-rail to GND. Amplifier A's three resistors lie just below the chip. The
+and − rails: the 100 nF right beside pin 8's supply wire, and the 10 µF
+two columns to its left, with its + leg on 5 V and striped − leg on GND.
+A black wire at column 21, close to pin 4, joins the top − rail to GND. Amplifier A's three resistors lie just below the chip. The
 generator reaches pin 3 only through the **10 kΩ input resistor**: the
 op-amp's input takes almost no current, so the resistor costs nothing
 here, but if the generator were ever on while the chip had no power it

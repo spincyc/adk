@@ -1,17 +1,19 @@
 # Keep E16's MCP6002 supply, bypass capacitors, and B follower. Change A's
-# feedback to a direct wire and feed it from the knob at home. The page
-# first moves the load's b15 end to c40, on the knob's wiper, and back.
+# feedback to a direct wire and feed it from the knob at home. The 1 kΩ
+# load stands from b12 into the − rail, fed from pin 1's strip by a short
+# jumper; the page first moves that jumper's b15 end to c40, on the knob's
+# wiper, and back.
 bench = Bench ("An MCP6002 output follows a knob while feeding a 1 kΩ load",
                columns=(1, 42))
 
 bench.stage ("the MCP6002 and its supply")
 bench.chip ("MCP6002", pins=["OUTA", "−A", "+A", "VSS",
                               "+B", "−B", "OUTB", "VDD"], first=15)
-bench.wire ("a18", "B-18")
-bench.wire ("j15", "T+15")
-bench.wire ("B-9", "T-9")
-bench.capacitor ("10 µF", "T+16", "T-16", polarized=True)
-bench.capacitor ("100 nF", "T+17", "T-17")
+bench.wire ("a18", "B-18")                    # pin 4, VSS
+bench.wire ("j15", "T+15")                    # pin 8, VDD
+bench.wire ("B-21", "T-21")                   # the top − rail is GND, near pin 4
+bench.capacitor ("100 nF", "T+16", "T-16")    # beside pin 8's supply wire
+bench.capacitor ("10 µF", "T+13", "T-13", polarized=True)
 
 bench.stage ("amplifier B's steady midpoint")
 bench.resistor ("10 kΩ", "g24", "e24")
@@ -24,9 +26,8 @@ bench.wire ("j17", "j16")
 
 bench.stage ("amplifier A's feedback and load")
 bench.wire ("a15", "a16")
-bench.wire ("b15", "j28")
-bench.resistor ("1 kΩ", "g28", "e28")
-bench.wire ("a28", "B-28")
+bench.wire ("b15", "b12")
+bench.resistor ("1 kΩ", "a12", "B-12")
 
 bench.home_knob ()
 bench.stage ("the knob's reference for amplifier A")

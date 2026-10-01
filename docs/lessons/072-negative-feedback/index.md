@@ -13,7 +13,7 @@ parts:
   - 100 nF ceramic capacitor
   - 10 µF electrolytic capacitor rated at least 10 V
   - Battery-powered two-channel oscilloscope or DC voltmeter
-  - 7 more jumper wires
+  - 6 more jumper wires, or 16 in all if you start here
 ideas:
   - Negative feedback makes an output follow an input while feeding a load
 ---
@@ -49,18 +49,19 @@ both guesses.
 
 Keep the MCP6002 across the middle gap with its notch to the left,
 pin 1 at column 15. Keep pin 8 at 5 V and pin 4 at GND, both supply
-capacitors and the black wire joining the − rails at column 9, and the two
-10 kΩ resistors that hold amplifier B's + input at a midpoint. Keep B's
-output (pin 7) joined to its − input (pin 6). Keep the Mega's GND and 5 V
-wires in their usual rail holes nearest it.
+capacitors and the black wire joining the − rails at column 21, and the
+two 10 kΩ resistors that hold amplifier B's + input at a midpoint. Keep
+B's output (pin 7) joined to its − input (pin 6). Keep the Mega's GND
+and 5 V wires in their usual rail holes nearest it.
 
 Remove E16's generator, its two wires and the 10 kΩ input resistor.
 Remove amplifier A's two feedback resistors and the short jumper from pin
 1's strip. Connect A's output (pin 1) directly to its − input (pin 2).
 Connect the kit knob's wiper to A's + input (pin 3), with the knob's
-outer legs at GND and 5 V. The 1 kΩ load goes from A's output to GND. The
-knob stays at its usual home and also connects to A0 so the sketch can
-show its setting.
+outer legs at GND and 5 V. The 1 kΩ load stands from **a12** into the
+bottom − rail, and a short jumper from **b15**, in pin 1's strip, to
+**b12** connects it to A's output. The knob stays at its usual home and
+also connects to A0 so the sketch can show its setting.
 
 **Starting here with a meter and no generator?** First follow
 [E16's steps](../071-amplifier-gain/index.md) for only two of its stages,
@@ -146,7 +147,7 @@ red probe to those two strips in turn. Keep the metal tips apart.
    read about 2.0 V too. Note the A0 number the sketch prints; it should
    be near **410**.
 2. **Load the knob directly.** Unplug USB. Move only the **b15** end of
-   the load wire (the one from b15 to j28) to **c40**, a free hole in the
+   the load wire (the one from b15 to b12) to **c40**, a free hole in the
    wiper's strip. The 1 kΩ load now hangs straight on the knob. Plug in
    USB without touching the knob. The wiper should drop to about
    **0.6 V**, and A0 to about **120**: the knob's own resistance cannot hold its
