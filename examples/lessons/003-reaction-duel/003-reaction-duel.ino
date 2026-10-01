@@ -23,7 +23,7 @@ void setup ()
     randomSeed (analogRead (A7));
 
     yellow.blink (1000);
-    Serial.println ("Reaction Duel! Press a button to start.");
+    adk::println (Serial, "Reaction Duel! Press a button to start.");
 }
 
 void loop ()
@@ -35,12 +35,13 @@ void loop ()
         go ();
     }
 
+    // One press a pass: a round ends with a wait, and a press left over
+    // from it must not start the next round.
     if (redButton.wasPressed ())
     {
         redPressed ();
     }
-
-    if (greenButton.wasPressed ())
+    else if (greenButton.wasPressed ())
     {
         greenPressed ();
     }
@@ -57,7 +58,7 @@ void redPressed ()
 
         case State::Ready:
             falseStart ();
-            Serial.println ("Red pressed too soon, so Green wins!");
+            adk::println (Serial, "Red pressed too soon, so Green wins!");
             green.blink (200);
             endRound ();
             break;
@@ -81,7 +82,7 @@ void greenPressed ()
 
         case State::Ready:
             falseStart ();
-            Serial.println ("Green pressed too soon, so Red wins!");
+            adk::println (Serial, "Green pressed too soon, so Red wins!");
             red.blink (200);
             endRound ();
             break;
@@ -103,7 +104,7 @@ void getReady ()
 
     suspense.start (random (2000, 5000));
     state = State::Ready;
-    Serial.println ("Get ready...");
+    adk::println (Serial, "Get ready...");
 }
 
 void go ()
@@ -129,5 +130,5 @@ void endRound ()
 
     // Let the loser's late press go by before a new round can start.
     adk::wait (1000);
-    Serial.println ("Press a button to play again.");
+    adk::println (Serial, "Press a button to play again.");
 }

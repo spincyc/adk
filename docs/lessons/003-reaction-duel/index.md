@@ -2,7 +2,7 @@
 lesson: 3
 promise: Build a two-player reflex game, and find out who in your house is fastest.
 time: 1 hour
-level: 2
+level: 3
 parts:
   - Arduino Mega 2560 and its USB cable
   - Breadboard
@@ -33,7 +33,7 @@ spot.
 
 ## The idea
 
-Three new tools make this game work.
+Two new tools make this game work.
 
 **Random numbers.** `random (2000, 5000)` picks a whole number from 2000 up
 to 4999, which the game uses as a wait in milliseconds, between 2 and 5
@@ -42,7 +42,8 @@ recipe that makes the same list of numbers every time the Mega starts, unless
 you give it a different starting point, called the **seed**. The sketch reads
 pin A7 for its seed. Nothing is connected to A7, so it floats (as a button's
 pin would, without its pull-up), and its reading wanders with stray
-electricity: a different seed, and a different game, nearly every time.
+electricity: a different seed, and different waits, nearly every time the
+Mega starts.
 
 **Time.** `millis ()` is the number of milliseconds since the Mega started.
 Read it once when the light comes on and again when a button is pressed, and
@@ -54,16 +55,6 @@ ADK does that sum for you in two parts. An `adk::Timer` counts down, like a
 kitchen timer: the game sets one for the random wait. An `adk::Stopwatch`
 counts up: the game starts one when the light comes on, and reads it when
 somebody presses.
-
-**The active buzzer.** It has a tiny oscillator circuit inside, so it makes
-its own tone, a shrill note a little over 2000 vibrations a second, whenever
-it has power. It can need up to 30 mA, above the Mega pin’s recommended
-20 mA. A **transistor** acts as a switch: pin 12 supplies a small control
-current through a 1 kΩ resistor, and the S8050 switches the buzzer’s current
-from the 5 V rail to GND. A 10 kΩ resistor keeps it off while the Mega starts.
-A diode across the buzzer catches a voltage spike when it switches off. In [Lesson 5](../005-melody-maker/index.md)
-you'll meet its cousin, the passive buzzer, which can play any note but needs
-a resistor and more help from the Mega.
 
 !!! question "Predict"
     Most people react faster to a sound than to a light. Before you play,
@@ -93,6 +84,18 @@ that, any press before the light is a false start.
     use the transistor driver shown below, even for short beeps. The active
     buzzer stands across the middle gap: its **+** leg, the longer one, with a **+** on its top, goes in f33,
     above the gap.
+
+The game keeps Lesson 2's buttons and lights, adds a green light, and gets
+a voice: the **active buzzer**. It has a tiny oscillator circuit inside, so
+it makes its own tone, a shrill note a little over 2000 vibrations a
+second, whenever it has power. It can need up to 30 mA, above the Mega
+pin’s recommended 20 mA, so a **transistor** switches it: pin 12 supplies a
+small control current through a 1 kΩ resistor, and the S8050 switches the
+buzzer’s current from the 5 V rail to GND. A 10 kΩ resistor keeps it off
+while the Mega starts, and a diode across the buzzer catches a voltage
+spike when it switches off. In [Lesson 5](../005-melody-maker/index.md)
+you'll meet its cousin, the passive buzzer, which can play any note but
+needs a resistor and more help from the Mega.
 
 <!-- bench -->
 
@@ -131,9 +134,52 @@ When you are done, these are the connections your circuit makes:
 
 <!-- connections -->
 
+### Test the beep first
+
+Before the game, check the buzzer and its transistor on their own: a
+buzzer that won't beep is much easier to puzzle out now than in the middle
+of a game. Choose **File → New**, replace everything in the new window with
+these lines, and upload them:
+
+```cpp
+// Lesson 03, first: test the beep.
+
+#include <Adk.h>
+
+adk::Buzzer buzzer {12};
+
+void setup ()
+{
+    adk::setup ();
+}
+
+void loop ()
+{
+    buzzer.beep (200);
+    adk::wait (1000);
+}
+```
+
+!!! question "Predict"
+    `buzzer.beep (200)` sounds a 200 ms beep. Does the sketch wait for the
+    beep to end before `adk::wait (1000)` starts, or start the beep and
+    carry straight on? If it waits, each pass of `loop ()` takes 1.2
+    seconds; if not, one second. So in 12 seconds, will you count 10 beeps
+    or 12?
+
+Count the beeps against a clock: about 12 in 12 seconds, each short with a
+longer quiet after it. `beep ()` starts the beep and carries straight on,
+and ADK switches the buzzer off by itself 200 ms later, partway through the
+wait. The game counts on that: at *Go* it starts the beep and the stopwatch
+in the same instant.
+
+If you hear nothing, or only a faint click, the beep's rows in
+[If it doesn't work](#if-it-doesnt-work) say what to check. Fix it now,
+while the buzzer is the only thing running.
+
 ## Code it
 
-Open **File → Examples → Adk → lessons → 003-reaction-duel**:
+Now open the game, **File → Examples → Adk → lessons → 003-reaction-duel**:
 
 <!-- sketch -->
 
@@ -160,6 +206,9 @@ What's new:
   that one piece of code can serve them all.
 - `falseStart ()` and `endRound ()` hold the lines both players share, so
   they are written once.
+- In `loop ()`, **`else if`** asks about the green button only when the
+  answer about the red one was no, so each pass handles one press at most.
+  *How it works* below says why that matters.
 - `adk::Timer suspense;` counts down. `suspense.start (random (2000, 5000))`
   sets it going, and `suspense.expired ()` is true for the one update in
   which it runs out, just as a button's `wasPressed ()` is true once per
@@ -168,8 +217,8 @@ What's new:
   reads it. Neither stops the sketch to wait, so a false start is still
   noticed.
 - `randomSeed (analogRead (A7));` plants the seed, once, in `setup ()`.
-- `adk::Buzzer buzzer {12};` and `buzzer.beep (200);` sound the buzzer for
-  200 ms and carry straight on; ADK switches it off by itself.
+- `adk::Buzzer buzzer {12};` and `buzzer.beep (200);` are the beep you
+  tested: it starts, and the sketch carries straight on.
 
 ## Upload it
 
@@ -182,7 +231,8 @@ second.
 2. Between 2 and 5 seconds later, the yellow LED lights and the buzzer
    beeps.
 3. Press! The winner's LED flashes quickly, and the Serial Monitor prints the
-   time, such as *Green wins in 247 ms!*
+   time, such as *Green wins in 247 ms!* That time includes the 20 ms ADK
+   waits for a button to settle (see *How it works*).
 4. Now try pressing before the yellow light. The buzzer gives a long, cross
    buzz, the other player's light flashes, and the Serial Monitor says who
    pressed too soon.
@@ -198,7 +248,7 @@ are faster to a sound, try the first challenge below.
 | The yellow LED doesn't blink at the start | Turn it round: its long leg goes in b12. Check its resistor runs from g12, across the gap, to e12. |
 | A button never starts a round | Push it firmly into the board, all four legs in. Check its black wire goes from row a (a4 or a10) to the − rail. |
 | The loser's light flashes, not the winner's | The LED wires may be swapped: pin 26 goes to j6 (red, on the left), pin 28 to j18 (green, on the right). |
-| No beep | The buzzer may be the wrong way round: its **+** leg goes in f33, above the gap. Check h33 reaches the top + rail, pin 12 reaches a32, and the S8050’s emitter reaches GND. Check its E–B–C order and the diode’s band at column 36. |
+| No beep | Upload the beep test from *Test the beep first* to try the buzzer on its own. The buzzer may be the wrong way round: its **+** leg goes in f33, above the gap. Check h33 reaches the top + rail, pin 12 reaches a32, and the S8050’s emitter reaches GND. Check its E–B–C order and the diode’s band at column 36. |
 | Only a faint click instead of a beep | That is the passive buzzer. Unplug the USB cable at once and swap it for the sealed, active one. |
 | The first wait is the same every time the Mega starts | Make sure nothing is plugged into A7: the seed only changes if the pin is left floating. |
 
@@ -209,14 +259,18 @@ are faster to a sound, try the first challenge below.
     is why the whole game runs in one quick loop without ever stopping to
     wait for something to finish.
 
-    The times include the 20 ms ADK waits for a button to settle, so your
-    real reaction is about 20 ms quicker than the number on screen. Both
-    players get the same 20 ms, so the duel stays fair.
+    The times include the 20 ms ADK waits for a button to settle, and a
+    little more if its contacts bounce, since each bounce starts the 20 ms
+    again. So your real reaction is about 20 ms quicker than the number on
+    screen. Both players get the same wait, so the duel stays fair.
 
     `endRound ()` ends with `adk::wait (1000)`, which gives the loser a
     second to finish their too-late press. A press during `adk::wait ()`
-    still updates its button, but no `loop ()` is looking, so it is simply
-    let go by instead of starting the next round.
+    still updates its button, but no `loop ()` is looking, so it is let go
+    by instead of starting the next round. Only a press in the wait's very
+    last update is still news when `loop ()` carries on, and the `else`
+    keeps `loop ()` from asking about it: the next `adk::update ()` forgets
+    it.
 
     `millis ()` counts up for about 49.7 days and then starts again from 0.
     The timer and the stopwatch only ever take the difference of two
