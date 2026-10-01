@@ -21,6 +21,14 @@ namespace {
 
         memcpy (chip.registers, time, sizeof time);
     }
+
+    // Updates a tenth of a second apart, when the Rtc reads the chip again.
+    // The first update only starts the count.
+    void readAgain (adk::Millis& now)
+    {
+        now += 100;
+        adk::update (now);
+    }
 }
 
 TEST (rtcLooksForItsChipAtSetup)
@@ -55,12 +63,73 @@ TEST (rtcReadsTheTimeInOneTransfer)
     adk::setup ();
 
     CHECK (same (rtc.now (), {2026, 9, 24, 20, 30, 45}));
-    CHECK (chip.transfers == 2);
+    CHECK (chip.transfers == 1);
     CHECK (chip.pointer == 7);
     CHECK (rtc.isRunning ());
 }
 
-TEST (rtcReadsTheTwelveHourClock)
+// Asking the time is free, so a sketch may ask on every pass of loop ():
+// the bus is only used ten times a second, by update ().
+TEST (rtcReadsTheChipTenTimesASecondWhateverTheSketchAsks)
+{
+    fake_i2c::Chip chip {0x68};
+    adk::Rtc       rtc;
+
+    setClock (chip);
+    adk::setup ();
+    CHECK (chip.transfers == 1);
+
+    for (adk::Millis now = 0; now < 1000; ++now)
+    {
+        adk::update (now);
+        rtc.now ();
+        rtc.isRunning ();
+        rtc.ok ();
+    }
+
+    CHECK (chip.transfers == 1 + 9);
+
+    // A new second shows from the next reading.
+    chip.registers[0] = 0x46;
+    adk::update (1000);
+    CHECK (rtc.now ().second == 46);
+}
+
+// As in the clock lessons: an Every of 200 ms, declared after the Rtc,
+// shows the time. Each of its ticks finds a reading made in that update,
+// however late the updates come.
+TEST (anEveryAfterTheRtcTicksWithAFreshReading)
+{
+    fake_i2c::Chip chip  {0x68};
+    adk::Rtc       rtc;
+    adk::Every     every {200};
+
+    setClock (chip);
+    adk::setup ();
+
+    adk::Millis now    = 0;
+    int         ticks  = 0;
+    bool        fresh  = true;
+
+    for (uint8_t pass = 0; pass < 200; ++pass)
+    {
+        uint8_t second    = pass % 60;
+        chip.registers[0] = static_cast<uint8_t> ((second / 10) << 4 | second % 10);
+        now              += static_cast<adk::Millis> (random (1, 40));
+        adk::update (now);
+
+        if (every.ticked ())
+        {
+            fresh = fresh && rtc.now ().second == second;
+            ++ticks;
+        }
+    }
+
+    CHECK (fresh);
+    CHECK (ticks > 10);
+}
+
+TEST (rtcReadsTheChipTenTimesASecondAcrossTheWrapOfMillis)
 {
     fake_i2c::Chip chip {0x68};
     adk::Rtc       rtc;
@@ -68,19 +137,42 @@ TEST (rtcReadsTheTwelveHourClock)
     setClock (chip);
     adk::setup ();
 
+    // A second of updates, from 256 ms before the wrap to 744 ms after.
+    for (adk::Millis now = 0xFFFFFF00; now != 744; now += 10)
+    {
+        adk::update (now);
+    }
+
+    CHECK (chip.transfers == 1 + 9);
+}
+
+TEST (rtcReadsTheTwelveHourClock)
+{
+    fake_i2c::Chip chip {0x68};
+    adk::Rtc       rtc;
+    adk::Millis    now = 0;
+
+    setClock (chip);
+    adk::setup ();
+    adk::update (now);
+
     const uint8_t pm = 0x60;
     const uint8_t am = 0x40;
 
     chip.registers[2] = pm | 0x08;
+    readAgain (now);
     CHECK (rtc.now ().hour == 20);
 
     chip.registers[2] = am | 0x12;
+    readAgain (now);
     CHECK (rtc.now ().hour == 0);
 
     chip.registers[2] = pm | 0x12;
+    readAgain (now);
     CHECK (rtc.now ().hour == 12);
 
     chip.registers[2] = am | 0x11;
+    readAgain (now);
     CHECK (rtc.now ().hour == 11);
 }
 
@@ -109,6 +201,7 @@ TEST (aHaltedClockStartsWhenSet)
     rtc.set ({2026, 9, 24, 20, 30, 0});
 
     CHECK (rtc.isRunning ());
+    CHECK (same (rtc.now (), {2026, 9, 24, 20, 30, 0}));
     CHECK (chip.registers[0] == 0x00);
     CHECK (chip.registers[1] == 0x30);
     CHECK (chip.registers[2] == 0x20);
@@ -129,20 +222,44 @@ TEST (rtcWritesTheHoursForTheTwentyFourHourClock)
     CHECK (chip.registers[2] == 0x23);
 }
 
+TEST (aClockThatHaltsIsNotRunningFromTheNextReading)
+{
+    fake_i2c::Chip chip {0x68};
+    adk::Rtc       rtc;
+    adk::Millis    now = 0;
+
+    setClock (chip);
+    adk::setup ();
+    adk::update (now);
+    CHECK (rtc.isRunning ());
+
+    chip.registers[0] |= 0x80;
+    readAgain (now);
+    CHECK (!rtc.isRunning ());
+    CHECK (rtc.ok ());
+}
+
 TEST (rtcTimesSurviveTheRoundTrip)
 {
     fake_i2c::Chip chip {0x68};
     adk::Rtc       rtc;
+    adk::Millis    now = 0;
 
     adk::setup ();
+    adk::update (now);
 
     const adk::DateTime times [] = {
         {2000, 1, 1, 0, 0, 0}, {2099, 12, 31, 23, 59, 59}, {2024, 2, 29, 12, 34, 56},
         {2031, 10, 9, 7, 8, 19}};
 
+    // Read back from the chip, not just remembered.
     for (const adk::DateTime& time : times)
     {
         rtc.set (time);
+        chip.registers[0] |= 0x80;
+        readAgain (now);
+        chip.registers[0] &= 0x7F;
+        CHECK (!rtc.isRunning ());
         CHECK (same (rtc.now (), time));
     }
 }
@@ -176,14 +293,19 @@ TEST (rtcThatStopsAnsweringIsNotOkUntilItAnswers)
 {
     fake_i2c::Chip chip {0x68};
     adk::Rtc       rtc;
+    adk::Millis    now = 0;
 
     setClock (chip);
     adk::setup ();
+    adk::update (now);
 
     chip.failures = 1;
+    readAgain (now);
     CHECK (same (rtc.now (), {0, 0, 0, 0, 0, 0}));
     CHECK (!rtc.ok ());
+    CHECK (!rtc.isRunning ());
 
+    readAgain (now);
     CHECK (rtc.now ().second == 45);
     CHECK (rtc.ok ());
 

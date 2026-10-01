@@ -8,6 +8,12 @@ namespace adk {
 
         constexpr uint8_t Address = 0x68;
 
+        // Ten readings a second keep a shown second within a tenth of a
+        // second of the chip's, for about 1% of the processor's time. A
+        // sketch that shows the time from an Every of 100 or 200 ms declared
+        // after the Rtc gets a reading made in the same update.
+        constexpr Millis ReadPeriod = 100;
+
         // The time registers, from 0x00: seconds, minutes, hours, day of the
         // week, date, month, and year, each in binary-coded decimal.
         constexpr uint8_t Seconds    = 0x00;
@@ -89,19 +95,40 @@ namespace adk {
     }
 
     Rtc::Rtc ()
-        : ok_ (false)
+        : read_    ()
+        , time_    {}
+        , running_ (false)
+        , ok_      (false)
     {
     }
 
+    // A first reading, so isRunning () is right in the sketch's setup ().
     void Rtc::setup ()
     {
+        ok_      = false;
+        running_ = false;
+        time_    = {};
+
         if (i2c::begin ())
         {
-            ok_ = i2c::present (Address);
+            read ();
         }
     }
 
-    DateTime Rtc::now ()
+    void Rtc::update (Millis now)
+    {
+        if (read_.beat (now, ReadPeriod))
+        {
+            read ();
+        }
+    }
+
+    DateTime Rtc::now () const
+    {
+        return time_;
+    }
+
+    void Rtc::read ()
     {
         uint8_t registers [7];
 
@@ -109,16 +136,19 @@ namespace adk {
 
         if (!ok_)
         {
-            return {};
+            time_    = {};
+            running_ = false;
+            return;
         }
 
         // The top bit of the month is a DS3231's century flag.
-        return {static_cast<uint16_t> (2000 + fromBcd (registers[6])),
-                fromBcd (registers[5] & 0x1F),
-                fromBcd (registers[4] & 0x3F),
-                hourOf  (registers[2]),
-                fromBcd (registers[1] & 0x7F),
-                fromBcd (registers[0] & 0x7F)};
+        time_    = {static_cast<uint16_t> (2000 + fromBcd (registers[6])),
+                    fromBcd (registers[5] & 0x1F),
+                    fromBcd (registers[4] & 0x3F),
+                    hourOf  (registers[2]),
+                    fromBcd (registers[1] & 0x7F),
+                    fromBcd (registers[0] & 0x7F)};
+        running_ = !(registers[0] & ClockHalt);
     }
 
     void Rtc::set (DateTime time)
@@ -135,14 +165,17 @@ namespace adk {
                                       toBcd     (static_cast<uint8_t> (time.year % 100))};
 
         ok_ = i2c::write (Address, registers, sizeof registers);
+
+        if (ok_)
+        {
+            time_    = time;
+            running_ = true;
+        }
     }
 
-    bool Rtc::isRunning ()
+    bool Rtc::isRunning () const
     {
-        uint8_t seconds = ClockHalt;
-
-        ok_ = i2c::read (Address, Seconds, &seconds, 1);
-        return ok_ && !(seconds & ClockHalt);
+        return ok_ && running_;
     }
 
     bool Rtc::ok () const

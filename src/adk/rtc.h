@@ -1,6 +1,7 @@
 #pragma once
 
 #include "object.h"
+#include "timing.h"
 
 #include <Arduino.h>
 
@@ -32,31 +33,41 @@ namespace adk {
     // The chip answers at I2C address 0x68, as does an MPU-6050 unless its
     // AD0 pin is raised. A missing chip is not a pin fault: the sketch runs,
     // and ok () is false.
+    //
+    // The clock reads the chip at setup () and then ten times a second, in
+    // update (), each a transfer of about 1 ms. now () and isRunning () give
+    // the latest reading, so they may be asked as often as a sketch likes.
     struct Rtc : Object
     {
         Rtc ();
 
-        // Read the date and time from the chip, a transfer of about 1 ms, so
-        // read it once per loop at most. All zeros if the chip does not
-        // answer.
-        DateTime now ();
+        // The date and time, as of the latest reading: no more than a tenth
+        // of a second old while loop () keeps updating. All zeros if the
+        // chip did not answer.
+        DateTime now () const;
 
-        // Set the date and time, for years 2000-2099. This also starts a
-        // halted clock.
+        // Set the date and time, for years 2000-2099, at once. This also
+        // starts a halted clock, and now () gives the new time straight away.
         void set (DateTime time);
 
         // False when the clock is halted: a brand-new chip, or one whose cell
         // went flat. A DS3231 cannot halt, so it always reports running.
-        bool isRunning ();
+        bool isRunning () const;
 
-        // The chip answered the last time it was asked, at setup or since.
+        // The chip answered when it was last read or set.
         bool ok () const;
 
       protected:
-        void setup () override;
+        void setup  () override;
+        void update (Millis now) override;
 
       private:
-        bool ok_;
+        void read ();
+
+        StartTime read_;
+        DateTime  time_;
+        bool      running_;
+        bool      ok_;
     };
 
     // Parse a date and time written as __DATE__ ("Sep 24 2026") and __TIME__
