@@ -87,8 +87,9 @@ degrees from it. Between those points, a tiny wobble changes nothing.
     before you change any wiring. Board A's power module comes off. Board
     B's stays beside the board as in Lesson 51, never plugged into it, both
     its jumpers **off**, its black wire from **GND** to the bottom − rail by
-    column 42, and its red wire to the bottom + rail by column 42, but now
-    from its **5V** pin, for the motor.
+    column 42. Its orange wire from the **3.3V** pin comes out, and a red
+    wire goes from its **5V** pin to the bottom + rail by column 42
+    instead, for the motor.
 
 Each board keeps its LoRa modem at the bridge's home: lying below the
 breadboard under columns 24 to 29, its spring pointing down, its divider in
@@ -103,8 +104,8 @@ to take out.
     Mega's **3.3V** pin. Its RXD only ever sees the Mega's TX pin through
     the 1 kΩ, with the 2 kΩ to GND. [Safety](../../safety.md#radios) says
     why. On Board B, take the modem's VDD wire off the bottom + rail
-    before you move the power module's red wire to its **5V** pin, so the
-    modem never sees 5 V.
+    before you swap the power module's orange wire for a red one on its
+    **5V** pin, so the modem never sees 5 V.
 
 ### Board A: the knob
 
