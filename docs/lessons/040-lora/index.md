@@ -118,7 +118,7 @@ Keep the screen and the button from Lesson 39 just as they are, with the
 Mega's GND and 5V wires, and take everything else off: the clock module, the
 rotary encoder, the FM radio and the volume knob. The power module lies
 beside the board, as in Lesson 36, its black wire from **GND** to the
-bottom − rail by column 42, but this time its red wire comes from its
+bottom − rail by column 42, but this time an orange wire comes from its
 **3.3V** pin to the bottom + rail by column 42: the module feeds only the
 bottom rails, at 3.3 V, for the modems, and the Mega's 5V still feeds the
 screen on the top rails.

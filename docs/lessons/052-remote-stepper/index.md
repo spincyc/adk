@@ -89,7 +89,7 @@ degrees from it. Between those points, a tiny wobble changes nothing.
 Each board keeps its LoRa modem at the bridge's home: lying below the
 breadboard under columns 24 to 29, its spring pointing down, its divider in
 column 28 and its VDD fed from the Mega's 3.3V pin. On Board B, the
-modem's red wire to the bottom + rail by column 29 comes off, and its VDD
+modem's orange wire to the bottom + rail by column 29 comes off, and its VDD
 goes back to the Mega's 3.3V pin: without the card reader, that pin has
 enough for it. The steps begin with what to keep from Lesson 51 and what
 to take out.

@@ -138,17 +138,19 @@ height are what to expect. With a meter, set DC volts, black lead in
 **COM** and red lead in **V**, leave the black probe on GND, and touch the
 red probe to those two strips in turn. Keep the metal tips apart.
 
-1. **Set the knob.** Plug in USB. As built, nothing draws current from
-   the wiper: the op-amp's + input takes almost none. Turn the knob until
-   the wiper reads about **2.0 V**, then leave it there. The output
-   should read about 2.0 V too. Note the A0 number the sketch prints;
-   it should be near **410**.
+1. **Set the knob.** Plug in USB, upload this investigation's sketch, and
+   open **Tools → Serial Monitor** at **9600** baud: it prints the knob's
+   A0 reading ten times a second. As built, nothing draws current from the
+   wiper: the op-amp's + input takes almost none. Turn the knob until the
+   wiper reads about **2.0 V**, then leave it there. The output should
+   read about 2.0 V too. Note the A0 number the sketch prints; it should
+   be near **410**.
 2. **Load the knob directly.** Unplug USB. Move only the **b15** end of
-   the blue load wire to **c40**, a free hole in the wiper's strip. The
-   1 kΩ load now hangs straight on the knob. Plug in USB without touching
-   the knob. The wiper should drop to about **0.6 V**, and A0 to about
-   **120**: the knob's own resistance cannot hold its voltage while 1 kΩ
-   draws current from it.
+   the load wire (the one from b15 to j28) to **c40**, a free hole in the
+   wiper's strip. The 1 kΩ load now hangs straight on the knob. Plug in
+   USB without touching the knob. The wiper should drop to about
+   **0.6 V**, and A0 to about **120**: the knob's own resistance cannot hold its
+   voltage while 1 kΩ draws current from it.
 3. **Load the follower.** Unplug USB and put that end back in **b15**.
    Plug in USB. The wiper returns to about 2.0 V, and the output, now
    feeding the same 1 kΩ load, should read about **2.0 V** as well.
