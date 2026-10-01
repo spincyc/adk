@@ -36,7 +36,7 @@ changing anything:
   servo runs from a pin, every LED has a resistor, the RFID reader gets 3.3 V.
 - **Say what is verified.** Host tests and compiling are not a working
   circuit. Never claim a lesson or part works on hardware unless someone has
-  built it and recorded that they did.
+  built it and recorded that they did, in `docs/builds.md`.
 - **No personal information.** Commits use the repository's configured
   identity, ADK Project with the GitHub no-reply address. Never add a
   person's name, email address or home directory to a file or commit.
