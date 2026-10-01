@@ -2,7 +2,7 @@
 lesson: 40
 promise: Send messages from one LoRa modem to another, and see how strong each one arrives.
 time: 60 minutes
-level: 2
+level: 3
 parts:
   - The screen and button from Lesson 39, wired as before
   - Two REYAX RYLR896 LoRa modems (add-on, not in the kit)
@@ -76,24 +76,14 @@ other's way.
 **Signal strength in dBm.** Modem B says how strong each message arrived,
 in **dBm**: decibels compared with one milliwatt. Every 10 dBm down is ten
 times weaker, and what arrives is always far less than a milliwatt, so the
-numbers are negative: about −40 across a room, and −120 at the edge of
-range.
+numbers are negative: about −40 across a room, and about −130 at the edge
+of range.
 
-<p class="formula">−40 dBm to −120 dBm = 8 steps of 10 dB ≈ 100,000,000 times weaker</p>
+<p class="formula">−40 dBm to −130 dBm = 9 steps of 10 dB ≈ 1,000,000,000 times weaker</p>
 
 It also gives a **margin**: how far the signal stands above the noise, in
 dB. Most radios need a margin well above 0; LoRa's chirps can still be heard
 down to about −15.
-
-**3.3 V.** The modems work on 3.3 V, like the FM radio and the little
-transmitter in Lessons 37 and 38. Each draws up to about 50 mA while it
-sends, by REYAX's datasheet, about as much as the Mega's 3.3V pin can give
-at all, so the modems take their power from the power module's **3.3V**
-pin.
-The Mega's TX pins reach them through a divider, as the transmitter's DAT
-did in Lesson 38:
-
-<p class="formula">RXD = 5 V × <span class="fraction"><span>2 kΩ</span><span>1 kΩ + 2 kΩ</span></span> ≈ 3.3 V</p>
 
 !!! question "Predict"
     The sketch sends to address 2, modem B. Once it works, you'll change
@@ -123,6 +113,14 @@ bottom − rail by column 42, but this time an orange wire comes from its
 **3.3V** pin to the bottom + rail by column 42: the module feeds only the
 bottom rails, at 3.3 V, for the modems, and the Mega's 5V still feeds the
 screen on the top rails.
+
+The modems work on 3.3 V, like the FM radio and the little transmitter in
+Lessons 37 and 38. Each draws up to about 50 mA while it sends, by REYAX's
+datasheet, about as much as the Mega's 3.3V pin can give at all: that's
+why they take their power from the power module. The Mega's TX pins reach
+them through a divider, as the transmitter's DAT did in Lesson 38:
+
+<p class="formula">RXD = 5 V × <span class="fraction"><span>2 kΩ</span><span>1 kΩ + 2 kΩ</span></span> ≈ 3.3 V</p>
 
 The modems stand below the board, past the button, their springs pointing
 down and away: modem B first, then modem A, so their wires meet the Mega's
@@ -279,6 +277,10 @@ means everyone. Put the 2 back when you're done.
     what noise gets wrong. That's where the thousand bits a second come
     from: slow, but hard to drown out.
 
+    The modem's own hiss across that 125 kHz band is about −117 dBm, so a
+    margin of −15 dB is a signal of about −132 dBm: the weakest the radio
+    chip inside can hear at these settings, by Semtech's datasheet.
+
 ## Make it yours
 
 1. **A kilometer.** The real test needs a second Mega, perhaps a friend's.
@@ -286,7 +288,7 @@ means everyone. Put the 2 back when you're done.
    its own on a 9 V battery, wired as this one is, and run this same sketch
    on both: each Mega ignores the modem it doesn't have. Power the far one
    from a USB power bank, and walk away with it, watching the signal fall.
-   Near −120 dBm, with the margin near −15, the messages stop. Outdoors,
+   Near −130 dBm, with the margin near −15, the messages stop. Outdoors,
    with nothing in the way, that can be a kilometer or more.
 2. **Got it.** Make modem B answer: when a message arrives, send
    `Got it` back to address 1 with `modemB.send (1, "Got it")`, and show
@@ -296,8 +298,8 @@ means everyone. Put the 2 back when you're done.
    `adk::LoraModem modemA {Serial1, 1, {.network = 12}};`, and the same
    for B. A pair on network 6 next door won't hear you, nor you them.
 4. **A signal bar.** Show the signal as a bar of blocks on the bottom row,
-   as the FM radio did in Lesson 37: none at −120 dBm and sixteen at −24,
-   with `min ((modemB.signal () + 120) / 6, 16)` blocks, so the bar can't
+   as the FM radio did in Lesson 37: none at −130 dBm and sixteen at −34,
+   with `min ((modemB.signal () + 130) / 6, 16)` blocks, so the bar can't
    run past the end of the row.
 
 ## Measure it
