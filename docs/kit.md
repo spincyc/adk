@@ -6,7 +6,7 @@ Modules Kit**; those are marked below and in each lesson's parts list. The
 drawings show that kit's black boards, as its first two versions have them;
 the blue boards of its third version carry the same parts, so check each
 one’s printed pin names. Lessons 28, 30 and 50 also need the I2C level
-shifter below. [What to buy](#what-to-buy) adds up each path's parts, with
+shifter below. [What to buy](buy.md) adds up each path's parts, with
 rough costs.
 
 ## The parts
@@ -49,15 +49,12 @@ rough costs.
 
 ## Other equipment
 
-Some lessons need things that don't go on the breadboard. Costs are rough
-US dollar prices, checked in 2026.
-
-| Equipment | Used for | Rough cost |
-|---|---|---|
-| A digital multimeter that reads DC volts | The *Measure it* section that ends most project lessons, which you can skip without one; the electricity path from E02 on | US$15–35 |
-| A small screwdriver | The relay's screw terminals, in Lessons 35 and 53 | US$2–5 |
-| A soldering iron, its stand and lead-free solder | Header pins on add-on boards that arrive without them fitted: the level shifter (Lesson 28), the FM radio board (Lesson 37), some 433 MHz modules (Lesson 38) and a Heltec board (Lesson 42). Buy them with pins fitted if you can, or ask someone experienced, and read [Soldering](safety.md#soldering) first | US$20–40 |
-| The electricity path's extra parts and instruments | Capacitors, an inductor, logic and amplifier chips, and for E11, E13–E16 and E18 a battery-powered scope and signal generator: the syllabus's [equipment gates](electricity/index.md#equipment-gates) list them module by module | See [What to buy](#what-to-buy) |
+Some lessons need things that don't go on the breadboard: a multimeter for
+the *Measure it* sections and the electricity path, a small screwdriver
+for the relay, a soldering iron for a few add-on boards' header pins, and,
+for the electricity path's scope extension, an oscilloscope and a signal
+generator. [What to buy](buy.md) says what each must do, with models and
+each path's shopping list.
 
 ## I2C level shifter
 
@@ -115,57 +112,6 @@ need a second of each thing the other board uses:
 
 Each board's page says what it needs. A second Elegoo kit covers all of
 Board B's parts.
-
-## What to buy
-
-Each path's shopping list, with rough US dollar prices checked in 2026.
-Prices vary by shop and country, and postage is extra. ADK sells nothing
-and earns nothing from any shop.
-
-### Project path, Lessons 1 to 36
-
-| Qty | Item | Rough cost |
-|---|---|---|
-| 1 | Elegoo Mega 2560 Most Complete Starter Kit: the Mega, USB cable, breadboard, parts, power module, 9 V adapter and 9 V battery | US$55–70 |
-| 1 | Elegoo 37 in 1 Sensor Modules Kit, for the modules marked *(37 in 1)* in [the parts](#the-parts) | US$30–40 |
-| 1 | BSS138 I2C level shifter with its headers fitted, such as Adafruit 757, for Lessons 28, 30 and 50 | US$4–8 |
-| 1 | Small screwdriver | US$2–5 |
-| 1 | Digital multimeter, for *Measure it* (optional) | US$15–35 |
-| | **About** | **US$90–160** |
-
-### Radio arcs, Lessons 37 to 42
-
-| Qty | Item | Rough cost |
-|---|---|---|
-| 1 set | Each of the [add-on radios](#add-on-radios), with aerials | US$105–160 |
-| | Without Lesson 41's E32 modules, where they need a license | US$90–135 |
-| | Without Lesson 42's Heltec boards | US$50–100 |
-| | Without either | US$40–75 |
-
-### Two boards, Lessons 43 to 55
-
-Besides the pair of RYLR896 modems from Lesson 40:
-
-| Qty | Item | Rough cost |
-|---|---|---|
-| 1 | A second Elegoo Mega 2560 Most Complete Starter Kit, which covers all of Board B's parts | US$55–70 |
-| | *or* a second Mega 2560 (a compatible board costs less than an Arduino one), USB cable and breadboard, a second breadboard power module for Lesson 51, and a second MAX7219 matrix, joystick and passive buzzer for Lessons 54 and 55 | US$40–75 |
-| 1–2 | USB power banks, or a long USB cable, to put the boards in different rooms | US$10–25 |
-
-### Electricity path, E01 to E24
-
-| Qty | Item | Rough cost |
-|---|---|---|
-| 1 | Elegoo Mega 2560 Most Complete Starter Kit, the same as the project path's | US$55–70 |
-| 1 | Digital multimeter with DC volts, from E02 on | US$15–35 |
-| 1 set | The extra parts in each module's [equipment gate](electricity/index.md#equipment-gates): capacitors, a 100 mH inductor, an MCP6002, a 74HC00 and a 74HC14, a 10 Ω and two 100 kΩ resistors | US$10–20 |
-| | **About** | **US$80–125** |
-
-### Scope extension, for E11, E13 to E16 and E18
-
-| Qty | Item | Rough cost |
-|---|---|---|
-| 1 | A battery-powered two-channel oscilloscope and a battery-powered, floating signal generator, as the [syllabus](electricity/index.md#equipment-gates) describes them; some handheld scopes have both | US$60–150 |
 
 ## Home pins
 

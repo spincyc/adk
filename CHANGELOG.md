@@ -36,6 +36,12 @@
   on one ends with a link to it, and the law's page lists every lesson
   that does. The glossary links to them and gains charge, forward voltage,
   Kirchhoff's laws and power.
+- **What to buy.** One page for everything beyond the kit, with each
+  path's shopping list and the meter, scope and generator, and tools to
+  look for: what each must do, models that meet it by their makers'
+  specifications, and searches for them at Amazon and other shops. Links
+  to shops must be searches, never listings or affiliate links, which
+  `make site` checks.
 - **Electricity.** Every investigation has the same sections and a change
   to try; E05, E10, E18, E21 and E24 now show their idea rather than state
   it; E07, E09, E10, E11 and E13 have schematics.

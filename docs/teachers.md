@@ -57,7 +57,7 @@ needs beyond the kit.
 
 - **One kit to a pair.** Two learners share a Mega, a breadboard and a kit:
   one reads the steps and checks, the other builds, and they swap each
-  lesson. [What to buy](kit.md#what-to-buy) adds up each path's parts.
+  lesson. [What to buy](buy.md) adds up each path's parts.
 - **Keep each pair's build.** Each lesson carries on from the one before:
   parts stay in their [breadboard homes](kit.md#breadboard-homes), and a
   lesson's steps say what to keep, what to take out and what to add. Store

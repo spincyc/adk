@@ -19,7 +19,7 @@ The course uses an **Arduino Mega 2560** and the parts in the Elegoo *Mega
 2560 Most Complete Starter Kit*, with a few extras from the Elegoo
 *37 in 1 Sensor Modules Kit*. [What's in the kit](kit.md) lists every part
 and the lesson that first uses it, the other equipment some lessons need,
-and [what to buy](kit.md#what-to-buy) for each path, with rough costs.
+and [what to buy](buy.md) for each path, with rough costs.
 Each lesson's own parts list says exactly what that lesson needs.
 
 Before you build anything, read [Safety](safety.md). It is short, and it

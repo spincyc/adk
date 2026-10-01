@@ -8,7 +8,10 @@ drawing's <use> and url(#...) references, a PDF's link. So this reads every
 built page and fails on a link within the site to a file that isn't there,
 a #fragment that names no element of its page, or an id two elements
 share, where a link or a drawing could find the wrong one. Links to other
-sites are left to them. Lessons' PDFs are printed after the site is built,
+sites are left to them, but for shops: ADK sells nothing and earns nothing
+from any shop, so a link to Amazon or AliExpress must be a search for a
+named model, which outlasts any one listing, and no link may carry an
+affiliate's tag or go through a link shortener. Lessons' PDFs are printed after the site is built,
 by make pdf, so a link to one counts when its lesson's page exists.
 """
 
@@ -18,7 +21,7 @@ import sys
 from concurrent.futures import ProcessPoolExecutor
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import unquote, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 sys.dont_write_bytecode = True
 
@@ -29,6 +32,9 @@ SITE_PATH = urlsplit (SITE_URL).path        # "/adk/", where GitHub Pages serves
 LINKS     = {"a": "href", "area": "href", "link": "href", "img": "src", "script": "src",
              "source": "src", "iframe": "src", "use": "href", "image": "href"}
 URL_REF   = re.compile (r"url\(\s*['\"]?#([^)'\"\s]+)")
+SHOPS     = re.compile (r"(^|\.)(amazon|aliexpress)\.[a-z.]+$")
+SHORTENED = {"amzn.to", "amzn.eu", "a.co", "s.click.aliexpress.com", "bit.ly", "tinyurl.com"}
+TAGS      = {"tag", "ref", "aff", "aff_id", "aff_fcid", "affiliate", "linkcode", "ascsubtag"}
 
 
 class Page (HTMLParser):
@@ -86,6 +92,23 @@ def target (site, page, link):
     return path, unquote (parts.fragment)
 
 
+# Why a link to another site breaks the rule for shops, or None.
+def shop_problem (link):
+    parts = urlsplit (link)
+    host = (parts.hostname or "").removeprefix ("www.")
+    if host in SHORTENED:
+        return "goes through a link shortener"
+    shop = SHOPS.search (host)
+    keys = {key.lower () for key in parse_qs (parts.query)}
+    if (TAGS & keys if shop else {key for key in keys if key.startswith ("aff")}):
+        return "carries an affiliate's tag"
+    if shop and shop[2] == "amazon" and not (parts.path == "/s" and "k" in parse_qs (parts.query)):
+        return "is a listing, not a search (use https://www.amazon.com/s?k=...)"
+    if shop and shop[2] == "aliexpress" and not parts.path.startswith (("/w/", "/wholesale")):
+        return "is a listing, not a search"
+    return None
+
+
 def problems (site, pages):
     for path, (ids, twice, links) in pages.items ():
         where = path.relative_to (site)
@@ -94,6 +117,9 @@ def problems (site, pages):
         for link in dict.fromkeys (links):
             found = target (site, path, link)
             if found is None:
+                why = shop_problem (link)
+                if why:
+                    yield f"{where}: {link} {why}"
                 continue
             file, fragment = found
             printed = file.parent == site / "pdf" and file.suffix == ".pdf" and \

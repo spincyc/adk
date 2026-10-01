@@ -44,7 +44,7 @@ states each law these investigations measure, once you have measured it.
 The [ADK starter kit](../kit.md) has the Mega, breadboard, wires, LEDs,
 buttons, 220 Ω/1 kΩ/2 kΩ/10 kΩ resistors, potentiometer, S8050 and
 1N4007. Add a digital multimeter with DC volts for the measured route.
-[What to buy](../kit.md#what-to-buy) turns this table into a shopping list
+[What to buy](../buy.md) turns this table into a shopping list
 for each path. Check each module's extra parts before starting it:
 
 | Module | Investigations | Equipment beyond the kit and DC voltmeter |
@@ -63,7 +63,9 @@ sampling at 1 MS/s or more, with AC coupling or vertical offset, and a
 **battery-powered, floating waveform generator** with adjustable 0–4 V
 output, sine and square waves from 100 Hz to 1 kHz, and at least 5 mA
 output. A handheld two-channel scope with a built-in generator fits, if
-its generator can set both amplitude and offset. Join the generator's
+its generator can set both amplitude and offset; none checked for
+[What to buy](../buy.md#generator) reaches 4 V, so it suggests a scope
+and a separate generator. Join the generator's
 signal ground to circuit ground. Keep its output off the Mega's USB +
 rail and all Mega inputs. A scope alone is optional in E12, E17 and E23.
 The [scope and generator primer](skills.md#scope-and-generator) explains

@@ -19,7 +19,7 @@ which keeps only one 220 Ω resistor from it. The last four arcs, and
 Lesson 55, join [two boards](kit.md#two-boards): two Megas that share what
 their sensors see over a LoRa radio, so a dial in one room turns a servo
 in another. They need a second Mega and a second set of the parts each board
-uses. [What to buy](kit.md#what-to-buy) adds up each path.
+uses. [What to buy](buy.md) adds up each path.
 
 !!! note "Not yet built on a real bench"
     Every sketch compiles and is checked against its drawing, but nobody
