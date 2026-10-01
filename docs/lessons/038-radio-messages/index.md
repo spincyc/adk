@@ -115,6 +115,12 @@ tests why a divider's output depends on what it drives.
     5V, and its DAT only ever sees pin 46 through the 1 kΩ, with the 2 kΩ to
     GND. The receiver's VCC takes 5 V.
 
+!!! warning "Soldered pins only"
+    Each module's pins must be soldered to its board. Pins that are only
+    pushed through the holes don't make a connection, and the module will
+    stay silent. If yours came loose, ask someone who solders to fix them
+    before you start.
+
 Keep the screen from Lesson 37 as it is, and one of the short black
 jumpers down to the − rail: the radio's, from f33, which now takes the
 receiver's GND. Take everything else off. The button goes at its home near
