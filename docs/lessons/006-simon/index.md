@@ -60,9 +60,6 @@ a ten-step sequence takes
 
 <p class="formula">10 × (400 ms + 150 ms) = 5500 ms = 5.5 seconds</p>
 
-If you want to see a circuit remember a state without a program, try
-[E20: Remember one bit](../075-set-reset-latch/index.md).
-
 !!! question "Predict"
     Each step can be any of four colors. How many different ten-step
     sequences could Simon choose? About forty? About a thousand? More than a
@@ -307,3 +304,10 @@ What the numbers tell you:
        Letting go only counts for the key that is `held`.
     3. `&&` stops at the first half that is false. With `held` at -1 it
        stops there, so `keys[-1]`, which doesn't exist, is never looked at.
+
+!!! tip "Go deeper"
+    [E20: Remember one bit](../075-set-reset-latch/index.md), in the
+    electricity course, builds a circuit that remembers a state, as Simon's
+    sketch remembers its steps, with no program at all. Beyond the kit, it
+    needs a 74HC00 logic chip, the one [E19](../074-nand-logic/index.md)
+    starts with: the [equipment gates](../../electricity/index.md#equipment-gates) list it.

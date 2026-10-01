@@ -53,11 +53,6 @@ total minus the time counted. To catch the moment it reaches zero, the
 sketch also sets an `adk::Timer`, Lesson 3's countdown, for the time left
 whenever the kitchen timer starts. Its `expired ()` says when.
 
-Compare a software timer with a changing voltage in
-[E07–E08](../../electricity/index.md#3-stored-charge-and-one-way-paths),
-or with a circuit that ticks on its own in
-[E21: Make a clock tick](../076-schmitt-clock/index.md).
-
 !!! question "Predict"
     You start the stopwatch, stop it after 3 seconds, wait 10 seconds, and
     start it again. What will it show 2 seconds later? Write down your
@@ -275,3 +270,11 @@ What the numbers tell you:
        starts it, *Running* pauses it, and *Done* resets it.
     3. The time left, `total - time`, while there is some, and 0 once the
        time is up. That way a timer never shows less than zero.
+
+!!! tip "Go deeper"
+    The electricity course keeps time without a program.
+    [E07–E08](../../electricity/index.md#3-stored-charge-and-one-way-paths)
+    time a capacitor's changing voltage with a multimeter and a stopwatch,
+    and [E21: Make a clock tick](../076-schmitt-clock/index.md) builds a
+    circuit that ticks on its own. Beyond the kit, they need a 1000 µF
+    capacitor, and E21 a 74HC14 logic chip: the [equipment gates](../../electricity/index.md#equipment-gates) list them.

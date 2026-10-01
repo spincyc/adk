@@ -66,10 +66,6 @@ is an `adk::Note`, such as `{adk::note::e4, 400}`: E above middle C, for
 400 ms. A whole tune is a list of them, and `speaker.play (tune)` plays it
 while your sketch carries on with other things.
 
-For a closer look at changing signals, the optional scope investigations
-[E13–E15](../../electricity/index.md#5-alternating-signals) show their
-waveforms and what a filter does to them.
-
 !!! question "Predict"
     The C key plays middle C, `c4`, at 262 Hz, and the G key plays 392 Hz.
     The next C up, `c5`, is 523 Hz. If the C key played `c5` instead, would
@@ -287,3 +283,11 @@ What the numbers tell you:
     3. `sounding` now holds E's pitch, and the sketch only stops the speaker
        when the key you let go of is the one sounding
        (`key.pitch == sounding`). C doesn't match, so E plays on.
+
+!!! tip "Go deeper"
+    The electricity course's
+    [E13–E15](../../electricity/index.md#5-alternating-signals) show
+    changing signals like this lesson's tones as waveforms, and what a
+    filter does to them. Beyond the kit, they need a signal generator, a
+    two-channel oscilloscope and a film capacitor: the [equipment gates](../../electricity/index.md#equipment-gates) list
+    them.

@@ -58,10 +58,6 @@ for you to see but not for the Mega, and hands shake. A **smoother** calms
 them: each new reading only moves the value an eighth of the way toward
 itself, so a single odd reading barely nudges the bar.
 
-The optional [E16–E17](../../electricity/index.md#6-gain-feedback-and-clean-power)
-investigations show how a circuit can change or follow a sensor voltage
-before the Mega reads it.
-
 !!! question "Predict"
     What if you swapped the photoresistor and the 10 kΩ resistor, so the
     10 kΩ went to 5 V and the photoresistor to GND? Would the bar still
@@ -271,3 +267,11 @@ What the numbers tell you:
     3. `map ()` would hand back 6 or more for a level that bright, but
        `constrain ()` keeps the answer between 0 and 5, so the bar just
        stays full.
+
+!!! tip "Go deeper"
+    The electricity course's
+    [E16–E17](../../electricity/index.md#6-gain-feedback-and-clean-power)
+    show how a circuit can change or follow a sensor's voltage before the
+    Mega reads it. Beyond the kit, they need an MCP6002 amplifier chip and
+    capacitors, and E16 a signal generator and an oscilloscope; E17 can
+    make do with a multimeter. The [equipment gates](../../electricity/index.md#equipment-gates) list them.

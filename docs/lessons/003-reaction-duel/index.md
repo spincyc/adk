@@ -65,11 +65,6 @@ A diode across the buzzer catches a voltage spike when it switches off. In [Less
 you'll meet its cousin, the passive buzzer, which can play any note but needs
 a resistor and more help from the Mega.
 
-To test the buzzer's supporting parts separately, try
-[E09: One-way diode](../064-one-way-diode/index.md),
-[E10: Control with a transistor](../065-control-with-a-transistor/index.md)
-and [E12: Give a coil a safe path](../067-coil-diode/index.md).
-
 !!! question "Predict"
     Most people react faster to a sound than to a light. Before you play,
     guess your reaction time in milliseconds. Is it nearer 100, 250, or 500?
@@ -303,3 +298,10 @@ What the numbers tell you:
        to GND. Pin 12 only sends a small control current to the
        transistor's base, because the buzzer can need more than a pin
        should give.
+
+!!! tip "Go deeper"
+    The electricity course tries the buzzer driver's parts one at a time:
+    [E09: One-way diode](../064-one-way-diode/index.md),
+    [E10: Control with a transistor](../065-control-with-a-transistor/index.md)
+    and [E12: Give a coil a safe path](../067-coil-diode/index.md). They need
+    only the kit's parts, and E12 a multimeter too.
