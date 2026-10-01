@@ -54,7 +54,7 @@ for each path. Check each module's extra parts before starting it:
 | 4. Switches and coils | E10–E12 | E10 and E12 use kit parts. E11 needs a 100 mH inductor rated at least 10 mA, generator and two-channel scope. |
 | 5. Alternating signals | E13–E15 | 1 µF nonpolar film capacitor, generator and two-channel scope. |
 | 6. Gain and power | E16–E18 | E16: MCP6002 DIP, 100 nF ceramic and 10 µF electrolytic capacitors rated at least 10 V, generator and scope; E17 reuses that chip circuit, which its page shows how to build without a generator, and may use a DC voltmeter instead of the scope; E18: 10 Ω resistor, 100 µF and 100 nF capacitors, generator and scope. |
-| 7. Logic and memory | E19–E21 | E19–E20: 74HC00 DIP and 100 nF capacitor; E21: 74HC14 DIP, 2 × 100 kΩ resistors, 10 µF electrolytic and 100 nF ceramic capacitors. |
+| 7. Logic and memory | E19–E21 | E19–E20: 74HC00 DIP and 100 nF capacitor; E21: 74HC14 DIP, 2 × 100 kΩ resistors, 10 µF electrolytic and 100 nF ceramic capacitors, a stopwatch. |
 | 8. Mega signals | E22–E24 | E22 and E24 use kit parts; E23 adds a 100 µF electrolytic capacitor rated at least 10 V. Its scope comparison is optional. |
 
 For E11, E13–E16 and E18, use a **battery-powered two-channel oscilloscope**
@@ -394,10 +394,14 @@ the state in
 **Idea:** A charging capacitor and a threshold can make a repeating clock.
 **Before:** E08, E20. **Use:** E21's USB 5 V build: 74HC14,
 100 kΩ feedback resistor, 10 µF capacitor with − at GND, red LED with
-1 kΩ resistor, 100 nF supply capacitor. Tie unused inputs to GND.
-**Predict, do, see:** Feed one inverter's output back to its input through
-100 kΩ and put the capacitor from input to GND. The LED on the output
-blinks; change to two 100 kΩ resistors in series and it blinks more slowly.
+1 kΩ resistor, 100 nF supply capacitor, stopwatch and meter. Tie unused
+inputs to GND, and take out E20's wires before the new chip goes in: its
+pins do different jobs. **Predict, do, see:** Feed one inverter's output
+back to its input through 100 kΩ and put the capacitor from input to GND.
+With R × C = 1 s, predict the pace; the LED on the output blinks about
+once every 0.8–1.1 s. Change to two 100 kΩ resistors in series and it
+blinks about half as fast, slowly enough for a meter on the capacitor to
+follow it between about 1.7 V and 2.7 V, the chip's two thresholds.
 **ADK connection:** A physical cousin of the timed events in
 [Lesson 12](../lessons/012-stopwatch/index.md).
 

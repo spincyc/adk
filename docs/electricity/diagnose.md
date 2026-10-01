@@ -21,7 +21,7 @@ The [linked lesson](index.md) gives its own hole-by-hole checks.
 | LED stays dark | Unplug; trace supply → resistor → LED → GND and check the LED's short leg. | An open path or reversed LED from a wrong current prediction. |
 | A voltage is near 0 V when you expected a middle value | Unplug; check the probe strip and the wires to 5 V and GND. | A misplaced probe or missing supply from a divider error. |
 | A voltage is near 5 V when you expected a middle value | Unplug; check the path from that node through its lower resistor to GND. | A missing return from a changed resistor ratio. |
-| A meter number alternates | Wait for the circuit to settle and press the probes firmly. If the circuit switches by itself, as E21's clock does, a meter cannot follow it: read a steady point, or use a scope. | Timing or contact movement from a steady reading. |
+| A meter number alternates | Wait for the circuit to settle and press the probes firmly. If the circuit switches by itself, as E21's clock does, a meter cannot follow a fast swing such as the clock's output: read a steady point, slow the circuit, or use a scope. A swing of a second or more, such as E21's capacitor with two 100 kΩ resistors, a meter can follow. | Timing or contact movement from a steady reading. |
 | A part gets warm or smells | Unplug at once; check for a direct + to − path, bypassed resistor or reversed electrolytic capacitor. | A wiring fault that needs correction before any more measurements. |
 
 ## Checkpoint: diagnose a divider

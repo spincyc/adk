@@ -12,8 +12,10 @@ parts:
   - 2 × 100 kΩ resistors (brown, black, black, orange, brown)
   - 10 µF polarized capacitor, rated at least 10 V
   - 100 nF ceramic capacitor
-  - 16 jumper wires
+  - 14 jumper wires
   - 1 extra jumper for the slower comparison
+  - Digital multimeter with DC volts
+  - Stopwatch
 ideas:
   - An RC path and Schmitt thresholds can make a repeating clock
 ---
@@ -31,23 +33,37 @@ its sketch does not control the LED.
 
 The inverter's output feeds its input through a **100 kΩ resistor**. The
 **10 µF capacitor** joins that input to GND. Before building, predict:
-will the LED stay on, stay off, or blink when you connect USB? Write down
-your guess.
+will the LED stay on, stay off, or blink when you connect USB?
+
+The resistor and capacitor make an RC pair, as in
+[E08](../063-time-an-rc-pair/index.md): **R × C = 100 kΩ × 10 µF =
+1 second**. If the LED blinks, will one blink, on and off, take much less
+than a second, about a second, or much longer? Write down both guesses.
 
 ## Build it
 
 !!! warning "Unplug USB first"
-    Disconnect USB before touching the circuit. Put the capacitor's
-    **+ leg** at c16 and its **striped − leg** at c15. Keep the **1 kΩ
-    resistor** between the chip's output and the LED. Never connect an
-    output directly to GND.
+    Disconnect USB before touching the circuit. Put the 10 µF
+    capacitor's **+ leg** in a16 and its **striped − leg** in the bottom
+    − rail by column 16. Keep the **1 kΩ resistor** between the chip's
+    output and the LED. Never connect an output directly to GND.
+
+!!! danger "The SN74HC14N's pins do different jobs"
+    The SN74HC14N fits the same holes as E20's SN74HC00N, but several of
+    the SN74HC00N's inputs are outputs on the SN74HC14N. Take out every
+    E20 wire the steps list **before** you push the new chip in. Three of
+    them would join an SN74HC14N output to GND or to another output: the
+    black wires from **j18** and from **j20** to the top − rail, on
+    outputs 6Y (pin 12) and 5Y (pin 10), and the white wire from **a21 to
+    c17**, between outputs 3Y (pin 6) and 1Y (pin 2).
 
 Carry on from [E20](../075-set-reset-latch/index.md). The LED and
 its 1 kΩ resistor remain at their home in columns 6 and 7. Keep the
-nearby 100 nF supply capacitor and the standard Mega power wires.
-Follow the generated steps to remove the NAND chip and old button
-connections, then fit the SN74HC14N **across the middle gap with its notch
-to the left**. In the [SN74HC14 datasheet](https://www.ti.com/lit/ds/symlink/sn74hc14.pdf),
+100 nF supply capacitor on the top rails, the link between the − rails
+at column 23 and the standard Mega power wires. Follow the generated
+steps to remove the NAND chip, its wires and the buttons, then fit the
+SN74HC14N **across the middle gap with its notch to the left**. In the
+[SN74HC14 datasheet](https://www.ti.com/lit/ds/symlink/sn74hc14.pdf),
 pin 1 is the first inverter's input, pin 2 its output, pin 14 VCC and
 pin 7 GND. The five unused inputs go to GND; their outputs stay open.
 
@@ -117,23 +133,37 @@ The finished circuit's connections are:
 
 <!-- connections -->
 
-## Watch the clock
+## Try it
 
 Check the chip's notch, the capacitor stripe, the 100 nF supply
 capacitor and the LED's 1 kΩ resistor. Plug in USB and watch the red LED.
-Record whether it blinks, stays lit or stays dark. The exact blink pace
-depends on the parts and the chip.
+Record whether it blinks, stays lit or stays dark. If it blinks, time ten
+blinks with the stopwatch and divide by ten: that is the time for one
+blink, on and off. Expect somewhere near **0.8–1.1 seconds**; the exact
+pace depends on the parts and the chip.
 
-The SN74HC14 has two input switching thresholds. As the capacitor
-charges through the feedback resistor and reaches the upper threshold,
-the inverter changes its output. The capacitor then discharges through
-the same resistor. At the lower threshold, the output changes back. This
-repeats, making a clock without timed code.
+## Why it happens
 
-## Slow it down
+The SN74HC14 has two input switching thresholds. While the output is
+high, it charges the capacitor through the feedback resistor. When the
+capacitor reaches the upper threshold, the inverter's output goes low,
+and the capacitor discharges through the same resistor. At the lower
+threshold, the output goes high again. This repeats, making a clock
+without timed code.
+
+At 5 V the upper threshold is typically about **2.7 V** and the lower
+about **1.7 V**, though each chip differs by a few tenths of a volt.
+With R × C = 1 second, charging from 1.7 V up to 2.7 V, on its way
+toward 5 V, takes about 0.36 seconds, and falling back from 2.7 V to
+1.7 V, on its way toward 0 V, about 0.46 seconds. So one blink takes
+about **0.8 seconds**, the LED lit for the shorter part; thresholds a
+little further apart stretch it toward 1.1 seconds.
+
+## Change one thing
 
 Predict whether **two 100 kΩ resistors in series** will make the LED
-blink faster or slower. Write that down before changing anything.
+blink faster or slower, and how long one blink will take. Write that down
+before changing anything.
 
 1. **Unplug USB.** Leave the first 100 kΩ resistor in g11 and e11.
    Move only the **b11 end** of the input jumper to **b13**; its other
@@ -142,29 +172,42 @@ blink faster or slower. Write that down before changing anything.
    to e13**. Add one jumper from **a11 to j13**. The path is now chip
    output → first resistor → second resistor → chip input. Leave both
    capacitors and the LED branch in place.
-3. Check that neither resistor is bypassed, then reconnect USB. Watch
-   for a slower blink and record what you see. Unplug again before
-   restoring the one-resistor build shown above.
+3. Check that neither resistor is bypassed, then reconnect USB. Time ten
+   blinks again.
+4. The slower swing gives a meter time to follow the capacitor. Set the
+   meter to **DC volts (V⎓)**, black lead in **COM**, red lead in **V**.
+   Put the black probe in a free hole of the bottom − rail and the red
+   probe in **d16**, a free hole in the strip of the capacitor's + leg and
+   chip pin 1. Watch the reading for a few blinks and note the highest and
+   lowest numbers it reaches.
 
-| Feedback path | Your prediction | Your observation |
+<!-- measure -->
+
+| Feedback path | Predicted blink time | Measured blink time |
 |---|---|---|
-| One 100 kΩ resistor | ____ | ____ |
-| Two 100 kΩ resistors in series | ____ | ____ |
+| One 100 kΩ resistor | ____ | ____ s |
+| Two 100 kΩ resistors in series | ____ | ____ s |
 
-The second resistor makes it take longer for the capacitor to cross each
-threshold. Compare your observations with your predictions. This is the
-same RC timing idea as [E08](../063-time-an-rc-pair/index.md), now
-repeated by the inverter. It is a physical cousin of the timed events in
-[Lesson 12](../012-stopwatch/index.md).
+Twice the resistance makes R × C twice as long, so each blink should take
+about twice as long: about **1.6–2.2 seconds**. On the meter, the
+capacitor's voltage should climb to about **2.7 V**, turn, fall to about
+**1.7 V**, and turn again, in step with the LED: the turning points are
+the chip's two thresholds. A meter updates only a few times a second, so
+it may not catch the exact turning points. With one 100 kΩ resistor the
+swing comes too fast for most meters, which show only a wandering middle
+value. Unplug USB before restoring the one-resistor build shown above.
 
-## About the sketch
+This is the same RC timing idea as [E08](../063-time-an-rc-pair/index.md),
+now repeated by the inverter. It is a physical cousin of the timed events
+in [Lesson 12](../012-stopwatch/index.md).
 
-No upload is needed. The matching ADK example claims no signal pins;
-USB powers the chip, and its circuit makes the blink without code:
+## Check your result
 
-<!-- sketch -->
+Did doubling the resistance about double your blink time? Did each time
+come near your prediction? In one sentence, explain what sets how long a
+blink takes, and what sets the voltages where the capacitor turns.
 
-## If it does not blink
+## If it doesn't work
 
 Unplug USB before checking any connection.
 
@@ -172,11 +215,22 @@ Unplug USB before checking any connection.
   to 5 V and pin 7 to GND. Check the LED's long leg at b6 and short leg
   at b7.
 - **LED stays lit:** Check the 100 kΩ path from pin 2 back to pin 1.
-  The 10 µF capacitor's + leg goes in c16 and its striped − leg in c15.
+  The 10 µF capacitor's + leg goes in a16 and its striped − leg in the
+  bottom − rail by column 16.
 - **Blink does not slow:** Check that the two 100 kΩ resistors connect
   end to end through a11 to j13, with the input jumper moved to b13.
+- **The meter stays near one value:** Check the red probe is in column
+  16's lower strip with the capacitor's + leg, and that the slower,
+  two-resistor build is in place.
 - **Capacitor gets warm or smells:** Unplug at once. Check its stripe and
   both chip supply wires before reconnecting.
+
+## About the sketch
+
+No upload is needed. The matching ADK example claims no signal pins;
+USB powers the chip, and its circuit makes the blink without code:
+
+<!-- sketch -->
 
 These are expected observations from the circuit and datasheet. This
 lesson has not been recorded as tried on a physical breadboard.
