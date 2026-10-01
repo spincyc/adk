@@ -34,7 +34,7 @@ void loop ()
 {
     adk::update ();
 
-    char key = keypad.key ();
+    char key = keypad.pressedKey ();
 
     if (key >= '0' && key <= '9')
     {

@@ -105,7 +105,7 @@ same but first a period after the first update, as a sensor's readings.
 
 Asking a part for what it is already doing changes nothing, so commands such
 as `blink ()`, `beep ()`, `fadeTo ()`, `play ()`, `moveTo ()`, `tune ()` and
-`setVolume ()` may be called from every pass of `loop ()`: a lamp told to
+`volume ()` may be called from every pass of `loop ()`: a lamp told to
 blink on every pass keeps blinking in step. A different request starts
 afresh.
 

@@ -288,23 +288,23 @@ TEST (fmRadioSetsTheVolumeAndStopFallsSilent)
     adk::FmRadio radio {Sdio, Sclk, Reset};
 
     adk::setup ();
-    radio.setVolume (15);
+    radio.volume (15);
     CHECK ((chip.registers[0x05] & 0x0F) == 15);
-    radio.setVolume (40);
+    radio.volume (40);
     CHECK (radio.volume () == 15);
 
     // Turning down past silent stays silent rather than wrapping round.
-    radio.setVolume (0);
-    radio.setVolume (radio.volume () - 1);
+    radio.volume (0);
+    radio.volume (radio.volume () - 1);
     CHECK (radio.volume () == 0);
     CHECK ((chip.registers[0x05] & 0x0F) == 0);
-    radio.setVolume (256 + 3);
+    radio.volume (256 + 3);
     CHECK (radio.volume () == 15);
 
     adk::stop ();
     CHECK (!(chip.registers[0x02] & Unmute));
 
-    radio.setVolume (5);
+    radio.volume (5);
     CHECK (chip.registers[0x02] & Unmute);
     CHECK ((chip.registers[0x05] & 0x0F) == 5);
     CHECK (!chip.drivenHigh);
@@ -324,7 +324,7 @@ TEST (fmRadioLeavesAStationAloneWhenAskedForItAgain)
     {
         radio.step (0);
         radio.tune (1011);
-        radio.setVolume (8);
+        radio.volume (8);
         CHECK (!radio.isTuning ());
         arduino::advance (10);
         adk::update ();

@@ -41,6 +41,17 @@ void Led::show (bool lit)
   `rgb_led.h`. `Adk.h` is the one exception, because Arduino looks for it.
 - Name things for what they mean in the circuit, and use the same words in the
   code, the lesson, and the wiring table.
+- A method that reports an event, true or set for the one update in which
+  something happened, reads in the past tense: `wasPressed ()`,
+  `ticked ()`, `measured ()`, `turned ()`, `pressedKey ()`. One that
+  reports how things are now names the state: `isPressed ()`,
+  `heldKey ()`, `isConnected ()`.
+- A setting is set and read by one bare noun, `volume (8)` and
+  `volume ()`, as `speed ()`, `period ()` and `brightness ()` are, never
+  `setVolume ()`. A call that copies an Arduino library's, such as the
+  LCD's `setCursor ()` and `createChar ()` or the servo's
+  `writeMicroseconds ()`, keeps that library's name, so what a reader
+  learned there still works.
 
 ## Language
 

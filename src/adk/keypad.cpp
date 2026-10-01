@@ -52,7 +52,7 @@ namespace adk {
         pressed_ = held_.sample (read (), now, Debounce) && held_.stable () != NoKey;
     }
 
-    char Keypad::key () const
+    char Keypad::pressedKey () const
     {
         return pressed_ ? heldKey () : '\0';
     }

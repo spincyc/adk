@@ -21,7 +21,7 @@ namespace adk {
         Keypad (const Pin (&rows) [4], const Pin (&columns) [4]);
 
         // The key pressed in this update, or '\0': an event, once per press.
-        char key () const;
+        char pressedKey () const;
 
         // The key held down now, or '\0'.
         char heldKey   () const;

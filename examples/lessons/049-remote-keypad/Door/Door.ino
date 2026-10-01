@@ -27,7 +27,7 @@ void loop ()
 
     // A key goes only while Board B can hear it; otherwise it could
     // arrive much later, out of the blue.
-    char key = keypad.key ();
+    char key = keypad.pressedKey ();
 
     if (key != '\0' && bridge.isConnected ())
     {

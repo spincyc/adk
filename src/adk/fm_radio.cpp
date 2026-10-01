@@ -230,7 +230,7 @@ namespace adk {
         return registers_[StatusRssi] & Stereo;
     }
 
-    void FmRadio::setVolume (int volume)
+    void FmRadio::volume (int volume)
     {
         uint16_t others = registers_[SysConfig2] & 0xFFF0;
         uint16_t loud   = static_cast<uint16_t> (others | constrain (volume, 0, Loudest));

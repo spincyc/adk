@@ -137,7 +137,7 @@ void setVolume ()
     int         full  = playing ? volumeKnob.read (0, 15) : 0;
     adk::Millis faded = fadeLength - fade.remaining ();
 
-    radio.setVolume (full * faded / fadeLength);
+    radio.volume (full * faded / fadeLength);
 }
 
 // A time of day, in minutes after midnight, as hours and minutes: 07:05.

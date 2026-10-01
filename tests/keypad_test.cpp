@@ -124,7 +124,7 @@ TEST (everyKeyReadsAsPrinted)
         keys.held = Printed[typed.size ()];
         adk::update (now);
         adk::update (now + 20);
-        typed += keypad.key ();
+        typed += keypad.pressedKey ();
 
         keys.held.clear ();
         adk::update (now + 50);
@@ -146,17 +146,17 @@ TEST (keyIsDebouncedAndReportedOnce)
     keys.held = "5";
     adk::update (100);
     adk::update (119);
-    CHECK (keypad.key () == '\0');
+    CHECK (keypad.pressedKey () == '\0');
     CHECK (keypad.heldKey () == '\0');
 
     adk::update (120);
-    CHECK (keypad.key () == '5');
+    CHECK (keypad.pressedKey () == '5');
     CHECK (keypad.heldKey () == '5');
     CHECK (keypad.isPressed ('5'));
     CHECK (!keypad.isPressed ('6'));
 
     adk::update (121);
-    CHECK (keypad.key () == '\0');
+    CHECK (keypad.pressedKey () == '\0');
     CHECK (keypad.heldKey () == '5');
 
     keys.held.clear ();
@@ -166,7 +166,7 @@ TEST (keyIsDebouncedAndReportedOnce)
 
     adk::update (220);
     CHECK (keypad.heldKey () == '\0');
-    CHECK (keypad.key () == '\0');
+    CHECK (keypad.pressedKey () == '\0');
     CHECK (!keypad.isPressed ('\0'));
 }
 
@@ -184,10 +184,10 @@ TEST (aBouncingKeyRestartsTheWait)
     keys.held = "8";
     adk::update (10);
     adk::update (29);
-    CHECK (keypad.key () == '\0');
+    CHECK (keypad.pressedKey () == '\0');
 
     adk::update (30);
-    CHECK (keypad.key () == '8');
+    CHECK (keypad.pressedKey () == '8');
 }
 
 TEST (onlyOneRowIsPulledLowAtATime)
@@ -202,7 +202,7 @@ TEST (onlyOneRowIsPulledLowAtATime)
     adk::update (0);
     adk::update (20);
 
-    CHECK (keypad.key () == '1');
+    CHECK (keypad.pressedKey () == '1');
     CHECK (keys.mistakes == 0);
 
     for (adk::Pin row : Rows)
@@ -221,21 +221,21 @@ TEST (aSecondKeyWaitsForTheFirstToBeLetGo)
     keys.held = "5";
     adk::update (0);
     adk::update (20);
-    CHECK (keypad.key () == '5');
+    CHECK (keypad.pressedKey () == '5');
 
     keys.held = "51";
     adk::update (30);
     adk::update (100);
-    CHECK (keypad.key () == '\0');
+    CHECK (keypad.pressedKey () == '\0');
     CHECK (keypad.heldKey () == '5');
 
     keys.held = "1";
     adk::update (110);
     adk::update (129);
-    CHECK (keypad.key () == '\0');
+    CHECK (keypad.pressedKey () == '\0');
 
     adk::update (130);
-    CHECK (keypad.key () == '1');
+    CHECK (keypad.pressedKey () == '1');
 }
 
 TEST (aKeyHeldAtStartupIsHeldButNotPressed)
@@ -249,5 +249,5 @@ TEST (aKeyHeldAtStartupIsHeldButNotPressed)
     adk::update (50);
 
     CHECK (keypad.heldKey () == '#');
-    CHECK (keypad.key () == '\0');
+    CHECK (keypad.pressedKey () == '\0');
 }

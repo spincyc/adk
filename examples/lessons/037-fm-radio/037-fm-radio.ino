@@ -36,7 +36,7 @@ void loop ()
 
     if (tick.ticked ())
     {
-        radio.setVolume (volumeKnob.read (0, 15));
+        radio.volume (volumeKnob.read (0, 15));
         showStation ();
     }
 }
