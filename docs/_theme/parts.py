@@ -512,9 +512,32 @@ class Led (Part):
     def legs (self):
         return [("long leg (+)", self.anode), ("short leg (−)", self.cathode)]
 
+    # Its lens leans back two rows, or a little less where that leaves more
+    # of the holes in use, or a probe's, in view: at its home, the hole
+    # behind its long leg where its resistor ends shows whole beside the
+    # flange.
     def dome (self, bench):
-        (x1, y1), (x2, y2) = bench.hole_xy (self.anode), bench.hole_xy (self.cathode)
-        return (x1 + x2) / 2, min (y1, y2) - 20
+        key = (id (bench), len (bench.used), len (bench.measurements), len (bench.scope_probes))
+        if getattr (self, "_dome", (None,))[0] != key:
+            (x1, y1), (x2, y2) = bench.hole_xy (self.anode), bench.hole_xy (self.cathode)
+            # The holes a probe is put in by name; one on a pin or a rail
+            # finds a hole of its own, away from the parts.
+            probed = {point for taken in bench.measurements
+                      for point in (taken["red"], taken["black"])}
+            probed |= {point for taken in bench.scope_probes
+                       for point in (taken["tip"], taken["ground"])}
+            held = [bench.hole_xy (hole)
+                    for hole in set (bench.used) | (probed & set (bench.holes ()))
+                    if hole not in (self.anode, self.cathode)]
+
+            def hidden (lean):
+                middle = ((x1 + x2) / 2, min (y1, y2) - lean)
+                return sum (max (0.0, self.RADIUS + 1.8 - math.dist (middle, hole))
+                            for hole in held)
+
+            lean = min ((17.5, 20), key=hidden)
+            self._dome = key, ((x1 + x2) / 2, min (y1, y2) - lean)
+        return self._dome[1]
 
     # Each leg rises to the side of the dome nearer it, so they never cross.
     def feet (self, bench):
@@ -523,9 +546,22 @@ class Led (Part):
         side = -1 if (x1, y2) <= (x2, y1) else 1
         return [((x1, y1), (cx + side * 3.5, cy + 8)), ((x2, y2), (cx - side * 3.5, cy + 8))]
 
+    # Each leg as it is drawn, a run of points from its hole up under the
+    # dome. The long leg, the anode, has a knee bent outward a little above
+    # its hole, as a long leg bent to stand level with the short one, so
+    # the two legs tell + from − as the flange's flat does.
+    def bends (self, bench):
+        (hole, top), short = self.feet (bench)
+        out = -1 if hole[0] < short[0][0] else 1
+        knee = (hole[0] + (top[0] - hole[0]) * 0.4 + out * 2.6,
+                hole[1] + (top[1] - hole[1]) * 0.4)
+        return [(hole, knee, top), short]
+
     def shapes (self, bench):
         cx, cy = self.dome (bench)
-        return [("circle", cx, cy, self.RADIUS)] + [lead_shape (a, b) for a, b in self.feet (bench)]
+        return [("circle", cx, cy, self.RADIUS)] + [lead_shape (a, b)
+                                                    for leg in self.bends (bench)
+                                                    for a, b in zip (leg, leg[1:])]
 
     def labels (self, bench):
         cx, cy = self.dome (bench)
@@ -536,8 +572,9 @@ class Led (Part):
     def draw (self, pencil, bench):
         (x1, _), (x2, _) = bench.hole_xy (self.anode), bench.hole_xy (self.cathode)
         cx, cy = self.dome (bench)
-        for a, b in self.feet (bench):
-            pencil.lead (a, b)
+        for leg in self.bends (bench):
+            for a, b in zip (leg, leg[1:]):
+                pencil.lead (a, b)
         lens (pencil, cx, cy, self.TINTS[self.color], 1 if x2 > x1 else -1)
 
 
@@ -650,6 +687,11 @@ def lens (pencil, cx, cy, tint, flat):
     pencil.tint (ring, tint[0] if isinstance (tint, list) else tint, opacity=0.55)
     pencil.polyline (ring, width=0.8, closed=True, layer="top")
     pencil.dome (cx, cy, 9.6, tint)
+    # The flat, drawn firm, as the transistor's flat face is.
+    if flat:
+        edge = cx + 9.6 * flat
+        half = math.sqrt (r * r - 9.6 * 9.6)
+        pencil.line ((edge, cy - half), (edge, cy + half), width=1.4, tone=0.95, layer="top")
 
 
 def resistor_half (edge, waist=3.9, cap=4.9):
