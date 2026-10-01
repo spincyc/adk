@@ -204,9 +204,9 @@ again with its next check. That's the radio, not you.
 | The ball goes over, but never comes down on the other matrix | Wait two seconds for the bridge to send it again. If the other **L** LED is dark, that board has lost the link. |
 | The paddle moves the wrong way | Hold the joystick with its pins to your left. |
 | The picture is upside down or back to front | Turn the matrix, as Lesson 25 says, until the paddle is along the bottom. |
-| Two balls at once | Check `firstServer`: true only on Board A, false on Board B, and upload the right sketch to each. |
+| Two balls at once | Check `firstServer`: true only on Board A, false on Board B, and upload the right sketch to each. If only one board was reset after a dropout, the other may still hold a ball: press both reset buttons. |
 | The score looks wrong after a board was reset | Each board counts its own misses from when it started, so a board that restarts starts again from 0. For a new game, press both reset buttons. |
-| The ball never comes back | The other board may have been switched off with the ball, and the ball went with it. Press Board A's reset button: it starts with the ball again. |
+| The ball never comes back | The other board may have been switched off, or gone out of range, with the ball. Switch it on or bring it closer, then press both reset buttons for a new game. To practise alone with Board B off, reset Board A: it serves first. |
 | No sound | Check the buzzer's + leg is in f33, beside pin 10's wire in j33, and its 220 Ω from a33 to the − rail. |
 | The matrix shows junk | Check its wires, especially CLK on 48 and CS on 49. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |

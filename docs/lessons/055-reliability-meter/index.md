@@ -58,10 +58,13 @@ away any message that noise got into, so every message arrives whole or
 not at all. Board B sends back whatever it hears; a message lost on the
 way there, or on the way back, leaves a gap on Board A's matrix.
 
-Why 64? With five messages, one lost is 20%, and two tests in the same
-place could differ by 20% by luck alone. With 64, one lost message is
-less than 2%, so a difference between two settings of more than a few
-percent means something.
+Why 64? With five messages, one lost is 20%, so one unlucky message
+swings a test a long way. With 64, one message is less than 2%, and luck
+moves the result much less. It still moves it: at the edge, where about
+half the messages get through, two tests in the same place can differ by
+10 points or more by chance alone. So repeat a test there, and trust a
+difference between two settings only when it is bigger than about 15
+points.
 
 **Every message pays a toll.** In [Lesson 40](../040-lora/index.md) a
 LoRa modem sent each piece of a message as a chirp. Before the first
@@ -405,10 +408,11 @@ What the numbers tell you:
    give up to get them through? Why did the bridge use Quick anyway?
 
 ??? note "Answers"
-    1. With five messages, one lost is 20%, and two tests in the same
-       place can differ that much by luck alone. With 64, one lost
-       message is less than 2%, so a real difference between two settings
-       stands out.
+    1. With five messages, one lost is 20%, so one unlucky message
+       swings a test a long way. With 64, one message is less than 2%
+       and luck moves the result much less, though at the edge two tests
+       can still differ by 10 points: repeat a test there before trusting
+       a difference.
     2. It reached Board B, which lit its dot and sent it back, but the
        echo was lost on the way back to Board A, or came back after Board
        A had given up waiting for it.
