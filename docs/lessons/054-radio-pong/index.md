@@ -126,7 +126,16 @@ Open **File → Examples → Adk → lessons → 054-radio-pong → Ping** for B
 <!-- sketch A -->
 
 Board B's sketch, **lessons → 054-radio-pong → Pong**, is the same but for
-`firstServer`, which is `false` on Board B.
+`firstServer`, which is `false` on Board B. Each board's sketch has a
+folder of its own, and the Arduino IDE builds a sketch only from the
+files in its folder, so the two can't share one copy of the game: change
+one, and make the same change in the other.
+
+At 180 lines, **Ping** is longer than the 150 or so a project usually
+takes. It is a whole game: a serve, a ball that crosses to the other
+board and back and bounces off the sides and the paddle, a score, and
+sounds for each. `catchBall ()`, `moveBall ()`, `showScore ()` and
+`draw ()` each take one part of it, so read them one at a time.
 
 What's new:
 

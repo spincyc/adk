@@ -153,6 +153,12 @@ What's new:
   three readings on the top row with a `switch`, and the time of the
   latest report on the bottom row.
 
+**Indoors** is longer than the sketch of a lesson like this one usually
+is. It has five readings to fit on a two-row screen, so three pages of
+them, and two kinds of missing news to show apart: a garden gone quiet,
+and a thermometer that didn't answer. Each of those takes a few lines of
+its own.
+
 Then **File → Examples → Adk → lessons → 046-remote-weather → Garden** for
 Board B:
 

@@ -166,6 +166,12 @@ What's new:
 - `beat` ticks every 0.4 s, to rewrite the top row and, while the alarm
   sounds, beep.
 
+**Den** is longer than the sketch of a lesson like this one usually is:
+it listens for five tripwires, the remote and the bridge, and drives the
+siren and the screen. Most of its length is the list of tripwires and
+`heard ()`, which is this lesson's idea in code: only a count that rises
+is news.
+
 ## Upload it
 
 1. Upload **Den** to Board A and **Door** to Board B, and keep out of the
