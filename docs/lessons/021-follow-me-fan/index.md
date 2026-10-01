@@ -13,7 +13,7 @@ parts:
   - DC motor with its fan blade
   - 12 jumper wires
   - 6 female-to-male jumper wires, and two more to lengthen the motor's leads
-  - Sticky tape or putty, and a strip of card
+  - Sticky tape or putty, and two strips of card
 ideas:
   - Scanning with a sensor on a servo
   - Finding the nearest thing in a sweep
@@ -95,6 +95,23 @@ The sketch repeats three steps for as long as it runs:
     **GND** to the bottom − rail, both by column 42. The servo and the fan
     take their power only from the module, never from the Mega. Keep
     fingers, hair and faces clear of the fan blade whenever the power is on.
+
+!!! danger "A fan that aims at people"
+    This turret is built to point a spinning blade at the nearest person,
+    so set it up to be safe before you power it:
+
+    - **Below face height.** Stand the turret on the floor or a low stool,
+      so it aims at legs and hands, never at eyes, and never lean in to
+      look along the blade while the power is on.
+    - **A guard.** Tape a second strip of card into a ring round the
+      blade, a finger's width clear of its tips, so a finger can't reach
+      it while it spins.
+    - **A gentler top speed.** With younger children about, or until you
+      trust your guard, change the `255` in `blow ()` to `180`, so the fan
+      never runs flat out. (The numbers in *Measure it* assume `255`.)
+
+    The sketch already stops the fan when anything comes closer than 15 cm,
+    but a sensor can miss a thin hand, so don't rely on it.
 
 This is Lesson 20's fan circuit without the knob and the button, plus the
 servo and the sensor. Build it on the breadboard first, then mount the

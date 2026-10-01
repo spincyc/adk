@@ -9,7 +9,7 @@ parts:
   - "Board B: Lesson 44's Board B, with its power module, LoRa modem and servo"
   - "Board B: HC-SR04 ultrasonic sensor, L293D motor driver chip, and the DC motor with its fan blade"
   - "Board B: 4 female-to-male jumper wires, two more to lengthen the motor's leads, and 10 jumper wires"
-  - "Sticky tape or putty, and a strip of card, for the turret"
+  - "Sticky tape or putty, and two strips of card, for the turret and its guard"
 ideas:
   - A project split between two boards
   - Steering by how far a stick is pushed
@@ -109,7 +109,9 @@ of these are true:
 !!! warning "Unplug first"
     Unplug each board's USB cable, and Board B's power module adapter,
     before you wire. Keep fingers, hair and faces clear of the fan blade
-    whenever Board B's power module is on.
+    whenever Board B's power module is on. Set the turret up as Lesson 21's
+    box *A fan that aims at people* says: below face height, with a card
+    guard round the blade.
 
 !!! danger "The motors' power"
     Board B's power module stays beside its breadboard as in Lesson 44,
