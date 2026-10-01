@@ -138,8 +138,8 @@ When you are done, these are the connections your circuit makes:
 
 Before the game, check the buzzer and its transistor on their own: a
 buzzer that won't beep is much easier to puzzle out now than in the middle
-of a game. Choose **File → New**, replace everything in the new window with
-these lines, and upload them:
+of a game. Choose **File → New**, and replace everything in the new window
+with these lines:
 
 ```cpp
 // Lesson 03, first: test the beep.
@@ -167,8 +167,8 @@ void loop ()
     seconds; if not, one second. So in 12 seconds, will you count 10 beeps
     or 12?
 
-Count the beeps against a clock: about 12 in 12 seconds, each short with a
-longer quiet after it. `beep ()` starts the beep and carries straight on,
+Upload it and count the beeps against a clock: about 12 in 12 seconds,
+each short with a longer quiet after it. `beep ()` starts the beep and carries straight on,
 and ADK switches the buzzer off by itself 200 ms later, partway through the
 wait. The game counts on that: at *Go* it starts the beep and the stopwatch
 in the same instant.
