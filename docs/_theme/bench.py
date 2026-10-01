@@ -1279,6 +1279,14 @@ class Bench:
         feeds = {m for m, gives in self._sources ().items () if gives == source}
         return f"pin {source}" in net or bool (feeds & net)
 
+    # What each wire carries from a supply, in the order of the wires:
+    # "GND", "3.3V" or "5V", which give it its color, or None.
+    def supplies (self):
+        net_of = {member: net for net in self.nets () for member in net}
+        return [next ((source for source in ("GND", "3.3V", "5V")
+                       if self._carries (net_of.get (self._node (start), set ()), source)), None)
+                for start, _, _, _ in self.wires]
+
     # A reading to take with a multimeter on DC volts, between the red
     # probe's point and the black probe's, expected to be about expect, and
     # when to take it.
@@ -1519,12 +1527,10 @@ class Bench:
     def _recolor (self):
         from drawing import Drawing     # which draws this bench, so is loaded after it
         routes = Drawing (self)._layout ()
-        net_of = {member: net for net in self.nets () for member in net}
+        supplies = self.supplies ()
         colors, signals = {}, []
         for index, (start, end, color, _) in enumerate (self.wires):
-            net = net_of.get (self._node (start), set ())
-            carried = next ((source for source in ("GND", "3.3V", "5V")
-                             if self._carries (net, source)), None)
+            carried = supplies[index]
             kept = self.inherited.get (identity (self, "wire", self.wires[index]))
             if index in self._painted:
                 # A part's own leads are as they come. Black, red and orange

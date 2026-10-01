@@ -63,7 +63,8 @@ room.wire ("A5", "sound.AO")
 room.module ("sensor", name="water", at=(2.35, 3.8), pins=("−", "+", "S"),
              label="water sensor", facing="up")
 room.wire ("A6", "water.S")
-room.wire ("A7", "water.+")
+# Straight down beside A6's wire, leaving room for that wire's name.
+room.wire ("A7", "water.+", via=[(3.1, 3.15)])
 room.wire ("GND.power2", "water.−")
 
 room.home_divider ("photoresistor")

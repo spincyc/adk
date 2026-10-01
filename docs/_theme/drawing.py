@@ -201,6 +201,8 @@ class Drawing:
             return self._routes
         bench.label_size = 10
         plans = [self._plan (*wire) for wire in bench.wires]
+        for plan, supply in zip (plans, bench.supplies ()):
+            plan["supply"] = supply
         paths = self._recall (plans)
         if paths is None:
             paths = self._negotiate_all (plans)
@@ -215,6 +217,7 @@ class Drawing:
 
     def _negotiate_all (self, plans):
         router = self._router ()
+        router.supplies = {index: plan["supply"] for index, plan in enumerate (plans)}
         order = sorted (range (len (plans)), key=lambda index: (not self._jumper (index),
                                                                   self._reach (index)))
         paths = {}
@@ -262,8 +265,8 @@ class Drawing:
     def _fingerprint (self, plans):
         bench = self.bench
         text = repr ((bench.first, bench.last, bench.gap, sorted (bench.used), sorted (bench.taken),
-                      [(p["points"], p["first"], sorted (p["allow"]), p["keep_off"], p["straight"])
-                       for p in plans],
+                      [(p["points"], p["first"], sorted (p["allow"]), p["keep_off"], p["straight"],
+                        p["along"], p["supply"]) for p in plans],
                       [(type (part).__name__, part.legs (), part.shapes (bench), part.blocks,
                         [(label.text, label.spots[0]) for label in part.labels (bench)[:1]])
                        for part in bench.parts],
@@ -308,10 +311,14 @@ class Drawing:
                     (direction (p, q) - direction (q, r)) % 8 == 4:
                 raise ValueError (f"{wire} turns back on itself at a waypoint: check its via "
                                   f"points")
+        # A wire would rather not lie along a rail strip, where it would
+        # seem to join the rail, unless it goes to one.
+        along = not any (kind == "hole" and parse_hole (name)[0] == "rail"
+                         for kind, name in (start, end))
         plan = dict (start=start, end=end, a=a, b=b, first=first, allow=allow_a | allow_b,
                      points=points,
                      keep_off=bench.board_box () if "hole" not in (start[0], end[0]) else None,
-                     straight=None)
+                     along=along, straight=None)
         if start[0] == end[0] == "hole" and not via and self._straight (start[1], end[1]):
             plan["straight"] = straight_nodes (node (a), node (b))
         return plan
@@ -320,7 +327,7 @@ class Drawing:
         bench = self.bench
         try:
             path, _ = router.route (plan["points"], plan["first"], plan["allow"], plan["keep_off"],
-                                    index, pressure)
+                                    index, pressure, plan["along"])
         except ValueError as error:
             raise ValueError (f"the wire from {bench.describe (plan['start'])} to "
                               f"{bench.describe (plan['end'])} can't get through ({error}): move "
@@ -359,6 +366,19 @@ class Drawing:
             router.hole (bench.pin_xy (name), True, near=False)
         for hole in bench.holes ():
             router.hole (bench.hole_xy (hole), hole in bench.used)
+        # A jumper's plug in a hole, which other wires pass clear of; a
+        # part's own lead ends in a hole with no plug.
+        for start, end, _, _ in bench.wires:
+            if "lead" not in (bench.style (start), bench.style (end)):
+                for kind, name in (start, end):
+                    if kind == "hole":
+                        router.plug (bench.hole_xy (name))
+        # Along a rail strip, among the rail's holes and over its stripe, a
+        # wire would read as joined to the rail (_plan says which may).
+        bx0, by0, bx1, by1 = bench.board_box ()
+        _, by = bench.board_origin ()
+        router.along ((bx0, by0, bx1, (by + 0.45) * DPI))
+        router.along ((bx0, (by + 1.75) * DPI, bx1, by1))
         # The board's printing, which wires would rather not hide.
         for x, y, w in self._print_marks ():
             router.cost (("rect", x - w / 2, y - 6, x + w / 2, y), 4)

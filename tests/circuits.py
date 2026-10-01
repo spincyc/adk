@@ -387,7 +387,8 @@ with tempfile.NamedTemporaryFile ("w", suffix=".py", delete=False) as file:
 try:
     fresh = load (file.name)[""]
     kept = load (file.name, {"": painted.legacy ()})[""]
-    other = finished (button (Bench ("test", columns=(1, 20))))
+    other = finished (Bench ("test", columns=(1, 20)).wire ("23", "j12").button (12)
+                      .wire ("a14", "B-15"))
     apart = load (file.name, {"": other.legacy ()})[""]
 finally:
     os.unlink (file.name)
@@ -457,6 +458,37 @@ router = Router ((-200, -200, 200, 200), (0, 0, 0, 0))
 router.cost (("rect", -2, -98, 2, 98), 400)
 path, _ = router.route ([node ((-50, 0)), node ((50, 0))])
 expect ("a wire crosses rather than going far round", max (abs (j) for _, j in path) * 5 < 30, True)
+
+# A wire never lies in the street beside another's plug, where it would
+# seem to end in it, but passes between two plugs over the free hole
+# between them.
+router = Router ((-200, -200, 200, 200), (0, 0, 0, 0))
+for x, used in ((-10, True), (0, False), (10, True)):
+    router.hole ((x, 0), used)
+    if used:
+        router.plug ((x, 0))
+path, _ = router.route ([node ((-50, 5)), node ((50, 5))])
+expect ("a wire keeps out of the street beside a plug", node ((10, 5)) in path, False)
+path, _ = router.route ([node ((0, -50)), node ((0, 50))])
+expect ("a wire passes between two plugs over the hole between",
+        {i for i, _ in path}, {0})
+# A wire for the rows would rather cross a rail strip than run along it,
+# where it would seem joined to the rail.
+router = Router ((-200, -200, 200, 200), (0, 0, 0, 0))
+router.along ((-150, -10, 150, 10))
+path, _ = router.route ([node ((-100, 0)), node ((100, 0))], along=True)
+expect ("a wire for the rows leaves a rail strip", max (abs (j) for _, j in path) * 5 > 10, True)
+path, _ = router.route ([node ((-100, 0)), node ((100, 0))])
+expect ("a wire to a rail may run along it", {j for _, j in path}, {0})
+# Two wires from one supply, drawn the same black, red or orange, would
+# rather not cross; wires from different ones cross square on.
+for supply, crosses in (("GND", False), ("5V", True)):
+    router = Router ((-200, -200, 200, 200), (0, 0, 0, 0))
+    router.supplies = {0: "GND", 1: supply}
+    router.claim (router.route ([node ((0, -20)), node ((0, 20))], wire=0)[0], 0)
+    path, _ = router.route ([node ((-50, 0)), node ((50, 0))], wire=1)
+    expect (f"a {supply} wire {'crosses' if crosses else 'goes round'} a GND one",
+            (0, 0) in path, crosses)
 
 # A trace for the scope: its tip moves off a hole a wire fills, its ground
 # clip finds the − rail, and it goes to channel 1 or 2.

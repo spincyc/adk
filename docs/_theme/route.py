@@ -8,6 +8,16 @@ another wire only square on, and never runs along one. A* finds the
 cheapest way, where length, turns, holes passed over and crossings all
 cost something, so wires come out short, straight and few-cornered.
 
+No wire passes right beside another's plug, in the street half a pitch
+from its hole, where the plug's black housing covers the wire and the wire
+seems to end in it; the free hole between two plugs is clear of both, so a
+wire may still pass between them there. A wire that doesn't go to a rail
+crosses the rail strips rather than lying along them, where it would seem
+joined to the rail; and a wire would rather not cross another from its
+own supply, which is drawn the same black, red or orange. Each costs so
+much that a wire does it only where nothing else gets through, so no wire
+is left without a way.
+
 The wires share the board by negotiation: each is routed as if the others
 might move, sharing a stretch of grid costs more every round, and the
 rounds go on until no two wires share any, so the first wire routed can't
@@ -34,6 +44,9 @@ SLANT    = 3.5                      # a slant step costs as much as the two squa
 DIAGONAL = 5                        # and more across the board, between the holes
 CLEAR    = 3.2                      # how far a wire's center keeps from anything
 KEEP_OFF = 40                       # crossing a board the wire doesn't plug into
+BRUSH    = 200                      # passing right beside another wire's plug
+ALIKE    = 150                      # crossing a wire from the same supply, drawn alike
+ALONG    = 6                        # a step along a rail strip, for a wire not to the rail
 SHARE    = 40                       # sharing grid with another wire, times the round's pressure
 HEURISTIC = 1.2                     # A* leans on its estimate a little, for speed
 DETOUR, SLACK = 1.5, 100            # a wire's length, at first, to the square way it spans
@@ -59,6 +72,11 @@ class Router:
         self.extra = {}
         self.holes = {}                 # node -> True when something is in it
         self.near = {}                  # node -> the used holes beside it
+        self.plugs = {}                 # node -> the plugged holes it lies beside
+        self.rows = []                  # boxes where a step along them costs ALONG
+        self.alongs = set ()            # the wires that pay it
+        self.supplies = {}              # wire -> the GND, 5V or 3.3V it carries, which colors
+                                        # it as every other wire from that supply
         self.occupied = {}              # node -> {wire: [(axis, straight)]} of wires there
         self.cells = {}                 # square a wire crosses on the slant -> wires
         self.history = {}               # node -> how often wires have fought over it
@@ -110,17 +128,35 @@ class Router:
             for di, dj in DIRECTIONS[::2]:
                 self.near.setdefault ((n[0] + di, n[1] + dj), set ()).add (n)
 
+    # A wire's plug in a hole, whose housing covers the streets either side.
+    def plug (self, point):
+        n = node (point)
+        for di, dj in DIRECTIONS[::2]:
+            self.plugs.setdefault ((n[0] + di, n[1] + dj), set ()).add (n)
+
+    # A box a wire routed with along would rather cross than run along,
+    # such as a rail strip.
+    def along (self, box):
+        self.rows.append (tuple (v / STEP for v in box))
+
     # Finding a way ------------------------------------------------------
 
-    def route (self, points, first=None, allow=(), keep_off=None, wire=None, pressure=None):
+    def route (self, points, first=None, allow=(), keep_off=None, wire=None, pressure=None,
+               along=False):
         """The cheapest way through the points in turn (the first and last are
         a wire's ends, the others waypoints), as grid nodes, and its cost.
         first limits the directions a wire may leave its start in; allow
         names nodes it may use though they are blocked, such as its own ends;
         keep_off is a box the wire would rather go round, such as a board it
-        doesn't plug into. With a pressure, other wires' grid may be shared,
-        at a price; without, never."""
+        doesn't plug into; along, that it would rather cross the boxes
+        along () gives than run along them. A wire would rather not cross
+        another from its own supply (supplies), drawn alike. With a
+        pressure, other wires' grid may be shared, at a price; without,
+        never."""
         self.keep_off, self.wire, self.pressure = keep_off, wire, pressure
+        if along:
+            self.alongs.add (wire)
+        rows = self.rows if along else ()
         allow = set (allow) | {points[0], points[-1]}
         own = {points[0], points[-1]}
         path, heading, total = [points[0]], None, 0.0
@@ -143,7 +179,7 @@ class Router:
             leg = None
             for margin, budget in ((40, way * DETOUR + SLACK), (40, None), (None, None)):
                 leg, heading, cost = self._search (a, b, heading, first if index == 0 else None,
-                                                   allow, own, ends, margin, budget)
+                                                   allow, own, ends, margin, budget, rows)
                 if leg is not None:
                     break
             if leg is None:
@@ -184,7 +220,7 @@ class Router:
             cost = None
         else:
             cost = self.extra.get (n, 0) + (HOLE if n in self.holes else 0) + \
-                NEAR * len (self.near.get (n, ()))
+                NEAR * len (self.near.get (n, ())) + BRUSH * len (self.plugs.get (n, ()))
         self.statics[n] = cost
         return cost
 
@@ -195,11 +231,13 @@ class Router:
         if self.holes.get (n) and n not in own and n not in allow:
             return None
         return self.extra.get (n, 0) + (HOLE if n in self.holes and n not in own else 0) + \
-            NEAR * len (self.near.get (n, set ()) - own)
+            NEAR * len (self.near.get (n, set ()) - own) + \
+            BRUSH * len (self.plugs.get (n, set ()) - own)
 
     # The cheapest way from start to goal, within margin grid steps of the
     # box they span, and, with a budget, no longer than that.
-    def _search (self, start, goal, heading, first, allow, own, ends, margin, budget=None):
+    def _search (self, start, goal, heading, first, allow, own, ends, margin, budget=None,
+                 rows=()):
         li0, lj0, li1, lj1 = self.limits
         if margin is not None:
             li0 = max (li0, min (start[0], goal[0]) - margin)
@@ -216,6 +254,9 @@ class Router:
             if others:
                 occupied[n] = others
         cells = {cell for cell, wires in self.cells.items () if wires - {wire}}
+        mine = self.supplies.get (wire)
+        alike = {n for n, by in self.occupied.items () if mine and
+                 any (other != wire and self.supplies.get (other) == mine for other in by)}
         off = self.keep_off and tuple (v / STEP for v in self.keep_off)
         # Nodes whose cost differs for this wire: its ends, what it may cross,
         # and the nodes beside its own holes.
@@ -271,6 +312,8 @@ class Router:
                 if base is None:
                     continue
                 cost = TURN[turn] + base
+                if e % 4 == 0 and any (b[0] <= ti <= b[2] and b[1] <= tj <= b[3] for b in rows):
+                    cost += ALONG
                 if off and off[0] < ti < off[2] and off[1] < tj < off[3]:
                     cost += KEEP_OFF
                 if crowded and turn:
@@ -286,6 +329,8 @@ class Router:
                         # Crossings start cheap, so each wire first takes the
                         # way it wants and the rounds sort out who gives way.
                         cost += crossing + sharing * history.get (there, 0)
+                    if there in alike:
+                        cost += ALIKE
                 dx, dy = abs (ti - gi), abs (tj - gj)
                 run = walked[(here, d)] + (STEP * SQRT2 if e % 2 else STEP)
                 if budget is not None and run + (dx + dy - 0.5858 * min (dx, dy)) * STEP > budget:
@@ -376,8 +421,17 @@ class Router:
                 if there in self.holes and there not in own:
                     total += HOLE
                 total += NEAR * len (self.near.get (there, set ()) - own)
-                if any (other != wire for other in self.occupied.get (there, {})):
+                total += BRUSH * len (self.plugs.get (there, set ()) - own)
+                if wire in self.alongs and e % 4 == 0 and \
+                        any (b[0] <= there[0] <= b[2] and b[1] <= there[1] <= b[3]
+                             for b in self.rows):
+                    total += ALONG
+                others = [other for other in self.occupied.get (there, {}) if other != wire]
+                if others:
                     total += CROSS
+                if self.supplies.get (wire) and \
+                        any (self.supplies.get (other) == self.supplies[wire] for other in others):
+                    total += ALIKE
         return total
 
 def direction (a, b):
