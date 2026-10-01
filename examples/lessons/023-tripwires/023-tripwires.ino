@@ -38,6 +38,6 @@ void announce (bool tripped, const char* message)
 {
     if (tripped)
     {
-        Serial.println (message);
+        adk::println (Serial, message);
     }
 }

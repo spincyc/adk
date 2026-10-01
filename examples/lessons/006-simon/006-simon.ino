@@ -59,7 +59,7 @@ void waitForPlayer ()
     }
 
     state = State::Idle;
-    Serial.println ("Press any button to play.");
+    adk::println (Serial, "Press any button to play.");
 }
 
 // Simon's turn: a pause in the dark, one more random key, then the tune.

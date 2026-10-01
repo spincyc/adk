@@ -142,8 +142,7 @@ What's new:
 - `lcd.createChar (1, heart);` stores the picture in slot 1, and
   `lcd.write (1);` shows it. The sketch uses slots 1 to 3.
 - `lcd.print ("Hello, LCD! ");` writes text where the cursor is, and moves
-  the cursor along. It works just like `Serial.print ()`, numbers
-  included.
+  the cursor along. It prints a number just as well as text.
 - `lcd.at (column, 1)` moves the cursor. Columns count from 0 to 15 and rows
   from 0 to 1, so `(0, 0)` is the top-left corner. It hands back the screen
   itself, so `lcd.at (column, 1).print (' ');` prints a space right there.
