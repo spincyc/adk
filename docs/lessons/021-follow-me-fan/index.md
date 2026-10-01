@@ -282,3 +282,21 @@ What the numbers tell you:
 - **During a sweep** the reading drops to 0. The fan rests whenever the
   turret turns, so the servo and the motor never pull hard on the power
   module together.
+
+## Check yourself
+
+1. A sweep takes 13 readings. How does `sweep ()` find the nearest thing
+   without keeping them all?
+2. Why does `sweep ()` answer with a `Sighting` rather than a single number?
+3. Why does the fan rest whenever the turret turns?
+
+??? note "Answers"
+    1. It keeps one note: the smallest distance so far and the angle where it
+       saw it. A smaller reading replaces the note, so at the end the note
+       holds the nearest thing.
+    2. The answer is two numbers that belong together, an angle and a
+       distance. A struct keeps them together, so the function can hand both
+       back at once.
+    3. The servo and the fan share the power module, and each can take
+       several hundred milliamps when it moves or starts. Taking turns means
+       they never pull hard on the supply together.

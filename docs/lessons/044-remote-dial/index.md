@@ -285,3 +285,22 @@ What the numbers tell you:
   and it falls to 0 V three to five seconds later: Board A's last message
   came at most two seconds before, and Board B waits five seconds from
   the last message it heard.
+
+## Check yourself
+
+1. Why does Board B move the servo only when `bridge.changed ("angle")` is
+   true, instead of always sending it to `bridge.value ("angle")`?
+2. Why does Board B share a new `at` only once its servo has stopped?
+3. With Board B's power module off, the servo can't move, yet the bottom row
+   still catches up with the knob. Why?
+
+??? note "Answers"
+    1. Until Board A's first message arrives, the value is 0, and the servo
+       would swing to one end before Board A had said a word. `changed` is
+       true only when a new angle arrives.
+    2. Board A's messages already fill about half the air while you turn,
+       and when both modems send at once, neither is heard. Reporting every
+       step of the glide would lose many messages each way.
+    3. `at` is `servo.angle ()`, the angle ADK last told the servo to go to,
+       not where the horn really points. An SG90 can't report its position,
+       so nothing tells Board B the servo didn't get there.

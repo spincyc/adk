@@ -252,3 +252,22 @@ What the numbers tell you:
   resistance, so your meter can work out the photoresistor's: 4.5 V is
   nine times 0.5 V, so it is nine times the 10 kΩ, about 90 kΩ. Try the
   same sum in room light, and under a lamp.
+
+## Check yourself
+
+1. You cover the light sensor. Does the reading on A1 go up or down, and
+   why?
+2. Why must the `while` loop in `learnTheRoom ()` call `adk::update ()` each
+   time round?
+3. After the meter has learned, you shine a light brighter than anything it
+   saw. Why doesn't the bar try to light a sixth LED?
+
+??? note "Answers"
+    1. Down. In the dark the photoresistor's resistance rises, so it takes a
+       bigger share of the 5 V and leaves less for the 10 kΩ resistor, whose
+       share A1 measures.
+    2. The timer only moves on inside `adk::update ()`. Without it the timer
+       would never run out, so the `while` loop would never end.
+    3. `map ()` would hand back 6 or more for a level that bright, but
+       `constrain ()` keeps the answer between 0 and 5, so the bar just
+       stays full.

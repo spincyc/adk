@@ -187,3 +187,23 @@ from 0. They are the two bumps on top of the heart.
    its legs the other way, and swap between the two on each tick of an
    `adk::Every` of 300 ms, so it walks. Or make a single dot bounce around
    the edges using `set (x, y)` and `set (x, y, false)`.
+
+## Check yourself
+
+1. The matrix has 64 LEDs, but the Mega uses only three pins for it, and
+   no LED has a resistor. What makes that possible?
+2. In `fillDotByDot ()`, the loop over `y` is outside the loop over `x`.
+   How would the fill look if you swapped them round?
+3. What would the button do if the sketch wrapped `slide` round with
+   `% pictures.size ()`, without the `+ 1`?
+
+??? note "Answers"
+    1. The MAX7219 chip on the module does the work. It takes the picture
+       as bits over DIN, CLK and CS, sets the current for every LED, and
+       lights one row at a time so fast that your eyes see one picture.
+    2. It would fill down the left-hand column first, then the next
+       column, and so on. The outer loop chooses the line that is filled
+       first.
+    3. `slide` would only ever count 0, 1, 0, 1, so the button would swap
+       between the smiley and the heart. It would never reach 2, one past
+       the last picture, so the message would never scroll.

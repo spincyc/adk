@@ -230,3 +230,22 @@ What the numbers tell you:
   the top + rail by column 3. The red wire between the + rails by column
   42 carries it round to the bottom rails, where the beam-break and
   obstacle sensors take their power.
+
+## Check yourself
+
+1. An LED is on while nothing is happening, and goes off when you trip its
+   sensor. What's wrong, and how do you fix it?
+2. Why does the tilt switch need the Mega's pull-up, while the PIR module
+   doesn't?
+3. The sketch lights each LED from `isActive ()`, but prints its message
+   from `activated ()`. Why the two different calls?
+
+??? note "Answers"
+    1. That module says "yes" with the opposite level from the one the sketch
+       expects. Swap `adk::ActiveHigh` in or out of its line in the sketch.
+    2. The tilt switch only joins its pin to GND or to nothing, and a pin
+       joined to nothing floats, so the pull-up holds it high until the switch
+       pulls it down. The PIR's own board drives its output both ways itself.
+    3. `isActive ()` is true the whole time the sensor says "yes", which suits
+       a light. `activated ()` is true only at the moment it changes, so each
+       message prints once instead of over and over.

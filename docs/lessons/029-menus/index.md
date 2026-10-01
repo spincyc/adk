@@ -263,3 +263,22 @@ What the numbers tell you:
 - Now set Mode to **Off**: pin 3 reads 0 V, whatever Level says. Set it
   back to **Steady** and the reading returns, because Level kept its
   setting all along.
+
+## Check yourself
+
+1. The encoder never says where it is, only that it has turned. How does
+   it tell clockwise from anticlockwise?
+2. The same turn of the knob sometimes moves the arrow and sometimes
+   changes a setting. Which variable decides, and what changes it?
+3. What would happen at 100% if `turnKnob ()` wrapped the setting round
+   with `%`, as Lesson 25 wrapped its slides, instead of using
+   `constrain`?
+
+??? note "Answers"
+    1. By which of its two contacts changes first. Turning clockwise, CLK
+       changes before DT; turning anticlockwise, DT changes first.
+    2. `editing`. `turnKnob ()` checks it, and each press of the knob's
+       shaft flips it with `editing = !editing`.
+    3. One more click would jump straight from 100% to 0%, and the lamp
+       would go dark. `constrain` holds Level at its last choice instead,
+       as a real dimmer does.

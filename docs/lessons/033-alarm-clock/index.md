@@ -318,3 +318,23 @@ What the numbers tell you:
   while the screen and the clock run from the Mega's 5 V on the top rails.
   Watch the reading while the flag moves: it hardly changes, because the
   module has plenty to spare for the motor.
+
+## Check yourself
+
+1. Why does the sketch keep each time of day as one number, minutes after
+   midnight, instead of an hour and a minute?
+2. What would happen if `readTheClock ()` started ringing whenever `time`
+   matched `ringAt`, without the `time != clockTime` part?
+3. The sketch never looks at the flag. How does the flag still know to lie
+   down when you press snooze?
+
+??? note "Answers"
+    1. One number is easy to compare and to add to: "is it time yet?" is
+       just `time == ringAt`, and five more minutes is a plain addition,
+       with `%` wrapping it round past midnight.
+    2. Pressing the knob to stop it until tomorrow wouldn't work. A tenth
+       of a second later it would still be the alarm's minute, so it would
+       start ringing again, over and over until that minute was over.
+    3. The last line of `loop ()` asks for `flagUp` only while the state is
+       `Ringing`, and 0 in every other state. Snooze changes the state, and
+       the stepper, which has counted every step, turns back to 0.

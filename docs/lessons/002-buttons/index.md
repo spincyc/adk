@@ -275,3 +275,24 @@ What the numbers tell you:
   red tip to i8, in pin 23's column, to see) and pin 27 reads about 5 V:
   `yellow.set (rightButton.isPressed ())` turns the button's LOW into the
   LED's HIGH.
+
+## Check yourself
+
+1. Why does a pressed button read LOW, and what would an unpressed button's
+   pin do without the pull-up?
+2. You hold the left button down. What would the red LED and the count do if
+   the sketch asked `isPressed ()` there instead of `wasPressed ()`?
+3. Why could one tap be counted as two or three if ADK didn't wait for the
+   button to settle?
+
+??? note "Answers"
+    1. The pull-up gently holds the pin HIGH, and pressing joins it straight
+       to GND, a much stronger path, so it reads LOW. Without the pull-up the
+       pin would float and read HIGH or LOW at random.
+    2. `isPressed ()` stays true for as long as you hold the button, so the
+       LED would flip on and off on every pass of `loop ()` and the count
+       would race up. `wasPressed ()` is true only once per press.
+    3. The metal contacts bounce apart and together several times as they
+       close, and the Mega checks its pins fast enough to see each bounce as
+       a press. ADK only believes a change once the reading has held steady
+       for 20 ms.

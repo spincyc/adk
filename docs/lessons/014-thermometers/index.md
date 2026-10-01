@@ -240,3 +240,22 @@ What the numbers tell you:
   25 °C, 2.77 V at 30 °C.
 - The DHT11 and the 18B20 send their temperature as a number, in pulses, so
   there is no voltage on their wires that follows the heat.
+
+## Check yourself
+
+1. When you warm the thermistor, the voltage on A2 goes up. Why?
+2. A meter on the thermistor's divider follows the temperature, but a meter
+   on the DHT11's data wire doesn't. Why not?
+3. How does the Mega know a DHT11 reading wasn't garbled on the way, and what
+   does the screen show if it was?
+
+??? note "Answers"
+    1. Warmer, the thermistor's resistance falls, so it takes a smaller share
+       of the 5 V than the fixed 10 kΩ resistor, and the point between them,
+       A2, rises.
+    2. The DHT11 measures inside itself and sends the answer as a number, in
+       pulses whose length means 0 or 1. Its wire only flips between high and
+       low, so no voltage on it follows the heat.
+    3. The fifth byte is a checksum, the first four added up. If it doesn't
+       match, the reading is thrown away, `dht.ok ()` turns false, and the
+       screen shows `--` until the next good reading.

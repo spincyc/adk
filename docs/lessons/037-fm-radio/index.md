@@ -292,3 +292,22 @@ What the numbers tell you:
 - **The supply** is the Mega's 3.3V pin, from a small regulator on the Mega
   that makes 3.3 V out of its 5 V. The radio takes only a little current,
   well within what that pin can give.
+
+## Check yourself
+
+1. Why does the radio find stations only while the earbuds are plugged in?
+2. The Mega's pins work at 5 V, but the radio must never see 5 V. How does
+   the Mega send the radio a 1?
+3. The board's 10 kΩ holds RST low, which keeps the chip asleep. Why does
+   adding a 1 kΩ from RST to 3.3 V wake it?
+
+??? note "Answers"
+    1. The board has no aerial of its own: the earbuds' cable is the aerial.
+       Pull the plug out and the signal bar drops, because the radio hears
+       almost nothing.
+    2. It never pushes a 1. To send a 0 it connects the wire to GND, and to
+       send a 1 it lets go, so the radio board's own resistors lift the wire
+       up to 3.3 V.
+    3. The two resistors pull against each other, and the 1 kΩ is ten times
+       stronger, so it wins. RST sits at about 3 V, high enough to count as
+       a 1, and the chip wakes.

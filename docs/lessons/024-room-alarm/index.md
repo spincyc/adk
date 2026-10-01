@@ -241,3 +241,23 @@ What the numbers tell you:
 | Armed | dim red | about 0.8 V | 0 | 0 |
 | Entering | orange | about 5 V | about 1.3 V | 0 |
 | Sounding | red and blue in turn | jumps about | 0 | jumps about |
+
+## Check yourself
+
+1. Movement starts a countdown when the alarm is Armed, but does nothing when
+   it is Disarmed. What in the sketch makes the difference?
+2. How does the sketch turn four separate presses, 1, 2, 3 and 4, into the
+   number 1234?
+3. What would go wrong if the alarm armed the moment you pressed POWER, with
+   no exit delay?
+
+??? note "Answers"
+    1. The alarm is always in exactly one state, kept in `state`, and
+       `loop ()` checks only what that state is waiting for. Disarmed waits
+       for POWER; Armed waits for movement.
+    2. Each new digit multiplies the number so far by ten and adds itself: 1,
+       then 12, then 123, then 1234. After the fourth, it compares the number
+       with `secretCode`.
+    3. You would still be in front of the PIR, so it would see you at once
+       and start the entry countdown. The exit delay gives you time to leave
+       its view first.

@@ -226,3 +226,20 @@ What the numbers tell you:
   it takes about 8 mA, against red's 14 mA. Measure the red LED here too,
   from b6 to b7 with the book closer than 20 cm, and see the difference
   for yourself.
+
+## Check yourself
+
+1. Sound covers a centimeter in about half of 58 µs. Why does each
+   centimeter of distance add a whole 58 µs to the echo?
+2. How does the sketch make the beeps come faster as something gets closer?
+3. Held closer than about 2 cm, the gauge goes green. Why green, of all
+   things?
+
+??? note "Answers"
+    1. The echo is a round trip. To reach something 1 cm away and come back,
+       the sound travels 2 cm, and that takes about 58 µs.
+    2. `beeps.period (cm * 10)` sets the time between beeps to 10 ms for every
+       centimeter, so the nearer the object, the shorter the gap.
+    3. The sensor can't hear an echo that comes back while it is still
+       sending, so no echo arrives. The sketch counts "no echo" as 400 cm:
+       plenty of room.

@@ -208,3 +208,23 @@ What the numbers tell you:
   5 V goes, as it did in your unplug test, the chip switches over to the
   cell by itself and just keeps counting, which takes so little current
   that a cell lasts for years.
+
+## Check yourself
+
+1. You unplug the Mega for a minute and plug it back in. Why does the clock
+   show the right time, and not the time you compiled the sketch?
+2. Why can't the clock and Lesson 28's accelerometer share the same I2C
+   wires as they are?
+3. The coin cell gives less than the 5 V on the top rails. When does the
+   clock chip actually use it?
+
+??? note "Answers"
+    1. The coin cell kept the chip counting while the Mega was off. When the
+       sketch started again, `rtc.isRunning ()` was true, so it left the
+       time alone instead of calling `rtc.set`.
+    2. Every chip on the bus needs its own address, and these two answer to
+       the same one. One of them would have to move to another address
+       first.
+    3. Only when the 5 V goes. While the rails give more than the cell, the
+       chip runs from them, and it switches to the cell by itself when they
+       stop.

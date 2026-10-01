@@ -243,3 +243,23 @@ What the numbers tell you:
   reads about −3 V. The minus sign means the chip has swapped which of the
   motor's leads gets the supply and which gets GND, so the current runs
   through the motor the other way: that is the H-bridge at work.
+
+## Check yourself
+
+1. Why does the motor get its power from the power module, through the
+   L293D, and never straight from a Mega pin?
+2. How does the L293D make the motor spin the other way?
+3. A speed of 128 switches the motor on only half the time. Why does the fan
+   turn smoothly at about half power instead of jerking?
+
+??? note "Answers"
+    1. The motor wants around 200 mA running and more as it starts, ten times
+       or more what a pin can give, so a pin would be damaged or the Mega
+       would reset. The chip switches the module's current for it, and its
+       diodes soak up the kick the motor sends back when it's switched off.
+    2. Its H-bridge swaps which of the motor's leads gets the supply and which
+       gets GND, so the current runs through the motor the other way. In the
+       sketch, a negative speed does that.
+    3. PWM on the enable pin switches it about a thousand times a second, far
+       too fast for the heavy motor to speed up and slow down each time, so it
+       feels only the average.

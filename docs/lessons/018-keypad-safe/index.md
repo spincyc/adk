@@ -280,3 +280,22 @@ What the numbers tell you:
   to the screen, `0101`, as in Lesson 16. D4 is the digit's lowest bit, so
   it reads 5 V after an odd digit and 0 V after an even one. The same key,
   in a different state, puts a different voltage on the wire.
+
+## Check yourself
+
+1. Pressing **#** checks your code at one moment and locks the safe at
+   another. What decides which?
+2. Why does the safe keep the code as a list of keys instead of turning it
+   into a number?
+3. You change the code, then upload the sketch again. Why does the new code
+   still open the safe?
+
+??? note "Answers"
+    1. The state the safe is in. While Locked, **#** checks the typed code;
+       while Open, it locks the safe; while Choosing, it saves the new code.
+    2. As numbers, 0123 and 123 would be the same, but they are different
+       codes. A list keeps every key, in order, and the code is right only
+       when both lists hold the same keys in the same order.
+    3. The code is saved in EEPROM, which keeps its bytes with the power off.
+       Uploading rewrites the flash that holds the sketch, but leaves the
+       EEPROM alone.

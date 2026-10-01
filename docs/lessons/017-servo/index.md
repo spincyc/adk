@@ -252,3 +252,23 @@ What the numbers tell you:
   turns 0 V into 0° and 5 V into 180°, so 90° is 2.5 V, and each degree is
   5 V ÷ 180 ≈ 0.03 V. Turn the knob and watch the needle and the meter move
   together.
+
+## Check yourself
+
+1. Why does the servo take its power from the power module, and why must the
+   module's GND still be joined to the Mega's?
+2. The orange wire carries a pulse fifty times a second. What about that
+   pulse tells the servo which angle to go to?
+3. With the power module switched off, the `Needle` number on the screen
+   still follows the knob. Does that show the horn is moving?
+
+??? note "Answers"
+    1. A moving servo gulps hundreds of milliamps in bursts, enough to make
+       the Mega's USB-fed 5 V dip so far that it resets. A pulse is a voltage
+       measured from GND, so without the shared GND the servo can't read it.
+    2. Its width: a narrow pulse means near 0°, a wide one near 180°, and
+       widths in between mean angles in proportion. How often the pulses come
+       stays the same whatever the angle.
+    3. No. `needle.angle ()` is the angle the Mega is sending, and the servo
+       sends no position back, so the screen can't tell whether the horn
+       followed. With no power, it hasn't: the servo is limp.

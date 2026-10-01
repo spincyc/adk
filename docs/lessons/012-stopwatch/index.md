@@ -257,3 +257,21 @@ What the numbers tell you:
   `wasPressed ()` is true for the one turn of `loop ()` just after the pin
   changes, not for every turn while it stays low. That is what lets one
   button start the clock, and the next press stop it.
+
+## Check yourself
+
+1. Why does a stopped stopwatch carry on from where it stopped, instead of
+   counting the time it stood still?
+2. The start/stop button can start, pause or reset the clock. What decides
+   which it does?
+3. What does `time < total ? total - time : 0` give, and why does a kitchen
+   timer need it?
+
+??? note "Answers"
+    1. When it stops, it banks the time so far. When it starts again it adds
+       only the time since the new start to what is banked, so the time it
+       stood still never counts.
+    2. The state. `startOrStop ()` uses a `switch` on `state`: *Stopped*
+       starts it, *Running* pauses it, and *Done* resets it.
+    3. The time left, `total - time`, while there is some, and 0 once the
+       time is up. That way a timer never shows less than zero.

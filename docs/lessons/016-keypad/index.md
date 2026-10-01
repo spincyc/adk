@@ -213,3 +213,22 @@ What the numbers tell you:
   and leaves the digit.
 - Type another digit and measure again: 6 is `0110`, 9 is `1001`. The
   meter reads the key you pressed, in binary, off four wires.
+
+## Check yourself
+
+1. If the wire on pin 22, row 1, came loose, which keys would stop working,
+   and why those?
+2. Why does `key - '0'` turn the character `'7'` into the number 7?
+3. Holding **5** down for a whole second puts just one 5 on the screen,
+   though `loop ()` runs thousands of times. Why?
+
+??? note "Answers"
+    1. **1**, **2**, **3** and **A**, the top row. Each of them joins row 1
+       to a column, and with row 1's wire gone the Mega can no longer pull
+       that row low, so no column ever reads low for them.
+    2. Characters are codes, and `'0'` to `'9'` come one after another.
+       Taking away the code of `'0'` leaves how far along the digits `'7'`
+       is: 7.
+    3. `keypad.key ()` is an event: it gives each press once, in one pass
+       of `loop ()`, and `'\0'` in every other pass, just as `wasPressed ()`
+       does for a button.

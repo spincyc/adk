@@ -244,3 +244,22 @@ What the numbers tell you:
   3.2 V: the blue one keeps more for itself. That leaves 3 V across the red
   leg's 220 Ω resistor but only 1.8 V across the blue's, which is why red
   takes about 14 mA and blue about 8 mA: 1.8 V ÷ 220 Ω ≈ 8 mA.
+
+## Check yourself
+
+1. A pin is only ever fully on or fully off. How does the sketch make the
+   green LED glow at about a quarter of its brightness?
+2. Red and green paint make a muddy brown. What do red and green *light*
+   make, and why is it different?
+3. Read `if (mood == rainbow && !lamp.isFading ())` in words. When does
+   `driftAroundTheWheel ()` run?
+
+??? note "Answers"
+    1. With PWM: the pin switches on and off about 490 times a second and is
+       on for a quarter of each flicker. Your eye can't follow that, so it
+       sees the average.
+    2. Yellow. Mixing light adds colors together, while mixing paint takes
+       them away.
+    3. "If the mood is the rainbow, and the lamp is not fading." So it runs
+       only in the rainbow mood, each time a fade has finished, to start the
+       next step round the wheel.

@@ -342,3 +342,23 @@ What the numbers tell you:
   second after you let go.
 - **With Board A unplugged** it falls to 0 three to five seconds later,
   and stays there: the failsafe, measured.
+
+## Check yourself
+
+1. Why does the joystick set how fast the aim changes, instead of setting
+   the angle itself, as Lesson 44's knob did?
+2. Board A's cable is pulled out while the fan blows. Why does the fan stop
+   by itself, and why not straight away?
+3. Why does the fan stop while the turret turns, and start again only a
+   moment after you let go of the stick?
+
+??? note "Answers"
+    1. A joystick springs back to the middle when you let go. If its
+       position were the angle, the turret would swing back to 90° every
+       time.
+    2. Board B lets the fan blow only while `bridge.isConnected ()`, which
+       turns false after five seconds without a word from Board A. Without
+       it, the last `fan` value, 1, would keep the fan blowing forever.
+    3. The servo and the fan share the power module, so they mustn't both
+       pull hard on it together. Each new aim starts a 0.3 s countdown, and
+       the fan blows only once it has run out.

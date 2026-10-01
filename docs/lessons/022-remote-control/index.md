@@ -222,3 +222,23 @@ What the numbers tell you:
   full, the meter reads about 3.2 V. Red keeps about 2 V; measure it from
   b6 to the − rail after pressing 1. That is why blue takes about 8 mA to
   red's 14: (5 V − 3.2 V) ÷ 220 Ω ≈ 8 mA.
+
+## Check yourself
+
+1. The room is full of infrared from sunlight and lamps. Why doesn't the
+   receiver mistake it for the remote?
+2. Why does POWER check `!receiver.isRepeat ()`, when VOL+ and VOL− don't?
+3. The lamp is off and you press 3. What happens, and which line makes it
+   so?
+
+??? note "Answers"
+    1. The remote flickers its LED 38,000 times a second, and the receiver
+       only answers light flickering at that rate. Steady light, and light
+       that changes slowly, is ignored.
+    2. A held button sends a repeat about nine times a second. If each
+       repeat toggled the lamp, holding POWER would make it flicker; for
+       VOL+ and VOL−, each repeat is one more step, which is what holding
+       them is for.
+    3. The lamp fades up in blue. The `for` loop finds 3 in `choices` and
+       sets `lit = true` as well as the color, so a number button switches
+       the lamp on.

@@ -218,3 +218,23 @@ What the numbers tell you:
   red, then slides back down to 0 over two seconds as `fadeTo` runs, while
   the blue pin climbs back to 0.8 V. Take the card away and bring it back
   to see it again: each arrival is read once.
+
+## Check yourself
+
+1. The card has no battery. Where does its chip get its power, and why does
+   that mean it only works a few centimeters from the reader?
+2. Four of the reader's signal wires pass through a 1 kΩ / 2 kΩ divider, but
+   MISO doesn't. What do the dividers do, and why does MISO not need one?
+3. You leave a known card resting on the reader. Why does the LED flash
+   green once and fade back to blue, instead of staying green?
+
+??? note "Answers"
+    1. Its coil catches some of the reader's radio field, and that powers
+       the chip. Further away, the coil can't catch enough of the field to
+       run the chip.
+    2. They turn the Mega's 5 V signals into about 3.3 V, so the reader's
+       3.3 V chip isn't damaged. MISO carries bits the other way, from the
+       reader to the Mega, so no 5 V ever reaches the reader on it.
+    3. `reader.wasRead ()` is an event: it's true once when a card arrives,
+       not all the while it stays there. So the sketch flashes once, and
+       `fadeTo` takes the LED back to blue.

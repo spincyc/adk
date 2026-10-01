@@ -296,3 +296,22 @@ What the numbers tell you:
 - **AUX** reads about 3.3 V, not 5 V: the module runs on 5 V, but its pins
   work at 3.3 V. That's still high enough for the Mega to read as high. It
   dips while a report goes out, too briefly for the meter to show.
+
+## Check yourself
+
+1. The link is transparent: it adds nothing and takes nothing away. So how
+   does module B's Mega know where one report ends and the next begins?
+2. How does the Mega put a module into its settings mode without ever
+   driving M0 and M1 to 5 V?
+3. The room warms from 23 °C to 24 °C. Does the report get longer? What
+   would change its length?
+
+??? note "Answers"
+    1. ADK ends each line with a newline. The link carries it through like
+       any other byte, so module B's side sees where each line stops.
+    2. The Mega lets go of the pin joined to M0 and M1, and the module's own
+       weak pull-ups lift them to 3.3 V. For the normal mode, it pulls them
+       low.
+    3. No: every digit is one character, and both numbers still have two
+       digits. It changes only when a number gains or loses a digit, such as
+       a humidity of 100 % or a temperature of 9 °C.

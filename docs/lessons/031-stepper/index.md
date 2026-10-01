@@ -208,3 +208,23 @@ What the numbers tell you:
   nothing tells it the motor didn't move. Switch the module back on: the
   sketch's count is now a quarter turn ahead of the real arrow, and nothing
   will put it right. That is the price of counting steps without a sensor.
+
+## Check yourself
+
+1. Why do the motor's coils get their current through the ULN2003 driver
+   from the power module, instead of straight from the Mega's pins?
+2. You press the button twice quickly. Why does the arrow turn half a turn,
+   instead of ignoring the second press?
+3. With the power module switched off, you press the button. What does the
+   sketch think has happened, and why can't it tell otherwise?
+
+??? note "Answers"
+    1. The coils need up to about 200 mA, far more than a pin can give, so
+       the pins only tell the driver which coils to switch. Taking that
+       current from the Mega's 5V could pull its power down and reset it.
+    2. `motor.step (quarterTurn)` doesn't wait, so the button is still
+       watched while the motor turns. Each press adds another quarter turn
+       on from where the last move ends.
+    3. It counts its quarter turn of half-steps just the same and believes
+       the arrow moved. Nothing measures the shaft, so its count is now a
+       quarter turn ahead of the real arrow.

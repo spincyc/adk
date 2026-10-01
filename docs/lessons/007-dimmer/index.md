@@ -239,3 +239,21 @@ What the numbers tell you:
   quarter of 5 V. Dividing the reading by 4 keeps the pin's average in
   step with the wiper: turn the knob to either end and pin 3 reads 0 V or
   the full 5 V, the same as the wiper.
+
+## Check yourself
+
+1. What would change if you swapped the knob's two outer wires, and why?
+2. `knob.read ()` gives 0 to 1023, but `led.write ()` wants 0 to 255. How
+   does the sketch bridge the gap?
+3. Why must the knob's middle leg go only to A0?
+
+??? note "Answers"
+    1. The LED would brighten the other way round. The 5 V end of the strip
+       moves to the other side, so the wiper's voltage now rises as you turn
+       the other way; nothing is wrong either way.
+    2. It divides the reading by 4, because there are four readings for
+       every step of brightness. The Mega drops the fraction, so 1023
+       becomes 255.
+    3. If it were joined to 5 V or GND as well, turning the knob to the end
+       would connect 5 V straight to GND, a short circuit that can make the
+       knob warm.

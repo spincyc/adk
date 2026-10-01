@@ -255,3 +255,23 @@ What the numbers tell you:
 - While the light fades, for a second, the numbers glide between 0 and 5 V.
   The pins are switching on and off very fast, as in Lesson 4, and the meter
   shows the average.
+
+## Check yourself
+
+1. The light turns red at 26 °C but only turns green again at 24 °C. Why not
+   use one line at 25 °C both ways?
+2. The screen says 25 °C. Can you tell from that alone whether the light is
+   green or red?
+3. Why does the sketch check the alarm four times a second, but judge the
+   mood only when a new reading arrives?
+
+??? note "Answers"
+    1. The DHT11's reading wobbles by a degree, 25, 26, 25, so with one line
+       the light would flip between green and red every couple of seconds.
+       With a gap between two lines, a one-degree wobble can't cross both.
+    2. No. At 25 °C nothing changes, so the station stays in whichever mood it
+       was in: still red if the room was hot and is cooling, still green if
+       it is warming and hasn't reached 26 °C yet.
+    3. The DHT11 gives a new temperature only every two seconds, so the mood
+       can't change in between. The knob can be turned at any moment, and
+       checking often lets the alarm answer it straight away.

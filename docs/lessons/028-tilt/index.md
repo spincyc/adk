@@ -249,3 +249,25 @@ What the numbers tell you:
   makes the chip answer to address `0x68`, the number in
   `adk::Mpu6050 tilt {0x68};`. Joined to 3.3 V instead, it would answer to
   `0x69`.
+
+## Check yourself
+
+1. The GY-521 takes its power from the 5 V rail. Why do its SDA and SCL
+   wires still go through the level shifter?
+2. Many chips can share the same two I2C wires. How does the Mega talk to
+   just the MPU-6050, and what would happen if its AD0 pin were joined to
+   3.3 V?
+3. Why are the pitch and roll right only while the board is held still?
+
+??? note "Answers"
+    1. The module's regulator makes 3.3 V for the chip, but SDA and SCL go
+       straight to the chip, and its signals need 3.3 V. The shifter passes
+       the lows between the sides while each is held high at its own voltage:
+       5 V at the Mega, 3.3 V at the sensor.
+    2. Every chip answers only to its own address, and the sketch asks for
+       `0x68`. With AD0 joined to 3.3 V the chip would answer to `0x69`
+       instead, so nothing would answer and the matrix would scroll
+       *NO SENSOR*.
+    3. ADK works them out from how gravity's 1 g is shared between x, y and z.
+       While the board moves, the chip feels the push of your hand as well,
+       and that throws the angles off.

@@ -237,3 +237,21 @@ What the numbers tell you:
 - **Across segment g's resistor** is about 3 V. The red segment keeps about
   2 V of the 5 V for itself, and the resistor takes the rest. By Ohm's law,
   3 V across 1 kΩ is 3 mA: the current worked out in the idea above.
+
+## Check yourself
+
+1. How can just three Mega pins light seven segments?
+2. Which byte would light only segments b and c, to draw a 1? How did you
+   work it out?
+3. In `spin ()`, why does the lit bar go round and round instead of sliding
+   off the edge of the digit?
+
+??? note "Answers"
+    1. The Mega sends the bits one at a time on the data pin, pulsing the
+       clock for each, and the 74HC595 shuffles them along inside. A pulse on
+       the latch then copies all eight to its outputs at once, and they stay
+       put until the next one.
+    2. `0b00000110`. Segment b is bit 1 and c is bit 2, and bits are counted
+       from 0 at the right-hand end.
+    3. `step % 6` counts 0 to 5 and starts again, so `1 << (step % 6)` only
+       ever moves the 1 into bits 0 to 5: segments a to f, round the rim.

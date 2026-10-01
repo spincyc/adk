@@ -284,3 +284,24 @@ What the numbers tell you:
 - **A quarter of the way**, about 1.25 V, is about 256, and volume 3. Every
   third of a volt on A0 is one more step of volume, so turning the knob
   from end to end walks through all sixteen.
+
+## Check yourself
+
+1. Ten seconds into a fade, with the volume knob at 12, the radio plays at
+   volume 4. Which line of the sketch works that out, and from what?
+2. The button flips `playing`, and it also stops the fade. Suppose it
+   didn't: you switch the radio off halfway through a fade, and straight
+   back on. What would you hear?
+3. Why does the alarm only switch the radio on when it isn't playing
+   already?
+
+??? note "Answers"
+    1. `radio.setVolume (full * faded / fadeLength);` in `setVolume ()`:
+       the knob's 12, times the 10 seconds gone by, out of the fade's 30.
+    2. The radio would come back quiet and carry on fading in, because
+       the fade would still be running. Stopping it makes
+       `fade.remaining ()` 0, so the radio comes back at once at the
+       volume knob's setting.
+    3. A new fade starts from silent. If you were already listening when
+       the alarm's minute came, the radio would suddenly go quiet and fade
+       back in.

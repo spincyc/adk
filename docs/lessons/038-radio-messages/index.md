@@ -302,3 +302,23 @@ What the numbers tell you:
   for the tenth of a second a message takes.
 - **The transmitter's supply** is the Mega's 3.3V pin, as the FM radio's
   was. The transmitter only draws much current while it sends.
+
+## Check yourself
+
+1. The receiver's DATA flickers with noise all the time nothing is sent. Why
+   doesn't the message count go up by itself?
+2. The FM radio's wires needed no divider, but the transmitter's DAT does.
+   Why the difference?
+3. You press the button again straight after a message. Why is nothing sent,
+   and how does the sketch know?
+
+??? note "Answers"
+    1. Every message ends with a checksum made from all its bytes. Random
+       noise almost never adds up to the right checksum, so the receiver
+       throws it away.
+    2. The radio board's own resistors lifted its wires, so the Mega only
+       pulled them down. DAT has nothing to lift it, so the Mega drives it
+       high, through a divider that turns 5 V into about 3.3 V.
+    3. The law lets the transmitter send only now and then, so after each
+       message it rests for at least 10 seconds. While it rests,
+       `transmitter.send ()` says `false` and sends nothing.

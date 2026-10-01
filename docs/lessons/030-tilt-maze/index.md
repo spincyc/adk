@@ -262,3 +262,23 @@ What the numbers tell you:
   accelerometer and the angle travels as numbers instead, a burst of bits
   every 20 ms, far too quick for the meter. All it sees is the bus resting
   high between them.
+
+## Check yourself
+
+1. Holding the same tilt, why does the ball settle at a steady speed
+   instead of speeding up for ever?
+2. Why does `rollBall ()` try the move across and the move down
+   separately?
+3. A row of a maze is `0b00111111`. How does the sketch find out that the
+   dot in column 1 is free?
+
+??? note "Answers"
+    1. The tilt adds the same push every reading, but the friction takes
+       away a tenth of the speed. The faster the ball goes, the more it
+       loses, until the loss matches the push.
+    2. So that a wall in one direction only stops that half of the move.
+       The ball keeps going the other way and slides along the wall,
+       instead of sticking to it.
+    3. `0b10000000 >> 1` is `0b01000000`, a single 1 in column 1. `&` with
+       the row keeps only the 1s both share, and there are none, so the
+       answer is 0: no wall.

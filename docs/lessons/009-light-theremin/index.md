@@ -249,3 +249,22 @@ What the numbers tell you:
   and 342 × 5 ÷ 1023 ≈ 1.7 V. Keep turning: the next jump, at 684, comes
   at about 3.3 V. The sketch cuts the knob's 5 V into three equal parts,
   and the meter shows you where the cuts are.
+
+## Check yourself
+
+1. As you lower your hand you hear separate notes, not a smooth slide. What
+   in the sketch makes the steps?
+2. `playNote ()` runs on every pass of `loop ()`. Why doesn't the note click
+   and start again each time?
+3. Turning the knob doesn't slide the pitch: it jumps a whole octave at a
+   time. Why?
+
+??? note "Answers"
+    1. `shadowSlice ()` cuts the shadow into eleven slices, and each slice
+       plays one note of the scale. The pitch only changes when your hand's
+       shadow moves into another slice.
+    2. Asking the speaker for the tone it is already playing changes
+       nothing, so the note sounds on smoothly until the slice changes.
+    3. `knob.read () / 342` throws away the remainder, so it only ever gives
+       0, 1 or 2. The sketch multiplies the note by 1, 2 or 4, and doubling
+       a frequency is exactly one octave up.

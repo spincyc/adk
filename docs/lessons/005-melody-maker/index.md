@@ -262,3 +262,23 @@ What the numbers tell you:
   2.1 V ÷ 220 Ω ≈ 10 mA on average, just what *The idea* worked out.
   Lesson 3's active buzzer read a steady, nearly full 5 V: that buzzer
   makes its own vibration, and this one's is made by the Mega.
+
+## Check yourself
+
+1. The passive buzzer can play any note, but Lesson 3's active buzzer had
+   only one. What decides the passive buzzer's pitch?
+2. Why does the passive buzzer need a resistor, and why does it still work
+   with the resistor after the buzzer instead of before it?
+3. You hold C, press E as well, then let go of C. Why does E keep sounding?
+
+??? note "Answers"
+    1. How many times a second the Mega switches current through its coil:
+       that is the frequency, and faster sounds higher. The active buzzer
+       has its own switching circuit inside, so it can only make its one
+       note.
+    2. Its coil is only about 16 Ω, so on its own it would try to draw far
+       more current than a pin can give. In a single loop the same current
+       flows all the way round, so a resistor anywhere in the loop limits it.
+    3. `sounding` now holds E's pitch, and the sketch only stops the speaker
+       when the key you let go of is the one sounding
+       (`key.pitch == sounding`). C doesn't match, so E plays on.

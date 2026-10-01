@@ -204,3 +204,23 @@ With the 220 Ω resistor, the red LED keeps about 2 V and the resistor has
 the other 3 V. Ohm's law gives about (5 V − 2 V) ÷ 220 Ω = 14 mA through
 both parts, below the Mega pin's 20 mA operating limit. With 1 kΩ, the
 current is about 3 mA.
+
+## Check yourself
+
+1. Pin 26 still switches on and off, but with the black GND wire taken out
+   the LED stays dark. Why?
+2. What is the resistor for, and why does a bigger one, such as 1 kΩ, make
+   the LED dimmer?
+3. What would you see if you deleted the second `adk::wait (500);` from
+   `loop ()`, and why?
+
+??? note "Answers"
+    1. Electricity only flows around a complete loop, and that wire is the
+       loop's way back into the Mega at GND. Without it no current flows, so
+       the LED can't light.
+    2. It limits the current, so the LED and the Mega's pin stay safe. A
+       bigger resistance lets less current through, and less current makes
+       a dimmer light.
+    3. The LED would look as if it were on all the time. `loop ()` would
+       turn it off and then, starting again at once, straight back on, far
+       too quickly for you to see.

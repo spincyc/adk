@@ -246,3 +246,23 @@ What the numbers tell you:
   the rest of the time. The pin is simply switched on, and the buzzer makes
   its tone inside. Pin 12 now supplies only a few milliamps through the
   base resistor; the transistor switches the buzzer’s current from the rail.
+
+## Check yourself
+
+1. You knock twice, then hold your card to the reader instead. Why is the
+   card dealt with at once, and what happens to the two knocks?
+2. While the door is open, a friend holds their card to the reader. Why does
+   nothing happen?
+3. During a beep, the active buzzer's pin reads nearly the full 5 V the
+   whole time. Why, and where does the buzzer's own current come from?
+
+??? note "Answers"
+    1. `loop ()` checks the reader before anything else, so the card opens
+       the door or is refused straight away. The knocks are never judged:
+       `quiet` runs out while the door is busy, and `lock ()` forgets them.
+    2. `openFor ()` waits out its five seconds with `adk::wait ()`, so
+       `loop ()` isn't running to check the reader. `wasRead ()` is an
+       event, true for one update only, so that card is simply missed.
+    3. The active buzzer makes its own tone, so the pin is simply switched
+       on for the whole beep. It gives only a few milliamps; the transistor
+       switches the buzzer's current from the 5 V rail.

@@ -279,3 +279,25 @@ What the numbers tell you:
   vibration inside itself. The passive buzzer in
   [Lesson 5](../005-melody-maker/index.md) is different, and the meter shows
   it.
+
+## Check yourself
+
+1. Why does the sketch read the floating pin A7 for its seed, and what would
+   happen if you plugged something into A7?
+2. A press during the dark wait loses, but the same press after the yellow
+   light wins. What in the sketch tells the two apart?
+3. Pin 12 doesn't power the active buzzer itself. Where does the buzzer's
+   current come from, and what does pin 12 do?
+
+??? note "Answers"
+    1. `random ()` makes the same list of numbers every time the Mega starts
+       unless it gets a different seed, and A7's floating reading wanders,
+       so the seed changes nearly every game. With something plugged in, the
+       reading would hold still and you would get the same wait every game.
+    2. The game's state. The sketch only does what the current state
+       allows: in *Ready* a press is a false start, and in *Go* the first
+       press wins.
+    3. Its current comes from the 5 V rail and flows through the transistor
+       to GND. Pin 12 only sends a small control current to the
+       transistor's base, because the buzzer can need more than a pin
+       should give.

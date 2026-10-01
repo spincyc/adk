@@ -176,3 +176,20 @@ little over a second.
    longest ago, so the trail is always the same length. You will need to
    remember the order the dots were drawn in: come back to this after the
    next lesson, whose snake does exactly that with an `adk::Deque`.
+
+## Check yourself
+
+1. What is inside the joystick that lets the Mega read where you push it?
+2. Why does ADK give the joystick a dead zone in the middle?
+3. Why does the sketch keep the pen's place in hundredths of a dot, rather
+   than in whole dots?
+
+??? note "Answers"
+    1. Two potentiometers at right angles, one for left and right and one for
+       up and down. Tilting the stick turns them, and each wiper gives a
+       voltage from 0 to 5 V that an analog pin reads.
+    2. A released stick never springs back to exactly the same place. Without
+       the dead zone, that small leftover reading would make the dot drift on
+       its own.
+    3. A gentle push adds only a few hundredths on each step. Keeping them
+       lets those small amounts add up to a whole dot, instead of being lost.

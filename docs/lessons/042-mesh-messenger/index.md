@@ -326,3 +326,23 @@ What the numbers tell you:
 - **Pin 5** reads about 5 V with the lamp on: white is red, green and blue
   all fully on. Send `lamp off` and it falls to 0 V over half a second, as
   the lamp fades.
+
+## Check yourself
+
+1. In a mesh, how can a message reach a node that's too far from the node
+   that first sent it?
+2. Why does the Mega obey `LAMP OFF`, but only show `lamp on please` on its
+   screen?
+3. Board 1's GPIO47 hears the Mega through a divider, but its GPIO48 goes
+   straight to a Mega pin. Why the difference?
+
+??? note "Answers"
+    1. Every node that hears a message it hasn't heard before sends it on
+       once more, up to three times over. So the message hops from node to
+       node until it gets there.
+    2. `strcasecmp ()` takes no notice of capitals, so `LAMP OFF` matches
+       the command. But a command must be the whole message, and
+       `lamp on please` isn't, so it's just a message for the screen.
+    3. GPIO47 listens to the Mega's pin, which rests at 5 V, and the divider
+       brings that down to about 3.3 V for the board. GPIO48 sends the
+       board's own 3.3 V signals to the Mega, which is happy to read 3.3 V.

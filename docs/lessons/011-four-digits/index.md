@@ -198,3 +198,24 @@ What the numbers tell you:
   keep the probes on digit 1's pin. It sits at 5 V for six seconds, then
   drops to 0 V for two while digit 1 has its turn. Take the delay out
   again when you're done.
+
+## Check yourself
+
+1. The four digits share eight segment lines. How does the display still
+   show four different numbers?
+2. The same segment is missing on every digit. Where would you look first,
+   and why?
+3. Why does this sketch count with `adk::Every` instead of waiting with
+   `delay (100)`?
+
+??? note "Answers"
+    1. It lights one digit at a time, with that digit's pattern on the
+       segment lines, then the next, round all four many times a second.
+       Your eye blends the flashes into four steady digits.
+    2. At that segment's resistor and wire from the chip. Every digit shares
+       the same segment line, so one loose resistor takes that segment out
+       of all four.
+    3. The display is refreshed inside `adk::update ()`, so `loop ()` must
+       never stop, and `delay ()` would freeze it on one digit. With
+       `adk::Every`, `tick.ticked ()` is true once every 100 ms and `loop ()`
+       carries on the rest of the time.

@@ -287,3 +287,22 @@ What the numbers tell you:
   together, through one resistor, the red LED would let current through as soon
   as it had 2 V across it, and hold every LED near 2 V: too little for green
   and blue, which need about 3.2 V, so they would stay nearly dark.
+
+## Check yourself
+
+1. Why does Simon keep its tune in an `adk::Vector` and not an
+   `adk::Array`?
+2. You press a button while Simon is still showing the tune, and let go
+   once your turn has begun. Why doesn't that count as an answer?
+3. In `held >= 0 && keys[held].button.wasReleased ()`, why must
+   `held >= 0` come first?
+
+??? note "Answers"
+    1. The tune grows by one step every round. An `adk::Array` always holds
+       the same number of things; an `adk::Vector` grows, up to the 100
+       steps it has room for.
+    2. During Simon's turn the sketch is inside `adk::wait ()`, so no
+       `loop ()` acts on the press, and `held` is -1 when your turn begins.
+       Letting go only counts for the key that is `held`.
+    3. `&&` stops at the first half that is false. With `held` at -1 it
+       stops there, so `keys[-1]`, which doesn't exist, is never looked at.

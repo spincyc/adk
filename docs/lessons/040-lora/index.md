@@ -322,3 +322,23 @@ What the numbers tell you:
   shares it out. The 1 kΩ takes the other 1.7 V, and the current through
   both is 5 V ÷ 3 kΩ, less than 2 mA. The modem's own input may shift
   the reading a little.
+
+## Check yourself
+
+1. LoRa modems talk to each other far more slowly than the Mega talks to
+   them. What do they get in return, and how?
+2. You change the sketch so modem A sends to address 3. Why does modem B
+   show nothing, and how does modem A find out?
+3. Why do the modems take their 3.3 V from the power module, and not from
+   the Mega's 3.3V pin?
+
+??? note "Answers"
+    1. Range: a message can cross a kilometer or more. The receiver knows
+       exactly what shape of chirp to listen for, so it can pick one out
+       even when it's weaker than the noise.
+    2. Modem B passes on only messages sent to its own address or to 0, so
+       it keeps this one to itself. Modem A never finds out: nothing comes
+       back to say it was heard.
+    3. Each modem draws up to about 50 mA while it sends, about as much as
+       the Mega's 3.3V pin can give at all. The power module's own 3.3 V has
+       plenty to spare.

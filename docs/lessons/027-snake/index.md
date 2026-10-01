@@ -284,3 +284,20 @@ What the numbers tell you:
 - The buzzer's small share is still plenty. It is the current that moves its
   disc, not the voltage: those 20 mA switch on and off with every wave, and
   each switch pulls the disc and lets it go. That is the sound.
+
+## Check yourself
+
+1. When the snake takes a step without eating, which of its dots change?
+2. Why may the new head move into the dot where the tail is now?
+3. The snake is heading right and you push the stick left. Why does it
+   carry on right?
+
+??? note "Answers"
+    1. Only the two ends: a new head goes on at the front and the tail comes
+       off the back. Every dot in between stays where it is, which is why a
+       deque, with two open ends, suits the snake.
+    2. The tail moves away in the same step, so its dot is free by the time
+       the head arrives. That's why `moveSnake ()` only counts a bite on a
+       dot that isn't the tail.
+    3. The dot to the left is the snake's neck, `snake[1]`. `steer ()` won't
+       turn into it, so `turn` stays `Right`.

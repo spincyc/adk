@@ -254,3 +254,22 @@ What the numbers tell you:
 - Some screens have a small resistor of their own for the backlight, on the
   back of the board. Then the backlight's reading is a little higher and the
   220 Ω's a little lower, but the two still add up to 5 V.
+
+## Check yourself
+
+1. Before you upload anything, the screen can show a row of solid blocks or
+   nothing at all. What decides which, and why doesn't the Mega come into it?
+2. If two of the data wires, D4 to D7, were swapped, why would you see
+   strange symbols rather than a blank screen?
+3. The heart's top row is `0b00000`. What would change on the screen if you
+   made it `0b11111`?
+
+??? note "Answers"
+    1. The contrast knob sets the voltage on V0, and that alone decides how
+       dark the dots go. The Mega only tells the chip what to show, and
+       nothing has talked to the screen yet.
+    2. The screen still gets each half and its E pulse, so it still shows a
+       character. But the bits land in the wrong places, which makes a
+       different code, so it's a different character.
+    3. A line of five lit dots would appear across the top of the heart. Each
+       `0b` number is one row of dots, and each `1` is a dot that lights.

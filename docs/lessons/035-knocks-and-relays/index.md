@@ -219,3 +219,23 @@ What the numbers tell you:
   reading. The red LED keeps about 2 V for itself, and the resistor takes
   the rest, about 7 V: 7 V ÷ 1000 Ω is the 7 mA worked out in the idea
   above.
+
+## Check yourself
+
+1. You knock the secret rhythm, but twice as slowly. Why does the lamp stay
+   as it was?
+2. Nothing joins the lamp's circuit to the Mega, its pins or its rails. How
+   does pin 11 still switch the lamp?
+3. What would you see if the lamp's wire went to the relay's NC terminal
+   instead of NO?
+
+??? note "Answers"
+    1. Every gap is now 400 ms or more, so the sketch writes `LLL`, which
+       isn't `"SLS"`. It decides short or long by the clock, not by
+       comparing the gaps with each other.
+    2. Pin 11 switches the relay's coil, an electromagnet that pulls a metal
+       contact across. The contact is a separate switch, not wired to the
+       coil, and it joins the battery to the lamp.
+    3. The lamp would be lit while the relay is off, and go out when the
+       secret knock switches the relay on. NC is joined to COM only while
+       the relay is off.
