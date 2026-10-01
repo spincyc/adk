@@ -107,6 +107,7 @@ nav:
       - Guided route: guided.md
       - kit.md
       - safety.md
+      - cpp.md
       - builds.md
   - Course:
       - course.md

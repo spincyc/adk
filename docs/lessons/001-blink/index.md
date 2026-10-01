@@ -90,6 +90,10 @@ Open the Arduino IDE and choose **File → Examples → Adk → lessons → 001-
 
 Read it from the top:
 
+- The first two lines start with `//`. Everything from `//` to the end of
+  its line is a **comment**: a note for people reading the sketch, which
+  the Mega ignores. Comments say what a sketch is for, or why a line is
+  the way it is.
 - `#include <Adk.h>` brings in the ADK library.
 - `adk::Led led {26};` says there is an LED on pin 26 and names it `led`.
   In the code, each part of the circuit is an **object**: a thing with a
@@ -104,6 +108,10 @@ Read it from the top:
   milliseconds, half a second. A semicolon ends each instruction.
 - So `loop ()` turns the LED on, waits, turns it off, and waits again: one
   blink a second, for as long as the Mega has power.
+
+Each lesson explains the new pieces of C++ in its sketch, the first time
+they appear. [The C++ you've met](../../cpp.md) lists them all, with the
+lesson that explains each one, for when you want to look one up again.
 
 ## Upload it
 

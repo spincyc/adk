@@ -160,7 +160,8 @@ What's new:
   hold the same keys in the same order, whatever kinds of list they are.
 - `refuse ()` counts wrong codes. On the third, it counts down 30 seconds with
   `adk::wait (1000)`, printing the seconds left on the bottom row with one
-  `adk::print ()`. Keys pressed meanwhile are scanned but never read, so they
+  `adk::print ()`. `left--` takes one away from `left` each time round, as
+  `presses++` added one in Lesson 2. Keys pressed meanwhile are scanned but never read, so they
   do nothing.
 - `enter (State::Open, "Open. # locks")` is how the safe changes state. It
   moves the latch to match the new state, writes the message on the top row,

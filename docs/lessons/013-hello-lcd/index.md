@@ -147,6 +147,8 @@ What's new:
 - `lcd.at (column, 1)` moves the cursor. Columns count from 0 to 15 and rows
   from 0 to 1, so `(0, 0)` is the top-left corner. It hands back the screen
   itself, so `lcd.at (column, 1).print (' ');` prints a space right there.
+  Single quotes hold exactly one character, here a space; double quotes,
+  as in `"Hello, LCD! "`, hold a piece of text.
   (Arduino's own LCD library calls this move `setCursor ()`; ADK has that
   too.)
 - `takeStep ()` rubs out the figure with a space, moves one column right (the

@@ -121,15 +121,39 @@ What's new:
   on every `adk::update ()`, so the button keeps working mid-fade.
 - `mood = (mood + 1) % (rainbow + 1);` counts 0, 1, 2, 3, 4 and then back to
   0. `%` gives the **remainder** after dividing: when `mood + 1` reaches 5,
-  5 % 5 is 0.
-- In the rainbow mood, `lamp.isFading ()` says whether a fade is still
-  going. Each time one ends, `driftAroundTheWheel ()` starts the next, to a
-  color a little further round the wheel.
+  5 % 5 is 0. Then `if (mood != rainbow)` starts a fade only when the new
+  mood is one of the colors: `!=` asks whether two numbers are different.
+- `lamp.isFading ()` says whether a fade is still going. In `loop ()`,
+  `if (mood == rainbow && !lamp.isFading ())` asks two questions at once:
+  is this the rainbow mood, *and* is the lamp *not* fading? Only when both
+  answers are yes does `driftAroundTheWheel ()` start the next fade, to a
+  color a little further round the wheel. The box below lists every sign
+  C++ uses to ask questions like these.
 - `adk::wheel (hue)` turns a position round the color wheel into a color:
   0 is red, 85 green, 170 blue, and on round toward red again. `hue` is a
   **`uint8_t`**, a whole number from 0 to 255 that wraps back to 0 after
   255, just as a wheel comes back round. It takes one byte of memory, where
   an `int` takes two.
+
+!!! note "Comparing, and deciding with and, or, not"
+    An `if` asks a question whose answer is true or false. These signs make
+    the questions:
+
+    | Write | It asks |
+    |---|---|
+    | `mood == 4` | Are the two equal? |
+    | `mood != 4` | Are they different? |
+    | `mood < 4`, `mood > 4` | Is the left one smaller? Bigger? |
+    | `mood <= 4`, `mood >= 4` | Smaller or equal? Bigger or equal? |
+    | `a && b` | Are both `a` and `b` true? (**and**) |
+    | `a || b` | Is at least one of them true? (**or**) |
+    | `!a` | Is `a` false? (**not**: it turns true into false, and false into true) |
+
+    Two equals signs ask; one sets. `mood == 4` asks whether `mood` is 4,
+    while `mood = 4` puts 4 in it. Brackets group a question, as they do in
+    sums: `a && (b || c)` needs `a`, and at least one of `b` and `c`. So
+    `mood == rainbow && !lamp.isFading ()` reads "the mood is the rainbow,
+    and the lamp is not fading".
 
 ## Upload it
 

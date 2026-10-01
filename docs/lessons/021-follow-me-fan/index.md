@@ -142,13 +142,16 @@ Read it from the top:
   distance, kept together.
 - `loop ()` is the three steps: `sweep ()`, then, if the nearest thing is
   within reach, `turnTo ()` its angle and `blow ()`. Each step finishes
-  before the next begins, so the loop reads like the table.
+  before the next begins, so the loop reads like the table. When nobody is
+  in reach, `return;` leaves `loop ()` early, after its rest, so the next
+  pass starts with a fresh sweep.
 - `Sighting sweep ()` is a function that answers with a whole sighting,
   both numbers at once. The note starts at 400 cm, which is what
   `measure ()` gives when no echo comes back, as in Lesson 19, so anything
   the sensor really sees is nearer. Then a `for` loop steps over the
-  angles, and `nearest = {angle, cm};` replaces both halves of the note
-  together.
+  angles: `angle += step` adds `step` to `angle`, a short way of writing
+  `angle = angle + step`, so the angle goes 30, 40, 50 and on to 150.
+  `nearest = {angle, cm};` replaces both halves of the note together.
 - `blow ()` starts the timer, then measures and sets the speed for as long
   as `blowing.isRunning ()`. `break` leaves the `while` loop early, just as
   it leaves a `switch`, when the target walks out of reach or comes too
@@ -216,7 +219,8 @@ at the wall.
    much longer does a sweep take? Is it worth it?
 2. **Sweep both ways.** Sweep from left to right, then right to left, so
    the turret never has to fling itself back to the start. A second `for`
-   loop can count down, with `angle -= step`.
+   loop can count down, with `angle -= step`, which takes `step` away just
+   as `+=` adds it.
 3. **Follow closely.** Instead of a full sweep, after blowing check just
    three angles with `turnTo ()` and `measure ()`: 10° either side of the
    last target, and the target itself. The turret will track you as you

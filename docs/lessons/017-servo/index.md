@@ -139,7 +139,9 @@ What's new:
   no angle has been chosen yet. After that, a new reading must differ by at
   least 2° to change the target; either end of the dial, 0° or 180°, always
   counts. Ignoring a one-degree wobble lets a glide finish instead of
-  starting it again every time a noisy reading changes.
+  starting it again every time a noisy reading changes. In the sketch that
+  is one `if` with five questions joined by `||`, *or*, from Lesson 4's
+  box: any one of them being true is enough.
 - `needle.moveTo (angle, 300);` asks the servo to glide to that angle over
   300 ms, while the sketch carries on. Asking again for the angle it is
   already gliding to changes nothing; a different target starts a new glide.
