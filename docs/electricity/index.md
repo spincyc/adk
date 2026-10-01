@@ -15,10 +15,11 @@ the circuits, not records of hardware trials.
 **Kit and meter route:** Work through E01–E10, then E12, E22, E23 and E24.
 E01–E03 use one steady LED circuit powered by the Mega's USB 5 V; they
 need no IDE or upload. E02 adds the meter. E05 needs a 10 Ω resistor,
-and E07–E08 and E23 the inexpensive capacitors, from the table below. E12 uses the kit's buzzer as a
-coil; its LED and button give a visible result without a scope. After E04,
-try the [loaded-divider design challenge](challenges.md#loaded-divider) to
-see why a measured divider voltage changes when a load is attached.
+and E07–E08 and E23 the inexpensive capacitors, from the table below.
+E12 builds the kit's buzzer into the protected-coil pattern; its LED and
+a meter show the switching, and only a scope shows the diode at work.
+After E04, try the [loaded-divider design challenge](challenges.md#loaded-divider)
+to see why a measured divider voltage changes when a load is attached.
 
 **Scope and generator extension:** After E10, try E11; after E08, try
 E13–E15; then E16–E18. These investigations need the isolated instruments
@@ -258,9 +259,11 @@ across the buzzer from the start: its banded end at buzzer + and unbanded
 end at collector. The separate resistor–LED branch also feeds the collector.
 Predict a lit LED while the button is held and possibly a faint click as you
 press and release. A meter on the collector reads about 0.1 V while the
-button is held and about 5 V when it is released; it cannot show the brief
-release itself. With a scope, probe the collector against GND to see it rise
-about 0.7 V above 5 V for a moment on release, held there by the diode. The
+button is held and about 5 V when it is released: without a scope, you
+build the protection and check the switching, but cannot see the diode
+work. With a scope, probe the collector against GND to see it rise about
+0.7 V above 5 V for a moment on release, as the coil's current carries on
+through the diode. The
 220 Ω stays in series with the roughly 16 Ω coil; the 5 V rail, not a Mega
 I/O pin, supplies its current. **ADK connection:** Combines [Lesson 5's
 passive buzzer](../lessons/005-melody-maker/index.md) with the transistor

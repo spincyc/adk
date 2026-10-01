@@ -24,20 +24,25 @@ ideas:
 <!-- closeup -->
 
 A button switches a red LED and the kit's passive buzzer through a
-transistor. The LED lights clearly while you hold the button. A diode stays
-across the buzzer's coil from the start; you may hear a faint click when
-you press or release. A battery-powered oscilloscope can show the brief
-voltage change at the transistor when you release it. The Mega supplies
-5 V from USB; no upload is needed.
+transistor, and a diode stands across the buzzer's coil from the start.
+This is the protection every switched coil in the course gets, the
+pattern beside [Lesson 3's buzzer](../003-reaction-duel/index.md). With
+the LED and a meter you can watch the transistor switch the coil on and
+off. The diode's own work, at the instant you let go, is over in well
+under a millisecond: too quick for your eyes or a meter. A
+battery-powered oscilloscope can show it. The Mega supplies 5 V from
+USB; no upload is needed.
 
 ## Predict
 
 Current flows through a coil while you hold the button. When you let go,
 the transistor stops feeding it, but the coil's current cannot stop at
 once. Before powering the build, predict whether the LED will light while
-you press and where the coil's current will go on release. Will the buzzer
-play a steady note while the button is held, or might it only click as
-the current changes?
+you press, and what a meter on the transistor's collector will read with
+the button held and released. Will the buzzer play a steady note while
+the button is held, or might it only click as the current changes? If
+you have a scope, predict where the coil's current goes at the moment you
+let go, and what that does to the collector's voltage.
 
 ## Build it
 
@@ -174,26 +179,11 @@ names each symbol.
    at each change. You may hear a faint click on pressing or releasing;
    this passive buzzer has no circuit to make a sustained note from
    steady DC.
-3. Compare what you noticed with your prediction. When the transistor
-   opens, the LED goes dark, but the coil briefly keeps current moving
-   through the diode and back through the coil. The diode gives that
-   current a loop while it dies away.
-
-The diode normally blocks current from buzzer + to buzzer − while the
-button is held. At release, the coil drives current the other way around
-the short diode-and-coil loop. Keep the diode connected throughout the
-experiment.
-
-## Measure the switch
-
-Predict first: with the button **held**, will the collector read near 0 V
-or near 5 V? With it **released**? Write down both guesses.
-
-Set the meter to **DC volts (V⎓)**, black lead in **COM**, red lead in
-**V**. Put the black probe in a free hole of the bottom − rail and the red
-probe in **e31**, a free hole in the collector's strip at column 31. Hold
-the button and read the meter, then release it and read again. Keep the
-probe tips apart.
+3. Set the meter to **DC volts (V⎓)**, black lead in **COM**, red lead in
+   **V**. Put the black probe in a free hole of the bottom − rail and the
+   red probe in **e31**, a free hole in the collector's strip at column
+   31. Hold the button and read the meter, then release it and read again.
+   Keep the probe tips apart.
 
 <!-- measure -->
 
@@ -206,9 +196,9 @@ Held, the transistor is a closed switch: the collector sits near GND,
 about **0.1 V**, and the 220 Ω resistor and coil share the rest of the
 supply. About 4.9 V across 236 Ω means roughly **21 mA** through the coil.
 Released, the switch is open, no current flows, and the collector reads
-close to the **5 V** supply. A meter shows only these two steady states.
-The diode's work at each release is over in well under a millisecond, far
-too quickly for a meter; a scope can show it.
+close to the **5 V** supply. The LED and the meter show only these two
+steady states, the switching. They cannot show the moment of release,
+when the diode does its work; only a scope can.
 
 ### If you have an oscilloscope
 
@@ -220,14 +210,37 @@ edge at about 2.5 V, in **Single** mode: the release happens once, and
 Single holds it on the screen. Hold the button, arm the trigger, then
 release the button: the trace jumps from near 0 V to
 about **0.7 V above the 5 V supply**, stays there briefly, then settles
-at 5 V. That bump is the coil's current carrying on through the diode,
-which holds the collector one diode drop above the buzzer's + side. To
-enlarge it, set **0.2 V/div**, use the vertical offset to bring the 5 V
-level to the middle of the screen, and move the trigger level to about
-5.3 V. How long the bump lasts depends on the coil: expect tens to a few
-hundred microseconds. The diode is what keeps it this small, which is why
-it never comes out. Never attach the ground clip to the collector or
-buzzer legs.
+at 5 V. To enlarge that bump, set **0.2 V/div**, use the vertical offset
+to bring the 5 V level to the middle of the screen, and move the trigger
+level to about 5.3 V. How long it lasts depends on the coil: expect tens
+to a few hundred microseconds. Never attach the ground clip to the
+collector or buzzer legs.
+
+## Why it happens
+
+While the button is held, current flows from the 220 Ω resistor into
+buzzer +, through the coil to buzzer −, and on through the transistor to
+GND. The diode points the other way across the coil, so it carries
+nothing.
+
+When you let go, the transistor stops taking that current, but a coil's
+current cannot stop at once. It keeps flowing the same way through the
+coil, from buzzer + to buzzer −; only its path changes. Out of buzzer −,
+it now goes through the diode, from its unbanded end to its banded end,
+and back into buzzer +: round the short loop of coil and diode, until
+the coil's stored energy is used up. Pushing current through the diode
+lifts the collector about 0.7 V above buzzer +, which is the bump a scope
+shows. Without the diode, the coil would drive the collector far higher
+to keep its current moving, and that spike could damage the transistor.
+That is why the diode goes in before the circuit is powered, and never
+comes out.
+
+## Check your result
+
+Did the LED and the collector readings match your predictions for held
+and released? Which part of your prediction could the meter check, and
+which needed a scope? In one sentence, say where the coil's current goes
+at the moment you let go.
 
 ## If it doesn't work
 
