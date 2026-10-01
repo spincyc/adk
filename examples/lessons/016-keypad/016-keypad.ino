@@ -1,93 +1,58 @@
 // Lesson 16: Keypad
-// A calculator: a number, A to D for + - x /, a number, then #. * clears.
+// An adding machine: type a number, then A to add it to the total or B to
+// take it away. * starts the total again from 0.
 
 #include <Adk.h>
 
 adk::Lcd    lcd    {31, 32, 33, 34, 35, 36};
 adk::Keypad keypad {{22, 23, 24, 25}, {26, 27, 28, 29}};
 
-constexpr adk::Array symbols {'+', '-', 'x', '/'};   // for A, B, C and D
-
-long first     = 0;        // the number before the operation
-long number    = 0;        // the number being typed
-int  digits    = 0;        // its digits: four at most, so 9999 × 9999 fits
-char operation = 0;        // one of the symbols, once it's chosen
-bool answered  = false;
+long total  = 0;    // on the top row
+long number = 0;    // being typed, on the bottom row
+int  digits = 0;    // in the number: four at most, up to 9999
 
 void setup ()
 {
     adk::setup ();
+    showTotal ();
 }
 
 void loop ()
 {
     adk::update ();
 
-    char key   = keypad.key ();
-    bool digit = key >= '0' && key <= '9';
+    char key = keypad.key ();
 
-    // * clears, and so does a new number typed after an answer.
-    if (key == '*' || (digit && answered))
+    if (key >= '0' && key <= '9' && digits < 4)
     {
-        clearAll ();
-    }
-
-    if (digit && digits < 4)
-    {
-        // Each digit shifts the number one place left and joins on the
-        // end: 4, then 2, makes 4 × 10 + 2 = 42.
+        // Each digit moves the others one place left: 4, then 2, is 42.
         number = number * 10 + (key - '0');
         digits++;
         lcd.print (key);
     }
-    else if (key >= 'A' && key <= 'D' && operation == 0)
+    else if (key == 'A')
     {
-        operation = symbols[key - 'A'];
-        first     = number;
-        number    = 0;
-        digits    = 0;
-        adk::print (lcd, ' ', operation, ' ');
+        total = total + number;
+        showTotal ();
     }
-    else if (key == '#' && operation != 0 && !answered)
+    else if (key == 'B')
     {
-        showAnswer ();
+        total = total - number;
+        showTotal ();
     }
-}
-
-void showAnswer ()
-{
-    lcd.at (0, 1);
-
-    if (operation == '/' && number == 0)
+    else if (key == '*')
     {
-        lcd.print ("Divide by 0? No!");
-    }
-    else
-    {
-        adk::print (lcd, "= ", calculate ());
-    }
-
-    answered = true;
-}
-
-// Whole numbers make a whole answer: 7 / 2 is 3, the remainder dropped.
-long calculate ()
-{
-    switch (operation)
-    {
-        case '+': return first + number;
-        case '-': return first - number;
-        case 'x': return first * number;
-        default:  return first / number;
+        total = 0;
+        showTotal ();
     }
 }
 
-void clearAll ()
+// The total on the top row, and an empty bottom row for the next number.
+void showTotal ()
 {
-    first     = 0;
-    number    = 0;
-    digits    = 0;
-    operation = 0;
-    answered  = false;
+    number = 0;
+    digits = 0;
     lcd.clear ();
+    adk::print (lcd, "Total ", total);
+    lcd.at (0, 1);
 }

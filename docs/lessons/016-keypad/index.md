@@ -1,6 +1,6 @@
 ---
 lesson: 16
-promise: Read sixteen keys with eight wires, and turn the Mega into a calculator.
+promise: Read sixteen keys with eight wires, and turn the Mega into a calculator that keeps a running total.
 time: 45 minutes
 level: 2
 parts:
@@ -13,15 +13,17 @@ ideas:
   - Rows and columns: a key matrix
   - Scanning, one row at a time
   - Building a number from its digits
+  - A running total
 ---
 
 ## What you'll build
 
 <!-- closeup -->
 
-A pocket calculator you wired yourself. Tap **12**, press **C** for times, tap
-**34** and press **#**: the screen answers **= 408**. **A**, **B**, **C** and
-**D** are plus, minus, times and divide, and **\*** wipes the slate clean.
+An adding machine you wired yourself, the simplest kind of calculator. Type
+**12** and press **A**: the top row says **Total 12**. Type **30** and press
+**A** again: **Total 42**. **B** takes a number away instead, and **\***
+starts the total again from 0.
 
 ## The idea
 
@@ -50,9 +52,10 @@ then **2** makes 4, then 4 × 10 + 2 = 42. Type **7** next and it's
 42 × 10 + 7 = 427.
 
 !!! question "Predict"
-    Hold down **1**, then hold **2** as well. Keep **2** down while you
-    release **1**. Does the screen show 1, 2, 12 or 21, and when? Write
-    down your guess and try it once the calculator works.
+    Pressing **5** joins row 2 to column 2, the wire on pin 27. Suppose
+    that wire came out of pin 27. Which keys would stop working: only
+    **5**, a whole row, a whole column, or every key? Write down your guess;
+    you'll test it once the adding machine works.
 
 ## Build it
 
@@ -71,8 +74,9 @@ then **2** makes 4, then 4 × 10 + 2 = 42. Type **7** next and it's
     Hold the keypad with its keys facing you and the ribbon hanging down. The
     eight contacts, from left to right, are rows 1 to 4 and then columns 1 to
     4, so the leftmost one goes to pin 22 and the rightmost to pin 29. If
-    pressing **1** puts ` / ` on the screen (the keypad read it as **D**),
-    the wires are in back to front: turn the order of all eight round.
+    pressing **5** puts a 9 on the screen, and **1** does nothing (the
+    keypad read it as **D**), the wires are in back to front: turn the
+    order of all eight round.
 
 When you are done, these are the connections your circuit makes:
 
@@ -94,50 +98,48 @@ What's new:
 - `char key` holds one character, as in Lesson 14. In single quotes, `'7'` is
   one character; in double quotes, `"7"` would be a piece of text.
 - Characters are numbers underneath. `'0'` to `'9'` have codes one after
-  another, so `key - '0'` turns `'7'` into the number 7. In the same way
-  `key - 'A'` turns **A** to **D** into 0 to 3, the place of each one's
-  symbol in `symbols`, an `adk::Array` of characters.
+  another, so `key - '0'` turns `'7'` into the number 7, and
+  `key >= '0' && key <= '9'`, with Lesson 4's `&&`, asks whether the key is
+  a digit at all.
 - `number` is the number being typed. Each digit shifts it one place left
-  and joins on the end, with `number * 10 + (key - '0')`. When you choose
-  an operation, `number` moves into `first`, and starts again from 0 for
-  the second number.
-- `digits` counts the digits typed into the number and stops at four, so even
-  9999 × 9999 fits in a `long`. Counting them, rather than looking at how big
-  the number is, stops a row of zeros at four too.
-- `answered` remembers that the answer is showing. While it is, a digit
-  clears the screen and starts a new sum, and **A** to **D** and **#** do
-  nothing.
-- `showAnswer ()` writes the answer on the bottom row, or a message instead
-  if you ask it to divide by zero, which has no answer.
-- `calculate ()` is a `switch` on the operation's symbol, like `colorOf ()`
-  in Lesson 15. Divide one whole number by another and the answer is whole
-  too, the remainder dropped, as the octave knob's was in Lesson 9: 7 / 2
-  is 3.
+  and joins on the end, with `number * 10 + (key - '0')`.
+- `digits` counts the digits typed into the number and stops at four, so a
+  number is at most 9999. Counting them, rather than looking at how big the
+  number is, stops a row of zeros at four too.
+- `total` is a `long`, from Lesson 8, which holds numbers past two billion:
+  room to add 9999 more than 200 000 times. `total = total + number` works
+  out the right-hand side first, then puts the answer back into `total`.
+- Keys **C**, **D** and **#** match none of the questions in the `if` and
+  its `else if`s, so they do nothing yet.
+- `showTotal ()` clears the screen, writes the total on the top row, and
+  moves to the start of the bottom row with `lcd.at (0, 1)`, ready for the
+  next number, which starts again from 0. `setup ()` calls it too, so the
+  screen starts at **Total 0**.
 
 ## Upload it
 
-Upload the sketch; the screen starts blank. Type **12**, press **C**, type
-**34** and press **#**. The top row reads `12 x 34` and the bottom row
-`= 408`. Press any digit to start a new sum, or **\*** to clear. Try **7**,
-**D**, **2**, **#** for `= 3`, and **5**, **D**, **0**, **#** to see what the
-calculator thinks of dividing by zero.
+Upload the sketch. The top row says `Total 0`. Type **12**: it appears on
+the bottom row. Press **A**: the top row says `Total 12`, and the bottom row
+is empty again. Type **30** and press **A**: `Total 42`. Type **50** and
+press **B**: `Total -8`, below zero. Press **\*** to start again from 0.
 
-Then test your prediction: hold **1**, then hold **2** as well. Only **1**
-appears at first. Keep **2** down and release **1**: after the debounce,
-**2** appears. The screen ends up showing 12 because the keypad follows one
-held key at a time. Release **2** before continuing.
-
-Predict what will happen if you release **2** first. Then clear with **\***,
-hold **1**, tap and release **2**, and release **1**. Only 1 appears. The
-second key was already up when the first let go: ADK doesn't save those
-overlapping taps for later.
+Then test your prediction. Unplug the USB cable and take out the wire from
+pin 27 altogether, easing its other end gently out of the keypad's sixth
+contact from the left, so no loose end can touch anything. Plug the cable
+back in and press every key. **2**, **5**, **8** and **0** do nothing. Every other digit
+still appears, even **4** and **6**, which share row 2 with **5**, and
+**A**, **B** and **\*** still work. Those four keys are column 2. Each
+joins its row to column 2's wire, and with that wire gone no scan ever sees
+pin 27 go low. So a whole row or column that stops at once points to one
+wire. Unplug the USB cable again and put the wire back, from pin 27 to the
+keypad's sixth contact.
 
 ## If it doesn't work
 
 | What you see | Try this |
 |---|---|
 | No key does anything | Check the eight wires go to pins 22 to 29, in order, and that each is pushed fully into the keypad's socket. |
-| Pressing **1** shows ` / ` | The ribbon is back to front: see "Which way round is the ribbon?" above. |
+| Pressing **5** shows 9 | The ribbon is back to front: see "Which way round is the ribbon?" above. |
 | A whole row or column of keys is dead | One wire is loose. Row 1 is pin 22, row 4 pin 25; column 1 is pin 26, column 4 pin 29. |
 | Digits appear twice | A dirty or worn contact. Press firmly and squarely; if one key keeps doing it, it's the keypad. |
 | The screen is blank or shows blocks | Go back to Lesson 13's table: the LCD wiring or the contrast knob. |
@@ -157,21 +159,25 @@ overlapping taps for later.
 
 ## Make it yours
 
-1. **Keep going.** After an answer, make **A** to **D** carry on with the
-   answer as the first number, so you can type **2 A 3 # C 4 #** and get 20.
-2. **Decimals.** Make **7 D 2 #** show `= 3.500`. A whole number can't hold
-   the half, but a `float`, from Lesson 14, can. In `showAnswer ()`, for a
-   division, print `float (first) / number` with `lcd.print (value, 3)`:
-   `float (first)` turns `first` into a `float`, so the division keeps its
-   decimals.
-3. **Backspace.** Let **\*** delete the last digit instead of clearing
-   everything: dividing a number by 10 drops its last digit. How will you
-   rub it out on the screen?
-4. **Bigger numbers.** Allow six digits. What goes wrong with 999999 × 999999,
-   and why? (A `long` holds numbers up to about 2 billion.)
-5. **Hide it.** Print a `*` for each digit instead of the digit itself, like a
+1. **Times and divide.** Give **C** and **D** jobs: **C** multiplies the
+   total by the number, and **D** divides it. Whole numbers divide into
+   whole numbers, as the octave knob did in Lesson 9: 7 / 2 is 3. Nothing
+   can be divided by 0, so make **D** do nothing while `number` is 0. Then
+   add 9999 and multiply by 9999 twice: a `long` stops at about 2 billion,
+   and the total comes out wrong.
+2. **Backspace.** Let **#** rub out the last digit you typed: dividing a
+   number by 10 drops its last digit. How will you rub it out on the
+   screen?
+3. **Hide it.** Print a `*` for each digit instead of the digit itself, like a
    password box. You'll need exactly that in
    [Lesson 18](../018-keypad-safe/index.md).
+4. **A two-number calculator.** Make **12 C 34 #** show `12 x 34` on the top
+   row and `= 408` below it. When **A** to **D** is pressed, keep `number`
+   in a second `long`, `first`, keep the key in a `char`, and start the
+   number again from 0. On **#**, a `switch` on that key, like `colorOf ()`
+   in Lesson 15, prints `first + number`, `first - number`,
+   `first * number` or `first / number`. Refuse to divide by 0, which has
+   no answer.
 
 ## Measure it
 
