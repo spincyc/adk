@@ -434,6 +434,8 @@ class Drawing:
         box = self._view_box (rough, placed, detail) if rough else self._canvas (routes, placed)
         if view == "opening":
             box = self.opening_box ()
+            # It keeps only the labels it shows whole, with what they name.
+            placed = [label for label in placed if shown (box, label)]
         self._draw_mega (pencil)
         self._draw_board (pencil, detail)
         # Each part, module and wire is tagged with its build step's place in
@@ -483,8 +485,8 @@ class Drawing:
         placed = self._place_labels (self._layout (), None, None)
         return json.dumps ({"placed": placed, "boxes": self._placed_boxes})
 
-    # The opening shows the actual parts, including screens and other
-    # modules standing outside the breadboard. Wiring detail comes later.
+    # The opening shows the actual parts: a screen, or the parts on the
+    # board and the modules that belong with them. Wiring detail comes later.
     def opening_box (self):
         bench = self.bench
         modules = list (bench.modules.values ())
@@ -496,8 +498,7 @@ class Drawing:
             boxes = [box for module in screens for box in (module.reach_box (), module.title_box ())]
         else:
             boxes = [bounds_of (shape) for part in bench.parts for shape in part.shapes (bench)]
-            boxes += [box for module in bench.modules.values ()
-                      for box in (module.reach_box (), module.title_box ())]
+            boxes += [box for module in self._results () for box in module]
         if not boxes:
             boxes = [bench.board_box ()]
         left, top = min (box[0] for box in boxes) - 30, min (box[1] for box in boxes) - 30
@@ -505,6 +506,28 @@ class Drawing:
         width = max (160, right - left)
         height = max (110, bottom - top)
         return ((left + right - width) / 2, (top + bottom - height) / 2, width, height)
+
+    # The modules off the board that are part of what the lesson builds,
+    # each as its box and the corners of the wires running close by it:
+    # those the Mega drives or reads, and those standing by the board. Not a
+    # supply, such as the power module, nor an instrument standing away from
+    # the board, such as the signal generator; and not their names, which
+    # would widen the picture for a word.
+    def _results (self):
+        bench = self.bench
+        bx0, by0, bx1, by1 = bench.board_box ()
+        board = (bx0 - DPI, by0 - DPI, bx1 + DPI, by1 + DPI)
+        driven = {end[1].split (".")[0] for wire in bench.wires if "pin" in (wire[0][0], wire[1][0])
+                  for end in wire[:2] if end[0] == "module"}
+        results = []
+        for name, module in bench.modules.items ():
+            x0, y0, x1, y1 = box = module.reach_box ()
+            if module.kind.sources or name not in driven and not boxes_meet (box, board):
+                continue
+            corners = [(x - 4, y - 4, x + 4, y + 4) for _, _, points in self._layout ()
+                       for x, y in points if x0 - 80 < x < x1 + 80 and y0 - 80 < y < y1 + 80]
+            results.append ([box] + corners)
+        return results
 
     # Paper cannot scroll or open the guided view. Divide the occupied
     # breadboard into readable, overlapping ranges, and give each off-board
@@ -1249,6 +1272,17 @@ def shape_crosses (shape, a, b):
 
 def boxes_meet (a, b):
     return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
+
+
+# Whether a view, (x, y, width, height), shows a placed label whole, and
+# the point its leader or arrow names.
+def shown (view, label):
+    text, x, y, anchor, size, to, kind = label
+    x0, y0, x1, y1 = view[0], view[1], view[0] + view[2], view[1] + view[3]
+    left, top, right, bottom = text_box (x, y, text, size, anchor)
+    point = (to[-1] if kind == "note" else to) if to else (x, y)
+    return (x0 <= left and right <= x1 and y0 <= top and bottom <= y1
+            and x0 <= point[0] <= x1 and y0 <= point[1] <= y1)
 
 
 def straight_nodes (a, b):

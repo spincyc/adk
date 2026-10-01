@@ -71,6 +71,17 @@ for module in matrix.modules.values ():
     x0, y0, x1, y1 = module.reach_box ()
     assert left <= x0 < x1 <= left + width
     assert top <= y0 < y1 <= top + height
+# Without a screen, it frames the parts on the board and the modules the
+# Mega drives or reads, not an instrument standing away from the board.
+lab = Bench ("Lab", columns=(1, 14))
+lab.module ("sensor", name="wave", at=(1, 4), pins=["OUT", "GND"], label="isolated generator")
+lab.module ("sensor", name="tap", at=(3, 4), label="tap sensor")
+lab.wire ("wave.OUT", "j6").inductor ("100 mH", "g6", "e6").wire ("a6", "B-6")
+lab.wire ("22", "tap.S")
+left, top, width, height = Drawing (lab).opening_box ()
+assert lab.modules["wave"].reach_box ()[2] < left
+x0, y0, x1, y1 = lab.modules["tap"].reach_box ()
+assert left <= x0 < x1 <= left + width and top <= y0 < y1 <= top + height
 regions = Drawing (screen).print_regions ()
 assert all (crop[2] <= 430 for _, crop, columns in regions if columns)
 assert any (columns and columns[0] <= 43 <= columns[1] for _, _, columns in regions)
