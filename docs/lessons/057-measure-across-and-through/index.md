@@ -55,7 +55,7 @@ Mega. Keep the metal probe tips from touching each other.
    bottom − rail. Plug USB in. Touch the probes to the two rail holes in
    the first drawing and record the steady reading.
 2. Predict how much of that voltage lies across the resistor. Touch red
-   to **h6** and black to **d6**, the free holes in its two strips. Record
+   to **h6** and black to **a6**, free holes in its two strips. Record
    the reading without moving the resistor.
 3. Predict how much lies across the LED. Touch red to **c6** by its long
    leg and black to **c7** by its short leg. Record the reading.

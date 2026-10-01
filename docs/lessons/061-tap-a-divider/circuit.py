@@ -4,5 +4,5 @@ bench = Bench ("A knob between 5 V and GND, with its wiper on A0", columns=(1, 5
 
 bench.home_knob ()
 
-bench.measure ("Wiper to GND", red="d40", black="GND", expect="about 2.5 V",
+bench.measure ("Wiper to GND", red="c40", black="GND", expect="about 2.5 V",
                when="Knob near the middle of its turn")

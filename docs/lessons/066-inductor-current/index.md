@@ -60,6 +60,10 @@ steady current to at most about 4 mA with a 4 V input, below the coil's
 
 ## Compare the edges
 
+If this is your first time with the scope and generator, read the
+[scope and generator primer](../../electricity/skills.md#scope-and-generator)
+and do its output check before you connect the generator to this circuit.
+
 1. With the generator still off, attach **both scope ground clips** to
    free holes in the bottom − rail. Put channel 1's tip at the generator
    **OUT** connection (or a free hole in j6's upper strip). Put channel 2's
@@ -70,7 +74,8 @@ steady current to at most about 4 mA with a 4 V input, below the coil's
    (50 µs/div). Turn on the generator. Sketch both rising edges and record
    how long channel 2 takes to rise most of the way.
 3. **Switch off and unplug the generator.** Remove only the coil. Bridge
-   its two breadboard strips with the spare jumper from **j6 to a6**.
+   its two breadboard strips with the spare jumper from **g6 to e6**, the
+   holes the coil's leads used.
    Leave the resistor and both probes in place. Check the route, reconnect
    the generator, and compare the same rising edges at the same scope
    settings.
@@ -102,7 +107,7 @@ the coil slowed the current change in your build.
 
 | What you see | Check with the generator off and unplugged |
 |---|---|
-| Channel 2 stays flat | Check OUT to j6, the coil at g6–e6, the a6-to-j10 jumper, the resistor at g10–e10, and a10 to the bottom − rail. |
+| Channel 2 stays flat | Check OUT to j6, the coil at g6–e6, the yellow a6-to-j10 jumper, the resistor at g10–e10, and a10 to the bottom − rail. |
 | Both traces look flat | Check that the generator is set to a 100 Hz square wave and that the scope triggers on channel 1. Check the timebase and probe coupling. |
 | Channel 2 looks like channel 1 even with the coil | Look for a wire bypassing g6–e6 or a probe tip on j6 instead of j10. |
 | Traces move when a clip moves | Put both ground clips only on the bottom − rail and check the generator's GND wire reaches that rail. |

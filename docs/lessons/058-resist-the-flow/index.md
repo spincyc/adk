@@ -34,10 +34,10 @@ light with 2 kΩ.
 ## Keep the circuit
 
 Unplug USB before building if you are starting here. Keep the 5 V and GND
-rail wires, red LED, and its two short jumpers in the same holes as Lesson
-57. Begin with the **220 Ω** resistor across the middle gap in **g6 and
-e6**. Each replacement goes in those same two holes. The 5 V feed and
-LED return stay in place.
+rail wires, red LED, and its two short jumpers in the same holes as E02.
+Begin with the **220 Ω** resistor across the middle gap in **g6 and e6**.
+Each replacement goes in those same two holes. The 5 V feed and LED return
+stay in place.
 
 !!! warning "Unplug before every swap"
     Never change a resistor or wire while USB is plugged in. Never leave
@@ -70,7 +70,7 @@ trials. Make each brightness note before the next swap.
 
 For each voltage reading, set the meter to **DC volts (V⎓)**, black lead in
 **COM**, red lead in **V**, and 20 V range if needed. Touch red to **h6**
-and black to **d6**. Those free holes are on opposite sides of whichever
+and black to **a6**. Those free holes are on opposite sides of whichever
 resistor is fitted. Keep the meter leads in the voltage jacks. Never put
 a meter set to current across the supply.
 
@@ -92,8 +92,8 @@ little as current changes; the three currents need not be in exact
 resistance ratios. Which change did the meter show more clearly than your
 eyes? Compare your observations with the order you predicted.
 
-**Leave USB unplugged.** Restore the 220 Ω resistor in g6 and e6 for the
-next lesson.
+**Leave USB unplugged.** Put the 220 Ω resistor back in g6 and e6, so the
+build matches the drawing again.
 
 ## The example sketch
 
@@ -108,7 +108,7 @@ works without code. It claims no signal pins.
 |---|---|
 | The LED stays dark with every resistor | Check the 5 V feed, LED direction, and GND return. |
 | It goes dark after a swap | Check the resistor value and make sure its legs cross the middle gap in g6 and e6. |
-| The meter stays near zero | Check DC volts, the V jack, and the h6 and d6 probe holes. |
+| The meter stays near zero | Check DC volts, the V jack, and the h6 and a6 probe holes. |
 | Brightness is hard to judge | Use the calculated currents; small visual changes can be difficult to see. |
 
 These are expected results; the circuit has not been recorded as tested on

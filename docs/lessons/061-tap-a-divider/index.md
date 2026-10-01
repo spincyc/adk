@@ -34,11 +34,9 @@ voltage. Here the wiper moves the point where you tap that shared voltage.
 
 ## Build it
 
-!!! warning "Unplug first"
-    Unplug the Mega before moving any wires. Remove any AA battery pack from
-    the previous build. This knob uses only the Mega's USB 5 V. Keep the
-    wiper on A0 alone: joining it to a power rail could short 5 V to GND
-    when the knob reaches an end.
+!!! warning "Unplug first" Unplug the Mega before moving any wires. This
+knob uses only the Mega's USB 5 V. Keep the wiper on A0 alone: joining it to
+a power rail could short 5 V to GND when the knob reaches an end.
 
 Use the knob's home from Lesson 7: its outer legs go in **f39** and **f41**,
 across the breadboard gap from the wiper in **d40**. The black jumper from
@@ -106,5 +104,6 @@ values. Compare the measured pairs, not an exact halfway position.
 | Knob or wire gets warm | Unplug at once. Check that the wiper's strip connects only to A0 and that the outer legs reach different rails. |
 
 This investigation adds a voltage measurement to [Lesson 7's divider](../007-dimmer/index.md).
-A later sampling investigation looks more closely at the numbered steps
-inside the A0 reading.
+[E22](../077-sampling/index.md) looks more closely at the numbered steps
+inside the A0 reading. These are expected results; the circuit has not been
+recorded as tested on hardware.

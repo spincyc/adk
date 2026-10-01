@@ -42,9 +42,10 @@ Write down all three guesses.
     part gets hot or smells, unplug at once and check the wiring.
 
 Keep the Mega's GND wire in the bottom − rail hole nearest it and its 5 V
-wire in the top + rail hole nearest it. Take out the other parts and wires
-from E09. The button and red LED go in their familiar positions;
-the transistor goes in the same holes as in Lesson 3.
+wire in the top + rail hole nearest it. Keep E09's red LED in its home
+holes and take out E09's diode, resistor and black jumper. The button goes
+in its familiar position; the transistor goes in the same holes as in
+Lesson 3.
 
 Before inserting the transistor, read its marking. This drawing is for an
 **S8050 whose pins are E–B–C**, left to right with its marked flat face
@@ -108,4 +109,5 @@ ADK sketch claims no I/O pins:
 When you finish, release the button and unplug USB. Compare this physical
 switch with [Lesson 3's active buzzer](../003-reaction-duel/index.md): there
 a Mega pin supplies the base current, while the buzzer has its own path
-through the transistor.
+through the transistor. These are expected results; the circuit has not been
+recorded as tested on hardware.

@@ -8,5 +8,5 @@ bench.led ("red", anode="b6", cathode="b7")
 bench.wire ("a7", "B-7")
 
 bench.measure ("Supply, from 5 V to GND", red="5V", black="GND", expect="about 5 V")
-bench.measure ("Across the 220 Ω resistor", red="h6", black="d6", expect="about 3 V")
+bench.measure ("Across the 220 Ω resistor", red="h6", black="a6", expect="about 3 V")
 bench.measure ("Across the red LED", red="c6", black="c7", expect="about 2 V")
