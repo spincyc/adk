@@ -1,5 +1,50 @@
 # Changelog
 
+## Unreleased
+
+- **Library: two renames.** `FmRadio::setVolume (n)` is now `volume (n)`
+  and `Keypad::key ()` is now `pressedKey ()`, following one rule written
+  into the style guide: events read in the past tense or as `was…`,
+  settings by their bare noun. Sketches written for 0.4.0 need the new
+  names.
+- **Library: stopping and timing.** After `adk::stop ()`, an `Every` holds
+  its beat until `restart ()`, and a `Bridge` sends nothing until the new
+  `start ()`. `StartTime` gains `start ()` and `passed ()`, its `elapsed ()`
+  is a plain query, and every part keeps its start times in one; so
+  `Stopwatch::reset ()` and a mesh node's 1.5 s gap now count from the
+  update after the call. The ultrasonic ranger times its echo with
+  `pulseInLong ()`, so other parts' interrupts no longer shorten it. A
+  `Span` views only its own type, or adds `const`. `adk::dec (n, 2)` prints
+  a number with at least two digits.
+- **Tests.** `make smoke` runs every sketch's `setup ()` and 400 passes of
+  `loop ()` on the host under the sanitizers; `make avr-test` runs a few
+  tests on a simulated Mega, where `int` is 16 bits; the fake core models a
+  pin's output latch, so a 3.3 V line pulled up to 5 V fails its test. CI
+  runs both.
+- **Lessons.** Every piece of C++ is explained where it first appears, and
+  *The C++ you've met* lists them. Lessons 2 and 3 carry less at once, with
+  a beep test before Lesson 3's game. Lesson 40's European setting
+  compiles; two-board lessons say how to tell two Megas' ports apart and
+  remind Europe of its airtime; Lesson 42 is optional. Longer sketches say
+  on their page why they need the length.
+- **Electricity.** Every investigation has the same sections and a change
+  to try; E05, E10, E18, E21 and E24 now show their idea rather than state
+  it; E07, E09, E10, E11 and E13 have schematics.
+- **Drawings.** Parts are drawn back to front, so a knob no longer hides
+  an LED; labels stay near their own parts with leaders kept off other
+  parts; wires keep off other wires' plugs and rail strips, and a wire kept
+  from the lesson before keeps its way as well as its color. The LED's
+  long leg is bent, film capacitors look like film capacitors, the PIR's
+  pin names read whole, meter probes lean in from their own sides, and a
+  lesson's opening shows what moves as well as its screen. Build along
+  and printed close-ups no longer cut names in half.
+- **Site.** Every lesson says it hasn't been built on a real bench yet and
+  asks for build reports, through a new issue form. A teacher guide, a
+  glossary, a page on what comes next and the changelog join the site, and
+  its footer shows the version. Printed lessons put their answers on a
+  last page of their own. Every link and anchor is checked when the site
+  builds.
+
 ## 0.4.0 (2026-09-30)
 
 A new start, built on the library's original 2021 design.
