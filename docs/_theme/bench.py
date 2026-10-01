@@ -790,18 +790,20 @@ class Bench:
     # The GY-521 standing in row j, columns 9 to 16, its board over the top
     # rails: VCC from the top + rail, GND down across the gap to the − rail,
     # and SCL and SDA from 21 and 20 through the BSS138 level shifter above
-    # the gap beside the Mega. Its low side takes 3.3 V through column 5,
-    # which also leaves a tap for another 3.3 V module.
+    # the gap beside the Mega. The shifter lies turned half round, its B
+    # side toward the Mega and its A side toward the GY-521, so each signal
+    # goes in one side and out the other. Its low side takes 3.3 V through
+    # column 5, which also leaves a tap for another 3.3 V module.
     @staged ("the GY-521")
     def home_gy521 (self):
         self.header_module ("gy521", first=9, row="j")
         self.wire ("T+7", "i9")
         self.wire ("f10", "e10", color="black")
         self.wire ("a10", "B-10")
-        self.module ("i2c_level_shifter", "levels", at=(5.0, -1.3), facing="down",
-                     detail="headers fitted; LV/A pins toward the Mega, HV/B pins toward the board")
+        self.module ("i2c_level_shifter", "levels", at=(5.0, -1.3), facing="up",
+                     detail="headers fitted; HV/B pins toward the Mega, LV/A pins toward the board")
         self.wire ("3.3V", "a5")
-        self.wire ("b5", "levels.LV", color="red")
+        self.wire ("b5", "levels.LV")
         self.wire ("T+5", "levels.HV")
         self.wire ("B-12", "levels.GND")
         self.wire ("20", "levels.B1")

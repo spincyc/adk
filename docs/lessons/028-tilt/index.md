@@ -78,7 +78,8 @@ side the Y arrow points to. ADK works them out for you in degrees with
     Add the **BSS138 bidirectional I2C level shifter**, an extra part
     described in [the kit list](../../kit.md#i2c-level-shifter). Lay it
     above the gap between the Mega and breadboard, on a nonconductive
-    support. Its fitted headers take female-to-male wires. HV takes 5 V,
+    support, its HV and B pins toward the Mega and its LV and A pins toward
+    the board. Its fitted headers take female-to-male wires. HV takes 5 V,
     LV takes the Mega’s 3.3 V through column 5, and GND joins GND. Pin 20
     reaches B1, with A1 to SDA; pin 21 reaches B2, with A2 to SCL. Leave
     channels 3 and 4 empty. Do not join A and B with jumper wires.

@@ -274,7 +274,7 @@ outer pair feed the rails.
 | Joystick | Below the Mega, under pins A3 and A4 | The power header's 5V and the inner GND pin |
 | Clock module | Above the board on its side, clear of the screen's wires | GND into the top − rail by column 13, VCC into the top + rail by column 15 |
 | Stepper driver | Below the Mega, under pins A8–A11 | From the power module's bottom rails: + into the bottom + rail by column 5, − into the bottom − rail by column 6 |
-| I2C level shifter | Above the gap between Mega and breadboard, supported on a nonconductive surface; A pins toward the Mega, B pins toward the board. Pin 20 to B1, A1 to h12; pin 21 to B2, A2 to g11 | HV from top +5; Mega 3.3V into a5 and b5 to LV; GND into bottom −12 |
+| I2C level shifter | Above the gap between Mega and breadboard, supported on a nonconductive surface; B pins toward the Mega, A pins toward the board. Pin 20 to B1, A1 to h12; pin 21 to B2, A2 to g11 | HV from top +5; Mega 3.3V into a5 and b5 to LV; GND into bottom −12 |
 | RFID reader | Below the Mega, facing up | The Mega's 3.3V and the inner GND pin |
 | Tap sensor | Below the Mega, at its left end | The power header's 5V and GND |
 | Relay | Above the board, its pins toward the Mega and its screw terminals away from it | The inner 5V and GND pins |

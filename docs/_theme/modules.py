@@ -543,8 +543,8 @@ class I2cLevelShifter (Kind):
         for pin in self.all_pins ():
             hole (pencil, pin.x, pin.y, r=2.5)
             inward = 5 if pin.x < 30 else -5
-            pencil.text (pin.x + inward, pin.y + 2, pin.name, size=4.5,
-                         anchor="start" if inward > 0 else "end", kind="silk")
+            level (pencil, pin.x + inward, pin.y, pin.name, 4.5,
+                   anchor="start" if inward > 0 else "end")
         for y in (25, 35, 45, 55):
             ic (pencil, 30, y, 9, 6, notch=False)
 
