@@ -614,13 +614,17 @@ class Bench:
     # driver, whose base on column 30 gets pin 12 through 1 kΩ. Beside the four-digit
     # display it stands in column 35, clear of the wires that rise over the
     # gap in column 32 and the segment circuit that occupies column 33.
+    # Pin 12's wire rises from the top header and runs along the top edges
+    # of the Mega and the board, below the screen's lanes and the keypad's
+    # turns, to column 32: the shortest way it has, not round the Mega's
+    # far end.
     @staged ("the {kind} buzzer")
     def home_buzzer (self, kind, via=None):
         column = 35 if self._has ("four-digit display") else 33
         self.buzzer (f"f{column}", f"e{column}", kind=kind)
         if kind == "active":
             self.transistor ("a29", "a30", "a31")
-            self.wire ("12", "a32", via=via)
+            self.wire ("12", "a32", via=[(1.6, 0.55), (8.45, 0.55)] if via is None else via)
             self.resistor ("1 kΩ", "c32", "c30")
             self.resistor ("10 kΩ", "b30", "B-30")
             self.wire ("b29", "B-29")

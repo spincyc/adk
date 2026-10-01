@@ -36,6 +36,7 @@ CLEAR    = 3.2                      # how far a wire's center keeps from anythin
 KEEP_OFF = 40                       # crossing a board the wire doesn't plug into
 SHARE    = 40                       # sharing grid with another wire, times the round's pressure
 HEURISTIC = 1.2                     # A* leans on its estimate a little, for speed
+DETOUR, SLACK = 1.5, 100            # a wire's length, at first, to the square way it spans
 
 
 def node (point):
@@ -134,11 +135,17 @@ class Router:
                 heading = direction (leg[0], leg[1])
                 path += leg[1:]
                 continue
-            leg, heading, cost = self._search (a, b, heading, first if index == 0 else None, allow,
-                                               own, ends, margin=40)
-            if leg is None:
+            # A wire no longer than it need be first: a way round the far
+            # end of the Mega may cost less than crossing a few wires, but
+            # it needs a jumper half as long again. Only where nothing so
+            # short gets through does the wire go further round.
+            way = (abs (b[0] - a[0]) + abs (b[1] - a[1])) * STEP
+            leg = None
+            for margin, budget in ((40, way * DETOUR + SLACK), (40, None), (None, None)):
                 leg, heading, cost = self._search (a, b, heading, first if index == 0 else None,
-                                                   allow, own, ends, margin=None)
+                                                   allow, own, ends, margin, budget)
+                if leg is not None:
+                    break
             if leg is None:
                 raise ValueError (f"no way from {spot (a)} to {spot (b)}")
             path += leg[1:]
@@ -190,7 +197,9 @@ class Router:
         return self.extra.get (n, 0) + (HOLE if n in self.holes and n not in own else 0) + \
             NEAR * len (self.near.get (n, set ()) - own)
 
-    def _search (self, start, goal, heading, first, allow, own, ends, margin):
+    # The cheapest way from start to goal, within margin grid steps of the
+    # box they span, and, with a budget, no longer than that.
+    def _search (self, start, goal, heading, first, allow, own, ends, margin, budget=None):
         li0, lj0, li1, lj1 = self.limits
         if margin is not None:
             li0 = max (li0, min (start[0], goal[0]) - margin)
@@ -224,6 +233,7 @@ class Router:
         outward = self.outward
 
         best = {(start, heading): 0.0}
+        walked = {(start, heading): 0.0}
         came = {}
         queue = [(0.0, 0.0, start, heading)]
         push, pop = heapq.heappush, heapq.heappop
@@ -276,6 +286,10 @@ class Router:
                         # Crossings start cheap, so each wire first takes the
                         # way it wants and the rounds sort out who gives way.
                         cost += crossing + sharing * history.get (there, 0)
+                dx, dy = abs (ti - gi), abs (tj - gj)
+                run = walked[(here, d)] + (STEP * SQRT2 if e % 2 else STEP)
+                if budget is not None and run + (dx + dy - 0.5858 * min (dx, dy)) * STEP > budget:
+                    continue
                 if e % 2:
                     # Slants only fan a wire out of its pin or into its hole.
                     if not (near_start or ends[1] and abs (ti - gi) <= 2 and abs (tj - gj) <= 2):
@@ -302,8 +316,8 @@ class Router:
                 key = (there, e)
                 if total < best.get (key, math.inf):
                     best[key] = total
+                    walked[key] = run
                     came[key] = (here, d)
-                    dx, dy = abs (ti - gi), abs (tj - gj)
                     guess = (dx + dy - 0.5858 * min (dx, dy)) * STEP * weight
                     push (queue, (total + guess, total, there, e))
         return None, heading, 0.0
