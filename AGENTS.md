@@ -50,6 +50,8 @@ changing anything:
 | `make sanitize` | Host tests under ASan and UBSan |
 | `make examples` | Compile every example for the Mega |
 | `make pins` | Check each sketch claims exactly the pins its circuit wires |
+| `make smoke` | Run every sketch on the host under the sanitizers, 400 passes of `loop ()` |
+| `make avr-test` | A few tests on a simulated Mega, where `int` is 16 bits |
 | `make site` / `make pdf` | The website, and every lesson as a PDF |
 | `make boards` | Install the site's ADK Boards package into `build/` and compile with it |
 | `make style` | The mechanical style rules |

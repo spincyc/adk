@@ -27,6 +27,8 @@ the site derives its public label from its order within that track.
 | `make deps` | Install what the build needs: on Arch Linux its packages (with `sudo pacman`), then the Arduino core, the compiler and the site's Python; elsewhere it says what to install |
 | `make test` | Build and run the host tests |
 | `make sanitize` | The same tests under AddressSanitizer and UBSan |
+| `make avr-test` | A few tests run on a simulated Mega (avr-run), where `int` is 16 bits as on the board |
+| `make smoke` | Run every sketch's `setup ()` and 400 passes of `loop ()` on the host under ASan and UBSan, failing on any error or hang |
 | `make toolchain` | Fetch the C++23 avr-gcc the examples build with |
 | `make examples` | Compile every example for the Mega, failing on any library or sketch warning |
 | `make 001-blink` | Compile one lesson's sketches; `make lessons` lists every lesson's name |

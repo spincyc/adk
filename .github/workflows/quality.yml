@@ -77,6 +77,12 @@ jobs:
             - name: Compile every example
               run: make -j4 examples
 
+            - name: Run every example under the sanitizers
+              run: make -j4 smoke
+
+            - name: Run tests on a simulated Mega
+              run: make avr-test
+
             - name: Check each sketch against its circuit
               run: make -j4 pins
 
