@@ -22,8 +22,10 @@ see why a measured divider voltage changes when a load is attached.
 
 **Scope and generator extension:** After E10, try E11; after E08, try
 E13–E15; then E16–E18. These investigations need the isolated instruments
-described below. E11 helps explain E12, and E15 helps explain E23, but
-neither is required to build the later kit-and-meter experiment.
+described below; read the [scope and generator
+primer](skills.md#scope-and-generator) and do its output check before the
+first one. E11 helps explain E12, and E15 helps explain E23, but neither is
+required to build the later kit-and-meter experiment.
 
 **Logic branch:** After E05, try E19–E20 with the DIP logic chip listed
 below; after E08, try E21. E24 teaches its own serial logic levels, so
@@ -40,7 +42,8 @@ and check your own prediction.
 The [ADK starter kit](../kit.md) has the Mega, breadboard, wires, LEDs,
 buttons, 220 Ω/1 kΩ/2 kΩ/10 kΩ resistors, potentiometer, S8050 and
 1N4007. Add a digital multimeter with DC volts for the measured route.
-Check each module's extra parts before starting it:
+[What to buy](../kit.md#what-to-buy) turns this table into a shopping list
+for each path. Check each module's extra parts before starting it:
 
 | Module | Investigations | Equipment beyond the kit and DC voltmeter |
 |---|---|---|
@@ -49,17 +52,21 @@ Check each module's extra parts before starting it:
 | 3. Charge and diodes | E07–E09 | 1000 µF electrolytic capacitor rated at least 10 V for E07–E08; a stopwatch for E08. E09 uses kit parts. |
 | 4. Switches and coils | E10–E12 | E10 and E12 use kit parts. E11 needs a 100 mH inductor rated at least 10 mA, generator and two-channel scope. |
 | 5. Alternating signals | E13–E15 | 1 µF nonpolar film capacitor, generator and two-channel scope. |
-| 6. Gain and power | E16–E18 | E16: MCP6002 DIP, 100 nF ceramic and 10 µF electrolytic capacitors rated at least 10 V, generator and scope; E17 reuses that chip circuit but may use a DC voltmeter for its comparison; E18: 10 Ω resistor, 100 µF and 100 nF capacitors, generator and scope. |
+| 6. Gain and power | E16–E18 | E16: MCP6002 DIP, 100 nF ceramic and 10 µF electrolytic capacitors rated at least 10 V, generator and scope; E17 reuses that chip circuit, which its page shows how to build without a generator, and may use a DC voltmeter instead of the scope; E18: 10 Ω resistor, 100 µF and 100 nF capacitors, generator and scope. |
 | 7. Logic and memory | E19–E21 | E19–E20: 74HC00 DIP and 100 nF capacitor; E21: 74HC14 DIP, 2 × 100 kΩ resistors, 10 µF electrolytic and 100 nF ceramic capacitors. |
 | 8. Mega signals | E22–E24 | E22 and E24 use kit parts; E23 adds a 100 µF electrolytic capacitor rated at least 10 V. Its scope comparison is optional. |
 
-For E11 and E13–E18, use a **battery-powered two-channel oscilloscope**
+For E11, E13–E16 and E18, use a **battery-powered two-channel oscilloscope**
 sampling at 1 MS/s or more, with AC coupling or vertical offset, and a
 **battery-powered, floating waveform generator** with adjustable 0–4 V
 output, sine and square waves from 100 Hz to 1 kHz, and at least 5 mA
-output. Join the generator's signal ground to circuit ground. Keep its
-output off the Mega's USB + rail and all Mega inputs. A scope alone is
-optional in E12 and E23.
+output. A handheld two-channel scope with a built-in generator fits, if
+its generator can set both amplitude and offset. Join the generator's
+signal ground to circuit ground. Keep its output off the Mega's USB +
+rail and all Mega inputs. A scope alone is optional in E12, E17 and E23.
+The [scope and generator primer](skills.md#scope-and-generator) explains
+the settings, the output check to do first, and why the instruments must
+run from their own batteries.
 
 ## How to work through one investigation
 
@@ -74,7 +81,10 @@ optional in E12 and E23.
    explanation if needed.
 
 Use [Getting started](../start.md) when a lesson calls for an upload, and
-read [Safety](../safety.md) before wiring. Physical circuits use only the Mega's
+read [Safety](../safety.md) before wiring. Each investigation's example
+keeps a stable three-digit folder name in the Arduino IDE and the
+repository: E04's is `examples/lessons/059-resistors-in-series`, and E24's
+is `079-serial-link`. Physical circuits use only the Mega's
 USB 5 V or the isolated 0–4 V generator. Never use mains, the kit's
 9 V adapter, or a motor or servo driven from a pin. Unplug before changing
 wires; put a resistor in series with **every** LED. Keep the
@@ -163,11 +173,12 @@ E06 adds a meter reading at its documented A0 connection.
 **Idea:** A capacitor stores separated charge. **Before:** E02. **Use:**
 E07's Mega USB 5 V build, 10 kΩ, 1000 µF capacitor and voltmeter.
 **Predict, do, see:** Put the capacitor's marked − leg at GND, charge it
-through 10 kΩ and watch its voltage rise toward 5 V. Unplug USB, then
-move only the rail end of the charging jumper from top + to bottom −; the
-capacitor discharges through 10 kΩ and the meter falls gradually, so stored
-energy was available
-after the source left. Never short its legs.
+through 10 kΩ and watch its voltage rise toward 5 V. Unplug USB and lift
+the charging jumper's rail end into a free hole: with no path, the
+capacitor holds its voltage. Move that end into the top − rail, which a
+link wire joins to GND; the capacitor discharges through 10 kΩ and the
+meter falls gradually, so the stored charge was still there after the
+source left. Never short its legs.
 **ADK connection:** The slow change helps explain
 [Lesson 12's timer](../lessons/012-stopwatch/index.md), although that timer
 runs in code.
@@ -177,8 +188,9 @@ runs in code.
 **Idea:** Resistance times capacitance sets a charging timescale.
 **Before:** E07. **Use:** E07's USB 5 V build, another 10 kΩ, stopwatch and
 meter. **Predict, do, see:** Time from 0 V to about 3.2 V with 10 kΩ.
-Unplug USB and discharge as in E07 through the charging resistor to GND;
-verify near 0 V before charging through two 10 kΩ in series.
+Unplug USB and discharge as in E07, through the charging resistors into
+the top − rail; verify near 0 V before charging through two 10 kΩ in
+series.
 Predict and observe roughly 10 s then 20 s; the exact times depend on
 the parts and your timing. **ADK connection:** Gives a physical counterpart to
 the waits in [Lesson 12](../lessons/012-stopwatch/index.md).
@@ -187,11 +199,12 @@ the waits in [Lesson 12](../lessons/012-stopwatch/index.md).
 
 **Idea:** A diode conducts mainly in one direction. **Before:** E03.
 **Use:** E09's Mega USB 5 V build: 1N4007, red LED and 1 kΩ resistor.
-**Predict, do, see:** Wire 5 V → resistor → diode → LED → GND; the
-banded diode end faces the LED. Predict what reversing only the diode will
-do. The LED lights in the first orientation and stays dark in the second;
-its resistor stays in place for both trials. **ADK connection:** The same
-diode appears across the buzzer in [Lesson 3](../lessons/003-reaction-duel/index.md).
+**Predict, do, see:** Wire 5 V → diode → resistor → LED → GND, with the
+diode's banded end away from the + rail. Predict what reversing only the
+diode will do. The LED lights in the first orientation and stays dark in the
+second; its resistor stays in place for both trials. **ADK connection:** The
+same diode appears across the buzzer in [Lesson
+3](../lessons/003-reaction-duel/index.md).
 
 ## 4. Electronic switches and magnetism
 
@@ -212,110 +225,122 @@ Isolates the switch used for the [Lesson 3 buzzer](../lessons/003-reaction-duel/
 
 [e11-guide]: ../lessons/066-inductor-current/index.md
 
-**Idea:** An inductor makes current change gradually. **Before:** E10.
-**Use:** E11's generator build: 0–4 V square wave, 1 kΩ resistor, 100 mH
-inductor, two-channel scope. **Predict, do, see:** At 100 Hz, compare the
-generator edge with the voltage across the 1 kΩ resistor, which stands for
-current. Wire generator output → inductor → 1 kΩ → GND. Put both scope
-ground clips at GND, channel 1 on generator output and channel 2 at the
-inductor/resistor junction. With the inductor, channel 2 rises over roughly
-0.1 ms; replace the inductor with a wire and the edge is much sharper.
-**ADK connection:** The coil in [Lesson 3's buzzer](../lessons/003-reaction-duel/index.md)
-is why its switch has a protective diode.
+**Idea:** An inductor makes current change gradually. **Before:** E10 and
+the [scope primer](skills.md#scope-and-generator). **Use:** E11's generator
+build: 0–4 V square wave, 1 kΩ resistor, 100 mH inductor, two-channel scope.
+**Predict, do, see:** At 100 Hz, compare the generator edge with the voltage
+across the 1 kΩ resistor, which stands for current. Wire generator output →
+inductor → 1 kΩ → GND. Put both scope ground clips at GND, channel 1 on
+generator output and channel 2 at the inductor/resistor junction. With the
+inductor, channel 2 rises over roughly 0.1 ms; replace the inductor with a
+wire and the edge is much sharper. **ADK connection:** The coil in [Lesson
+3's buzzer](../lessons/003-reaction-duel/index.md) is why its switch has a
+protective diode.
 
 ### E12 — [Give a coil a safe path](../lessons/067-coil-diode/index.md) {#e12-coil-diode}
 
 **Idea:** A flyback diode gives coil current a path when its switch opens.
-**Before:** E10. E11 gives an optional scope comparison. **Use:** E12's
-Mega USB 5 V build: kit passive buzzer,
-S8050, button, 220 Ω buzzer resistor, 1 kΩ base resistor, 10 kΩ base
-pull-down, 1N4007, and red LED with its own 1 kΩ resistor; a scope is
-optional. **Predict, do, see:** Wire
-5 V → 220 Ω → buzzer + → buzzer − → collector; emitter goes to GND. Put the button
-through 1 kΩ from 5 V to base and 10 kΩ from base to GND. Fit the diode
-directly across the buzzer from the start: its banded end at buzzer + and
-unbanded end at collector. The separate resistor–LED branch also feeds
-the collector. Predict a lit LED while the button is held and possibly
-a faint click as you press and release.
-With a scope, probe the collector against GND to see a brief clamped
-transient on release. The 220 Ω stays in series with the roughly 16 Ω coil;
-the 5 V rail, not a Mega I/O pin, supplies its current. **ADK connection:**
-Combines
-[Lesson 5's passive buzzer](../lessons/005-melody-maker/index.md) with the
-transistor and flyback diode pattern in
-[Lesson 3](../lessons/003-reaction-duel/index.md).
+**Before:** E10. E11 gives an optional scope comparison; with a scope, read
+the [scope primer](skills.md#scope-and-generator). **Use:** E12's Mega USB
+5 V build: kit passive buzzer, S8050, button, 220 Ω buzzer resistor, 1 kΩ base
+resistor, 10 kΩ base pull-down, 1N4007, and red LED with its own 1 kΩ
+resistor; a scope is optional. **Predict, do, see:** Wire 5 V → 220 Ω →
+buzzer + → buzzer − → collector; emitter goes to GND. Put the button through
+1 kΩ from 5 V to base and 10 kΩ from base to GND. Fit the diode directly
+across the buzzer from the start: its banded end at buzzer + and unbanded
+end at collector. The separate resistor–LED branch also feeds the collector.
+Predict a lit LED while the button is held and possibly a faint click as you
+press and release. A meter on the collector reads about 0.1 V while the
+button is held and about 5 V when it is released; it cannot show the brief
+release itself. With a scope, probe the collector against GND to see it rise
+about 0.7 V above 5 V for a moment on release, held there by the diode. The
+220 Ω stays in series with the roughly 16 Ω coil; the 5 V rail, not a Mega
+I/O pin, supplies its current. **ADK connection:** Combines [Lesson 5's
+passive buzzer](../lessons/005-melody-maker/index.md) with the transistor
+and flyback diode pattern in [Lesson
+3](../lessons/003-reaction-duel/index.md).
 
 ## 5. Alternating signals
 
 ### E13 — [Current reverses](../lessons/068-alternating-current/index.md) {#e13-alternating-current}
 
 **Idea:** Alternating current flows first one way, then the other.
-**Before:** E07. **Use:** E13's generator build: 0–4 V, 1 kHz sine wave
-(2 V offset), 1 µF nonpolar film capacitor, 1 kΩ resistor, scope.
-**Predict, do, see:** Connect generator → capacitor → resistor → ground.
-With both scope ground
-clips at circuit ground, DC-couple channel 1 at the generator output and
-channel 2 at the resistor's top. Predict whether channel 2 can go below
-ground. Channel 1 stays between 0 and 4 V while channel 2 swings above
-and below 0 V: the capacitor removes the generator's 2 V DC offset and
-current through the resistor reverses. **ADK connection:** Deepens the
-waveform idea behind the [Lesson 5 buzzer](../lessons/005-melody-maker/index.md).
+**Before:** E08 and the [scope primer](skills.md#scope-and-generator).
+**Use:** E13's generator build: 0–4 V, 1 kHz sine wave (2 V offset), 1 µF
+nonpolar film capacitor, 1 kΩ resistor, scope. **Predict, do, see:** Connect
+generator → capacitor → resistor → ground. With both scope ground clips at
+circuit ground, DC-couple channel 1 at the generator output and channel 2 at
+the resistor's top. Predict whether channel 2 can go below ground. Channel 1
+stays between 0 and 4 V while channel 2 swings about 2 V above and below
+0 V: the capacitor charges to the generator's 2 V average, so current flows
+toward GND while the input is above 2 V and reverses while it is below.
+Replace the capacitor with a wire and channel 2 matches channel 1, never
+below 0 V. **ADK connection:** Deepens the waveform idea behind the [Lesson
+5 buzzer](../lessons/005-melody-maker/index.md).
 
 ### E14 — [Count a waveform][e14-guide] {#e14-frequency-and-period}
 
 [e14-guide]: ../lessons/069-frequency-and-period/index.md
 
 **Idea:** Frequency counts cycles per second; period is time per cycle.
-**Before:** E13. **Use:** E13's circuit, generator and scope. **Predict,
-do, see:** Change only the generator from 100 Hz to 1 kHz. Predict how many
-cycles fit in 10 ms; the scope shows about one, then ten. Measure one
-period as about 10 ms, then 1 ms. **ADK connection:** Explains why changing
-the note in [Lesson 5](../lessons/005-melody-maker/index.md) changes pitch.
+**Before:** E13. **Use:** E13's circuit, generator and scope; the [scope
+primer](skills.md#scope-and-generator) explains the timebase. **Predict, do,
+see:** Change only the generator from 100 Hz to 1 kHz. Predict how many
+cycles fit in 10 ms; the scope shows about one, then ten. Measure one period
+as about 10 ms, then 1 ms. **ADK connection:** Explains why changing the
+note in [Lesson 5](../lessons/005-melody-maker/index.md) changes pitch.
 
 ### E15 — [Filter and phase](../lessons/070-filter-and-phase/index.md) {#e15-filter-and-phase}
 
 **Idea:** An RC low-pass filter reduces fast changes and delays the output.
-**Before:** E08, E14. **Use:** E15's generator build: 0–4 V sine wave,
-1 kΩ series resistor, 1 µF film capacitor from output to ground, both
-scope channels. **Predict, do, see:** Compare input and output at 100 Hz,
-then 1 kHz. The output is smaller at 1 kHz, and its peaks come later than
-the input peaks; the capacitor's charge cannot follow as quickly.
-**ADK connection:** Gives a circuit explanation for smoothing the
-[Lesson 7 dimmer](../lessons/007-dimmer/index.md).
+**Before:** E08, E14 and the [scope primer](skills.md#scope-and-generator).
+**Use:** E15's generator build: 0–4 V sine wave, 1 kΩ series resistor, 1 µF
+film capacitor from output to ground, both scope channels. **Predict, do,
+see:** Compare input and output at 100 Hz, then 1 kHz. The output is smaller
+at 1 kHz, and its peaks come later than the input peaks; the capacitor's
+charge cannot follow as quickly. **ADK connection:** Gives a circuit
+explanation for smoothing the [Lesson 7
+dimmer](../lessons/007-dimmer/index.md).
 
 ## 6. Gain, feedback and clean power
 
 ### E16 — [Make a small signal larger](../lessons/071-amplifier-gain/index.md) {#e16-amplifier-gain}
 
-**Idea:** An amplifier changes a signal by a chosen gain. **Before:** E15.
-**Use:** E16's USB 5 V MCP6002 build, four 10 kΩ resistors,
-100 nF and 10 µF supply capacitors, generator and scope. Place both
-capacitors across the supply near the chip, with the 10 µF + leg at 5 V.
-Wire the unused amplifier as a follower: its + input uses a 2.5 V divider
-and its output joins its − input. **Predict, do, see:** Wire amplifier A as a non-inverting
-amplifier with one 10 kΩ from output to − input and one from − input to
-GND; feed + input a 0.5–1.5 V sine wave at 100 Hz. Predict the
-output range; it follows at about 1–3 V, twice the input. **ADK connection:**
-Shows what can happen inside the analog sensors used in
-[Lesson 8](../lessons/008-light-meter/index.md).
+**Idea:** An amplifier changes a signal by a chosen gain. **Before:** E15
+and the [scope primer](skills.md#scope-and-generator). **Use:** E16's USB
+5 V MCP6002 build, five 10 kΩ resistors and a sixth for the comparison, 100 nF
+and 10 µF supply capacitors, generator and scope. Place both capacitors
+across the supply near the chip, with the 10 µF + leg at 5 V. Wire the
+unused amplifier as a follower: its + input uses a 2.5 V divider and its
+output joins its − input. **Predict, do, see:** Wire amplifier A as a
+non-inverting amplifier with one 10 kΩ from output to − input and one from
+− input to GND; feed + input a 0.5–1.5 V sine wave at 100 Hz through a 10 kΩ
+input resistor. Predict the output range; it follows at about 1–3 V, twice
+the input. Put a second 10 kΩ in series in the feedback path and the gain
+becomes 3: about 1.5–4.5 V. **ADK connection:** A sensor with a small output
+needs a stage like this; [Lesson 8's](../lessons/008-light-meter/index.md)
+photoresistor divider already swings widely enough to read without one.
 
 ### E17 — [Feed back the output](../lessons/072-negative-feedback/index.md) {#e17-negative-feedback}
 
 **Idea:** Negative feedback makes an output follow a reference. **Before:**
-E16. **Use:** E17's USB-powered MCP6002 with both nearby supply capacitors
-and its unused amplifier terminated as in E16; add the kit's potentiometer,
-scope or meter, and a 1 kΩ load resistor. **Predict, do, see:** Connect the op-amp
-output to its − input (a follower), the knob's wiper to + input and 1 kΩ
-from output to
-GND. Turn the knob between about 1 V and 3 V; input and output readings
-track even while the output feeds the load. **ADK connection:** The knob
-comes from [Lesson 7](../lessons/007-dimmer/index.md); this is a new
+E16; with a scope, the [scope primer](skills.md#scope-and-generator).
+**Use:** E17's USB-powered MCP6002 with both nearby supply capacitors and
+its unused amplifier terminated as in E16; add the kit's potentiometer,
+scope or meter, and a 1 kΩ load resistor. **Predict, do, see:** Set the
+knob's wiper to 2.0 V, then hang the 1 kΩ load straight on it: the wiper
+falls to about 0.6 V. Connect the op-amp output to its − input (a follower),
+the knob's wiper to + input and the load from output to GND; the output
+stays near 2.0 V. Turn the knob between about 1 V and 3 V; input and output
+readings track even while the output feeds the load. **ADK connection:** The
+knob comes from [Lesson 7](../lessons/007-dimmer/index.md); this is a new
 buffer circuit, not a change to that lesson's wiring.
 
 ### E18 — [Keep the supply steady](../lessons/073-power-integrity/index.md) {#e18-power-integrity}
 
 **Idea:** Supply resistance makes load changes disturb the local voltage;
-a nearby capacitor reduces short ripples. **Before:** E07, E10, E14.
+a nearby capacitor reduces short ripples. **Before:** E07, E10, E14 and
+the [scope primer](skills.md#scope-and-generator).
 **Use:** E18's USB 5 V build: 10 Ω in the + feed, E10's transistor
 and LED load pattern, generator at 1 kHz square wave, 1 kΩ base resistor,
 10 kΩ base pull-down, 100 µF and 100 nF capacitors, scope. **Predict, do,
@@ -389,8 +414,9 @@ comparison. **Use:** E23's Mega build based on
 resistor; add a separate 10 kΩ from pin 3 to a meter point and 100 µF from
 that point to GND (− leg to GND). **Predict, do, see:** Turn the knob from
 low to high; the LED brightens while the filtered meter point rises from
-about 0 to 5 V after settling for several seconds. On the scope, pin 3
-still switches between 0 and 5 V. The filter branch is separate from the
+about 0 to 5 V after settling for several seconds. On the scope (see the
+[scope primer](skills.md#scope-and-generator)), pin 3 still switches
+between 0 and 5 V. The filter branch is separate from the
 LED branch.
 
 ### E24 — [Send a byte down a wire](../lessons/079-serial-link/index.md) {#e24-serial-link}

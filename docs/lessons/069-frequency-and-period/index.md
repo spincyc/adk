@@ -62,6 +62,9 @@ GND. The generator's ground and both scope clips meet at that common rail.
 
 ## Count and measure
 
+The [scope and generator primer](../../electricity/skills.md#scope-and-generator)
+explains the timebase, trigger and generator settings used here.
+
 1. With the generator off, put channel 1's tip on **generator OUT** at
    column 6's upper strip, and channel 2's tip on the **resistor top** at
    column 10's upper strip. Attach both ground clips to free bottom − rail

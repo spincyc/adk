@@ -107,8 +107,8 @@ If a part gets hot or smells, unplug USB at once and check for a wire joining
 ## How a lesson works
 
 Each lesson has a printable PDF. Project lessons include code and an upload;
-passive electricity investigations work from their wired circuit and need
-no upload. Both paths ask you to predict, build and check a result.
+most electricity investigations work from their wired circuit alone and
+need no upload. Both paths ask you to predict, build and check a result.
 The time shown is an estimate. **Level 1** is a starter build with a few
 connections; **Level 2** joins several parts or paths; **Level 3** has dense
 wiring or needs more advanced instruments.
