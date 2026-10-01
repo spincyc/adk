@@ -77,9 +77,10 @@ namespace adk {
         uint16_t    sender      () const;
         const char* text        () const;
 
-        // How strong it arrived, in dBm: about -40 across a room, and -120 at
-        // the edge of range. The margin above the noise, in dB, goes below 0
-        // near the edge; LoRa still hears down to about -15.
+        // How strong it arrived, in dBm: about -40 across a room, and about
+        // -130 at the edge of range at the Far speed. The margin above the
+        // noise, in dB, goes below 0 near the edge; LoRa still hears down to
+        // about -15.
         int16_t signal () const;
         int8_t  margin () const;
 
