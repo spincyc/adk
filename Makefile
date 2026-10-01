@@ -255,6 +255,7 @@ CLI_HINT         := and arduino-cli, as its installation guide explains:  \
         deps-other   \
         test         \
         sanitize     \
+        smoke        \
         avr-test     \
         toolchain    \
         examples     \
@@ -279,6 +280,7 @@ check: style     \
        sanitize  \
        avr-test  \
        examples  \
+       smoke     \
        pins      \
        size      \
        pdf       \
@@ -325,8 +327,8 @@ $(HOST_DIR)/examples/%: tests/examples/%.cpp $(PROBE_OBJECTS)
 	@echo "  TEST $<"
 	@$(CXX) $(PROBE_FLAGS) -MMD -MP -MF $@.d $< $(PROBE_OBJECTS) -o $@
 
-## sanitize        run the host tests and every example (its setup and loop) under ASan and UBSan
-sanitize: $(SANITIZE_DIR)/tests $(SANITIZE_CASES) $(SMOKE_CHECKS)
+## sanitize        run the host tests under AddressSanitizer and UBSan
+sanitize: $(SANITIZE_DIR)/tests $(SANITIZE_CASES)
 	$(SANITIZE_DIR)/tests $(TEST)
 	@set -e; for example in $(SANITIZE_CASES); do "$$example"; done
 
@@ -343,8 +345,13 @@ $(SANITIZE_DIR)/examples/%: tests/examples/%.cpp $(SANITIZE_PROBES)
 	@echo "  TEST $< (sanitized)"
 	@$(CXX) $(SANITIZE_PROBE_FLAGS) -MMD -MP -MF $@.d $< $(SANITIZE_PROBES) -o $@
 
-# Every example's setup () and a few hundred passes of its loop ()
-# (tests/probe/smoke.cpp): a crash, undefined behavior or a hang fails.
+## smoke           run every example's setup and loop on the host, under ASan and UBSan
+#
+# A few hundred passes of each loop () (tests/probe/smoke.cpp): a crash,
+# undefined behavior or a hang fails. It follows each example's AVR build,
+# so unlike sanitize it needs the toolchain.
+smoke: $(SMOKE_CHECKS)
+
 $(SANITIZE_DIR)/smoke/%.ok: $(ARDUINO_DIR)/%.log   \
                             $(SANITIZE_PROBES)     \
                             tests/probe/smoke.cpp

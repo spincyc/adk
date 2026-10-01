@@ -234,11 +234,11 @@ range, glides over the longest times, the clock's date read from flash,
 and a `Bridge` carrying a Mega's whole `long`. The simulator has no timers
 or pins, so only tests that give `update ()` its time can run there.
 
-`make sanitize` runs the host tests under AddressSanitizer and UBSan, then
-runs every example on the host too (`tests/probe/smoke.cpp`): its
-`setup ()`, then 400 passes of its `loop ()`, while time moves on and its
-inputs change now and then. A crash, undefined behavior or a sketch that
-never comes back fails it. That shows a sketch doesn't break, not that it
+`make sanitize` runs the host tests under AddressSanitizer and UBSan, and
+`make smoke` runs every example on the host under them too
+(`tests/probe/smoke.cpp`): its `setup ()`, then 400 passes of its
+`loop ()`, while time moves on and its inputs change now and then. A
+crash, undefined behavior or a sketch that never comes back fails it. That shows a sketch doesn't break, not that it
 does what its lesson says; the lessons tested in `tests/examples` are
 checked for that. None of these replaces trying a circuit on a real board.
 
