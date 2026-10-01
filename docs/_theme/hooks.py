@@ -143,7 +143,8 @@ def visible_reference (lesson):
 
 def arc_title (arc, lessons):
     name = arc["arc"].removeprefix ("Electricity · ")
-    title = f"{name}{NBSP}·{NBSP}{visible_number (lessons[0])}–{visible_number (lessons[-1])}"
+    first, last = visible_number (lessons[0]), visible_number (lessons[-1])
+    title = f"{name}{NBSP}·{NBSP}{first}" + (f"–{last}" if last != first else "")
     return title + (f"{NBSP}·{NBSP}two boards" if arc.get ("boards", 1) == 2 else "")
 
 

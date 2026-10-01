@@ -15,9 +15,9 @@ ROOT = Path (__file__).resolve ().parents[1]
 sys.dont_write_bytecode = True
 sys.path.insert (0, str (ROOT / "docs" / "_theme"))
 
-from hooks import (LESSONS, arcs, check_wires, course_table, link_lessons,  # noqa: E402
-                   load_circuit, on_config, on_nav, previous, stage_block,
-                   steps, visible_reference)
+from hooks import (LESSONS, NBSP, arc_title, arcs, check_wires, course_table,  # noqa: E402
+                   link_lessons, load_circuit, on_config, on_nav, previous,
+                   stage_block, steps, visible_reference)
 
 
 def nav_paths (items):
@@ -33,6 +33,11 @@ def nav_paths (items):
 
 
 assert len (LESSONS) == 79
+
+# An arc of one lesson is named by that lesson alone, not "55–55".
+assert arc_title ({"arc": "Extras", "boards": 2}, [LESSONS[54]]) == \
+    f"Extras{NBSP}·{NBSP}55{NBSP}·{NBSP}two boards"
+assert arc_title ({"arc": "First light"}, LESSONS[0:3]) == f"First light{NBSP}·{NBSP}1–3"
 
 # In course.yml's one-line entries a comma ends a value unless the value is
 # quoted: "builds: A game, with sound" would make a key named "with sound".
