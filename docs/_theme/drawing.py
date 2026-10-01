@@ -981,7 +981,7 @@ class Drawing:
                 best = placer.place (label.text, scaled, wide_ring (label.at, scaled), own, mine)
             settle (label, best)
         for text, at, offset in bench.notes:
-            tx, ty = bench.point_xy (at)
+            tx, ty = self._point (at)
             if rough and not (rough[0] < tx < rough[2] and rough[1] < ty < rough[3]):
                 continue
             note_size = size * 0.95
@@ -995,6 +995,16 @@ class Drawing:
             placed.append ((text, x, y, anchor, note_size, arrow_to (box, (tx, ty), note_size), "note"))
             self._placed_boxes.append (box)
         return placed
+
+    # Where a note points: a module's named spot, such as "servo.horn", or a
+    # point as the bench takes one.
+    def _point (self, at):
+        module, _, name = at.partition (".") if isinstance (at, str) else ("", "", "")
+        if name and module in self.bench.modules:
+            spot = self.bench.modules[module].spot (name)
+            if spot:
+                return spot
+        return self.bench.point_xy (at)
 
     # A label's paper, widened to cover whole any hole it would cut in half.
     def _patch (self, x, y, width, size, anchor):

@@ -1136,6 +1136,14 @@ class HeaderModule (Part):
             x, y = hx - pins[0].x, hy - pins[0].y - gap
         placed = Placed (self.kind, self.name, x, y, 180 if self.turned else 0, reach=gap)
         placed.title = self.name
+        # Its name never lies across the board's edge, which would strike it
+        # through: where it would, it moves further out, past the edge.
+        _, top, _, bottom = bench.board_box ()
+        y0 = placed.box ()[1]
+        for edge in (top, bottom):
+            _, upper, _, lower = placed.title_box ()
+            if upper - 2.5 < edge < lower + 2.5:
+                placed.gap += lower + 2.5 - edge if upper < y0 else edge + 2.5 - upper
         return placed
 
     def footprint (self, bench):

@@ -25,7 +25,7 @@ bench.wire ("4", "j19", via=[(2.45, -1.67), (7.2, -1.67)])
 bench.home_motor ()
 
 bench.home_servo ()
-bench.note ("tape the sensor and the fan to the horn", "servo.signal", offset=(-1.6, 1.2))
+bench.note ("tape the sensor and the fan to the horn", "servo.horn", offset=(1.4, -0.3))
 
 # Readings to take with a multimeter while the fan blows at a book.
 bench.measure ("The enable pin, a book at 70 cm", red="4", black="B-21", expect="about 2.6 V",

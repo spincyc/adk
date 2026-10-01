@@ -69,6 +69,7 @@ class Kind:
     sources = {}                    # pins that feed power, by what they give
     wired  = frozenset ()           # the pins with a wire on them, as Placed draws it
     title_side, title_gap = "top", 8
+    spots  = {}                     # named points on it that aren't pins, for notes
 
     def __init__ (self, pins=None, label=None, **options):
         if pins is not None and not self.flexible and len (pins) != len (self.pins):
@@ -285,6 +286,7 @@ class Servo (Kind):
     pin_modes = {"signal": "output"}
     width, height = 150, 160
     style  = "female"
+    spots  = {"horn": (66, 48)}     # along its arm, which things are taped to
 
     def header_y (self):
         return self.height
@@ -1405,6 +1407,7 @@ class Placed:
         self.x, self.y, self.angle = x, y, angle % 360
         self.reach = reach
         self.wired = set ()
+        self.gap = kind.title_gap       # from its body to its name
 
     def scene (self, x, y):
         c, s = self.COS[self.angle], self.SIN[self.angle]
@@ -1441,6 +1444,13 @@ class Placed:
                               f"{volts}")
         raise ValueError (f"the {self.title} has no pin {name!r}; its pins are "
                           f"{', '.join (p.name for p in pins)}")
+
+    # A named point on it that isn't a pin, such as a servo's horn, in the
+    # scene, or None.
+    def spot (self, name):
+        if name not in self.kind.spots:
+            return None
+        return self.scene (*self.kind.spots[name])
 
     # Where a wire meets a pin, and which way it leaves.
     def anchor (self, pin):
@@ -1488,7 +1498,7 @@ class Placed:
     def title_spot (self):
         x0, y0, x1, y1 = self.box ()
         dx, dy = self.turn (*SIDES[self.kind.title_side])
-        gap = self.kind.title_gap
+        gap = self.gap
         if dy < 0:
             return (x0 + x1) / 2, y0 - gap, "middle"
         if dy > 0:
