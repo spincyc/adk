@@ -38,13 +38,16 @@ from bench import (BOARD_HEIGHT, END, MARGIN, MEGA_HEIGHT, MEGA_PINS, MEGA_WIDTH
                    load, numbered, parse_hole, rail_column)
 from modules import HOUSING, Lcd1602, Matrix
 from parts import HeaderModule, Label, Led, Resistor, spots_round
-from pencil import DPI, WIRES, Pencil
+from pencil import DPI, WIRES, Pencil, leader_start
 from route import (HARD, Placer, Router, bounds_of, corners, direction, node, segment_distance,
                    segment_meets_box, text_box, text_width)
 
 MEGA_TINT = "#dfe6e8"
 CLOSEUP_COLUMNS = 16                # the narrowest close-up, so parts keep one scale
 ROUNDS = 6                          # of negotiation between the wires
+# How far out a label crowded from beside its part on the whole bench may go,
+# on its leader: as far as the margin round the board.
+FAR = (16, 24, 34, 46, 60, 80, 100, 125, 150)
 
 # Directions a wire may leave a header in: the way its pins point, or a
 # little either side, to fan out from its neighbors.
@@ -716,7 +719,7 @@ class Drawing:
     def _place_labels (self, routes, rough, detail):
         bench = self.bench
         size = bench.label_size
-        placer = Placer ()
+        placer = Labels ()
         if rough:
             _, by = bench.board_origin ()
             placer.view = (rough[0] - 30, by * DPI - 40, rough[2] + 30, (by + BOARD_HEIGHT) * DPI + 25)
@@ -755,11 +758,20 @@ class Drawing:
         named = []
 
         # A label that can only cover something else is an error, never an
-        # overlap drawn without a word.
+        # overlap drawn without a word, nor a part left without its name.
         def clear (text, best):
             if best[0] >= HARD:
                 raise ValueError (f"the label {text!r} has no room of its own: move what crowds "
                                   f"it{', or show other columns in the close-up' if rough else ''}")
+
+        # A label, and the leader back from it to what it names, which later
+        # labels keep off and later leaders would rather not cross.
+        def take (text, x, y, anchor, size, to, box):
+            placer.taken (box)
+            placed.append ((text, x, y, anchor, size, to, "label"))
+            self._placed_boxes.append (box)
+            if to:
+                placer.lead (leader_from (box, to), to)
 
         def put (label, own):
             text, scale = label.text, label.size
@@ -771,20 +783,25 @@ class Drawing:
                     named.append ((text, label.at))
                     return
                 named.append ((text, label.at))
-            spots = list (label.spots)
-            # The whole bench names a part on the breadboard only where the
-            # name fits beside it; the close-up names them all.
-            beside = not rough and not part_box (own)
-            if label.at and not beside:
-                spots += ring (label.at, text, size * scale)
-            # A leg's own label, such as an RGB LED's R, may touch its hole;
-            # the whole bench leaves those to the close-up.
-            if label.leg and not rough:
-                return
+            # A leg's own label, such as an RGB LED's R, may touch its hole.
             mine = [("circle", *label.leg, 3.4)] if label.leg else ()
+            # The whole bench names a part on the breadboard beside it where
+            # the name fits, and only failing that further out, on a leader
+            # back to it, once the wires are named (crowded); the close-up,
+            # and a part off the board, weigh both at once.
+            together = rough or part_box (own)
+            spots = list (label.spots) + (ring (label.at, text, size * scale)
+                                          if label.at and together else [])
             best = placer.place (text, size * scale, spots, own, mine)
-            if best is None or beside and best[0] >= HARD:
+            if label.at and not together and best[0] >= HARD:
+                crowded.append ((label, own, mine))
                 return
+            settle (label, best)
+
+        crowded = []
+
+        def settle (label, best):
+            text = label.text
             clear (text, best)
             cost, x, y, anchor, box = best
             to = None
@@ -793,9 +810,7 @@ class Drawing:
                 gap = math.hypot (max (box[0] - label.at[0], 0, label.at[0] - box[2]),
                                   max (box[1] - label.at[1], 0, label.at[1] - box[3]))
                 to = label.at if gap > 6 else None
-            placer.taken (box)
-            placed.append ((text, x, y, anchor, size * scale, to, "label"))
-            self._placed_boxes.append (box)
+            take (text, x, y, anchor, size * label.size, to, box)
 
         seen = lambda x: not rough or rough[0] - 4 < x < rough[2] + 4
         board = bench.board_box ()
@@ -838,21 +853,40 @@ class Drawing:
             for label in part.labels (bench) if id (part) not in grouped else ():
                 if label.at is None or seen (label.at[0]):
                     put (label, own)
+        # A ground or supply wire's name would rather not lie along the rail
+        # of the other sign, where "GND" beside a + reads as one.
+        _, by = bench.board_origin ()
+        rails = {sign: [(board[0], (by + low) * DPI, board[2], (by + high) * DPI)
+                        for low, high in bands]
+                 for sign, bands in (("+", ((0.21, 0.36), (2.01, 2.2))),
+                                     ("−", ((0.04, 0.19), (1.84, 1.99))))}
+        # Where each wire ends in a hole: a wire's name right beside another
+        # wire's end would seem to name that one.
+        ends = [(points[index], (start, end)) for start, end, points in routes
+                for index, (kind, _) in ((0, start), (-1, end)) if kind == "hole"]
         for start, end, points in routes:
             # Named by the end that matters: the hole, or the Mega for a module.
             if start[0] != "pin" or not seen ((points[-1] if end[0] == "hole" else points[0])[0]):
                 continue
             text = canonical (start[1])
+            wrong = rails["+"] if text == "GND" else rails["−"] if text in ("5V", "3.3V") else ()
+            others = [(x - 5, y - 5, x + 5, y + 5) for (x, y), wire in ends if wire != (start, end)]
             text = f"pin {text}" if numbered (text) else text
             spots = along (points if end[0] != "hole" else points[::-1], size * 0.9)
+            spots = [(x, y, anchor, cost + 100 * any (boxes_meet (box, rail) for rail in wrong)
+                      + 40 * any (boxes_meet (box, other) for other in others), to)
+                     for x, y, anchor, cost, to in spots
+                     for box in [text_box (x, y, text, size * 0.9, anchor)]]
             best = placer.place (text, size * 0.9, spots)
             if best:
                 clear (text, best)
                 _, x, y, anchor, box = best
                 to = next (spot[4] for spot in spots if spot[:3] == (x, y, anchor))
-                placer.taken (box)
-                placed.append ((text, x, y, anchor, size * 0.9, to, "label"))
-                self._placed_boxes.append (box)
+                take (text, x, y, anchor, size * 0.9, to, box)
+        for label, own, mine in crowded:
+            scaled = size * label.size
+            settle (label, placer.place (label.text, scaled, ring (label.at, label.text, scaled, FAR),
+                                         own, mine))
         for text, at, offset in bench.notes:
             tx, ty = bench.point_xy (at)
             if rough and not (rough[0] < tx < rough[2] and rough[1] < ty < rough[3]):
@@ -1100,6 +1134,49 @@ class Drawing:
                 pencil.text (hx + offset, hy + 2.3, row, size=6.5, tone=0.7, **board)
 
 
+class Labels (Placer):
+    """The labels placed so far and what they keep clear of, minding each
+    leader as well: one that runs under another label, or along another
+    leader, leaves unclear which label names what, which is worse than
+    crossing a wire or two."""
+
+    def __init__ (self):
+        super ().__init__ ()
+        self.leaders = []
+
+    # A leader drawn from start to the point it names, which later labels
+    # keep off.
+    def lead (self, start, to):
+        if math.dist (start, to) > 3:
+            self.leaders.append ((start, to))
+            self.avoid (("segment", *start, *to, 1.2))
+
+    def leader_cost (self, box, to, own=()):
+        cost = super ().leader_cost (box, to, own)
+        start = leader_from (box, to)
+        if math.dist (start, to) < 6:
+            return cost
+        cost += 2000 * sum (segment_meets_box (start, to, other, 2) for other in self.labels)
+        return cost + 2000 * sum (alongside (start, to, *leader) for leader in self.leaders)
+
+
+# Where the leader from a label's box to a point leaves the label, as the
+# pencil draws it.
+def leader_from (box, to):
+    size = (box[3] - box[1]) / 1.06
+    return leader_start (box[0] + 1, box[2] - box[0] - 3, box[3] - size * 0.26, size, to)
+
+
+# Whether the segment from a to b runs along the one from p to q, rather
+# than just crossing it.
+def alongside (a, b, p, q):
+    steps = max (2, int (math.dist (a, b) / 2))
+    near = sum (segment_distance (p, q, (a[0] + (b[0] - a[0]) * k / steps,
+                                         a[1] + (b[1] - a[1]) * k / steps)) < 2.5
+                for k in range (steps + 1))
+    return near > 3
+
+
 def board_outline (x, y, w, h, torn_left, torn_right, random):
     def edge (x0, top_to_bottom):
         points = []
@@ -1131,6 +1208,10 @@ def shape_crosses (shape, a, b):
             if segment_distance (shape[1:3], shape[3:5], p) < shape[5] + 2:
                 return True
     return False
+
+
+def boxes_meet (a, b):
+    return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
 
 
 def straight_nodes (a, b):
@@ -1175,9 +1256,9 @@ def along (points, size):
 
 # Spots further out round a point, each with a leader back to it, for a
 # label crowded out of its own.
-def ring (at, text, size):
+def ring (at, text, size, reaches=(16, 24, 34, 46, 60)):
     spots = []
-    for reach in (16, 24, 34, 46, 60):
+    for reach in reaches:
         for step in range (16):
             angle = step * math.pi / 8
             x, y = at[0] + math.cos (angle) * reach * 1.4, at[1] + math.sin (angle) * reach

@@ -455,14 +455,16 @@ class RgbLed (Part):
         size = bench.label_size
         labels = [Label (self.name, spots_round ((cx - r, cy - r, cx + r, cy + r), self.name, size,
                                                  "right"), (cx + r, cy))]
-        # Prefer a letter beside each hole. In a crowded close-up, let the
-        # label move farther away with a leader back to that exact leg.
+        # A letter beside each leg's hole: below it, or along a rail beside
+        # it, where below would stand on the other rail. When crowded, the
+        # letter moves farther away with a leader back to that exact leg.
         for letter, hole in zip (self.LETTERS, self.holes):
             x, y = bench.hole_xy (hole)
-            small = size * 0.62
-            spots = [(x, y + 4 + small * 0.8, "middle", 0), (x - 4, y + small * 0.3, "end", 3),
-                     (x + 4, y + small * 0.3, "start", 3)]
-            labels.append (Label (letter, spots, (x, y), 0.62, leg=(x, y)))
+            small = size * 0.7
+            below, beside = (9, 0) if re.match (r"[TB][+-]", hole) else (0, 3)
+            spots = [(x, y + 4 + small * 0.8, "middle", below), (x - 4, y + small * 0.3, "end", beside),
+                     (x + 4, y + small * 0.3, "start", beside)]
+            labels.append (Label (letter, spots, (x, y), 0.7, leg=(x, y)))
         return labels
 
     def draw (self, pencil, bench):

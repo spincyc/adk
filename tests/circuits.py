@@ -205,8 +205,17 @@ expect ("moving the green resistor preserves all three LED signals",
         {pin: mode for pin, (mode, _) in rgb_button.pin_modes ().items ()},
         {"5": "output", "6": "output", "7": "output", "23": "input"})
 # The green jumper and button ground crowd all three adjacent G-label
-# positions. The close-up must still label that leg, using a leader.
-Drawing (rgb_button).svg ("closeup")
+# positions. The bench must still label that leg, using a leader, and the
+# other three beside theirs.
+legs = Drawing (rgb_button).svg ()
+expect ("the RGB LED's legs are named on the bench",
+        [f">{letter}</text>" in legs for letter in ("R", "−", "G", "B")], [True] * 4)
+
+# The active buzzer's transistor, diode and resistors stand close together.
+# Each is still named on the bench: beside itself, or further out on a leader.
+crowded = Drawing (finished (Bench ("test", columns=(1, 63)).home_buzzer ("active"))).svg ()
+for name in ("S8050 transistor", "1N4007 diode", "10 kΩ", "1 kΩ", "active buzzer"):
+    expect (f"the {name} is named on the bench", f">{name}</text>" in crowded, True)
 
 # Automatic links are left of the LCD's body and remain standard wires
 # for the generated carry-over steps and the close-up's extent.

@@ -250,9 +250,7 @@ class Pencil:
         # The paper under it, from patch's left to its right when given.
         under = patch or (left - 1.2, left + width + 1.2)
         if to:
-            sx = min (max (to[0], left - 1.5), left + width + 1.5)
-            sy = y - size * 0.35 if abs (to[0] - sx) > 1 else (y + 2.5 if to[1] > y else y - size - 0.5)
-            self._path (straight ([(sx, sy), to]), 0.45, 0.7, "text")
+            self._path (straight ([leader_start (left, width, y, size, to), to]), 0.45, 0.7, "text")
             self.layers["text"].append (
                 f'<circle cx="{to[0]:.1f}" cy="{to[1]:.1f}" r="0.9" fill="{GRAPHITE}" '
                 f'fill-opacity="0.75"/>')
@@ -351,6 +349,16 @@ class Pencil:
 
 def straight (points):
     return "M " + " L ".join (f"{x:.1f} {y:.1f}" for x, y in points)
+
+
+# Where a label's leader leaves it for the point to: from its side, level
+# with the middle of its letters, or from above or below them when the
+# point is straight over or under it.
+def leader_start (left, width, y, size, to):
+    sx = min (max (to[0], left - 1.5), left + width + 1.5)
+    if abs (to[0] - sx) > 1:
+        return sx, y - size * 0.35
+    return sx, y + 2.5 if to[1] > y else y - size - 0.5
 
 
 # A Catmull-Rom curve through the points, as cubic Béziers.
