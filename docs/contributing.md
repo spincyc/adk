@@ -17,7 +17,7 @@ the site derives its public label from its order within that track.
 | `examples/` | One sketch per lesson (one per board in a two-board lesson), also the library's Arduino examples |
 | `tests/` | Host tests, a fake Arduino core, the pins check, the circuit model's tests and the style check |
 | `docs/` | This website: pages in Markdown, lessons in `docs/lessons/` |
-| `docs/_theme/` | The site's theme, build hook, circuit model (`bench.py`), drawing engine and course list |
+| `docs/_theme/` | The site's theme, build hooks, circuit model (`bench.py`), drawing engine and course list |
 | `boards/` | ADK Boards, the Arduino IDE board package: `avr/` is the platform, `toolchain.json` its compiler downloads, `published.txt` every version the site has published |
 
 ## Commands
@@ -38,7 +38,7 @@ the site derives its public label from its order within that track.
 | `make serve` | Preview the website at <http://127.0.0.1:8000> |
 | `make style` | Check the mechanical rules of the [style guide](STYLE.md) |
 | `make boards` | Install the site's ADK Boards package into `build/boards` and compile two lessons with it |
-| `make check` | All of the above, as CI runs it |
+| `make check` | Style, the host tests with and without the sanitizers, the examples, pins, sizes, the site and PDFs, and the board package: what CI runs on Linux. CI also lints the library with arduino-lint, installs ADK Boards on Windows and macOS, and checks that no published board version changed |
 | `make upload EXAMPLE=… PORT=…` | Upload one example, by its folder in `examples/` |
 
 The website needs Python 3: `make site` creates `build/venv` from
@@ -320,6 +320,17 @@ into the site. The package takes the library's version: when
 match, or the site will not build. To add a compiler for another computer,
 run the Toolchain workflow and add the entries it prints to
 `boards/toolchain.json`; `make toolchain` reads it too.
+
+The compilers for Windows, and for Linux on x86-64, come from Zak Kemble's
+avr-gcc builds, downloaded from [his GitHub releases](https://github.com/ZakKemble/avr-gcc-build/releases);
+the Toolchain workflow builds only the computers his releases leave out.
+If his releases moved or went, Boards Manager could no longer install ADK
+Boards on those computers. To host the same files on a release of this
+repository instead, download each archive, check it against its checksum
+in `toolchain.json`, attach it unchanged to the release, and change only
+its `url`. The file, its checksum and size, and the compiler's version all
+stay the same, so learners who have it already fetch nothing, and
+`published.txt` needs no new line.
 
 The site goes live from main, and Boards Manager never fetches a version it
 already has, so a published version must never change. `boards/published.txt`

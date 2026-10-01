@@ -89,7 +89,7 @@ make 001-blink                           # compile one lesson; make lessons list
 make upload-001-blink PORT=/dev/ttyACM0  # compile it and upload it to the Mega
 make site                                # the website, in build/site
 make pdf                                 # every lesson as a PDF
-make check                               # all of it, as CI runs it
+make check                               # what CI runs on Linux
 make help                                # everything else
 ```
 
