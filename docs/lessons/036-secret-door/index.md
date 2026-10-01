@@ -225,8 +225,9 @@ Push each probe tip into its own hole: the rails' + and − holes are only
 2.5 mm apart. A 600 ms beep is too short for a meter to settle, so for the
 second reading change `buzzer.beep (600)` in `refuse ()` to
 `buzzer.beep (2000)`, upload, and show the reader a card it doesn't know.
-Put it back afterwards. As in Lesson 34, the reader's wires go straight
-from the Mega to the reader, so its 3.3 V is out of reach here.
+Put it back afterwards. As in Lesson 34, the reader's four input signals
+pass through their dividers, and they change too quickly during a message
+for a meter to follow, so these readings leave the reader alone.
 
 !!! question "Predict"
     In Lesson 33, the passive buzzer's pin read about half of 5 V while a
