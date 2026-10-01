@@ -229,7 +229,7 @@ resistor for 10 kΩ: the LED stays as bright while the base current falls
 to about 0.36 mA, a fortieth of the collector current. **ADK connection:**
 Isolates the switch used for the [Lesson 3 buzzer](../lessons/003-reaction-duel/index.md).
 
-### E11 — [An inductor resists a change][e11-guide] {#e11-inductor-current}
+### E11 — [An inductor resists change][e11-guide] {#e11-inductor-current}
 
 [e11-guide]: ../lessons/066-inductor-current/index.md
 
@@ -316,7 +316,7 @@ dimmer](../lessons/007-dimmer/index.md).
 
 ## 6. Gain, feedback and clean power
 
-### E16 — [Make a small signal larger](../lessons/071-amplifier-gain/index.md) {#e16-amplifier-gain}
+### E16 — [Make a signal larger](../lessons/071-amplifier-gain/index.md) {#e16-amplifier-gain}
 
 **Idea:** An amplifier changes a signal by a chosen gain. **Before:** E15
 and the [scope primer](skills.md#scope-and-generator). **Use:** E16's USB

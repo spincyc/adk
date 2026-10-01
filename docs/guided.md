@@ -30,7 +30,7 @@ each module.
    Predict what two parts share and what happens when a second branch
    joins.
 6. **[Lessons 7–9: the analog world](lessons/007-dimmer/index.md).**
-7. **[E06: tap a divider](lessons/061-tap-a-divider/index.md).** Measure
+7. **[E06: Tap a divider](lessons/061-tap-a-divider/index.md).** Measure
    the knob's middle voltage, then try
    [Load a divider](electricity/challenges.md#loaded-divider) to see it
    change when another part draws from it.
@@ -39,7 +39,7 @@ each module.
    Time a capacitor's voltage change, then compare that physical delay
    with the timer in Lesson 12.
 10. **[Lessons 13–15: words and weather](lessons/013-hello-lcd/index.md).**
-11. **[E12: give a coil a safe path](lessons/067-coil-diode/index.md).** It
+11. **[E12: Give a coil a safe path](lessons/067-coil-diode/index.md).** It
     has complete steps from an empty board; you may skip scope-based E11.
 12. **[Lessons 16–36: keys, motion, sensors, games and projects](lessons/016-keypad/index.md).**
     Along the way, you can try

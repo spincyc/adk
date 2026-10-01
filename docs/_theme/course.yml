@@ -129,7 +129,7 @@
   track: electricity
   lessons:
     - {slug: 056-close-the-loop, title: Close the Loop, builds: An LED that proves current needs a return path}
-    - {slug: 057-measure-across-and-through, title: Across and Through, builds: Voltage and current readings from one LED circuit}
+    - {slug: 057-measure-across-and-through, title: Measure Across and Through, builds: Voltage and current readings from one LED circuit}
     - {slug: 058-resist-the-flow, title: Resist the Flow, builds: An LED whose current changes with resistance}
 
 - arc: Electricity · Sharing
