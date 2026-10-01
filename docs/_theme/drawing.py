@@ -107,11 +107,14 @@ def kept (draw):
         asked.apply_defaults ()
         wanted = (self.bench.source, draw.__name__, list (asked.arguments.values ())[1:])
         key = hashlib.sha256 (repr (wanted).encode ()).hexdigest () + ".svg"
+        # Only a finished drawing goes in DRAWN: one that raised must not
+        # leave a None behind for the pages to find in its place.
         if key not in DRAWN:
-            DRAWN[key] = recall (key)
-            if DRAWN[key] is None:
-                DRAWN[key] = draw (self, *args, **options)
-                keep (key, DRAWN[key])
+            text = recall (key)
+            if text is None:
+                text = draw (self, *args, **options)
+                keep (key, text)
+            DRAWN[key] = text
         return DRAWN[key]
     return drawing
 
