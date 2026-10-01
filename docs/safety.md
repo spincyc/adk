@@ -1,10 +1,11 @@
 # Safety
 
-The breadboard circuits use 5 V or 3.3 V, low voltages that are safe to
-touch. The Mega gets power from USB; later project lessons use the kit's
-power module with a 9 V adapter. The electricity investigations also use
-an isolated 0–4 V signal generator. These rules keep the parts and wiring
-safe.
+The breadboard circuits use 5 V or 3.3 V, and the relay's lamp in Lessons
+35 and 53 runs from a 9 V battery on the breadboard: all low voltages that
+are safe to touch. The Mega gets power from USB; later project lessons use
+the kit's power module with a 9 V adapter. The electricity investigations
+also use an isolated 0–4 V signal generator. These rules keep the parts
+and wiring safe.
 
 !!! danger "Never mains electricity"
     Nothing in this course connects to a wall socket, and nothing ever
@@ -62,6 +63,25 @@ and drivers; the chip’s 40 mA absolute maximum is not a design target.
 | 9 V battery | Never let its two terminals touch each other or anything metal. |
 | Laser module | Not used in this course. A laser can damage eyes. |
 | Clock module | If yours charges its coin cell (see its lesson), use a rechargeable LIR2032, never a CR2032. |
+
+## Soldering
+
+A few boards can arrive with their header pins loose, among them the level
+shifter (Lesson 28), the FM radio board (Lesson 37), some 433 MHz modules
+(Lesson 38) and a Heltec board (Lesson 42). Buy them with the pins fitted
+if you can. If not:
+
+- **An adult solders, or watches closely.** The iron's tip is hotter than
+  300 °C, and stays hot for minutes after it is unplugged.
+- **Keep the iron in its stand** whenever it isn't in your hand. Never
+  try to catch one that falls.
+- **Let fresh air in.** The smoke is from the flux in the solder; open a
+  window, or let a small fan draw it away from your face.
+- **Use lead-free solder**, and wash your hands when you finish, before
+  you eat.
+- **Wear safety glasses.** Hot flux can spit, and clipped pins fly.
+- **Hold the board still** with a clamp or a lump of putty, not your
+  fingers, and unplug the iron when you're done.
 
 ## Radios
 
@@ -127,4 +147,5 @@ work at 3.3 V, and a radio that sends is ruled by law.
 
 The lessons are written for learners from about twelve upwards, working
 alone or with a family member or teacher. Younger learners should build with
-an adult alongside.
+an adult alongside, and anyone under 18 should solder only with an adult
+there.
