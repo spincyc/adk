@@ -74,7 +74,9 @@ void loop ()
         if (tilt.measured ())
         {
             rollBall ();
-            drawGame ();
+            matrix.show (mazes[maze]);
+            matrix.set (7, 7, exitLit);
+            matrix.set (lround (ball.x), lround (ball.y));
         }
 
         if (lround (ball.x) == 7 && lround (ball.y) == 7)
@@ -105,9 +107,9 @@ void chooseMaze ()
     }
 }
 
-// The ball speeds up downhill and slows a little on its own, like a marble
-// on a tray. A raised right end rolls it left; a raised far edge, towards
-// you. It tries each way on its own, so it slides along a wall.
+// Like a marble on a tray, the ball speeds up downhill and slows a little on
+// its own. A raised right end rolls it left; a raised far edge, towards you.
+// A wall stops it dead. Trying each way on its own lets it slide along one.
 void rollBall ()
 {
     ball.speedX = ball.speedX * 0.9 - (tilt.pitch () - flatPitch) * 0.001;
@@ -115,14 +117,14 @@ void rollBall ()
 
     if (!isFree (ball.x + ball.speedX, ball.y))
     {
-        ball.speedX = bump (ball.speedX);
+        ball.speedX = 0;
     }
 
     ball.x += ball.speedX;
 
     if (!isFree (ball.x, ball.y + ball.speedY))
     {
-        ball.speedY = bump (ball.speedY);
+        ball.speedY = 0;
     }
 
     ball.y += ball.speedY;
@@ -136,24 +138,6 @@ bool isFree (float x, float y)
     bool inside = column >= 0 && column <= 7 && row >= 0 && row <= 7;
 
     return inside && (mazes[maze][row] & (0b10000000 >> column)) == 0;
-}
-
-// A wall stops the ball dead, with a knock if it hit hard enough to hear.
-float bump (float speed)
-{
-    if (fabs (speed) > 0.05)
-    {
-        speaker.tone (adk::note::c3, 20);
-    }
-
-    return 0;
-}
-
-void drawGame ()
-{
-    matrix.show (mazes[maze]);
-    matrix.set (7, 7, exitLit);
-    matrix.set (lround (ball.x), lround (ball.y));
 }
 
 // Out through the exit: a cheer, then on to choose the next maze.

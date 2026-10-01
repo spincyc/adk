@@ -27,7 +27,7 @@ The wooden maze game where you tilt a tray to roll a marble into the goal,
 made of light. Turn the knob to flip through four mazes and click to pick
 one. A single glowing ball waits in the top-left corner and an exit blinks
 in the bottom-right. Tilt the breadboard and the ball rolls: it speeds up
-downhill, knocks against the walls, and when it reaches the exit the buzzer
+downhill, stops against the walls, and when it reaches the exit the buzzer
 cheers and the next maze is ready.
 
 ## The idea
@@ -58,8 +58,10 @@ right: `0b00000100`. Then `&` keeps only the 1s the two bytes share. If
 anything is left, it's a wall.
 
 !!! question "Predict"
-    At 10° the ball settles at 5 dots a second. How fast will it roll with
-    the board tilted 5°? About how long will it take to cross the matrix?
+    Roll the ball along the top row of the first maze twice: once with the
+    board tipped gently, and once tipped about twice as far. Which run will
+    be faster, and by about how much? Will the ball keep speeding up all the
+    way along the row, or settle at a steady speed?
 
 ## How the game plays
 
@@ -72,8 +74,7 @@ Whatever tilt the board has at the moment you click counts as **flat** for
 that game, so hold the breadboard level when you click. That also cancels
 out a sensor that is a degree or two out, or a table that isn't level.
 
-The ball stops dead against a wall, and if it hit hard enough to hear, the
-buzzer knocks. The edges of the matrix are walls too.
+The ball stops dead against a wall. The edges of the matrix are walls too.
 
 ## Build it
 
@@ -137,15 +138,22 @@ What's new:
   and `flatRoll`, the tilt that counts as flat.
 - `rollBall ()` runs once per reading. It updates the speed, then tries the
   move in x and in y separately, so a ball rolling along a wall keeps
-  sliding the way it's free to go. When a wall is in the way, `bump ()`
-  stops the ball, and knocks if it was going faster than 0.05 dots per
-  reading.
-- `isFree ()` rounds the ball's position to a dot with `lround ()` and checks
-  that it is on the matrix. `&&` stops at the first thing that is false, so
-  a dot off the matrix is never looked up in the maze. Then
-  `mazes[maze][row] & (0b10000000 >> column)` tests that dot's bit.
-- `drawGame ()` shows the maze, lights the exit only while `exitLit` is on,
-  and lights the ball.
+  sliding the way it's free to go. When a wall is in the way, that speed
+  becomes 0 and the ball stops dead. `ball.x += ball.speedX` adds the speed
+  to the place, with Lesson 21's `+=`.
+- After each roll, `loop ()` draws the game: the maze, then the exit, lit
+  only while `exitLit` is on, then the ball.
+- `isFree ()` rounds the ball's position to a dot with `lround ()`, as in
+  Lesson 28, and checks that it is on the matrix. `&&` stops at the first
+  thing that is false, so a dot off the matrix is never looked up in the
+  maze. Then `mazes[maze][row] & (0b10000000 >> column)` tests that dot's
+  bit. `>>` is Lesson 10's `<<` the other way: it moves the 1 to the right.
+- One `&` is not the same as two. `&&` joins two true-or-false answers, as in
+  Lesson 4's box; a single `&` between two numbers works bit by bit, keeping
+  only the 1s they share, as *The idea* showed. The brackets round the
+  whole `&` matter: C++ does `==` before `&`, so without them it would ask
+  whether `(0b10000000 >> column) == 0` first. `isFree ()` hands back the
+  answer, true or false, with `return`.
 - `celebrate ()` plays the `cheer`, lets it finish with `adk::wait ()`, and
   chooses the next maze.
 
@@ -155,14 +163,18 @@ Upload the sketch with the breadboard lying flat. The matrix shows the
 first maze, a zigzag. Turn the knob: each click ticks and shows another
 maze; after the fourth, the first comes round again. Choose the zigzag,
 hold the breadboard level and click. Two rising notes play, the ball sits
-in the top-left corner and the exit blinks in the bottom-right. Tip the
-board to your right: the ball rolls along the top row. Roll it down through
-each gap to the exit, and listen for the cheer.
+in the top-left corner and the exit blinks in the bottom-right.
 
-You predicted the speed at 5°. Half the tilt gives half the push, 0.005 of a
-dot per reading, and it balances the friction at half the speed: 0.05 dots
-per reading, or 2.5 dots a second. It crosses the matrix in about three
-seconds, where 10° took under two.
+Now test your prediction on the top row. Tip the board gently to your
+right and watch the ball cross the row, then tip it about twice as far to
+your left and watch it come back. The steeper run takes about half the
+time: twice the tilt gives twice the push, and the friction balances it at
+twice the speed. Either way the ball gathers speed for a moment, then rolls
+on at a steady pace. It doesn't keep speeding up, because the faster it
+goes, the more the friction takes away.
+
+Then roll the ball down through each gap to the exit, and listen for the
+cheer.
 
 ## If it doesn't work
 
@@ -200,9 +212,15 @@ seconds, where 10° took under two.
 2. **Against the clock.** Start an `adk::Stopwatch`, as in Lesson 3, when
    the maze starts. When the ball escapes, scroll the time in seconds,
    printed into an `adk::Text` as Lesson 27 printed the score.
-3. **Bouncy walls.** Instead of stopping dead, make the ball bounce back
-   at half speed: have `bump ()` return `-speed * 0.5`.
-4. **Traps.** Add holes that send the ball back to the start: a second
+3. **A knock.** Make a wall knock when the ball hits it hard enough to
+   hear. In `rollBall ()`, just before a speed becomes 0, play a short low
+   note, `speaker.tone (adk::note::c3, 20);`, but only if that speed is
+   more than 0.05 dots per reading either way: `fabs (ball.speedX) > 0.05`,
+   with `fabs ()` from Lesson 28. A gentle roll into a wall stays silent.
+4. **Bouncy walls.** Instead of stopping dead, make the ball bounce back
+   at half speed: set the speed to `-ball.speedX * 0.5` instead of 0, and
+   the same for y.
+5. **Traps.** Add holes that send the ball back to the start: a second
    `Maze` of holes for each maze, drawn blinking, and checked the same way
    as the walls.
 
