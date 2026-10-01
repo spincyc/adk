@@ -29,6 +29,7 @@ import json
 import logging
 import math
 import os
+import re
 import shutil
 import sys
 
@@ -36,7 +37,7 @@ import meter
 
 from bench import (BOARD_HEIGHT, END, MARGIN, MEGA_HEIGHT, MEGA_PINS, MEGA_WIDTH, ROWS, canonical,
                    load, numbered, parse_hole, rail_column)
-from modules import HOUSING, Lcd1602, Matrix
+from modules import HOUSING, Lcd1602, Matrix, Motor, Servo, Stepper
 from parts import HeaderModule, Label, Led, Resistor, back_to_front, spots_round
 from pencil import DPI, WIRES, Pencil, leader_start
 from route import (HARD, Placer, Router, bounds_of, corners, direction, node, segment_distance,
@@ -55,6 +56,11 @@ PROBED = 1000
 # Directions a wire may leave a header in: the way its pins point, or a
 # little either side, to fan out from its neighbors.
 LEAVING = {"top": (6, 5, 7), "bottom": (2, 1, 3), "double": (0, 7, 1)}
+
+# The modules that move, which the opening shows beside a screen.
+MOVING = (Servo, Motor, Stepper)
+# A row of like parts' one name, as "4 × 220 Ω".
+GROUPED = re.compile (r"\d+ × ")
 
 # Where routes and drawings are kept, if anywhere, and this version of the
 # engine: a digest of the theme's Python.
@@ -519,17 +525,20 @@ class Drawing:
         placed = self._place_labels (self._layout (), None, None)
         return json.dumps ({"placed": placed, "boxes": self._placed_boxes})
 
-    # The opening shows the actual parts: a screen, or the parts on the
-    # board and the modules that belong with them. Wiring detail comes later.
+    # The opening shows the actual parts: a screen and whatever moves, or
+    # the parts on the board and the modules that belong with them, each
+    # with its name. Wiring detail comes later.
     def opening_box (self):
         bench = self.bench
         modules = list (bench.modules.values ())
         modules += [part.placed (bench) for part in bench.parts if isinstance (part, HeaderModule)]
         screens = [module for module in modules if isinstance (module.kind, (Lcd1602, Matrix))]
-        # A screen is the visible result. Framing a distant button with it
-        # would turn a readable picture into a tall strip of empty wiring.
+        # A screen is the visible result, and so is a servo's arm or a fan
+        # turning. Framing a distant button with them would turn a readable
+        # picture into a tall strip of empty wiring.
         if screens:
-            boxes = [box for module in screens for box in (module.reach_box (), module.title_box ())]
+            shown = screens + [module for module in modules if isinstance (module.kind, MOVING)]
+            boxes = [box for module in shown for box in (module.reach_box (), module.title_box ())]
         else:
             boxes = [bounds_of (shape) for part in bench.parts for shape in part.shapes (bench)]
             boxes += [box for module in self._results () for box in module]
@@ -537,6 +546,18 @@ class Drawing:
             boxes = [bench.board_box ()]
         left, top = min (box[0] for box in boxes) - 30, min (box[1] for box in boxes) - 30
         right, bottom = max (box[2] for box in boxes) + 30, max (box[3] for box in boxes) + 30
+        # A part's name that the frame would cut in half, or leave outside
+        # at the end of its leader, is framed in whole rather than left out:
+        # the coil a lesson is about is never shown unnamed.
+        if not screens:
+            names = {label.text for part in bench.parts for label in part.labels (bench)}
+            cut = (left, top, right, bottom)
+            for text, x, y, anchor, size, to, kind in self._bench_labels ():
+                x0, y0, x1, y1 = box = text_box (x, y, text, size, anchor)
+                if kind == "label" and (text in names or GROUPED.match (text)) and \
+                        (boxes_meet (box, cut) or to and boxes_meet ((*to, *to), cut)):
+                    left, top = min (left, x0 - 8), min (top, y0 - 8)
+                    right, bottom = max (right, x1 + 8), max (bottom, y1 + 8)
         width = max (160, right - left)
         height = max (110, bottom - top)
         return ((left + right - width) / 2, (top + bottom - height) / 2, width, height)
@@ -604,7 +625,25 @@ class Drawing:
             right, bottom = max (p[0] for p in points), max (p[1] for p in points)
             regions.append ((module.title + " · connections",
                              (left - 38, top - 38, right - left + 76, bottom - top + 76), None))
-        return regions
+        return [(caption, self._whole_names (crop), columns) for caption, crop, columns in regions]
+
+    # A printed detail shows the bench's own labels, so its frame would cut
+    # a name at its edge to "1N4007 dio" or "50 transistor". It grows to
+    # take in whole every name it cuts, and any those bring in.
+    def _whole_names (self, crop):
+        x, y, width, height = crop
+        left, top, right, bottom = x, y, x + width, y + height
+        names = json.loads (self._labels ())["boxes"]
+        grown = True
+        while grown:
+            grown = False
+            for x0, y0, x1, y1 in names:
+                whole = left <= x0 and x1 <= right and top <= y0 and y1 <= bottom
+                if not whole and boxes_meet ((x0, y0, x1, y1), (left, top, right, bottom)):
+                    left, top = min (left, x0 - 4), min (top, y0 - 4)
+                    right, bottom = max (right, x1 + 4), max (bottom, y1 + 4)
+                    grown = True
+        return left, top, right - left, bottom - top
 
     # Reuse the overview's scene instead of copying thousands of SVG nodes
     # for each printed crop. Add row names at a crop's own edge;
@@ -615,7 +654,9 @@ class Drawing:
         pencil = Pencil (self.bench.seed, prefix)
         pencil.layers["paper"].append (f'<use href="#{source}-scene"/>')
         if columns:
-            first, _ = columns
+            # A frame grown to hold a name whole starts further along: its
+            # row letters stand by the first column it shows.
+            first = min (columns[0], self._column_at (box[0] + 36))
             original, _ = self.bench.hole_xy (f"a{self.bench.first}")
             if not box[0] <= original - 11 <= box[0] + box[2]:
                 self._row_letters (pencil, first)

@@ -20,7 +20,7 @@ from bench import Bench  # noqa: E402
 from hooks import (LESSONS, board_caption, carries, continuity, load_all,  # noqa: E402
                    load_circuit, previous, recolored, step_points, step_row, step_stages, steps,
                    written)
-from drawing import Drawing  # noqa: E402
+from drawing import Drawing, shown  # noqa: E402
 
 
 class Tags (HTMLParser):
@@ -80,12 +80,28 @@ lab.module ("sensor", name="wave", at=(1, 4), pins=["OUT", "GND"], label="isolat
 lab.module ("sensor", name="tap", at=(3, 4), label="tap sensor")
 lab.wire ("wave.OUT", "j6").inductor ("100 mH", "g6", "e6").wire ("a6", "B-6")
 lab.wire ("22", "tap.S")
-left, top, width, height = Drawing (lab).opening_box ()
+left, top, width, height = box = Drawing (lab).opening_box ()
 assert lab.modules["wave"].reach_box ()[2] < left
 x0, y0, x1, y1 = lab.modules["tap"].reach_box ()
 assert left <= x0 < x1 <= left + width and top <= y0 < y1 <= top + height
+# It names every part it frames: the coil a lesson is about keeps its name,
+# however far up its leader the name stands.
+names = {label.text for part in lab.parts for label in part.labels (lab)}
+assert all (shown (box, label) for label in Drawing (lab)._bench_labels () if label[0] in names)
+# Beside a screen, it frames what moves, such as a servo's arm, which is
+# the visible result as well.
+needle = Bench ("Needle", columns=(1, 63)).screen ().module ("servo", at=(6.0, 5.5))
+left, top, width, height = Drawing (needle).opening_box ()
+x0, y0, x1, y1 = needle.modules["servo"].reach_box ()
+assert left <= x0 < x1 <= left + width and top <= y0 < y1 <= top + height
 regions = Drawing (screen).print_regions ()
 assert all (crop[2] <= 430 for _, crop, columns in regions if columns)
+# A printed detail shows each of the bench's names whole, or not at all.
+for _, (x, y, width, height), _ in regions:
+    for x0, y0, x1, y1 in json.loads (Drawing (screen)._labels ())["boxes"]:
+        inside = x <= x0 and x1 <= x + width and y <= y0 and y1 <= y + height
+        apart = x1 <= x or x + width <= x0 or y1 <= y or y + height <= y0
+        assert inside or apart, "a printed detail cuts a name in half"
 assert any (columns and columns[0] <= 43 <= columns[1] for _, _, columns in regions)
 assert any (columns and columns[0] <= 62 <= columns[1] for _, _, columns in regions)
 
