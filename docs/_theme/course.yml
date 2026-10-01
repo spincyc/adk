@@ -40,7 +40,7 @@
 
 - arc: Keys and motion
   lessons:
-    - {slug: 016-keypad, title: Keypad, builds: A calculator on a keypad and screen}
+    - {slug: 016-keypad, title: Keypad, builds: An adding machine on a keypad and screen}
     - {slug: 017-servo, title: Servo, builds: A dial whose needle follows a knob}
     - {slug: 018-keypad-safe, title: Keypad Safe, builds: A box that opens with a secret code, project: true}
 

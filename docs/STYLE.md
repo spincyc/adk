@@ -71,7 +71,7 @@ the interesting part of a lesson is what the reader sees first.
 
 - Declare the circuit's parts at the top, in the order the lesson introduces
   them. Parts that belong together go together in a `struct`, such as a
-  player's button and light, and parts that repeat go in an `adk::Array`.
+  key's button and its note, and parts that repeat go in an `adk::Array`.
 - `setup ()` acquires, configures, then starts: `adk::setup ()` first, then
   anything that happens once.
 - `loop ()` observes, decides, then acts: it starts with `adk::update ()` (or

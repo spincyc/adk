@@ -22,7 +22,7 @@ bench.power_module ()
 bench.home_stepper ()
 
 # Readings to take with a multimeter, the power module switched on.
-bench.measure ("The buzzer's pin while it rings", red="10", black="GND", expect="about 2.4 V",
+bench.measure ("The buzzer's pin while it rings", red="10", black="GND", expect="about 2.3 V",
                when="While a note plays")
 bench.measure ("The flag's supply, on the bottom rails", red="B+40", black="B-40",
                expect="about 5 V", when="Power module on")
