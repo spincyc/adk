@@ -219,6 +219,37 @@ crowded = Drawing (finished (Bench ("test", columns=(1, 63)).home_buzzer ("activ
 for name in ("S8050 transistor", "1N4007 diode", "10 kΩ", "1 kΩ", "active buzzer"):
     expect (f"the {name} is named on the bench", f">{name}</text>" in crowded, True)
 
+# A label crowded out to a leader keeps the leader off other parts' bodies,
+# as the photoresistor's between the buzzer and the knob, and no label
+# hides the hole a probe goes in, as Lesson 63's might the red probe's d8.
+for lesson, wanted in (("009-light-theremin", "photoresistor"), ("063-time-an-rc-pair", None)):
+    bench = load (os.path.join (ROOT, "docs", "lessons", lesson, "circuit.py"))[""]
+    drawing = Drawing (bench)
+    placed = drawing._place_labels (drawing._layout (), None, None)
+    bodies = [(part, shape) for part in bench.parts for shape in part.bodies (bench)]
+    for text, x, y, anchor, size, to, _ in placed:
+        if text == wanted and to:
+            box = text_box (x, y, text, size, anchor)
+            crossed = [part.name for part, shape in bodies if part.name != text
+                       and shape_crosses_segment (shape, leader_from (box, to), to)]
+            expect (f"{lesson}'s {text} leader crosses no other part", crossed, [])
+    probes = [hole for index in range (len (bench.measurements))
+              for hole, _ in bench.probes (index)]
+    expect (f"{lesson}'s labels leave its probes' holes in view",
+            [text for text, x, y, anchor, size, _, _ in placed for hole in probes
+             if distance_to (("rect", *text_box (x, y, text, size, anchor)), bench.hole_xy (hole))
+             < 1.8], [])
+
+# A note points at a module's named spot, such as a servo's horn; a module
+# standing in a row keeps its name off the board's edge.
+horned = finished (Bench ("test", columns=(1, 63)).power_module ().home_servo ())
+expect ("a note at the servo's horn", Drawing (horned)._point ("servo.horn"),
+        horned.modules["servo"].spot ("horn"))
+radio = finished (Bench ("test", columns=(1, 63)).home_rf_receiver ())
+_, upper, _, lower = radio.parts[0].placed (radio).title_box ()
+expect ("the receiver's name clear of the board's edge",
+        lower < radio.board_box ()[1] or upper > radio.board_box ()[1], True)
+
 # Automatic links are left of the LCD's body and remain standard wires
 # for the generated carry-over steps and the close-up's extent.
 links = finished (Bench ("test", columns=(1, 63)).home_knob ())

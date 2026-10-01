@@ -40,7 +40,7 @@ from modules import HOUSING, Lcd1602, Matrix
 from parts import HeaderModule, Label, Led, Resistor, back_to_front, spots_round
 from pencil import DPI, WIRES, Pencil, leader_start
 from route import (HARD, Placer, Router, bounds_of, corners, direction, node, segment_distance,
-                   segment_meets_box, text_box, text_width)
+                   segment_meets_box, shape_crosses_segment, text_box, text_width)
 
 MEGA_TINT = "#dfe6e8"
 CLOSEUP_COLUMNS = 16                # the narrowest close-up, so parts keep one scale
@@ -48,6 +48,9 @@ ROUNDS = 6                          # of negotiation between the wires
 # How far out a label crowded from beside its part on the whole bench may go,
 # on its leader: as far as the margin round the board.
 FAR = (16, 24, 34, 46, 60, 80, 100, 125, 150)
+# What a label costs over a probe's hole, which it would hide from a learner
+# looking for it: more than a leader across a wire or two.
+PROBED = 1000
 
 # Directions a wire may leave a header in: the way its pins point, or a
 # little either side, to fan out from its neighbors.
@@ -812,30 +815,49 @@ class Drawing:
             _, by = bench.board_origin ()
             placer.view = (rough[0] - 30, by * DPI - 40, rough[2] + 30, (by + BOARD_HEIGHT) * DPI + 25)
             placer.soft_view = rough
-        placer.avoid (("rect", *bench.mega_box ()))
-        for placed in bench.modules.values ():
-            placer.avoid (("rect", *placed.reach_box ()))
+        # Each thing a leader may cross is counted once, however many of its
+        # shapes it crosses: a wire's run and the end it plugs in by, a part's
+        # body and its legs.
+        placer.avoid (("rect", *bench.mega_box ()), owner="Mega")
+        for name, placed in bench.modules.items ():
+            placer.avoid (("rect", *placed.reach_box ()), owner=name)
+            placer.body (("rect", *placed.box ()), name)
             placer.taken (placed.title_box ())
+        owners = {}
         for part in bench.parts:
             for shape in part.shapes (bench):
-                placer.avoid (shape)
-        for _, _, points in routes:
+                placer.avoid (shape, owner=id (part))
+            for shape in part.bodies (bench):
+                placer.body (shape, id (part))
+            owners.update ((hole, id (part)) for _, hole in part.legs ())
+        # The holes a meter's or a scope's probes go in, which the learner
+        # looks for on the bench.
+        probes = [hole for index in range (len (bench.measurements))
+                  for hole, _ in bench.probes (index)]
+        probes += [hole for index in range (len (bench.scope_probes))
+                   for hole, _ in bench.probe_points (index)]
+        for hole in probes:
+            placer.avoid (("circle", *bench.hole_xy (hole), 3.4), PROBED)
+        for index, (start, end, points) in enumerate (routes):
             for a, b in zip (points, points[1:]):
-                placer.avoid (("segment", a[0], a[1], b[0], b[1], 2.4))
+                placer.avoid (("segment", a[0], a[1], b[0], b[1], 2.4), owner=index)
+            owners.update ((name, index) for kind, name in (start, end) if kind in ("hole", "pin"))
         for hole in bench.holes ():
             xy = bench.hole_xy (hole)
             if hole in bench.used:
-                placer.avoid (("circle", xy[0], xy[1], 3.4))
+                placer.avoid (("circle", xy[0], xy[1], 3.4), owner=owners.get (hole, hole))
             else:
                 placer.point (xy, 3)
         for name in bench.taken:
             if name in MEGA_PINS:
-                placer.avoid (("circle", *bench.pin_xy (name), 3.4))
+                placer.avoid (("circle", *bench.pin_xy (name), 3.4), owner=owners.get (name, name))
         for x, y, w in self._print_marks (detail):
             placer.avoid (("rect", x - w / 2, y - 6, x + w / 2, y), 150)
+        # A label across the board's edge, or the Mega's, reads as struck
+        # through.
         for x0, y0, x1, y1 in (bench.board_box (), bench.mega_box ()):
             for edge in ((x0, y0, x1, y0), (x0, y1, x1, y1), (x0, y0, x0, y1), (x1, y0, x1, y1)):
-                placer.avoid (("segment", *edge, 0.6), 60)
+                placer.avoid (("segment", *edge, 0.6), 600)
         for box in self._silk_boxes ():
             placer.avoid (("rect", *box), 400)
         for x, y, w in self._board_signs ():
@@ -874,30 +896,56 @@ class Drawing:
             # A leg's own label, such as an RGB LED's R, may touch its hole.
             mine = [("circle", *label.leg, 3.4)] if label.leg else ()
             # The whole bench names a part on the breadboard beside it where
-            # the name fits, and only failing that further out, on a leader
-            # back to it, once the wires are named (crowded); the close-up,
-            # and a part off the board, weigh both at once.
+            # the name fits, clear of a probe's hole, and only failing that
+            # further out, on a leader back to it, once the wires are named
+            # (crowded); the close-up, and a part off the board, weigh both
+            # at once.
             together = rough or part_box (own)
-            spots = list (label.spots) + (ring (label.at, text, size * scale)
+            spots = list (label.spots) + (unmistaken (text, aimed (label, ring (label.at, text,
+                                                                              size * scale)),
+                                                      size * scale)
                                           if label.at and together else [])
             best = placer.place (text, size * scale, spots, own, mine)
-            if label.at and not together and best[0] >= HARD:
+            if label.at and not together and best[0] >= PROBED:
                 crowded.append ((label, own, mine))
                 return
-            settle (label, best)
+            settle (label, best, spots)
 
         crowded = []
 
-        def settle (label, best):
+        # Where each part's label points, by its words: a label that stands
+        # nearer another part of the same name than its own seems to name
+        # that one, as a 2 kΩ beside another modem's 2 kΩ would.
+        namesakes = [(label.text, label.at) for part in bench.parts
+                     for label in part.labels (bench)[:1] if label.at]
+
+        def unmistaken (text, spots, scale):
+            kept = []
+            for spot in spots:
+                x, y, anchor, cost, to = spot
+                box = text_box (x, y, text, scale, anchor)
+                near = gap_to (box, to)
+                cost += 1000 * any (gap_to (box, at) < near for other, at in namesakes
+                                    if other == text and math.dist (at, to) > 1)
+                kept.append ((x, y, anchor, cost, to))
+            return kept
+
+        # A row of like parts' label points to the one nearest each spot.
+        def aimed (label, spots):
+            if not label.targets:
+                return spots
+            return [(x, y, anchor, cost, min (label.targets, key=lambda at: math.dist (at, (x, y))))
+                    for x, y, anchor, cost, _ in spots]
+
+        def settle (label, best, spots):
             text = label.text
             clear (text, best)
             cost, x, y, anchor, box = best
             to = None
             # A leader only when the label stands away from what it names.
             if label.at and (x, y, anchor) not in [s[:3] for s in label.spots]:
-                gap = math.hypot (max (box[0] - label.at[0], 0, label.at[0] - box[2]),
-                                  max (box[1] - label.at[1], 0, label.at[1] - box[3]))
-                to = label.at if gap > 6 else None
+                aim = next (s[4] for s in spots if s[:3] == (x, y, anchor))
+                to = aim if gap_to (box, aim) > 6 else None
             take (text, x, y, anchor, size * label.size, to, box)
 
         seen = lambda x: not rough or rough[0] - 4 < x < rough[2] + 4
@@ -930,7 +978,10 @@ class Drawing:
             last = max (group, key=lambda part: part.geometry (bench)[0])
             text = f"{len (group)} × {value}"
             spots = spots_round (box, text, size, "right")[:8] + last.labels (bench)[0].spots
-            put (Label (text, spots, last.geometry (bench)), shapes)
+            legs = [("circle", *bench.hole_xy (hole), 3.4) for part in group
+                    for _, hole in part.legs ()]
+            put (Label (text, spots, ((box[0] + box[2]) / 2, (box[1] + box[3]) / 2),
+                        targets=[part.geometry (bench) for part in group]), shapes + legs)
         for part in bench.parts:
             # The whole bench leaves an LED's color to speak for it; the
             # close-up names each one.
@@ -949,37 +1000,44 @@ class Drawing:
                  for sign, bands in (("+", ((0.21, 0.36), (2.01, 2.2))),
                                      ("−", ((0.04, 0.19), (1.84, 1.99))))}
         # Where each wire ends in a hole: a wire's name right beside another
-        # wire's end would seem to name that one.
+        # wire's end would seem to name that one, worse than a leader across
+        # a wire would.
         ends = [(points[index], (start, end)) for start, end, points in routes
                 for index, (kind, _) in ((0, start), (-1, end)) if kind == "hole"]
         for start, end, points in routes:
             # Named by the end that matters: the hole, or the Mega for a module.
             if start[0] != "pin" or not seen ((points[-1] if end[0] == "hole" else points[0])[0]):
                 continue
+            # Its leader may cross its own wire, and its own wire's ends.
+            own = [("segment", a[0], a[1], b[0], b[1], 2.4) for a, b in zip (points, points[1:])]
+            own += [("circle", *bench.hole_xy (name), 3.4) for kind, name in (start, end)
+                    if kind == "hole"]
             text = canonical (start[1])
             wrong = rails["+"] if text == "GND" else rails["−"] if text in ("5V", "3.3V") else ()
-            others = [(x - 5, y - 5, x + 5, y + 5) for (x, y), wire in ends if wire != (start, end)]
+            others = [(x - 8, y - 8, x + 8, y + 8) for (x, y), wire in ends if wire != (start, end)]
             text = f"pin {text}" if numbered (text) else text
             spots = along (points if end[0] != "hole" else points[::-1], size * 0.9)
             spots = [(x, y, anchor, cost + 100 * any (boxes_meet (box, rail) for rail in wrong)
-                      + 40 * any (boxes_meet (box, other) for other in others), to)
+                      + 600 * any (boxes_meet (box, other) for other in others), to)
                      for x, y, anchor, cost, to in spots
                      for box in [text_box (x, y, text, size * 0.9, anchor)]]
-            best = placer.place (text, size * 0.9, spots)
+            best = placer.place (text, size * 0.9, spots, own)
             if best:
                 clear (text, best)
                 _, x, y, anchor, box = best
                 to = next (spot[4] for spot in spots if spot[:3] == (x, y, anchor))
                 take (text, x, y, anchor, size * 0.9, to, box)
+        # A crowded name goes further out, on a leader, where it can: round
+        # its part in fine steps, centred on each point or, on the side away
+        # from the part, starting or ending there, so a long name finds a gap
+        # too. A gap is worth a little reach, but not a leader across another
+        # part or a wire.
         for label, own, mine in crowded:
             scaled = size * label.size
-            best = placer.place (label.text, scaled, ring (label.at, label.text, scaled, FAR), own,
-                                 mine)
-            # A long name finds no gap it can stand in the middle of: let it
-            # start or end at each point instead, and reach further still.
-            if best[0] >= HARD:
-                best = placer.place (label.text, scaled, wide_ring (label.at, scaled), own, mine)
-            settle (label, best)
+            spots = list (label.spots) + unmistaken (label.text,
+                                                     aimed (label, wide_ring (label.at, scaled)),
+                                                     scaled)
+            settle (label, placer.place (label.text, scaled, spots, own, mine), spots)
         for text, at, offset in bench.notes:
             tx, ty = self._point (at)
             if rough and not (rough[0] < tx < rough[2] and rough[1] < ty < rough[3]):
@@ -1249,19 +1307,41 @@ class Labels (Placer):
     def __init__ (self):
         super ().__init__ ()
         self.leaders = []
+        self.owners = []                # what each shape belongs to, as avoid () was told
+        self.bodies = []                # parts' and modules' bodies, with their owners
+
+    def avoid (self, shape, cost=HARD, owner=None):
+        super ().avoid (shape, cost)
+        self.owners.append (("shape", len (self.owners)) if owner is None else owner)
 
     # A leader drawn from start to the point it names, which later labels
     # keep off.
     def lead (self, start, to):
         if math.dist (start, to) > 3:
             self.leaders.append ((start, to))
-            self.avoid (("segment", *start, *to, 1.2))
+            self.avoid (("segment", *start, *to, 1.2), owner=("leader", len (self.leaders)))
 
+    # A part's or module's body, which a leader crossing it would seem to
+    # point into: worse than crossing a wire.
+    def body (self, shape, owner):
+        self.bodies.append ((shape, owner))
+
+    # A leader runs from the label's side to just short of its point. Each
+    # wire, part or leader it crosses costs, once however many of its shapes
+    # it crosses, and each body more; a leader under another label, or along
+    # another leader, leaves unclear which label names what.
     def leader_cost (self, box, to, own=()):
-        cost = super ().leader_cost (box, to, own)
         start = leader_from (box, to)
-        if math.dist (start, to) < 6:
-            return cost
+        length = math.dist (start, to)
+        if length < 6:
+            return 0
+        tip = (to[0] + (start[0] - to[0]) * 3 / length, to[1] + (start[1] - to[1]) * 3 / length)
+        crossed = {owner for (shape, amount), owner in zip (self.shapes, self.owners)
+                   if amount >= HARD and shape not in own
+                   and shape_crosses_segment (shape, start, tip)}
+        bodies = {owner for shape, owner in self.bodies
+                  if shape not in own and shape_crosses_segment (shape, start, tip)}
+        cost = 500 * len (crossed) + 1500 * len (bodies)
         cost += 2000 * sum (segment_meets_box (start, to, other, 2) for other in self.labels)
         return cost + 2000 * sum (alongside (start, to, *leader) for leader in self.leaders)
 
@@ -1320,6 +1400,12 @@ def boxes_meet (a, b):
     return a[0] < b[2] and b[0] < a[2] and a[1] < b[3] and b[1] < a[3]
 
 
+# How far a point lies outside a box.
+def gap_to (box, point):
+    return math.hypot (max (box[0] - point[0], 0, point[0] - box[2]),
+                       max (box[1] - point[1], 0, point[1] - box[3]))
+
+
 # Whether a view, (x, y, width, height), shows a placed label whole, and
 # the point its leader or arrow names.
 def shown (view, label):
@@ -1357,11 +1443,11 @@ def point_along (points, along):
 def along (points, size):
     spots = []
     total = sum (math.dist (a, b) for a, b in zip (points, points[1:]))
-    for out in range (10, int (min (total - 6, 200)), 5):
+    for out in range (10, int (min (total - 6, 400)), 5):
         (px, py), (dx, dy) = point_along (points, out)
         cost = out * 0.35
         # Beside the wire, or further out on a longer leader when crowded.
-        for reach, extra in ((1, 0), (2.4, 30), (4, 60), (7, 90), (10, 120)):
+        for reach, extra in ((1, 0), (2.4, 30), (4, 60), (7, 90), (10, 120), (15, 150), (21, 180)):
             if abs (dx) >= abs (dy):
                 spots += [(px, py - 4.5 * reach - size * 0.26, "middle", cost + extra, (px, py)),
                           (px, py + 4.5 * reach + size * 0.8, "middle", cost + extra + 1, (px, py))]
@@ -1372,14 +1458,16 @@ def along (points, size):
 
 
 # Spots further out round a point, each with a leader back to it, for a
-# label crowded out of its own.
+# label crowded out of its own. Each step out costs: a label further from its
+# part than it need be is the harder to match to it, as much as one whose
+# leader crosses a wire on the way.
 def ring (at, text, size, reaches=(16, 24, 34, 46, 60)):
     spots = []
     for reach in reaches:
         for step in range (16):
             angle = step * math.pi / 8
             x, y = at[0] + math.cos (angle) * reach * 1.4, at[1] + math.sin (angle) * reach
-            spots.append ((x, y + size * 0.3, "middle", 40 + reach * 1.2, at))
+            spots.append ((x, y + size * 0.3, "middle", 40 + reach * 10, at))
     return spots
 
 
@@ -1392,7 +1480,7 @@ def wide_ring (at, size):
         for step in range (24):
             angle = step * math.pi / 12
             x, y = at[0] + math.cos (angle) * reach * 1.4, at[1] + math.sin (angle) * reach
-            cost = 40 + reach * 1.2
+            cost = 40 + reach * 10
             spots.append ((x, y + size * 0.3, "middle", cost, at))
             if math.cos (angle) > -0.3:
                 spots.append ((x, y + size * 0.3, "start", cost + 3, at))

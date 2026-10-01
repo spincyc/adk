@@ -23,10 +23,13 @@ class Label:
     """A label a part or wire wants: its text, and the spots it may go,
     best first, each (x, y, anchor, cost). at is what a leader points to
     when the label has to go further out; leg is the hole of the leg it
-    names, if it names one, which it may touch."""
+    names, if it names one, which it may touch. A label for a row of like
+    parts goes out round at, the row's middle, and its leader points to
+    whichever of targets, the parts, stands nearest it."""
 
-    def __init__ (self, text, spots, at=None, size=1.0, leg=None):
+    def __init__ (self, text, spots, at=None, size=1.0, leg=None, targets=()):
         self.text, self.spots, self.at, self.size, self.leg = text, spots, at, size, leg
+        self.targets = targets
 
 
 # Spots round a box for a label of that text: above, then beside, then
