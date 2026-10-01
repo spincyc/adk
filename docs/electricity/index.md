@@ -14,8 +14,8 @@ the circuits, not records of hardware trials.
 
 **Kit and meter route:** Work through E01–E10, then E12, E22, E23 and E24.
 E01–E03 use one steady LED circuit powered by the Mega's USB 5 V; they
-need no IDE or upload. E02 adds the meter. E07–E08 and E23 need the
-inexpensive capacitors in the table below. E12 uses the kit's buzzer as a
+need no IDE or upload. E02 adds the meter. E05 needs a 10 Ω resistor,
+and E07–E08 and E23 the inexpensive capacitors, from the table below. E12 uses the kit's buzzer as a
 coil; its LED and button give a visible result without a scope. After E04,
 try the [loaded-divider design challenge](challenges.md#loaded-divider) to
 see why a measured divider voltage changes when a load is attached.
@@ -48,7 +48,7 @@ for each path. Check each module's extra parts before starting it:
 | Module | Investigations | Equipment beyond the kit and DC voltmeter |
 |---|---|---|
 | 1. DC paths | E01–E03 | None; E01 does not need the meter or an upload. |
-| 2. Sharing | E04–E06 | None. |
+| 2. Sharing | E04–E06 | E05: 10 Ω resistor. E04 and E06 use kit parts. |
 | 3. Charge and diodes | E07–E09 | 1000 µF electrolytic capacitor rated at least 10 V for E07–E08; a stopwatch for E08. E09 uses kit parts. |
 | 4. Switches and coils | E10–E12 | E10 and E12 use kit parts. E11 needs a 100 mH inductor rated at least 10 mA, generator and two-channel scope. |
 | 5. Alternating signals | E13–E15 | 1 µF nonpolar film capacitor, generator and two-channel scope. |
@@ -148,11 +148,14 @@ the [knob divider in Lesson 7](../lessons/007-dimmer/index.md).
 
 **Idea:** Parallel branches have the same voltage and their currents add.
 **Before:** E04. **Use:** E05's Mega USB 5 V build: two red LEDs, two
-1 kΩ resistors, meter. **Predict, do, see:** Predict what adding a second
-LED-and-resistor branch will do to the first LED. Add it across the same
-rails, not in line with the first. Both light about as brightly. Measure
-the voltage across each 1 kΩ resistor, divide by 1 kΩ for each branch's
-current, and add those currents for the current feeding the two LED branches.
+1 kΩ resistors, a 10 Ω resistor that feeds both, meter. **Predict, do,
+see:** Predict what adding a second LED-and-resistor branch will do to
+the first LED and to the current through the shared 10 Ω resistor. Add it
+beside the first, not in line with it. Both light about as brightly, and
+the voltage across the 10 Ω resistor about doubles, from roughly 30 mV to
+60 mV: about 3 mA, then 6 mA. Each 1 kΩ resistor's voltage divided by
+1 kΩ gives its branch's current, and the two add up to the current
+through the 10 Ω feed.
 **ADK connection:**
 Extends the separate LEDs in [Lesson 2](../lessons/002-buttons/index.md).
 
