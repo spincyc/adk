@@ -686,8 +686,8 @@ class Encoder (Kind):
 
 class Pir (Kind):
     # HC-SR501: 32 x 24 mm under a 23 mm Fresnel dome. Seen from the dome's
-    # side, pins down, they run GND, OUT, VCC; their names are printed
-    # under the dome.
+    # side, pins down, they run GND, OUT, VCC; the board prints their names
+    # under the dome, so the drawing shows them on its cover.
     title  = "PIR sensor"
     pins   = ("GND", "OUT", "VCC")
     pin_modes = {"OUT": "input"}
@@ -709,8 +709,11 @@ class Pir (Kind):
         pencil.spot (50, 34, 14, "#ffffff", opacity=0.5)
         left, right = 48, 78
         pencil.tint ([(left, 89), (right, 89), (right, 96), (left, 96)], PLASTIC)
+        # Each pin's name stands on end just above the header's strip, on
+        # the dome's cover, which keeps its lines out of the letters.
         for pin in self.header ():
-            pencil.text (pin.x + 2, 83, pin.name, size=5.4, rotate=-90, anchor="end", kind="silk")
+            pencil.text (pin.x + 2, 87, pin.name, size=5.4, rotate=-90, anchor="start", kind="silk",
+                         halo="#f8f6f0")
 
 
 class Sensor (Kind):
@@ -874,8 +877,9 @@ class PowerModule (Kind):
     # The breadboard power module, 36 x 53 mm, lying beside the board: its
     # pins underneath fit the kit's breadboard the right way round only at
     # the end nearest the Mega, so it doesn't plug in. Both its jumpers are
-    # off, parked on one pin, so those pins carry nothing, and wires from
-    # the header in its middle take 5 V or 3.3 V, and GND, to the rails:
+    # off, each parked on its middle pin alone, so those pins carry nothing,
+    # and wires from the header in its middle take 5 V or 3.3 V, and GND, to
+    # the rails:
     # that header gives both voltages whatever the jumpers say. Drawn as
     # the kit's lies with its barrel socket top right: the header's upper
     # row is 3.3V, 3.3V, 5V, 5V, its lower row GND.
@@ -903,13 +907,14 @@ class PowerModule (Kind):
         for y, sign in ((12, "+"), (22, "−"), (188, "+"), (198, "−")):
             hole (pencil, 10, y, r=3.4, square=True)
             pencil.text (22, y + 3, sign, size=7, kind="silk")
-        # Each side's jumper, three pins beside its label, its cap parked
-        # on the end pin: off.
+        # Each side's jumper, three pins beside their labels, its yellow cap
+        # parked on the middle pin alone, by OFF: it joins nothing, and can't
+        # be taken for a cap across 5V or 3.3.
         for top in (8, 172):
             for index in range (3):
                 pencil.spot (40, top + index * 10, 1.8, "#9a9a9a", layer="shade")
-            pencil.tint ([(35.5, top + 16), (44.5, top + 16), (44.5, top + 26), (35.5, top + 26)],
-                         "#1f1f1f")
+            pencil.tint (rounded (35.5, top + 5.5, 9, 9, 1.2), "#e2bf3d")
+            pencil.rect (35.5, top + 5.5, 9, 9, width=0.7, radius=1.2, layer="top", passes=1)
             pencil.text (50, top + 3, "5V", size=5, kind="silk", anchor="start")
             pencil.text (50, top + 13, "OFF", size=5, kind="silk", anchor="start")
             pencil.text (50, top + 23, "3.3", size=5, kind="silk", anchor="start")
