@@ -21,8 +21,6 @@ bench.module ("battery9v", name="battery", at=(8.2, 2.6), facing="up")
 bench.wire ("battery.−", "a14", via=[(8.6, 2.28), (6.7, 2.28)])
 bench.wire ("battery.+", "relay.COM")
 
-bench.closeup (1, 24)
-
 # Readings to take with a multimeter while the lamp is on, all in the
 # lamp's own circuit.
 bench.measure ("The battery, through the relay", red="h13", black="b14", expect="about 9 V",

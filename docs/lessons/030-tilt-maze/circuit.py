@@ -21,7 +21,6 @@ bench.home_gy521 ()
 bench.home_matrix (pixels=[row[::-1] for row in reversed (MAZE)])
 
 bench.home_buzzer ("passive")
-bench.closeup (1, 37)
 
 # Readings to take with a multimeter: the buzzer's pin on a high note and a
 # low one, and the data line while the board tilts.

@@ -14,8 +14,6 @@ bench.home_rf_receiver ()
 
 bench.home_rf_transmitter ()
 
-bench.closeup (1, 63)
-
 # Readings to take with a multimeter while nothing is being sent: the
 # receiver's DATA flickering with noise, the transmitter's DAT resting at
 # 0 V, and the transmitter's supply from the Mega's 3.3V pin.

@@ -51,7 +51,6 @@ meter.home_joystick ()
 meter.home_buzzer ("passive")
 
 meter.screen (text=("Quick 20 letters", "95% back 112ms"))
-meter.closeup (1, 63)
 
 # Readings to take with a multimeter on Board A between tests, while the
 # serial lines to the modem rest: the modem's RXD, made 3.3 V from pin
@@ -68,6 +67,5 @@ echo = Bench ("Board B, the echo: an LED matrix on pins 47 to 49, and a LoRa mod
 echo.home_modem ()
 
 echo.home_matrix (pixels=upside_down (ECHO))
-echo.closeup (1, 50)
 
 boards = {"A": meter, "B": echo}

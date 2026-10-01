@@ -37,8 +37,6 @@ ball.home_modem ()
 
 ball.home_servo ()
 
-ball.closeup (38, 63)
-
 boards = {"A": tilt, "B": ball}
 
 # Readings to take with a multimeter on Board A: the Mega's 3.3V feed,

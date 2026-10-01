@@ -31,5 +31,3 @@ bench.stage ("the two local supply capacitors")
 bench.capacitor ("100 µF", "c4", "B-4", polarized=True)
 bench.wire ("d4", "b9")
 bench.capacitor ("100 nF", "c9", "B-9")
-
-bench.closeup (1, 32)

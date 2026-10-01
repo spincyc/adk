@@ -13,8 +13,6 @@ bench.home_fm_radio ()
 
 bench.home_knob ()
 
-bench.closeup (1, 63)
-
 # Readings to take with a multimeter: the data line resting at the radio's
 # 3.3 V, RST held up by the 1 kΩ against the board's own 10 kΩ, and the
 # supply the Mega's 3.3V pin gives it.

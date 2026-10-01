@@ -33,8 +33,6 @@ bench.wire ("modemA.RXD", "c37", color="white")
 bench.wire ("modemA.TXD", "f35", color="grey")
 bench.wire ("19", "j35")
 
-bench.closeup (1, 63)
-
 # Readings to take with a multimeter: the 3.3 V the modems run on, and
 # modem A's divider, which turns pin 18's resting 5 V into 3.3 V.
 bench.measure ("The modems' supply, on the bottom rails", red="B+40", black="B-40",

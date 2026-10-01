@@ -11,5 +11,3 @@ bench.wire ("19", "c6")
 bench.stage ("the 10 kΩ pull-up on RX1")
 bench.resistor ("10 kΩ", "T+7", "j7")
 bench.wire ("h7", "d6")
-
-bench.closeup (4, 8)

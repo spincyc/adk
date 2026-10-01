@@ -40,5 +40,3 @@ bench.wire ("b18", "j6")                # pin 3, Q
 bench.resistor ("1 kΩ", "g6", "e6")
 bench.led ("red", anode="b6", cathode="b7")
 bench.wire ("a7", "B-7")
-
-bench.closeup (1, 24)

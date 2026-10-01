@@ -18,4 +18,3 @@ SMILEY = ["..####..",
 bench.home_button ("22")
 
 bench.home_matrix (pixels=[row[::-1] for row in reversed (SMILEY)])
-bench.closeup (1, 16)

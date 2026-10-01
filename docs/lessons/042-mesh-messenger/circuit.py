@@ -27,8 +27,6 @@ bench.wire ("node.GND", "B-41")
 
 bench.home_button ("23")
 
-bench.closeup (1, 63)
-
 # Readings to take with a multimeter: the middle of the divider, which
 # turns pin 18's resting 5 V into 3.3 V for the board, and the lamp's red.
 bench.measure ("The board's GPIO47, the middle of the divider", red="d37", black="GND",

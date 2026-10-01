@@ -14,5 +14,3 @@ bench.wire ("b6", "j10")
 bench.capacitor ("1 µF", "g10", "e10")
 bench.wire ("a10", "B-10")
 bench.wire ("wave.GND", "B-5")
-
-bench.closeup (1, 12)

@@ -16,7 +16,6 @@ LEVEL = ["########",
 bench.home_matrix (pixels=[row[::-1] for row in reversed (LEVEL)])
 
 bench.home_gy521 ()
-bench.closeup (1, 16)
 
 # Readings to take with a multimeter, the black probe in the GY-521's GND
 # column: its supply, the data line resting high between readings, and the

@@ -14,8 +14,6 @@ bench.home_buzzer ("active")
 
 bench.home_knob ()
 
-bench.closeup (1, 63)
-
 # Readings to take with a multimeter: the alarm knob's wiper, and the red
 # and green pins of the comfort light, which remember the mood.
 bench.measure ("The alarm knob's wiper, on A0", red="A0", black="GND", expect="about 3.4 V",

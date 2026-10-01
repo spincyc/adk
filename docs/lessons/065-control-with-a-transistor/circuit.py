@@ -20,5 +20,3 @@ bench.transistor ("a29", "a30", "a31")
 bench.resistor ("1 kΩ", "c32", "c30")
 bench.resistor ("10 kΩ", "b30", "B-30")
 bench.wire ("b29", "B-29")
-
-bench.closeup (1, 34)

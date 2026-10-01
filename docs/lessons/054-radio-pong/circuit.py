@@ -28,7 +28,6 @@ def player (title, sketch):
     bench.home_joystick ()
 
     bench.home_buzzer ("passive")
-    bench.closeup (1, 50)
 
     # Readings to take with a multimeter, before anyone serves: TX3
     # resting at 5 V, and the modem's RXD, where the divider makes it 3.3 V.

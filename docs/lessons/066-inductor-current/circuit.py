@@ -13,5 +13,3 @@ bench.wire ("a6", "j10", color="yellow")
 bench.resistor ("1 kΩ", "g10", "e10")
 bench.wire ("a10", "B-10")
 bench.wire ("wave.GND", "B-5")
-
-bench.closeup (1, 12)

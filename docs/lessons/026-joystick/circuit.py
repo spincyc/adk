@@ -20,4 +20,3 @@ bench.home_button ("23")
 bench.home_matrix (pixels=[row[::-1] for row in reversed (DRAWING)])
 
 bench.home_joystick ()
-bench.closeup (1, 16)

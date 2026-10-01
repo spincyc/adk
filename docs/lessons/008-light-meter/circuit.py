@@ -17,9 +17,6 @@ for pin, color in ((26, "red"), (27, "yellow"), (28, "green"), (29, "blue"), (30
 
 bench.home_divider ("photoresistor")
 
-# The close-up starts at column 1, so its row letters stand clear of the bar.
-bench.closeup (1, 46)
-
 # Readings to take with a multimeter: the divider's middle in room light and
 # with the sensor covered, and the photoresistor's own share of the 5 V.
 bench.measure ("The divider's middle, in room light", red="d37", black="GND",

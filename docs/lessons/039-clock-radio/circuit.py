@@ -18,8 +18,6 @@ bench.home_fm_radio ()
 
 bench.home_knob ()
 
-bench.closeup (1, 63)
-
 # Readings to take with a multimeter: the volume knob's wiper, which the
 # sketch turns into the radio's volume, halfway and a quarter of the way.
 bench.measure ("The volume knob halfway, on A0", red="A0", black="GND", expect="about 2.5 V",

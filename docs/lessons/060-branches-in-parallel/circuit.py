@@ -16,8 +16,6 @@ bench.resistor ("1 kΩ", "g12", "e12")
 bench.led ("red", anode="b12", cathode="b13")
 bench.wire ("a13", "B-13")
 
-bench.closeup (3, 16)
-
 bench.measure ("The first branch, from + to −", red="T+6", black="B-7",
                expect="about 5 V", when="Both LEDs on")
 bench.measure ("The second branch, from + to −", red="T+12", black="B-13",

@@ -33,5 +33,3 @@ bench.wire ("b24", "j25")
 bench.wire ("a25", "B-25")
 bench.wire ("c24", "j18")                     # midpoint to pin 5, +B
 bench.wire ("j17", "j16")                     # pin 6 −B to pin 7 OUTB
-
-bench.closeup (13, 26)

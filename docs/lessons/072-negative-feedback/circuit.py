@@ -36,5 +36,3 @@ bench.measure ("Knob wiper at +A", red="a17", black="GND",
                expect="about 2 V", when="Knob set near 2 V")
 bench.measure ("Loaded output at OUTA", red="a15", black="GND",
                expect="about 2 V, close to the wiper", when="Knob set near 2 V")
-
-bench.closeup (13, 42)

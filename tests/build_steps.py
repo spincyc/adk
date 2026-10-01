@@ -60,12 +60,11 @@ assert "a47 through a62" in attrs["data-action"]
 assert "breadboard height" in attrs["data-care"]
 assert json.loads (attrs["data-point-labels"])[::15] == ["a47", "a62"]
 
-# An opening must include off-board hardware even when a lesson explicitly
-# asks for a breadboard close-up. Printed details must remain large enough
-# to read, and cover every occupied breadboard column.
+# An opening must include an off-board screen, the visible result, however
+# far it stands from the breadboard. Printed details must remain large
+# enough to read, and cover every occupied breadboard column.
 matrix = Bench ("Matrix", columns=(1, 63)).button (2)
 matrix.module ("matrix", at=(6, 4), facing="up")
-matrix.closeup (1, 16)
 drawing = Drawing (matrix)
 left, top, width, height = drawing.opening_box ()
 for module in matrix.modules.values ():

@@ -13,8 +13,6 @@ for pin, color in (("26", "red"), ("27", "yellow"), ("28", "green")):
 
 bench.home_buzzer ("active")
 
-bench.closeup (1, 37)
-
 # Readings to take with a multimeter, with a book standing still in front of
 # the sensor, or nothing there at all.
 bench.measure ("The yellow light's pin", red="27", black="GND", expect="about 5 V",

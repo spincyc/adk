@@ -8,7 +8,6 @@ bench = Bench ("A stepper motor's driver on pins A8 to A11, powered from the bre
 bench.power_module ()
 bench.home_button ("22")
 bench.home_stepper ()
-bench.closeup (1, 28)
 
 # Readings to take with a multimeter, the power module switched on.
 bench.measure ("The driver's supply, on the bottom rails", red="B+10", black="B-10",

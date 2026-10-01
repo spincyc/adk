@@ -14,8 +14,6 @@ bench.wire ("2", "receiver.S")
 bench.wire ("receiver.+", "5V.long")
 bench.wire ("receiver.−", "GND.long")
 
-bench.closeup (1, 30)
-
 # Readings to take with a multimeter while the lamp holds a color.
 bench.measure ("The red pin, full brightness", red="5", black="GND", expect="about 5 V",
                when="after 1, then VOL+ to full brightness")

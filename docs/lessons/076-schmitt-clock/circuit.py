@@ -32,5 +32,3 @@ bench.wire ("c17", "j6")                # separate output branch
 bench.resistor ("1 kΩ", "g6", "e6")
 bench.led ("red", anode="b6", cathode="b7")
 bench.wire ("a7", "B-7")
-
-bench.closeup (5, 23)

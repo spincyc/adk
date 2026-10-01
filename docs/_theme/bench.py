@@ -46,8 +46,7 @@ Modules sit beside the board, placed in inches in the drawing's own
 coordinates, where the Mega's top-left corner is (0.35, 0.6) and the
 breadboard's is (5.15, 0.55); a wire reaches a module pin as "name.PIN", as
 in bench.wire ("44", "servo.signal"). note () adds a small annotation with
-an arrow. closeup (first, last) picks the columns the close-up shows, for a
-build too wide to show whole.
+an arrow.
 
 A wire runs from a Mega pin, a hole or a module pin to another. The drawing
 routes it round parts, modules and labels on its own; via=[...] makes it
@@ -277,7 +276,6 @@ class Bench:
         self.used = {}
         self.gap = GAP
         self.label_size = 10            # the drawing's, which parts' labels read
-        self.closeup_range = None
         self._last = None
         self._finished = False
         self._powering = False
@@ -1664,11 +1662,6 @@ class Bench:
     def signal_pins (self):
         ends = [end for start, finish, _, _ in self.wires for end in (start, finish)]
         return {pin_id (name) for kind, name in ends if kind == "pin"} - POWER_PINS
-
-    # Show these columns in the close-up, for a build too wide to show whole.
-    def closeup (self, first, last):
-        self.closeup_range = (first, last)
-        return self
 
 
 # Run a lesson's circuit.py and finish its builds. A one-board lesson's

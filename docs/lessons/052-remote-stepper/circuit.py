@@ -15,7 +15,6 @@ knob = Bench ("Board A: a knob on A0, the LCD on pins 31 to 36, and a LoRa modem
 knob.screen (text=("Knob says 90°", "Arrived: 90°"))
 knob.home_modem ()
 knob.home_knob ()
-knob.closeup (1, 63)
 
 # Readings to take with a multimeter: the knob's middle leg, whose voltage
 # is the angle it asks for. The black probe goes in B-40, beside
@@ -32,6 +31,5 @@ turntable = Bench ("Board B: a stepper motor's driver on pins A8 to A11, powered
 turntable.power_module ()
 turntable.home_modem ()
 turntable.home_stepper ()
-turntable.closeup (1, 63)
 
 boards = {"A": knob, "B": turntable}

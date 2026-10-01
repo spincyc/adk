@@ -5,7 +5,8 @@ lesson's circuit.py describes (bench.py).
     drawing = Drawing (bench)
     drawing.svg ("bench")           the Mega, the breadboard, every part and wire
     drawing.svg ("opening")         the visible result, including off-board screens
-    drawing.svg ("closeup")         the breadboard round the parts, larger
+    drawing.svg ("closeup")         the breadboard round the parts, larger, as the
+                                    home page shows Lesson 1's
     drawing.measure_svg (0)         the first measurement's probes and meter
 
 Every wire is routed once for all of them (route.py): round parts, modules
@@ -635,8 +636,6 @@ class Drawing:
     # rail links, which are the same in every lesson.
     def _closeup_columns (self):
         bench = self.bench
-        if bench.closeup_range:
-            return bench.closeup_range
         standard = {hole for start, end, _, _ in bench.wires if bench.is_standard ((start, end))
                     for kind, hole in (start, end) if kind == "hole"}
         columns = [parse_hole (hole)[1] for hole in bench.used if hole not in standard]

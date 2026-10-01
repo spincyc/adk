@@ -24,7 +24,6 @@ receiver.module ("ir_receiver", name="eye", at=(7.89, -1.7))
 receiver.wire ("2", "eye.S", via=[(2.65, -0.2), (8.3, -0.2)])
 receiver.wire ("eye.+", "T+29")
 receiver.wire ("eye.−", "T-28")
-receiver.closeup (1, 63)
 
 repeater = Bench ("Board B: a relay on pin 11 switching a 9 V battery, 1 kΩ resistor and LED; an "
                   "IR LED on pin 3 through 220 Ω; and a LoRa modem on pins 14 and 15, its VDD from "
@@ -48,8 +47,6 @@ repeater.resistor ("220 Ω", "g38", "e38")
 repeater.module ("ir_transmitter", name="irled", at=(8.69, 3.45), facing="up")
 repeater.wire ("irled.S", "a38")
 repeater.wire ("irled.−", "B-36")
-
-repeater.closeup (1, 50)
 
 # Readings to take with a multimeter, all in the lamp's own circuit, as in
 # Lesson 35: switched from the other board now.

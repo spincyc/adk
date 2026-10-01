@@ -26,8 +26,6 @@ bench.home_motor ()
 
 bench.home_knob ()
 
-bench.closeup (1, 50)
-
 # Readings to take with a multimeter, the fan at one fixed speed set in the
 # sketch.
 bench.measure ("The enable pin", red="4", black="B-21", expect="about 2.5 V",

@@ -9,8 +9,6 @@ bench.home_rgb_led ()
 
 bench.home_rfid ()
 
-bench.closeup (1, 28)
-
 # Readings to take with a multimeter on the RGB LED's pins.
 bench.measure ("The blue leg's pin, waiting", red="7", black="GND", expect="about 0.8 V",
                when="LED glowing dim blue")

@@ -18,7 +18,6 @@ bench.home_matrix (pixels=[row[::-1] for row in reversed (SNAKE)])
 bench.home_joystick ()
 
 bench.home_buzzer ("passive")
-bench.closeup (1, 40)
 
 # Readings to take with a multimeter while a long note plays: the pin's
 # average, and how the buzzer and the resistor share it.

@@ -50,8 +50,6 @@ bench.wire ("40", "j39")
 
 bench.home_button ("23")
 
-bench.closeup (1, 63)
-
 # Readings to take with a multimeter: the 5 V the modules run on, the pin
 # that holds module A's M0 and M1 low, and module A's AUX, high while it
 # is free.
