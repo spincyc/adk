@@ -12,6 +12,8 @@ course.yml, and its sketch from its name: examples/lessons/013-hello-lcd for
     <!-- sketch -->        the example sketch, exactly as it compiles
     <!-- measure -->       each reading to take with a multimeter, drawn, and
                            a table of them all
+    <!-- probe -->         each trace to watch on an oscilloscope, its probe
+                           drawn on the board, and a table of them all
 
 A two-board lesson's page gives each marker a board's letter, as in
 <!-- bench A --> and <!-- sketch B -->; its circuit.py describes both
@@ -58,6 +60,7 @@ sys.path.insert (0, os.path.dirname (__file__))
 from api import document  # noqa: E402
 from bench import canonical, example, hole_words, load  # noqa: E402
 from drawing import Drawing, draw_all  # noqa: E402
+import meter  # noqa: E402
 from parts import Chip, Led, Resistor  # noqa: E402
 from pencil import WIRES  # noqa: E402
 
@@ -80,7 +83,7 @@ for number, lesson in enumerate (LESSONS, 1):
     track_counts[lesson["track"]] += 1
     lesson["track_number"] = track_counts[lesson["track"]]
 ELECTRICITY_LESSONS = [lesson for lesson in LESSONS if lesson["track"] == "electricity"]
-MARKERS = ("bench", "closeup", "steps", "connections", "sketch", "measure")
+MARKERS = ("bench", "closeup", "steps", "connections", "sketch", "measure", "probe")
 CIRCUITS = {}                       # each circuit.py this build has read, by path
 DRAWINGS = {}                       # each drawing in a page, by its digest
 DRAWN_HERE = re.compile (r"<!-- drawn ([0-9a-f]{40}) -->")
@@ -294,6 +297,8 @@ def board_pieces (lesson, letter, bench):
             "connections": connections (bench),
             "sketch": f'```cpp title="{name}.ino" linenums="1"\n{sketch.rstrip ()}\n```',
             "measure": measurements (bench, measured),
+            "probe": traces (bench, [meter.probe_svg (drawing, index, "probe" + letter)
+                                     for index in range (len (bench.scope_probes))]),
         }
     except ValueError as error:
         raise PluginError (f"{lesson['slug']}: {error}") from error
@@ -431,6 +436,26 @@ def measurements (bench, drawn):
                      f"{taken['when'] or ''} |")
     table = ["| Measurement | Expect | Red probe | Black probe | When |",
              "|---|---|---|---|---|"] + rows
+    return ('<div class="meters" markdown="0">\n' + "\n".join (figures) + "\n</div>\n\n" +
+            "\n".join (table))
+
+
+# Each trace to watch on an oscilloscope, drawn small with its probe, and
+# numbered as the table below lists them: the channel, where the probe's
+# tip and its ground clip go, what to expect and when.
+def traces (bench, drawn):
+    if not bench.scope_probes:
+        return ""
+    figures, rows = [], []
+    for index, (taken, svg) in enumerate (zip (bench.scope_probes, drawn), 1):
+        (_, tip), (_, ground) = bench.probe_points (index - 1)
+        figures.append (
+            f'<figure class="meter">\n{held (svg)}\n'
+            f'<figcaption>{index}. {escape (taken["label"])}</figcaption>\n</figure>')
+        rows.append (f"| {index}. {taken['label']} | CH{taken['channel']} | {tip} | {ground} | "
+                     f"{taken['expect'] or ''} | {taken['when'] or ''} |")
+    table = ["| Trace | Channel | Probe tip | Ground clip | Expect | When |",
+             "|---|---|---|---|---|---|"] + rows
     return ('<div class="meters" markdown="0">\n' + "\n".join (figures) + "\n</div>\n\n" +
             "\n".join (table))
 

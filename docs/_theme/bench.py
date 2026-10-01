@@ -75,7 +75,9 @@ to take with a multimeter set to DC volts: each probe on a hole (main or
 rail) that holds or shares a strip with something in the build, on a Mega
 pin number such as "26" (the probe goes in a free hole of the strip that
 pin's wire lands in), or on "GND" or "5V" (a free hole of the − or + rail
-nearest the other probe).
+nearest the other probe). probe (label, tip=..., ground=..., channel=...)
+records a trace to watch on an oscilloscope the same way, a scope probe's
+tip on one point and its ground clip on another.
 
 finish () then checks the circuit could work: no Mega pin's wire reaching
 nothing, no pin joined straight to GND, 5V or 3.3V, and no part with two
@@ -280,6 +282,7 @@ class Bench:
         self._finished = False
         self._powering = False
         self.measurements = []
+        self.scope_probes = []          # traces to watch on a scope (probe ())
         self.screened = False           # the course's screen is on the board
         self._stage = None              # the stage steps join now
 
@@ -1077,6 +1080,8 @@ class Bench:
         self._check ()
         for index in range (len (self.measurements)):
             self.probes (index)
+        for index in range (len (self.scope_probes)):
+            self.probe_points (index)
         return self
 
     def _power (self):
@@ -1245,6 +1250,34 @@ class Bench:
         self.measurements.append (dict (label=label, red=red, black=black, expect=expect,
                                         when=when))
         return self
+
+    # A trace to watch on an oscilloscope, and where its probe goes:
+    #
+    #     bench.probe ("CH1 · generator side", tip="h6", ground="GND", channel=1,
+    #                  expect="a 0–4 V sine wave", when="generator on")
+    #
+    # The probe's tip touches tip and its ground lead clips to ground, each
+    # a hole, a Mega pin number or "GND" as measure () takes them: a tip
+    # aimed at a hole a wire fills moves to a free hole in the same strip,
+    # and GND finds a free hole of the − rail nearest the tip. channel is
+    # the scope input the probe plugs into, 1 or 2, which colors its band.
+    # The page shows each in a drawing of its own (meter.probe_svg) and a
+    # table, where it has <!-- probe -->.
+    def probe (self, label, tip, ground="GND", channel=1, expect=None, when=None):
+        if channel not in (1, 2):
+            raise ValueError (f"a scope probe goes to channel 1 or 2, not {channel!r}")
+        self.scope_probes.append (dict (label=label, tip=tip, ground=ground, channel=channel,
+                                        expect=expect, when=when))
+        return self
+
+    # Where a scope probe's tip and ground clip touch: (hole, words) each.
+    def probe_points (self, index):
+        taken = self.scope_probes[index]
+        tip = self._probe (taken["tip"], None)
+        ground = self._probe (taken["ground"], tip[0])
+        if taken["tip"] in ("GND", "5V"):
+            tip = self._probe (taken["tip"], ground[0])
+        return tip, ground
 
     # Where each probe of a measurement touches: (hole, words for it).
     def probes (self, index):

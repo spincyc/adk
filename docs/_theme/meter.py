@@ -7,13 +7,18 @@ at SCALE. Like the common DT830 its jacks stand in a column at the right of
 its face, 10A at the top, then V, then COM; it lies below and to the left of
 what it measures, so its leads leave to the right and the one from the
 lower jack stays outside the other.
+
+An oscilloscope's probe is drawn here too (probe_svg): a slim probe with a
+hook tip on the point it watches, a band in its channel's color, and a
+short ground lead to a clip on the ground point, for each trace a circuit
+records with bench.probe ().
 """
 
 import math
 import re
 
 from modules import rounded
-from pencil import GRAPHITE, WIRES
+from pencil import GRAPHITE, WIRES, Pencil
 
 WIDTH, HEIGHT = 70, 112
 SCALE = 0.72
@@ -126,3 +131,110 @@ def lead (pencil, start, touch, color, side):
         f'stroke="#e4e2dc" stroke-width="0.6"/>')
     pencil.layers["top"].append (
         f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="1.3" fill="{GRAPHITE}" fill-opacity="0.8"/>')
+
+
+# An oscilloscope probe --------------------------------------------------
+
+# Each channel's band, as most scopes color their inputs: yellow, then cyan.
+CHANNELS = {1: "#d9b43c", 2: "#3fa7c4"}
+PROBE   = "#3c3f44"
+
+
+# A scope probe touching point with its hook tip, leaning in from below at
+# its side (-1 from the left, 1 from the right), its cable running down to
+# bottom; returns where its ground lead leaves it.
+def scope_probe (pencil, touch, channel, side, bottom):
+    tx, ty = touch
+    angle = math.radians (-90 + 32 * side * -1)
+    ux, uy = math.cos (angle), math.sin (angle)
+    at = lambda back, across=0.0: (tx - ux * back - uy * across, ty - uy * back + ux * across)
+    # The cable, from the probe's back end down out of the view.
+    end = at (62)
+    path = (f"M {end[0]:.1f} {end[1]:.1f} C {end[0] - ux * 30:.1f} {end[1] - uy * 30:.1f} "
+            f"{end[0] - side * 10:.1f} {bottom - 30:.1f} {end[0] - side * 14:.1f} {bottom + 4:.1f}")
+    pencil.wire ([], "#2d2f33", width=3.2, layer="top", path=path)
+    # The body, its channel's band, the ground collar and the nose.
+    for (front, back), half, tint in (((22, 62), 4.6, PROBE), ((48, 54), 4.8, CHANNELS[channel]),
+                                      ((17, 22), 3.6, "#c9c9c4"), ((7, 17), 2.6, PROBE)):
+        points = band (at (front), at (back), half)
+        pencil.solid (points, tint)
+        pencil.polyline (points, width=0.6, closed=True, layer="top", passes=1)
+    # The hook tip, from the nose to the hole, curling round it.
+    pencil.line (at (7), at (1.5), width=1.2, tone=0.55, layer="top", passes=1, wobble=0)
+    pencil.layers["top"].append (
+        f'<path d="M {at (1.5)[0]:.1f} {at (1.5)[1]:.1f} Q {tx + uy * 3:.1f} {ty - ux * 3:.1f} '
+        f'{tx:.1f} {ty:.1f}" fill="none" stroke="#c9c9c4" stroke-width="1.1"/>'
+        f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="1.3" fill="{GRAPHITE}" fill-opacity="0.8"/>')
+    # Its channel, beside the band.
+    x, y = at (51, side * 13)
+    pencil.text (x, y + 2.5, f"CH{channel}", size=6, kind="silk", weight="bold", tone=0.85)
+    return at (19)
+
+
+# The probe's short ground lead from its collar to a crocodile clip, its
+# jaws on the ground point.
+def ground_clip (pencil, start, touch):
+    (sx, sy), (tx, ty) = start, touch
+    length = max (1e-9, math.dist (start, touch))
+    ux, uy = (tx - sx) / length, (ty - sy) / length
+    jaws = (tx - ux * 3, ty - uy * 3)
+    back = (tx - ux * 15, ty - uy * 15)
+    middle = ((sx + back[0]) / 2 + uy * 14, (sy + back[1]) / 2 - ux * 14)
+    path = (f"M {sx:.1f} {sy:.1f} Q {middle[0]:.1f} {middle[1]:.1f} {back[0]:.1f} {back[1]:.1f}")
+    pencil.wire ([], WIRES["black"], width=2.0, layer="top", path=path)
+    # The clip: a black sleeve, then its two steel jaws, open on the point.
+    sleeve = band (back, (tx - ux * 7, ty - uy * 7), 3.2)
+    pencil.solid (sleeve, "#222222")
+    pencil.polyline (sleeve, width=0.6, closed=True, layer="top", passes=1)
+    for spread in (-1, 1):
+        tip = (jaws[0] - uy * spread * 1.8, jaws[1] + ux * spread * 1.8)
+        pencil.line ((tx - ux * 7 - uy * spread * 1.6, ty - uy * 7 + ux * spread * 1.6), tip,
+                     width=1.3, tone=0.6, layer="top", passes=1, wobble=0)
+    pencil.layers["top"].append (
+        f'<circle cx="{tx:.1f}" cy="{ty:.1f}" r="1.3" fill="{GRAPHITE}" fill-opacity="0.8"/>')
+
+
+# A trace to watch (bench.probe): the breadboard round its two points, the
+# probe leaning in on its tip and its ground lead clipped to the ground
+# point, drawn on the bench as drawing's Drawing draws it, and labeled
+# only by the page's caption and table.
+def probe_svg (drawing, index, prefix="probe"):
+    bench = drawing.bench
+    routes = drawing._layout ()
+    taken = bench.scope_probes[index]
+    (tip, _), (ground, _) = bench.probe_points (index)
+    points = {"tip": bench.hole_xy (tip), "ground": bench.hole_xy (ground)}
+    side = -1 if points["ground"][0] >= points["tip"][0] else 1
+    xs = [x for x, _ in points.values ()]
+    ys = [y for _, y in points.values ()]
+    _, by0, _, _ = bench.board_box ()
+    left, right = min (xs) - 100, max (xs) + 80
+    top = min (ys) - 30
+    bottom = max (ys) + 80
+    for part in bench.parts:
+        for shape in part.footprint (bench):
+            if shape[0] == "rect":
+                x0, y0, x1, y1 = shape[1:5]
+            else:
+                cx, cy, r = shape[1:4]
+                x0, y0, x1, y1 = cx - r, cy - r, cx + r, cy + r
+            if x0 < right and x1 > left and y0 < top < y1:
+                top = max (by0 - 4, min (top, y0 - 8))
+    bench.label_size = 6.4
+    detail = (drawing._column_at (left), drawing._column_at (right))
+    pencil = Pencil (bench.seed, f"{prefix}{index}")
+    drawing._draw_mega (pencil)
+    drawing._draw_board (pencil, detail)
+    for part in bench.parts:
+        part.draw (pencil, bench)
+    for module in bench.modules.values ():
+        if not module.kind.blocks:
+            module.draw (pencil)
+    for start, end, route in routes:
+        drawing._draw_wire (pencil, start, end, route)
+    for module in bench.modules.values ():
+        if module.kind.blocks:
+            module.draw (pencil)
+    collar = scope_probe (pencil, points["tip"], taken["channel"], side, bottom)
+    ground_clip (pencil, collar, points["ground"])
+    return pencil.svg ((left, top, right - left, bottom - top), f"{bench.title}: {taken['label']}")

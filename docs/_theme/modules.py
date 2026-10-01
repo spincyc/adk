@@ -965,6 +965,54 @@ class Battery9V (Kind):
         pencil.text (64, 172, "−", size=10, kind="silk", color="#f4f1e8")
 
 
+class Generator (Kind):
+    # A battery-powered signal generator, so it shares no ground with the
+    # mains: a small case with its display, a knob for the frequency and
+    # one for the size of the wave, and its two clip leads from the jacks
+    # at its end, OUT red and GND black. shows="…" sets what its display
+    # reads.
+    title  = "signal generator"
+    pins   = ("OUT", "GND")
+    notes  = {"OUT": "red OUT lead", "GND": "black GND lead"}
+    width, height = 150, 104
+    COLORS = {"OUT": "red", "GND": "black"}
+    CASE   = "#4b4f55"
+
+    def header (self):
+        return [Pin (name, 55 + 40 * index, self.height, (0, 1), "lead", self.notes[name],
+                     self.COLORS[name]) for index, name in enumerate (self.names)]
+
+    def draw (self, pencil):
+        pencil.tint (rounded (0, 0, self.width, 96, 7), self.CASE)
+        pencil.rect (0, 0, self.width, 96, width=1.0, radius=7, layer="top")
+        # The display: what it puts out, and the wave.
+        pencil.tint (rounded (10, 10, 82, 36, 3), "#c9d2b6")
+        pencil.rect (10, 10, 82, 36, width=0.8, radius=3, layer="top", passes=1)
+        # It reads the right way up however the case is turned.
+        flip = 90 < sum (pencil.turns) % 360 <= 270
+        pencil.text (51, 24 - 6.5 * flip, self.options.get ("shows", "1.000 kHz"), size=9,
+                     kind="mono", color="#262a22", tone=0.95, rotate=180 if flip else 0)
+        wave = " ".join (f"{'M' if step == 0 else 'L'} {16 + step * 1.75:.1f} "
+                         f"{37 - 5 * math.sin (step * math.pi / 10):.1f}" for step in range (41))
+        pencil.layers["top"].append (f'<path d="{wave}" fill="none" stroke="#262a22" '
+                                     f'stroke-width="0.9"/>')
+        # Its knobs, frequency and size.
+        for cy, r, words in ((28, 13, "FREQ"), (68, 10, "AMPL")):
+            pencil.spot (122, cy, r, "#2c2e31")
+            pencil.circle (122, cy, r, width=0.9, layer="top", passes=1)
+            pencil.line ((122, cy), (122 + r * 0.6, cy - r * 0.6), width=1.4, tone=0.0,
+                         layer="top", passes=1, wobble=0)
+            level (pencil, 122, cy + r + 6, words, 4.6, color=WHITE)
+        level (pencil, 51, 60, "BATTERY · ISOLATED", 4.6, color=WHITE)
+        # The jacks, and the leads leaving them past the case's end.
+        for pin in self.header ():
+            pencil.spot (pin.x, 84, 5.5, "#1c1c1c")
+            pencil.circle (pin.x, 84, 5.5, width=1.4, layer="top", passes=1)
+            pencil.wire ([(pin.x, 84), (pin.x, pin.y)], WIRES[self.COLORS[pin.name]], width=2.4,
+                         layer="top")
+            level (pencil, pin.x, 72, pin.name, 5, color=WHITE)
+
+
 class Lcd1602 (Kind):
     # The LCD1602 module: 80 x 36 mm, its sixteen pins along the top edge
     # from pin 1 (VSS) 8 mm in from the left, as the screen reads. Plugged
@@ -1289,6 +1337,7 @@ KINDS = {
     "dht11": Dht11, "motor": Motor, "battery9v": Battery9V, "fm_radio": FmRadio,
     "rf_receiver": RfReceiver, "rf_transmitter": RfTransmitter, "lora_modem": LoraModem,
     "lora_module": LoraModule, "mesh_board": MeshBoard, "power_module": PowerModule,
+    "generator": Generator,
     "module": Kind,
 }
 
