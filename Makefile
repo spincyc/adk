@@ -133,7 +133,7 @@ SANITIZE_PROBE_FLAGS := $(PROBE_FLAGS)                  \
 # The AVR's own widths ---------------------------------------------------------
 #
 # The host's int is 32 bits, but the Mega's is 16, its long 32 and its double
-# no wider than float. tests/avr/widths runs a few pure-logic tests on the
+# no wider than float. tests/avr/widths.cpp runs a few pure-logic tests on the
 # AVR itself, built as an example is, in the simulator that comes with
 # avr-gdb. The sketch stops at a break instruction, or after 10^8 cycles if
 # it never gets there, and avr-gdb reads its report back from its RAM.
@@ -376,7 +376,9 @@ $(TOOLCHAIN)/bin/avr-g++:
 	    x86-64 or arm64, not $(HOST): install avr-gcc 16 and set TOOLCHAIN to its folder))
 	@mkdir -p $(BUILD_DIR)/toolchain
 	curl --fail --location --silent --show-error --output $(TOOLCHAIN).tar.bz2 $(AVR_GCC_URL)
-	echo "$(AVR_GCC_SHA256)  $(TOOLCHAIN).tar.bz2" | $(SHA256SUM) -c
+	@sum=$$($(SHA256SUM) $(TOOLCHAIN).tar.bz2); sum=$${sum%% *};  \
+	    [ "$$sum" = "$(AVR_GCC_SHA256)" ]                         \
+	    || { echo "$(TOOLCHAIN).tar.bz2: SHA-256 $$sum, not $(AVR_GCC_SHA256)"; exit 1; }
 	tar -xjf $(TOOLCHAIN).tar.bz2 -C $(BUILD_DIR)/toolchain
 	@rm $(TOOLCHAIN).tar.bz2
 	@touch $@
@@ -407,21 +409,23 @@ $(ARDUINO_DIR)/%.log: examples/$$*/$$(notdir $$*).ino  \
 ## avr-test        run a few tests on a simulated Mega, where int is 16 bits
 avr-test: $(AVR_TEST_DIR)/widths.ok
 
-$(AVR_TEST_DIR)/widths.ok: tests/avr/widths/widths.ino  \
-                           $(LIBRARY_FILES)             \
+$(AVR_TEST_DIR)/widths.ok: tests/avr/widths.cpp  \
+                           $(LIBRARY_FILES)      \
                            $(TOOLCHAIN)/bin/avr-g++
-	@mkdir -p $(AVR_TEST_DIR) $(ARDUINO_CACHE)
-	@echo "  AVR  tests/avr/widths"
-	@ARDUINO_BUILD_CACHE_PATH=$(abspath $(ARDUINO_CACHE))       \
-	    arduino-cli compile                                     \
-	        --fqbn $(FQBN)                                      \
-	        --library .                                         \
-	        --warnings all                                      \
-	        $(AVR_PROPERTIES)                                   \
-	        --build-path $(AVR_TEST_DIR)/widths                 \
-	        tests/avr/widths > $(AVR_TEST_DIR)/widths.log 2>&1  \
+	@mkdir -p $(AVR_TEST_DIR)/sketch/widths $(ARDUINO_CACHE)
+	@cp tests/avr/widths.cpp $(AVR_TEST_DIR)/sketch/widths/widths.ino
+	@echo "  AVR  tests/avr/widths.cpp"
+	@ARDUINO_BUILD_CACHE_PATH=$(abspath $(ARDUINO_CACHE))           \
+	    arduino-cli compile                                         \
+	        --fqbn $(FQBN)                                          \
+	        --library .                                             \
+	        --warnings all                                          \
+	        $(AVR_PROPERTIES)                                       \
+	        --build-path $(AVR_TEST_DIR)/widths                     \
+	        $(AVR_TEST_DIR)/sketch/widths                           \
+	        > $(AVR_TEST_DIR)/widths.log 2>&1                       \
 	    || (cat $(AVR_TEST_DIR)/widths.log; exit 1)
-	@echo "  SIM  tests/avr/widths"
+	@echo "  SIM  tests/avr/widths.cpp"
 	@$(AVR_SIMULATOR) $(AVR_TEST_DIR)/widths/widths.ino.elf > $(AVR_TEST_DIR)/widths.out 2>&1  \
 	    || true
 	@grep '^avr: ' $(AVR_TEST_DIR)/widths.out || cat $(AVR_TEST_DIR)/widths.out

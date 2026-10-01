@@ -2,7 +2,9 @@
 // is 16 bits, long 32 and double no wider than float, as on the Mega. The
 // host tests run with wider types and can't see what these widths do.
 //
-// make avr-test builds this as a lesson is built and runs it in the
+// make avr-test copies this into build/ as a sketch, widths.ino (the
+// Arduino library rules allow sketches only under examples/), builds it as
+// a lesson is built and runs it in the
 // simulator that comes with avr-gdb. That simulates the processor alone,
 // with no timers or pins behind it, so millis () never moves and every test
 // gives adk::update () its time. The result is left in adkReport, which

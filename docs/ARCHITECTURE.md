@@ -228,7 +228,7 @@ with each other.
 
 The host's `int` is 32 bits, but the Mega's is 16, its `long` 32 and its
 `double` no wider than `float`. `make avr-test` builds a few pure-logic
-tests (`tests/avr/widths`) as a lesson is built, and runs them in the
+tests (`tests/avr/widths.cpp`) as a lesson is built, and runs them in the
 simulator that comes with avr-gdb: printing at the ends of each type's
 range, glides over the longest times, the clock's date read from flash,
 and a `Bridge` carrying a Mega's whole `long`. The simulator has no timers
