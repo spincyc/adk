@@ -36,9 +36,10 @@ kilometer or more.
     to its middle: `adk::LoraModem modemA {Serial1, 1, {.band = 921500000}};`,
     and the same for B. Europe uses 868 MHz instead, at lower power and
     for 1% of the time at most: give both modems
-    `{.band = 868100000, .power = 14}`. Other countries have rules of their
-    own. Receiving is fine anywhere; before you send, read
-    [Radios](../../safety.md#radios) on the safety page.
+    `{.power = 14, .band = 868100000}`, in that order, as *Code it*
+    explains. Other countries have rules of their own. Receiving is fine
+    anywhere; before you send, read [Radios](../../safety.md#radios) on
+    the safety page.
 
 ## The idea
 
@@ -176,7 +177,10 @@ What's new:
   `Serial1`, pins 18 (TX1) and 19 (RX1), with address 1. Modem B is on
   `Serial3`, pins 14 (TX3) and 15 (RX3), with address 2. `Serial` itself
   belongs to the USB cable and the Serial Monitor. Settings in braces
-  after the address could choose the network, 6 unless you say otherwise.
+  after the address could choose the network, 6 unless you say otherwise,
+  or the band. Name only the ones you change, and keep them in this
+  order, or the sketch won't compile: partner, speed, power, network,
+  band.
 - `modemA.ok ()` says whether the modem answered when the sketch started;
   the screen says which did.
 - `modemA.send (2, text)` sends the text to address 2. It comes straight

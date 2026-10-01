@@ -37,11 +37,12 @@ Board A is the Mega you have used all along; Board B is a second one.
 !!! warning "915 MHz is for the Americas and Australia"
     The RYLR896 modems send on 915 MHz, which anyone may use in the USA
     and Canada. In Australia, add `.band = 921500000` to the settings on
-    both boards, to keep inside Australia's 915–928 MHz. Europe limits how
-    much of the time a radio may send, and a bridge sends often, so there
-    add `.band = 869525000` on both boards: that band allows a tenth of the
-    time. Receiving is fine anywhere; before you send, read
-    [Radios](../../safety.md#radios) on the safety page.
+    both boards, after `.power`, to keep inside Australia's 915–928 MHz.
+    Europe limits how much of the time a radio may send, and a bridge
+    sends often, so there add `.band = 869525000` on both boards, after
+    `.power`: that band allows a tenth of the time. Receiving is fine
+    anywhere; before you send, read [Radios](../../safety.md#radios) on
+    the safety page.
 
 ## The idea
 
@@ -190,7 +191,9 @@ What's new:
   pins 14 and 15, with address 1. The settings in braces name only what
   differs from the usual: `.partner = 2` is where its messages go,
   `.speed` is `Quick`, and `.power` is 10 dBm. Anything left out keeps
-  its usual value, such as network 6.
+  its usual value, such as network 6. Settings keep the order
+  partner, speed, power, network, band, as in Lesson 40, so a band
+  or a network you add goes after `.power`, and the band last.
 - `adk::Bridge bridge {radio};` is the bridge, over that modem. It goes
   straight after the modem it uses.
 - `bridge.share ("button", button.isPressed ())` shares this board's
