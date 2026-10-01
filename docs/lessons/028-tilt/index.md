@@ -83,6 +83,10 @@ side the Y arrow points to. ADK works them out for you in degrees with
     reaches B1, with A1 to SDA; pin 21 reaches B2, with A2 to SCL. Leave
     channels 3 and 4 empty. Do not join A and B with jumper wires.
 
+If your level shifter came with its header pins loose, they must be
+soldered on before it can take its wires: see
+[Soldering](../../safety.md#soldering).
+
 <!-- bench -->
 
 <!-- steps -->

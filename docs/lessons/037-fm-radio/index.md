@@ -112,7 +112,8 @@ and take everything else off, the power module too: nothing here needs it.
 Most of these radio boards come with their row of eight pins loose, and the
 pins have to be soldered on before the board can stand in the breadboard.
 If you haven't learned to solder yet, ask someone who has, or buy a board
-with its pins already fitted.
+with its pins already fitted. [Soldering](../../safety.md#soldering) says
+how to do it safely.
 
 The radio stands in row j, columns 27 to 34, its board lying back over the
 top rails, like the accelerometer in Lesson 28. Its three signal wires, and

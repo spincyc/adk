@@ -95,7 +95,8 @@ pictures of each.
 
 1. **Pins.** Heltec boards usually come with their pin headers loose. Board
    1 needs its pins soldered on; board 2 needs none. Ask an adult to help
-   with the soldering iron, or buy boards with their pins already fitted.
+   with the soldering iron, as [Soldering](../../safety.md#soldering)
+   says, or buy boards with their pins already fitted.
 2. **Aerials.** Screw each board's aerial on before you ever plug it in.
    Sending into no aerial can damage the radio.
 3. **Meshtastic.** Plug board 1 into the computer with its USB-C cable. In

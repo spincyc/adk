@@ -118,8 +118,8 @@ tests why a divider's output depends on what it drives.
 !!! warning "Soldered pins only"
     Each module's pins must be soldered to its board. Pins that are only
     pushed through the holes don't make a connection, and the module will
-    stay silent. If yours came loose, ask someone who solders to fix them
-    before you start.
+    stay silent. If yours came loose, have them soldered before you start,
+    as [Soldering](../../safety.md#soldering) describes.
 
 Keep the screen from Lesson 37 as it is, and one of the short black
 jumpers down to the − rail: the radio's, from f33, which now takes the
