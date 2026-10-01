@@ -91,7 +91,7 @@ need: [Safety](safety.md#radios) has the details.
 | 433 MHz transmitter (WL102-341) and receiver (RX470C) | Short messages, one every 10 seconds at most | Lesson 38 | US$3–8 | No license, within the limits; in the USA and Canada, aerials off |
 | Two REYAX RYLR896 LoRa modems | Messages across a kilometer or more, on 915 MHz | Lesson 40 | US$32–50 | No license, within the limits |
 | Two Ebyte E32-433T20D LoRa modules, with aerials *(optional)* | A 433 MHz link that passes on lines of text | Lesson 41 | US$12–25 | **An amateur radio license** in the USA and Canada, so there Lesson 41 is optional: read it, and carry on to Lesson 42 from Lesson 40's build |
-| Two Heltec WiFi LoRa 32 V3 boards, the 863–928 MHz version, running Meshtastic, and a phone | Text messages from a phone, across a mesh | Lesson 42 | US$52–60, besides the phone | No license, within the limits |
+| Two Heltec WiFi LoRa 32 V3 boards, the 863–928 MHz version, running Meshtastic, and a phone *(optional)* | Text messages from a phone, across a mesh. Lesson 42 is optional: read it, and carry on to Lesson 43 from Lesson 40's or 41's build | Lesson 42 | US$52–60, besides the phone | No license, within the limits |
 
 Their pins work at 3.3 V, so the Mega's signals reach them through a
 resistor divider, 1 kΩ and 2 kΩ; [Safety](safety.md#radios) explains why, and
@@ -139,6 +139,8 @@ and earns nothing from any shop.
 |---|---|---|
 | 1 set | Each of the [add-on radios](#add-on-radios), with aerials | US$105–160 |
 | | Without Lesson 41's E32 modules, where they need a license | US$90–135 |
+| | Without Lesson 42's Heltec boards | US$50–100 |
+| | Without either | US$40–75 |
 
 ### Two boards, Lessons 43 to 55
 
