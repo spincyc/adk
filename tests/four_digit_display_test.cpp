@@ -321,6 +321,30 @@ TEST (fourDigitDisplayShowsTextWithDots)
     CHECK (scan (now) == glyphs ("    "));
 }
 
+// A char is a number too, and without show (char) the whole-number show ()
+// would take it: 'A' would show as 65.
+TEST (fourDigitDisplayShowsACharAsACharacter)
+{
+    adk::FourDigitDisplay display {30, 31, 32, 22, 23, 24, 25};
+    adk::Millis           now = 0;
+
+    adk::setup ();
+
+    display.show ('A');
+    CHECK (scan (now) == glyphs ("A   "));
+
+    char grade = '7';
+    display.show (grade);
+    CHECK (scan (now) == glyphs ("7   "));
+
+    display.show ('.');
+    CHECK (scan (now) == dotted (glyphs ("    "), 0));
+
+    // A byte stays a number.
+    display.show (uint8_t {'A'});
+    CHECK (scan (now) == glyphs ("  65"));
+}
+
 TEST (fourDigitDisplayShowsMinutesAndSeconds)
 {
     adk::FourDigitDisplay display {30, 31, 32, 22, 23, 24, 25};

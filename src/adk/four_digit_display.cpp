@@ -109,6 +109,12 @@ namespace adk {
         }
     }
 
+    void FourDigitDisplay::show (char character)
+    {
+        const char text [] = {character, '\0'};
+        show (text);
+    }
+
     void FourDigitDisplay::showTime (uint8_t minutes, uint8_t seconds)
     {
         if (minutes > 99 || seconds > 59)

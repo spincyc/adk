@@ -49,6 +49,10 @@ namespace adk {
         // the character before it instead of taking a digit of its own.
         void show (const char* text);
 
+        // One character, as text shows it: show ('A') shows A at the left,
+        // not 65, the number a char also is.
+        void show (char character);
+
         // Minutes and seconds as 05.09, the dot after the second digit
         // standing in for a colon. Past 99 minutes or 59 seconds shows ----.
         void showTime (uint8_t minutes, uint8_t seconds);
