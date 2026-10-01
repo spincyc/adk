@@ -338,6 +338,32 @@ expect ("a module's + on a pin is a signal's color",
                             .wire ("22", "s.+").wire ("23", "s.S").wire ("GND.power", "s.−")),
                   "22", "s.+") in ("black", "red", "orange"), False)
 
+# A build carried on keeps the colors of the wires it keeps, as its steps
+# name them: load () hands them on from the lesson before, where the two
+# share a part, and the drawings are kept by the colors too.
+painted = finished (Bench ("test", columns=(1, 20)).wire ("26", "j6", color="green")
+                    .resistor ("220 Ω", "g6", "e6").led ("red", anode="b6", cathode="b7")
+                    .wire ("a7", "B-7"))
+CARRIED = '''
+bench = Bench ("test", columns=(1, 20))
+bench.wire ("26", "j6").resistor ("220 Ω", "g6", "e6").led ("red", anode="b6", cathode="b7")
+bench.wire ("a7", "B-7").wire ("22", "j2").button (2).wire ("a4", "B-4")
+'''
+with tempfile.NamedTemporaryFile ("w", suffix=".py", delete=False) as file:
+    file.write (CARRIED)
+try:
+    fresh = load (file.name)[""]
+    kept = load (file.name, {"": painted.legacy ()})[""]
+    other = finished (button (Bench ("test", columns=(1, 20))))
+    apart = load (file.name, {"": other.legacy ()})[""]
+finally:
+    os.unlink (file.name)
+expect ("a wire kept from the build before keeps its color", color_of (kept, "26", "j6"), "green")
+expect ("a new build's wire takes its own color", color_of (fresh, "26", "j6"), "white")
+expect ("a build that keeps no part starts its colors afresh", color_of (apart, "26", "j6"),
+        "white")
+expect ("a drawing is kept by its colors", kept.source != fresh.source, True)
+
 # A wire takes a costly short way rather than a cheap one three times as
 # long, as round the far end of the Mega: here a strip that costs much to
 # cross, with a way round it 100 units off.

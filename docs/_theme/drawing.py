@@ -121,32 +121,55 @@ def kept (draw):
 
 # Drawing is nearly all of a site build's time, so the build draws every
 # lesson at once before it starts, a process to a core, and keeps what they
-# drew in DRAWN for the pages to find. A circuit that fails is left to its
-# page, which says why; so is everything, where processes can't be had. The
-# biggest circuits, the two-board lessons, start first so none is left to
-# finish alone. The processes import this module from the theme's folder,
-# which MkDocs takes off the path once the hooks are loaded.
-def draw_all (paths):
+# drew in DRAWN for the pages to find. Each circuit comes with what the
+# lesson before hands on (bench.load), which colors the wires it keeps. A
+# circuit that fails is left to its page, which says why; so is
+# everything, where processes can't be had. The biggest circuits, the
+# two-board lessons, start first so none is left to finish alone. The
+# processes import this module from the theme's folder, which MkDocs takes
+# off the path once the hooks are loaded.
+def draw_all (circuits):
     DRAWN.clear ()
+    biggest = sorted (circuits, key=lambda circuit: os.path.getsize (circuit[0]), reverse=True)
+    for drawn in _each (_draw_circuit, biggest):
+        DRAWN.update (drawn)
+
+
+# A lesson's colors hang on the routes of every lesson before it, so the
+# build routes every circuit at once first, a process to a core, and keeps
+# the routes, before it reads them in order (hooks.load_all).
+def route_all (paths):
+    if KEPT:
+        for _ in _each (_route_circuit, sorted (paths, key=os.path.getsize, reverse=True)):
+            pass
+
+
+def _each (work, jobs):
     if THEME not in sys.path:
         sys.path.insert (0, THEME)
     try:
         with concurrent.futures.ProcessPoolExecutor () as pool:
-            for drawn in pool.map (_draw_circuit, sorted (paths, key=os.path.getsize,
-                                                          reverse=True)):
-                DRAWN.update (drawn)
+            yield from pool.map (work, jobs)
     except (OSError, NotImplementedError, concurrent.futures.process.BrokenProcessPool) as error:
-        logging.getLogger ("mkdocs").info (f"Drawing the lessons one at a time: {error}")
+        logging.getLogger ("mkdocs").info (f"Taking the lessons one at a time: {error}")
 
 
-def _draw_circuit (path):
+def _draw_circuit (circuit):
+    path, before = circuit
     DRAWN.clear ()
     try:
-        for letter, bench in load (path).items ():
+        for letter, bench in load (path, before).items ():
             Drawing (bench).page (letter)
     except Exception:  # noqa: BLE001 - the page draws it again, and says what failed
         pass
     return dict (DRAWN)
+
+
+def _route_circuit (path):
+    try:
+        load (path)
+    except Exception:  # noqa: BLE001 - its page reads it again, and says what failed
+        pass
 
 
 class Drawing:

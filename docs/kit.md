@@ -227,9 +227,9 @@ nearer the Mega. Support the overhang at breadboard height.
 The drawings color each wire by what it carries: black for GND, red for
 5 V and orange for 3.3 V, which a 3.3 V module such as the LoRa modem needs
 and 5 V would ruin. Every other color is a signal, and wires that cross or
-sit side by side differ where the kit's colors allow. Your wires needn't
-match, but keeping black, red and orange for those three makes a build easy
-to check.
+sit side by side differ where the kit's colors allow. A wire you keep from
+the lesson before keeps the color it had there. Your wires needn't match, but
+keeping black, red and orange for those three makes a build easy to check.
 
 | Part | Home |
 |---|---|

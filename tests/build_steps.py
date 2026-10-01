@@ -17,7 +17,8 @@ sys.dont_write_bytecode = True
 sys.path.insert (0, str (ROOT / "docs" / "_theme"))
 
 from bench import Bench  # noqa: E402
-from hooks import step_points, step_row, step_stages, steps  # noqa: E402
+from hooks import (LESSONS, carries, continuity, load_all, load_circuit, previous,  # noqa: E402
+                   recolored, step_points, step_row, step_stages, steps, written)
 from drawing import Drawing  # noqa: E402
 
 
@@ -205,4 +206,26 @@ for page in sorted ((ROOT / "docs" / "lessons").glob ("*/index.md")):
         assert source[match.end ():].lstrip ().startswith (following), \
             f"{page.parent.name}: keep each board's drawing and steps together"
 
-print ("Guided build: coordinates, progress identity, board labels and carry-over pass")
+# A build carried on keeps its wires' colors: each wire a lesson keeps from
+# the build before is drawn the color the keep text names it by, its color
+# there. Where no part carries on, only the Mega's power wires stay. Every
+# lesson is read as the site reads them; the routing runs a process to a
+# core, which import this script again, so this part runs only here.
+if __name__ == "__main__":
+    load_all ()
+    compared = 0
+    for lesson in filter (written, LESSONS):
+        for letter, bench in load_circuit (lesson).items ():
+            before = previous (lesson["number"], letter)
+            if before is None:
+                continue
+            kept, _, _ = continuity (bench, before[2])
+            if not carries (kept):
+                kept = [(kind, thing) for kind, thing in kept if before[2].is_standard (thing)]
+            changed = recolored (bench, before[2], kept)
+            assert not changed, f"{lesson['slug']}{letter}: kept wires change color: {changed}"
+            compared += sum (kind == "wire" for kind, _ in kept)
+    assert compared > 500, f"only {compared} kept wires compared"
+
+    print ("Guided build: coordinates, progress identity, board labels, carry-over and kept "
+           "colors pass")

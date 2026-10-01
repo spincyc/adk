@@ -58,8 +58,9 @@ one column lies straight when nothing is in its way.
 A wire's color says what it carries, once finish () knows: black for GND,
 red for 5 V, orange for 3.3 V, and those three for nothing else. Any other
 wire is a signal in a color of its own, its pin's (PIN_COLORS) from lesson
-to lesson, unless that would match a wire it crosses or ends beside;
-color= gives one by hand.
+to lesson, unless that would match a wire it crosses or ends beside. A
+wire kept from the build this one carries on keeps the color it had there
+(load ()); color= gives one by hand.
 
 The Mega's pins go by number ("26", "A0") or name. GND and 5V take the free
 pin of that kind nearest the wire's other end; these names pick one:
@@ -88,7 +89,7 @@ tip on one point and its ground clip on another.
 finish () then checks the circuit could work: no Mega pin's wire reaching
 nothing, no pin joined straight to GND, 5V or 3.3V, and no part with two
 legs in one strip. load () runs a lesson's circuit.py, one board's or two,
-and finishes them.
+and finishes them, each carrying on the board before it hands it.
 
 From that one description come the pencil drawings, the build steps and the
 table of connections; signal_pins () and pin_modes () let tests/pins.py
@@ -212,6 +213,15 @@ class Stage:
         self.name = name
 
 
+# What a finished bench hands on to the build that carries it on
+# (Bench.legacy ()): its parts and modules, by identity (), which tell the
+# next build whether it carries this one on at all, and each wire's color
+# by the wire's identity.
+class Legacy (NamedTuple):
+    things: frozenset
+    colors: dict
+
+
 # A home_* call's steps make one stage, named for its part: "the {color}
 # LED" names home_led ("26", "red")'s "the red LED".
 def staged (name):
@@ -281,7 +291,7 @@ class Bench:
         self.title = title
         self.sketch = sketch            # a board's own sketch, in a two-board lesson
         self.board = ""                 # its letter there: "A", "B"
-        self.source = None              # its circuit.py's digest and letter, which load () gives
+        self.source = None              # its circuit.py's digest, letter and colors, from load ()
         self.first, self.last = columns
         self.seed = seed
         self.taken = set ()
@@ -301,6 +311,7 @@ class Bench:
         self.screened = False           # the course's screen is on the board
         self._stage = None              # the stage steps join now
         self._painted = set ()          # the wires whose color circuit.py gave, by index
+        self.inherited = {}             # the colors of the build it carries on, which load () gives
 
     def _step (self, step):
         kind, thing = self._last
@@ -1246,6 +1257,12 @@ class Bench:
             return ("module", placed.title, pin.name)
         return end
 
+    # What a finished bench hands on to the build that carries it on.
+    def legacy (self):
+        things = frozenset (identity (self, kind, thing) for kind, thing, _ in self.items
+                            if kind != "wire")
+        return Legacy (things, {identity (self, "wire", wire): wire[2] for wire in self.wires})
+
     # Whether a rail is joined to a Mega pin or a power module leg of this
     # kind: "GND", "5V" or, from a power module, "3.3V".
     def _powered (self, rail, source):
@@ -1484,17 +1501,19 @@ class Bench:
 
     # Each wire's color, once the circuit is whole. A wire whose strip
     # carries GND, 5 V or 3.3 V is black, red or orange, whatever its ends
-    # are called, and no other wire is. A signal takes its own color
-    # (_signal_color) unless a wire ending beside it on a neighboring pin
-    # or hole, or one it crosses or runs beside, has that color already
-    # (clash); then the kit's color that clashes least. Home pins' wires choose first, then the rest in
+    # are called, and no other wire is. A signal wire kept from the build
+    # this one carries on keeps the color it had there (inherited), as the
+    # build steps name it, so nothing the learner leaves in place changes
+    # color. Any other signal takes its own color (_signal_color) unless a
+    # wire ending beside it on a neighboring pin or hole, or one it crosses
+    # or runs beside, has that color already (clash); then the kit's color
+    # that clashes least. Home pins' wires choose first, then the rest in
     # the order they went in. So a pin's wire keeps its color from lesson
-    # to lesson where the wires round it let it, and a build carried on
-    # from the lesson before keeps its colors unless something new crowds
-    # them: telling two wires apart where they meet matters more than a
-    # color kept, but with four colors for a jumper a wire that crosses
-    # all four keeps its own. Where wires meet is where the drawing routes
-    # them; its route cache keeps the routes for the drawing itself.
+    # to lesson where the wires round it let it: telling two new wires
+    # apart where they meet matters more than a color kept, but with four
+    # colors for a jumper a wire that crosses all four keeps its own. Where
+    # wires meet is where the drawing routes them; its route cache keeps
+    # the routes for the drawing itself.
     def _recolor (self):
         from drawing import Drawing     # which draws this bench, so is loaded after it
         routes = Drawing (self)._layout ()
@@ -1504,6 +1523,7 @@ class Bench:
             net = net_of.get (self._node (start), set ())
             carried = next ((source for source in ("GND", "3.3V", "5V")
                              if self._carries (net, source)), None)
+            kept = self.inherited.get (identity (self, "wire", self.wires[index]))
             if index in self._painted:
                 # A part's own leads are as they come. Black, red and orange
                 # go only where GND, 5 V and 3.3 V do.
@@ -1517,6 +1537,8 @@ class Bench:
                 colors[index] = color
             elif carried:
                 colors[index] = POWER_COLORS[carried]
+            elif kept and kept not in POWER_COLORS.values ():
+                colors[index] = kept
             else:
                 signals.append (index)
         courses = {index: (points, (self.xy (start), self.xy (end)))
@@ -1826,8 +1848,13 @@ class Bench:
 # circuit makes one Bench, bench; a two-board lesson's makes a Bench for
 # each board, each naming its own sketch, and lists them in order as
 # boards = {"A": ..., "B": ...}. Returns {letter: Bench}, where a one-board
-# lesson's board is "".
-def load (path):
+# lesson's board is "". before is what the lesson before hands on,
+# {letter: Legacy}, where this one carries its build on: a board that
+# keeps any part or module of the board it carries on (carried_from) keeps
+# the colors of the wires it keeps, as its steps say. Each board's source,
+# by which its drawings are kept, is its circuit's digest, its letter and
+# its wires' colors.
+def load (path, before=None):
     scope = {"Bench": Bench, "HC595": HC595, "L293D": L293D}
     text = open (path, encoding="utf-8").read ()
     exec (compile (text, path, "exec"), scope)
@@ -1851,9 +1878,39 @@ def load (path):
     digest = hashlib.sha256 (text.encode ()).hexdigest ()[:16]
     for letter, bench in boards.items ():
         bench.board = letter
-        bench.source = digest + letter
+        theirs = carried_from (letter, before or {})
+        if theirs is not None and before[theirs].things & bench.legacy ().things:
+            bench.inherited = before[theirs].colors
         bench.finish ()
+        colors = " ".join (color for _, _, color, _ in bench.wires)
+        bench.source = digest + letter + hashlib.sha256 (colors.encode ()).hexdigest ()[:16]
     return boards
+
+
+# The board of the lesson before that a board carries on, given that
+# lesson's boards by letter: the same board; after a one-board lesson,
+# Board A carries on its only board, and Board B starts on a Mega of its
+# own; a one-board lesson after a two-board one carries on Board A. None
+# where there is none.
+def carried_from (letter, before):
+    for mine, theirs in ((letter, letter), ("A", ""), ("", "A")):
+        if letter == mine and theirs in before:
+            return theirs
+    return None
+
+
+# What makes a part, module or wire the same thing in two builds: a part
+# of a kind in the same holes, a module of a kind in the same place, a
+# wire between the same two points.
+def identity (bench, kind, thing):
+    if kind == "part":
+        holes = tuple (hole for _, hole in thing.legs ())
+        settings = (thing.top, thing.bottom) if hasattr (thing, "top") else ()
+        return ("part", type (thing).__name__, thing.name, holes, settings)
+    if kind == "module":
+        return ("module", type (thing.kind).__name__, thing.title, round (thing.x), round (thing.y),
+                thing.angle)
+    return ("wire", frozenset (bench.end_key (end) for end in thing[:2]))
 
 
 # The folder a lesson's example is in, under examples: lessons/013-hello-lcd

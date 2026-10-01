@@ -58,8 +58,8 @@ from mkdocs.exceptions import PluginError
 sys.path.insert (0, os.path.dirname (__file__))
 
 from api import document  # noqa: E402
-from bench import canonical, example, hole_words, load  # noqa: E402
-from drawing import Drawing, draw_all  # noqa: E402
+from bench import canonical, carried_from, example, hole_words, identity, load  # noqa: E402
+from drawing import Drawing, draw_all, route_all  # noqa: E402
 import meter  # noqa: E402
 from parts import Chip, Led, Resistor  # noqa: E402
 from pencil import WIRES  # noqa: E402
@@ -154,13 +154,21 @@ def arc_title (arc, lessons):
 # the text copied from the page is unchanged.
 # Drawing is nearly all of the build's time, so every lesson is drawn at
 # once before the pages are built, and each page finds its drawings ready.
-# Each build reads each circuit once, for its page and the next lesson's.
+# Each build reads each circuit once, for its page and the next lesson's,
+# and each drawing process reads its own with what the lesson before hands
+# on, so it colors the wires as the page does.
 def on_pre_build (config):
     CIRCUITS.clear ()
     DRAWINGS.clear ()
     STAGES.clear ()
-    draw_all ([os.path.join (ROOT, "docs", "lessons", lesson["slug"], "circuit.py")
-               for lesson in LESSONS if written (lesson)])
+    load_all ()
+    circuits = []
+    for lesson in filter (written, LESSONS):
+        try:
+            circuits.append ((circuit_path (lesson), handed (lesson)))
+        except PluginError:
+            pass                        # the lesson before failed; its page says why
+    draw_all (circuits)
 
 
 # A drawing's thousands of elements would cost Markdown, and then the search
@@ -374,33 +382,66 @@ def lesson_drawing (match):
     return figure (Drawing (bench).svg (view, f"{slug}-{view}{letter or ''}"), bench.title, view)
 
 
+def circuit_path (lesson):
+    return os.path.join (ROOT, "docs", "lessons", lesson["slug"], "circuit.py")
+
+
+# A lesson's boards, each carrying on the build of the lesson before as
+# previous () says, so a wire it keeps keeps its color.
 def load_circuit (lesson):
-    path = os.path.join (ROOT, "docs", "lessons", lesson["slug"], "circuit.py")
+    path = circuit_path (lesson)
     if path not in CIRCUITS:
+        before = handed (lesson)
         try:
-            CIRCUITS[path] = load (path)
+            CIRCUITS[path] = load (path, before)
         except Exception as error:
             raise PluginError (f"{path}: {error}") from error
     return CIRCUITS[path]
 
 
+# What the lesson before hands on to a lesson's build, {letter: Legacy},
+# or None where the lesson starts afresh.
+def handed (lesson):
+    before = earlier (lesson)
+    return {letter: bench.legacy () for letter, bench in load_circuit (before).items ()} \
+        if before else None
+
+
+# Every lesson's circuit, its routes worked out first, a process to a core,
+# and then each read in course order, so it can carry on the one before. A
+# circuit that fails is left to its page, which says why.
+def load_all ():
+    lessons = [lesson for lesson in LESSONS if written (lesson)]
+    route_all ([circuit_path (lesson) for lesson in lessons])
+    for lesson in lessons:
+        try:
+            load_circuit (lesson)
+        except PluginError:
+            pass
+
+
+# The lesson whose build a lesson carries on: the one before, in the same
+# track, when that is written and this one doesn't start afresh; or None.
+def earlier (lesson):
+    number = lesson.get ("number", 0)
+    if number < 2 or lesson.get ("fresh_start") or not written (LESSONS[number - 2]) or \
+            LESSONS[number - 2]["track"] != lesson["track"]:
+        return None
+    return LESSONS[number - 2]
+
+
 # The build a board carries on from: the same board in the lesson before,
 # when that is written. After a one-board lesson Board A carries on from
 # its only board, and Board B starts on a Mega of its own; a one-board
-# lesson after a two-board one carries on from Board A. Returns the lesson,
-# its board's letter and its bench, or None.
+# lesson after a two-board one carries on from Board A (carried_from).
+# Returns the lesson, its board's letter and its bench, or None.
 def previous (number, letter=""):
-    if number < 2 or LESSONS[number - 1].get ("fresh_start") or \
-            not written (LESSONS[number - 2]):
-        return None
-    lesson = LESSONS[number - 2]
-    if lesson["track"] != LESSONS[number - 1]["track"]:
+    lesson = earlier (LESSONS[number - 1])
+    if lesson is None:
         return None
     boards = load_circuit (lesson)
-    for mine, theirs in ((letter, letter), ("A", ""), ("", "A")):
-        if letter == mine and theirs in boards:
-            return lesson, theirs, boards[theirs]
-    return None
+    theirs = carried_from (letter, boards)
+    return None if theirs is None else (lesson, theirs, boards[theirs])
 
 
 # The drawing's own width, in drawing units, lets the page size it so its
@@ -473,6 +514,11 @@ def steps (bench, before=None, number=1, letter="", title=None):
         source = f"[{visible_reference (lesson)}](../{lesson['slug']}/index.md)" + \
             (f"'s Board {letter_before}" if letter_before else "")
         if carries (kept):
+            # What is kept is named by its color before, which the drawing
+            # keeps (bench.load) unless circuit.py gives another.
+            for wire, color in recolored (bench, old, kept):
+                raise ValueError (f"{describe (old, 'wire', wire)} is kept from "
+                                  f"{visible_reference (lesson)}, so can't be {color} here")
             # Where anything is taken out, each wire kept is named, since a
             # count can't say which. A chip swapped for another in its holes
             # would meet any wire left on its old pins, so then every one
@@ -741,6 +787,14 @@ def carries (kept):
     return any (kind != "wire" for kind, _ in kept)
 
 
+# The wires kept from the build before that this one draws in another
+# color, each with its color here.
+def recolored (bench, before, kept):
+    colors = {identity (bench, "wire", wire): wire[2] for wire in bench.wires}
+    return [(wire, colors[identity (before, "wire", wire)]) for kind, wire in kept
+            if kind == "wire" and colors[identity (before, "wire", wire)] != wire[2]]
+
+
 # The items a board's steps add to the build it carries on from.
 def added (bench, before=None):
     if not before:
@@ -805,17 +859,6 @@ def continuity (bench, before):
     gone = [item for item in before.items if identity (before, item[0], item[1]) not in here]
     new = [item for item in bench.items if identity (bench, item[0], item[1]) not in there]
     return kept, gone, new
-
-
-def identity (bench, kind, thing):
-    if kind == "part":
-        holes = tuple (hole for _, hole in thing.legs ())
-        settings = (thing.top, thing.bottom) if hasattr (thing, "top") else ()
-        return ("part", type (thing).__name__, thing.name, holes, settings)
-    if kind == "module":
-        return ("module", type (thing.kind).__name__, thing.title, round (thing.x), round (thing.y),
-                thing.angle)
-    return ("wire", frozenset (bench.end_key (end) for end in thing[:2]))
 
 
 # What is kept, in words. A stage kept whole goes by its heading in the
