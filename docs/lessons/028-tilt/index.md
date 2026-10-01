@@ -37,9 +37,12 @@ that many chips can share using just two wires: **SDA** carries the data and
 **address**, a number it answers to; the MPU-6050's is `0x68`, a hexadecimal
 (base 16) number, 104 in ordinary counting. The Mega's I2C pins are 20 (SDA)
 and 21 (SCL). The module has its own 3.3 V regulator, so it runs from 5V,
-and its own resistors that hold the two wires high between bits. Its
-**signals still need 3.3 V**. A bidirectional I2C level shifter lets each
-side use its own voltage: 5 V at the Mega and 3.3 V at the sensor.
+and its own resistors that hold the two wires high, at 3.3 V, between
+bits. Its **signals still need 3.3 V**, but the Mega board has resistors
+of its own, 10 kΩ, that pull pins 20 and 21 up to 5 V: joined straight
+to the sensor, they would lift its wires above what it can take. A
+bidirectional I2C level shifter keeps the two sides apart, each at its
+own voltage: 5 V at the Mega and 3.3 V at the sensor.
 
 An **accelerometer** measures how hard something is pushed, along three
 directions at right angles, x, y and z. Lying still, it isn't pushed by
@@ -262,9 +265,11 @@ What the numbers tell you:
 
 ??? note "Answers"
     1. The module's regulator makes 3.3 V for the chip, but SDA and SCL go
-       straight to the chip, and its signals need 3.3 V. The shifter passes
-       the lows between the sides while each is held high at its own voltage:
-       5 V at the Mega, 3.3 V at the sensor.
+       straight to the chip, and its signals need 3.3 V. The Mega board's
+       own 10 kΩ resistors pull pins 20 and 21 up to 5 V, which would lift
+       the sensor's wires too high. The shifter passes the lows between
+       the sides while each is held high at its own voltage: 5 V at the
+       Mega, 3.3 V at the sensor.
     2. Every chip answers only to its own address, and the sketch asks for
        `0x68`. With AD0 joined to 3.3 V the chip would answer to `0x69`
        instead, so nothing would answer and the matrix would scroll
