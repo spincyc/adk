@@ -56,6 +56,17 @@ namespace adk {
         // Heard from the other board in the last five seconds.
         bool isConnected () const;
 
+        // Stop sending: nothing goes out, not even the two-second refresh,
+        // until start (). A stopped bridge still listens, so value () keeps
+        // up, but no value or event counts as changed (). adk::stop () stops
+        // every Bridge too, so a loop driven by changed () stays still.
+        void stop () override;
+
+        // Talk again after stop (), sending everything at once. What changed
+        // while it was stopped is not news: changed () waits for the next
+        // change.
+        void start ();
+
         static constexpr uint8_t MaxValues  = 8;
         static constexpr uint8_t NameLength = 7;
 
@@ -106,5 +117,6 @@ namespace adk {
         uint8_t theirRun_;     // the other board's, as last heard
         bool    beat_;
         bool    heard_;
+        bool    stopped_;
     };
 }

@@ -56,6 +56,8 @@ namespace adk {
     // Like delay (), but every object keeps updating while it waits.
     void wait (Millis duration);
 
-    // Put every object in its safe state.
+    // Put every object in its safe state: outputs off, and sound and motion
+    // stopped. Nothing timed, such as a Timer, an Every or a Bridge's
+    // messages, starts again until the sketch starts it; inputs still read.
     void stop ();
 }

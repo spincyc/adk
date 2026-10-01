@@ -116,6 +116,7 @@ namespace adk {
         , theirRun_    (0)
         , beat_        (true)
         , heard_       (false)
+        , stopped_     (false)
     {
     }
 
@@ -180,6 +181,22 @@ namespace adk {
         return heard_ && now_ - heardAt_ < Silence;
     }
 
+    void Bridge::stop ()
+    {
+        stopped_ = true;
+    }
+
+    void Bridge::start ()
+    {
+        stopped_ = false;
+        beat_    = true;
+
+        for (uint8_t index = 0; index < mineCount_; ++index)
+        {
+            mine_[index].unsent = true;
+        }
+    }
+
     void Bridge::update (Millis now)
     {
         now_ = now;
@@ -203,7 +220,7 @@ namespace adk {
             heard_ = false;
         }
 
-        if (now - sentAt_ >= Pace)
+        if (!stopped_ && now - sentAt_ >= Pace)
         {
             tell (now);
         }
@@ -307,7 +324,7 @@ namespace adk {
             }
 
             // A value is news the first time it arrives; an event only once
-            // its count goes up.
+            // its count goes up. Nothing is news to a stopped bridge.
             if (!theirs && theirsCount_ < MaxValues)
             {
                 theirs = &theirs_[theirsCount_++];
@@ -324,7 +341,7 @@ namespace adk {
                 long before = theirs->event ? theirs->value : 0;
                 bool news   = event ? number > before : theirs->event || theirs->value != number;
 
-                theirs->fresh   = theirs->fresh || news;
+                theirs->fresh   = (theirs->fresh || news) && !stopped_;
                 theirs->value   = number;
                 theirs->payload = payload;
                 theirs->event   = event;

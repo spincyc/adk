@@ -36,7 +36,7 @@ before the Arduino core has set the board up. Objects override three hooks:
 |---|---|---|
 | `setup ()` | `adk::setup ()` | Claim pins and timers, and configure them. |
 | `update (Millis now)` | `adk::update ()` | Advance anything that depends on time. |
-| `stop ()` | `adk::stop ()` | Enter the safe state: outputs off, sound, motion and countdowns stopped. |
+| `stop ()` | `adk::stop ()` | Enter the safe state: outputs off; sound, motion, countdowns and beats stopped. |
 
 The free functions drive the whole list:
 
@@ -46,7 +46,7 @@ The free functions drive the whole list:
 | `adk::setup (Serial)` | The same, and prints what went wrong first. |
 | `adk::update ()` | At the top of `loop ()`. Reads `millis ()` once and passes it to every object. |
 | `adk::wait (ms)` | Instead of `delay ()`. Keeps every object updating while it waits. |
-| `adk::stop ()` | Put everything in its safe state at once. Every `Timer` stops too, and never expires, and every `Stopwatch` holds its time. |
+| `adk::stop ()` | Put everything in its safe state at once, as [Stopping](#stopping) says. |
 
 An object is a whole device. Its parts (pins, a debouncer, a buffer) are plain
 members, never objects of their own, so a device is set up and updated as one.
@@ -130,6 +130,31 @@ if (button.isPressed ())    // true while held
 Nothing a sketch does takes an event back before the next update. A `Timer`
 started again as it expires, or an `Every` restarted as it ticks, still says
 `expired ()` or `ticked ()` to the rest of that pass of `loop ()`.
+
+## Stopping
+
+`adk::stop ()` calls every object's `stop ()` at once, from anywhere: from
+`loop ()` when something goes wrong, or when a button means *stop
+everything*. After it:
+
+- Outputs are safe. LEDs, buzzers, relays, displays, digital and PWM
+  outputs and shift registers are off, a speaker is silent and the FM radio
+  muted, motors coast, servos go limp and a stepper's coils are released,
+  and the IR transmitter, the 433 MHz transmitter and the RFID reader's
+  field are off. An `Lcd` keeps its text, which often says why.
+- Nothing starts again by itself. A `Timer` never expires, an `Every` never
+  ticks, a `Stopwatch` holds its time, and a `Bridge` sends nothing, not
+  even its two-second refresh, until the sketch starts that part again:
+  `start ()`, `restart ()`, or a command such as `on ()`, `blink ()`,
+  `tone ()` or `write ()`.
+- Inputs still read, and `adk::update ()` and `adk::wait ()` still update
+  every object, so a sketch can wait for a button before it goes again. A
+  stopped `Bridge` still listens, so its `value ()` keeps up, but nothing it
+  hears counts as `changed ()`.
+
+`adk::stop ()` stops the parts, not the sketch. A `loop ()` driven by
+`ticked ()`, `expired ()` or a bridge's `changed ()` stays still, but one
+that calls `led.on ()` on every pass turns the LED on again.
 
 ## Blocking
 

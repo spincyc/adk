@@ -139,6 +139,51 @@ TEST (adkStopCancelsEveryTimerAndHoldsEveryStopwatch)
     CHECK (watch.elapsed () == 60);
 }
 
+TEST (adkStopStopsEveryEveryUntilItIsRestarted)
+{
+    adk::Every tick {100};
+    int        ticks = 0;
+
+    adk::update (0);
+    adk::update (100);
+    CHECK (tick.ticked ());
+
+    // A tick already reported stays reported until the next update.
+    adk::stop ();
+    CHECK (tick.ticked ());
+
+    for (adk::Millis now = 110; now <= 1000; now += 10)
+    {
+        adk::update (now);
+        ticks += tick.ticked () ? 1 : 0;
+    }
+
+    CHECK (ticks == 0);
+
+    tick.restart ();
+    adk::update (1010);
+    adk::update (1109);
+    CHECK (!tick.ticked ());
+    adk::update (1110);
+    CHECK (tick.ticked ());
+}
+
+TEST (anEveryStoppedOnItsOwnStaysStill)
+{
+    adk::Every tick {100};
+
+    adk::update (0);
+    tick.stop ();
+    adk::update (100);
+    adk::update (200);
+    CHECK (!tick.ticked ());
+
+    tick.restart ();
+    adk::update (250);
+    adk::update (350);
+    CHECK (tick.ticked ());
+}
+
 TEST (aTimerRunsAcrossTheWrapOfMillis)
 {
     adk::Timer fuse;

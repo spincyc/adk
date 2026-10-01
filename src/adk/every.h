@@ -16,6 +16,10 @@ namespace adk {
         // update. A tick already reported stays reported until then.
         void restart ();
 
+        // Stop the beat: no tick comes until restart (). adk::stop () stops
+        // every Every too, so a loop that waits for ticked () stays still.
+        void stop () override;
+
         void   period (Millis period);
         Millis period () const;
 
@@ -26,5 +30,6 @@ namespace adk {
         StartTime beat_;
         Millis    period_;
         bool      ticked_;
+        bool      running_;
     };
 }

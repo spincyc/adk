@@ -435,6 +435,70 @@ TEST (bridgeRecoversWhenOneBoardRestarts)
     CHECK (boards.bridgeB->payload ("key") == 4);
 }
 
+TEST (adkStopSilencesEveryBridgeUntilItStartsAgain)
+{
+    Boards boards;
+
+    adk::setup ();
+    boards.bridgeA->share ("angle", 30);
+    boards.bridgeA->shareEvent ("key", 0, 0);
+    boards.meet ();
+
+    // Stopped, A sends nothing, not even the two-second refresh, and B
+    // soon takes it for gone.
+    adk::stop ();
+    boards.bridgeA->share ("angle", 40);
+    boards.bridgeA->shareEvent ("key", 1, 7);
+    CHECK (boards.run (6000, "angle") == 0);
+    CHECK (boards.radioA.sent.empty ());
+    CHECK (boards.bridgeB->value ("angle") == 30);
+    CHECK (!boards.bridgeB->isConnected ());
+
+    // B, stopped too, still hears A once A starts again, so its values keep
+    // up; but nothing is news to it, so a loop driven by changed () stays
+    // still.
+    boards.bridgeA->start ();
+    CHECK (boards.run (200, "angle") == 0);
+    CHECK (boards.radioA.sent.front () == "@1/1 angle=40 key=1:7");
+    CHECK (boards.bridgeB->value ("angle") == 40);
+    CHECK (boards.bridgeB->value ("key") == 1);
+    CHECK (!boards.bridgeB->changed ("key"));
+    CHECK (boards.bridgeB->isConnected ());
+    CHECK (boards.radioB.sent.empty ());
+
+    // Started again, B tells A everything at once. What changed while it
+    // was stopped is no news; the next change is.
+    boards.bridgeB->start ();
+    CHECK (boards.run (200, "key") == 0);
+    CHECK (boards.radioB.sent.size () == 1);
+    CHECK (boards.bridgeA->isConnected ());
+    boards.bridgeA->shareEvent ("key", 2, 8);
+    CHECK (boards.run (200, "key") == 1);
+    CHECK (boards.bridgeB->payload ("key") == 8);
+    boards.bridgeA->share ("angle", 41);
+    CHECK (boards.run (200, "angle") == 1);
+}
+
+TEST (aBridgeStoppedMidPassStillReportsWhatArrived)
+{
+    Boards boards;
+
+    adk::setup ();
+    boards.meet ();
+    boards.bridgeA->share ("angle", 30);
+
+    while (!boards.bridgeB->changed ("angle"))
+    {
+        boards.run (10);
+    }
+
+    // Nothing a sketch does takes an event back before the next update.
+    boards.bridgeB->stop ();
+    CHECK (boards.bridgeB->changed ("angle"));
+    boards.run (10);
+    CHECK (!boards.bridgeB->changed ("angle"));
+}
+
 TEST (bridgeIgnoresAReplyMeantForTheBoardBeforeItRestarted)
 {
     Boards boards;

@@ -37,7 +37,7 @@ void loop ()
 | `adk::setup (Serial)` | instead, after `Serial.begin (9600)` | The same, and prints what went wrong, if anything. |
 | `adk::update ()` | top of `loop ()` | Lets every part do its work: debounce buttons, play notes, refresh displays, take readings. |
 | `adk::wait (ms)` | anywhere in `loop ()` | Waits like `delay ()`, while every part keeps working. |
-| `adk::stop ()` | anywhere | Puts every part in its safe state: lights off, sound and motors stopped. |
+| `adk::stop ()` | anywhere | Puts every part in its safe state: lights off, sound and motors stopped, and timers and beats held until the sketch starts them again. |
 
 ## Events
 

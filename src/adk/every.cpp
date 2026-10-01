@@ -3,9 +3,10 @@
 namespace adk {
 
     Every::Every (Millis period)
-        : beat_   ()
-        , period_ (period)
-        , ticked_ (false)
+        : beat_    ()
+        , period_  (period)
+        , ticked_  (false)
+        , running_ (true)
     {
     }
 
@@ -18,6 +19,12 @@ namespace adk {
     void Every::restart ()
     {
         beat_.restart ();
+        running_ = true;
+    }
+
+    void Every::stop ()
+    {
+        running_ = false;
     }
 
     void Every::period (Millis period)
@@ -33,6 +40,6 @@ namespace adk {
     // The first beat comes one period after the first update.
     void Every::update (Millis now)
     {
-        ticked_ = beat_.beat (now, period_);
+        ticked_ = running_ && beat_.beat (now, period_);
     }
 }
