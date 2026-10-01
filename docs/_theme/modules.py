@@ -170,11 +170,12 @@ def screw (pencil, cx, cy, r=6.5):
 
 
 def pin_labels (pencil, pins, y, size=6.2):
-    # Short names sit level; longer ones stand on end, as boards print them.
+    # Short names sit level, above the header however the board is turned;
+    # longer ones stand on end, as boards print them.
     upright = max (len (pin.name) for pin in pins) <= 2
     for pin in pins:
         if upright:
-            pencil.text (pin.x, y + 1, pin.name, size=size + 0.8, kind="silk")
+            level (pencil, pin.x, y + 1 - (size + 0.8) * 0.36, pin.name, size + 0.8)
         else:
             pencil.text (pin.x + size * 0.36, y, pin.name, size=size, rotate=-90, anchor="start",
                          kind="silk")
@@ -763,7 +764,22 @@ class Sensor (Kind):
             for index in range (6):
                 pencil.line ((cx - 6, 13 + index * 4.5), (cx + 6, 15 + index * 4.5), width=0.7,
                              layer="top", passes=1)
-        elif any (word in emblem for word in ("obstacle", "avoid", "beam", "line", "track")):
+        elif any (word in emblem for word in ("beam", "interrupt", "slot")):
+            # A slotted photo-interrupter standing on the board, seen from
+            # its front: a black U, a light on one side of the slot and its
+            # sensor on the other, so a card pushed into the slot breaks
+            # the beam across it.
+            u = [(cx - 19, 6), (cx - 4, 6), (cx - 4, 30), (cx + 4, 30), (cx + 4, 6), (cx + 19, 6),
+                 (cx + 19, 42), (cx - 19, 42)]
+            pencil.tint (u, PLASTIC)
+            pencil.polyline (u, width=1.0, closed=True, layer="top")
+            for side in (-1, 1):
+                pencil.tint ([(cx + side * 4, 12), (cx + side * 6, 12), (cx + side * 6, 20),
+                              (cx + side * 4, 20)], "#8a8a86")
+            pencil.layers["top"].append (
+                f'<path d="M {cx - 4:.1f} 16 L {cx + 4:.1f} 16" stroke="{LED_RED}" '
+                f'stroke-width="1.2" stroke-dasharray="1.6 1.2"/>')
+        elif any (word in emblem for word in ("obstacle", "avoid", "line", "track")):
             for dx, tint in ((-9, "#f2f2f2"), (9, "#3a3a3a")):
                 pencil.dome (cx + dx, 22, 8, tint)
         elif any (word in emblem for word in ("water", "rain", "level")):

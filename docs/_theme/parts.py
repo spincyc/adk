@@ -306,7 +306,12 @@ class Diode (Part):
 class Transistor (Part):
     # TO-92 S8050, emitter/base/collector with the marked flat face toward
     # the learner. Spread the three leads to adjacent breadboard columns.
+    # Seen from above it is a D, 4.8 mm across and 3.8 mm deep, its flat
+    # face toward the legs' row and its round back away from it, leaning
+    # back a little: the holes of the next row show through it, and the
+    # leads and wires in them lie over it.
     name = "S8050 transistor"
+    FLAT, DEEP, HALF = 5, 12, 9         # the flat face's offset from the legs, and the D's size
 
     def __init__ (self, emitter, base, collector):
         self.holes = (emitter, base, collector)
@@ -317,9 +322,20 @@ class Transistor (Part):
     def modes (self):
         return [None, "output", None]
 
-    def shapes (self, bench):
+    # The D's outline, where its flat face lies, and which way its back
+    # leans from the legs: toward the middle gap.
+    def outline (self, bench):
         x, y = bench.hole_xy (self.holes[1])
-        return [("rect", x - 10, y - 25, x + 10, y - 10)]
+        back = -1 if self.holes[1][0] in "abcde" else 1
+        face = y + back * self.FLAT
+        arc = [(x + self.HALF * math.cos (math.pi * step / 12),
+                face + back * self.DEEP * math.sin (math.pi * step / 12)) for step in range (13)]
+        return arc, face, back
+
+    def shapes (self, bench):
+        arc, _, _ = self.outline (bench)
+        xs, ys = [px for px, _ in arc], [py for _, py in arc]
+        return [("rect", min (xs), min (ys), max (xs), max (ys))]
 
     def labels (self, bench):
         _, x0, y0, x1, y1 = self.shapes (bench)[0]
@@ -327,12 +343,16 @@ class Transistor (Part):
                                                bench.label_size, "below"), ((x0 + x1) / 2, y1))]
 
     def draw (self, pencil, bench):
-        x, y = bench.hole_xy (self.holes[1])
+        x, _ = bench.hole_xy (self.holes[1])
+        arc, face, back = self.outline (bench)
         for index, hole in enumerate (self.holes):
-            pencil.lead (bench.hole_xy (hole), (x + (index - 1) * 5, y - 10))
-        pencil.tint (rounded (x - 10, y - 25, 20, 15, 4), "#353535")
-        pencil.rect (x - 10, y - 25, 20, 15, radius=4, width=0.8)
-        pencil.text (x, y - 14, "8050", size=5, kind="silk", color="#f4f1e8")
+            pencil.lead (bench.hole_xy (hole), (x + (index - 1) * 5, face))
+        pencil.tint (arc, "#353535", opacity=0.82)
+        pencil.polyline (arc, width=0.8, closed=True)
+        # The flat face, marked, toward the legs' row.
+        pencil.line ((x - self.HALF, face), (x + self.HALF, face), width=1.3, tone=0.95)
+        pencil.text (x, face + back * self.DEEP * 0.42 + 2, "8050", size=5, kind="silk",
+                     color="#f4f1e8")
 
 
 class Led (Part):
@@ -565,12 +585,15 @@ class Buzzer (Part):
             pencil.text (mx, top + 3.4, "AFTER WASHING", size=2.4, kind="silk")
         else:
             pencil.spot (mx, top, 3.2, "#111111")
-        # The + mark on the side of the + leg, whichever way the legs lie.
+        # The + mark on the side of the + leg, whichever way the legs lie:
+        # dark on the active one's sticker, clear of its words, and light
+        # on the passive one's dark top.
         px, py = bench.hole_xy (self.positive)
         length = math.hypot (px - mx, py - my) or 1
         ux, uy = (px - mx) / length, (py - my) / length
-        pencil.text (mx + ux * r * 0.62, top + uy * r * 0.62 + 4.5, "+", size=12, kind="silk",
-                     weight="bold", color="#f4f1e8")
+        reach, color = (0.46, "#2b2b2b") if self.kind == "active" else (0.62, "#f4f1e8")
+        pencil.text (mx + ux * r * reach, top + uy * r * reach + 4, "+", size=11, kind="silk",
+                     weight="bold", color=color, tone=1.0)
 
 
 class Potentiometer (Part):
