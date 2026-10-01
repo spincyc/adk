@@ -17,17 +17,12 @@ adk::Array   keys    {Key {22, 26, adk::note::c4},     // red
                       Key {25, 29, adk::note::c5}};    // blue
 adk::Speaker speaker {10};
 
-constexpr adk::Note fanfare [] = {
-    {adk::note::g4, 150}, {adk::note::c5, 150},
-    {adk::note::e5, 150}, {adk::note::g5, 600},
-};
-
 enum class State { Idle, YourTurn };
 
 State                     state = State::Idle;
 adk::Vector<uint8_t, 100> sequence;     // Simon's keys, by number
 uint8_t                   step = 0;     // how many you have repeated
-int                       held = -1;    // the key you pressed, or -1
+int                       held = -1;    // the key you are holding, or -1
 int                       best = 0;
 
 void setup ()
@@ -67,8 +62,7 @@ void waitForPlayer ()
     Serial.println ("Press any button to play.");
 }
 
-// Simon's turn: after a pause with the lights out, add one random key, then
-// show the whole sequence.
+// Simon's turn: a pause in the dark, one more random key, then the tune.
 void nextRound ()
 {
     for (auto& key : keys)
@@ -81,43 +75,32 @@ void nextRound ()
 
     for (auto number : sequence)
     {
-        flash (keys[number]);
+        keys[number].light.on ();
+        speaker.tone (keys[number].pitch, 400);
+        adk::wait (400);
+        keys[number].light.off ();
+        adk::wait (150);
     }
 
     step  = 0;
-    held  = -1;
     state = State::YourTurn;
 }
 
-void flash (Key& key)
-{
-    key.light.on ();
-    speaker.tone (key.pitch);
-    adk::wait (400);
-
-    key.light.off ();
-    speaker.stop ();
-    adk::wait (150);
-}
-
-// Each light and tone follow its button, and letting go is your answer.
+// Hold a key to light it and hear it; letting go is your answer.
 void yourTurn (int pressed)
 {
-    for (auto& key : keys)
+    if (pressed >= 0 && held < 0)
     {
-        key.light.set (key.button.isPressed ());
-    }
-
-    // A new press counts only once the last key you pressed is up again.
-    if (pressed >= 0 && (held < 0 || !keys[held].button.isPressed ()))
-    {
-        speaker.tone (keys[pressed].pitch);
         held = pressed;
+        keys[held].light.on ();
+        speaker.tone (keys[held].pitch);
     }
     else if (held >= 0 && keys[held].button.wasReleased ())
     {
+        keys[held].light.off ();
         speaker.stop ();
         check (held);
+        held = -1;
     }
 }
 
@@ -141,7 +124,7 @@ void check (int answer)
     }
 }
 
-// A low buzz, a fanfare for a new best, and the lights blink again.
+// A low buzz, the score, and the lights blink again.
 void gameOver (int score)
 {
     speaker.tone (adk::note::c3, 1000);
@@ -150,7 +133,6 @@ void gameOver (int score)
     if (score > best)
     {
         best = score;
-        speaker.play (fanfare);
     }
 
     adk::println (Serial, "You remembered ", score,

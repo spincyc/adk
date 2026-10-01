@@ -26,8 +26,8 @@ Simon, the memory game from 1978. Four lights blink, waiting for you. Press
 any button and Simon takes its turn: one light flashes with its own note. You
 press that light's button. Simon plays it again and adds another, then
 another. Every round the tune grows by one step, and you must repeat it all,
-in order. One wrong press and it's over, with a low buzz. Beat your best and
-Simon plays you a fanfare.
+in order. One wrong press and it's over, with a low buzz, and the Serial
+Monitor shows your score beside your best so far.
 
 ## The idea
 
@@ -76,8 +76,8 @@ Simon and the player take **turns**, and the game is always in one state:
 |---|---|---|
 | **Idle** | All four lights blink slowly | Any button starts a new game |
 | **Simon's turn** | Simon adds a random step, then shows the whole sequence | Your presses are ignored |
-| **Your turn** | Each light and its note follow its button while you hold it | Letting go is your answer, so let go of each button before you press the next. Right: the next step. Last step right: Simon's turn again, one step longer. Wrong: game over |
-| **Game over** | A low buzz, then a fanfare if you beat your best | Back to *Idle* |
+| **Your turn** | The button you press lights its light and sounds its note while you hold it | Letting go is your answer. Another button pressed while you hold one does nothing, so let go of each before you press the next. Right: the next step. Last step right: Simon's turn again, one step longer. Wrong: game over |
+| **Game over** | A low buzz, and your score and best on the Serial Monitor | Back to *Idle* |
 
 Simon's turn is so short and simple, just show and wait, that the sketch
 does it all in one go, inside `nextRound ()`, and game over is just as
@@ -143,24 +143,41 @@ What's new:
   range-for hands you each key but not its number, and `pressedKey ()`
   needs the number.
 - In `nextRound ()`, `for (auto number : sequence)` walks the steps added
-  so far, from the first, and `flash (keys[number])` shows each one: the
-  key with that number lights up and sounds its note.
-- `yourTurn ()` makes each light follow its button, as in
-  [Lesson 2](../002-buttons/index.md), and sounds a key's note when it goes
-  down. `held` remembers which key that was, and letting go of it is your
-  answer. Another press counts only once that key is up again, so two
-  buttons held together give one answer, not two. `held` starts each turn
-  at -1, so a button you were already holding while Simon played doesn't
-  count when you let it go.
+  so far, from the first. Each one is a key's number, so
+  `keys[number].light.on ()` lights that key and
+  `speaker.tone (keys[number].pitch, 400)` sounds its note. A `tone ()`
+  given a length, here 400 ms, stops by itself. There's no `&` this time:
+  `number` is a copy of each step, which is all the loop needs, because it
+  only reads them.
+- `yourTurn ()` asks two questions. Each joins two comparisons with `&&`,
+  *and*, from Lesson 4's box: the whole question is true only when both
+  halves are.
+    - `pressed >= 0 && held < 0` asks: was a key pressed in this update,
+      *and* is no key held already? Then that key becomes `held`, and its
+      light and note come on.
+    - `held >= 0 && keys[held].button.wasReleased ()` asks: is a key held,
+      *and* has it just come up? Then letting go is your answer: the light
+      and note go off, `check (held)` judges it, and `held` goes back to
+      -1, nobody's number.
+
+    C++ works out an `&&` from the left and stops at the first half that
+    is false, because then the whole question can't be true. That's why
+    `held >= 0` comes first: when `held` is -1, `keys[held]` is never
+    looked at. There is no key -1, and asking for one would read whatever
+    memory happens to sit before the list.
+
+    So while you hold one key, pressing another does nothing: two buttons
+    pressed together give one answer, not two. And because `held` goes back
+    to -1 after every answer, each turn starts with no key held: a button
+    you pressed while Simon played doesn't count when you let it go.
 - `check ()` compares your answer with `sequence[step]`. Wrong ends the
   game. Right moves `step` on, until the last step: steps are numbered
   from 0, so the last is `sequence.size () - 1`. Then Simon takes its turn
   with `nextRound ()`, which puts the lights out, pauses for a second and
   adds the next step, unless `sequence.full ()` says all 100 steps are
   used: then you've beaten Simon.
-- `best` holds the high score. `speaker.play (fanfare);` celebrates a new
-  one and returns at once, so `waitForPlayer ()` sets the lights blinking
-  while it plays.
+- `gameOver ()` buzzes, keeps your score in `best` if it beats it, and
+  prints both. `best` keeps the high score from one game to the next.
 
 ## Upload it
 
@@ -173,9 +190,8 @@ see your scores. All four lights blink together.
    hold it; let go.
 3. After a short pause Simon shows two steps. Repeat them, and keep going.
 4. Make a mistake on purpose. A low buzz sounds for a second. The Serial
-   Monitor says *You remembered 3 steps. Best so far: 3*,
-   and if that's a new best, you hear a fanfare. The lights blink again,
-   ready for the next game.
+   Monitor says *You remembered 3 steps. Best so far: 3*. The lights blink
+   again, ready for the next game.
 
 You predicted how many ten-step sequences there are. Four colors for each
 of ten steps is 4 × 4 × 4 × 4 × 4 × 4 × 4 × 4 × 4 × 4 = 1 048 576 different
@@ -188,6 +204,7 @@ sequences. More than a million.
 | One light never lights | Turn that LED round: long leg in row b, on the left. Check its resistor runs from row g, across the gap, to row e. |
 | A light and its button don't match | The signal wires are out of order. Buttons: pins 22 to 25 into j2, j8, j14 and j20. Lights: pins 26 to 29 into j6, j12, j18 and j24. |
 | The lights blink, but one button never starts a game | Push that button firmly in, all four legs, and check its black wire from row a to the − rail. |
+| In your turn, a button does nothing | Are you still holding another one? Only one button counts at a time: let go of the first. |
 | No sound | Follow pin 10: j33, the buzzer's **+** leg in f33 and its other leg in e33, and the resistor from a33 down into the − rail. |
 | Every game starts with the same steps | Leave A7 unconnected: the random seed comes from it floating. |
 | The Mega's **L** LED blinks long and short flashes | A pin in the sketch is wrong. The Serial Monitor says which. |
@@ -210,22 +227,28 @@ sequences. More than a million.
 
 ## Make it yours
 
-1. **Faster and faster.** Real Simon speeds up. Keep the time each step is
+1. **A fanfare for a new best.** Below `speaker`, add a tune, a
+   `constexpr adk::Note fanfare []` as in Lesson 5: G4, C5 and E5 for
+   150 ms each, then G5 for 600 ms. In `gameOver ()`, add
+   `speaker.play (fanfare);` inside the braces of `if (score > best)`.
+   `play ()` returns at once, so the lights start blinking while it plays.
+2. **Faster and faster.** Real Simon speeds up. Keep the time each step is
    shown in an `int` variable: set it to 400 where `loop ()` starts a new
-   game, use it in `flash ()`, and take 10 off in `nextRound ()` as long as
-   it is still over 150.
-2. **Your score in lights.** After a game, blink the blue light once for each
+   game, use it in place of both 400s in `nextRound ()`'s showing loop, and
+   take 10 off it each round, before the loop, as long as it is still over
+   150.
+3. **Your score in lights.** After a game, blink the blue light once for each
    step you remembered, with a counting loop, so you don't need the Serial
    Monitor.
-3. **Hurry up.** Give the player three seconds for each press. Start an
+4. **Hurry up.** Give the player three seconds for each press. Start an
    `adk::Timer`, as in Lesson 3, for 3000 ms when your turn starts and after
    each answer, and if it `expired ()`, it's game over.
-4. **Remember forever.** Keep the best score in EEPROM so it survives being
+5. **Remember forever.** Keep the best score in EEPROM so it survives being
    unplugged. Add `#include <EEPROM.h>`, read it in `setup ()` with
    `best = EEPROM.read (0);` (a Mega that has never stored anything reads
    255 there, so treat 255 as 0), and save a new best with
    `EEPROM.update (0, best);`.
-5. **Pass the Simon.** A two-player version: instead of a random step, each
+6. **Pass the Simon.** A two-player version: instead of a random step, each
    player repeats the sequence and then adds one step of their own for the
    other to remember.
 
