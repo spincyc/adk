@@ -10,7 +10,9 @@ namespace adk {
     // It pings every 60 ms, the shortest cycle its datasheet allows, so the
     // echoes of one ping have died away before the next. Timing the echo
     // blocks update () for up to 25 ms once per ping, so it sees no further
-    // than about 4 m.
+    // than about 4 m. Interrupts stay on, and the echo is timed by the
+    // clock, so other parts' interrupts, such as a 433 MHz receiver's,
+    // neither shorten a distance nor make the wait longer.
     struct Ultrasonic : Object
     {
         Ultrasonic (Pin trigger, Pin echo);

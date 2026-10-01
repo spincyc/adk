@@ -10,7 +10,8 @@ namespace adk {
 
         // Sound takes 58 us to reach something a centimeter away and come
         // back. An echo takes 25 ms from 4.3 m, beyond which it is too faint
-        // to trust.
+        // to trust. The wait counts from the trigger, so the moment before
+        // the echo begins, under a millisecond, comes out of it too.
         constexpr unsigned long UsPerCm     = 58;
         constexpr unsigned long EchoTimeout = 25000;
     }
@@ -61,14 +62,18 @@ namespace adk {
     void Ultrasonic::ping ()
     {
         // A 10 us pulse on Trig sends eight 40 kHz clicks. Echo then goes
-        // high until they come back, or pulseIn () gives up and returns 0.
+        // high until they come back, or pulseInLong () gives up and returns
+        // 0. It times the echo by micros (), with interrupts on, so time
+        // spent in another part's interrupt still counts; pulseIn () counts
+        // its own loops instead, and reads short while a 433 MHz receiver
+        // or a Speaker's tone takes interrupts.
         digitalWrite      (trigger_, LOW);
         delayMicroseconds (2);
         digitalWrite      (trigger_, HIGH);
         delayMicroseconds (10);
         digitalWrite      (trigger_, LOW);
 
-        unsigned long echo = pulseIn (echo_, HIGH, EchoTimeout);
+        unsigned long echo = pulseInLong (echo_, HIGH, EchoTimeout);
 
         if (echo > EchoTimeout)
         {

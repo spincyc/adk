@@ -103,7 +103,7 @@ int           analogRead        (uint8_t pin);
 void          analogWrite       (uint8_t pin, int value);
 void          tone              (uint8_t pin, unsigned int frequency, unsigned long duration = 0);
 void          noTone            (uint8_t pin);
-unsigned long pulseIn           (uint8_t pin, uint8_t state, unsigned long timeout = 1000000L);
+unsigned long pulseInLong       (uint8_t pin, uint8_t state, unsigned long timeout = 1000000L);
 void          shiftOut          (uint8_t data, uint8_t clock, uint8_t order, uint8_t value);
 void          attachInterrupt   (uint8_t interrupt, void (*handler) (), int mode);
 void          detachInterrupt   (uint8_t interrupt);
@@ -117,6 +117,12 @@ long          map               (long value, long fromLow, long fromHigh, long t
 long          random            (long high);
 long          random            (long low, long high);
 void          randomSeed        (unsigned long seed);
+
+// The core's pulseIn () times a pulse by counting its own loops, so time
+// spent in an interrupt goes uncounted: a pulse reads short, and a timeout
+// runs long, while a 433 MHz receiver or a Speaker takes interrupts. The
+// library times pulses with pulseInLong (), which reads micros () instead.
+unsigned long pulseIn (uint8_t pin, uint8_t state, unsigned long timeout = 1000000L) = delete;
 
 // Arduino's min, max and constrain are macros; functions do the same here
 // without clashing with the standard library.
@@ -366,6 +372,7 @@ namespace arduino {
     void setClockStep (unsigned long us);
 
     // Hooks a test sets to act as the device on the other end of a pin.
+    // onPulseIn answers pulseInLong ().
     extern std::function<int (uint8_t pin)>                                         onDigitalRead;
     extern std::function<void (uint8_t pin, uint8_t value)>                         onDigitalWrite;
     extern std::function<void (uint8_t pin, uint8_t mode)>                          onPinMode;

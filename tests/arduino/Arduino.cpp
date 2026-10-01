@@ -266,7 +266,7 @@ void noTone (uint8_t pin)
     pins[pin].tone = 0;
 }
 
-unsigned long pulseIn (uint8_t pin, uint8_t state, unsigned long timeout)
+unsigned long pulseInLong (uint8_t pin, uint8_t state, unsigned long timeout)
 {
     return arduino::onPulseIn ? arduino::onPulseIn (pin, state, timeout) : 0;
 }
