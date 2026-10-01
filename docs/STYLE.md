@@ -84,7 +84,9 @@ the interesting part of a lesson is what the reader sees first.
 - Print with `adk::println (Serial, "Red wins in ", time, " ms")` rather than
   a `print` call per piece.
 - Keep sketches short. A component lesson fits on one screen; a project fits
-  in about 150 lines. Keep their lines to 80 characters, so they fit the
+  in about 150 lines. A sketch may run longer only when what it builds
+  needs the length, not to cover weak code or design, and its lesson page
+  says why. Keep their lines to 80 characters, so they fit the
   lesson page and its PDF without scrolling.
 
 ## The Makefile

@@ -31,7 +31,8 @@ changing anything:
 - **Lessons are for beginners.** Plain words, one new idea at a time, a
   prediction before each experiment, and something that visibly works at the
   end. Keep sketches short: one screen for a part, about 150 lines for a
-  project.
+  project. A longer sketch is allowed only when what it builds needs the
+  length, never to cover weak code or design, and its page says why.
 - **Safety** follows `docs/safety.md`: nothing touches mains, no motor or
   servo runs from a pin, every LED has a resistor, the RFID reader gets 3.3 V.
 - **Say what is verified.** Host tests and compiling are not a working
