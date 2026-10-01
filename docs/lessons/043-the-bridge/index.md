@@ -134,7 +134,9 @@ Stick a label on each Mega, **A** and **B**, so you always know which is
 which. Then build the two boards the same way. Board A carries on from
 Lesson 42: keep the 220 Ω resistor from g6 to e6 and the black GND wire
 into the bottom − rail by column 3, and take everything else off. That
-resistor will feed the red LED. Board B starts from an empty breadboard.
+resistor will feed the red LED. If you skipped Lesson 42, keep only the
+GND wire, and put a 220 Ω resistor across the middle gap from g6 to e6.
+Board B starts from an empty breadboard.
 
 - **The button** on 22 and **the LEDs** on 26 (red) and 27 (yellow) go
   in at their homes, as in Lesson 2: the button across the middle gap in

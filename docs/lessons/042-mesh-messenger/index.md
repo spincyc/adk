@@ -41,6 +41,13 @@ across a town if there are enough of them.
     anything personal. [Radios](../../safety.md#radios) on the safety page
     has the details.
 
+!!! note "An optional lesson"
+    This lesson needs two Heltec boards, about US$52–60 for the pair, and
+    a phone with the Meshtastic app. Without them, read it but don't build
+    it, and carry on to Lesson 43 from your Lesson 40 or 41 build. Lesson
+    43 keeps only one part from this one, a 220 Ω resistor from g6 to e6,
+    and its build says where it goes.
+
 ## The idea
 
 **A mesh.** Meshtastic is free software for small LoRa radios. Each radio
@@ -207,8 +214,10 @@ Read it from the top:
   Lesson 22; the DHT11; the button; and `scroll`, a beat for sliding a long
   message along the bottom row.
 - `message` is the message on the screen, kept in an `adk::Text` as long
-  as the longest message, 100 letters, and `first` is the letter at its
-  left edge.
+  as the longest message, 100 letters, and `first` is the place of the
+  letter at its left edge, counting from 0. It's a `size_t`, as in
+  Lesson 18: the type that sizes and places in a list come in, a whole
+  number that is never negative, as `message.size ()` is.
 - `loop ()` hands each message to `obey ()`, with who sent it, and sends a
   hello when the button is pressed. Three times a second, if the message
   is longer than the screen, it moves `first` along one letter and redraws
@@ -226,9 +235,12 @@ Read it from the top:
 - `show ()` keeps a copy of the message, puts who sent it on the top row
   (`4f2a says:`), and draws the bottom row from the start.
 - `showBottomRow ()` prints sixteen letters of the message from `first`.
-  For a long message, `% (length + 3)` wraps round to the start after a
-  gap of three spaces, the way `% 16` wrapped the walking figure round in
-  Lesson 13.
+  `message.c_str ()` is the message as plain text, as in Lesson 27, and
+  `[at]` picks out its letter at place `at`, counting from 0, as
+  `moods[0]` did in Lesson 4. Past the message's end, a space goes there
+  instead. For a long message, `% (length + 3)` wraps round to the start
+  after a gap of three spaces, the way `% 16` wrapped the walking figure
+  round in Lesson 13.
 
 ## Upload it
 
