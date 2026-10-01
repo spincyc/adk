@@ -113,7 +113,8 @@ A new start, built on the library's original 2021 design.
 - **Drawings you can read.** Every part is named on the bench, a crowded
   name on a leader of its own; leaders keep clear of other labels. Wires
   are colored by what they carry, black for GND, red for 5 V and orange for
-  3.3 V, and wires that sit side by side or cross take different colors.
+  3.3 V, and nothing else; wires that sit side by side or cross take
+  different colors, and a wire kept from the lesson before keeps its color.
   When a lesson swaps a chip in the same holes, its steps name every wire to
   keep and every one to take out. Oscilloscope probes and the signal
   generator are drawn where a lesson uses them. The RGB LED's legs, the

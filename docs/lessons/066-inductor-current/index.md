@@ -44,7 +44,7 @@ the Mega's 5 V rail wire. Keep its GND wire in the bottom − rail hole
 nearest the Mega. You may leave the Mega's USB unplugged. Put the coil
 across the breadboard's center gap at **g6–e6**, then the resistor across
 the gap at **g10–e10**. Follow the generated drawing and steps for the
-jumper wires and the generator's own clip leads: red OUT into j6, black
+jumper wires and the generator's own clip leads: blue OUT into j6, black
 GND into the bottom − rail by column 5.
 
 <!-- bench -->

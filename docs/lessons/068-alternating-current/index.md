@@ -111,7 +111,7 @@ flows toward GND: it never reverses.
 - **Channel 2 stays above 0 V:** Check its DC coupling, its tip in i10,
   and that the capacitor really separates j6 from the resistor's strip.
   Wait for the initial transient to fade.
-- **No trace appears:** With output off, check the generator's red OUT
+- **No trace appears:** With output off, check the generator's blue OUT
   lead in j6 and its black GND lead in the bottom − rail. Keep both scope ground clips on
   that same rail, then turn the output on again.
 
