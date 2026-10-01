@@ -210,7 +210,9 @@ The fake core models the ATmega2560's TWI and SPI unit from their registers
 host test, a step at a time, polling as they would on the chip. The chips on
 the far end are played by `tests/fake_i2c.cpp` and `tests/fake_spi.cpp`, and
 `arduino::twi.log` records what crossed the I2C wires, such as
-`S 68w+ 00+ Sr 68r+ 12- P`.
+`S 68w+ 00+ Sr 68r+ 12- P`. As on the chip, one latch holds a pin's output
+level and its input's pull-up, and each pin remembers whether that latch
+ever went high, so a test can check that a 3.3 V line never saw 5 V.
 
 `make examples` compiles every example for the Mega with all warnings, and
 fails on any warning from the library or an example. `make pins` first
@@ -222,7 +224,15 @@ what a pin does, driving an LED or a module's input, or reading a button, a
 knob or a sensor, the sketch must claim it the same way, as an output or an
 input. That catches a wire in the wrong hole, a pin left out, or an LED
 swapped with a button, but not two pins wired to parts of one kind swapped
-with each other. None of these replaces trying a circuit on a real board.
+with each other.
+
+`make sanitize` runs the host tests under AddressSanitizer and UBSan, then
+runs every example on the host too (`tests/probe/smoke.cpp`): its
+`setup ()`, then 400 passes of its `loop ()`, while time moves on and its
+inputs change now and then. A crash, undefined behavior or a sketch that
+never comes back fails it. That shows a sketch doesn't break, not that it
+does what its lesson says; the lessons tested in `tests/examples` are
+checked for that. None of these replaces trying a circuit on a real board.
 
 ## Adding a device
 

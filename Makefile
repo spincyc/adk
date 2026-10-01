@@ -85,25 +85,30 @@ HOST_FLAGS       := -std=c++23       \
 HOST_OBJECTS     := $(patsubst %.cpp,$(HOST_DIR)/obj/%.o,$(LIBRARY_SOURCES) $(TEST_SOURCES))
 HOST_EXAMPLES    := $(patsubst tests/examples/%.cpp,$(HOST_DIR)/examples/%,$(EXAMPLE_TESTS))
 
+# UBSan only reports and carries on unless it is told not to recover.
 SANITIZE_DIR     := $(BUILD_DIR)/sanitize
 SANITIZE_FLAGS   := $(HOST_FLAGS)                 \
                     -O1                           \
                     -fsanitize=address,undefined  \
+                    -fno-sanitize-recover=all     \
                     -fno-omit-frame-pointer
 SANITIZE_OBJECTS := $(patsubst %.cpp,$(SANITIZE_DIR)/obj/%.o,$(LIBRARY_SOURCES) $(TEST_SOURCES))
 SANITIZE_CASES   := $(patsubst tests/examples/%.cpp,$(SANITIZE_DIR)/examples/%,$(EXAMPLE_TESTS))
 
-# The Mega's builds and the pins check -----------------------------------------
+# The Mega's builds, the pins check and the smoke test -------------------------
 #
 # A warning from the library or an example fails its build; arduino-cli
 # names each file by its full path. The pins check runs a sketch's setup ()
-# on the host against the fake core, to list the pins it claims, so its
+# on the host against the fake core, to list the pins it claims, and the
+# smoke test runs its setup () and loop () there under the sanitizers. Both
+# take the sketch as Arduino preprocessed it for the Mega, so their
 # warnings are the AVR build's business.
 
 ARDUINO_DIR      := $(BUILD_DIR)/arduino
 ARDUINO_CACHE    := $(BUILD_DIR)/arduino-cache
 ARDUINO_LOGS     := $(patsubst %,$(ARDUINO_DIR)/%.log,$(EXAMPLES))
 PIN_CHECKS       := $(patsubst %,$(ARDUINO_DIR)/%/pins.ok,$(EXAMPLES))
+SMOKE_CHECKS     := $(patsubst %,$(SANITIZE_DIR)/smoke/%.ok,$(EXAMPLES))
 WARNINGS         := '^$(CURDIR)/(src|examples)/[^:]+:[0-9]+:[0-9]+: warning'
 PROBE_FLAGS      := -std=gnu++23     \
                     -w               \
@@ -121,6 +126,7 @@ SANITIZE_PROBE_FLAGS := $(PROBE_FLAGS)                  \
                         -g                              \
                         -O1                             \
                         -fsanitize=address,undefined    \
+                        -fno-sanitize-recover=all       \
                         -fno-omit-frame-pointer
 
 # Each lesson's own targets ----------------------------------------------------
@@ -301,8 +307,8 @@ $(HOST_DIR)/examples/%: tests/examples/%.cpp $(PROBE_OBJECTS)
 	@echo "  TEST $<"
 	@$(CXX) $(PROBE_FLAGS) -MMD -MP -MF $@.d $< $(PROBE_OBJECTS) -o $@
 
-## sanitize        run the host tests under AddressSanitizer and UBSan
-sanitize: $(SANITIZE_DIR)/tests $(SANITIZE_CASES)
+## sanitize        run the host tests and every example (its setup and loop) under ASan and UBSan
+sanitize: $(SANITIZE_DIR)/tests $(SANITIZE_CASES) $(SMOKE_CHECKS)
 	$(SANITIZE_DIR)/tests $(TEST)
 	@set -e; for example in $(SANITIZE_CASES); do "$$example"; done
 
@@ -318,6 +324,21 @@ $(SANITIZE_DIR)/examples/%: tests/examples/%.cpp $(SANITIZE_PROBES)
 	@mkdir -p $(@D)
 	@echo "  TEST $< (sanitized)"
 	@$(CXX) $(SANITIZE_PROBE_FLAGS) -MMD -MP -MF $@.d $< $(SANITIZE_PROBES) -o $@
+
+# Every example's setup () and a few hundred passes of its loop ()
+# (tests/probe/smoke.cpp): a crash, undefined behavior or a hang fails.
+$(SANITIZE_DIR)/smoke/%.ok: $(ARDUINO_DIR)/%.log   \
+                            $(SANITIZE_PROBES)     \
+                            tests/probe/smoke.cpp
+	@mkdir -p $(@D)
+	@echo "  RUN  examples/$* (sanitized)"
+	@$(CXX) $(SANITIZE_PROBE_FLAGS)                    \
+	    $(ARDUINO_DIR)/$*/sketch/$(notdir $*).ino.cpp  \
+	    tests/probe/smoke.cpp                          \
+	    $(SANITIZE_PROBES)                             \
+	    -o $(basename $@)
+	@$(basename $@)
+	@touch $@
 
 -include $(HOST_OBJECTS:.o=.d) $(SANITIZE_OBJECTS:.o=.d)
 -include $(HOST_EXAMPLES:%=%.d) $(SANITIZE_CASES:%=%.d)
