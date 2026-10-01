@@ -430,7 +430,7 @@ class Drawing:
         # Labels are set smaller in the close-up, which the page shows larger.
         bench.label_size = 6.4 if view == "closeup" else 10
         rough = self._closeup_box () if view == "closeup" else None
-        placed = self._place_labels (routes, rough, detail)
+        placed = self._place_labels (routes, rough, detail) if rough else self._bench_labels ()
         box = self._view_box (rough, placed, detail) if rough else self._canvas (routes, placed)
         if view == "opening":
             box = self.opening_box ()
@@ -468,6 +468,20 @@ class Drawing:
                 pencil.label (x, y, text, size=size, anchor=anchor, to=to, width=width,
                               patch=self._patch (x, y, width, size, anchor))
         return pencil.svg (box, bench.title if view == "bench" else f"{bench.title}: close-up")
+
+    # The whole bench's labels, placed once for all its drawings: the bench,
+    # the opening, and the printed details, which keep their row letters
+    # clear of them.
+    def _bench_labels (self):
+        labels = json.loads (self._labels ())
+        self._placed_boxes = [tuple (box) for box in labels["boxes"]]
+        return [tuple (label) for label in labels["placed"]]
+
+    @kept
+    def _labels (self):
+        self.bench.label_size = 10
+        placed = self._place_labels (self._layout (), None, None)
+        return json.dumps ({"placed": placed, "boxes": self._placed_boxes})
 
     # The opening shows the actual parts, including screens and other
     # modules standing outside the breadboard. Wiring detail comes later.
@@ -545,13 +559,33 @@ class Drawing:
         pencil.layers["paper"].append (f'<use href="#{source}-scene"/>')
         if columns:
             first, _ = columns
-            left, _ = self.bench.hole_xy (f"a{first}")
             original, _ = self.bench.hole_xy (f"a{self.bench.first}")
-            rows = "" if box[0] <= original - 11 <= box[0] + box[2] else "abcdefghij"
-            for row in rows:
-                _, y = self.bench.hole_xy (f"{row}{first}")
-                pencil.text (left - 20, y + 2, row, size=7, kind="silk", halo="#ffffff")
+            if not box[0] <= original - 11 <= box[0] + box[2]:
+                self._row_letters (pencil, first)
         return pencil.svg (box, caption)
+
+    # Row letters for a printed detail that starts partway along the board:
+    # in a column between the holes left of its first, where they cover the
+    # fewest of the bench's labels and wires. A letter that would still
+    # cover a label goes in another such column, or is left out.
+    def _row_letters (self, pencil, first):
+        bench = self.bench
+        left, _ = bench.hole_xy (f"a{first}")
+        labels = json.loads (self._labels ())["boxes"]
+        runs = [(a, b) for _, _, points in self._layout () for a, b in zip (points, points[1:])]
+        rows = [(row, bench.hole_xy (f"{row}{first}")[1] + 2) for row in "abcdefghij"]
+
+        def cost (x, y):
+            box = (x - 3, y - 5.6, x + 3, y + 1.8)
+            return (100 * any (boxes_meet (box, label) for label in labels)
+                    + 10 * any (segment_meets_box (a, b, box, 1.8) for a, b in runs))
+
+        columns = [left - 15, left - 25, left - 5]
+        best = min (columns, key=lambda x: sum (cost (x, y) for _, y in rows))
+        for row, y in rows:
+            x = min ([best] + columns, key=lambda x: cost (x, y))
+            if cost (x, y) < 100:
+                pencil.text (x, y, row, size=7, kind="silk", halo="#ffffff")
 
     # A measurement: the breadboard round its two probe points, the meter
     # below the board reading what is expected, and its leads rising to the
