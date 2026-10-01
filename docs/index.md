@@ -78,7 +78,9 @@ electricity path has eight three-investigation modules. Start either path
 at its first lesson and keep each build's parts in their home positions.
 
 The cards below show the project path. See the [Electricity syllabus](electricity/index.md)
-for E01–E24 and the equipment each module needs.
+for E01–E24 and the equipment each module needs. Teaching a class? The
+[teacher guide](teachers.md) has a plan for each arc, what the room needs
+and how to print the lessons as worksheets.
 
 <!-- arcs -->
 

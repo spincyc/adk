@@ -31,7 +31,9 @@ need the extra parts and measuring tools listed in the syllabus.
 
 For one route through both paths, follow the [Guided route](guided.md). It
 keeps each path's numbering while pointing out useful electricity stops as
-the projects introduce them.
+the projects introduce them. Teaching a class? The
+[teacher guide](teachers.md) has a plan for each arc. After Lesson 55,
+[What next](next.md) shows where the course's ideas lead.
 
 <div class="course-list" markdown>
 

@@ -116,7 +116,10 @@ nav:
       - kit.md
       - safety.md
       - cpp.md
+      - glossary.md
       - builds.md
+      - Teacher guide: teachers.md
+      - What next: next.md
       - changelog.md
   - Course:
       - course.md

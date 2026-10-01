@@ -119,6 +119,11 @@
     margin: 0 0 1em;
 }
 
+/* A definition, as in the glossary, sits close under its term. */
+.md-typeset dd {
+    margin-top: 0.2em;
+}
+
 .md-typeset h1,
 .md-typeset h2,
 .md-typeset h3 {

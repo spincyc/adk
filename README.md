@@ -10,7 +10,8 @@ web page and a printable PDF, with pencil drawings of the breadboard that
 are checked against the code's pins.
 
 **[Start the course →](https://spincyc.github.io/adk/)** ·
-**[Explore electricity →](https://spincyc.github.io/adk/electricity/)**
+**[Explore electricity →](https://spincyc.github.io/adk/electricity/)** ·
+**[Teach it →](https://spincyc.github.io/adk/teachers/)**
 
 ```cpp
 #include <Adk.h>
