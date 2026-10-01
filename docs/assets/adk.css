@@ -2201,6 +2201,21 @@ body.building-along {
         box-shadow: none;
     }
 
+    /* Chromium prints an SVG filter as a picture at 300 dpi, and the
+       pencil, grain and paper noise barely compress: they made each
+       lesson's PDF several times larger. On paper the drawings print as
+       plain lines and fills instead, which are sharper too. With no
+       ancestor in the selectors, they also reach the copies that <use>
+       makes for the enlarged details. */
+    [filter*="-pencil)"],
+    [filter*="-grain)"] {
+        filter: none;
+    }
+
+    rect[filter*="-paper)"] {
+        display: none;
+    }
+
     .lesson-pdf,
     .lesson-sections,
     .md-typeset .headerlink,
