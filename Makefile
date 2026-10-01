@@ -215,6 +215,9 @@ DEPS_Darwin      := python       \
                     arduino-cli  \
                     chromium
 DEPS_other       := a C++ compiler, make, Python 3, Chromium, arduino-cli, curl, bzip2 and git
+# Debian and Fedora have no package of arduino-cli; its own installer does.
+CLI_HINT         := and arduino-cli, as its installation guide explains:  \
+                    https://arduino.github.io/arduino-cli/latest/installation/
 
 # Targets ----------------------------------------------------------------------
 
@@ -271,6 +274,7 @@ deps-arch:
 deps-debian deps-fedora deps-Darwin deps-other:
 	@echo "make deps doesn't install packages here yet. Install:"
 	@echo "    $(DEPS_$(DEPS_SYSTEM))"
+	$(if $(filter debian fedora,$(DEPS_SYSTEM)),@echo "$(CLI_HINT)")
 	@echo "then run:"
 	@echo "    arduino-cli core update-index"
 	@echo "    arduino-cli core install $(ARDUINO_CORE)"
