@@ -1,0 +1,84 @@
+name: Build report
+description: Tell us how a lesson went on a real bench, whether it worked or not.
+title: "Build report: "
+labels:
+    - build report
+body:
+    - type: markdown
+      attributes:
+          value: |
+              Thank you for building a lesson. A build that didn't work is just as useful as one that did: [Builds on real hardware](https://spincyc.github.io/adk/builds/) says why.
+
+              Keep personal details out of this report: no full name, address or school, and no faces in photos. GitHub accounts are for people 13 and older, so younger learners can ask an adult to send it.
+
+    - type: input
+      id: lesson
+      attributes:
+          label: Which lesson
+          description: Its number and title.
+          placeholder: Lesson 3, Reaction Duel, or E07, Charge a Capacitor
+      validations:
+          required: true
+
+    - type: input
+      id: board
+      attributes:
+          label: Board
+          description: A genuine Arduino Mega 2560, with its revision if you know it, or a compatible board and its maker.
+          placeholder: Arduino Mega 2560 Rev3
+      validations:
+          required: true
+
+    - type: input
+      id: kit
+      attributes:
+          label: Kit and its version
+          description: The kit the parts came from, its version if it shows one, and any part you swapped for another.
+          placeholder: Elegoo Mega 2560 Most Complete Starter Kit, version 3 of the 37 in 1 sensor kit
+      validations:
+          required: true
+
+    - type: input
+      id: version
+      attributes:
+          label: ADK version
+          description: The version in the footer of the lesson's page or PDF, or of the library you installed.
+          placeholder: "0.4.0"
+
+    - type: dropdown
+      id: result
+      attributes:
+          label: Did it work?
+          options:
+              - It did what the lesson says
+              - Partly
+              - It didn't work
+      validations:
+          required: true
+
+    - type: textarea
+      id: happened
+      attributes:
+          label: What happened
+          description: What you saw, compared with what *What you'll build* and *Upload it* describe. If something went wrong, what you tried.
+      validations:
+          required: true
+
+    - type: textarea
+      id: readings
+      attributes:
+          label: Readings
+          description: If you have a multimeter or a scope, your *Measure it* readings beside the ones the lesson expects.
+          placeholder: "Across the LED: 1.9 V (the lesson expects about 2 V)"
+
+    - type: textarea
+      id: unclear
+      attributes:
+          label: Anything wrong or unclear
+          description: A step, a drawing, a hole, a word.
+
+    - type: textarea
+      id: photo
+      attributes:
+          label: A photo of the build
+          description: If you like, drag a photo in here. No faces, please.

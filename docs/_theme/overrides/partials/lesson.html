@@ -25,6 +25,16 @@
     </li>
     <li class="lesson-guide"><a href="../../guided/">Guided route</a></li>
   </ul>
+  {#- Until someone builds the lessons and records it (builds.md), each says
+      so, on screen and in its PDF, where paper also gets the address. -#}
+  <p class="lesson-unbuilt">
+    {% include ".icons/material/flask-outline.svg" %}
+    <span>Not yet <a href="../../builds/">built on real hardware</a>, so what you'll see
+      is a prediction.
+      <a href="{{ config.repo_url }}/issues/new?template=build-report.yml">Report your
+      build</a><span class="lesson-unbuilt-url"> at
+      {{ config.site_url | replace("https://", "") }}builds</span>.</span>
+  </p>
   <nav class="lesson-sections" aria-label="Sections">
     {% for heading in page.toc %}<a href="{{ heading.url }}">{{ heading.title }}</a>{% endfor %}
   </nav>

@@ -15,9 +15,9 @@ No builds have been recorded yet. Yours could be the first.
 
 ## Report your build
 
-[Open an issue on GitHub](https://github.com/spincyc/adk/issues/new) and
-tell us how it went. A build that didn't work is just as useful as one
-that did. Say:
+[Fill in a build report](https://github.com/spincyc/adk/issues/new?template=build-report.yml)
+on GitHub and tell us how it went. A build that didn't work is just as
+useful as one that did. The form asks for:
 
 - **Which lesson**: its number and title, such as *Lesson 3, Reaction
   Duel* or *E07, Charge a Capacitor*.
@@ -48,3 +48,7 @@ a table like this one, a row for each build, linking its report:
 Record the builds that didn't work too, with what went wrong, and fix the
 lesson. One build that worked shows that a lesson can work, not that it
 works with every kit.
+
+Every lesson's page and PDF says, under its title, that it hasn't been built
+on real hardware yet (`docs/_theme/overrides/partials/lesson.html`). Once a
+lesson's build is recorded, that line should say so instead.

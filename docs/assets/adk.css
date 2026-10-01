@@ -366,6 +366,31 @@
     background: var(--adk-red);
 }
 
+/* Until a build is recorded, a quiet line says the results are predicted. */
+.md-typeset .lesson-unbuilt {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0.25rem 0 0.25rem 0.6rem;
+    border-left: 3px solid var(--adk-rule);
+    font-size: 0.7rem;
+    line-height: 1.45;
+    color: var(--adk-muted);
+}
+
+.lesson-unbuilt svg {
+    flex: none;
+    align-self: center;
+    width: 1.1em;
+    height: 1.1em;
+    fill: currentcolor;
+}
+
+.lesson-unbuilt-url {
+    display: none;
+}
+
 /* The lesson's sections, after what it needs, lead into the lesson. */
 .lesson-sections {
     display: flex;
@@ -2229,6 +2254,10 @@ body.building-along {
     .md-typeset details::details-content {
         content-visibility: visible;
         display: block;
+    }
+
+    .lesson-unbuilt-url {
+        display: inline;
     }
 
     .md-typeset a {
