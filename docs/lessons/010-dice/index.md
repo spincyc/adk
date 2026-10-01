@@ -190,7 +190,10 @@ right, along the bottom and up the left.
 
 1. **Light the dot.** Wire Q7 (column 24) through an eighth 1 kΩ resistor
    to the digit's decimal point (pin 5, column 50), then light bit 7 while
-   the die spins: `digit.write ((1 << (step % 6)) | 0b10000000);`.
+   the die spins: `digit.write ((1 << (step % 6)) | 0b10000000);`. The `|`
+   works bit by bit, keeping every 1 from either number, so the spinning
+   segment's bit and bit 7 are both lit. It is not the same as `||`, which
+   asks whether either of two questions is true.
 2. **Tumble.** Instead of a spinning bar, flash random faces that slow down,
    the way a real die bounces before it settles.
 3. **Loaded die.** Make 6 come up twice as often as the other numbers. Is it

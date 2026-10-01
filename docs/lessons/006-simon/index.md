@@ -37,7 +37,8 @@ of things, so Simon keeps its tune in an **`adk::Vector`** instead: a list
 that can grow and shrink, up to a size you choose.
 `adk::Vector<uint8_t, 100> sequence;` has room for 100 steps and starts
 with none. Each step is a key's number, 0 for red up to 3 for blue, and
-each round `sequence.push_back (random (4))` adds a random one at the end.
+each round `sequence.push_back (random (4))` adds a random one at the end:
+`random (4)` picks a whole number from 0 up to 3.
 `sequence.size ()` says how many there are so far:
 
 | Round | `sequence.size ()` | `sequence` | Simon shows |
@@ -134,6 +135,13 @@ What's new:
   hands it back and leaves the function at once. When no key was pressed
   it reaches `return -1;`, which is nobody's number. `loop ()` keeps the
   answer: `int pressed = pressedKey ();`.
+- `void yourTurn (int pressed)` needs to know which key was pressed, so it
+  takes the number in its brackets. `int pressed` there is a
+  **parameter**: a variable of the function's own, which each call fills
+  in. `loop ()` calls `yourTurn (pressed)` and hands over its own
+  `pressed`. `check (int answer)` and `gameOver (int score)` take their
+  numbers the same way: `check (held)` hands the held key to `check ()`,
+  which calls it `answer`.
 - `for (int number = 0; number < 4; number++)` is a **counting loop**. It
   sets `number` to 0, runs the lines inside while `number < 4` is true,
   and adds one after each pass, so they run for 0, 1, 2 and 3. A

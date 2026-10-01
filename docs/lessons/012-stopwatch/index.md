@@ -145,7 +145,10 @@ What's new:
   buzzer with `buzzer.beep (20)`. `(current + 1) % modes.size ()` steps to the next
   mode, and back to the first after the last.
 - `clockTime ()` turns the stopwatch into what the display shows: its time
-  for the stopwatch, or `total - time` for a kitchen timer. Its last line
+  for the stopwatch, or `total - time` for a kitchen timer. Its first two
+  lines make **`auto`** variables: `auto total = modes[current];` lets the
+  compiler work out the type from the value it starts with, here an
+  `adk::Millis`, as `auto` did in Lesson 5's range-for. Its last line
   is a **conditional expression**, a question with two answers:
   `question ? yes : no` is `yes` when the question is true and `no` when
   it isn't. So `time < total ? total - time : 0` is the time left while

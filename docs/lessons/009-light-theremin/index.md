@@ -146,6 +146,10 @@ What's new:
   darker than anything the sketch learned. They hand back a `long`, as in
   Lesson 8, and `shadowSlice ()` hands it on as an `int`: `constrain ()` has
   already made it 0 to 10, which an `int` holds with room to spare.
+- `playNote (int note, int octave)` takes two parameters, as Lesson 6's
+  functions took one, with a comma between them. `loop ()` calls
+  `playNote (slice - 1, knob.read () / 342)`, so the first value becomes
+  `note` and the second `octave`, in that order.
 - `playNote ()` works out the pitch and calls `speaker.tone ()` with it. A
   tone with no length keeps sounding until the next `tone ()` or `stop ()`,
   and asking again for the pitch already sounding changes nothing, so
