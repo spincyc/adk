@@ -58,11 +58,50 @@ can face either way. Check the path before reconnecting the generator.
 The path is **generator OUT → resistor → output at the capacitor's top
 strip → capacitor → common GND → generator GND**. The output is at
 **j10**, on the same strip as the capacitor's g10 leg. The input is at
-**j6**, on the same strip as the resistor's g6 leg.
+**j6**, on the same strip as the resistor's g6 leg. In schematic form
+(the [schematic key](../../electricity/schematics.md) names each symbol):
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 230" width="600"
+     role="img" aria-labelledby="rc-filter-title rc-filter-desc">
+  <title id="rc-filter-title">RC low-pass filter schematic</title>
+  <desc id="rc-filter-desc">The generator's output, the input at j6 and channel 1, passes through a 1 kilohm resistor to the output at j10, channel 2. A 1 microfarad capacitor joins the output to ground, and the generator's ground joins the same ground.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="150" cy="120" r="24"/>
+    <path d="M137 120 q6.5 -12 13 0 q6.5 12 13 0"/>
+    <path d="M150 96 L150 60 L240 60"/>
+    <path d="M240 60 L295.0 60"/>
+    <path d="M365.0 60 L420 60"/>
+    <rect x="295.0" y="47" width="70" height="26"/>
+    <path d="M420 60 L500 60"/>
+    <path d="M500 60 L500 114.0"/>
+    <path d="M500 126.0 L500 180"/>
+    <path d="M480 114.0 H520"/>
+    <path d="M480 126.0 H520"/>
+    <path d="M150 144 L150 180 L500 180"/>
+    <path d="M330 180 V188 M310 188 H350 M317 196 H343 M324 204 H336"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="240" cy="60" r="5"/>
+    <circle cx="420" cy="60" r="5"/>
+    <circle cx="330" cy="180" r="5"/>
+  </g>
+  <g fill="currentColor" font-size="17" font-family="system-ui, sans-serif">
+    <text x="20" y="112">generator</text>
+    <text x="20" y="132">0–4 V sine</text>
+    <text x="240" y="36" text-anchor="middle">ch 1 · j6</text>
+    <text x="330" y="36" text-anchor="middle">1 kΩ</text>
+    <text x="420" y="36" text-anchor="middle">ch 2 · j10</text>
+    <text x="530" y="126">1 µF</text>
+    <text x="350" y="214">GND</text>
+  </g>
+</svg>
 
 <!-- connections -->
 
 ## Try two speeds
+
+The [scope and generator primer](../../electricity/skills.md#scope-and-generator)
+explains the scope settings and peak-to-peak heights used here.
 
 1. With the generator still off, clip **both scope grounds** to free
    holes in the bottom − rail. Touch channel 1's tip to the input at

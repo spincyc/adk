@@ -55,6 +55,64 @@ pin 7 GND. The five unused inputs go to GND; their outputs stay open.
 
 <!-- steps -->
 
+In schematic form, with the chip's pin numbers (the
+[schematic key](../../electricity/schematics.md) names each symbol):
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600"
+     role="img" aria-labelledby="schmitt-clock-title schmitt-clock-desc">
+  <title id="schmitt-clock-title">Schmitt inverter clock schematic</title>
+  <desc id="schmitt-clock-desc">Inverter 1 of the SN74HC14N. Its output, pin 2, feeds back through a 100 kilohm resistor to its input, pin 1. A 10 microfarad capacitor, plus side at the input, joins pin 1 to ground. The output also lights a red LED through 1 kilohm.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M200 150 L260 150"/>
+    <path d="M260 115.0 L330 150 L260 185.0 Z"/>
+    <circle cx="336" cy="150" r="6"/>
+    <path d="M266 158 H282 V142 H290 M274 158 V142 H290"/>
+    <path d="M342 150 L480 150"/>
+    <path d="M400 150 L400 70"/>
+    <path d="M200 70 L265.0 70"/>
+    <path d="M335.0 70 L400 70"/>
+    <rect x="265.0" y="57" width="70" height="26"/>
+    <path d="M200 70 L200 150"/>
+    <path d="M200 150 L200 204.0"/>
+    <path d="M200 216.0 L200 270"/>
+    <path d="M180 204.0 H220"/>
+    <path d="M180 222.0 Q200 212.0 220 222.0"/>
+    <path d="M200 217.0 L200 270"/>
+    <path d="M200 270 V278 M180 278 H220 M187 286 H213 M194 294 H206"/>
+    <path d="M480 150 L480 170.0"/>
+    <path d="M480 220.0 L480 240"/>
+    <rect x="467" y="170.0" width="26" height="50"/>
+    <path d="M480 250 L480.0 267.0"/>
+    <path d="M480.0 293.0 L480 310"/>
+    <path d="M465.0 267.0 L495.0 267.0 L480.0 293.0 Z"/>
+    <path d="M465.0 293.0 L495.0 293.0"/>
+    <path d="M460.0 274.0 L444.0 282.0"/>
+    <path d="M444.0 282.0 L447.8 276.1"/>
+    <path d="M444.0 282.0 L451.0 282.5"/>
+    <path d="M460.0 286.0 L444.0 294.0"/>
+    <path d="M444.0 294.0 L447.8 288.1"/>
+    <path d="M444.0 294.0 L451.0 294.5"/>
+    <path d="M480 240 L480 250"/>
+    <path d="M480 310 V318 M460 318 H500 M467 326 H493 M474 334 H486"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="200" cy="150" r="5"/>
+    <circle cx="400" cy="150" r="5"/>
+  </g>
+  <g fill="currentColor" font-size="17" font-family="system-ui, sans-serif">
+    <text x="190" y="140" text-anchor="end" font-size="15">pin 1</text>
+    <text x="264" y="106">SN74HC14N</text>
+    <text x="410" y="140" font-size="15">pin 2</text>
+    <text x="300" y="48" text-anchor="middle">100 kΩ</text>
+    <text x="166" y="202.0" font-size="16">+</text>
+    <text x="226" y="216">10 µF</text>
+    <text x="498" y="200">1 kΩ</text>
+    <text x="498" y="286" font-size="15">red LED</text>
+    <text x="40" y="360" font-size="15">Pin 14 to 5 V and pin 7 to GND, with 100 nF across them.</text>
+    <text x="40" y="380" font-size="15">The five unused inputs go to GND.</text>
+  </g>
+</svg>
+
 The finished circuit's connections are:
 
 <!-- connections -->
@@ -102,7 +160,7 @@ repeated by the inverter. It is a physical cousin of the timed events in
 ## About the sketch
 
 No upload is needed. The matching ADK example claims no signal pins;
-USB powers the passive circuit:
+USB powers the chip, and its circuit makes the blink without code:
 
 <!-- sketch -->
 

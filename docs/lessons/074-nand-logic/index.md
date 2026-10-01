@@ -61,7 +61,78 @@ to **pin 1**, button B to **pin 2**, and each has its own 10 kΩ path to
 GND so it reads 0 when released. **Pin 3 → 1 kΩ → red LED → GND**. The
 six unused inputs (pins 4, 5, 9, 10, 12, and 13) are tied to GND; leave
 their three output pins (6, 8, and 11) unconnected. A loose input can
-give an unpredictable result, so check these wires before powering.
+give an unpredictable result, so check these wires before powering. The
+schematic shows gate 1 with its pin numbers (the
+[schematic key](../../electricity/schematics.md) names each symbol):
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 440" width="620"
+     role="img" aria-labelledby="nand-gate-title nand-gate-desc">
+  <title id="nand-gate-title">NAND truth-table schematic</title>
+  <desc id="nand-gate-desc">Button A joins 5 volts to gate 1's input A, pin 1, and button B joins 5 volts to its input B, pin 2. Each input has a 10 kilohm resistor to ground. The output, pin 3, drives a 1 kilohm resistor and red LED to ground.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M60 40 H200"/>
+    <path d="M200 40 L200 54"/>
+    <path d="M200 96 L200 110"/>
+    <circle cx="200" cy="58" r="4"/>
+    <circle cx="200" cy="92" r="4"/>
+    <path d="M186 50 V100 M186 75.0 H172 M172 67.0 V83.0"/>
+    <path d="M200 110 L200 130"/>
+    <path d="M200 130 L200 140.0"/>
+    <path d="M200 190.0 L200 200"/>
+    <rect x="187" y="140.0" width="26" height="50"/>
+    <path d="M200 200 V208 M180 208 H220 M187 216 H213 M194 224 H206"/>
+    <path d="M200 130 L380 130 L380 172 L400 172"/>
+    <path d="M80 40 L80 50"/>
+    <path d="M80 50 L80 64"/>
+    <path d="M80 106 L80 120"/>
+    <circle cx="80" cy="68" r="4"/>
+    <circle cx="80" cy="102" r="4"/>
+    <path d="M66 60 V110 M66 85.0 H52 M52 77.0 V93.0"/>
+    <path d="M80 120 L80 260"/>
+    <path d="M80 260 L80 275.0"/>
+    <path d="M80 325.0 L80 340"/>
+    <rect x="67" y="275.0" width="26" height="50"/>
+    <path d="M80 340 V348 M60 348 H100 M67 356 H93 M74 364 H86"/>
+    <path d="M80 260 L380 260 L380 208 L400 208"/>
+    <path d="M400 155.0 H435 A35.0 35.0 0 0 1 435 225.0 H400 Z"/>
+    <circle cx="476.0" cy="190" r="6"/>
+    <path d="M482.0 190 L540 190"/>
+    <path d="M540 190 L540 205.0"/>
+    <path d="M540 255.0 L540 270"/>
+    <rect x="527" y="205.0" width="26" height="50"/>
+    <path d="M540 280 L540.0 297.0"/>
+    <path d="M540.0 323.0 L540 340"/>
+    <path d="M525.0 297.0 L555.0 297.0 L540.0 323.0 Z"/>
+    <path d="M525.0 323.0 L555.0 323.0"/>
+    <path d="M520.0 304.0 L504.0 312.0"/>
+    <path d="M504.0 312.0 L507.8 306.1"/>
+    <path d="M504.0 312.0 L511.0 312.5"/>
+    <path d="M520.0 316.0 L504.0 324.0"/>
+    <path d="M504.0 324.0 L507.8 318.1"/>
+    <path d="M504.0 324.0 L511.0 324.5"/>
+    <path d="M540 270 L540 280"/>
+    <path d="M540 340 V348 M520 348 H560 M527 356 H553 M534 364 H546"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="200" cy="130" r="5"/>
+    <circle cx="80" cy="260" r="5"/>
+  </g>
+  <g fill="currentColor" font-size="17" font-family="system-ui, sans-serif">
+    <text x="20" y="46">5 V</text>
+    <text x="216" y="80">A</text>
+    <text x="182" y="172" text-anchor="end" font-size="15">10 kΩ</text>
+    <text x="372" y="164" text-anchor="end" font-size="15">pin 1</text>
+    <text x="96" y="90">B</text>
+    <text x="62" y="306" text-anchor="end" font-size="15">10 kΩ</text>
+    <text x="372" y="230" text-anchor="end" font-size="15">pin 2</text>
+    <text x="400" y="140">SN74HC00N gate 1</text>
+    <text x="500" y="180" text-anchor="middle" font-size="15">pin 3</text>
+    <text x="558" y="236">1 kΩ</text>
+    <text x="470" y="330" text-anchor="end" font-size="15">red LED</text>
+    <text x="230" y="400" font-size="15">Pin 14 to 5 V and pin 7 to GND, with 100 nF</text>
+    <text x="230" y="420" font-size="15">across them. The six unused inputs go to GND.</text>
+  </g>
+</svg>
 
 <!-- connections -->
 

@@ -63,11 +63,97 @@ The **10 Ω resistor in column 4** crosses the breadboard's middle gap.
 Its lower end makes column 4's lower strip the local supply. The 220 Ω
 LED path and both capacitor + sides meet this local supply. Each
 capacitor's other side meets the bottom − rail, **after** the 10 Ω
-resistor. Neither capacitor connects across the 10 Ω resistor.
+resistor. Neither capacitor connects across the 10 Ω resistor. The
+schematic shows the same nodes (the [schematic key](../../electricity/schematics.md)
+names each symbol):
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 440" width="620"
+     role="img" aria-labelledby="local-supply-title local-supply-desc">
+  <title id="local-supply-title">Local supply schematic</title>
+  <desc id="local-supply-desc">USB 5 volts passes through a 10 ohm resistor to the local supply at column 4, where the scope probe goes. A 100 microfarad capacitor, plus side up, and a 100 nanofarad capacitor join the local supply to ground. The local supply feeds a 220 ohm resistor and red LED to the S8050's collector; its emitter goes to ground. The generator drives the base through 1 kilohm, with 10 kilohms from base to ground.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M50 60 L75.0 60"/>
+    <path d="M145.0 60 L170 60"/>
+    <rect x="75.0" y="47" width="70" height="26"/>
+    <path d="M170 60 L500 60"/>
+    <path d="M250 60 L250 119.0"/>
+    <path d="M250 131.0 L250 190"/>
+    <path d="M230 119.0 H270"/>
+    <path d="M230 137.0 Q250 127.0 270 137.0"/>
+    <path d="M250 132.0 L250 190"/>
+    <path d="M250 190 V198 M230 198 H270 M237 206 H263 M244 214 H256"/>
+    <path d="M370 60 L370 119.0"/>
+    <path d="M370 131.0 L370 190"/>
+    <path d="M350 119.0 H390"/>
+    <path d="M350 131.0 H390"/>
+    <path d="M370 190 V198 M350 198 H390 M357 206 H383 M364 214 H376"/>
+    <path d="M500 60 L500 70.0"/>
+    <path d="M500 140.0 L500 150"/>
+    <rect x="487" y="70.0" width="26" height="70"/>
+    <path d="M500 160 L500.0 177.0"/>
+    <path d="M500.0 203.0 L500 220"/>
+    <path d="M485.0 177.0 L515.0 177.0 L500.0 203.0 Z"/>
+    <path d="M485.0 203.0 L515.0 203.0"/>
+    <path d="M480.0 184.0 L464.0 192.0"/>
+    <path d="M464.0 192.0 L467.8 186.1"/>
+    <path d="M464.0 192.0 L471.0 192.5"/>
+    <path d="M480.0 196.0 L464.0 204.0"/>
+    <path d="M464.0 204.0 L467.8 198.1"/>
+    <path d="M464.0 204.0 L471.0 204.5"/>
+    <path d="M500 150 L500 160"/>
+    <path d="M500 220 L500 260"/>
+    <circle cx="80" cy="340" r="24"/>
+    <path d="M67 340 q6.5 -12 13 0 q6.5 12 13 0"/>
+    <path d="M80 316 L80 310 L110 310"/>
+    <path d="M110 310 L185.0 310"/>
+    <path d="M255.0 310 L330 310"/>
+    <rect x="185.0" y="297" width="70" height="26"/>
+    <path d="M330 310 L330 320.0"/>
+    <path d="M330 390.0 L330 400"/>
+    <rect x="317" y="320.0" width="26" height="70"/>
+    <path d="M330 400 V408 M310 408 H350 M317 416 H343 M324 424 H336"/>
+    <path d="M80 364 L80 376"/>
+    <path d="M80 376 V384 M60 384 H100 M67 392 H93 M74 400 H86"/>
+    <path d="M400 310 L418 310"/>
+    <path d="M418 290 V330"/>
+    <path d="M418 301 L500 280 L500 260"/>
+    <path d="M418 319 L500 340 L500 400"/>
+    <path d="M463.1 330.6 L453.5 333.4"/>
+    <path d="M463.1 330.6 L456.1 323.4"/>
+    <circle cx="461.0" cy="310" r="30"/>
+    <path d="M330 310 L400 310"/>
+    <path d="M500 400 V408 M480 408 H520 M487 416 H513 M494 424 H506"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="170" cy="60" r="5"/>
+    <circle cx="250" cy="60" r="5"/>
+    <circle cx="370" cy="60" r="5"/>
+    <circle cx="330" cy="310" r="5"/>
+  </g>
+  <g fill="currentColor" font-size="17" font-family="system-ui, sans-serif">
+    <text x="14" y="66">5 V</text>
+    <text x="110" y="40" text-anchor="middle">10 Ω</text>
+    <text x="196" y="100" text-anchor="end" font-size="15">local supply</text>
+    <text x="196" y="118" text-anchor="end" font-size="15">column 4 · scope</text>
+    <text x="216" y="117.0" font-size="16">+</text>
+    <text x="276" y="132">100 µF</text>
+    <text x="396" y="132">100 nF</text>
+    <text x="518" y="110">220 Ω</text>
+    <text x="518" y="196">red LED</text>
+    <text x="20" y="290" font-size="15">generator, 1 kHz</text>
+    <text x="220" y="290" text-anchor="middle">1 kΩ</text>
+    <text x="312" y="362" text-anchor="end">10 kΩ</text>
+    <text x="540" y="330">S8050</text>
+  </g>
+</svg>
 
 <!-- connections -->
 
 ## Compare the ripples
+
+The [scope and generator primer](../../electricity/skills.md#scope-and-generator)
+explains AC coupling and the vertical offset used here; do its output
+check before connecting the generator.
 
 1. With USB unplugged and the generator off, put the scope ground clip
    in a free bottom − rail hole. Put the probe tip in a free hole of
