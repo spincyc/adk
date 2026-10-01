@@ -33,6 +33,12 @@ def nav_paths (items):
 
 
 assert len (LESSONS) == 79
+
+# In course.yml's one-line entries a comma ends a value unless the value is
+# quoted: "builds: A game, with sound" would make a key named "with sound".
+for arc in yaml.safe_load ((ROOT / "docs" / "_theme" / "course.yml").read_text ()):
+    for lesson in arc["lessons"]:
+        assert set (lesson) <= {"slug", "title", "builds", "project", "fresh_start"}, lesson
 assert [(lesson["number"], visible_reference (lesson)) for lesson in
         (LESSONS[0], LESSONS[54], LESSONS[55], LESSONS[-1])] == [
             (1, "Lesson 1"), (55, "Lesson 55"), (56, "E01"), (79, "E24")]

@@ -18,7 +18,7 @@
   lessons:
     - {slug: 004-mood-lamp, title: Mood Lamp, builds: An RGB lamp that fades through colors}
     - {slug: 005-melody-maker, title: Melody Maker, builds: A four-button keyboard that plays tunes}
-    - {slug: 006-simon, title: Simon, builds: The memory game, with sound and a high score, project: true}
+    - {slug: 006-simon, title: Simon, builds: "The memory game, with sound and a high score", project: true}
 
 - arc: The analog world
   lessons:
@@ -53,14 +53,14 @@
 - arc: Invisible signals
   lessons:
     - {slug: 022-remote-control, title: Remote Control, builds: A lamp you control from the sofa}
-    - {slug: 023-tripwires, title: Tripwires, builds: Motion, tilt and beam-break sensors}
+    - {slug: 023-tripwires, title: Tripwires, builds: "Motion, tilt and beam-break sensors"}
     - {slug: 024-room-alarm, title: Room Alarm, builds: An alarm you arm and disarm with the remote, project: true}
 
 - arc: Pixels and games
   lessons:
     - {slug: 025-led-matrix, title: LED Matrix, builds: Pictures and scrolling text on 64 LEDs}
     - {slug: 026-joystick, title: Joystick, builds: An etch-a-sketch for the matrix}
-    - {slug: 027-snake, title: Snake, builds: The classic game, with sound, project: true}
+    - {slug: 027-snake, title: Snake, builds: "The classic game, with sound", project: true}
 
 - arc: Tilt and turn
   lessons:
@@ -102,9 +102,9 @@
 - arc: Far senses
   boards: 2
   lessons:
-    - {slug: 046-remote-weather, title: Remote Weather, builds: The garden's weather, read indoors}
+    - {slug: 046-remote-weather, title: Remote Weather, builds: "The garden's weather, read indoors"}
     - {slug: 047-remote-alarm, title: Remote Alarm, builds: Sensors by the door and the siren where you are}
-    - {slug: 048-baby-monitor, title: Room Monitor, builds: A room's sound and a leak alarm, heard from afar, project: true}
+    - {slug: 048-baby-monitor, title: Room Monitor, builds: "A room's sound and a leak alarm, heard from afar", project: true}
 
 - arc: Far hands
   boards: 2
