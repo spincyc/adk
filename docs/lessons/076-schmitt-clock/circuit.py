@@ -1,4 +1,4 @@
-# Keep Lesson 75's LED, its 1 kΩ resistor and return wire, the supply
+# Keep E20's LED, its 1 kΩ resistor and return wire, the supply
 # jumper and nearby bypass capacitor. Replace the NAND with a Schmitt IC.
 bench = Bench ("A Schmitt inverter and RC feedback make an LED blink",
                columns=(1, 24))

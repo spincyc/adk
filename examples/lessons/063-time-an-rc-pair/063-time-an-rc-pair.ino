@@ -1,4 +1,4 @@
-// Lesson 63: Time an RC Pair
+// E08: Time an RC Pair
 // USB powers the passive circuit; the sketch claims no signal pins.
 
 #include <Adk.h>

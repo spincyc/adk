@@ -1,4 +1,4 @@
-// Lesson 66: An Inductor Resists a Change
+// E11: An Inductor Resists Change
 // The isolated generator drives this experiment; the Mega claims no pins.
 
 #include <Adk.h>

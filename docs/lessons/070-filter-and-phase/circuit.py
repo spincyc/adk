@@ -1,4 +1,4 @@
-# Keep the generator and common ground from Lessons 68–69. Swap the
+# Keep the generator and common ground from E13–E14. Swap the
 # capacitor and resistor: the capacitor now runs from the output to GND.
 bench = Bench ("A 1 kΩ and 1 µF low-pass filter driven by an isolated generator",
                columns=(1, 14))

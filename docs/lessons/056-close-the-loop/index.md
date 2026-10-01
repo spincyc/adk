@@ -82,6 +82,6 @@ functions. It claims no signal pins. USB alone supplies the power used here.
 | The LED stays lit with GND removed | Look for another wire connecting the LED's short-leg side to the Mega's GND. |
 | The LED stays dark after restoring GND | Put the black wire back in the bottom − rail hole nearest the Mega and check the other end is in the Mega's GND. |
 
-Leave the complete circuit powered for the next lesson, or unplug it if you
-are stopping now. This is the expected behavior; the circuit has not been
+Leave the complete circuit in place for E02, and unplug USB if you are
+stopping now. This is the expected behavior; the circuit has not been
 recorded as tested on hardware.

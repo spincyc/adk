@@ -1,4 +1,4 @@
-// Lesson 68: Alternating Current
+// E13: Current Reverses
 // The isolated generator powers the passive circuit; no upload is needed.
 
 #include <Adk.h>

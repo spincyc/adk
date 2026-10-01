@@ -1,4 +1,4 @@
-// Lesson 71: Amplifier Gain
+// E16: Make a Signal Larger
 // The Mega supplies 5 V; the generator drives the analog circuit.
 
 #include <Adk.h>

@@ -1,4 +1,4 @@
-# Keep Lesson 74's SN74HC00N, buttons, LED and supply capacitor in their
+# Keep E19's SN74HC00N, buttons, LED and supply capacitor in their
 # holes. Each button now pulls a normally high input low; two gates feed back.
 bench = Bench ("Two NAND gates remember the last button press", columns=(1, 26))
 

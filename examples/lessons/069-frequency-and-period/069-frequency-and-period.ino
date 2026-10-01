@@ -1,4 +1,4 @@
-// Lesson 69: Frequency and Period
+// E14: Count a Waveform
 // The isolated generator drives this passive circuit; the Mega claims no pins.
 
 #include <Adk.h>

@@ -1,4 +1,4 @@
-// Lesson 70: Filter and Phase
+// E15: Filter and Phase
 // The isolated generator drives the passive filter; no upload is needed.
 
 #include <Adk.h>

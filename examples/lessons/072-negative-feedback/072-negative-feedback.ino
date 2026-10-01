@@ -1,4 +1,4 @@
-// Lesson 72: Negative Feedback
+// E17: Feed Back the Output
 // A0 reads the knob; the op-amp follows it without a Mega output pin.
 
 #include <Adk.h>

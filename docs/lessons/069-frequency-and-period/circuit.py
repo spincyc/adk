@@ -1,5 +1,5 @@
-# Keep Lesson 68's generator, capacitor, resistor and wiring.
-# Only the generator's frequency changes in this lesson.
+# Keep E13's generator, capacitor, resistor and wiring.
+# Only the generator's frequency changes in this investigation.
 bench = Bench ("Count cycles through a capacitor and 1 kΩ resistor",
                columns=(1, 14))
 

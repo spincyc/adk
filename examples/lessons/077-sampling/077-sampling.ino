@@ -1,4 +1,4 @@
-// Lesson 77: Sample a Voltage
+// E22: Sample a Voltage
 // Reuse Lesson 7's dimmer and watch each A0 reading on the Serial Plotter.
 
 #include <Adk.h>

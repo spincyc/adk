@@ -1,4 +1,4 @@
-// Lesson 61: Tap a Divider
+// E06: Tap a Divider
 // Plot the voltage picked up by the knob's wiper on A0.
 
 #include <Adk.h>

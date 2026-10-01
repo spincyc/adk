@@ -1,4 +1,4 @@
-// Lesson 75: Set/Reset Latch
+// E20: Remember One Bit
 // The SN74HC00N latch runs from the Mega's USB 5 V. No upload is needed.
 
 #include <Adk.h>

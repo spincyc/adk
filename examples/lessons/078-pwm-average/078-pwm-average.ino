@@ -1,4 +1,4 @@
-// Lesson 78: Average PWM
+// E23: Average PWM
 // The knob sets pin 3's on-time; the separate resistor and capacitor
 // smooth its pulses for a meter without taking away the LED's pulses.
 

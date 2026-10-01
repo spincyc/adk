@@ -1,4 +1,4 @@
-// Lesson 79: Send a Byte Down a Wire
+// E24: Send a Byte Down a Wire
 // Serial1 sends 'A' through a resistor to its own receiver.
 // USB Serial reports it.
 
