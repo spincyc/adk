@@ -22,7 +22,10 @@ namespace adk {
     //
     // Asking again for the tone or the melody already playing changes
     // nothing, so tone () and play () can be called from every pass of
-    // loop (); a different one starts at once.
+    // loop (); a different one starts at once. A melody is the same one
+    // when it is the same notes in the same place: an Array or Vector whose
+    // notes change as it plays plays on, sounding each changed note when it
+    // gets there, but a Vector that gains or loses a note starts afresh.
     struct Speaker : Object
     {
         Speaker (Pin pin);

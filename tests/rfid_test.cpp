@@ -308,6 +308,7 @@ TEST (rfidClaimsTheBusAndStartsTheReader)
     CHECK (arduino::pin (8).mode == OUTPUT);
     CHECK (arduino::pin (8).output == HIGH);
     CHECK (arduino::pin (MISO).mode == INPUT);
+    CHECK (!arduino::pin (MISO).raised);    // the reader's 3.3 V output: no pull-up
     CHECK (arduino::pin (MOSI).mode == OUTPUT);
     CHECK (arduino::pin (SCK).mode == OUTPUT);
     CHECK (arduino::pin (SS).mode == OUTPUT);

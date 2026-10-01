@@ -435,6 +435,48 @@ TEST (bridgeRecoversWhenOneBoardRestarts)
     CHECK (boards.bridgeB->payload ("key") == 4);
 }
 
+TEST (bridgeRecoversWhenTheRestartedBoardSpeaksFirst)
+{
+    Boards boards;
+
+    adk::setup ();
+    boards.bridgeA->share ("angle", 30);
+    boards.bridgeA->shareEvent ("key", 5, 1);
+    boards.bridgeB->share ("typed", 2);
+    boards.meet ();
+    boards.bridgeA->shareEvent ("key", 6, 2);
+    CHECK (boards.run (200, "key") == 1);
+
+    // A restarts and speaks before it has heard anything: it doesn't know
+    // B yet, so it sends start numbers 0/0, and B's own events don't count
+    // for it. B sees A's start number change, and counts afresh too.
+    boards.restartA ();
+    boards.bridgeA->share ("angle", 35);
+    boards.bridgeA->shareEvent ("key", 0, 0);
+    boards.radioA.sent.clear ();
+    boards.radioB.sent.clear ();
+    CHECK (boards.run (10, "angle") == 0);
+    CHECK (boards.radioA.sent.size () == 1);
+    CHECK (boards.radioA.sent.front () == "@0/0 angle=35 key=0:0");
+    CHECK (boards.run (10, "angle") == 1);
+    CHECK (boards.bridgeB->value ("angle") == 35);
+
+    // B answers with A's old start number, 1, so A takes 1 again. B still
+    // notices, because A's number went from 1 to 0 and back.
+    CHECK (boards.run (500, "key") == 0);
+    CHECK (boards.radioB.sent.front () == "@1/0 typed=2");
+    CHECK (boards.radioA.sent.back ().starts_with ("@1/1"));
+    CHECK (boards.bridgeA->value ("typed") == 2);
+    CHECK (boards.bridgeA->isConnected ());
+    CHECK (boards.bridgeB->isConnected ());
+
+    // A's first event since it restarted arrives once, counted from 1.
+    boards.bridgeA->shareEvent ("key", 1, 4);
+    CHECK (boards.run (200, "key") == 1);
+    CHECK (boards.bridgeB->value ("key") == 1);
+    CHECK (boards.bridgeB->payload ("key") == 4);
+}
+
 TEST (adkStopSilencesEveryBridgeUntilItStartsAgain)
 {
     Boards boards;

@@ -341,14 +341,18 @@ extern HardwareSerial Serial3;
 
 namespace arduino {
 
+    // A pin. As on the chip, one latch holds both an output's level and an
+    // input's pull-up: INPUT clears it, INPUT_PULLUP and a high write to an
+    // input set it, and a pin made an OUTPUT drives what it holds.
     struct PinState
     {
         uint8_t      mode;
-        uint8_t      output;
+        uint8_t      output;    // the latch
         uint8_t      input;
         int          analog;
         int          pwm;
         unsigned int tone;
+        bool         raised;    // the latch went high: 5 V, driven or pulled up
     };
 
     // Forget every pin, hook, interrupt and register, and set time to zero.

@@ -63,6 +63,7 @@ TEST (serialPortsClaimTheirPins)
     CHECK (arduino::pin (18).mode == OUTPUT);
     CHECK (arduino::pin (18).output == HIGH);
     CHECK (arduino::pin (19).mode == INPUT);
+    CHECK (!arduino::pin (19).raised);   // a 3.3 V radio's TX: no pull-up to 5 V
     CHECK (adk::claimSerial (Serial2));
     CHECK (adk::isClaimed (16) && adk::isClaimed (17));
     CHECK (adk::claimSerial (Serial3));
@@ -203,6 +204,11 @@ TEST (loraLinkChoosesALawfulChannelAndPower)
     CHECK (arduino::pin (Mode).mode == OUTPUT);
     CHECK (arduino::pin (Mode).output == LOW);
     CHECK (arduino::pin (Aux).mode == INPUT);
+
+    // The module's pins work at 3.3 V: the Mega never drives them high,
+    // nor pulls them up to 5 V.
+    CHECK (!arduino::pin (Mode).raised);
+    CHECK (!arduino::pin (Aux).raised);
 }
 
 TEST (loraLinkAsksForItsSettingsWhenTheyAreNotRepeated)

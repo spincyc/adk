@@ -97,6 +97,34 @@ TEST (speakerPlaysARecordedVector)
     CHECK (!speaker.isPlaying ());
 }
 
+TEST (aMelodyChangedInPlaceIsTheSameMelody)
+{
+    adk::Vector<adk::Note, 8> tune;
+    adk::Speaker              speaker {30};
+
+    tune.push_back ({adk::note::e4, 200});
+    tune.push_back ({adk::note::g4, 200});
+
+    adk::setup ();
+    speaker.play (tune);
+    adk::update (0);
+    CHECK (arduino::pin (30).tone == 330);
+
+    // The same notes in the same place: play () changes nothing, and the
+    // changed note sounds when the melody gets to it.
+    tune[1] = {adk::note::a4, 200};
+    speaker.play (tune);
+    adk::update (100);
+    CHECK (arduino::pin (30).tone == 330);
+    adk::update (200);
+    CHECK (arduino::pin (30).tone == 440);
+
+    // A note more is another melody, which starts afresh.
+    tune.push_back ({adk::note::c5, 200});
+    speaker.play (tune);
+    CHECK (arduino::pin (30).tone == 330);
+}
+
 TEST (speakerIsSilencedByStopAll)
 {
     adk::Speaker speaker {30};

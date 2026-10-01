@@ -86,7 +86,18 @@ TEST (fmRadioWakesOnTheTwoWireBusWithoutEverDriving5V)
     {
         CHECK (arduino::pin (pin).mode == INPUT);
         CHECK (arduino::pin (pin).output == LOW);
+        CHECK (!arduino::pin (pin).raised);
     }
+}
+
+TEST (theFakeRadioNoticesAPullUpTo5V)
+{
+    fake::Si4703 chip {Sdio, Sclk, Reset};
+
+    // A pull-up puts 5 V on the line, and leaves the latch high, so making
+    // the pin an output to pull it low would drive it high instead.
+    pinMode (Sdio, INPUT_PULLUP);
+    CHECK (chip.drivenHigh);
 }
 
 TEST (fmRadioWithoutAChipIsNotOk)

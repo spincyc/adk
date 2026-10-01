@@ -54,14 +54,15 @@ namespace fake {
         registers[0x01] = 0x1253;
         registers[0x07] = 0x0100;
 
-        arduino::onPinMode = [this] (uint8_t pin, uint8_t mode)
+        arduino::onPinMode = [this] (uint8_t pin, uint8_t)
         {
             if (!mine (pin))
             {
                 return;
             }
 
-            if (mode == OUTPUT && arduino::pin (pin).output == HIGH)
+            // A pull-up, or an output left high by one, puts 5 V on it.
+            if (arduino::pin (pin).output == HIGH)
             {
                 drivenHigh = true;
             }

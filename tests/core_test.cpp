@@ -225,6 +225,58 @@ TEST (waitKeepsObjectsUpdating)
     CHECK (led.isOn ());
 }
 
+namespace {
+
+    // A part that waits from inside its own update, as a careless one
+    // might, and one that counts its updates.
+    struct Waiter : adk::Object
+    {
+        void update (adk::Millis) override
+        {
+            ++updates;
+
+            if (waiting)
+            {
+                adk::wait (50);
+            }
+        }
+
+        int  updates = 0;
+        bool waiting = true;
+    };
+
+    struct Counter : adk::Object
+    {
+        void update (adk::Millis) override
+        {
+            ++updates;
+        }
+
+        int updates = 0;
+    };
+}
+
+TEST (waitFromInsideAnUpdateOnlyDelays)
+{
+    Waiter  waiter;
+    Counter counter;
+
+    adk::setup ();
+    adk::update ();
+
+    // The time passed, but nothing was updated again from inside the
+    // update, which would have run the waiter's update inside itself.
+    CHECK (arduino::now () == 50000);
+    CHECK (waiter.updates == 1);
+    CHECK (counter.updates == 1);
+
+    // Outside an update, wait () updates everything again.
+    waiter.waiting = false;
+    adk::wait (20);
+    CHECK (waiter.updates > 1);
+    CHECK (counter.updates == waiter.updates);
+}
+
 TEST (pwmDutyBeyondEitherEndStopsThere)
 {
     adk::PwmOutput dimmer {5};
@@ -281,6 +333,26 @@ TEST (digitalOutputSetsItsLevelBeforeDriving)
 
     CHECK (order == "early");
     CHECK (arduino::pin (8).output == LOW);
+}
+
+TEST (anInputsPullUpIsTheLatchAnOutputDrives)
+{
+    // On the chip, INPUT_PULLUP sets the latch that a pin made an OUTPUT
+    // then drives, so it goes high, not low. INPUT clears the latch.
+    pinMode (40, INPUT_PULLUP);
+    pinMode (40, OUTPUT);
+    CHECK (arduino::pin (40).output == HIGH);
+    CHECK (arduino::pin (40).raised);
+
+    pinMode (41, INPUT);
+    pinMode (41, OUTPUT);
+    CHECK (arduino::pin (41).output == LOW);
+    CHECK (!arduino::pin (41).raised);
+
+    // A high write to an input turns its pull-up on.
+    pinMode (41, INPUT);
+    digitalWrite (41, HIGH);
+    CHECK (arduino::pin (41).raised);
 }
 
 TEST (digitalOutputWritesAndToggles)

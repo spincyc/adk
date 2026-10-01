@@ -53,6 +53,12 @@ namespace {
     {
         nowUs += callCost;
     }
+
+    void latch (uint8_t pin, uint8_t level)
+    {
+        pins[pin].output  = level;
+        pins[pin].raised |= level == HIGH;
+    }
 }
 
 namespace arduino {
@@ -217,6 +223,11 @@ void pinMode (uint8_t pin, uint8_t mode)
 {
     pins[pin].mode = mode;
 
+    if (mode != OUTPUT)
+    {
+        latch (pin, mode == INPUT_PULLUP ? HIGH : LOW);
+    }
+
     if (arduino::onPinMode)
     {
         arduino::onPinMode (pin, mode);
@@ -226,7 +237,7 @@ void pinMode (uint8_t pin, uint8_t mode)
 void digitalWrite (uint8_t pin, uint8_t value)
 {
     charge ();
-    pins[pin].output = value;
+    latch (pin, value);
 
     if (arduino::onDigitalWrite)
     {
