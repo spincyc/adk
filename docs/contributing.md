@@ -55,9 +55,19 @@ at least two pages, titled as its page is and set in the site's typeface.
 `make pdf` then fails if a PDF is over `PDF_MAX_MB` (8 MB) or the whole
 site over `SITE_MAX_MB` (500 MB), well inside GitHub Pages' 1 GB. The
 drawings print as plain lines: Chromium would print their pencil texture
-as a picture, several megabytes a page. Where poppler's `pdftotext` is
-installed, `make pdf` also lists lessons whose last page is nearly empty
-(`tests/pdf_last_pages.py`), a hint for someone to look at, not a failure.
+as a picture, several megabytes a page. Where poppler is installed,
+`make pdf` also lists pages less than half full (`tests/pdf_pages.py`),
+usually where a figure or box too tall for the rest of a page went on to
+the next, and a lesson's last page of text when it is nearly empty. It is
+a hint for someone to look at, not a failure.
+
+A project lesson's answers to *Check yourself* start a page of their own,
+the PDF's last, so a teacher can print the pages before it as a worksheet.
+
+The PDFs are US Letter only. They print on A4 at 97 %, with a little more
+space at the foot of each page, and an A4 set would double their share of
+the site: about 150 MB more, against the 500 MB budget, for a scaling
+every print dialog already does.
 
 ## Adding a part
 

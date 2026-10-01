@@ -2181,11 +2181,16 @@ body.building-along {
         max-height: 2in;
     }
 
+    /* The details sit in rows, each a line of the box, and a row may start
+       a page on its own: otherwise the rule of two lines either side of a
+       break would push them all after a page holding just the drawing. */
     .print-details {
         display: block;
         text-align: center;
         margin: 0.6rem 0;
         break-inside: auto;
+        orphans: 1;
+        widows: 1;
     }
 
     .md-typeset .print-details .bench-figure {
@@ -2211,6 +2216,20 @@ body.building-along {
 
     .md-typeset .meter figcaption {
         margin-bottom: 0.2rem;
+    }
+
+    /* A tall bench or reading is scaled down to leave room on its page, so
+       the page before it isn't left half empty and it never runs off its
+       own. The enlarged details after the bench print its holes legibly. */
+    .md-typeset :is(.bench-bench, .meter) svg.pencil-drawing {
+        width: auto;
+        max-width: 100%;
+        max-height: 4.5in;
+        margin-inline: auto;
+    }
+
+    .md-typeset .meter svg.pencil-drawing {
+        max-height: 6in;
     }
 
     /* A tall close-up is scaled down to fit beside the opening text, rather
@@ -2254,6 +2273,17 @@ body.building-along {
     .md-typeset details::details-content {
         content-visibility: visible;
         display: block;
+    }
+
+    /* The answers to Check yourself start the lesson's last page, so the
+       pages before it make a worksheet without them, and the questions
+       stay together. */
+    .lesson-body > #check-yourself ~ details:last-child {
+        break-before: page;
+    }
+
+    .lesson-body > #check-yourself + ol {
+        break-inside: avoid;
     }
 
     .lesson-unbuilt-url {
