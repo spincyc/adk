@@ -62,8 +62,12 @@ Mega. Keep the metal probe tips from touching each other.
 
 <!-- measure -->
 
-Supply = ____ V; resistor = ____ V; LED = ____ V. Add the last two:
-____ V. How close is that sum to your supply reading? The LED may have
+| Supply | Resistor | LED | Resistor + LED |
+|---:|---:|---:|---:|
+| ____ V | ____ V | ____ V | ____ V |
+
+Add the resistor and LED readings. How close is that sum to your supply
+reading? The LED may have
 about 2 V across it and the resistor the rest, but use your own readings.
 A voltage is always a difference **between two points**.
 

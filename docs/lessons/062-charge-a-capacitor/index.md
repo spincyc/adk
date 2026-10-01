@@ -94,7 +94,7 @@ guesses. Leave the meter across the capacitor throughout.
    the Mega's own unpowered 5 V circuits, so the reading may drop a little
    in those few seconds.
 2. Watch the meter for 30 seconds and record the reading at the start and
-   the end: ____ V, ____ V. With nowhere for its charge to go, the
+   the end: \_\_\_\_ V, \_\_\_\_ V. With nowhere for its charge to go, the
    capacitor should hold its voltage: it may creep down a little, through
    the meter itself and a tiny leak inside the capacitor.
 3. Now move that same end from j7 into the **top − rail by column 6**,

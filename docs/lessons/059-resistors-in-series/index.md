@@ -90,8 +90,8 @@ voltage readings. Expect about **1.7 V** across the 1 kΩ resistor and
 ## Check your explanation
 
 Complete this sentence: “The 2 kΩ resistor gets about twice the voltage
-of the 1 kΩ resistor because both carry the same ________, and the 2 kΩ
-resistor has twice the ________.” Then compare your prediction and your
+of the 1 kΩ resistor because both carry the same \_\_\_\_\_\_\_\_, and the 2 kΩ
+resistor has twice the \_\_\_\_\_\_\_\_.” Then compare your prediction and your
 readings. The missing words are **current** and **resistance**.
 
 This is the fixed-resistor version of the divider inside the knob in

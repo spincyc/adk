@@ -78,11 +78,11 @@ in a free hole of the bottom − rail.
    Set the scope to show **10 ms** across the screen, then turn the
    generator on. Count complete cycles on channel 1. Briefly widen the
    view until two successive peaks are visible; measure the time between
-   them. Record: cycles in 10 ms = ___; period = ___ ms.
+   them. Record: cycles in 10 ms = \_\_\_; period = \_\_\_ ms.
 3. Return the scope to a **10 ms** window. Change only the generator
    frequency to **1 kHz**. Count again on channel 1 and measure between
    successive peaks.
-   Record: cycles in 10 ms = ___; period = ___ ms.
+   Record: cycles in 10 ms = \_\_\_; period = \_\_\_ ms.
 
 Your counts should be near **1 and 10**, and the periods near **10 ms
 and 1 ms**. Use channel 1 for counting if channel 2 is hard to see.

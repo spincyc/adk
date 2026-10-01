@@ -86,7 +86,7 @@ pins:
 ## Check your result
 
 Complete this sentence: “With the 1N4007's band toward the resistor and
-LED, the LED is ______; with the band in the + rail, the LED is ______.” The
+LED, the LED is \_\_\_\_\_\_; with the band in the + rail, the LED is \_\_\_\_\_\_.” The
 expected words are **lit** and **dark**. The 1N4007 is also used as a
 protective diode beside [Lesson 3's buzzer](../003-reaction-duel/index.md).
 

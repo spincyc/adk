@@ -107,8 +107,8 @@ circuit:
 
 ## Keep a useful record
 
-For each trial, write: **I changed ___; I held ___ fixed; I predicted
-___; I measured or saw ___; I now think ___ because ___.** Record an
+For each trial, write: **I changed \_\_\_; I held \_\_\_ fixed; I predicted
+\_\_\_; I measured or saw \_\_\_; I now think \_\_\_ because \_\_\_.** Record an
 approximate number when a number matters. A dark LED or missing trace is
 an observation too; check the build before treating it as a result.
 
