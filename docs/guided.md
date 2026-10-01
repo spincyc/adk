@@ -22,22 +22,24 @@ each module.
    Test the diode's direction and switch a separate path with the S8050:
    the two parts Lesson 3 put beside its buzzer. Only E10's measured
    comparison needs a meter; without one, still swap its base resistor
-   and watch the LED.
-   Clear Lesson 3's parts first, keeping the Mega's two power wires; E09's
-   steps build the rest.
+   and watch the LED. Clear Lesson 3's parts first, keeping the Mega's
+   two power wires; E09's steps build the rest.
 4. **[Lessons 4–6: color and sound](lessons/004-mood-lamp/index.md).**
 5. **[E04–E05: series and parallel](lessons/059-resistors-in-series/index.md).**
    Predict what two parts share and what happens when a second branch
-   joins.
+   joins; E05 adds a 10 Ω resistor. Clear Lesson 6's parts first, keeping
+   the Mega's two power wires; E04's steps build the rest.
 6. **[Lessons 7–9: the analog world](lessons/007-dimmer/index.md).**
 7. **[E06: Tap a divider](lessons/061-tap-a-divider/index.md).** Measure
    the knob's middle voltage, then try
    [Load a divider](electricity/challenges.md#loaded-divider) to see it
-   change when another part draws from it.
+   change when another part draws from it. Clear Lesson 9's parts first,
+   keeping the Mega's two power wires; E06's steps build the rest.
 8. **[Lessons 10–12: digits and time](lessons/010-dice/index.md).**
 9. **[E07–E08: stored charge](lessons/062-charge-a-capacitor/index.md).**
    Time a capacitor's voltage change, then compare that physical delay
-   with the timer in Lesson 12.
+   with the timer in Lesson 12. Clear Lesson 12's parts first, keeping
+   the Mega's two power wires; E07's steps build the rest.
 10. **[Lessons 13–15: words and weather](lessons/013-hello-lcd/index.md).**
 11. **[E12: Give a coil a safe path](lessons/067-coil-diode/index.md).** It
     has complete steps from an empty board; you may skip scope-based E11.
