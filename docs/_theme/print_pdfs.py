@@ -52,9 +52,9 @@ def pdf_string (raw: bytes) -> str:
         data = bytes.fromhex (raw[1:-1].decode ("ascii"))
     else:
         escapes = {b"n": b"\n", b"r": b"\r", b"t": b"\t", b"b": b"\b", b"f": b"\f"}
-        data = re.sub (rb"\\([0-7]{1,3}|.)",
-                       lambda m: bytes ([int (m[1], 8)]) if m[1][:1].isdigit ()
-                       else escapes.get (m[1], m[1]),
+        data = re.sub (rb"\\(?:([0-7]{1,3})|(.))",
+                       lambda m: bytes ([int (m[1], 8) & 0xFF]) if m[1]
+                       else escapes.get (m[2], m[2]),
                        raw[1:-1], flags=re.S)
     if data.startswith (b"\xfe\xff"):
         return data[2:].decode ("utf-16-be")
