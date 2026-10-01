@@ -356,10 +356,13 @@ and LED load pattern, generator at 1 kHz square wave, 1 kΩ base resistor,
 10 kΩ base pull-down, 100 µF and 100 nF capacitors, scope. **Predict, do,
 see:** Copy E10's LED and transistor path onto locally fed rails, omitting
 the button. Drive the base from generator output through 1 kΩ; keep the
-10 kΩ pull-down and join generator ground to Mega GND. Probe the local + rail with the scope
-ground at GND, AC-coupled at 50 mV/div (or with a vertical offset). The rail
-dips by roughly 0.1 V when the LED lights. Add 100 µF and 100 nF across
-the local rails, with 100 µF + at local + and − at GND; the ripple shrinks.
+10 kΩ pull-down and join generator ground to Mega GND. Probe the local +
+rail with the scope ground at GND, AC-coupled at 50 mV/div (or with a
+vertical offset). The rail steps down by about 0.13 V for as long as the
+LED is lit. Add 100 µF and 100 nF across the local rails, with 100 µF +
+at local + and − at GND; the step shrinks to a ripple of about 30 mV.
+Change only the generator to 100 Hz and the ripple grows to about
+130 mV: the capacitors smooth short changes, not long ones.
 **ADK connection:** Helps explain why
 [Lesson 15's sensors and display](../lessons/015-weather-station/index.md)
 share power and need a sound ground path.

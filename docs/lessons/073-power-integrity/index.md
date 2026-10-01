@@ -1,6 +1,6 @@
 ---
 lesson: 73
-promise: See how nearby capacitors reduce a brief dip in a local supply.
+promise: See how nearby capacitors smooth the steps a switching load makes in a local supply.
 time: 25 minutes
 level: 3
 parts:
@@ -18,7 +18,7 @@ parts:
   - 100 nF ceramic capacitor
   - 7 jumper wires
 ideas:
-  - A changing load briefly lowers its local supply voltage; nearby capacitors reduce the dip
+  - A switching load steps its local supply voltage down; nearby capacitors smooth short steps
 ---
 
 ## What you'll build
@@ -33,9 +33,10 @@ The Mega supplies power; its signal pins and sketch do not make the wave.
 ## Predict
 
 The LED takes current only while the transistor is on. Predict what
-happens to the voltage **after the 10 Ω resistor** when the LED lights.
-Then predict how two capacitors from that local supply to GND might change
-the dip. Write down both predictions before measuring.
+happens to the voltage **after the 10 Ω resistor** when the LED lights,
+and for how long. Then predict how two capacitors from that local supply
+to GND might change that step. Write down both predictions before
+measuring.
 
 ## Build it
 
@@ -149,7 +150,7 @@ names each symbol):
 
 <!-- connections -->
 
-## Compare the ripples
+## Try it
 
 The [scope and generator primer](../../electricity/skills.md#scope-and-generator)
 explains AC coupling and the vertical offset used here; do its output
@@ -173,28 +174,68 @@ bottom − rail.
    transistor, base resistors, generator leads, and other jumpers in place.
    Plug in USB, check the generator is set to a **0–4 V square wave at
    1 kHz**, then enable its output. Record the local trace's high-to-low
-   change while the LED switches. The dip may be around a tenth of a volt;
-   USB voltage and parts vary.
+   change while the LED switches. Expect a square step of roughly
+   **0.13 V**, the local supply sitting low for the whole time the LED is
+   lit; USB voltage and parts vary.
 3. Switch the generator off and **unplug USB**. Put both capacitors back
    exactly as drawn: 100 µF **+ to the local supply**, striped **− to the
    bottom − rail**; 100 nF across those same two nets. Check the probe
    ground again. Plug in USB, enable the same generator wave, and record
-   the trace with the same scope settings.
-4. Compare the two recorded changes with your prediction. The ripple
-   should be smaller with the capacitors. Turn the generator off and
-   unplug USB when finished.
+   the trace with the same scope settings. Expect a much smaller ripple,
+   about **30 mV** from top to bottom, its edges rounded into slopes.
 
 At 1 kHz the LED may look steadily lit; the scope shows what changes
 each cycle.
 
-When the LED lights, its current flows through the 10 Ω resistor, which
-uses a little of the USB voltage. Around 10 mA through 10 Ω gives a drop
-near **0.1 V**. The capacitors can briefly supply some of the changing
-current from the local side of that resistor. The 100 µF part holds more
-charge; the 100 nF ceramic part sits in parallel to help with fast edges.
-The exact trace depends on the USB supply, leads, and scope settings.
+| Generator | Capacitors | Your ripple, top to bottom |
+|---|---|---:|
+| 1 kHz | Out | ____ mV |
+| 1 kHz | In | ____ mV |
+| 100 Hz | In | ____ mV |
 
-## If the trace surprises you
+## Why it happens
+
+When the LED lights, about 13 mA flows through the 10 Ω resistor, which
+uses a little of the USB voltage: 13 mA × 10 Ω is about **0.13 V**. With
+nothing else on the local supply, that drop lasts exactly as long as the
+LED is lit, so the local voltage steps down and back up with the
+generator's square wave.
+
+The capacitors hold charge on the local side of the resistor. When the
+LED lights, they supply some of its current at once, and their voltage
+sags only gradually as they give up charge; while the LED is off, the
+10 Ω resistor recharges them. How fast that happens is set by
+**10 Ω × 100 µF = 1 ms**. At 1 kHz the LED is lit for only half a
+millisecond at a time, too short for the capacitors to run down far, so
+the step shrinks to a small ripple. The 100 µF part does nearly all of
+this work here: 10 Ω × 100 nF is only a millionth of a second. The
+100 nF ceramic part is there for much faster changes, such as a logic
+chip's switching edges, which this scope view is too slow to show.
+Lifting out only the 100 nF should make little visible difference.
+
+## Change one thing
+
+Predict first: with both capacitors in place, will the ripple be smaller
+or larger if the LED stays lit for ten times as long each time?
+
+1. Leave the capacitors and probe in place. Change only the generator's
+   frequency to **100 Hz**, keeping its 0–4 V square wave, and set the
+   scope to about **10 ms across the screen**.
+2. Record the ripple from top to bottom.
+
+Expect about **130 mV**, nearly the whole step again, with slopes that
+level off. At 100 Hz the LED is lit for 5 ms at a time, five times as long
+as 10 Ω × 100 µF, so the capacitors have time to give up most of their
+charge. A nearby capacitor smooths short changes in a supply, not long
+ones. Turn the generator off and unplug USB when finished.
+
+## Check your result
+
+Compare your three ripples with your predictions. Did the capacitors
+shrink the 1 kHz step? Did the ripple grow again at 100 Hz? In one
+sentence, explain why the same capacitors smooth the faster load better.
+
+## If it doesn't work
 
 - **No LED switching:** With power off, check the generator's OUT wire,
   its common GND wire, the 1 kΩ base resistor, the 10 kΩ pull-down, and

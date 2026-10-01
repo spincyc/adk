@@ -33,5 +33,5 @@ bench.wire ("d4", "b9")
 bench.capacitor ("100 nF", "c9", "B-9")
 
 bench.probe ("CH1 · local supply, after the 10 Ω", tip="h6", ground="GND", channel=1,
-             expect="near 5 V, dipping about 0.1 V as the LED lights",
+             expect="near 5 V, stepping down about 0.13 V while the LED is lit",
              when="generator on; AC coupling at 50 mV/div")
