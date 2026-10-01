@@ -226,6 +226,14 @@ input. That catches a wire in the wrong hole, a pin left out, or an LED
 swapped with a button, but not two pins wired to parts of one kind swapped
 with each other.
 
+The host's `int` is 32 bits, but the Mega's is 16, its `long` 32 and its
+`double` no wider than `float`. `make avr-test` builds a few pure-logic
+tests (`tests/avr/widths`) as a lesson is built, and runs them in the
+simulator that comes with avr-gdb: printing at the ends of each type's
+range, glides over the longest times, the clock's date read from flash,
+and a `Bridge` carrying a Mega's whole `long`. The simulator has no timers
+or pins, so only tests that give `update ()` its time can run there.
+
 `make sanitize` runs the host tests under AddressSanitizer and UBSan, then
 runs every example on the host too (`tests/probe/smoke.cpp`): its
 `setup ()`, then 400 passes of its `loop ()`, while time moves on and its

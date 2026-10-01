@@ -61,6 +61,7 @@ STYLED           := $(wildcard src/*.h src/adk/*.h src/adk/*.cpp)  \
                     $(wildcard tests/*.h tests/*.cpp)              \
                     $(wildcard tests/arduino/* tests/probe/*.cpp)  \
                     $(wildcard tests/examples/*.h)                 \
+                    $(wildcard tests/avr/*/*.ino)                  \
                     $(EXAMPLE_TESTS)                               \
                     $(SKETCHES)                                    \
                     Makefile
@@ -128,6 +129,21 @@ SANITIZE_PROBE_FLAGS := $(PROBE_FLAGS)                  \
                         -fsanitize=address,undefined    \
                         -fno-sanitize-recover=all       \
                         -fno-omit-frame-pointer
+
+# The AVR's own widths ---------------------------------------------------------
+#
+# The host's int is 32 bits, but the Mega's is 16, its long 32 and its double
+# no wider than float. tests/avr/widths runs a few pure-logic tests on the
+# AVR itself, built as an example is, in the simulator that comes with
+# avr-gdb. The sketch stops at a break instruction, or after 10^8 cycles if
+# it never gets there, and avr-gdb reads its report back from its RAM.
+
+AVR_TEST_DIR     := $(BUILD_DIR)/avr-test
+AVR_SIMULATOR    := $(TOOLCHAIN)/bin/avr-gdb -q -batch -nx                \
+                    -ex 'target sim --watch-cycles-breakpoint 100000000'  \
+                    -ex load                                              \
+                    -ex run                                               \
+                    -ex 'printf "%s\n", adkReport'
 
 # Each lesson's own targets ----------------------------------------------------
 #
@@ -239,6 +255,7 @@ CLI_HINT         := and arduino-cli, as its installation guide explains:  \
         deps-other   \
         test         \
         sanitize     \
+        avr-test     \
         toolchain    \
         examples     \
         lessons      \
@@ -260,6 +277,7 @@ all: check
 check: style     \
        test      \
        sanitize  \
+       avr-test  \
        examples  \
        pins      \
        size      \
@@ -378,6 +396,30 @@ $(ARDUINO_DIR)/%.log: examples/$$*/$$(notdir $$*).ino  \
 	    || (cat $@.tmp; rm -rf $@.tmp $(ARDUINO_DIR)/$*; exit 1)
 	@if grep -A3 -E $(WARNINGS) $@.tmp; then rm -rf $@.tmp $(ARDUINO_DIR)/$*; exit 1; fi
 	@mv $@.tmp $@
+
+## avr-test        run a few tests on a simulated Mega, where int is 16 bits
+avr-test: $(AVR_TEST_DIR)/widths.ok
+
+$(AVR_TEST_DIR)/widths.ok: tests/avr/widths/widths.ino  \
+                           $(LIBRARY_FILES)             \
+                           $(TOOLCHAIN)/bin/avr-g++
+	@mkdir -p $(AVR_TEST_DIR) $(ARDUINO_CACHE)
+	@echo "  AVR  tests/avr/widths"
+	@ARDUINO_BUILD_CACHE_PATH=$(abspath $(ARDUINO_CACHE))       \
+	    arduino-cli compile                                     \
+	        --fqbn $(FQBN)                                      \
+	        --library .                                         \
+	        --warnings all                                      \
+	        $(AVR_PROPERTIES)                                   \
+	        --build-path $(AVR_TEST_DIR)/widths                 \
+	        tests/avr/widths > $(AVR_TEST_DIR)/widths.log 2>&1  \
+	    || (cat $(AVR_TEST_DIR)/widths.log; exit 1)
+	@echo "  SIM  tests/avr/widths"
+	@$(AVR_SIMULATOR) $(AVR_TEST_DIR)/widths/widths.ino.elf > $(AVR_TEST_DIR)/widths.out 2>&1  \
+	    || true
+	@grep '^avr: ' $(AVR_TEST_DIR)/widths.out || cat $(AVR_TEST_DIR)/widths.out
+	@grep -q '^avr: [0-9]* checks, 0 failures$$' $(AVR_TEST_DIR)/widths.out
+	@touch $@
 
 ## NNN-name        compile one lesson's sketches, as in make 001-blink
 ## upload-NNN-name compile a lesson's sketch and upload it to the Mega on PORT
