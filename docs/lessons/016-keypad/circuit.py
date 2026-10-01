@@ -4,7 +4,8 @@
 # the keypad at its home.
 bench = Bench ("A 4×4 keypad on pins 22 to 29, with the screen from Lesson 13", columns=(1, 30))
 
-bench.screen (text=("Total 42", "30"), risers=(4.8, 0.05))
+# The screen as the page's first sum leaves it: 12 added, 30 typed, A next.
+bench.screen (text=("Total 12", "30"), risers=(4.8, 0.05))
 
 bench.home_keypad ()
 
