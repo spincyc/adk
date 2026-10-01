@@ -89,10 +89,13 @@ guesses. Leave the meter across the capacitor throughout.
 
 1. **Unplug USB**, then straight away lift **only the rail end of the red
    jumper** out of the top + rail and push it into **j7**, a free hole
-   whose strip holds nothing else. Its other end stays in j6. Until you
-   lift it, the capacitor can push charge back through the resistor into
-   the Mega's own unpowered 5 V circuits, so the reading may drop a little
-   in those few seconds.
+   whose strip holds nothing else. Its other end stays in j6. Be quick:
+   until you lift it, the capacitor pushes charge back through the
+   resistor into the Mega's own unpowered 5 V circuits, which its green
+   ON light holds near 2 V. About 0.3 mA flows, enough to lower the
+   reading by about 0.3 V every second, so a pause of two or three seconds
+   costs 0.6–1 V. That is why the next step records the reading only once
+   the end is in j7.
 2. Watch the meter for 30 seconds and record the reading at the start and
    the end: \_\_\_\_ V, \_\_\_\_ V. With nowhere for its charge to go, the
    capacitor should hold its voltage: it may creep down a little, through
