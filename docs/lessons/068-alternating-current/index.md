@@ -53,6 +53,44 @@ Trace the complete path: generator OUT → capacitor → 1 kΩ resistor →
 bottom − rail → generator GND. The resistor and capacitor each cross the
 breadboard's middle gap.
 
+In schematic form (the
+[schematic key](../../electricity/schematics.md) names each symbol):
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 230" width="600"
+     role="img" aria-labelledby="ac-path-title ac-path-desc">
+  <title id="ac-path-title">Capacitor and resistor in series schematic</title>
+  <desc id="ac-path-desc">The generator's output, where channel 1 probes i6, passes through the 1 microfarad film capacitor to the top of the 1 kilohm resistor, where channel 2 probes i10. The resistor joins that node to ground, and the generator's ground joins the same ground.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="150" cy="120" r="24"/>
+    <path d="M137 120 q6.5 -12 13 0 q6.5 12 13 0"/>
+    <path d="M150 96 L150 60 L240 60"/>
+    <path d="M240 60 L320.0 60"/>
+    <path d="M320.0 40 V80"/>
+    <path d="M332.0 40 V80"/>
+    <path d="M332.0 60 L420 60"/>
+    <path d="M420 60 L500 60"/>
+    <path d="M500 60 L500 85.0"/>
+    <path d="M500 155.0 L500 180"/>
+    <rect x="487" y="85.0" width="26" height="70"/>
+    <path d="M150 144 L150 180 L500 180"/>
+    <path d="M330 180 V188 M310 188 H350 M317 196 H343 M324 204 H336"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="240" cy="60" r="5"/>
+    <circle cx="420" cy="60" r="5"/>
+    <circle cx="330" cy="180" r="5"/>
+  </g>
+  <g fill="currentColor" font-size="17" font-family="system-ui, sans-serif">
+    <text x="20" y="112">generator</text>
+    <text x="20" y="132">0–4 V sine</text>
+    <text x="240" y="30" text-anchor="middle">ch 1 · i6</text>
+    <text x="326" y="106" text-anchor="middle">1 µF</text>
+    <text x="420" y="30" text-anchor="middle">ch 2 · i10</text>
+    <text x="530" y="126">1 kΩ</text>
+    <text x="350" y="214">GND</text>
+  </g>
+</svg>
+
 <!-- connections -->
 
 ## Try it

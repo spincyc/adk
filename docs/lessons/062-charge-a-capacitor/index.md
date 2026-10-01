@@ -59,7 +59,40 @@ capacitor.
 
 The breadboard joins a–e in one column and f–j in that column. The gap
 separates those strips, so current reaches the capacitor only by crossing
-the resistor. These are the finished connections:
+the resistor. In schematic form (the
+[schematic key](../../electricity/schematics.md) names each symbol):
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 270" width="600"
+     role="img" aria-labelledby="charge-cap-title charge-cap-desc">
+  <title id="charge-cap-title">Capacitor charging through a resistor schematic</title>
+  <desc id="charge-cap-desc">Five volts reaches the red wire's rail end, then passes through a 10 kilohm resistor to the capacitor's + leg, where the meter's red probe touches d8. The 1000 microfarad electrolytic capacitor joins that node to ground. To hold the charge the wire's rail end moves to j7, and to discharge it moves to the top − rail, which is ground.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="70" cy="60" r="5"/>
+    <path d="M75 60 L170.0 60"/>
+    <path d="M240.0 60 L360 60"/>
+    <rect x="170.0" y="47" width="70" height="26"/>
+    <path d="M360 60 L360 104.0"/>
+    <path d="M340 104.0 H380"/>
+    <path d="M340 122.0 Q360 112.0 380 122.0"/>
+    <path d="M360 117.0 L360 160"/>
+    <path d="M360 160 V168 M340 168 H380 M347 176 H373 M354 184 H366"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="360" cy="60" r="5"/>
+  </g>
+  <g fill="currentColor" font-size="17" font-family="system-ui, sans-serif">
+    <text x="20" y="66">5 V</text>
+    <text x="70" y="96" text-anchor="middle" font-size="15">rail end</text>
+    <text x="205" y="36" text-anchor="middle">10 kΩ</text>
+    <text x="360" y="36" text-anchor="middle">meter · d8</text>
+    <text x="326" y="102.0" font-size="16">+</text>
+    <text x="392" y="118">1000 µF</text>
+    <text x="40" y="226" font-size="15">To hold the charge, the red wire's rail end moves to j7, where it</text>
+    <text x="40" y="246" font-size="15">meets nothing; to let it go, into the top − rail, which is GND.</text>
+  </g>
+</svg>
+
+These are the finished connections:
 
 <!-- connections -->
 

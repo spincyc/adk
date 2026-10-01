@@ -24,7 +24,7 @@ joined only if the drawing or connection list says so.
 
 ## Symbols in the drawings
 
-E12, E15, E16, E17, E18, E19, E20 and E21 each draw their circuit with
+E07, E09, E10, E11, E12, E13 and E15–E21 each draw their circuit with
 these symbols, labeled with the values, chip pins and holes their pages
 use.
 

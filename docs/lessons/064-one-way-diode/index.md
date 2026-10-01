@@ -52,6 +52,42 @@ single path as the diode and the LED before powering the board.
 
 <!-- steps -->
 
+In schematic form (the
+[schematic key](../../electricity/schematics.md) names each symbol):
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 220" width="560"
+     role="img" aria-labelledby="one-way-title one-way-desc">
+  <title id="one-way-title">Diode, resistor and LED in one path schematic</title>
+  <desc id="one-way-desc">Five volts passes through the 1N4007 diode, from its unbanded end to its banded end in j6, then through a 1 kilohm resistor and the red LED to ground.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M60 60 L132.0 60"/>
+    <path d="M132.0 75.0 L132.0 45.0 L158.0 60 Z"/>
+    <path d="M158.0 75.0 L158.0 45.0"/>
+    <path d="M158.0 60 L240.0 60"/>
+    <path d="M310.0 60 L410 60"/>
+    <rect x="240.0" y="47" width="70" height="26"/>
+    <path d="M410 60 L410 97.0"/>
+    <path d="M395.0 97.0 L425.0 97.0 L410.0 123.0 Z"/>
+    <path d="M395.0 123.0 L425.0 123.0"/>
+    <path d="M390.0 104.0 L374.0 112.0"/>
+    <path d="M374.0 112.0 L377.8 106.1"/>
+    <path d="M374.0 112.0 L381.0 112.5"/>
+    <path d="M390.0 116.0 L374.0 124.0"/>
+    <path d="M374.0 124.0 L377.8 118.1"/>
+    <path d="M374.0 124.0 L381.0 124.5"/>
+    <path d="M410 123.0 L410 160"/>
+    <path d="M410 160 V168 M390 168 H430 M397 176 H423 M404 184 H416"/>
+  </g>
+  <g fill="currentColor" font-size="17" font-family="system-ui, sans-serif">
+    <text x="14" y="66">5 V</text>
+    <text x="145" y="32" text-anchor="middle">1N4007</text>
+    <text x="158" y="100" text-anchor="middle" font-size="15">band · j6</text>
+    <text x="275" y="36" text-anchor="middle">1 kΩ</text>
+    <text x="434" y="116">red LED</text>
+    <text x="438" y="182">GND</text>
+  </g>
+</svg>
+
 The finished forward-facing circuit makes these connections:
 
 <!-- connections -->

@@ -65,6 +65,65 @@ joins those two sides. The 1 kΩ resistor limits current into the base; the
 10 kΩ resistor holds the base at GND after you release it. The 220 Ω
 resistor stays in the other path, with the LED.
 
+The same two paths in schematic form (the
+[schematic key](../../electricity/schematics.md) names each symbol):
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 460" width="560"
+     role="img" aria-labelledby="transistor-switch-title transistor-switch-desc">
+  <title id="transistor-switch-title">Transistor switching an LED schematic</title>
+  <desc id="transistor-switch-desc">Five volts feeds two paths. A 220 ohm resistor and the red LED lead to the collector of the S8050 transistor, whose emitter goes to ground. The push button and a 1 kilohm resistor feed the base, and a 10 kilohm resistor joins the base to ground.</desc>
+  <g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M70 50 H370"/>
+    <path d="M70 50 L70 330"/>
+    <path d="M70 330 L84 330"/>
+    <path d="M136 330 L150 330"/>
+    <circle cx="88" cy="330" r="4"/>
+    <circle cx="132" cy="330" r="4"/>
+    <path d="M80 316 H140 M110.0 316 V302 M102.0 302 H118.0"/>
+    <path d="M150 330 L175.0 330"/>
+    <path d="M245.0 330 L270 330"/>
+    <rect x="175.0" y="317" width="70" height="26"/>
+    <path d="M270 330 L270 340.0"/>
+    <path d="M270 410.0 L270 420"/>
+    <rect x="257" y="340.0" width="26" height="70"/>
+    <path d="M270 420 V428 M250 428 H290 M257 436 H283 M264 444 H276"/>
+    <path d="M270 330 L288 330"/>
+    <path d="M288 310 V350"/>
+    <path d="M288 321 L370 300 L370 280"/>
+    <path d="M288 339 L370 360 L370 420"/>
+    <path d="M333.1 350.6 L323.5 353.4"/>
+    <path d="M333.1 350.6 L326.1 343.4"/>
+    <circle cx="331.0" cy="330" r="30"/>
+    <path d="M370 420 V428 M350 428 H390 M357 436 H383 M364 444 H376"/>
+    <path d="M370 50 L370 65.0"/>
+    <path d="M370 135.0 L370 177.0"/>
+    <rect x="357" y="65.0" width="26" height="70"/>
+    <path d="M355.0 177.0 L385.0 177.0 L370.0 203.0 Z"/>
+    <path d="M355.0 203.0 L385.0 203.0"/>
+    <path d="M350.0 184.0 L334.0 192.0"/>
+    <path d="M334.0 192.0 L337.8 186.1"/>
+    <path d="M334.0 192.0 L341.0 192.5"/>
+    <path d="M350.0 196.0 L334.0 204.0"/>
+    <path d="M334.0 204.0 L337.8 198.1"/>
+    <path d="M334.0 204.0 L341.0 204.5"/>
+    <path d="M370 203.0 L370 280"/>
+  </g>
+  <g fill="currentColor">
+    <circle cx="270" cy="330" r="5"/>
+  </g>
+  <g fill="currentColor" font-size="17" font-family="system-ui, sans-serif">
+    <text x="20" y="56">5 V</text>
+    <text x="82" y="285">button</text>
+    <text x="210" y="310" text-anchor="middle">1 kΩ</text>
+    <text x="215" y="385" text-anchor="end">10 kΩ</text>
+    <text x="410" y="345">S8050</text>
+    <text x="388" y="106">220 Ω</text>
+    <text x="394" y="196">red LED</text>
+    <text x="384" y="274" font-size="14">collector, column 31</text>
+    <text x="300" y="300" text-anchor="end" font-size="14">base</text>
+  </g>
+</svg>
+
 <!-- connections -->
 
 ## Try it
