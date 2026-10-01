@@ -133,9 +133,12 @@ Read it from the top:
 - The parts: the LCD and clock from Lesson 32, the radio, `dial`,
   `dialButton` and `volumeKnob` from Lesson 37, and `radioButton`, the
   button on 23. `fade` is the `adk::Timer` that times the half minute, and
-  `tick` reads the clock five times a second.
-- `bell` is a little bell, drawn in eight rows of dots as your own
-  characters were in Lesson 13. `setup ()` stores it in slot 1.
+  `tick` has the sketch check the clock and the volume five times a
+  second.
+- `bell` is a little bell, a plain list of eight bytes drawn in rows of
+  dots, as your own characters were in Lesson 13. `setup ()` stores it in
+  slot 1. `fadeLength` is an `adk::Millis`, ADK's type for times from
+  Lesson 12.
 - `enum class State` names the three states from the table, and `alarm` is
   in minutes after midnight, as in Lesson 33. `playing` is true while the
   radio is on.
@@ -143,17 +146,25 @@ Read it from the top:
   its own. The button flips `playing` and stops any fade, so pressing it
   during a fade switches the radio straight off.
 - `dialPressed ()` moves from state to state, as the knob did in Lesson 33,
-  but with only three states: there's nothing to beep or snooze.
+  but with only three states: there's no `Ringing`, because the radio
+  itself is the alarm, and the button switches it off.
 - `dialTurned ()` tunes the radio when the clock is showing the time, and
-  otherwise changes the alarm by an hour or a minute a click. Tuning
-  `return`s at once, because the alarm doesn't need wrapping round the day.
-- `readTheClock ()` starts the radio and the fade only as a new minute
-  begins (`time != clockTime`), exactly as Lesson 33 started its tune, and
-  only if the radio isn't on already. Then it writes the top row: the time
-  with `printTime ()` and the seconds, the bell with `lcd.write (1)`, and
-  the alarm.
-- `showBottomRow ()` prints what the rotary knob is setting, or the
-  station's name and, from column 11, its frequency, as in Lesson 37.
+  otherwise changes the alarm by an hour or a minute a click, with `+=` as
+  in Lesson 33. Tuning `return`s at once, because the alarm doesn't need
+  wrapping round the day.
+- `readTheClock ()` takes the time from `rtc.now ()`, as in Lesson 32. It
+  starts the radio and the fade only as a new minute begins
+  (`time != clockTime`), exactly as Lesson 33 started its tune, and only if
+  the radio isn't on already (`!playing`): otherwise the fade would start
+  again from silent while you listen. The condition is too long for one
+  line, so it carries on onto the next. Then it writes the top row: the
+  time with `printTime ()` and the seconds, the bell with `lcd.write (1)`,
+  and the alarm.
+- `showBottomRow ()` blanks the row with sixteen spaces, because a station
+  name can be shorter than the last one, then prints what the rotary knob
+  is setting, or the station's name and, from column 11, its frequency,
+  as in Lesson 37: dividing by `10.0` keeps the tenths, and the `?:` adds
+  a space in front of a frequency under 100 MHz, so the digits line up.
 - `setVolume ()` does the fade. `fade.remaining ()` is how much of the half
   minute is left, and 0 once it's over or when there's no fade at all, so
   `faded` is how much has gone by: all of it, except during a fade.
@@ -189,7 +200,6 @@ and the time gone by, so the whole fade shrinks to fit.
 
 | What you see | Try this |
 |---|---|
-| The screen says **No clock found!** | Check the clock's SDA goes to pin 20 and SCL to pin 21, as in Lesson 32. |
 | The time is wrong | The clock keeps whatever time it was set to: see Lesson 32. |
 | The bottom row stays at ` 87.5` with no name, and the radio is silent | Try Lesson 37's sketch: it says whether the radio answers. Check pins 40, 41 and 42, the 1 kΩ from h29 to h34, and the radio's 3.3V. |
 | The radio never comes on by itself | The alarm only starts as a new minute begins, so set it at least a minute ahead, and press the rotary knob until the bottom row shows the station again. It won't start if the radio is already on. |
@@ -197,6 +207,7 @@ and the time gone by, so the whole fade shrinks to fit.
 | The button does nothing | It must straddle the gap in columns 8 to 10, with pin 23's wire in j8 and the black jumper from a10 to the − rail. |
 | Turning the rotary knob goes the wrong way | Swap its CLK and DT wires, on pins 18 and 19. |
 | A row of solid blocks, or a blank lit screen | Turn the contrast knob beside the LCD, not the volume knob. |
+| The time stands still, perhaps at 00:00:00 | Upload Lesson 32's sketch. It says **No clock found!** if the Mega can't hear the clock: check SDA goes to pin 20 and SCL to pin 21. If the clock had stopped, it starts it again. Then upload this sketch again. |
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"
@@ -207,8 +218,9 @@ and the time gone by, so the whole fade shrinks to fit.
 
     Everything happens in small steps so nothing waits for anything else.
     The encoder is read on every `adk::update ()`, a thousand times a second;
-    the clock and the screen five times a second; the radio, every 40 ms,
-    for its signal and name. A tune takes the radio about 60 ms, and it gets
+    the clock ten times a second, inside `adk::update ()` too; the screen
+    five times a second, when `tick` ticks; the radio, every 40 ms, for its
+    signal and name. A tune takes the radio about 60 ms, and it gets
     on with it on its own while the clock carries on ticking.
 
     The volume changes in steps, because the radio has only sixteen of them.

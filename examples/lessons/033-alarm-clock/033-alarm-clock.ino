@@ -15,8 +15,7 @@ adk::Every         tick       {100};
 constexpr adk::Note wakeUp [] =
 {
     {adk::note::c5, 150}, {adk::note::e5, 150}, {adk::note::g5, 150},
-    {adk::note::c6, 300}, {adk::note::g5, 150}, {adk::note::c6, 450},
-    {adk::note::rest, 700}
+    {adk::note::c6, 450}, {adk::note::rest, 700}
 };
 
 constexpr int  minutesPerDay = 24 * 60;
@@ -34,11 +33,6 @@ int   clockTime = -1;       // the clock's time when it was last read
 void setup ()
 {
     adk::setup ();
-
-    if (!rtc.isRunning ())
-    {
-        rtc.set (adk::compiledAt ());
-    }
 }
 
 void loop ()
@@ -75,23 +69,19 @@ void knobPressed ()
     {
         case State::Showing:       state = State::SettingHour;   break;
         case State::SettingHour:   state = State::SettingMinute; break;
+        case State::SettingMinute: sleepUntil (alarm);           break;
         case State::Ringing:       sleepUntil (alarm);           break;
-        case State::SettingMinute:
-            sleepUntil (alarm);
-            speaker.tone (adk::note::c6, 150);
-            break;
     }
 }
 
-// While setting, each click moves the alarm an hour or a minute, round
-// and round the day.
+// While setting, each click moves the alarm an hour or a minute.
 void knobTurned (int clicks)
 {
     switch (state)
     {
         case State::SettingHour:   alarm += clicks * 60; break;
         case State::SettingMinute: alarm += clicks;      break;
-        case State::Showing:
+        case State::Showing:       return;
         case State::Ringing:       return;
     }
 
@@ -109,16 +99,8 @@ void sleepUntil (int time)
 // Ten times a second: ring if it's time, and show the time and the alarm.
 void readTheClock ()
 {
-    auto now = rtc.now ();
-
-    if (!rtc.ok ())
-    {
-        adk::print (lcd.at (0, 0), "No clock found! ");
-        adk::print (lcd.at (0, 1), "Check pins 20,21");
-        return;
-    }
-
-    int time = now.hour * 60 + now.minute;
+    auto now  = rtc.now ();
+    int  time = now.hour * 60 + now.minute;
 
     // Only as a new minute begins, so a stopped alarm stays stopped.
     if (state == State::Showing && time == ringAt && time != clockTime)
@@ -126,8 +108,7 @@ void readTheClock ()
         state = State::Ringing;
     }
 
-    // Asked for again while it plays, the tune carries on; once it has
-    // ended, it starts again, until someone stops it.
+    // A tune that is still playing carries on; one that has ended restarts.
     if (state == State::Ringing)
     {
         speaker.play (wakeUp);
@@ -158,7 +139,6 @@ void showAlarm (int second)
 
     adk::print (lcd.at (0, 1), label);
     printTime (state == State::Showing ? ringAt : alarm);
-    lcd.print ("   ");
 }
 
 // A time of day, in minutes after midnight, as hours and minutes: 07:05.

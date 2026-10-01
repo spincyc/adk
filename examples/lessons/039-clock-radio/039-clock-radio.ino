@@ -1,7 +1,5 @@
 // Lesson 39: Clock Radio
-// A clock that wakes you with your station, fading in gently. Turn the
-// rotary knob to tune, press it to set the alarm; the button switches the
-// radio on and off, and the volume knob sets how loud it plays.
+// A clock that wakes you with your station, fading in gently.
 
 #include <Adk.h>
 
@@ -36,11 +34,6 @@ void setup ()
 {
     adk::setup ();
     lcd.createChar (1, bell);
-
-    if (!rtc.isRunning ())
-    {
-        rtc.set (adk::compiledAt ());
-    }
 }
 
 void loop ()
@@ -82,8 +75,7 @@ void dialPressed ()
     }
 }
 
-// Showing the time, the rotary knob tunes the radio. Setting the alarm,
-// each click moves it an hour or a minute, round and round the day.
+// Showing the time, the rotary knob tunes; setting, it moves the alarm.
 void dialTurned (int clicks)
 {
     switch (state)
@@ -96,23 +88,13 @@ void dialTurned (int clicks)
     alarm = (alarm + minutesPerDay) % minutesPerDay;
 }
 
-// Five times a second: switch the radio on if it's time to wake, and show
-// the time and the alarm on the top row.
+// Five times a second: wake the radio if it's time, and fill the top row.
 void readTheClock ()
 {
-    auto now = rtc.now ();
+    auto now  = rtc.now ();
+    int  time = now.hour * 60 + now.minute;
 
-    if (!rtc.ok ())
-    {
-        adk::print (lcd.at (0, 0), "No clock found! ");
-        adk::print (lcd.at (0, 1), "Check pins 20,21");
-        return;
-    }
-
-    int time = now.hour * 60 + now.minute;
-
-    // Only as the alarm's minute begins, so a radio switched off stays off,
-    // and only if it isn't playing already.
+    // Only as the alarm's minute begins, so a radio switched off stays off.
     if (state == State::Showing && !playing && time == alarm
         && time != clockTime)
     {
@@ -129,8 +111,7 @@ void readTheClock ()
     showBottomRow ();
 }
 
-// Which part of the alarm the rotary knob sets, or the station's name and
-// frequency.
+// What the rotary knob sets, or the station's name and frequency.
 void showBottomRow ()
 {
     int frequency = radio.frequency ();
@@ -149,8 +130,8 @@ void showBottomRow ()
                 adk::fixed (frequency / 10.0, 1));
 }
 
-// The volume knob sets how loud. Waking, the radio starts silent and
-// climbs to the knob's volume as the half minute of the fade goes by.
+// Waking, the radio starts silent and climbs to the volume knob's setting
+// as the half minute of the fade goes by.
 void setVolume ()
 {
     int         full  = playing ? volumeKnob.read (0, 15) : 0;
