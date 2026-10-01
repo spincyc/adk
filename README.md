@@ -7,7 +7,7 @@ played between two boards over radio, plus twenty-four electricity
 investigations that run alongside them. Its small C++ library makes the
 project builds simple. Every lesson is a
 web page and a printable PDF, with pencil drawings of the breadboard that
-match the code pin for pin.
+are checked against the code's pins.
 
 **[Start the course →](https://spincyc.github.io/adk/)** ·
 **[Explore electricity →](https://spincyc.github.io/adk/electricity/)**
@@ -101,7 +101,9 @@ design, and [the style guide](docs/STYLE.md) the code.
 All seventy-nine lessons are written, each with its sketch and a build drawn
 from one description. The site can also make each as a PDF. The library is
 host-tested, and every sketch compiles for the Mega. The circuit results are
-predictions and have not yet been checked on physical hardware.
+predictions and have not yet been checked on physical hardware. If you build
+a lesson, [report your build](https://spincyc.github.io/adk/builds/), whether
+it works or not.
 
 ## License
 

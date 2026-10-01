@@ -82,12 +82,21 @@ for E01–E24 and the equipment each module needs.
 
 <!-- arcs -->
 
-## Drawings you can trust
+## Drawings checked against the code
 
 Every breadboard drawing is generated from the same description of the
-circuit that the site checks against the lesson's code. If a wire in the
-picture went to a different pin from the one the sketch uses, the site would
-refuse to build. What you see is what the code expects.
+circuit that the checks hold the lesson's code to. If a wire in the
+picture went to a pin the sketch doesn't use, or a button sat where the
+sketch drives an LED, those checks would fail, and the site would not be
+published with the mistake. They can't tell two parts of the same kind
+apart, though: swap the wires of two LEDs and the checks still pass.
+
+!!! note "Not yet built on a real bench"
+    The sketches compile and the library's tests pass, but nobody has yet
+    built these lessons on real hardware and recorded the result. Until
+    someone does, what each lesson says you'll see is a careful
+    prediction. If you build one, whether it works or not, please
+    [report your build](builds.md).
 
 [What's in the kit](kit.md){ .md-button }
 [Safety first](safety.md){ .md-button }
