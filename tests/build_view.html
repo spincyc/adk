@@ -82,6 +82,7 @@ document.querySelector (".complete-build").append (completeBuild);
 </script>
 <script src="../docs/assets/steps.js"></script>
 <script>
+(async function () {
 try {
     const assert = (ok, message) => { if (!ok) throw Error (message); };
     const crops = () => [...document.querySelectorAll (".workbench-crop svg")]
@@ -111,7 +112,12 @@ try {
     document.querySelector (".workbench-reset").click ();
     const select = index => document.querySelectorAll (".workbench-list button")[index].click ();
     const dialog = document.querySelector (".build-workbench");
-    const instruction = dialog.querySelector (".workbench-instruction");
+    const instruction = dialog.querySelector (".workbench-step-title");
+    if (window.location.search === "?mobile") {
+        assert (window.innerWidth <= 700 && getComputedStyle (
+            dialog.querySelector (".workbench-instruction")).display === "contents",
+            "mobile checks use the actual narrow-screen instruction layout");
+    }
     const description = () => instruction.getAttribute ("aria-describedby").split (" ")
         .map (id => document.getElementById (id).textContent).join (" ");
     const announced = (action, details) => {
@@ -223,7 +229,7 @@ try {
     assert (fullDialog.querySelector (".workbench-step-count").textContent.includes ("0 checked"),
         "full-build progress is independent of the completed continuing build");
     fullDialog.querySelector (".workbench-start").click ();
-    assert (document.activeElement === fullDialog.querySelector (".workbench-instruction"),
+    assert (document.activeElement === fullDialog.querySelector (".workbench-step-title"),
         "Start building focuses the complete instruction");
     fullDialog.querySelector (".workbench-done").click ();
     assert (document.querySelector (".build-steps tr").classList.contains ("done") &&
@@ -241,10 +247,31 @@ try {
     assert (savedProgress ().join (",") === "5",
         "reset removes only the full-build record from storage");
     fullDialog.querySelector (".workbench-close").click ();
+    if (window.location.search !== "?mobile") {
+        const mobile = document.createElement ("iframe");
+        mobile.style.width = "390px";
+        mobile.style.height = "844px";
+        // file: pages can have separate origins. The narrow fixture reports its
+        // complete result without depending on access to its DOM from this page.
+        const result = new Promise (resolve => {
+            window.addEventListener ("message", event => {
+                if (event.source === mobile.contentWindow) resolve (event.data);
+            }, {once: true});
+        });
+        mobile.src = window.location.pathname + "?mobile";
+        document.body.append (mobile);
+        const narrow = await result;
+        assert (narrow.result === "pass", "mobile navigation: " + narrow.failure);
+    }
     document.body.dataset.testResult = "pass";
 } catch (error) {
     document.body.dataset.testResult = "fail";
     document.body.append (String (error));
 }
+if (window.location.search === "?mobile") {
+    window.parent.postMessage ({result: document.body.dataset.testResult,
+        failure: document.body.lastChild.textContent}, "*");
+}
+}) ();
 </script>
 </html>

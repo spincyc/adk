@@ -136,16 +136,14 @@
         stagebar.setAttribute ("aria-label", "Build stages");
         const workspace = element ("div", "workbench-workspace");
         const instruction = element ("section", "workbench-instruction");
-        instruction.tabIndex = -1;
         const status = element ("p", "workbench-step-count");
         const stepTitle = element ("h3", "workbench-step-title");
+        stepTitle.tabIndex = -1;
         const action = element ("p", "workbench-action");
         const places = element ("div", "workbench-places");
         const note = element ("p", "workbench-note");
-        stepTitle.id = titleId + "-step";
         [status, action, places, note].forEach ((node, i) => node.id = titleId + "-detail-" + i);
-        instruction.setAttribute ("aria-labelledby", stepTitle.id);
-        instruction.setAttribute ("aria-describedby",
+        stepTitle.setAttribute ("aria-describedby",
             [status, action, places, note].map (node => node.id).join (" "));
         instruction.append (status, stepTitle, action, places, note);
         const focus = element ("section", "workbench-panel workbench-focus");
@@ -182,7 +180,7 @@
                 current = current + 1 < rows.length ? current + 1 : Math.max (0, first);
             }
             changed ();
-            if (!instruction.hidden) instruction.focus ({preventScroll: true});
+            if (!instruction.hidden) stepTitle.focus ({preventScroll: true});
             dialog.scrollTop = 0;
         });
         controls.append (previous, tick, next);
@@ -237,7 +235,7 @@
         contextBody.append (button ("workbench-start", "Start building", () => {
             context.open = false;
             dialog.scrollTop = 0;
-            instruction.focus ({preventScroll: true});
+            stepTitle.focus ({preventScroll: true});
         }));
         context.append (contextBody);
         shell.append (header, context, stagebar, workspace, all, footer);
@@ -313,9 +311,9 @@
             reviewing = true;
             all.open = false;
             render ();
-            // One focus announcement includes the instruction and its details.
-            // A second live region would repeat it. Tab reaches the controls next.
-            instruction.focus ({preventScroll: true});
+            // The heading carries the full instruction, with no second live announcement.
+            // Its container is display: contents on phones and cannot receive focus.
+            stepTitle.focus ({preventScroll: true});
             dialog.scrollTop = 0;
         }
 
