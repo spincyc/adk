@@ -27,6 +27,8 @@ import tarfile
 
 from mkdocs.exceptions import PluginError
 
+from board_history import records, systems
+
 ROOT      = os.path.dirname (os.path.dirname (os.path.dirname (os.path.abspath (__file__))))
 PLATFORM  = os.path.join (ROOT, "boards", "avr")
 TOOL      = os.path.join (ROOT, "boards", "toolchain.json")
@@ -100,6 +102,10 @@ def properties (path):
 # The platform is released with the library, and must ask for the tool the
 # index installs; a mismatch would only show on a learner's computer.
 def check (library, platform, tool):
+    try:
+        systems (tool)
+    except ValueError as error:
+        raise PluginError (str (error)) from error
     if platform["version"] != library["version"]:
         raise PluginError (f"boards/avr/platform.txt is version {platform['version']}, "
                            f"but library.properties is {library['version']}")
@@ -111,18 +117,18 @@ def check (library, platform, tool):
 # The site goes live from main, so whatever this builds is what learners
 # install as this version; boards/published.txt says how to publish another.
 def published (version, checksum, compiler):
-    records = {}
-    for line in open (PUBLISHED, encoding="utf-8"):
-        fields = line.split ("#", 1)[0].split ()
-        if fields:
-            records[fields[0]] = fields[1:]
-    if version not in records:
+    try:
+        with open (PUBLISHED, encoding="utf-8") as source:
+            history = records (source.read ())
+    except ValueError as error:
+        raise PluginError (str (error)) from error
+    if version not in history:
         raise PluginError (f"ADK Boards {version} is not in boards/published.txt. It is "
                            f"published once it reaches main, so add its line there:\n"
                            f"    {version:<11}{checksum}  {compiler}")
-    if records[version] != [checksum, compiler]:
+    if history[version] != (checksum, compiler):
         raise PluginError (f"ADK Boards {version} has changed since it was published:\n"
-                           f"    published  {'  '.join (records[version])}\n"
+                           f"    published  {'  '.join (history[version])}\n"
                            f"    now        {checksum}  {compiler}\n"
                            f"Learners who installed {version} would never get the change. "
                            f"Raise the version in library.properties and "

@@ -29,17 +29,26 @@ TOOLCHAIN_HOSTS  := Linux-x86_64:x86_64-linux-gnu      \
                     Darwin-x86_64:x86_64-apple-darwin  \
                     Darwin-arm64:arm64-apple-darwin
 TOOLCHAIN_HOST   := $(patsubst $(HOST):%,%,$(filter $(HOST):%,$(TOOLCHAIN_HOSTS)))
-TOOLCHAIN_ENTRY  := import json, sys;                                             \
-                    print (*next ((system["url"],                                 \
-                                   system["checksum"].removeprefix ("SHA-256:"))  \
-                                  for system in json.load (sys.stdin)["systems"]  \
-                                  if system["host"] == sys.argv[1]))
+TOOLCHAIN_ENTRY  := import json, sys;                                       \
+                    tool = json.load (sys.stdin);                           \
+                    system = next (s for s in tool["systems"]               \
+                                   if s["host"] == sys.argv[1]);            \
+                    digest = system["checksum"].removeprefix ("SHA-256:");  \
+                    print (system["url"], digest,                           \
+                           "-".join ((tool["name"], tool["version"],        \
+                                      system["host"], digest)))
 AVR_GCC_DOWNLOAD := $(if $(TOOLCHAIN_HOST),$(shell $(PYTHON) -c '$(TOOLCHAIN_ENTRY)'  \
                         $(TOOLCHAIN_HOST) < boards/toolchain.json))
 AVR_GCC_URL      := $(word 1,$(AVR_GCC_DOWNLOAD))
 AVR_GCC_SHA256   := $(word 2,$(AVR_GCC_DOWNLOAD))
-AVR_GCC          := $(basename $(basename $(notdir $(AVR_GCC_URL))))
-TOOLCHAIN        ?= $(BUILD_DIR)/toolchain/$(AVR_GCC)
+AVR_GCC_ID       := $(word 3,$(AVR_GCC_DOWNLOAD))
+ifeq ($(origin TOOLCHAIN),undefined)
+TOOLCHAIN        := $(BUILD_DIR)/toolchain/$(AVR_GCC_ID)
+TOOLCHAIN_READY  := $(TOOLCHAIN)/.verified
+else
+TOOLCHAIN_READY  := $(TOOLCHAIN)/bin/avr-g++
+endif
+TOOLCHAIN_ACTIVE := $(BUILD_DIR)/toolchain/.selected
 SHA256SUM        := $(if $(shell command -v sha256sum),sha256sum,shasum -a 256)
 AVR_PROPERTIES   := --build-property "compiler.path=$(abspath $(TOOLCHAIN))/bin/"  \
                     --build-property "compiler.cpp.extra_flags=-std=gnu++23"
@@ -56,6 +65,7 @@ LIBRARY_FILES    := $(wildcard src/*.h src/adk/*.h src/adk/*.cpp)  \
 TEST_SOURCES     := $(wildcard tests/*.cpp tests/arduino/*.cpp)
 EXAMPLE_TESTS     := $(wildcard tests/examples/*.cpp)
 SKETCHES         := $(wildcard examples/lessons/*/*.ino examples/lessons/*/*/*.ino)
+CIRCUITS         := $(wildcard docs/lessons/*/circuit.py)
 EXAMPLES         := $(patsubst examples/%/,%,$(sort $(dir $(SKETCHES))))
 STYLED           := $(wildcard src/*.h src/adk/*.h src/adk/*.cpp)  \
                     $(wildcard tests/*.h tests/*.cpp)              \
@@ -269,6 +279,7 @@ CLI_HINT         := and arduino-cli, as its installation guide explains:  \
         style        \
         upload       \
         monitor      \
+        FORCE        \
         clean        \
         help
 
@@ -369,19 +380,29 @@ $(SANITIZE_DIR)/smoke/%.ok: $(ARDUINO_DIR)/%.log   \
 -include $(HOST_EXAMPLES:%=%.d) $(SANITIZE_CASES:%=%.d)
 
 ## toolchain       fetch the C++23 avr-gcc the examples build with
-toolchain: $(TOOLCHAIN)/bin/avr-g++
+toolchain: $(TOOLCHAIN_READY)
 
-$(TOOLCHAIN)/bin/avr-g++:
+$(TOOLCHAIN)/.verified:
 	$(if $(AVR_GCC_URL),,$(error make toolchain fetches avr-gcc for Linux and macOS on  \
 	    x86-64 or arm64, not $(HOST): install avr-gcc 16 and set TOOLCHAIN to its folder))
-	@mkdir -p $(BUILD_DIR)/toolchain
+	@mkdir -p $(TOOLCHAIN)
 	curl --fail --location --silent --show-error --output $(TOOLCHAIN).tar.bz2 $(AVR_GCC_URL)
 	@sum=$$($(SHA256SUM) $(TOOLCHAIN).tar.bz2); sum=$${sum%% *};  \
 	    [ "$$sum" = "$(AVR_GCC_SHA256)" ]                         \
 	    || { echo "$(TOOLCHAIN).tar.bz2: SHA-256 $$sum, not $(AVR_GCC_SHA256)"; exit 1; }
-	tar -xjf $(TOOLCHAIN).tar.bz2 -C $(BUILD_DIR)/toolchain
+	tar -xjf $(TOOLCHAIN).tar.bz2 --strip-components=1 -C $(TOOLCHAIN)
 	@rm $(TOOLCHAIN).tar.bz2
+	@test -x $(TOOLCHAIN)/bin/avr-g++
 	@touch $@
+
+# A return to an older, already installed compiler must rebuild too. Keep
+# this selection stamp unchanged for mirrors and repeated builds.
+$(TOOLCHAIN_ACTIVE): FORCE $(TOOLCHAIN_READY)
+	@mkdir -p $(@D)
+	@printf '%s\n' '$(abspath $(TOOLCHAIN))' > $@.tmp
+	@cmp -s $@.tmp $@ && rm $@.tmp || mv $@.tmp $@
+
+FORCE:
 
 ## examples        compile every example for the Mega 2560
 examples: $(ARDUINO_LOGS)
@@ -391,11 +412,12 @@ examples: $(ARDUINO_LOGS)
 # time, print no warning, and pass.
 $(ARDUINO_DIR)/%.log: examples/$$*/$$(notdir $$*).ino  \
                       $(LIBRARY_FILES)                 \
-                      $(TOOLCHAIN)/bin/avr-g++
+                      $(TOOLCHAIN_READY) $(TOOLCHAIN_ACTIVE)
 	@mkdir -p $(ARDUINO_DIR)/$* $(ARDUINO_CACHE)
 	@echo "  AVR  examples/$*"
 	@ARDUINO_BUILD_CACHE_PATH=$(abspath $(ARDUINO_CACHE))  \
 	    arduino-cli compile                                \
+	        --clean                                        \
 	        --fqbn $(FQBN)                                 \
 	        --library .                                    \
 	        --warnings all                                 \
@@ -411,19 +433,20 @@ avr-test: $(AVR_TEST_DIR)/widths.ok
 
 $(AVR_TEST_DIR)/widths.ok: tests/avr/widths.cpp  \
                            $(LIBRARY_FILES)      \
-                           $(TOOLCHAIN)/bin/avr-g++
+                           $(TOOLCHAIN_READY) $(TOOLCHAIN_ACTIVE)
 	@mkdir -p $(AVR_TEST_DIR)/sketch/widths $(ARDUINO_CACHE)
 	@cp tests/avr/widths.cpp $(AVR_TEST_DIR)/sketch/widths/widths.ino
 	@echo "  AVR  tests/avr/widths.cpp"
-	@ARDUINO_BUILD_CACHE_PATH=$(abspath $(ARDUINO_CACHE))           \
-	    arduino-cli compile                                         \
-	        --fqbn $(FQBN)                                          \
-	        --library .                                             \
-	        --warnings all                                          \
-	        $(AVR_PROPERTIES)                                       \
-	        --build-path $(AVR_TEST_DIR)/widths                     \
-	        $(AVR_TEST_DIR)/sketch/widths                           \
-	        > $(AVR_TEST_DIR)/widths.log 2>&1                       \
+	@ARDUINO_BUILD_CACHE_PATH=$(abspath $(ARDUINO_CACHE))  \
+	    arduino-cli compile                                \
+	        --clean                                        \
+	        --fqbn $(FQBN)                                 \
+	        --library .                                    \
+	        --warnings all                                 \
+	        $(AVR_PROPERTIES)                              \
+	        --build-path $(AVR_TEST_DIR)/widths            \
+	        $(AVR_TEST_DIR)/sketch/widths                  \
+	        > $(AVR_TEST_DIR)/widths.log 2>&1              \
 	    || (cat $(AVR_TEST_DIR)/widths.log; exit 1)
 	@echo "  SIM  tests/avr/widths.cpp"
 	@$(AVR_SIMULATOR) $(AVR_TEST_DIR)/widths/widths.ino.elf > $(AVR_TEST_DIR)/widths.out 2>&1  \
@@ -459,7 +482,7 @@ $(foreach lesson,$(LESSONS),$(eval $(call lesson_target,$(lesson))))
 ## pins            test the circuit model, then hold each example to its lesson's circuit
 pins: $(BUILD_DIR)/circuits.ok $(PIN_CHECKS)
 
-$(BUILD_DIR)/circuits.ok: tests/circuits.py $(wildcard docs/_theme/*.py)
+$(BUILD_DIR)/circuits.ok: tests/circuits.py $(wildcard docs/_theme/*.py) $(CIRCUITS)
 	@mkdir -p $(@D)
 	@echo "  PY   tests/circuits.py"
 	@$(PYTHON) tests/circuits.py
@@ -492,15 +515,28 @@ size: $(ARDUINO_LOGS)
 	done
 
 ## site            build the website into build/site, and check its links
-site: $(VENV)/.installed $(BUILD_DIR)/steps.ok
+site: $(VENV)/.installed $(BUILD_DIR)/steps.ok $(BUILD_DIR)/api.ok $(BUILD_DIR)/tooling.ok
 	$(VENV)/bin/mkdocs build --strict --site-dir $(abspath $(BUILD_DIR))/site
 	@$(PYTHON) tests/site_links.py $(BUILD_DIR)/site
 
 $(BUILD_DIR)/steps.ok: tests/build_steps.py tests/navigation_ids.py  \
                      $(wildcard docs/_theme/*.py)                    \
-                     $(wildcard docs/lessons/*/index.md) $(VENV)/.installed
+                     $(shell find docs -name '*.md')                 \
+                     docs/_theme/course.yml $(CIRCUITS) $(VENV)/.installed
 	$(VENV)/bin/python tests/build_steps.py
 	$(VENV)/bin/python tests/navigation_ids.py
+	@touch $@
+
+$(BUILD_DIR)/api.ok: tests/api.py docs/_theme/api.py $(wildcard src/adk/*.h)
+	@mkdir -p $(@D)
+	$(PYTHON) tests/api.py
+	@touch $@
+
+$(BUILD_DIR)/tooling.ok: tests/tooling.py Makefile docs/_theme/board_history.py  \
+                       docs/_theme/boards.py boards/published.txt                \
+                       boards/toolchain.json $(VENV)/.installed
+	@mkdir -p $(@D)
+	ADK_TEST_BUILD_DIR=$(abspath $(BUILD_DIR)) $(VENV)/bin/python tests/tooling.py
 	@touch $@
 
 ## pdf             print every lesson page to build/site/pdf

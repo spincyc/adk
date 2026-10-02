@@ -9,6 +9,8 @@ as in
     void seekUp   ();
     void seekDown ();
 
+A trailing // comment documents only its own declaration and ends a group.
+
 document () turns that into Markdown, so the reference can never drift from
 the code: the calls that need no comment listed plainly, then a table of
 the others with what each does.
@@ -26,7 +28,8 @@ import re
 
 
 def document (path, name=None):
-    lines = open (path, encoding="utf-8").read ().splitlines ()
+    with open (path, encoding="utf-8") as header:
+        lines = header.read ().splitlines ()
     if name:
         return document_struct (lines, name, path)
     return document_functions (lines)
@@ -42,7 +45,7 @@ def document_struct (lines, name, path):
     body = []
     depth = 0
     for line in lines[start + 1:]:
-        stripped = line.strip ()
+        stripped, _ = split_comment (line.strip ())
         if depth == 1 and re.match (r"(protected|private):", stripped):
             break
         depth += stripped.count ("{") - stripped.count ("}")
@@ -71,9 +74,10 @@ def document_functions (lines):
             body.pop ()
         depth = 0
         while True:
-            depth += lines[index].count ("{") - lines[index].count ("}")
+            code, _ = split_comment (lines[index])
+            depth += code.count ("{") - code.count ("}")
             index += 1
-            if depth == 0 and "}" in lines[index - 1]:
+            if depth == 0 and "}" in code:
                 break
         body.append ("")
     # Functions only, the header's types having markers of their own.
@@ -112,17 +116,27 @@ def comment_above (lines, index):
     return comment
 
 
+# Ignore // inside string and character literals, such as a URL default.
+def split_comment (line):
+    for match in re.finditer (r'''"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|//(.*)''', line):
+        if match.group (1) is not None:
+            return line[:match.start ()].rstrip (), match.group (1).strip ()
+    return line, ""
+
+
 # Each public declaration, in groups: the calls a comment covers, up to a
 # blank line or the next comment, as [signatures, comment]. Calls with no
 # comment above them make groups of their own, with an empty comment.
 def declarations (body):
     groups, group = [], None
     comment = []
+    trailing = []
     pending = ""
     skipping = 0
     for line in body:
         stripped = line.strip ()
         if skipping:
+            stripped, _ = split_comment (stripped)
             skipping += stripped.count ("{") - stripped.count ("}")
             continue
         if not stripped:
@@ -137,13 +151,22 @@ def declarations (body):
         if stripped.startswith (("#", "namespace", "}", "using ", "friend ")) and \
                 not pending.startswith ("enum"):
             continue
+        stripped, note = split_comment (stripped)
+        if note:
+            trailing.append (note)
         pending = (pending + " " + stripped).strip ()
+        # A requires-expression has braces too, but the function's body
+        # starts on the next line. Keep its constraint in the signature.
+        if stripped.startswith ("requires ") and not pending.endswith (";"):
+            continue
         # An enum is shown whole, with its values.
         if pending.startswith ("enum"):
             if pending.endswith ("};"):
                 signature, pending = clean (pending.replace ("{ ", "{").replace (" }", "}")), ""
-                group = [[signature], " ".join (comment)]
+                group = [[signature], " ".join (comment + trailing)]
                 groups.append (group)
+                if trailing:
+                    comment, group, trailing = [], None, []
             continue
         if pending.endswith ((";", "}")) or pending.endswith ("{") or stripped == "{":
             if pending.endswith ("{") or stripped == "{":
@@ -151,10 +174,15 @@ def declarations (body):
             signature = clean (pending)
             pending = ""
             if keep (signature):
-                if group is None:
-                    group = [[], " ".join (comment)]
-                    groups.append (group)
-                group[0].append (signature)
+                if trailing:
+                    groups.append ([[signature], " ".join (comment + trailing)])
+                else:
+                    if group is None:
+                        group = [[], " ".join (comment)]
+                        groups.append (group)
+                    group[0].append (signature)
+            if trailing:
+                comment, group, trailing = [], None, []
     return groups
 
 
@@ -179,10 +207,11 @@ def cell (text):
 
 def clean (signature):
     signature = re.sub (r"\s+", " ", signature)
+    declaration = signature.endswith (";")
     signature = re.sub (r"\s*;\s*$", "", signature)
-    signature = re.sub (r"\s*\{\s*$", "", signature)
-    if not signature.startswith ("enum"):
+    if not declaration and not signature.startswith ("enum"):
         signature = without_body (signature)
+    signature = re.sub (r"\s*\{\s*$", "", signature)
     signature = re.sub (r"\s+override$", "", signature)
     signature = re.sub (r"^template <[^>]*> ", "", signature)
     signature = re.sub (r"^constexpr ", "", signature)
