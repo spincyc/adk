@@ -23,17 +23,20 @@ namespace adk {
     LoraLink::LoraLink (HardwareSerial& port, Pin mode, Pin aux, uint8_t channel)
         : port_     (port)
         , text_     {}
+        , wait_     (0)
         , mode_     (mode)
         , aux_      (aux)
         , channel_  (channel)
         , ok_       (false)
         , received_ (false)
+        , queued_   (false)
     {
     }
 
     void LoraLink::setup ()
     {
-        ok_ = false;
+        ok_     = false;
+        queued_ = false;
 
         if (!claimSerial (port_) || !claimInput (mode_) || !claimInput (aux_))
         {
@@ -78,11 +81,20 @@ namespace adk {
 
     bool LoraLink::send (const char* text)
     {
-        if (!ok_ || strlen (text) > MaxLength)
+        size_t length = strlen (text);
+
+        if (!ok_ || queued_ || length > MaxLength || digitalRead (aux_) == LOW)
         {
             return false;
         }
 
+        // E32-433T20D manual v1.0 (2022-05-12), 5.6.2 and 6.2: AUX
+        // falls only when the module receives the first UART byte. Cover
+        // the whole queued 8N1 line plus its three-byte idle detector, so
+        // neither a late AUX fall nor a missed low pulse permits a flood.
+        wait_ = static_cast<Millis> (((length + 4) * 10000UL + Baud - 1) / Baud);
+        sending_.restart ();
+        queued_ = true;
         port_.print (text);
         port_.print ('\n');
         return true;
@@ -108,9 +120,19 @@ namespace adk {
         return text_;
     }
 
-    void LoraLink::update (Millis)
+    void LoraLink::update (Millis now)
     {
         received_ = false;
+
+        if (queued_)
+        {
+            sending_.start (now);
+
+            if (sending_.elapsed (now) >= wait_)
+            {
+                queued_ = false;
+            }
+        }
 
         if (reader_.read (port_))
         {

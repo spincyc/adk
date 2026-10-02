@@ -21,8 +21,9 @@ char adkReport [96];
 namespace {
 
     adk::Text<sizeof adkReport - 1> failed;
-    int                             checks   = 0;
-    int                             failures = 0;
+    int                             checks       = 0;
+    int                             failures     = 0;
+    volatile int                    analogSample = 0;
 
     void check (bool passed, int line)
     {
@@ -83,6 +84,19 @@ namespace {
 
 #define CHECK(expression) check ((expression), __LINE__)
 
+// The processor simulator has no ADC; supply only its raw sample while
+// AnalogInput performs its real scaling with the Mega's integer widths.
+int analogRead (uint8_t)
+{
+    return analogSample;
+}
+
+// Both functions share the core's ADC object file; do not link its hardware
+// implementation into this simulator sketch. No test drives a PWM output.
+void analogWrite (uint8_t, int)
+{
+}
+
 void setup ()
 {
     // Printing at the ends of each type's range.
@@ -98,6 +112,78 @@ void setup ()
     CHECK (adk::interpolate (65535, 0, 0x40000000, 0xFFFFFFFF) == 49151);
     CHECK (adk::interpolate (100, 300, 250, 1000) == 150);
     CHECK (adk::interpolate (300, 100, 250, 1000) == 250);
+
+    // A knob can span a whole hour, or the full signed range in either direction.
+    adk::AnalogInput knob {A0};
+    analogSample = 0;
+    CHECK (knob.read (0, 3600000L) == 0);
+    CHECK (knob.read (Lowest, Highest) == Lowest);
+    CHECK (knob.read (Highest, Lowest) == Highest);
+    analogSample = 1023;
+    CHECK (knob.read (0, 3600000L) == 3600000L);
+    CHECK (knob.read (3600000L, 0) == 0);
+    CHECK (knob.read (Lowest, Highest) == Highest);
+    CHECK (knob.read (Highest, Lowest) == Lowest);
+    analogSample = 512;
+    CHECK (knob.read (0, 3600000L) == 1801759L);
+    CHECK (knob.read (3600000L, 0) == 1798241L);
+    CHECK (knob.read (Lowest, Highest) == 2099201L);
+    CHECK (knob.read (Highest, Lowest) == -2099202L);
+    CHECK (knob.read (Lowest, Lowest) == Lowest);
+
+    constexpr uint8_t shifts [] = {0, 16, 17, 31, 32, 255};
+
+    for (uint8_t shift : shifts)
+    {
+        adk::Smoother smooth {shift};
+        CHECK (smooth.value () == 0);
+        CHECK (smooth.add (65535) == 65535);
+        CHECK (smooth.add (65535) == 65535);
+        CHECK (smooth.add (0) == (shift == 0 ? 0 : 65534));
+    }
+
+    // Reliability Meter's letters per second: widen before multiplying.
+    struct Rate
+    {
+        int           length;
+        unsigned long at100;
+        unsigned long at1;
+    };
+
+    constexpr Rate rates [] = {{15, 300, 30000}, {20, 400, 40000}, {60, 1200, 120000}};
+
+    for (auto expected : rates)
+    {
+        volatile int         length = expected.length;
+        volatile int         heard  = 1;
+        volatile adk::Millis back   = 100;
+        CHECK (length * 2000UL / back == expected.at100);
+        back = 1;
+        CHECK (length * 2000UL / back == expected.at1);
+        back = 0xFFFFFFFF;
+        CHECK (length * 2000UL / back == 0);
+        back = 0;
+        unsigned long rate       = 0;
+        bool          calculated = false;
+
+        if (heard > 0 && back > 0)
+        {
+            rate = length * 2000UL / back;
+            calculated = true;
+        }
+
+        CHECK (!calculated && rate == 0);
+        back = 100;
+        heard = 0;
+
+        if (heard > 0 && back > 0)
+        {
+            rate = length * 2000UL / back;
+            calculated = true;
+        }
+
+        CHECK (!calculated && rate == 0);
+    }
 
     // Time across the wrap of millis ().
     adk::StartTime start;

@@ -113,6 +113,7 @@ namespace adk {
         Millis  heardAt_;
         uint8_t mineCount_;
         uint8_t theirsCount_;
+        uint8_t next_;
         uint8_t run_;          // this board's start number, 0 until it hears the other
         uint8_t theirRun_;     // the other board's, as last heard
         bool    beat_;

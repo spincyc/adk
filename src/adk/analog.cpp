@@ -21,7 +21,10 @@ namespace adk {
 
     long AnalogInput::read (long low, long high) const
     {
-        return low + (high - low) * static_cast<long> (read ()) / 1023;
+        // A Mega's long is 32 bits; both its full span and the product
+        // with a ten-bit reading need more room before division.
+        int64_t span = static_cast<int64_t> (high) - low;
+        return static_cast<long> (low + span * read () / 1023);
     }
 
     Pin AnalogInput::pin () const
@@ -63,7 +66,7 @@ namespace adk {
 
     Smoother::Smoother (uint8_t shift)
         : scaled_ (0)
-        , shift_  (shift)
+        , shift_  (shift > 16 ? 16 : shift)
         , primed_ (false)
     {
     }

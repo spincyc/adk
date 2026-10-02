@@ -106,6 +106,7 @@ namespace adk {
         , segments_  (0)
         , textFlag_  (0)
         , seek_      (0)
+        , requested_ (false)
         , ok_        (false)
         , tuned_     (false)
         , named_     (false)
@@ -173,8 +174,9 @@ namespace adk {
     void FmRadio::tune (uint16_t frequency)
     {
         Band band = bandOf (band_);
-        frequency = constrain (frequency, band.bottom, band.top);
-        wanted_   = static_cast<uint16_t> ((frequency - band.bottom) / band.spacing);
+        frequency  = constrain (frequency, band.bottom, band.top);
+        wanted_    = static_cast<uint16_t> ((frequency - band.bottom) / band.spacing);
+        requested_ = true;
 
         if (state_ == State::Idle && wanted_ != channel_)
         {
@@ -184,9 +186,15 @@ namespace adk {
 
     void FmRadio::step (int8_t stations)
     {
+        if (stations == 0)
+        {
+            return;
+        }
+
         int32_t count = channels ();
         int32_t next  = (static_cast<int32_t> (wanted_) + stations) % count;
         wanted_       = static_cast<uint16_t> (next < 0 ? next + count : next);
+        requested_    = true;
 
         if (state_ == State::Idle && wanted_ != channel_)
         {
@@ -316,7 +324,7 @@ namespace adk {
         // be cleared, and clears STC in answer.
         if (state_ == State::Tuning && complete)
         {
-            if (seek_ != 0 && !(registers_[StatusRssi] & Failed))
+            if (seek_ != 0 && !requested_ && !(registers_[StatusRssi] & Failed))
             {
                 wanted_ = registers_[ReadChannel] & 0x3FF;
             }
@@ -363,8 +371,9 @@ namespace adk {
         registers_[PowerConfig] = static_cast<uint16_t> ((registers_[PowerConfig] & ~SeekUp)
                                                          | Seek | (up ? SeekUp : 0));
         write (PowerConfig);
-        seek_  = up ? 1 : -1;
-        state_ = State::Tuning;
+        seek_      = up ? 1 : -1;
+        requested_ = false;
+        state_     = State::Tuning;
         polled_.restart ();
     }
 
@@ -374,7 +383,7 @@ namespace adk {
         channel_ = registers_[ReadChannel] & 0x3FF;
         state_   = State::Idle;
 
-        if (seek_ == 0 && channel_ != wanted_)
+        if ((seek_ == 0 || requested_) && channel_ != wanted_)
         {
             startTune ();
             return;

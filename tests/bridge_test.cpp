@@ -263,6 +263,95 @@ TEST (bridgeTriesAgainWhenTheRadioIsBusy)
     CHECK (boards.bridgeB->value ("angle") == 5);
 }
 
+TEST (bridgeGivesEveryChangingValueATurnDespiteBusySendsAndRefresh)
+{
+    Boards boards;
+    const char* names [] = {"valueaa", "valuebb", "valuecc", "valuedd",
+                            "valueee", "valueff", "valuegg", "valuehh"};
+
+    adk::setup ();
+    boards.meet ();
+
+    // Only two entries fit. Keep all eight changing through several
+    // refreshes, rejecting every third send window along the way.
+    for (long round = 0; round < 80; ++round)
+    {
+        boards.radioA.busy = round % 3 == 1;
+        size_t before = boards.radioA.sent.size ();
+
+        for (const char* name : names)
+        {
+            boards.bridgeA->share (name, 2000000000L + round);
+        }
+
+        boards.run (100);
+
+        if (boards.radioA.busy)
+        {
+            CHECK (boards.radioA.sent.size () == before);
+        }
+
+        if (round >= 8)
+        {
+            for (const char* name : names)
+            {
+                CHECK (boards.bridgeB->value (name) >= 2000000000L + round - 8);
+            }
+        }
+    }
+
+    boards.radioA.busy = false;
+    boards.run (600);
+
+    for (const char* name : names)
+    {
+        CHECK (boards.bridgeB->value (name) == 2000000079L);
+    }
+
+    // With no new changes, the refresh still carries every value.
+    boards.radioA.sent.clear ();
+    boards.run (2400);
+
+    for (const char* name : names)
+    {
+        bool found = false;
+
+        for (const std::string& line : boards.radioA.sent)
+        {
+            CHECK (line.size () <= 56);
+            found = found || line.find (name) != std::string::npos;
+        }
+
+        CHECK (found);
+    }
+}
+
+TEST (bridgeRetriesTheSameTurnAfterARejectedPacket)
+{
+    FakeRadio radio;
+    adk::Bridge bridge {radio};
+    const char* names [] = {"valueaa", "valuebb", "valuecc", "valuedd"};
+
+    adk::setup ();
+
+    for (const char* name : names)
+    {
+        bridge.share (name, 2000000000L);
+    }
+
+    adk::update (100);
+    radio.busy = true;
+    adk::update (200);
+    adk::update (210);
+    CHECK (radio.sent.size () == 1);
+
+    bridge.share ("valueaa", 2000000001L);
+    bridge.share ("valuecc", 2000000002L);
+    radio.busy = false;
+    adk::update (220);
+    CHECK (radio.sent.back () == "@0/0 valuecc=2000000002 valuedd=2000000000");
+}
+
 TEST (bridgeIgnoresTextThatIsNotABridgeMessage)
 {
     Boards boards;

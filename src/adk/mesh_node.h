@@ -33,6 +33,7 @@ namespace adk {
 
         // A message arrived in this update: who sent it, by their short name
         // of up to four letters, and what it said. Both stay until the next.
+        // A payload longer than MaxLength keeps its first MaxLength characters.
         bool        wasReceived () const;
         const char* sender      () const;
         const char* text        () const;
@@ -48,13 +49,15 @@ namespace adk {
         bool        sendLine  (const char* text) override;
         const char* heardLine () const override;
 
-        HardwareSerial&       port_;
-        LineReader<MaxLength> reader_;
-        char                  sender_ [17];
-        char                  text_   [MaxLength + 1];
-        StartTime             gap_;
-        Millis                now_;
-        bool                  sent_;
-        bool                  received_;
+        static constexpr uint8_t SenderLength = 16;
+
+        HardwareSerial&                         port_;
+        LineReader<MaxLength + SenderLength + 2> reader_;
+        char                                    sender_ [SenderLength + 1];
+        char                                    text_   [MaxLength + 1];
+        StartTime                               gap_;
+        Millis                                  now_;
+        bool                                    sent_;
+        bool                                    received_;
     };
 }

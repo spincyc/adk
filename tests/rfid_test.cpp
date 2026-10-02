@@ -637,3 +637,72 @@ TEST (rfidStopSwitchesTheFieldOff)
     CHECK (readsBetween (rfid, 10, 1000) == 0);
     CHECK (reader.frames.size () == frames);
 }
+
+TEST (lifecycleFaultBeforeRfidLeavesItsFieldOff)
+{
+    Rc522     reader {9};
+    adk::Led  first  {26};
+    adk::Led  failed {26};
+    adk::Rfid rfid   {9, 8};
+
+    CHECK (!adk::start ());
+    CHECK (!rfid.ok ());
+    CHECK ((reader.registers[TxControlReg] & 0x03) == 0);
+    CHECK (reader.transactions == 0);
+    CHECK (fake::spiLog.begins == 0);
+    CHECK (fake::spiLog.bytes == 0);
+    CHECK (!adk::isClaimed (9));
+    CHECK (!adk::isClaimed (8));
+}
+
+TEST (lifecycleFaultAfterRfidTurnsItsFieldOffBeforeHalting)
+{
+    Rc522     reader {9};
+    adk::Rfid rfid   {9, 8};
+    adk::Led  failed {90};
+
+    adk::setup ();
+
+    CHECK (check::halted.happened);
+    CHECK (check::halted.fault == adk::Fault::NoSuchPin);
+    CHECK (check::halted.pin == 90);
+    CHECK (rfid.ok ());
+    CHECK (reader.softResets == 1);
+    CHECK (reader.registers[CommandReg] == Idle);
+    CHECK (reader.registers[TxControlReg] == 0x80);
+    CHECK (fake::spiLog.strays == 0);
+    CHECK (fake::spiLog.clashes == 0);
+}
+
+TEST (lifecycleInvalidRfidPinsNeverSendOnTheBus)
+{
+    for (bool invalidSelect : {false, true})
+    {
+        Rc522     reader {9};
+        adk::Rfid rfid   {adk::Pin (invalidSelect ? 90 : 9),
+                          adk::Pin (invalidSelect ? 8 : 90)};
+
+        CHECK (!adk::start ());
+        CHECK (adk::fault () == adk::Fault::NoSuchPin);
+        CHECK (adk::faultPin () == 90);
+        CHECK (!rfid.ok ());
+        CHECK (reader.transactions == 0);
+        CHECK (fake::spiLog.bytes == 0);
+        CHECK (!adk::isClaimed (90));
+    }
+}
+
+TEST (lifecycleConflictingRfidSelectNeverSelectsTheUnclaimedReader)
+{
+    Rc522     reader {9};
+    adk::Led  first  {9};
+    adk::Rfid rfid   {9, 8};
+
+    CHECK (!adk::start ());
+    CHECK (adk::fault () == adk::Fault::PinInUse);
+    CHECK (adk::faultPin () == 9);
+    CHECK (!rfid.ok ());
+    CHECK (reader.transactions == 0);
+    CHECK (fake::spiLog.bytes == 0);
+    CHECK (!adk::isClaimed (8));
+}

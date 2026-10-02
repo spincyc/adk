@@ -100,7 +100,8 @@ namespace adk {
 
             memcpy (sender_, line, name);
             sender_[name] = '\0';
-            strcpy (text_, colon ? colon + 2 : line);
+            strncpy (text_, colon ? colon + 2 : line, MaxLength);
+            text_[MaxLength] = '\0';
             received_ = true;
             return;
         }

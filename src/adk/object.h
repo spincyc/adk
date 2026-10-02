@@ -21,7 +21,9 @@ namespace adk {
         Object  ();
         ~Object ();
 
-        // Claim and configure pins. Runs once, from adk::setup ().
+        // Claim and configure pins before activating the part. Return on a
+        // failed claim: only earlier, successful setups receive stop ().
+        // Runs once, from adk::setup ().
         virtual void setup ();
 
         // Advance time-driven behavior. Runs on every adk::update ().
@@ -46,7 +48,8 @@ namespace adk {
     // Start Serial first: Serial.begin (9600); adk::setup (Serial);
     void setup (Print& log);
 
-    // Start every object and report whether every claim succeeded.
+    // Start objects in declaration order. On the first fault, stop only the
+    // objects already set up and return false, keeping the fault and claims.
     bool start ();
 
     // Advance every object. Call it at the top of loop ().

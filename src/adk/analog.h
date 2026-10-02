@@ -45,6 +45,7 @@ namespace adk {
 
     // Smooths a jumpy reading. Each sample moves the value 1/2^shift of the
     // way towards itself, so a larger shift is smoother and slower.
+    // Shifts above 16 are clamped to 16, keeping a full 16-bit sample intact.
     struct Smoother
     {
         explicit Smoother (uint8_t shift = 3);

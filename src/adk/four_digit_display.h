@@ -36,13 +36,29 @@ namespace adk {
         // last digits go after the dot, as Serial.print () writes decimals:
         // show (123, 1) shows 12.3, and show (5, 1) shows 0.5.
         void show (auto number, uint8_t decimals = 0)
+            requires requires { number / 2; }
         {
             // A fraction would be dropped without a word, so refuse one.
             static_assert (decltype (number) (1) / 2 == 0,
                            "show () takes a whole number: for 21.5, show (215, 1)");
 
-            // Checked at full width, so 70000 shows ---- rather than the
-            // 4464 left of it in the Mega's 16-bit int.
+            // Check before converting: the largest unsigned value need
+            // not fit even in a signed long long.
+            if (+number > 9999)
+            {
+                dashes ();
+                return;
+            }
+
+            if constexpr (decltype (number) (-1) < 0)
+            {
+                if (number < -999)
+                {
+                    dashes ();
+                    return;
+                }
+            }
+
             showNumber (static_cast<long long> (number), decimals);
         }
 

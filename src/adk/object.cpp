@@ -52,9 +52,21 @@ namespace adk {
         for (Object* object = first; object; object = object->next_)
         {
             object->setup ();
+
+            if (fault () != Fault::None)
+            {
+                // A failed or not-yet-started part may have invalid pins.
+                // Stop only completed setups, while their buses still work.
+                for (Object* started = first; started != object; started = started->next_)
+                {
+                    started->stop ();
+                }
+
+                return false;
+            }
         }
 
-        return fault () == Fault::None;
+        return true;
     }
 
     void setup ()

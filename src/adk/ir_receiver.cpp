@@ -71,6 +71,35 @@ namespace adk {
     {
     }
 
+    IrReceiver::~IrReceiver ()
+    {
+        if (pin_ >= NUM_DIGITAL_PINS || digitalPinToInterrupt (pin_) == NOT_AN_INTERRUPT)
+        {
+            return;
+        }
+
+        uint8_t interrupt = static_cast<uint8_t> (digitalPinToInterrupt (pin_));
+
+        // Keep an interrupt from seeing a half-cleared AVR pointer, and
+        // leave a replacement receiver's handler and slot alone.
+#if defined (__AVR__)
+        uint8_t savedStatus = SREG;
+#endif
+        noInterrupts ();
+
+        if (receivers[interrupt] == this)
+        {
+            detachInterrupt (interrupt);
+            receivers[interrupt] = nullptr;
+        }
+
+#if defined (__AVR__)
+        SREG = savedStatus;
+#else
+        interrupts ();
+#endif
+    }
+
     void IrReceiver::setup ()
     {
         if (!claimInterrupt (pin_, true))

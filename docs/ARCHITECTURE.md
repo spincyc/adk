@@ -65,13 +65,22 @@ A device claims what it uses from its `setup ()`:
 | `claimShared (pin)` | Free, or already shared by a bus such as I2C. |
 | `claimTimer (timer, pin)` | No PWM pin and no other device uses the timer. |
 
-The first failed claim is a fault. `adk::setup ()` then releases every pin and
-blinks the fault's pin number on the built-in LED forever: long flashes for
-tens, short flashes for ones. Two long and two short means pin 22. Pin 0,
-which has neither, is ten short flashes, so a halted board never sits dark.
+The first failed claim is a fault. `adk::setup ()` stops at that object and
+calls `stop ()` only on the objects whose setup completed before it, while
+their pins and buses are still available. It then releases every claimed
+pin and blinks the fault's pin number on the built-in LED forever: long
+flashes for tens, short flashes for ones. Two long and two short means
+pin 22. Pin 0, which has neither, is ten short flashes, so a halted board
+never sits dark.
 With `adk::setup (Serial)` it also prints a sentence such as
 `adk: pin 9 needs a timer that is already in use`, and names the parts that
 take that pin's timer over.
+
+A part's `setup ()` must finish its claims before activating the device and
+return on a failed claim. The failed object and later objects are never
+stopped during rollback: their pins may be invalid or belong to another
+part. `adk::start ()`, the non-halting form used by tests, performs the same
+setup and rollback but keeps the claims and fault for inspection.
 
 Timers matter on the Mega:
 

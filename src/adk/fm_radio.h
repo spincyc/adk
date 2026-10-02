@@ -45,14 +45,17 @@ namespace adk {
         // The chip answered when setup () woke it.
         bool ok () const;
 
-        // Tune to a frequency in tenths of a megahertz, tune (1011) for
-        // 101.1 MHz, or move a number of stations' spacing up or down, as
-        // step (encoder.turned ()). Both stay in the band: a frequency past
-        // either end tunes to that end, and a step past an end wraps round
-        // to the other. A frequency between stations goes to the one below.
-        // Asking for where it already is changes nothing, so both can be
-        // called from every pass of loop ().
+        // Tune to a frequency in tenths of a megahertz: tune (1011) for
+        // 101.1 MHz. A frequency past either end tunes to that end; one
+        // between stations goes to the one below. Repeating the requested
+        // frequency changes nothing. During a seek, the request takes
+        // effect after the seek's handshake finishes.
         void tune (uint16_t frequency);
+
+        // Move the requested frequency by this many stations' spacings,
+        // wrapping past either end of the band. Every nonzero call moves
+        // again, including during a seek; zero changes nothing. This makes
+        // step (encoder.turned ()) safe on every pass of loop ().
         void step (int8_t stations);
 
         // Find the next station up or down the band.
@@ -129,6 +132,7 @@ namespace adk {
         uint8_t   segments_;
         uint8_t   textFlag_;
         int8_t    seek_;
+        bool      requested_;   // a tune or nonzero step since the seek began
         bool      ok_;
         bool      tuned_;
         bool      named_;

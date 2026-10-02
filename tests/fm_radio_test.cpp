@@ -229,6 +229,92 @@ TEST (fmRadioSeeksTheNextStationEitherWay)
     CHECK (!radio.isTuning ());
 }
 
+TEST (fmRadioHonorsANewerTuneDuringSeek)
+{
+    fake::Si4703 chip  {Sdio, Sclk, Reset};
+    adk::FmRadio radio {Sdio, Sclk, Reset};
+
+    chip.stations = {{136, 42, true}};
+    adk::setup ();
+    radio.tune (950);
+    run (200, radio);
+    radio.seekUp ();
+    run (20, radio);
+    radio.tune (980);
+    CHECK (run (300, radio) == 1);
+    CHECK (!radio.isTuning ());
+    CHECK (radio.frequency () == 980);
+    CHECK ((chip.registers[0x0B] & 0x3FF) == 105);
+}
+
+TEST (fmRadioHonorsTheLatestStepsDuringSeek)
+{
+    fake::Si4703 chip  {Sdio, Sclk, Reset};
+    adk::FmRadio radio {Sdio, Sclk, Reset};
+
+    chip.stations = {{136, 42, true}};
+    adk::setup ();
+    radio.tune (950);
+    run (200, radio);
+    radio.seekUp ();
+    run (20, radio);
+    radio.step (1);
+    radio.step (1);
+    CHECK (radio.frequency () == 952);
+    CHECK (run (300, radio) == 1);
+    CHECK (radio.frequency () == 952);
+    CHECK ((chip.registers[0x0B] & 0x3FF) == 77);
+
+    radio.seekDown ();
+    run (20, radio);
+    radio.tune (980);
+    radio.step (-1);
+    CHECK (radio.frequency () == 979);
+    CHECK (run (300, radio) == 1);
+    CHECK (radio.frequency () == 979);
+    CHECK ((chip.registers[0x0B] & 0x3FF) == 104);
+}
+
+TEST (fmRadioHonorsARequestWhileTheSeekHandshakeSettles)
+{
+    fake::Si4703 chip  {Sdio, Sclk, Reset};
+    adk::FmRadio radio {Sdio, Sclk, Reset};
+
+    chip.stations = {{136, 42, true}};
+    adk::setup ();
+    radio.tune (950);
+    run (200, radio);
+    radio.seekUp ();
+
+    for (int attempt = 0; attempt < 20 && (chip.registers[0x02] & (1u << 8)); ++attempt)
+    {
+        run (10, radio);
+    }
+
+    CHECK (radio.isTuning ());
+    CHECK (!radio.wasTuned ());
+    CHECK (radio.frequency () == 1011);
+    radio.tune (980);
+    CHECK (run (300, radio) == 1);
+    CHECK (radio.frequency () == 980);
+    CHECK ((chip.registers[0x0B] & 0x3FF) == 105);
+}
+
+TEST (fmRadioZeroStepsLeaveASeekRunning)
+{
+    fake::Si4703 chip  {Sdio, Sclk, Reset};
+    adk::FmRadio radio {Sdio, Sclk, Reset};
+
+    chip.stations = {{136, 42, true}};
+    adk::setup ();
+    radio.tune (950);
+    run (200, radio);
+    radio.seekUp ();
+    radio.step (0);
+    CHECK (run (200, radio) == 1);
+    CHECK (radio.frequency () == 1011);
+}
+
 TEST (fmRadioLearnsTheStationsName)
 {
     fake::Si4703 chip  {Sdio, Sclk, Reset};

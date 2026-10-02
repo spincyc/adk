@@ -15,6 +15,7 @@ namespace adk {
     struct IrReceiver : Object
     {
         IrReceiver (Pin pin);
+        ~IrReceiver ();
 
         // A code arrived in this update: a button press, or a repeat, which
         // the remote sends about nine times a second while it is held.

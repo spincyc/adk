@@ -73,7 +73,7 @@ namespace adk {
         }
 
         flash_.beat (now, period_);
-        bool lit = flash_.elapsed (now) < (period_ + 1) / 2;
+        bool lit = flash_.elapsed (now) < period_ / 2 + period_ % 2;
 
         if (lit != light_.isOn ())
         {

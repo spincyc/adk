@@ -3,12 +3,14 @@
 #include "link.h"
 #include "object.h"
 #include "serial_port.h"
+#include "timing.h"
 
 namespace adk {
 
-    // An Ebyte E32-433T20D LoRa module (sold as the E32-TTL-100 and under
-    // other names): a 433 MHz radio that reaches a kilometer or more and
-    // passes on whatever the Mega sends it to every module on its channel.
+    // A legacy SX1278 Ebyte E32-433T20D LoRa module with six-byte C0 settings,
+    // as described in Ebyte's manual v1.0 (2022-05-12). Also sold as the
+    // E32-TTL-100, it is a 433 MHz radio that reaches a kilometer or more
+    // and passes whatever the Mega sends it to every module on its channel.
     // ADK sends and receives a line of text at a time.
     //
     //   VCC -> 5 V, GND -> GND
@@ -40,8 +42,11 @@ namespace adk {
         bool ok () const;
 
         // Send a line of text to every module on the channel. False, and
-        // nothing sent, if it is over 56 characters, one of the module's
-        // packets with its newline.
+        // nothing sent, if it is over 56 characters or the module or UART
+        // is busy. A line and its newline fit in one module packet. The
+        // update after a send starts a holdoff for its UART bytes plus
+        // three idle byte times. Calls return immediately during that
+        // interval; AUX must also be high before another send can succeed.
         bool send (const char* text);
 
         // A line arrived in this update. Its text stays until the next.
@@ -65,10 +70,13 @@ namespace adk {
         HardwareSerial& port_;
         LineReader<64>  reader_;
         char            text_ [MaxLength + 1];
+        StartTime       sending_;
+        Millis          wait_;
         Pin             mode_;
         Pin             aux_;
         uint8_t         channel_;
         bool            ok_;
         bool            received_;
+        bool            queued_;
     };
 }

@@ -191,3 +191,44 @@ TEST (stoppedLedIsOff)
     CHECK (!led.isOn ());
     CHECK (arduino::pin (8).output == LOW);
 }
+
+TEST (blinkRoundsAnOddHalfPeriodUp)
+{
+    adk::Led led {8};
+
+    adk::setup ();
+    led.blink (5);
+    adk::update (0);
+    CHECK (led.isOn ());
+    adk::update (2);
+    CHECK (led.isOn ());
+    adk::update (3);
+    CHECK (!led.isOn ());
+    adk::update (5);
+    CHECK (led.isOn ());
+}
+
+TEST (blinkHandlesTheLongestPeriodAcrossTheWrapOfMillis)
+{
+    adk::Led led {8};
+
+    adk::setup ();
+    led.blink (0xFFFFFFFF);
+    CHECK (led.isOn ());
+    adk::update (0);
+    CHECK (led.isOn ());
+    adk::update (0x7FFFFFFF);
+    CHECK (led.isOn ());
+    adk::update (0x80000000);
+    CHECK (!led.isOn ());
+    adk::update (0xFFFFFFFE);
+    CHECK (!led.isOn ());
+    adk::update (0xFFFFFFFF);
+    CHECK (led.isOn ());
+    adk::update (0);
+    CHECK (led.isOn ());
+    adk::update (0x7FFFFFFE);
+    CHECK (led.isOn ());
+    adk::update (0x7FFFFFFF);
+    CHECK (!led.isOn ());
+}

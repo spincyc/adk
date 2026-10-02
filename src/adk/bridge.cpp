@@ -112,6 +112,7 @@ namespace adk {
         , heardAt_     (0)
         , mineCount_   (0)
         , theirsCount_ (0)
+        , next_        (0)
         , run_         (0)
         , theirRun_    (0)
         , beat_        (true)
@@ -419,13 +420,20 @@ namespace adk {
         Text<Longest> line;
         bool          chosen [MaxValues] = {};
         bool          any                = false;
+        uint8_t       next               = next_;
 
         print (line, Mark, static_cast<int> (run_), '/', static_cast<int> (theirRun_));
 
-        for (uint8_t index = 0; index < mineCount_; ++index)
+        for (uint8_t offset = 0; offset < mineCount_; ++offset)
         {
+            uint8_t     index = static_cast<uint8_t> ((next_ + offset) % mineCount_);
             const Mine& mine = mine_[index];
             Text<32>    pair;
+
+            if (!mine.unsent)
+            {
+                continue;
+            }
 
             if (mine.event)
             {
@@ -439,14 +447,17 @@ namespace adk {
                 print (pair, mine.name, '=', mine.value);
             }
 
-            if (!mine.unsent || line.size () + 1 + pair.size () > Longest)
+            // Leave the next unsent value first in line for the next
+            // packet, even if a smaller value would still fit this one.
+            if (line.size () + 1 + pair.size () > Longest)
             {
-                continue;
+                break;
             }
 
             print (line, ' ', pair.c_str ());
             chosen[index] = true;
             any           = true;
+            next          = static_cast<uint8_t> ((index + 1) % mineCount_);
         }
 
         if ((!any && !beat_) || !out_.sendLine (line.c_str ()))
@@ -461,6 +472,7 @@ namespace adk {
 
         sentAt_ = now;
         beat_   = false;
+        next_   = next;
     }
 
     const Bridge::Theirs* Bridge::find (const char* name) const

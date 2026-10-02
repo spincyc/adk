@@ -404,3 +404,93 @@ TEST (remoteDigitButtonsKnowTheirNumbers)
     CHECK (adk::remote::digitOf (adk::remote::digit9) == 9);
     CHECK (adk::remote::digitOf (adk::remote::power) == -1);
 }
+
+TEST (irReceiverDestructionDetachesBeforeTheNextEdge)
+{
+    Remote remote;
+
+    {
+        adk::IrReceiver ir {Signal};
+        adk::setup ();
+        remote.press (adk::remote::power);
+        adk::update (0);
+        CHECK (ir.wasReceived ());
+    }
+
+    // Exercise the old callback before a board reset can hide it.
+    int reads = 0;
+    arduino::onDigitalRead = [&] (uint8_t pin)
+    {
+        ++reads;
+        return arduino::pin (pin).input;
+    };
+
+    remote.press (adk::remote::digit1);
+    CHECK (reads == 0);
+    arduino::onDigitalRead = nullptr;
+}
+
+TEST (irReceiverDestructionKeepsAnotherInterruptListening)
+{
+    adk::IrReceiver lasting {21};
+    Remote          remote  {21};
+
+    {
+        adk::IrReceiver temporary {Signal};
+        adk::setup ();
+    }
+
+    remote.press (adk::remote::digit2);
+    adk::update (0);
+    CHECK (lasting.wasReceived ());
+    CHECK (lasting.command () == adk::remote::digit2);
+}
+
+namespace {
+
+    struct DirectReceiver : adk::IrReceiver
+    {
+        using IrReceiver::IrReceiver;
+        using IrReceiver::setup;
+    };
+}
+
+TEST (irReceiverDestructionPreservesItsReplacement)
+{
+    DirectReceiver replacement {Signal};
+    Remote         remote;
+
+    {
+        DirectReceiver original {Signal};
+        original.setup ();
+
+        adk::releaseClaims ();
+        replacement.setup ();
+    }
+
+    remote.press (adk::remote::digit3);
+    adk::update (0);
+    CHECK (replacement.wasReceived ());
+    CHECK (replacement.command () == adk::remote::digit3);
+}
+
+TEST (irReceiverDestructionWithoutOwningAnInterruptKeepsItsOwner)
+{
+    DirectReceiver owner {Signal};
+    Remote         remote;
+    owner.setup ();
+
+    {
+        DirectReceiver failed  {Signal};
+        adk::IrReceiver unused  {Signal};
+        adk::IrReceiver invalid {90};
+        adk::IrReceiver noIrq   {22};
+        failed.setup ();
+        CHECK (adk::fault () == adk::Fault::PinInUse);
+    }
+
+    remote.press (adk::remote::digit4);
+    adk::update (0);
+    CHECK (owner.wasReceived ());
+    CHECK (owner.command () == adk::remote::digit4);
+}

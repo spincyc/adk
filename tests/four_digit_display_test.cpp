@@ -262,6 +262,12 @@ TEST (fourDigitDisplayShowsAnyWholeNumberType)
     display.show (uint8_t {7});
     CHECK (scan (now) == glyphs ("   7"));
 
+    display.show (false);
+    CHECK (scan (now) == glyphs ("   0"));
+
+    display.show (true);
+    CHECK (scan (now) == glyphs ("   1"));
+
     display.show (-42L);
     CHECK (scan (now) == glyphs (" -42"));
 
@@ -290,6 +296,50 @@ TEST (fourDigitDisplayChecksTheRangeBeforeNarrowing)
 
     display.show (0xFFFFFFFFUL);
     CHECK (scan (now) == glyphs ("----"));
+
+    display.show (UINT64_MAX);
+    CHECK (scan (now) == glyphs ("----"));
+
+    display.show (INT64_MIN);
+    CHECK (scan (now) == glyphs ("----"));
+
+    display.show (INT64_MAX);
+    CHECK (scan (now) == glyphs ("----"));
+
+    display.show (uint64_t {9999});
+    CHECK (scan (now) == glyphs ("9999"));
+
+    display.show (uint64_t {10000});
+    CHECK (scan (now) == glyphs ("----"));
+
+    display.show (int64_t {-999});
+    CHECK (scan (now) == glyphs ("-999"));
+
+    display.show (int64_t {-1000});
+    CHECK (scan (now) == glyphs ("----"));
+}
+
+TEST (fourDigitDisplayAcceptsMutableAndConstText)
+{
+    adk::FourDigitDisplay display {30, 31, 32, 22, 23, 24, 25};
+    adk::Millis           now = 0;
+    char                  text [] = "12.34";
+    char*                 pointer = text;
+    const char*           constant = text;
+
+    adk::setup ();
+
+    display.show (text);
+    CHECK (scan (now) == dotted (glyphs ("1234"), 1));
+
+    display.show (pointer);
+    CHECK (scan (now) == dotted (glyphs ("1234"), 1));
+
+    display.show (constant);
+    CHECK (scan (now) == dotted (glyphs ("1234"), 1));
+
+    display.show (static_cast<char*> (nullptr));
+    CHECK (scan (now) == glyphs ("    "));
 }
 
 TEST (fourDigitDisplayShowsTextWithDots)

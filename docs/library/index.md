@@ -51,9 +51,11 @@ which it happened. Methods for how things are, such as
 
 `adk::setup ()` checks every pin a part asks for. If a pin doesn't exist,
 is used by two parts, or can't do what the part needs (only some pins can dim
-an LED or drive a servo), setup stops before anything is switched on. Every
-pin goes back to being a harmless input, and the Mega's own **L** LED blinks
-the pin number: long flashes for tens, then short flashes for ones.
+an LED or drive a servo), setup stops at that part. Parts already prepared
+are put in their safe state, including muting an FM radio and switching off
+an RFID reader's field. Later parts are never prepared. Every claimed pin
+then goes back to being an input, and the Mega's own **L** LED blinks the pin
+number: long flashes for tens, then short flashes for ones.
 
 | You see | It means |
 |---|---|
