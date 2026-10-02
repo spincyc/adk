@@ -23,7 +23,8 @@ adk::Every     nudge    {250};        // a held stick changes the length
 
 constexpr int tries = 64;             // one for each dot of the matrix
 
-int         length  = 20;             // letters in each message, 5 to 60
+int         length  = 20;             // letters in each message, 15 to 60
+uint32_t    run     = 0;              // a different number for each test
 int         sent    = 0;              // messages sent in this test
 int         heard   = 0;              // echoes that came back whole
 adk::Millis back    = 0;              // how long the latest echo took
@@ -43,20 +44,21 @@ void loop ()
 
     if (!testing && nudge.ticked () && joystick.x () / 60 != 0)
     {
-        length = constrain (length + joystick.x () / 60 * 5, 5, 60);
+        length = constrain (length + joystick.x () / 60 * 5, 15, 60);
         showSettings ("Click to test");
     }
 
     if (!testing && stick.wasPressed ())
     {
         testing = true;
+        ++run;
         sent    = 0;
         heard   = 0;
         matrix.clear ();
     }
 
     // The message that is out came back, word for word: light its dot.
-    if (testing && radio.wasReceived () && message == radio.text ())
+    if (testing && sent > 0 && radio.wasReceived () && message == radio.text ())
     {
         back = trip.elapsed ();
         giveUp.stop ();
@@ -78,12 +80,12 @@ void loop ()
     }
 }
 
-// A numbered message, 1 to 64, filled out with letters to its length, so
-// each one is different and exactly as long as the stick chose.
+// The test number and message number travel together, even if early
+// packets go missing. Fifteen letters leave room for both full numbers.
 void sendNext ()
 {
     message.clear ();
-    adk::print (message, sent + 1, ' ');
+    adk::print (message, run, ' ', sent + 1, ' ');
 
     while (int (message.size ()) < length)
     {

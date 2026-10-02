@@ -32,10 +32,17 @@ void setup ()
 void loop ()
 {
     adk::update ();
+    State before = state;
 
     if (receiver.wasReceived () && !receiver.isRepeat ())
     {
         pressed (receiver.command ());
+    }
+
+    // Entering Leaving restarts the second, but its old tick still exists.
+    if (state != before)
+    {
+        return;
     }
 
     if (state == State::Leaving && countedDown ())

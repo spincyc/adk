@@ -58,9 +58,11 @@ question, how good is the link?
 messages: it sent everything again every two seconds, so a lost change
 came a moment late, and you hardly noticed. To find out how good a link
 really is, send messages you know and count the ones that come back.
-Each of the meter's messages starts with its number, from 1 to 64, so a
-late one can't be counted as the next. And the modem's checksum throws
-away any message that noise got into, so every message arrives whole or
+Each message starts with a test number, then its message number from 1
+to 64. Every packet identifies its test, even if its first messages were
+lost, and a late echo from a previous test cannot count in the next.
+The modem's checksum throws away any message that noise got into, so
+every message arrives whole or
 not at all. Board B sends back whatever it hears; a message lost on the
 way there, or on the way back, leaves a gap on Board A's matrix.
 
@@ -188,9 +190,13 @@ What's new:
   Lesson 40. A bridge sends everything again every two seconds, which
   would cover up the very losses the meter is there to count.
 - `sendNext ()` builds each message in an `adk::Text<60>`, as Lesson 54
-  built its score: its number, such as `17 `, and then letters of the
-  alphabet until it is as long as the screen says. If the modem takes it,
-  `++sent` counts it, and `trip.restart ()` starts the stopwatch.
+  built its score: a test number and message number, such as `2 17 `,
+  then letters of the alphabet until it is as long as the screen says.
+  `run` goes up with each click and fits over four billion tests before
+  wrapping. The minimum length is 15, enough for both full numbers and
+  their spaces. All these characters count in the on-air length. If the
+  modem takes it, `++sent` counts it, and `trip.restart ()` starts the
+  stopwatch.
 - `adk::Timer giveUp;` is how long to wait for an echo:
   `2 * airTime () + 500`, the formula's time on the air there and back,
   and half a second to spare. `airTime ()` is the formula from
@@ -199,7 +205,8 @@ What's new:
 - `message == radio.text ()` is true when what arrived is exactly the
   message that is out. Then `back = trip.elapsed ()` keeps its time there
   and back, `giveUp.stop ()` stops the wait, and `++heard` counts it. A
-  late echo of message 2 starts with a 2, so it can't count as message 3.
+  late echo of message 2 still carries that number, so it cannot count as
+  message 3, or as message 2 in a different test.
 - `!giveUp.isRunning ()` is true when nothing is out: the echo came back
   and stopped the timer, or the timer ran out and the message is lost.
   Either way, the next one goes, until all 64 have gone.
@@ -210,7 +217,7 @@ What's new:
   and 64 the bottom right corner.
 - `joystick.x () / 60` is −1, 0 or 1, as it moved the paddle in
   Lesson 54. Every quarter second while the stick is held, the length
-  goes up or down by 5, and `constrain ()` keeps it from 5 to 60.
+  goes up or down by 5, and `constrain ()` keeps it from 15 to 60.
 - `finish ()` shows `heard * 100 / tries`, the share that came back in
   percent, and the latest time there and back. It beeps high when all 64
   came back and low when any were lost, so you can tell without looking.
@@ -221,12 +228,18 @@ Board B's sketch, **Echo**, is short:
 
 - `radio.send (radio.text ())` sends every message straight back, word
   for word, to its partner, Board A.
-- `atoi (radio.text ())` reads the number at the start of the message.
-  `atoi`, short for "ASCII to integer", reads digits until the first thing
-  that isn't one, so `17 defg` gives 17.
-- `showHeard ()` lights that message's dot, worked out as on Board A.
-  A number lower than the last one means a new test has begun, so it
-  clears the matrix first.
+- `strtoul ()` reads the test number and leaves `end` at the space after
+  it. `strtol ()` reads the message number after that. The sketch checks
+  the spaces and the range 1 to 64 before using the numbers.
+- `showHeard ()` clears the matrix when the test number changes, then
+  lights the message's dot. If test 2 first delivers message 17, dots
+  from test 1 still go away. Equal or lower message numbers work too.
+
+Reset both boards together before a new session: restarting only Board A
+reuses its test numbers. Board B cannot know a new test exists until one
+of its packets arrives. If an entire test is lost on the outward trip,
+Board B still shows the previous test; do not use those old dots to diagnose
+return losses.
 
 ## Upload it
 
@@ -242,14 +255,14 @@ Board B's sketch, **Echo**, is short:
    About ten seconds later the meter beeps, and the screen shows the
    result, such as `100% back 117ms`.
 4. Hold the stick right until the screen says `60 letters`, and click
-   again; then try `5 letters`.
+   again; then try `15 letters`.
 
 Did you predict about 100 ms for 20 letters? Each way, the toll is 20 ms
 and twenty letters add 30 ms: 50 ms, so 100 ms there and back. Your
 meter shows a little more, for the time the Megas and the modems take
 to pass each message along their wires. Sixty letters take about 220 ms
-there and back, five about 55 ms. Sixty letters carry twelve times as
-much as five, but take only about four times as long, because the toll
+there and back, fifteen about 85 ms. Sixty letters carry four times as
+much as fifteen, but take about 2.6 times as long, because the toll
 is paid either way: long messages carry their letters more cheaply. A
 whole test of 64 twenty-letter messages takes 64 times 100 ms, between
 six and seven seconds, and a little more. At Far, a 20-letter message
@@ -327,22 +340,22 @@ such as someone walking between the boards.
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"
-    With the screen at `Quick 20 letters`, message 17 goes from Board A to
-    its modem as this line:
+    With the screen at `Quick 20 letters`, test 2, message 17 goes from
+    Board A to its modem as this line:
 
     ```text
-    AT+SEND=2,20,17 defghijklmnopqrst
+    AT+SEND=2,20,2 17 fghijklmnopqrst
     ```
 
     Board B's modem hears it and tells its Mega the sender, the length,
     the text, the signal in dBm and the margin in dB:
 
     ```text
-    +RCV=1,20,17 defghijklmnopqrst,-58,9
+    +RCV=1,20,2 17 fghijklmnopqrst,-58,9
     ```
 
     Board B sends the text straight back with `AT+SEND=1,20,...`, and
-    Board A's modem tells its Mega `+RCV=2,20,17 defghijklmnopqrst,...`.
+    Board A's modem tells its Mega `+RCV=2,20,2 17 fghijklmnopqrst,...`.
 
     Where the formula comes from: at Quick, each chirp sweeps the 125 kHz
     band in 1.024 ms and carries 7 bits; at Far, 8.192 ms and 10 bits. For
@@ -357,7 +370,7 @@ such as someone walking between the boards.
 ## Make it yours
 
 1. **Long or short, at the edge.** Go back to a place where Quick loses
-   some messages, and test 5 letters and then 60 letters there, twice
+   some messages, and test 15 letters and then 60 letters there, twice
    each. Which loses more? A long message has more chirps for noise to
    spoil, and the modem's spare bits can put right only so much.
 2. **More power.** Change `.power = 0` to `.power = 10` on both boards,
@@ -369,9 +382,14 @@ such as someone walking between the boards.
    `adk::print (lcd.at (0, 0), "Margin ", radio.margin (), " dB   ")`.
    At Quick, messages start to go missing as it nears −7.5 dB; at Far,
    nearer −15.
-4. **Letters a second.** After a test in which some came back, show how
-   many letters a second it carried one way: `length * 2000 / back`.
-   Which length and which speed carries the most?
+4. **Letters a second.** At the end of `finish ()`, calculate the one-way
+   rate only when `heard > 0 && back > 0`, so a successful, nonzero time
+   exists: `length * 2000UL / back`. The `UL` makes the multiplication use
+   a 32-bit unsigned long; the Mega's 16-bit `int` cannot hold even
+   20 × 2000. At 20 letters and 100 ms, the result is 400 letters a second.
+   This estimates the latest successful round trip, including its test
+   numbers; it does not count lost messages or waiting time. Which length
+   and which speed carries the most?
 
 ## Measure it
 
@@ -404,8 +422,9 @@ What the numbers tell you:
 ## Check yourself
 
 1. Why does the meter send 64 messages in a test, and not 5?
-2. After a test, Board B's matrix has the dot for message 41 lit, but
-   Board A's doesn't. What happened to message 41?
+2. After Board B has received packets from the current test, its matrix
+   has the dot for message 41 lit, but Board A's doesn't. What happened
+   to message 41?
 3. In one place, Quick got 38 of 64 back and Far all 64. What did Far
    give up to get them through? Why did the bridge use Quick anyway?
 

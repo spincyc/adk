@@ -49,7 +49,7 @@ int main ()
     Serial3.text.clear ();
     click ();
     expect (testing && sent == 1 && message.size () == 20, "a click sends message 1");
-    expect (Serial3.text.find ("AT+SEND=2,20,1 cdefghijklmnopqrst\r\n") != std::string::npos,
+    expect (Serial3.text.find ("AT+SEND=2,20,1 1 efghijklmnopqrst\r\n") != std::string::npos,
             "message 1 goes to Board B, numbered and filled to its length");
 
     echo ();
@@ -73,15 +73,45 @@ int main ()
     hear (two.c_str ());
     expect (heard == 1 && !matrix.get (1, 0), "a late echo is not counted");
 
+    while (sent < 64)
+    {
+        echo ();
+    }
+
+    // The last packet's echo arrives only when the next run starts.
+    std::string oldFinalEcho = message.c_str ();
+    while (testing)
+    {
+        runFor (10);
+    }
+    expect (sent == 64 && heard == 62, "the old run lost messages 2 and 64");
+    expect (!matrix.get (1, 0) && !matrix.get (7, 7), "both losses leave gaps");
+    expect (arduino::pin (10).tone == adk::note::c4, "a low beep for a loss");
+
+    arduino::drive (22, LOW);
+    runFor (1);
+    Serial3.input += "+RCV=1," + std::to_string (oldFinalEcho.size ())
+                   + ',' + oldFinalEcho + ",-40,9\r\n";
+    runFor (25);
+    expect (stick.wasPressed () && radio.wasReceived (),
+            "the old echo and new-test click arrive in the same update");
+    expect (heard == 0, "the start update rejects the previous run's retained message");
+    arduino::drive (22, HIGH);
+    runFor (25);
+    expect (testing && sent == 1 && !matrix.get (7, 7), "a new test clears the matrix");
+    hear ("1 1 efghijklmnopqrst");
+    expect (heard == 0 && !matrix.get (0, 0), "a previous test's echo is rejected");
+    expect (run == 2, "the next test has its own identity");
     while (testing)
     {
         echo ();
     }
-    expect (sent == 64 && heard == 63, "63 of 64 came back");
-    expect (!matrix.get (1, 0) && matrix.get (7, 7), "a gap at 2, and dot 64 lit");
-    expect (arduino::pin (10).tone == adk::note::c4, "a low beep for a loss");
-
+    expect (heard == 64 && matrix.get (7, 7), "the new run counts its own 64 echoes");
+    expect (arduino::pin (10).tone == adk::note::c6, "a high beep for a complete run");
+    run = 4294967294UL;
+    length = 15;
     click ();
-    expect (testing && sent == 1 && !matrix.get (7, 7), "a new test clears the matrix");
+    expect (message.size () == 15 && message == "4294967295 1 no",
+            "the minimum length fits a full-width test number");
     return result ();
 }

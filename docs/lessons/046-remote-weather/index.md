@@ -57,16 +57,22 @@ changes by one or two on almost every read. Shared on every pass of
 nothing. The weather changes over minutes, so the garden sends a
 **report** every five seconds, and nothing new in between.
 
-**A report number.** The weather often stays the same, so report after
-report can bring the very same readings. Then the bridge sends nothing
-new, and Board A can't tell a fresh report from an old one. So the garden
-counts its reports, `reports`, and shares the count as one more name,
-`report`. The count goes up by one every time, even when every reading
-stays the same:
+**A report number with every reading.** The weather often stays the same,
+so report after report can bring the very same measurements. The garden
+counts its reports and uses `shareEvent ()`, from the earlier projects,
+to send each measurement as a payload beside that count. `air=12:215`
+means report 12 measured 21.5 °C. The count and its payload stay together
+in one packet, even when a whole report needs several packets.
 
-<p class="formula">report=12 → report=13: a new report has come</p>
+The `report` event carries the same count and an unused payload of 0.
+Board A watches `bridge.changed ("report")` and notes the time. It shows
+a reading only when that reading's count matches the current report.
+If the light's packet is lost, `light=11:64` cannot borrow report 12's
+new time: the screen shows dashes until `light=12:64` arrives. At startup,
+an absent reading also shows dashes, never a made-up zero.
 
-Board A watches `bridge.changed ("report")`, and notes the time.
+The bridge counts events from when the boards found each other. A restart
+clears those counts together; a fresh report then brings the readings back.
 
 **Old news.** When the garden goes quiet, Board A still holds its last
 readings. Showing them would say the garden is still 21.5 °C, when nobody
@@ -79,7 +85,9 @@ Board A shows dashes for it.
 
 The radio can lose a message or two on the way, as
 [Lesson 43](../043-the-bridge/index.md#what-the-bridge-can-lose)
-explains; a lost report comes again within two seconds.
+explains. Every two seconds the bridge retries its latest values; a
+missing reading becomes visible when a matching retry gets through. Further
+losses can take longer.
 
 !!! question "Predict"
     Once it's running, you'll unplug Board B, the garden. How long until
@@ -147,10 +155,12 @@ What's new:
 - `hasNews ()` is true once a report has come, while the garden can be
   heard. `bridge.value ("report")` is 0 until the first report, as every
   value is until it arrives.
-- `bridge.value ("air")` is the air temperature, in tenths. For a
-  temperature, `showReading ()` divides by `10.0` to keep the fraction,
-  and `adk::fixed` shows one decimal. With no news, or a thermometer that
-  didn't answer, it shows `----` instead.
+- `bridge.value ("air")` is the reading's report count, and
+  `bridge.payload ("air")` is its temperature in tenths. `hasReading ()`
+  requires a positive current report and matching counts. For a temperature,
+  `showReading ()` divides the payload by `10.0` to keep the fraction,
+  and `adk::fixed` shows one decimal. With no news, an older or missing
+  reading, or a thermometer that didn't answer, it shows `----` instead.
 - `comfortOf ()` picks blue, green or red from the tenths, as `colorOf ()`
   did in Lesson 15: 180 tenths is 18 °C. Without a temperature, the light
   fades out.
@@ -160,9 +170,9 @@ What's new:
 
 **Indoors** is longer than the sketch of a lesson like this one usually
 is. It has five readings to fit on a two-row screen, so three pages of
-them, and two kinds of missing news to show apart: a garden gone quiet,
-and a thermometer that didn't answer. Each of those takes a few lines of
-its own.
+them, and missing news to handle: a garden gone quiet, a lost or older
+reading, and a thermometer that didn't answer. Each of those takes a few
+lines of its own.
 
 Then **File → Examples → Adk → lessons → 046-remote-weather → Garden** for
 Board B:
@@ -175,7 +185,9 @@ What's new:
   are Lesson 14's thermometers and Lesson 8's light sensor, just as they
   were. `online` is the green LED, lit while `bridge.isConnected ()`.
 - `report` ticks every five seconds. Then the sketch adds one to
-  `reports`, shares it, and shares every reading after it.
+  `reports` and shares that same count alongside each reading using
+  `bridge.shareEvent ()`. Its paired payload is the measurement, or 0
+  for the report marker itself.
 - `tenths ()` turns a temperature in degrees into whole tenths:
   `lround ()` rounds to the nearest whole number, so 21.46 °C becomes
   214.6 and then 215.
@@ -190,8 +202,9 @@ What's new:
    seconds the screen says `No report yet`.
 2. Plug in Board B and upload **Garden** to it. Its green LED lights within
    a second or two, once the boards hear each other.
-3. Within five seconds the first report comes. Board A's light glows, and
-   its screen shows something like:
+3. Within about five seconds of the boards finding each other, a new
+   report can arrive. Board A's light glows, and its screen shows something
+   like:
 
     ```text
     Air 21.5°C 45%
@@ -231,8 +244,8 @@ a new time would have been a lie. Unplug before you put the wire back.
 | Board A always says `No news` and Board B's green LED stays off | The boards don't hear each other. Check each modem as in Lesson 43: TXD into f26, pin 15 into j26, pin 14 into j28 with the 1 kΩ and 2 kΩ, RXD into c28, GND into the bottom − rail by column 24 and VDD on the 3.3V pin. |
 | Board B's green LED is on, but Board A says `No news` | Board A hears nothing, but Board B hears Board A: check Board A's TXD and pin 15, and Board B's RXD and its divider. |
 | Board A says `No report yet` for more than five seconds | Check that Board B runs **Garden**, and that its modem is back on pins 14 and 15, not 16 and 17. |
-| Air or humidity shows `----` | The DHT11 didn't answer. Check S to pin 16, + to the top + rail by column 36, − to the top − rail by column 37, and wait two seconds. |
-| `DS ----` | Check the 18B20's Y pin (the signal) goes to pin 17, its R to the top + rail and its G to the top − rail. |
+| Air or humidity shows `----` | Its packet may be missing; allow a retry. If it stays missing, the DHT11 may not have answered. Check S to pin 16, + to the top + rail by column 36, − to the top − rail by column 37, and wait two seconds. |
+| `DS ----` | Allow a retry for a lost packet, then check the 18B20's Y pin (the signal) goes to pin 17, its R to the top + rail and its G to the top − rail. |
 | `NTC` shows about −77 or hundreds | As in Lesson 14: the thermistor's legs in f33 and e33, the red wire from j33 to the top + rail, the 10 kΩ from c33 to c36. |
 | `Light` stays at 0 or 100 | Check the photoresistor in f37 and e37, the red wire from j37 to the top + rail by column 37, the 10 kΩ from a37 to the bottom − rail, and A1's wire in c37. |
 | The time stays `00:00:00` after reports arrive, or is wrong | Check the clock module's SDA on pin 20 and SCL on 21. Lesson 32 shows how to set it. |
@@ -240,18 +253,20 @@ a new time would have been a lie. Unplug before you put the wire back.
 | The **L** LED blinks long and short flashes | ADK found a pin problem in the sketch. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"
-    A report goes out as two messages, because a line holds at most 56
-    letters:
+    A report uses more than one message because a line holds at most 56
+    letters. With these readings it could go as:
 
     ```text
-    @1/1 report=12 air=215 humid=45 probe=211 ntc=214
-    @1/1 light=64
+    @1/1 report=12:0 air=12:215 humid=12:45 probe=12:211
+    @1/1 ntc=12:214 light=12:64
     ```
 
-    `1/1` are the two boards' start numbers, from Lesson 43. If one of the
-    two messages is lost, the bridge sends everything again two seconds
-    later, and a repeat isn't a change, so the time on the screen doesn't
-    move.
+    `1/1` are the two boards' start numbers, from Lesson 43. In each
+    `name=count:payload`, the count identifies the measurement's report.
+    A lost second packet leaves both NTC and light as dashes for report
+    12, even if the screen still holds their measurements from report 11.
+    The bridge retries every two seconds. A repeated report count does
+    not move the time; matching fields fill the gaps when they arrive.
 
     Board A shares nothing, so it sends just `@1/1` every two seconds,
     which is how the garden knows it is there. Its screen changes every
@@ -296,7 +311,7 @@ What the numbers tell you:
   your room, and the screen shows it within a report or two.
 - **Covered**, the photoresistor's resistance climbs, it takes most of the
   5 V, and A1 falls towards 0: the garden has gone dark.
-- The number crossed the bridge as a plain whole number, `light=50`: the
+- The number crossed the bridge beside its report count, `light=12:50`: the
   voltage on one board became a word on the other.
 
 ## Check yourself
@@ -314,6 +329,7 @@ What the numbers tell you:
        `10.0` and shows 21.5 again.
     2. The report number goes up by one with every report, even when every
        reading stays the same, so `bridge.changed ("report")` is true.
+       Each reading carries that count too, so an older one stays hidden.
     3. The bridge keeps the last readings it heard, but nobody knows whether
        they are still true. Showing them would say the garden is still that
        warm; dashes say the news is old.

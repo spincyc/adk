@@ -77,8 +77,9 @@ When several numbers change together, they go together in one message.
 **Everything again every two seconds.** A message can be lost: to noise,
 or because both boards spoke at the same moment and neither heard the
 other. So every two seconds each board sends everything it shares,
-changed or not, and a lost change is made good within two seconds. The
-messages are plain text, which you'll see in the Serial Monitor:
+changed or not, so a lost change gets another try at that interval. More
+than one retry may be lost. The messages are plain text, which you'll see
+in the Serial Monitor:
 
 ```text
 @1/1 button=0
@@ -272,13 +273,14 @@ to check `isConnected ()` as well: Lesson 45's fan does.
 
     - **A lost message.** Noise, or both boards sending at once, can lose
       one. Every two seconds the bridge sends everything again, so a lost
-      value is back within two seconds.
+      value is tried again at that interval. It arrives when a retry gets
+      through; repeated loss can take longer.
     - **A quick change.** The bridge sends at most ten messages a second,
       and only the latest value. A number that goes 1, 2, 3 within a
       tenth of a second arrives as 3.
     - **A moment.** A press lasts one pass of `loop ()`, too short to
-      share. A sketch sends a count of presses instead, and the other
-      board watches it go up: *Make it yours* shows how.
+      share. For an on/off switch, change a stored state on each
+      press and share that state: *Make it yours* shows how.
     - **Old news.** When the other board goes quiet, its last values stay,
       as you just saw. A sketch that must not trust them checks
       `isConnected ()`.
@@ -339,13 +341,24 @@ to check `isConnected ()` as well: Lesson 45's fan does.
 ## Make it yours
 
 1. **Switch it.** Make a press switch the other board's red LED on and
-   off, instead of lighting it while held. A press lasts a single pass
-   of `loop ()`, far too short to share, so share a count instead: add
-   one to `presses` at each `button.wasPressed ()`, share it with
-   `bridge.share ("presses", presses)`, and on the other board toggle
-   the LED whenever `bridge.changed ("presses")`. A count only ever goes
-   up, so even if a message is lost, the next one still brings a number
-   that has changed.
+   off. Add `bool switchedOn = false;` beside the objects in each sketch.
+   Replace the line that shares `button.isPressed ()` with:
+
+    ```cpp
+    if (button.wasPressed ())
+    {
+        switchedOn = !switchedOn;
+    }
+
+    bridge.share ("button", switchedOn);
+    ```
+
+    Keep `light.set (bridge.value ("button"));` on the receiving side.
+    The first zero leaves it off. Two quick presses leave the shared state
+    as it began, even if the receiver sees only the final value. A lost
+    change is retried; after reconnecting the LED takes the sender's current
+    state. Restarting the sender resets that state to off. Restarting only
+    the receiver leaves its LED off until the sender's state arrives.
 2. **How strong.** Print `radio.signal ()` beside each message, as
    Lesson 40 showed it, and walk Board B away on its power bank. Watch
    the signal fall, and see where the yellow LEDs start to flicker.

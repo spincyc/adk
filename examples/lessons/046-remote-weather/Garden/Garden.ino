@@ -1,7 +1,7 @@
 // Lesson 46: Remote Weather, Board B, the garden
 // Four sensors measure the garden, and every five seconds the bridge
-// carries a report indoors: its number, then every reading as a whole
-// number.
+// carries a report indoors: every whole-number reading travels with its
+// report number, so a lost packet cannot make an old reading look new.
 
 #include <Adk.h>
 
@@ -35,15 +35,15 @@ void loop ()
     if (report.ticked ())
     {
         ++reports;
-        bridge.share ("report", reports);
-        bridge.share ("air", dht.ok () ? tenths (dht.temperature ())
-                                       : noReading);
-        bridge.share ("humid", dht.ok () ? lround (dht.humidity ())
-                                         : noReading);
-        bridge.share ("probe", probe.ok () ? tenths (probe.celsius ())
-                                           : noReading);
-        bridge.share ("ntc", tenths (thermistor.celsius ()));
-        bridge.share ("light", light.read (0, 100));
+        bridge.shareEvent ("report", reports, 0);
+        bridge.shareEvent ("air", reports, dht.ok ()
+                           ? tenths (dht.temperature ()) : noReading);
+        bridge.shareEvent ("humid", reports, dht.ok ()
+                           ? lround (dht.humidity ()) : noReading);
+        bridge.shareEvent ("probe", reports, probe.ok ()
+                           ? tenths (probe.celsius ()) : noReading);
+        bridge.shareEvent ("ntc", reports, tenths (thermistor.celsius ()));
+        bridge.shareEvent ("light", reports, light.read (0, 100));
     }
 }
 

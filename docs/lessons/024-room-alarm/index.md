@@ -145,7 +145,8 @@ Read it from the top:
 - `enter ()` is how the alarm changes state: the light's color, the message,
   the countdown if the state has one, and a fresh code line.
   `second.restart ()` makes the countdown's first tick come a whole second
-  later.
+  later. If POWER arrived on an old tick, `loop ()` returns after changing
+  state: that tick belongs to the state it just left, not the new countdown.
 
 ## Upload it
 

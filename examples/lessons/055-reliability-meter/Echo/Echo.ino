@@ -13,7 +13,7 @@ adk::LoraModem radio  {Serial3, 2, {.partner = 1,
                                     .power   = 0}};    // its lowest
 adk::LedMatrix matrix {47, 48, 49};
 
-int last = 0;     // the number of the last message heard
+unsigned long run = 0;    // which test the dots belong to
 
 void setup ()
 {
@@ -27,23 +27,35 @@ void loop ()
     if (radio.wasReceived ())
     {
         radio.send (radio.text ());
-        showHeard (atoi (radio.text ()));
+        showHeard (radio.text ());
     }
 }
 
-// "17 abcd..." is message 17: its dot is the 17th, counting along each
-// row of eight. A number lower than the last one heard starts a new test.
-void showHeard (int number)
+// "2 17 abcd..." is test 2, message 17. Any packet can announce a new
+// test: its first sixteen messages might all have been lost.
+void showHeard (const char* text)
 {
-    if (number < last)
+    char* end;
+    unsigned long nextRun = strtoul (text, &end, 10);
+
+    if (end == text || *end != ' ')
+    {
+        return;
+    }
+
+    long number = strtol (end + 1, &end, 10);
+
+    if (number < 1 || number > 64 || *end != ' ')
+    {
+        return;
+    }
+
+    if (nextRun != run)
     {
         matrix.clear ();
+        run = nextRun;
     }
 
-    if (number >= 1 && number <= 64)
-    {
-        matrix.set ((number - 1) % 8, (number - 1) / 8);
-    }
-
-    last = number;
+    int dot = int (number) - 1;
+    matrix.set (dot % 8, dot / 8);
 }

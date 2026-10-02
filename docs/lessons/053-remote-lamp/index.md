@@ -290,10 +290,23 @@ LED away and the echo stops.
 1. **Hold to repeat.** Pass on held buttons too: count repeats as
    `repeats` on Board A, and on Board B call `irLed.repeat ()` each time
    that count goes up. Now holding **VOL+** keeps the TV's volume going.
-2. **A universal remote.** Find your TV's own codes with its remote and
-   Board A's screen. Then make Board A pass on the TV's code when you
-   press a button on the kit's remote: **VOL+** on the kit's remote could
-   become the TV's volume up, address and all.
+2. **A universal remote.** First make Board A print both parts of each
+   NEC code: the screen alone shows only the command. Add
+   `Serial.begin (9600);` in `setup ()`, after `adk::setup ();`, and these
+   lines inside the `receiver.wasReceived () && !receiver.isRepeat ()`
+   block in `loop ()`, before `obey ()`:
+
+    ```cpp
+    adk::println (Serial, "Address 0x", adk::hex (receiver.address (), 4),
+                  " command 0x", adk::hex (receiver.command (), 2));
+    ```
+
+    Open Board A's Serial Monitor at **9600 baud**, aim the TV's remote
+    at its receiver, and record both numbers for volume up. Two remotes
+    can have the same command and different addresses. Then make **VOL+**
+    on the kit's remote pass on those two recorded numbers. This works
+    only for a TV remote that speaks NEC; a different protocol needs a
+    different receiver and transmitter implementation.
 3. **A sleep timer.** Make Board A switch the lamp off again 30 minutes
    after it was switched on, with an `adk::Timer`, as in Lesson 35's last
    challenge.

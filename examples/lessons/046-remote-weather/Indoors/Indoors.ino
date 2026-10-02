@@ -43,8 +43,8 @@ void loop ()
     }
 
     // The light needs a temperature: it fades out without one.
-    long air   = bridge.value ("air");
-    bool known = hasNews () && air != noReading;
+    long air   = bridge.payload ("air");
+    bool known = hasReading ("air") && air != noReading;
     light.fadeTo (known ? comfortOf (air) : adk::color::off, 1000);
 
     if (page.ticked ())
@@ -59,6 +59,12 @@ void loop ()
 bool hasNews ()
 {
     return bridge.isConnected () && bridge.value ("report") > 0;
+}
+
+// A reading must belong to this report, not a previous packet or startup.
+bool hasReading (const char* name)
+{
+    return hasNews () && bridge.value (name) == bridge.value ("report");
 }
 
 // One reading at a time on the top row; below it, when the latest report
@@ -105,9 +111,9 @@ void showWeather ()
 // A temperature in tenths shows with its fraction: 215 is 21.5.
 void showReading (const char* name, bool temperature)
 {
-    long value = bridge.value (name);
+    long value = bridge.payload (name);
 
-    if (!hasNews () || value == noReading)
+    if (!hasReading (name) || value == noReading)
     {
         lcd.print ("----");
     }

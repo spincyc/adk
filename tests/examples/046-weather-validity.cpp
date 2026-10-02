@@ -73,11 +73,11 @@ int main ()
         runFor (150);
     }
     expect (!dht.ok (), "the sensor has stopped answering");
-    expect (Serial3.text.find ("air=-10000") != std::string::npos,
+    expect (Serial3.text.find ("air=1:-10000") != std::string::npos,
             "failed DHT sends missing marker instead of its retained temperature");
-    expect (Serial3.text.find ("probe=-10000") != std::string::npos,
+    expect (Serial3.text.find ("probe=1:-10000") != std::string::npos,
             "absent 18B20 sends missing marker instead of zero");
-    expect (Serial3.text.find ("report=1") != std::string::npos,
+    expect (Serial3.text.find ("report=1:0") != std::string::npos,
             "each report carries its number");
     return result ();
 }
