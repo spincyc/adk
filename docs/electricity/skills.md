@@ -60,13 +60,19 @@ A mains-powered bench scope joins its ground clips to the building's
 earth through its power cord, and a desktop computer usually earths its
 USB ground, so the Mega's GND is earthed too. If such a scope's ground
 clip touched the 5 V rail, it would short USB 5 V to earth through the
-clip lead. A scope and generator running from their own batteries are
-**floating**: their ground joins the circuit only where you clip it, so a
-slip cannot make that short. That is why the course asks for
-battery-powered instruments. A handheld two-channel oscilloscope with a
-built-in waveform generator is one kind that fits. Check that its
-generator can set both amplitude and DC offset, and use it on its battery
-with the charger unplugged.
+clip lead. Running the instruments from their own batteries, with chargers
+and USB data cables unplugged, removes that mains-earth path. It does
+**not** isolate one ground clip from another. Once one clip is on GND,
+a second clip touching 5 V still shorts the supply through their common
+ground. A combined instrument's connected generator ground can complete
+the same path.
+
+A combined scope and generator must meet both
+[instrument lists](../buy.md#scope-and-generator), including a generator
+that reaches **0–4 V** with amplitude and DC offset set together. A maximum
+of 4 V peak to peak alone does not establish that range. No checked
+combination has yet been established to meet every requirement; check the
+[purchasing gate](../buy.md#generator) before buying.
 
 **Ground clips go only on GND.** A scope's ground clips are joined to each
 other inside it, and in a combined scope and generator, to the
@@ -98,6 +104,11 @@ same wave. Many generators also have a load or output setting, often
 current, and a generator set for a 50 Ω load puts out about twice the
 voltage it displays, 0–8 V instead of 0–4 V.
 
+Changing the load setting may change only the displayed numbers. After
+choosing High-Z, set the amplitude and offset again and check the actual
+output. Keep **OUT off every Mega pin and every + rail**; only the
+generator's GND joins the circuit's common GND as the lesson shows.
+
 ### Check the output first
 
 Do this whenever you set up the generator, before it is wired to any
@@ -110,8 +121,9 @@ circuit:
    to channel 1, rising, at about 2 V.
 3. Turn on the generator's output. The trace should run from **0 V to
    about 4 V**, never below 0 V and never above 4 V. If it reaches about
-   8 V, switch the generator to High-Z; if it dips below 0 V, set the
-   offset or low level again.
+   8 V, turn the output off, choose High-Z, then reset the amplitude to
+   4 Vpp and offset to +2 V before checking again. If it dips below 0 V,
+   correct the offset or low level and recheck.
 4. Turn the output off. Then wire the generator into the unpowered
    circuit as its page says.
 

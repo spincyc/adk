@@ -175,7 +175,7 @@ Switch the power module off when you finish, before you unplug the USB.
 | What you see | Try this |
 |---|---|
 | Nothing spins at all | Is the power module's LED on? Check its red wire from 5V to the bottom + rail and its black wire from GND to the bottom − rail, both by column 42, then the red wire from a19 to the bottom + rail (the motor's supply) and the one from j12 to the top + rail (the chip's). |
-| It hums but doesn't turn | The speed is too low: turn the knob further. A flick of the blade helps a sluggish motor start. |
+| It hums but doesn't turn | Turn the knob further. If it still won't start, switch the module off, unplug its adapter and USB, and wait for the blade to stop before checking for an obstruction or removing it. Never touch a powered blade. |
 | It only ever spins one way | The wire from pin 8 or pin 9 is in the wrong hole: pin 8's goes to j18, pin 9's to j13. |
 | The Mega resets when the fan starts | The motor is taking power from the Mega. Its supply goes from a19 to the bottom + rail, which only the power module feeds; and the module's red wire must go only to the bottom + rail by column 42, so its 5 V never meets the Mega's. |
 | The chip gets hot | Unplug everything at once and check the motor's leads go to j14 and j17, not straight to a rail. |
@@ -219,10 +219,10 @@ lead in **COM** and the red one in **V**. Never use the **10A** jack here: it
 joins the two probes, and across the power module's rails that is a short
 circuit.
 
-First make the fan safe to work beside. Pull the blade off the motor's
-shaft: the motor turns just the same without it, and there is nothing left
-to catch your fingers or the meter's leads. If you keep the blade on, keep
-your fingers, the probes and their leads well out of its circle. Then give
+First switch the power module off, unplug its adapter and USB, and wait
+for the blade to stop. Pull the blade off the motor's shaft before taking
+measurements: the motor turns without it, and there is nothing left to
+catch your fingers or the meter's leads. Then give
 the fan one slow, fixed speed, so the readings hold still: in `loop ()`,
 change `knobSpeed ()` to `128` and upload. Put it back when you have
 finished. The probes go into holes close beside the chip, so keep each tip

@@ -99,46 +99,69 @@ work at 3.3 V, and a radio that sends is ruled by law.
   Lesson 41 shows a 10 kΩ to 3.3 V that holds them firmly. The FM radio's
   board holds its RST low, so Lesson 37 lifts it with a 1 kΩ to 3.3 V.
   Their outputs are safe for the Mega to read directly.
-- **Power them as the lesson says.** The FM radio and the 433 MHz
-  transmitter take little enough for the Mega's 3.3V pin. A LoRa modem
-  sending at full power draws up to about 50 mA by REYAX's datasheets: all
-  that pin can give, so Lesson 40's two run from the breadboard power
-  module's 3.3V pin. In the two-board lessons each board has one modem
-  sending at 10 dBm. REYAX gives no figure for that, but the radio chip
-  inside draws about 29 mA even at 13 dBm (Semtech's SX1276 datasheet), so
-  its VDD goes to the Mega's 3.3V pin; a board that also has the RFID
-  reader, which shares that pin, powers its modem from the power module's
-  3.3V pin instead. Check that the module's orange wire comes from its 3.3V
-  pin before you switch on: from its 5V pin it would ruin the modem. The
-  Meshtastic board runs from its own USB cable.
+- **Check the complete supply budget.** The FM and 433 MHz drawings use
+  the Mega's 3.3V pin; identify the exact boards and their current needs
+  using the [purchasing gates](buy.md#radio-purchasing-gates). The RYLR896
+  draws **49.7 mA typically at +14 dBm**, according to the
+  [RYLR896 datasheet](https://reyax.com/upload/products_download/download_file/RYLR896_EN.pdf).
+  That is not a maximum. Lesson 40's pair uses the power module; most
+  two-board drawings use the Mega's 3.3V pin for one modem at 10 dBm.
+  A complete-module maximum at that setting has not been established,
+  so those drawings' 50 mA supply budget remains unverified. The radio
+  chip's current alone cannot prove it. Resolve this supply requirement
+  before powering that arrangement; do not join two 3.3 V supplies to
+  compensate. Check that a power module's orange wire comes from its
+  3.3V pin: 5V would exceed the modem's rating. The Meshtastic board runs
+  from its own USB cable.
 - **Fit the aerial before powering a LoRa radio.** Sending into no aerial
   can damage it, and the Meshtastic board starts sending as soon as it is
   set up.
-- **Send only where it's allowed.** Receiving is fine anywhere; sending is
-  not. Check your country's rules; in outline:
+- **Establish permission before transmitting.** The band, complete device,
+  aerial, power, modulation and timing all matter. ADK has not recorded
+  emissions tests or established applicable authorization for each lesson's
+  actual configuration. The following are limits to check, not permission
+  to operate a particular board. Until the configuration is established,
+  read the transmitting lesson without powering its transmitter.
 
-| Radio | Band | License-free |
+| Radio | Band | What remains to check |
 |---|---|---|
-| FM radio | 87.5–108 MHz | Receive only, so anywhere |
-| 433 MHz transmitter | 433.92 MHz | In Europe, up to 10 mW, sending at most a tenth of the time; its rest (below) keeps it well inside the time. In the USA and Canada, only a weak signal, far weaker than this module with an aerial: leave the aerials off and keep both modules on one desk. |
-| E32 LoRa module | 434 MHz | In Europe, 433.05–434.79 MHz at up to 10 mW, sending at most a tenth of the time. The 10 mW counts what the aerial sends out, so ADK sets the E32 to its lowest power, 10 mW: don't give it a bigger aerial. In the USA and Canada it is an amateur band: use the E32 only with an amateur license, and send your call sign (below). |
-| RYLR896 modem, Heltec board | 915 MHz, or 868 MHz in Europe | In the USA and Canada, 902–928 MHz. In Australia, 915–928 MHz: a signal on 915 MHz spills over its lower edge, so give the modems `.band = 921500000`, the middle of the band, and set Meshtastic's region to ANZ. In Europe, the same modems with `.band = 868100000` send at 868.0–868.6 MHz, up to 25 mW for 1% of the time, so give them `.power = 14` too: ADK's usual 15 dBm is more than 25 mW. A bridge sends more often than 1%, so in Europe give its modems `.band = 869525000`, in the 869.4–869.65 MHz band, where 10% of the time is allowed, and don't leave a knob turning for long. Meshtastic's region EU_868 keeps to that band by itself. |
+| FM radio | 87.5–108 MHz | Receives only; check local restrictions on reception and use. |
+| WL102-341 transmitter | 433.92 MHz | The USA and Canada have timing, radiated-emission, bandwidth and authorization requirements. Removing the aerial or keeping modules on one desk does not establish compliance. No applicable authorization or emissions measurement for this build is recorded. |
+| E32-433T20D | Around 433 MHz | The course requires a licensed amateur operating arrangement in the USA and Canada. The EU's 433.05–434.79 MHz entry allows 10 mW ERP and at most 10% duty cycle; a 10 dBm conducted setting with an unspecified aerial does not establish that radiated limit. The exact revision and aerial need verification. |
+| RYLR896 modem, Heltec board | Regional 868 or 915 MHz bands | Match the hardware, aerial and settings to applicable authorization and local rules. Region or frequency selection alone does not establish compliance. See the configuration notes below. |
 
-- **The 433 MHz transmitter rests.** In the USA and Canada, a license-free
-  gadget at 433 MHz may send a control signal, like a car key's, but one
-  that sends data must stop after at most a second, then stay silent 30
-  times as long and never less than 10 seconds (47 CFR 15.231(e); RSS-210
-  A.1.5). ADK's `RadioTransmitter` keeps that rule for every sketch: after
-  each message it won't send again until its rest is over, and after it
-  starts it rests as long as the longest message would need, 12.78
-  seconds, so a reset can't cut a rest short. The same rest keeps it well
-  within Europe's tenth of the time (ERC Recommendation 70-03, annex 1,
-  band g1).
-- **With an amateur license**, 433 MHz is part of the 70 cm band, and the
-  aerials and the range are yours to try. The license holder must send
-  their call sign at least every 10 minutes and at the end of each contact
-  (47 CFR 97.119 in the USA): the easiest way is to put it in the
-  messages.
+- **Timing is only one requirement.**
+  [US 47 CFR 15.231(e)](https://www.ecfr.gov/current/title-47/section-15.231)
+  and [Canada RSS-210 A.1.5](https://ised-isde.canada.ca/site/spectrum-management-telecommunications/en/devices-and-equipment/radio-equipment-standards/radio-standards-specifications-rss/rss-210-licence-exempt-radio-apparatus-category-i-equipment)
+  specify at most one second per transmission, then silence at least
+  30 times as long and at least 10 seconds. ADK limits message duration
+  and inserts a rest intended to meet that timing, including a 12.78-second
+  rest on startup. Software pacing cannot establish the separate field
+  strength, unwanted-emission or bandwidth limits. Equipment authorization
+  also applies: see [US 15.201](https://www.ecfr.gov/current/title-47/section-15.201)
+  and RSS-210 section 3. Do not presume a home-built exemption covers a kit.
+- **Regional settings need regional evidence.**
+  [EU Decision 2025/105](https://eur-lex.europa.eu/eli/dec_impl/2025/105/oj/eng)
+  specifies radiated power and access conditions for short-range bands;
+  check its national implementation and equipment conformity. For an
+  established RYLR896 arrangement, 868.1 MHz / 14 dBm is only a starting
+  setting for the 868.0–868.6 MHz, 25 mW ERP / 1% entry. The bridge's
+  two-second refresh can exceed 1%; 869.525 MHz lies in the
+  869.4–869.65 MHz / 10% entry, but repeated knob changes still need a
+  duty-cycle budget. Neither setting verifies radiated power.
+  Australia's [2025 class licence](https://www.legislation.gov.au/F2025L01047/asmade/text)
+  includes 915–928 MHz subject to its equipment-category conditions;
+  `.band = 921500000` avoids centring at the lower band edge, but does
+  not establish the other conditions. Meshtastic's
+  [region setting](https://meshtastic.org/docs/configuration/radio/lora/)
+  selects regional bands and duty limiting where implemented; it is not
+  evidence of a board's authorization.
+- **An amateur licence has its own conditions.** A qualified operator
+  must establish the permitted band, emissions, power and identification
+  method. [US 47 CFR 97.119](https://www.ecfr.gov/current/title-47/section-97.119)
+  requires identification at communication end and at least every ten
+  minutes; other countries differ. Adding a call sign to a message alone
+  does not establish an authorized operating arrangement.
 - **Mesh messages are public.** Anyone nearby with Meshtastic can read
   the default channel. Lesson 42 sets up a private one; even so, never send
   anything personal.

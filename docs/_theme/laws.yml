@@ -119,9 +119,9 @@
       words: A diode conducts one way, keeping a nearly fixed voltage, so something else must set its current.
     - id: transistor-switch
       name: The transistor switch
-      formula: I<sub>collector</sub> ≤ β × I<sub>base</sub>, with the base about 0.7 V above the emitter
-      units: currents in mA; β is a hundred or more for the S8050
-      words: A small base current switches a much larger collector current.
+      formula: I<sub>base</sub> ≈ I<sub>load</sub> ÷ 10 as a starting point for a small switch
+      units: currents in mA; 10 is a chosen drive ratio, not a guaranteed gain
+      words: Allow generous base current and check the part's saturation specifications.
     - id: op-amp
       name: The op-amp with feedback
       formula: gain = 1 + R<sub>f</sub> ÷ R<sub>g</sub>
@@ -172,8 +172,8 @@
       words: A resistor to 5 V or GND holds an input at a known level until something overrides it.
     - id: schmitt
       name: Schmitt triggers
-      formula: switch up at about 2.7 V · switch down at about 1.7 V, for a 74HC14 at 5 V
-      units: volts
+      formula: rising input near 2.7 V → output LOW · falling input near 1.7 V → output HIGH
+      units: approximate input thresholds in volts, for a 74HC14 at 5 V
       words: Two thresholds instead of one stop a slow or noisy input from flickering.
     - id: serial
       name: Serial timing

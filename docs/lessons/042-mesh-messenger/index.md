@@ -6,7 +6,7 @@ level: 3
 parts:
   - Your circuit from Lesson 41, without its LoRa modules, second divider and power module
   - Two Heltec WiFi LoRa 32 V3 boards, the 863–928 MHz version, with their aerials (add-on, not in the kit)
-  - A USB-C cable and a USB charger or port for each board
+  - A USB-C data cable and a 5 V USB supply rated for at least 600 mA for each board
   - A phone with the Meshtastic app, and a computer with Chrome or Edge
   - RGB LED
   - 3 × 220 Ω resistors (red, red, black, black, brown)
@@ -46,11 +46,17 @@ across a town if there are enough of them.
     has the details.
 
 !!! note "An optional lesson"
-    This lesson needs two Heltec boards, about US$52–60 for the pair, and
-    a phone with the Meshtastic app. Without them, read it but don't build
-    it, and carry on to Lesson 43 from your Lesson 40 or 41 build. Lesson
-    43 keeps only one part from this one, a 220 Ω resistor from g6 to e6,
-    and its build says where it goes.
+    This lesson needs two Heltec boards and a phone with the Meshtastic
+    app. [Heltec's V3 listing](https://heltec.org/project/wifi-lora-32-v3/)
+    showed US$17.90–19.90 each on 2026-10-01: US$35.80–39.80 for the pair,
+    before shipping and tax. Each includes an aerial and two loose pin
+    headers. Budget separately for the USB-C data cables, USB power and
+    soldering supplies below if you do not have them.
+
+    Without those parts, read it but don't build it, and carry on to
+    Lesson 43 from your Lesson 40 or 41 build. Lesson 43 keeps only one
+    part from this one, a 220 Ω resistor from g6 to e6, and its build says
+    where it goes.
 
 ## The idea
 
@@ -104,12 +110,21 @@ Meshtastic's menus move about a little from one version of the app to the
 next; [its own guide](https://meshtastic.org/docs/getting-started/) has
 pictures of each.
 
+Each board needs its own USB-C cable and USB power while this build runs.
+Use cables that carry data for flashing, and a 5 V supply rated for at
+least 600 mA per board, as [Heltec recommends](https://heltec.org/project/wifi-lora-32-v3/).
+The default board package does not include those cables or supplies.
+
 1. **Pins.** Heltec boards usually come with their pin headers loose. Board
    1 needs its pins soldered on; board 2 needs none. Ask an adult to help
    with the soldering iron, as [Soldering](../../safety.md#soldering)
    says, or buy boards with their pins already fitted.
-2. **Aerials.** Screw each board's aerial on before you ever plug it in.
-   Sending into no aerial can damage the radio.
+2. **Aerials.** With power disconnected, fit each aerial before plugging
+   the board in. The V3's board socket is **IPEX/U.FL**: align the small
+   plug on the aerial's lead squarely over it and press straight down to
+   snap it on. Do not twist that connector. If the aerial has a separate
+   threaded **SMA** joint at the other end of its lead, screw together
+   only that joint. Sending into no aerial can damage the radio.
 3. **Meshtastic.** Plug board 1 into the computer with its USB-C cable. In
    Chrome or Edge, open [flasher.meshtastic.org](https://flasher.meshtastic.org),
    choose **Heltec V3** and the newest stable version, and press **Flash**.

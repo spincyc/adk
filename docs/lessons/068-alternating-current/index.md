@@ -41,7 +41,7 @@ predict whether the voltage at the **top of the resistor** can go below
     Turn the generator output off and unplug the Mega's USB cable before
     moving anything. Use only a battery-powered, isolated generator set to
     **0–4 V**; do not use a negative supply or connect its output to a
-    Mega input or the 5 V rail. Keep both scope ground clips on the common
+    Mega pin or either + rail. Keep both scope ground clips on the common
     bottom − rail, never on either signal point.
 
 Start with an empty breadboard. The complete steps below put the Mega's

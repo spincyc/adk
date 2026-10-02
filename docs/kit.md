@@ -3,9 +3,10 @@
 The course is built around the **Elegoo Mega 2560 Most Complete Starter
 Kit**. A few lessons also use modules from the **Elegoo 37 in 1 Sensor
 Modules Kit**; those are marked below and in each lesson's parts list. The
-drawings show that kit's black boards, as its first two versions have them;
-the blue boards of its third version carry the same parts, so check each
-one’s printed pin names. Lessons 28, 30 and 50 also need the I2C level
+drawings show that kit's black boards, as its first two versions have them.
+The blue V3 boards have not been verified as direct replacements: check
+each required module and its printed pin names before purchase. Lessons
+28, 30 and 50 also need the I2C level
 shifter below. [What to buy](buy.md) adds up each path's parts, with
 rough costs.
 
@@ -40,10 +41,10 @@ rough costs.
 | GY-521 accelerometer (MPU-6050) | Knows which way is down | Lesson 28 |
 | Rotary encoder | A knob that turns forever | Lesson 29 |
 | 28BYJ-48 stepper motor and ULN2003 driver | Exact, countable steps | Lesson 31 |
-| DS1307 real-time clock | Keeps time when unplugged | Lesson 32 |
+| DS1307-style real-time clock module; some kits supply DS3231 | Keeps time when unplugged; identify its pins and battery charging circuit first | Lesson 32 |
 | RC522 RFID reader, card and fob | Knows which card is which | Lesson 34 |
 | Tap sensor and relay *(37 in 1)* | Knocks, and switching a separate circuit | Lesson 35 |
-| 9 V battery and its snap lead | Powers the circuit the relay switches | Lesson 35 |
+| 9 V battery and a snap lead with two breadboard pins | Powers the relay's circuit; a kit's barrel-ended snap needs replacing as [What to buy](buy.md#lists) says | Lesson 35 |
 | Sound sensor module and water level sensor | How loud it is, and water on the floor | Lesson 48 |
 | IR LED module (KY-005) *(37 in 1)* | Sends a remote's codes | Lesson 53 |
 
@@ -82,13 +83,19 @@ prices for the pair or set, checked in 2026; they vary by shop and
 country. Sending is ruled by law, and the last column says what you may
 need: [Safety](safety.md#radios) has the details.
 
+**Check before purchase:** the models below are the course's intended
+parts, not a verified radio operating package. The
+[buying gates](buy.md#radio-purchasing-gates) identify missing variant,
+supply and authorization evidence. Do not power a transmitter until its
+permitted configuration is established.
+
 | Part | What it does | First used | Rough cost | To send |
 |---|---|---|---|---|
 | Si4703 FM radio board (CJMCU-470) and wired earbuds | FM stations, their names and songs | Lesson 37 | US$5–15 | Receives only |
-| 433 MHz transmitter (WL102-341) and receiver (RX470C) | Short messages, one every 10 seconds at most | Lesson 38 | US$3–8 | No license, within the limits; in the USA and Canada, aerials off |
-| Two REYAX RYLR896 LoRa modems | Messages across a kilometer or more, on 915 MHz | Lesson 40 | US$32–50 | No license, within the limits |
-| Two Ebyte E32-433T20D LoRa modules, with aerials *(optional)* | A 433 MHz link that passes on lines of text | Lesson 41 | US$12–25 | **An amateur radio license** in the USA and Canada, so there Lesson 41 is optional: read it, and carry on to Lesson 42 from Lesson 40's build |
-| Two Heltec WiFi LoRa 32 V3 boards, the 863–928 MHz version, running Meshtastic, and a phone *(optional)* | Text messages from a phone, across a mesh. Lesson 42 is optional: read it, and carry on to Lesson 43 from Lesson 40's or 41's build | Lesson 42 | US$52–60, besides the phone | No license, within the limits |
+| 433 MHz transmitter (WL102-341) and receiver (RX470C / QIACHIP RX470-4) | Short messages, one every 10 seconds at most | Lesson 38 | About US$6 for QIACHIP's set | Actual emissions and authorization unverified; aerial removal is not permission |
+| Two REYAX RYLR896 LoRa modems, with integrated spring aerials | A UART radio link; range depends on the surroundings | Lesson 40 | About US$32 | Check the actual settings and authorization; the two-board supply budget is unresolved |
+| Two legacy Ebyte E32-433T20D LoRa modules, with matching aerials *(optional)* | A 433 MHz link that passes on lines of text | Lesson 41 | About US$16 for a current pair with aerials; legacy availability unresolved | **An amateur radio licence and permitted configuration** in the USA and Canada; current revisions are not verified replacements |
+| Two Heltec WiFi LoRa 32 V3 boards, the regional 868/915 MHz version, running Meshtastic, and a phone *(optional)* | Text messages from a phone, across a mesh. Lesson 42 is optional: read it, and carry on to Lesson 43 from Lesson 40's or 41's build | Lesson 42 | US$36–40, plus USB cables, supplies and phone | Region selection does not establish equipment authorization; check the actual board and aerial |
 
 Their pins work at 3.3 V, so the Mega's signals reach them through a
 resistor divider, 1 kΩ and 2 kΩ; [Safety](safety.md#radios) explains why, and

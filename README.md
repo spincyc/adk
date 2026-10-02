@@ -49,9 +49,11 @@ void loop ()
   used once, and can do what its part needs. If not, it stops and blinks the
   pin number on the Mega's own LED, or explains in words with
   `adk::setup (Serial)`.
-- **Nothing blocks.** `adk::update ()` keeps buttons debounced, melodies
-  playing, displays refreshed and sensors read, and `adk::wait ()` is a
-  `delay ()` that keeps them all going.
+- **Parts update together.** `adk::update ()` debounces buttons, advances
+  melodies, refreshes displays and reads sensors. `adk::wait ()` keeps
+  calling it while waiting. Some devices briefly block other updates and
+  can make multiplexed displays flicker; see the
+  [timing limits](docs/ARCHITECTURE.md#blocking).
 - **Small.** No heap, no exceptions, no Arduino libraries: a part you don't
   declare costs nothing. Blink is 2.9 KB of flash and 76 bytes of RAM.
 - **Tested.** Every part has host tests against a fake Arduino core, run

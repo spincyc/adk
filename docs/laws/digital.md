@@ -75,14 +75,19 @@ is between 20 kΩ and 50 kΩ: by [Ohm's law](ohms-law.md), at most
 
 An input with one threshold, fed a voltage that creeps slowly past it or
 carries a little noise, flickers between HIGH and LOW while the voltage
-is near the threshold. Two thresholds fix that: the output switches HIGH
-only once the input rises past the upper one, and LOW only once it falls
-past the lower one. The gap between them is called **hysteresis**.
+is near the threshold. Two thresholds fix that: the input is recognized
+as HIGH only once it rises past the upper one, and as LOW only once it
+falls past the lower one. Between them it keeps its previous recognized
+state. The gap between them is called **hysteresis**.
 
-A **Schmitt trigger** input does this in hardware. The 74HC14 on 5 V
-switches up at about 2.7 V and down at about 1.7 V, which E21 has you
-watch on a meter,
-and makes a clock from it: its output charges a capacitor through a
+A **Schmitt trigger** input does this in hardware. The 74HC14 is also an
+**inverter**: a rising input crossing the upper threshold makes its output
+LOW; a falling input crossing the lower threshold makes its output HIGH.
+That is the input/output relationship in
+[TI's function table](https://www.ti.com/lit/ds/symlink/sn74hc14.pdf#page=10).
+On 5 V the thresholds are roughly 2.7 V rising and 1.7 V falling;
+they vary between chips. E21 has you watch them on a meter,
+and makes a clock from them: its output charges a capacitor through a
 resistor until the input reaches 2.7 V, flips LOW, lets the capacitor
 fall to 1.7 V, flips back, and so on. Each half takes part of a
 [time constant](capacitors-and-coils.md#rc-time), about 0.8 × R × C for

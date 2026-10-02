@@ -53,26 +53,34 @@ Uses in the course:
 The kit's S8050 is an **NPN transistor** with three legs: the **emitter**
 (E), the **base** (B) and the **collector** (C). Current into the base,
 out of the emitter, lets a much larger current flow from the collector to
-the emitter, up to β times the base current. β, the transistor's
-**gain**, is a hundred or more for the S8050. The
-base and emitter behave like a diode, so the base sits about 0.7 V above
-the emitter whenever it conducts.
+the emitter. Before it is fully on, the ratio of collector current to
+base current is its **gain**, β. Gain depends on the manufacturer, grade,
+current and temperature; 100 is an example value, not a guaranteed
+minimum. For example, [onsemi's SS8050 datasheet](https://www.onsemi.com/pdf/datasheet/ss8050-d.pdf#page=2)
+specifies minima of 45 at 5 mA and 85 at 100 mA, both with 1 V from
+collector to emitter. Those are gain tests, not saturation guarantees.
+The base and emitter behave like a diode, so the base sits about 0.7 V
+above the emitter at the small currents used here.
 
 Used as a switch, the load goes between + and the collector and the
 emitter goes to GND:
 
 - **Off:** no base current, no collector current. A 10 kΩ resistor from
   base to GND makes sure of that while the Mega starts and its pin floats.
-- **On:** more base current than the load needs, so the transistor is
-  fully on, **saturated**, with only about 0.1 to 0.2 V left between
-  collector and emitter. The load gets nearly the whole supply.
+- **On:** enough base current to make the transistor fully on,
+  **saturated**. At these small loads, expect about 0.1 to 0.2 V between
+  collector and emitter, so the load gets nearly the whole supply.
 
 ### Choosing the base resistor {#base-resistor}
 
 1. **The load's current:** Lesson 3's active buzzer can want 30 mA.
-2. **The base current that would just do:** 30 mA ÷ 100 = 0.3 mA.
-3. **Give it plenty more,** ten times or so, so it is surely saturated:
-   about 3 to 4 mA, well within a pin's 20 mA.
+2. **Allow generous base drive:** use a collector/base current ratio of
+   about 10 as a conservative starting point: 30 mA ÷ 10 = 3 mA into
+   the base. This chosen ratio is not the transistor's gain. Onsemi also
+   uses a ratio of 10 for its saturation test, at 800 mA and 80 mA.
+3. **Allow some margin:** aim for about 4 mA, well within a pin's 20 mA.
+   Check the exact part's specifications and the collector voltage under
+   load; the datasheet's test at 800 mA does not specify every smaller load.
 4. **Ohm's law** for the resistor, which has the pin's 5 V less the base's
    0.7 V across it: R = 4.3 V ÷ 4 mA ≈ 1 kΩ.
 
@@ -81,7 +89,8 @@ emitter goes to GND:
 E10 has you check exactly this. It predicts about 4 mA into the base
 through 1 kΩ and 14 mA through the LED; with 10 kΩ, only about 0.36 mA
 into the base, a fortieth of the LED's current, yet the LED should stay
-as bright: the transistor still has enough to stay fully on.
+as bright. That is a prediction to check with your transistor, not a
+guarantee derived from an assumed gain of 100.
 
 A single small transistor is enough for a buzzer or a few LEDs. Motors
 and steppers use **driver chips** with several transistors and their
@@ -130,8 +139,8 @@ the wave.
    backwards. What does a meter read across the LED, and across the
    resistor?
 2. A blue LED keeps about 3 V. What current does 220 Ω give it from 5 V?
-3. A load wants 100 mA and the transistor's β is at least 100. Is 1 kΩ
-   from a 5 V pin enough base drive?
+3. A load wants 100 mA. With a chosen collector/base current ratio of 10,
+   is 1 kΩ from a 5 V pin enough base drive? Use 0.7 V at the base.
 4. Why does the load go on the collector side, not between the emitter
    and GND?
 5. An op-amp has R<sub>f</sub> = 30 kΩ and R<sub>g</sub> = 10 kΩ. What
@@ -142,9 +151,11 @@ the wave.
        the LED has the whole 5 V. By Kirchhoff's voltage law the two
        still add to 5 V.
     2. 2 V ÷ 220 Ω ≈ 9 mA, dimmer than a red LED on the same resistor.
-    3. It needs at least 100 mA ÷ 100 = 1 mA; 1 kΩ gives about 4.3 mA,
-       four times that, so yes. Check that the transistor itself is
-       rated for 100 mA.
+    3. The chosen ratio calls for 100 mA ÷ 10 = 10 mA. The 1 kΩ
+       resistor gives about 4.3 mA, so it does not meet that design rule.
+       Gain alone cannot tell you whether it will saturate; check the
+       transistor's ratings and saturation specifications before choosing
+       a smaller resistor.
     4. With the emitter at GND, the base needs only 0.7 V to switch it
        fully on. A load below the emitter would lift the emitter, and the
        pin's 5 V could no longer turn the transistor fully on.

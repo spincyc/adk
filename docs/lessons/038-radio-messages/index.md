@@ -78,24 +78,28 @@ When pin 46 is at 0 V, so is DAT.
 **An aerial.** A 433 MHz wave is 69 cm long, and a straight wire a quarter
 of that, 17 cm, soldered to a module's **ANT** hole makes a good aerial. The
 modules often come with little coil springs that do the same job in less
-space; they need soldering too. You don't need either here: without them,
-the two still hear each other easily across a desk.
+space; they need soldering too. The aerial changes the radiated signal,
+so its type must be part of the permitted operating configuration below.
+Removing it does not establish compliance.
 
-**A rest after every message.** The law lets a gadget like this send
-messages only now and then. In the USA and Canada, each message may last
+**A rest after every message.** The US and Canadian rules discussed in
+[Safety](../../safety.md#radios) include a timing limit: each message may last
 at most a second, and must be followed by a rest 30 times as long, and
-never shorter than 10 seconds. ADK keeps that rule for you: after each
+never shorter than 10 seconds. ADK implements that pacing: after each
 message the transmitter rests, and until the rest is over it turns new
 messages down. A word takes about a tenth of a second, so its rest is
 10 seconds.
 
-!!! warning "Sending is ruled by law"
-    Receiving is allowed anywhere, but sending is not. In Europe, 433 MHz
-    is free for small gadgets like this one, up to 10 mW. In the USA and
-    Canada it belongs to radio amateurs, and without a license a gadget
-    that sends messages must be very weak, much weaker than this
-    transmitter with an aerial: leave the aerials off, and keep both
-    modules on one desk. [Safety](../../safety.md#radios) has the details.
+!!! warning "Establish permission before transmitting"
+    ADK has not established that this WL102-341 breadboard configuration
+    meets the requirements where you live. Removing its aerial or keeping
+    both modules on one desk does not establish compliance. The rest
+    addresses timing only; emissions, bandwidth and any equipment
+    authorization requirements still apply. Before buying or powering the
+    transmitter, obtain evidence for the exact module, supply, aerial and
+    settings, or establish a permitted licensed arrangement. Until then,
+    read this lesson without transmitting.
+    [Safety](../../safety.md#radios) links the rules and missing evidence.
 
 !!! question "Predict"
     The receiver's DATA flickers with noise the whole time nothing is being
@@ -261,10 +265,11 @@ the noise doesn't get through.
    friend with the kit, and send messages from one to the other. Any
    Arduino running RadioHead's RH_ASK at its usual 2000 bits a second,
    with a receiver on its data pin, can listen too.
-2. **An aerial.** Only where the rules allow it: in Europe, or with an
-   amateur radio license and your call sign in the messages. Solder a
-   17 cm wire to each module's ANT hole, keep them straight, and see how
-   far apart the two Megas can go.
+2. **An aerial.** Only after establishing that the changed aerial is
+   permitted in your operating configuration, try a 17 cm wire on each
+   module's ANT hole and compare the range. Changing the aerial requires
+   checking that evidence again; a call sign or short distance is not a
+   substitute. Switch off and unplug before soldering.
 3. **A doorbell.** Make the second Mega beep, with the active buzzer from
    Lesson 3, whenever a message says `Ding dong`. Compare the text with
    `strcmp (receiver.text (), "Ding dong") == 0`.

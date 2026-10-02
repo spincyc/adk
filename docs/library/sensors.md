@@ -1,9 +1,16 @@
 # Sensors
 
-The sensors that take readings by themselves, every so often, all say so
-the same way. `measured ()` is true in the one update in which a reading
-finished, good or not, and `ok ()` says whether it was good: whether the
-sensor answered, and its reading arrived whole.
+`Dht11`, `Ds18b20`, `Ultrasonic` and `Mpu6050` share a reading pattern:
+`measured ()` is true in the one update in which a reading finished, good
+or not, and `ok ()` says whether that device's latest reading succeeded.
+Each entry below explains what counts as success.
+
+The analog sensors have different interfaces. `Thermistor` keeps its
+latest smoothed temperature in `celsius ()` and `fahrenheit ()`, with no
+`measured ()` or `ok ()`. `SoundSensor` supplies `level ()` and a
+`measured ()` event every 50 ms, but no `ok ()` signal. For the clock,
+read `Rtc::now ()`, check communication with `ok ()`, and check whether
+it is ticking with `isRunning ()`; it has no `measured ()` event.
 
 <!-- api thermistor.h Thermistor -->
 

@@ -13,8 +13,10 @@ Lesson 50 uses again. The next two need [add-on radios](kit.md#add-on-radios),
 from about US$3 to US$30 each. Lesson 41's 433 MHz modules need an amateur
 radio license in the USA and Canada, so there Lesson 41 is optional: read
 it, then carry on to Lesson 42 from your Lesson 40 build. Lesson 42 needs
-two Heltec Meshtastic boards, about US$52–60, and a phone with the
-Meshtastic app, so it is optional too: read it, then carry on to Lesson 43,
+two Heltec Meshtastic boards, US$35.80–39.80 for the pair before shipping,
+tax and USB accessories at the [maker's listed prices](https://heltec.org/project/wifi-lora-32-v3/)
+on 2026-10-01, and a phone with the Meshtastic app. It is optional too:
+read it, then carry on to Lesson 43,
 which keeps only one 220 Ω resistor from it. The last four arcs, and
 Lesson 55, join [two boards](kit.md#two-boards): two Megas that share what
 their sensors see over a LoRa radio, so a dial in one room turns a servo

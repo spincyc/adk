@@ -66,8 +66,10 @@ void loop ()
   servos, sensors, the keypad, the remote control and the RFID reader.
 - **Mistakes found early.** If two parts share a pin, `adk::setup ()` stops
   and blinks the pin number on the Mega's own LED.
-- **Nothing blocks.** `adk::update ()` keeps buttons debounced, melodies
-  playing and displays lit, so there is no juggling of `delay ()`.
+- **Parts update together.** `adk::update ()` debounces buttons, advances
+  melodies and refreshes displays. Some devices briefly block other
+  updates and can make multiplexed displays flicker; see the
+  [timing limits](ARCHITECTURE.md#blocking) when combining parts.
 
 </div>
 

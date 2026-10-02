@@ -12,7 +12,7 @@ parts:
   - S8050 transistor (check its E–B–C pin order)
   - 10 Ω resistor (brown, black, black, gold, brown)
   - 220 Ω resistor (red, red, black, black, brown)
-  - 1 kΩ resistor (brown, black, black, brown, brown)
+  - 1 kΩ resistor, plus a spare for discharging (brown, black, black, brown, brown)
   - 10 kΩ resistor (brown, black, black, red, brown)
   - 100 µF polarized capacitor rated at least 10 V
   - 100 nF ceramic capacitor
@@ -54,8 +54,10 @@ measuring.
     Its OUT goes only through the 1 kΩ base resistor, never to a Mega pin
     or either + rail. Keep the **220 Ω resistor in series with the LED**.
     The 100 µF capacitor's striped − leg belongs at GND; check its rating
-    and stripe before powering. Put the scope ground clip only on the
-    common bottom − rail, never on the local supply or a floating point.
+    and stripe before powering. Before moving a charged capacitor,
+    discharge it through the spare 1 kΩ resistor and use the scope in
+    DC coupling to check it is below 0.1 V. Put the scope ground clip only
+    on the common bottom − rail, never on the local supply or a floating point.
 
 Take out the parts and signal wires from the previous build. Keep the
 Mega's GND wire in the bottom − rail hole nearest it and its 5 V wire in
@@ -199,6 +201,8 @@ each cycle.
 |---|---|---:|
 | 1 kHz | Out | ____ mV |
 | 1 kHz | In | ____ mV |
+| 1 kHz | Only 100 µF | ____ mV |
+| 1 kHz | Only 100 nF | ____ mV |
 | 100 Hz | In | ____ mV |
 
 ## Why it happens
@@ -219,7 +223,17 @@ the step shrinks to a small ripple. The 100 µF part does nearly all of
 this work here: 10 Ω × 100 nF is only a millionth of a second. The
 100 nF ceramic part is there for much faster changes, such as a logic
 chip's switching edges, which this scope view is too slow to show.
-Lifting out only the 100 nF should make little visible difference.
+
+To compare the two sizes, predict which one changes this slow ripple.
+Switch the generator off, unplug USB and discharge the 100 µF capacitor
+as described above. Remove only the 100 nF, then reconnect power and
+restore the scope settings used for the ripple measurement. Record the
+same 1 kHz trace: it should change little. Switch off, unplug and discharge
+again; put the 100 nF back and remove the 100 µF. Restore the measurement
+settings and record again. With only 100 nF, expect nearly the original
+130 mV step. Its capacitance is one thousandth as large, so it cannot
+sustain current over this half-millisecond interval. Turn off and unplug
+before restoring both capacitors for the next trial.
 
 ## Change one thing
 
@@ -232,14 +246,18 @@ or larger if the LED stays lit for ten times as long each time?
 2. Record the ripple from top to bottom.
 
 Expect about **130 mV**, nearly the whole step again, with slopes that
-level off. At 100 Hz the LED is lit for 5 ms at a time, five times as long
-as 10 Ω × 100 µF, so the capacitors have time to give up most of their
-charge. A nearby capacitor smooths short changes in a supply, not long
-ones. Turn the generator off and unplug USB when finished.
+level off. At 100 Hz the LED is lit for 5 ms at a time, about five time
+constants. The local supply has time to approach its slightly lower
+loaded voltage, about 4.87 V from a 5 V source, so nearly the full
+resistive dip appears. The 5 V feed stays connected throughout: the
+capacitors lose only about 2.6% of their charge as their voltage falls
+by about 0.13 V, then recharge while the LED is off. A nearby capacitor
+smooths short changes in a supply; it cannot remove the steady drop in
+the feed resistor. Turn the generator off and unplug USB when finished.
 
 ## Check your result
 
-Compare your three ripples with your predictions. Did the capacitors
+Compare your ripples with your predictions. Did the capacitors
 shrink the 1 kHz step? Did the ripple grow again at 100 Hz? In one
 sentence, explain why the same capacitors smooth the faster load better.
 
