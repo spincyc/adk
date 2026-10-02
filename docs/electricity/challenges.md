@@ -18,8 +18,9 @@ result before changing anything else. If a result surprises you, use the
 tap stay there when another resistor draws current from it? This is a
 complete USB-powered experiment using **three 1 kΩ resistors**, a Mega,
 breadboard, jumper wires and a DC voltmeter from the kit-and-meter route.
-No sketch or upload is needed. It builds on [E04's two-resistor idea](../lessons/059-resistors-in-series/index.md),
-but the steps below include the entire circuit.
+No sketch or upload is needed. It builds on [E04's two-resistor idea](../lessons/059-resistors-in-series/index.md)
+and [E05's parallel branches](../lessons/060-branches-in-parallel/index.md),
+so try it after E05; the steps below include the entire circuit.
 
 ```text
                    1 kΩ
@@ -53,11 +54,14 @@ load. Write both numbers down.
    or removing the load. Leave the meter's red lead in its voltage jack.
 
 **Explain:** The two lower 1 kΩ resistors each connect the tap to GND,
-so together they act like **500 Ω**. The upper 1 kΩ and that 500 Ω
-share the supply: 5 V × 500 ÷ (1000 + 500) ≈ **1.67 V** at the tap.
-The real USB voltage and resistor values can shift both readings. The
-load draws current from the tap and lowers its voltage; a voltage
-divider's unloaded result is not guaranteed once it feeds something.
+so together they act like **500 Ω**: two equal paths with the same
+voltage across them carry twice the current one would, just as half the
+resistance would ([resistors in parallel](../laws/kirchhoff.md#parallel)).
+The upper 1 kΩ and that 500 Ω share the supply:
+5 V × 500 ÷ (1000 + 500) ≈ **1.67 V** at the tap. The real USB voltage
+and resistor values can shift both readings. The load draws current from
+the tap and lowers its voltage; a voltage divider's unloaded result is
+not guaranteed once it feeds something.
 This is why the [Lesson 7 knob](../lessons/007-dimmer/index.md) and
 other sensor outputs must be considered with whatever they drive.
 

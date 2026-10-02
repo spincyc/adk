@@ -94,7 +94,7 @@ back as a card's number, which is never negative.
 | Someone knocks | `knocks` goes up | `Knock knock!`, a tap on the chime |
 | A friend's card | `cards` goes up, carrying the card number | `Welcome home,` and the name, a tune, and the latch opens for 5 s |
 | A stranger's card | `cards` goes up, carrying the card number | `Unknown card`, a low note, and its number on the Serial Monitor |
-| The buzzer buzzes for a second | `door` becomes 1, the other way | The latch opens, for a friend's card or when you press the button: `Door open` |
+| The buzzer buzzes for a second | `door` becomes 1, the other way | The latch opens for 5 s: for a friend's card, as above, or when you press the button, which shows `Door open` |
 
 News stays on Board A's screen for ten seconds; then it says
 `Front door` and `All quiet`, or `Can't hear it` while Board B is silent.
@@ -198,8 +198,11 @@ Read it from the top:
   latch follows `unlocked.isRunning ()` on every pass: open while it runs,
   shut once it stops. `news` runs while the screen shows news.
 - `bridge.changed ("cards")`, `("rings")` and `("knocks")` are each true
-  once for each new event at the door. If two arrive together, the card
-  comes first, then the bell, then the knock.
+  once for each new event at the door, for one update. The `else if`s
+  handle one of them a pass, since the screen and the chime can only show
+  one at a time. If two or more arrive in one message, only one is shown:
+  a card before the bell, and the bell before a knock. The rest are let
+  go.
 - `uint32_t (bridge.payload ("cards"))` turns the number that crossed the
   air back into a card's number, as *The idea* explains, and
   `checkCard ()` looks it up in `friends`, as in Lesson 36. A friend is

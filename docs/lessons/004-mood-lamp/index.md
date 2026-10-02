@@ -137,8 +137,8 @@ What's new:
 - `adk::wheel (hue)` turns a position round the color wheel into a color:
   0 is red, 85 green, 170 blue, and on round toward red again. `hue` is a
   **`uint8_t`**, a whole number from 0 to 255 that wraps back to 0 after
-  255, just as a wheel comes back round. It takes one byte of memory, where
-  an `int` takes two.
+  255, just as a wheel comes back round. It takes one byte of memory, eight
+  bits, where an `int` takes two.
 
 !!! note "Comparing, and deciding with and, or, not"
     An `if` asks a question whose answer is true or false. These signs make
@@ -187,13 +187,14 @@ brighter to your eye than the red one.
 | The button does nothing | Push it firmly into the board, and check the black wire from a4 to the − rail. |
 
 ??? note "How it works"
-    Each PWM pin is driven by a **timer**, a counter inside the Mega that
-    counts up and down on its own and flips the pin at the right moments,
-    so your sketch never has to. Pin 5 uses Timer 3, and pins 6 and 7 Timer
-    4. `adk::setup ()` checks that each pin you give an `RgbLed` can do PWM:
-    try `{5, 6, 22}` and the Mega's **L** LED blinks pin 22's number, 2 long
-    and 2 short. With `adk::setup (Serial)` it would say *adk: pin 22 cannot
-    do PWM; use 2-13 or 44-46*.
+    Each PWM pin is driven by a hardware **timer**, not the `adk::Timer` of
+    Lesson 3: a counter inside the Mega that counts up and down on its own
+    and flips the pin at the right moments, so your sketch never has to.
+    Pin 5 uses Timer 3, and pins 6 and 7 Timer 4. `adk::setup ()` checks
+    that each pin you give an `RgbLed` can do PWM: try `{5, 6, 22}` and the
+    Mega's **L** LED blinks pin 22's number, 2 long and 2 short. With
+    `adk::setup (Serial)` it would say *adk: pin 22 cannot do PWM; use 2-13
+    or 44-46*.
 
     A fade works out its color from the time. Half way through a
     1000 ms fade from orange to blue, 500 ms in, each of the three numbers

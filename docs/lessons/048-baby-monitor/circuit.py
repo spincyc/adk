@@ -35,7 +35,7 @@ listener.home_matrix (pixels=[row[::-1] for row in reversed (BARS)])
 # Readings to take with a multimeter on Board A: the buzzer's pin while the
 # leak alarm sounds, and once POWER has hushed it.
 listener.measure ("Pin 10, the leak alarm sounding", red="10", black="B-39",
-                  expect="about 2.2 V", when="the water sensor in water")
+                  expect="about 2 V", when="the water sensor in water")
 listener.measure ("Pin 10, hushed", red="10", black="B-39", expect="0 V",
                   when="after POWER, still in water")
 

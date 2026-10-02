@@ -13,7 +13,7 @@ adk::Bridge    bridge {radio};
 adk::Switch motion   {A12, adk::ActiveHigh};    // PIR: high on movement
 adk::Switch upright  {A14};                     // tilt switch: closed upright
 adk::Switch beam     {A15, adk::ActiveHigh};    // high when the beam is broken
-adk::Switch obstacle {16};                      // low when something is near
+adk::Switch obstacle {A13};                     // low when something is near
 adk::Switch tap      {17, adk::ActiveLow, 0};   // low for a moment on a knock
 adk::Led    armed    {26};
 adk::Led    online   {28};    // lit while the den is heard

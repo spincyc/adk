@@ -38,6 +38,9 @@ long crossings = 0;
 long flight    = 0;
 long misses    = 0;
 
+// The other player's misses as last heard: -1 until the first count.
+long heardMisses = -1;
+
 adk::Text<12> score;
 
 void setup ()
@@ -60,11 +63,18 @@ void loop ()
         moveBall ();
     }
 
-    // The other player missed: a point to this side.
-    if (bridge.changed ("misses") && bridge.value ("misses") > 0)
+    // The other player missed: a point to this side. The first count
+    // heard only says where theirs stands, and one that falls means their
+    // board has started again.
+    if (bridge.changed ("misses"))
     {
-        speaker.play (cheer);
-        showScore ();
+        if (heardMisses >= 0 && bridge.value ("misses") > heardMisses)
+        {
+            speaker.play (cheer);
+            showScore ();
+        }
+
+        heardMisses = bridge.value ("misses");
     }
 
     if (nudge.ticked ())

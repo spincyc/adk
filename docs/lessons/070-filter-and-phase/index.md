@@ -140,9 +140,14 @@ The resistor limits how quickly charge can reach and leave the
 capacitor. The output is the capacitor's voltage, so it cannot follow a
 rapid input change as fully as a slow one. It also reaches its peak
 after the input peak. This delay relative to the input wave is called a
-**phase lag**. The pair's nominal time constant is **R × C = 1 ms**;
-its nominal cutoff frequency is about **159 Hz**. Real part values and
-the generator and scope can shift the readings. This is a circuit
+**phase lag**. The pair's nominal time constant is **R × C = 1 ms**,
+which puts its nominal **cutoff frequency**, 1 ÷ (2π × R × C), where 2π
+is about 6.3, at about **159 Hz**: the change-over between waves slow
+enough to pass nearly whole and waves fast enough to be smoothed away.
+At 100 Hz, below it, the output is a little smaller than the input; at
+1 kHz, about six times above it, it is only about a sixth as large
+([filters](../../laws/signals.md#filter)). Real part values and the
+generator and scope can shift the readings. This is a circuit
 example of the smoothing idea behind [Lesson 7's dimmer](../007-dimmer/index.md).
 
 ## Check your result

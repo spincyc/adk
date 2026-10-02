@@ -64,12 +64,12 @@ counts; the den shares one number back, `armed`, 1 or 0, and the door
 lights its red LED from it. A `bool` crosses as a whole number: `true` is
 1 and `false` is 0.
 
-**Tripwires far from the alarm.** The sensors are Lesson 23's, wired as
-there where they can be. Two can't go to their homes. The obstacle sensor's
-home below the board is the modem's now, and the tap sensor's home would
-share the power header's one 5V pin with the PIR. So they take the places
-Lesson 46's DHT11 and 18B20 had above the board, and their pins, 16 and
-17. An `adk::Switch` works on any pin.
+**Tripwires far from the alarm.** The PIR, the tilt switch, and the
+beam-break and obstacle sensors go back to their homes from Lesson 23,
+the obstacle sensor's on A13. Only the tap sensor moves: its home would
+share pin A12 and the power header's one 5V pin with the PIR, so it takes
+the place Lesson 46's 18B20 had above the board, and its pin, 17. An
+`adk::Switch` works on any pin.
 
 !!! question "Predict"
     Once it works, you'll arm the alarm and then unplug Board B, the door,
@@ -106,11 +106,14 @@ When you are done, these are the connections Board A makes:
 
 Keep the modem, its divider and the green LED from Lesson 46, and take out
 the four sensors and their wires. The red LED goes at its home in column
-6. The PIR sits below the Mega and the beam-break sensor below the board
-at their homes, and the tilt switch stands in c32 and c33, as in Lesson 23.
-The obstacle sensor takes the DHT11's place above the board, powered from
-the top rails below it; the tap sensor takes the 18B20's. The modem's 3.3 V
-wire goes round the left of the PIR now, to keep clear of its wires.
+6. The PIR sits at its home below the Mega, and the beam-break and
+obstacle sensors at theirs below the board, with the obstacle sensor's OUT
+on A13. The tilt switch stands in c32 and c33, as in Lesson 23. The tap
+sensor's home below the Mega would share A12 and the power header's one
+5V pin with the PIR, so the tap sensor takes the 18B20's place above the
+board instead, on pin 17, powered from the top rails below it. The
+modem's 3.3 V wire goes round the left of the PIR now, to keep clear of
+its wires.
 
 <!-- bench B -->
 
@@ -205,7 +208,7 @@ silence as trouble too, and *Make it yours* shows how.
 | What you see | Try this |
 |---|---|
 | `No news` all the time | The boards don't hear each other: check each modem as in Lesson 43. |
-| A tripwire never shows | Check its wire: the PIR's OUT to A12, the tilt switch's A14 into a32, the beam-break's S to A15, the obstacle's OUT to pin 16, the tap's S to pin 17. Watch the module's own LED: if that doesn't light, check its + and GND on the rails. |
+| A tripwire never shows | Check its wire: the PIR's OUT to A12, the tilt switch's A14 into a32, the beam-break's S to A15, the obstacle's OUT to A13, the tap's S to pin 17. Watch the module's own LED: if that doesn't light, check its + and GND on the rails. |
 | A tripwire shows on its own, over and over | The PIR may be settling, or seeing warm air: give it a minute. The obstacle sensor may see too far: turn its knob back. |
 | A tripwire shows when it stops, not when it starts | That module is the other way round from most: swap `adk::ActiveHigh` in or out of its line in **Door**. |
 | POWER does nothing | Aim the remote at the receiver. Check its Y pin (the signal) goes to pin 2, its R to the top + rail by column 39 and its G to the top − rail by column 37. Lesson 22's sketch shows your remote's codes. |

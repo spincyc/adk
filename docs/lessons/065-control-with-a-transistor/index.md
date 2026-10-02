@@ -18,6 +18,7 @@ ideas:
   - A small current into a transistor's base switches a separate path through its collector
 laws:
   - {law: ohms-law, section: try-it, for: "Finds LED and base currents from resistor voltages"}
+  - {law: current-law, section: try-it, for: "Subtracts the pull-down's 0.08 mA to give the base 4.1 mA"}
   - {law: current-law, section: change-one-thing, for: "Splits base-resistor current between base and pull-down"}
   - {law: forward-voltage, section: try-it, for: "Expects 4.2 V, not 5 V, across the base resistor"}
   - {law: transistor-switch, section: why-it-happens, for: "Explains a small base current switching the LED path"}
@@ -158,9 +159,17 @@ other. Keep the metal tips apart.
 
 <!-- measure -->
 
+The base resistor gets about 4.2 V, not the whole 5 V, because the base
+and emitter behave like a diode: while current flows into the base, it
+sits about 0.7–0.8 V above the emitter, its
+[forward voltage](../../laws/diodes-transistors-op-amps.md#forward-voltage).
+
 Each resistor's voltage divided by its resistance gives its current:
 about 3.0 V ÷ 220 Ω ≈ **14 mA** through the LED and collector, and about
-4.2 V ÷ 1 kΩ ≈ **4.2 mA** into the base.
+4.2 V ÷ 1 kΩ ≈ **4.2 mA** through the base resistor. The 10 kΩ pull-down,
+the resistor from base to − that holds the switch off, has the base's
+0.8 V across it and takes about 0.08 mA of the 4.2 mA, so the base gets
+about **4.1 mA**.
 
 ## Why it happens
 
@@ -195,12 +204,13 @@ the base current?
 
 The LED should look just as bright, and the 220 Ω reading should stay
 near 3.0 V: about 14 mA still flows through the collector. The base
-resistor still has about 4.2 V across it, but ten times the resistance
-passes a tenth of the current, about **0.43 mA**. A little of that, about
-0.07 mA, goes down the 10 kΩ pull-down rather than into the base, so the
-base gets about **0.36 mA**. Now the collector current is about **40
-times** the base current: a small base current controls a much larger
-collector current.
+resistor now has about 4.3 V across it, a little more than before, since
+with less current the base sits only about 0.70 V above the emitter. Ten
+times the resistance passes about a tenth of the current, **0.43 mA**. A
+little of that, about 0.07 mA, goes down the 10 kΩ pull-down rather than
+into the base, so the base gets about **0.36 mA**. Now the collector
+current is about **40 times** the base current: a small base current
+controls a much larger collector current.
 
 ## Check your result
 

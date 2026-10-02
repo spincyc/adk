@@ -178,5 +178,5 @@ joins its end to a node. The dot at the tap names the shared connection.
 **Check:** The first resistor runs i4–i7, the second g7–g10, and the
 shared column 7 strip is the tap. Equal 1 kΩ resistors should put it
 near 2.5 V on a nominal 5 V supply. The exact voltage depends on the
-USB supply and resistor values. You can now add a branch at that same
-node in the [loaded-divider challenge](challenges.md#loaded-divider).
+USB supply and resistor values. After E05, you can add a branch at that
+same node in the [loaded-divider challenge](challenges.md#loaded-divider).

@@ -23,7 +23,7 @@ laws:
   - {law: series, section: the-idea, for: "Adds the coil's 16 Ω to its 220 Ω resistor"}
   - {law: divider, section: measure-it, for: "Shares pin 10's voltage by resistance between coil and resistor"}
   - {law: loading, section: measure-it, for: "Explains pin 10 sagging below 5 V under the buzzer"}
-  - {law: budgets, section: the-idea, for: "Keeps the buzzer coil under a pin's 20 mA"}
+  - {law: budgets, section: the-idea, for: "Holds the buzzer coil's peak to a pin's 20 mA"}
   - {law: flyback, section: the-idea, for: "Explains why the passive buzzer needs no flyback diode"}
   - {law: frequency, section: the-idea, for: "Sets each note's pitch in vibrations a second"}
   - {law: pwm, section: measure-it, for: "Explains pin 10 reading about half of 5 V"}
@@ -56,20 +56,22 @@ it can make any pitch you ask for. (The active buzzer in
 so it could only ever play its one note.)
 
 That coil is only about 16 Ω. Straight from a pin, it would try to take
-5 V ÷ 16 Ω, about 310 mA: fifteen times what a pin gives comfortably, and
-eight times the most it may ever give. So the buzzer gets a 220 Ω resistor
-in series, and the two add up:
+5 V ÷ 16 Ω, about 310 mA: fifteen times the 20 mA a pin is meant to give,
+and eight times the most it may ever give. So the buzzer gets a 220 Ω
+resistor in series, and the two add up:
 
 <p class="formula">current = <span class="fraction"><span>5 V</span><span>220 Ω + 16 Ω</span></span> ≈ 21 mA</p>
 
-That's at most, and only while the pin is HIGH, which is half of every
-vibration. On average the pin gives about 10 mA. The buzzer is a little
-quieter with the resistor, but still plenty loud. The active buzzer in
-Lesson 3 needed a diode: when its transistor switched off, the current in
-the buzzer had nowhere to go, and kicked up a spike. Here the pin itself
-switches, and when it goes LOW it joins the buzzer to GND, so the coil's
-current, which the 220 Ω keeps small, always has a way round. No diode is
-needed.
+That's the very most, and only while the pin is HIGH, which is half of
+every vibration. The pin's own voltage sags a little below 5 V while it
+pushes this current, so the peak is really about 20 mA, and on average the
+pin gives about 10 mA.
+The buzzer is a little quieter with the resistor, but still plenty loud.
+The active buzzer in Lesson 3 needed a diode: when its transistor switched
+off, the current in the buzzer had nowhere to go, and kicked up a spike.
+Here the pin itself switches, and when it goes LOW it joins the buzzer to
+GND, so the coil's current, which the 220 Ω keeps small, always has a way
+round. No diode is needed.
 
 A **melody** is a list of notes, each a pitch and a length. In ADK one note
 is an `adk::Note`, such as `{adk::note::e4, 400}`: E above middle C, for

@@ -31,6 +31,9 @@ current. The Mega supplies 5 V from USB; no upload or signal pin is needed.
 
 ## Predict
 
+A resistor's **resistance** says how strongly it holds back current. It
+is measured in **ohms**, written Ω: 1 kΩ, one kilohm, is 1000 ohms.
+
 Which resistor will give the brightest LED and largest current: **220 Ω**,
 **1 kΩ**, or **2 kΩ**? Which will give the smallest? Put them in order in
 your notes before changing anything. Predict whether the LED will still

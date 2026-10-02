@@ -63,9 +63,12 @@ The finished circuit makes these connections:
 
 ## Why it happens
 
-Current can pass only around a complete loop. The GND wire closes the return
-to the Mega. Removing it opens that loop, even though the top + rail still
-has 5 V. The 220 Ω resistor limits current so the LED can stay lit safely.
+Current can pass only around a complete loop, and this loop has three
+parts: a **source** that pushes the current, here the Mega's USB 5 V; a
+**load** that uses it, here the LED; and a **return** that carries it back
+to the source, here the GND wire. Removing the GND wire opens that loop,
+even though the top + rail still has 5 V. The 220 Ω resistor limits
+current so the LED can stay lit safely.
 
 ## Check your result
 

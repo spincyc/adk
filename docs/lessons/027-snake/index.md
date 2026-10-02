@@ -103,9 +103,11 @@ always appears on a random dot the snake doesn't cover.
     Its coil is a thin wire of only about 16 Ω. Straight from a pin, Ohm's
     law gives 5 V ÷ 16 Ω, over 300 mA: far past the 40 mA that would damage
     the pin. With the 220 Ω resistor in the way the current is
-    5 V ÷ (220 Ω + 16 Ω), about 20 mA while the pin is high, and the pin is
-    only high half the time while a note plays. It is quieter than without,
-    but plenty loud across a room.
+    5 V ÷ (220 Ω + 16 Ω), about 21 mA at the very most, and only while the
+    pin is high, which is half the time while a note plays. The pin's own
+    voltage sags a little below 5 V while it pushes this current, so the
+    peak is about 20 mA, and about 10 mA on average. It is quieter than
+    without, but plenty loud across a room.
 
 When you are done, these are the connections your circuit makes:
 

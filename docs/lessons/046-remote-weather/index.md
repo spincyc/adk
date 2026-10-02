@@ -194,7 +194,7 @@ What's new:
    its screen shows something like:
 
     ```text
-    Air 21.5°C  45%
+    Air 21.5°C 45%
     Heard   14:32:05
     ```
 

@@ -79,7 +79,11 @@ section shows the individual pulses if that instrument is available.
 
 <!-- connections -->
 
-The LED uses roughly (5 − 3.2) V ÷ 220 Ω ≈ **8 mA** while on. The
+A white LED keeps about 3.2 V across it while lit, more than a red LED's
+2 V: each color of LED has its own
+[forward voltage](../../laws/diodes-transistors-op-amps.md#forward-voltage),
+and white, made from a blue LED inside, has one of the highest. So the
+LED uses roughly (5 − 3.2) V ÷ 220 Ω ≈ **8 mA** while on. The
 separate filter branch can draw at most 5 V ÷ 10 kΩ = **0.5 mA** when
 its capacitor starts empty. Together they stay below the Mega's
 20 mA per-pin operating limit. The 10 kΩ and 100 µF pair has a time

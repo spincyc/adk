@@ -61,6 +61,11 @@ shows this pinout.
 Check the power path: chip **pin 14 to 5 V** and **pin 7 to GND**. The
 100 nF capacitor stands across the top + and − rails by column 15, beside
 pin 14's supply wire; a black wire at column 23 makes the top − rail GND.
+A capacitor stores a little electricity, as E07 shows. This one is a
+small local store right at the chip's power pins: it supplies the brief
+gulps of current the chip takes each time an output switches, so the
+chip's 5 V does not dip
+([supply capacitors](../../laws/capacitors-and-coils.md#decoupling)).
 Button A goes to **pin 1**, button B to **pin 2**, and each has its own
 10 kΩ path to GND so it reads 0 when released. **Pin 3 → 1 kΩ → red LED → GND**. The
 six unused inputs (pins 4, 5, 9, 10, 12, and 13) are tied to GND; leave

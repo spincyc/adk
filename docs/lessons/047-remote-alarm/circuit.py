@@ -21,17 +21,18 @@ den.wire ("receiver.−", "T-37")
 den.home_buzzer ("active")
 
 # Board B, by the door: Lesson 46's sensors go, and the green LED on 28
-# stays to show the link. The PIR, the tilt switch and the beam-break
-# sensor come back at their homes from Lesson 23: the PIR on A12, powered
-# from the power header; the tilt switch in c32 and c33 on A14; the
-# beam-break sensor on A15. The obstacle and tap sensors
-# take the places Lesson 46's DHT11 and 18B20 had above the board, on
-# their pins, 16 and 17, and their top-rail holes. This keeps the power
-# header free for the PIR. The red
-# LED on 26 shows whether the den has armed the alarm.
-door = Bench ("Board B, by the door: a PIR on A12, a tilt switch on A14, a beam-break sensor on "
-              "A15, an obstacle sensor on pin 16, a tap sensor on pin 17, a red LED on pin 26, a green "
-              "LED on pin 28 and a LoRa modem on pins 14 and 15", columns=(1, 63), sketch="Door")
+# stays to show the link. The PIR, the tilt switch, the beam-break sensor
+# and the obstacle sensor come back at their homes from Lesson 23: the PIR
+# on A12, powered from the power header; the tilt switch in c32 and c33 on
+# A14; the beam-break sensor on A15; the obstacle sensor on A13, past it
+# below the board. The tap sensor's home would share A12 and the power
+# header's one 5V pin with the PIR, so it takes the place Lesson 46's
+# 18B20 had above the board, on its pin, 17, and its top-rail holes. The
+# red LED on 26 shows whether the den has armed the alarm.
+door = Bench ("Board B, by the door: a PIR on A12, an obstacle sensor on A13, a tilt switch on "
+              "A14, a beam-break sensor on A15, a tap sensor on pin 17, a red LED on pin 26, a "
+              "green LED on pin 28 and a LoRa modem on pins 14 and 15", columns=(1, 63),
+              sketch="Door")
 
 door.home_modem ()
 
@@ -52,11 +53,11 @@ door.wire ("a33", "B-33")
 
 door.home_beam ()
 
-door.module ("sensor", name="obstacle", at=(8.63, -1.96), label="obstacle sensor",
-             pins=("GND", "+", "OUT", "EN"))
-door.wire ("16", "obstacle.OUT")
-door.wire ("obstacle.+", "T+36")
-door.wire ("obstacle.GND", "T-35")
+door.module ("sensor", name="obstacle", at=(9.43, 3.45), label="obstacle sensor",
+             pins=("GND", "+", "OUT", "EN"), facing="up")
+door.wire ("A13", "obstacle.OUT")
+door.wire ("obstacle.+", "B+45")
+door.wire ("obstacle.GND", "B-46")
 
 # Readings to take with a multimeter on Board B: the red LED's pin, which
 # the den sets over the bridge, and the tilt switch's pin both ways up.

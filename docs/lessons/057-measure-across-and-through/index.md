@@ -53,8 +53,11 @@ part of the circuit. Check the whole path before plugging USB in.
 Set the meter to **DC volts (V⎓)** and the 20 V range if it has ranges.
 Put the black lead in **COM** and the red lead in **V**. Keep the lead in the
 V jack throughout this lesson. Never put voltage probes in a current jack
-or across the supply while the meter is set to current: that can short the
-Mega. Keep the metal probe tips from touching each other.
+or across the supply while the meter is set to current: on a current
+setting the meter joins its two probes much as a plain wire would, and
+across the supply that is a **short circuit**, a path that lets far too
+much current flow and can damage the Mega. Keep the metal probe tips
+from touching each other.
 
 1. Predict whether the top + rail will read close to 0 V or 5 V above the
    bottom − rail. Plug USB in. Touch the probes to the two rail holes in

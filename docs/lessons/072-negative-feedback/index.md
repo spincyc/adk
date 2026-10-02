@@ -191,10 +191,16 @@ pin.
 
 At 2.0 V the wiper sits 40% of the way along the knob's 10 kΩ track:
 6 kΩ above it and 4 kΩ below. Hung on the wiper, the 1 kΩ load joins the
-lower 4 kΩ in parallel, and together they act like 800 Ω, so the wiper
-falls to about 5 V × 800 ÷ 6800 ≈ **0.59 V**. This is the
+lower 4 kΩ in parallel. Two paths to GND let more current through than
+either alone, so together they act like less than either:
+1 kΩ × 4 kΩ ÷ (1 kΩ + 4 kΩ) = 800 Ω, by the rule for
+[resistors in parallel](../../laws/kirchhoff.md#parallel). The 6 kΩ
+above now shares the 5 V with only 800 Ω, so the wiper falls to about
+5 V × 800 ÷ 6800 ≈ **0.59 V**. A load to GND
+[pulls a divider's tap down](../../laws/dividers.md#loading) like this;
+the optional
 [loaded-divider challenge](../../electricity/challenges.md#loaded-divider)
-again.
+measures it with three resistors.
 
 The op-amp changes its output until the voltage at its − input is close to
 the voltage at its + input. Here the output itself feeds the − input, so the

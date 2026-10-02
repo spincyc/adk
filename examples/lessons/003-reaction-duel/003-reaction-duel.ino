@@ -64,8 +64,21 @@ void redPressed ()
             break;
 
         case State::Go:
-            adk::println (Serial, "Red wins in ", reaction.elapsed (), " ms!");
-            red.blink (200);
+            // Nobody reacts in under 100 ms. A press that quick is a
+            // guess, or began before the light and showed late, as a
+            // button takes 20 ms to settle: a false start too.
+            if (reaction.elapsed () < 100)
+            {
+                falseStart ();
+                adk::println (Serial, "Red pressed too soon, so Green wins!");
+                green.blink (200);
+            }
+            else
+            {
+                adk::println (Serial, "Red wins in ", reaction.elapsed (),
+                              " ms!");
+                red.blink (200);
+            }
             endRound ();
             break;
     }
@@ -88,9 +101,18 @@ void greenPressed ()
             break;
 
         case State::Go:
-            adk::println (Serial, "Green wins in ", reaction.elapsed (),
-                          " ms!");
-            green.blink (200);
+            if (reaction.elapsed () < 100)
+            {
+                falseStart ();
+                adk::println (Serial, "Green pressed too soon, so Red wins!");
+                red.blink (200);
+            }
+            else
+            {
+                adk::println (Serial, "Green wins in ", reaction.elapsed (),
+                              " ms!");
+                green.blink (200);
+            }
             endRound ();
             break;
     }
@@ -115,7 +137,7 @@ void go ()
     state = State::Go;
 }
 
-// A long, cross buzz, and the light never comes on.
+// A long, cross buzz, and the light's countdown is called off.
 void falseStart ()
 {
     suspense.stop ();

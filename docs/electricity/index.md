@@ -18,7 +18,7 @@ need no IDE or upload. E02 adds the meter. E05 needs a 10 Ω resistor,
 and E07–E08 and E23 the inexpensive capacitors, from the table below.
 E12 builds the kit's buzzer into the protected-coil pattern; its LED and
 a meter show the switching, and only a scope shows the diode at work.
-After E04, try the [loaded-divider design challenge](challenges.md#loaded-divider)
+After E05, try the [loaded-divider design challenge](challenges.md#loaded-divider)
 to see why a measured divider voltage changes when a load is attached.
 
 **Scope and generator extension:** After E10, try E11; after E08, try
@@ -52,7 +52,7 @@ for each path. Check each module's extra parts before starting it:
 | 1. DC paths | E01–E03 | None; E01 does not need the meter or an upload. |
 | 2. Sharing | E04–E06 | E05: 10 Ω resistor. E04 and E06 use kit parts. |
 | 3. Charge and diodes | E07–E09 | 1000 µF electrolytic capacitor rated at least 10 V for E07–E08; a stopwatch for E08. E09 uses kit parts. |
-| 4. Switches and coils | E10–E12 | E10 and E12 use kit parts. E11 needs a 100 mH inductor rated at least 10 mA, generator and two-channel scope. |
+| 4. Switches and coils | E10–E12 | E10 and E12 use kit parts. E11 needs a 100 mH inductor rated at least 10 mA, with DC resistance under about 500 Ω, a generator and a two-channel scope. |
 | 5. Alternating signals | E13–E15 | 1 µF nonpolar film capacitor, generator and two-channel scope. |
 | 6. Gain and power | E16–E18 | E16: MCP6002 DIP, 100 nF ceramic and 10 µF electrolytic capacitors rated at least 10 V, generator and scope; E17 reuses that chip circuit, which its page shows how to build without a generator, and may use a DC voltmeter instead of the scope; E18: 10 Ω resistor, 100 µF and 100 nF capacitors, generator and scope. |
 | 7. Logic and memory | E19–E21 | E19–E20: 74HC00 DIP and 100 nF capacitor; E21: 74HC14 DIP, 2 × 100 kΩ resistors, 10 µF electrolytic and 100 nF ceramic capacitors, a stopwatch. |
@@ -99,9 +99,10 @@ USB 5 V or the isolated 0–4 V generator. Never use mains, the kit's
 wires; put a resistor in series with **every** LED. Keep the
 Mega's GND at the bottom − rail hole nearest it and its 5 V at the top +
 rail hole nearest it, as in the [kit homes](../kit.md#breadboard-homes).
-Do not join a generator output to the Mega's 5 V rail. Keep the meter in its
-DC voltage mode, with the red lead in the voltage jack. Probe **across** a
-part; find its current by dividing the resistor's voltage by its resistance.
+Do not join a generator output to the Mega's 5 V rail or to any Mega pin.
+Keep the meter in its DC voltage mode, with the red lead in the voltage
+jack. Probe **across** a part; find its current by dividing the
+resistor's voltage by its resistance.
 
 ## 1. DC paths and measurements
 
@@ -232,9 +233,11 @@ order. **Predict, do, see:** Put the LED and its resistor between + and
 collector, emitter at GND, and the button through 1 kΩ from + to base.
 Predict the LED state before pressing; it is off until the button
 supplies base current. With the button held, the resistor voltages give
-about 14 mA through the LED and 4.2 mA into the base. Swap the 1 kΩ base
-resistor for 10 kΩ: the LED stays as bright while the base current falls
-to about 0.36 mA, a fortieth of the collector current. **ADK connection:**
+about 14 mA through the LED and 4.2 mA through the base resistor, of
+which the base gets about 4.1 mA after the pull-down's share. Swap the
+1 kΩ base resistor for 10 kΩ: the LED stays as bright while the base
+current falls to about 0.36 mA, a fortieth of the collector current.
+**ADK connection:**
 Isolates the switch used for the [Lesson 3 buzzer](../lessons/003-reaction-duel/index.md).
 
 ### E11 — [An inductor resists change][e11-guide] {#e11-inductor-current}
@@ -248,10 +251,10 @@ build: 0–4 V square wave, 1 kΩ resistor, 100 mH inductor, two-channel scope.
 across the 1 kΩ resistor, which stands for current. Wire generator output →
 inductor → 1 kΩ → GND. Put both scope ground clips at GND, channel 1 on
 generator output and channel 2 at the inductor/resistor junction. With the
-inductor, channel 2 rises most of the way in roughly 0.1 ms and levels at
-about 2.6–3.8 V, below 4 V because the coil's winding and the generator
-take a share; replace the inductor with a wire and the edge is much
-sharper. **ADK connection:** The coil in [Lesson
+inductor, channel 2 rises about two thirds of the way in roughly 0.1 ms
+and levels by about 0.3 ms, at about 2.6–3.8 V, below 4 V because the
+coil's winding and the generator take a share; replace the inductor with
+a wire and the edge is much sharper. **ADK connection:** The coil in [Lesson
 3's buzzer](../lessons/003-reaction-duel/index.md) is why its switch has a
 protective diode.
 
@@ -411,10 +414,12 @@ the state in
 inputs to GND, and take out E20's wires before the new chip goes in: its
 pins do different jobs. **Predict, do, see:** Feed one inverter's output
 back to its input through 100 kΩ and put the capacitor from input to GND.
-With R × C = 1 s, predict the pace; the LED on the output blinks about
-once every 0.8–1.1 s. Change to two 100 kΩ resistors in series and it
-blinks about half as fast, slowly enough for a meter on the capacitor to
-follow it between about 1.7 V and 2.7 V, the chip's two thresholds.
+With R × C = 1 s, predict the pace; the LED on the output blinks roughly
+once every 0.7–1.1 s, since the chip's thresholds differ from chip to
+chip and maker to maker and the 10 µF capacitor may be a fifth off its
+label. Change to two 100 kΩ resistors in series and it blinks about half
+as fast, slowly enough for a meter on the capacitor to follow it between
+the chip's two thresholds, typically about 1.7 V and 2.7 V.
 **ADK connection:** A physical cousin of the timed events in
 [Lesson 12](../lessons/012-stopwatch/index.md).
 

@@ -77,11 +77,12 @@ pass of `loop ()`, only does what the current state allows.
 |---|---|---|
 | **Waiting** | The yellow light blinks slowly, or, after a round, the winner's light flashes | One player's press: *Ready* |
 | **Ready** | All dark, for a random 2 to 5 seconds | Time's up: *Go*. A press: a **false start**, the other player wins, and back to *Waiting* |
-| **Go** | Yellow on, and a beep | The first press wins: back to *Waiting* |
+| **Go** | Yellow on, and a beep | The first press wins, unless it is too quick to be a reaction (below): back to *Waiting* |
 
-A false start is only possible because the game knows it is in *Ready*: the
-same press in *Go* would win. So only one of you presses to start: after
-that, any press before the light is a false start.
+A false start is only possible because the game knows which state it is
+in. So only one of you presses to start: after that, any press before the
+light is a false start. So is a press in the first 100 ms after it, too
+quick to be a reaction (*How it works* below says why).
 
 ## Build it
 
@@ -103,6 +104,28 @@ while the Mega starts, and a diode across the buzzer catches a voltage
 spike when it switches off. In [Lesson 5](../005-melody-maker/index.md)
 you'll meet its cousin, the passive buzzer, which can play any note but
 needs a resistor and more help from the Mega.
+
+??? note "How the switch works"
+    The S8050 has three legs. The **base** is its control input: a small
+    current into it, from pin 12 through the 1 kΩ resistor, switches the
+    transistor on. Then the buzzer's much bigger current, from the 5 V
+    rail through the buzzer, flows in at the **collector** and out at the
+    **emitter** to GND. With no current into the base, that path is shut
+    and the buzzer is quiet. More in
+    [The transistor switch](../../laws/diodes-transistors-op-amps.md#transistor-switch).
+
+    While the Mega starts, pin 12 isn't an output yet: it floats, like a
+    button's pin without its pull-up, and stray electricity could switch
+    the transistor partly on. The 10 kΩ resistor from the base to the −
+    rail is a **pull-down**: it holds the base low, so the buzzer stays
+    quiet until the sketch drives pin 12.
+
+    Inside the buzzer is a small coil, and the current in a coil can't
+    stop at once. When the transistor switches off, that current would
+    kick up a spike of tens of volts across the transistor. The diode
+    across the buzzer gives it a way back round instead, where it dies
+    away harmlessly. More in
+    [Flyback](../../laws/capacitors-and-coils.md#flyback).
 
 <!-- bench -->
 
@@ -213,6 +236,10 @@ What's new:
   that one piece of code can serve them all.
 - `falseStart ()` and `endRound ()` hold the lines both players share, so
   they are written once.
+- In *Go*, `if (reaction.elapsed () < 100)` asks whether the press came
+  less than 100 ms after the light (`<` asks "is the left number
+  smaller?"). If so, it is a false start, as in *Ready*; otherwise it
+  wins. *How it works* below says why.
 - In `loop ()`, **`else if`** asks about the green button only when the
   answer about the red one was no, so each pass handles one press at most.
   *How it works* below says why that matters.
@@ -239,7 +266,8 @@ second.
    beeps.
 3. Press! The winner's LED flashes quickly, and the Serial Monitor prints the
    time, such as *Green wins in 247 ms!* That time includes the 20 ms ADK
-   waits for a button to settle (see *How it works*).
+   waits for a button to settle (see *How it works*). A press in the first
+   100 ms is too quick to be a reaction, and counts as a false start.
 4. Now try pressing before the yellow light. The buzzer gives a long, cross
    buzz, the other player's light flashes, and the Serial Monitor says who
    pressed too soon.
@@ -270,6 +298,13 @@ are faster to a sound, try the first challenge below.
     little more if its contacts bounce, since each bounce starts the 20 ms
     again. So your real reaction is about 20 ms quicker than the number on
     screen. Both players get the same wait, so the duel stays fair.
+
+    That wait has a catch. A press that begins in the last 20 ms before
+    the light is only noticed after the light comes on, in *Go*, and
+    would win in under 20 ms. Nobody reacts that fast: even sprinters
+    are counted as starting early if they move within a tenth of a
+    second of the gun. So in *Go* the sketch counts any press under
+    100 ms as a false start too, and a jumped gun always loses.
 
     `endRound ()` ends with `adk::wait (1000)`, which gives the loser a
     second to finish their too-late press. A press during `adk::wait ()`
@@ -354,7 +389,7 @@ What the numbers tell you:
        order.
     2. The game's state. The sketch only does what the current state
        allows: in *Ready* a press is a false start, and in *Go* the first
-       press wins.
+       press wins, unless it comes in the first 100 ms.
     3. Its current comes from the 5 V rail and flows through the transistor
        to GND. Pin 12 only sends a small control current to the
        transistor's base, because the buzzer can need more than a pin

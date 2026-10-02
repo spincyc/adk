@@ -16,7 +16,8 @@ ideas:
   - Alarms that fail loud, because no news isn't good news
 laws:
   - {law: budgets, section: the-idea, for: "Powers the water sensor's 20 mA from pin A7"}
-  - {law: pwm, section: measure-it, for: "Explains pin 10 averaging about 2.2 V during the alarm"}
+  - {law: pwm, section: measure-it, for: "Explains pin 10 averaging about 2 V during the alarm"}
+  - {law: loading, section: measure-it, for: "Explains pin 10 sagging below 5 V under the buzzer"}
   - {law: sampling, section: the-idea, for: "Measures loudness as the swing of A5's readings"}
   - {law: airtime, section: the-idea, for: "Sends less often in Europe to stay within a tenth"}
 ---
@@ -60,9 +61,17 @@ loud, not what: no voice crosses the bridge, only a number.
 Sending every one would keep the radio busy ten times a second, as
 Lesson 46 found, and an average could hide a short sound among quiet
 moments. So the room board keeps the loudest level of each half second and sends
-that, and a short clap still shows. In Europe, send the sound once a
-second instead (`adk::Every halfSecond {1000}`), to stay well inside a
-tenth of the time.
+that, and a short clap still shows.
+
+In Europe, where each radio may send for only a tenth of the time, send
+the sound every two seconds instead: change `adk::Every halfSecond {500};`
+to `adk::Every twoSeconds {2000};`, and `halfSecond.ticked ()` to
+`twoSeconds.ticked ()`. Once a second isn't enough, because the bridge
+also sends everything again every two seconds, and the water's reading
+whenever it changes: a loud room with a wet sensor would keep the room
+board on the air about 9 % of the time, too close to the limit. Every two
+seconds it is about 5 to 7 %, and the graph shows each level for four
+columns.
 
 **Feeling for water.** The water sensor is a comb of copper traces, every
 other one joined to its **+**. Dry, nothing joins them. Water between the
@@ -259,6 +268,8 @@ readings to compare with.
 
     A quiet room's level wobbles by a few, so most half seconds bring a
     message: two a second, each about a twentieth of a second on the air.
+    Every two seconds the bridge also sends everything again, as in
+    Lesson 43, in case a message was lost.
 
     The sound sensor reads A5 four times on every pass of `loop ()`, about
     half a millisecond, and keeps the highest and lowest readings. It hears
@@ -305,8 +316,9 @@ the water sensor is in the cup.
 What the numbers tell you:
 
 - **While the alarm sounds**, pin 10 is high half of each wave, which
-  would average 2.5 V, but each note is silent for its last eighth, so the
-  meter settles a little lower, about 2.2 V.
+  would average 2.5 V. The meter settles a little lower, about 2 V, for
+  two reasons: the pin sags a little below 5 V while it pushes current
+  through the buzzer, and ADK keeps each note silent for its last eighth.
 - **Hushed**, the pin rests at 0 V, even though the room board still
   says `WET!`: the choice to be quiet was made on Board A, not by the
   sensor.

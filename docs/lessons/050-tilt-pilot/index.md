@@ -16,6 +16,7 @@ ideas:
   - Sending only what has changed
 laws:
   - {law: logic-levels, section: measure-it, for: "Shifts I2C between the Mega's 5 V and 3.3 V"}
+  - {law: airtime, section: what-youll-build, for: "Keeps tilting in Europe to about ten minutes an hour"}
 ---
 
 ## What you'll build
@@ -34,8 +35,10 @@ Board B the plane.
 As before, send on 915 MHz only where it's allowed: see
 [Radios](../../safety.md#radios). In Europe the band allows a tenth of the
 time, six minutes in an hour. While you tilt Board A it sends up to ten
-messages a second, about half the time, so there tilt it for no more than
-about eight minutes in an hour, and lay it flat in between.
+messages a second, each a little over 0.05 s on the air, such as
+`@1/1 pitch=-12 roll=25`: more than half of every second. So there tilt
+it for no more than about ten minutes in an hour, and lay it flat in
+between.
 
 ## The idea
 

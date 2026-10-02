@@ -27,9 +27,9 @@ laws:
 
 <!-- closeup -->
 
-An MCP6002 amplifier takes a small sine wave from an isolated generator,
-through a 10 kΩ input resistor. Two equal **10 kΩ feedback resistors** set
-its gain to about two. On the
+An MCP6002 **op-amp**, short for operational amplifier, takes a small
+sine wave from an isolated generator, through a 10 kΩ input resistor.
+Two equal **10 kΩ feedback resistors** set its gain to about two. On the
 scope, its output wave should be about twice as tall as the input wave.
 The Mega supplies USB 5 V but uses no signal pins.
 
@@ -63,7 +63,12 @@ Follow the generated steps. Pins 8 and 4 sit at opposite corners of the
 chip, so the **100 nF and 10 µF supply capacitors** stand across the top +
 and − rails: the 100 nF right beside pin 8's supply wire, and the 10 µF
 two columns to its left, with its + leg on 5 V and striped − leg on GND.
-A black wire at column 21, close to pin 4, joins the top − rail to GND. Amplifier A's three resistors lie just below the chip. The
+They are a small local store of charge right at the chip's power pins:
+the chip takes its current in brief gulps, and they supply each gulp so
+the chip's 5 V does not dip
+([supply capacitors](../../laws/capacitors-and-coils.md#decoupling)).
+A black wire at column 21, close to pin 4, joins the top − rail to GND.
+Amplifier A's three resistors lie just below the chip. The
 generator reaches pin 3 only through the **10 kΩ input resistor**: the
 op-amp's input takes almost no current, so the resistor costs nothing
 here, but if the generator were ever on while the chip had no power it
@@ -158,7 +163,7 @@ in a free hole of the bottom − rail.
 
 ## Why it happens
 
-The amplifier raises its output until the voltage fed back to its − input
+The op-amp raises its output until the voltage fed back to its − input
 is close to the voltage at its + input. The two equal resistors split the
 output voltage in half before it reaches that − input. So the output needs
 to be about **twice the input**: gain = 1 + 10 kΩ ÷ 10 kΩ = **2**. This is

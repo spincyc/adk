@@ -28,8 +28,8 @@ and wiring safe.
 ## Electricity investigations
 
 - **Keep sources separate.** Do not join a generator output to the Mega's
-  5 V or 3.3 V pin. Follow each circuit's ground connection, and keep its
-  output within the stated range.
+  5 V or 3.3 V pin, or to any Mega pin. Follow each circuit's ground
+  connection, and keep its output within the stated range.
 - **Mind capacitor polarity.** Put the striped − leg where the drawing says,
   use the stated voltage rating, and discharge through the stated resistor
   before moving it. Do not short its legs.

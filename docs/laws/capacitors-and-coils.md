@@ -98,8 +98,10 @@ coil pushes back with a voltage:
 
 Its **inductance** L is in henrys. Where a capacitor's voltage can't jump,
 a coil's **current** can't: switched on, it rises gradually, with its own
-time constant, L ÷ R. E11's 100 mH coil with 1 kΩ: 0.1 H ÷ 1000 Ω = 0.1 ms, which the scope
-shows as a rounded edge where a plain wire gives a sharp one.
+time constant, L ÷ R, where R is all the resistance in the loop. E11's
+100 mH coil goes with 1 kΩ, plus the generator's 50 Ω and the winding's
+few hundred ohms: 0.1 H ÷ about 1050–1550 Ω is about 65–95 µs, which the
+scope shows as a rounded edge where a plain wire gives a sharp one.
 
 ## Flyback: why a coil needs a diode {#flyback}
 

@@ -148,7 +148,7 @@ circuit from an earlier lesson can often stay on the breadboard.
 | Joystick: X, Y (its button on 22) | A3, A4 |
 | Sound sensor | A5 |
 | Water sensor: S, and + (powered only while it reads) | A6, A7 |
-| Obstacle and tap sensors, when they share a board with the bridge's modem and the PIR | 16, 17 |
+| Tap sensor, when it shares a board with the PIR | 17 |
 | Stepper driver: IN1 to IN4 | A8, A9, A10, A11 |
 | On/off sensor modules | A12, A13, A14, A15 |
 | FM radio: SDIO, SCLK, RST (lessons without the four-digit display) | 40, 41, 42 |
@@ -221,7 +221,6 @@ outer pair feed the rails.
 | IR receiver | Above the gap between the Mega and the breadboard; with the screen, above columns 28–30 (its pins printed G, R, Y). In Lessons 47–48, above columns 38–40 to leave room for the clock and the modem's wires | The inner 5V and GND pins; with the screen, R into the top + rail by column 29 and G into the top − rail by column 28. In Lessons 47–48, R into the top + rail by column 39 and G into the top − rail by column 37 |
 | PIR sensor | Below the Mega, under the power header | The power header's 5V and GND |
 | Obstacle and beam-break sensors | Below the board, under columns 45 and 36 | From the bottom rails beside them |
-| Obstacle sensor, beside the bridge's modem | Above the board, pins over columns 35–38 (the DHT11's place) | + into the top + rail by column 36, GND into the top − rail by column 35 |
 | Tap sensor, beside the PIR | Above the board, pins over columns 26–28 (the 18B20's place) | + into the top + rail by column 27, − into the top − rail by column 28 |
 | Sound sensor | Below the Mega, under the power header | + and G from the power header's 5V and GND |
 | Water sensor | Below the Mega, beside the sound sensor | + from A7, − into the power header's second GND |
@@ -272,7 +271,9 @@ from the left: three digits, then how many zeros follow.
 | 2 kΩ | red, black, black, brown, brown |
 | 10 kΩ | brown, black, black, red, brown |
 
-So red, red, black, then black, is 2, 2, 0 and no more zeros: 220 Ω. Some
-resistors have four bands instead (two digits, then the zeros); 220 Ω is
-then red, red, brown. The kit's resistor card is labeled too, so check the
-card when in doubt.
+So red, red, black, then black, is 2, 2, 0 and no more zeros: 220 Ω.
+Gold in the zeros' place means divide by ten instead: the 10 Ω resistor
+that E05 and E18 add is brown, black, black, gold, brown, so 100 divided
+by ten, 10 Ω. Some resistors have four bands instead (two digits, then
+the zeros); 220 Ω is then red, red, brown. The kit's resistor card is
+labeled too, so check the card when in doubt.

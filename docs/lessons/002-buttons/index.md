@@ -174,9 +174,11 @@ button's taps and sends the count to your computer, which shows it in the
 Arduino IDE's **Serial Monitor**. These are the lines that do it:
 
 - `Serial.begin (9600);` opens the USB link to your computer, at 9600 bits a
-  second. `adk::setup (Serial);` does everything `adk::setup ()` does, and if
-  it finds a mistake in your sketch, it also explains it in words over that
-  link (see *How it works* below).
+  second: bits are the 0s and 1s that
+  [Lesson 10](../010-dice/index.md) explains. `adk::setup (Serial);` does
+  everything `adk::setup ()` does, and if it finds a mistake in your
+  sketch, it also explains it in words over that link (see *How it works*
+  below).
 - `int presses = 0;` makes a **variable**, a named box that holds a whole
   number (an `int`), starting at 0. It sits outside the functions, so it
   keeps its number from one pass of `loop ()` to the next.

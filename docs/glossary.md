@@ -124,8 +124,9 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 **Current** { #current }
 :   The flow of electricity, which passes only around a complete loop. It is
     measured in amps (A), or thousandths of an amp, milliamps (mA). Taught
-    in [Lesson 1](lessons/001-blink/index.md#the-idea) and
-    [E01](lessons/056-close-the-loop/index.md#try-it).
+    in [Lesson 1](lessons/001-blink/index.md#the-idea),
+    [E01](lessons/056-close-the-loop/index.md#why-it-happens) and
+    [E02](lessons/057-measure-across-and-through/index.md#try-it).
     Explained in [Charge and current](laws/units.md#charge).
 
 ## D
@@ -374,6 +375,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 **Op-amp** { #op-amp }
 :   An operational amplifier: a chip that changes its output until the
     voltages at its two inputs, + and −, nearly match. Taught in
+    [E16](lessons/071-amplifier-gain/index.md#why-it-happens) and
     [E17](lessons/072-negative-feedback/index.md#why-it-happens).
     Explained in
     [The op-amp with feedback](laws/diodes-transistors-op-amps.md#op-amp).
@@ -479,7 +481,7 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 :   How strongly a part holds back current, measured in ohms (Ω). More
     resistance in a loop means less current. Taught in
     [Lesson 1](lessons/001-blink/index.md#the-idea) and
-    [E03](lessons/058-resist-the-flow/index.md#try-it).
+    [E03](lessons/058-resist-the-flow/index.md#predict).
     Explained in [Ohm's law](laws/ohms-law.md).
 
 **RFID, UID** { #rfid }
@@ -543,7 +545,8 @@ C++ are in [The C++ you've met](cpp.md), and ADK's parts in
 **Short circuit** { #short-circuit }
 :   A path with almost no resistance, such as a wire from 5 V straight to
     GND. It lets far too much current flow and can damage the Mega. Taught
-    in [Lesson 7](lessons/007-dimmer/index.md#measure-it).
+    in [Lesson 7](lessons/007-dimmer/index.md#measure-it) and
+    [E02](lessons/057-measure-across-and-through/index.md#try-it).
     Explained in [A short circuit](laws/power.md#short-circuit).
 
 **Sketch** { #sketch }

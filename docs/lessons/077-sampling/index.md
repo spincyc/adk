@@ -76,9 +76,14 @@ the LED and the printed number describe the same sample.
 
 `adk::AnalogInput knob {A0};` claims A0 as an input. Each `knob.read ()`
 takes one **sample**: a measurement of the voltage at that moment. The
-`adk::wait (20)` pause leaves space between readings. At 9600 baud, sending
-each line also takes time, so the sketch does not take exactly 50 samples
-each second.
+`adk::wait (20)` pause leaves space between readings: on its own it would
+allow 50 samples a second, one every 20 ms. But at 9600 baud each
+character takes about 1 ms to send, and each line, such as
+`knob:512 brightness:128` with its line ending, has 21 to 26 characters:
+22 to 27 ms of sending, longer than the wait. The Mega can hold only 64
+characters waiting to go out, so it soon has to wait for room before each
+line, and the sending sets the pace: about 37 to 46 samples a second,
+nearer 40 than 50.
 
 ## Try it
 

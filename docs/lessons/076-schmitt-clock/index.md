@@ -145,8 +145,8 @@ Check the chip's notch, the capacitor stripe, the 100 nF supply
 capacitor and the LED's 1 kΩ resistor. Plug in USB and watch the red LED.
 Record whether it blinks, stays lit or stays dark. If it blinks, time ten
 blinks with the stopwatch and divide by ten: that is the time for one
-blink, on and off. Expect somewhere near **0.8–1.1 seconds**; the exact
-pace depends on the parts and the chip.
+blink, on and off. Expect roughly **0.7–1.1 seconds**; the exact pace
+depends on the chip and the capacitor.
 
 ## Why it happens
 
@@ -158,12 +158,15 @@ threshold, the output goes high again. This repeats, making a clock
 without timed code.
 
 At 5 V the upper threshold is typically about **2.7 V** and the lower
-about **1.7 V**, though each chip differs by a few tenths of a volt.
-With R × C = 1 second, charging from 1.7 V up to 2.7 V, on its way
-toward 5 V, takes about 0.36 seconds, and falling back from 2.7 V to
-1.7 V, on its way toward 0 V, about 0.46 seconds. So one blink takes
-about **0.8 seconds**, the LED lit for the shorter part; thresholds a
-little further apart stretch it toward 1.1 seconds.
+about **1.7 V**, but chips differ, and chips from different makers
+differ more. With R × C = 1 second, charging from 1.7 V up to 2.7 V, on
+its way toward 5 V, takes about 0.36 seconds, and falling back from
+2.7 V to 1.7 V, on its way toward 0 V, about 0.46 seconds. So one blink
+takes about **0.8 seconds**, the LED lit for the shorter part.
+Thresholds further apart stretch it and closer ones shorten it, and the
+10 µF capacitor may be up to a fifth larger or smaller than its label
+(its [tolerance](../../laws/units.md#tolerance)), which moves the time
+by up to a fifth too: expect roughly **0.7–1.1 seconds**.
 
 ## Change one thing
 
@@ -195,7 +198,7 @@ before changing anything.
 | Two 100 kΩ resistors in series | ____ | ____ s |
 
 Twice the resistance makes R × C twice as long, so each blink should take
-about twice as long: about **1.6–2.2 seconds**. On the meter, the
+about twice as long: roughly **1.4–2.2 seconds**. On the meter, the
 capacitor's voltage should climb to about **2.7 V**, turn, fall to about
 **1.7 V**, and turn again, in step with the LED: the turning points are
 the chip's two thresholds. A meter updates only a few times a second, so

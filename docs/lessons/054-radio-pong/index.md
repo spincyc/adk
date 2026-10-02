@@ -134,7 +134,7 @@ folder of its own, and the Arduino IDE builds a sketch only from the
 files in its folder, so the two can't share one copy of the game: change
 one, and make the same change in the other.
 
-At 180 lines, **Ping** is longer than the 150 or so a project usually
+At 190 lines, **Ping** is longer than the 150 or so a project usually
 takes. It is a whole game: a serve, a ball that crosses to the other
 board and back and bounces off the sides and the paddle, a score, and
 sounds for each. `catchBall ()`, `moveBall ()`, `showScore ()` and
@@ -150,8 +150,13 @@ What's new:
   other board: a ball is coming, and `catchBall ()` unpacks its flight
   and mirrors it.
 - `bridge.changed ("misses")` is true when the other player's count of
-  misses changes, and `bridge.value ("misses") > 0` leaves out the 0 that
-  comes when a board starts: then it's a point to this side.
+  misses first arrives, and each time it changes. `heardMisses`
+  remembers the count last heard, starting at −1 for "not heard yet", as
+  the den did in Lesson 47. Once a count has been heard
+  (`heardMisses >= 0`), a higher one is a point to this side. The first
+  count only says where theirs stands, even when this board has just been
+  reset in the middle of a game, and a count that falls means their board
+  has started again.
 - The flight is `pace * 32 + (drift + 1) * 8 + column`, three small
   numbers packed into one, as Lesson 53 packed an IR code: the column is
   0 to 7, the drift + 1 is 0 to 2, and the pace 100 to 250. `% 8` gets
@@ -224,7 +229,7 @@ again with its next check. That's the radio, not you.
 | The paddle moves the wrong way | Hold the joystick with its pins to your left. |
 | The picture is upside down or back to front | Turn the matrix, as Lesson 25 says, until the paddle is along the bottom. |
 | Two balls at once | Check `firstServer`: true only on Board A, false on Board B, and upload the right sketch to each. If only one board was reset after a dropout, the other may still hold a ball: press both reset buttons. |
-| The score looks wrong after a board was reset | Each board counts its own misses from when it started, so a board that restarts starts again from 0. For a new game, press both reset buttons. |
+| The score looks wrong after a board was reset | Each board counts its own misses from when it started, so a board that restarts starts again from 0, though neither board cheers for it. For a new game, press both reset buttons. |
 | The ball never comes back | The other board may have been switched off, or gone out of range, with the ball. Switch it on or bring it closer, then press both reset buttons for a new game. To practise alone with Board B off, reset Board A: it serves first. |
 | No sound | Check the buzzer's + leg is in f33, beside pin 10's wire in j33, and its 220 Ω from a33 to the − rail. |
 | The matrix shows junk | Check its wires, especially CLK on 48 and CS on 49. |

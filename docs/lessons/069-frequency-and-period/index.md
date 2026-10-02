@@ -94,10 +94,12 @@ and 1 ms**. Use channel 1 for counting if channel 2 is hard to see.
 Frequency and period describe the same wave from two sides: the period is
 one second divided by the frequency. The 1 kHz wave repeats ten times as
 often as the 100 Hz one, so each cycle takes one tenth as long, and ten
-of them fit where one did. The capacitor and resistor make a high-pass RC
-path: at 100 Hz the resistor's signal is attenuated more than at 1 kHz,
-so the two output heights need not match. The cycle timing should still
-match the input. Changing a note's frequency in
+of them fit where one did. The capacitor and resistor make a
+[high-pass](../../laws/signals.md#filter) path, one that lets fast
+changes through more easily than slow ones: at 100 Hz the wave across
+the resistor comes out smaller, roughly half as tall as at 1 kHz, so the
+two output heights need not match. The cycle timing should still match
+the input. Changing a note's frequency in
 [Lesson 5's melody maker](../005-melody-maker/index.md) changes its pitch
 for the same reason.
 

@@ -8,7 +8,7 @@ parts:
   - Breadboard
   - Isolated, battery-powered 0–4 V waveform generator with at least 5 mA output
   - Battery-powered two-channel oscilloscope sampling at 1 MS/s or more, with two probes
-  - 100 mH inductor rated for at least 10 mA
+  - 100 mH inductor rated for at least 10 mA, with DC resistance under about 500 Ω
   - 1 kΩ resistor (brown, black, black, brown, brown)
   - 3 jumper wires (and one spare for the comparison)
 ideas:
@@ -122,7 +122,8 @@ in a free hole of the bottom − rail.
 2. Set the generator to a **0–4 V square wave at 100 Hz**. Set the scope
    to trigger on channel 1's rising edge and start near **0.05 ms/div**
    (50 µs/div). Turn on the generator. Sketch both rising edges and record
-   how long channel 2 takes to rise most of the way.
+   how long channel 2 takes to get two thirds of the way up, and to level
+   off.
 3. **Switch off and unplug the generator.** Remove only the coil. Bridge
    its two breadboard strips with the spare jumper from **g6 to e6**, the
    holes the coil's leads used.
@@ -137,8 +138,9 @@ because the coil's own winding resistance and the generator's output
 resistance, often 50 Ω, take part of the 4 V. With the jumper, channel 2
 should follow channel 1 much more sharply, levelling near 3.8 V. The rise
 timescale is **L ÷ R**: 0.1 H ÷ (1000 Ω + 50 Ω + the coil's winding
-resistance, a few hundred ohms at most) is about **65–95 µs**. Record
-what you observe before deciding whether it matches your prediction.
+resistance, under about 500 Ω) is about **65–95 µs**. A coil with more
+winding resistance than that levels lower, and sooner. Record what you
+observe before deciding whether it matches your prediction.
 
 ## Why it happens
 

@@ -152,6 +152,7 @@ from 0. They are the two bumps on top of the heart.
 | Nothing lights at all | Check VCC goes to 5V and GND to the bottom − rail, that the rail has its black wire from the Mega's GND, and that you used the matrix's input end, marked **DIN**. |
 | Random dots, or pictures made of junk | CLK and CS are probably swapped: CLK goes to pin 48 and CS to 49. Push each jumper fully onto its pin. |
 | The fill starts in another corner or runs down a column | The module is turned round. Turn it until the fill starts top left and runs along the top row. |
+| No turn makes the fill start top left *and* run along the top row | Your module's dots are wired mirror-image, and turning can't fix that: ADK has no setting for it, so pictures and text come out mirrored. Use another module if you have one, and tell us which module it is in a [build report](../../builds.md#report-your-build). |
 | The button does nothing | The button must straddle the middle gap, with the jumper from a4 to the − rail and the black wire from GND to that rail. |
 | The Mega's **L** LED blinks long and short flashes | ADK found a pin problem and is blinking its number. See [Faults](../../library/index.md#faults). |
 

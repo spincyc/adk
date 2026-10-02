@@ -22,7 +22,7 @@ ideas:
 laws:
   - {law: loading, section: measure-it, for: "Explains the pin sagging below 5 V under the buzzer"}
   - {law: budgets, section: build-it, for: "Keeps the buzzer's current within what a pin should give"}
-  - {law: pwm, section: measure-it, for: "Explains the buzzer pin averaging about half of 5 V"}
+  - {law: pwm, section: measure-it, for: "Explains the buzzer pin averaging about 2 V"}
 ---
 
 ## What you'll build
@@ -313,10 +313,11 @@ across would join them.
 What the numbers tell you:
 
 - **The buzzer's pin** is high half the time and low half the time, so the
-  meter shows about half of 5 V. It's a little under 2.5 V, because the pin
-  sags a little below 5 V while it pushes current through the buzzer. The
-  number jumps about as the notes come and go, and drops to 0 in the pause
-  at the end of the tune. Press snooze and it stays at 0: the pin shows the
+  meter shows a little under half of 5 V, about 2 V, for two reasons: the
+  pin sags a little below 5 V while it pushes current through the buzzer,
+  and ADK keeps each note of a tune silent for its last eighth, so the
+  notes don't run together. The number jumps about as the notes come and
+  go, and drops to 0 in the pause at the end of the tune. Press snooze and it stays at 0: the pin shows the
   state as plainly as the flag does.
 - **The flag's supply** is the power module's 5 V on the bottom rails,
   while the screen and the clock run from the Mega's 5 V on the top rails.

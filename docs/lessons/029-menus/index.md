@@ -76,9 +76,9 @@ of 255 on its PWM pin, just as the dimmer's `write ()` set it in Lesson 7.
 
 !!! warning "Unplug first"
     Unplug the USB cable before you wire: this is a long build, so check
-    each wire against the list as you go. The LED matrix and the GY-521
-    come off for this lesson: put them aside with their wires, because
-    Lesson 30 brings them back, in the same places. The LED gets its own
+    each wire against the list as you go. The LED matrix, the GY-521 and
+    the BSS138 level shifter come off for this lesson: put them aside with
+    their wires, because Lesson 30 brings them back, in the same places. The LED gets its own
     220 Ω resistor, and so does the LCD's backlight.
 
 The rotary encoder plugs into the breadboard. Its pins bend at a right

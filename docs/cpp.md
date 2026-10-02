@@ -89,7 +89,7 @@ more strictly; E24's sketch uses `static_cast<char> (...)`.
 | `if (...) { ... } else { ... }` | Runs the first lines when the answer is yes, the others when it is no | Lesson 2 |
 | `else if (...)` | A second question, asked only when the first answer is no | Lesson 3 |
 | `==`, `!=` | Are two values equal? Are they different? | Lessons 2 and 4 |
-| `<`, `>`, `<=`, `>=` | Smaller? Bigger? Smaller or equal? Bigger or equal? | Lesson 4 |
+| `<`, `>`, `<=`, `>=` | Smaller? Bigger? Smaller or equal? Bigger or equal? | Lessons 3 and 4 |
 | `&&`, `||`, `!` | And, or, not: both true, at least one true, the opposite | Lesson 4 |
 | `switch`, `case`, `break` | Jumps to the lines for one value, and stops at `break` | Lesson 3 |
 | `case 0:` | A `switch` on a number, with a `case` for each | Lesson 46 |

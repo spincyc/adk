@@ -44,7 +44,10 @@ Break the loop anywhere and the LED goes dark.
 An LED lets current through only one way: in at its **long leg** (+) and out
 at its **short leg** (−). The flat edge of its rim marks the short-leg side.
 If you put it in backwards, it stays dark. The **resistor** limits the current
-so the LED and the Mega's pin stay safe. Keep it in the circuit.
+so the LED and the Mega's pin stay safe. How strongly it holds back current
+is its **resistance**, measured in **ohms** (Ω): this one is 220 Ω. A bigger
+resistance lets less current through, so the LED glows dimmer. Keep the
+resistor in the circuit.
 
 Want to see the same loop work **before writing code**? Try
 [E01–E03](../../electricity/index.md#1-dc-paths-and-measurements): power a
@@ -155,7 +158,7 @@ wire in the same holes, and plug in once more. It blinks again.
 | Still dark | Check the resistor stands in g6 and e6, the LED's long leg is in the same column (b6), the black jumper joins a7 to the − rail, and the white wire is in pin 26, not 27. |
 | The LED is always on | The white wire may be in 5 V instead of pin 26. |
 | Upload fails | Pick the right board and port in the **Tools** menu, and try a different USB cable: some only carry power. |
-| The little **L** LED on the Mega blinks long and short flashes | ADK found a wiring mistake in the sketch and is blinking the pin number. See [Faults](../../library/index.md#faults). |
+| The little **L** LED on the Mega blinks long and short flashes | ADK found a pin mistake in the sketch and is blinking the pin number. See [Faults](../../library/index.md#faults). |
 
 ??? note "How it works"
     `adk::setup ()` does more than it looks. Before anything runs, it checks

@@ -6,8 +6,11 @@
 # runs along row h to one lying in row i; Q5, Q1 and Q6 (f, b, g) cross the
 # gap through resistors standing in columns 27, 28 and 30; Q4, Q3 and Q2
 # (e, d, c) step up over the gap to three standing just before the digit,
-# whose lower legs drop into its bottom pins. Lesson 11 keeps all of this
-# but the digit and its wires.
+# whose lower legs drop into its bottom pins. Lesson 11 keeps the chip, its
+# wires to the Mega and the rails, and the wires that lead Q0 to Q5 to their
+# resistors' columns. It takes out the button, the digit and its wires, and
+# g's resistor with its wire from Q6, which it puts back below the gap; it
+# swaps every 1 kΩ for 2 kΩ and adds a resistor for dp, on Q7.
 X = lambda column: round (5.30 + 0.1 * column, 3)    # inches, as bench.py draws
 Y = lambda row: round (0.55 + row, 3)               # row offsets from the board's top
 

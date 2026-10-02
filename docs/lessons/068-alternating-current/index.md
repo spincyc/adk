@@ -115,7 +115,9 @@ in a free hole of the bottom − rail.
    at the top of the resistor. Set both channels to **DC coupling**.
 2. Set the isolated generator to a **1 kHz sine wave from 0 to 4 V**:
    4 V peak-to-peak with a **+2 V DC offset**. Check those settings before
-   enabling its output. Wait for the initial transient to settle.
+   enabling its output. Then wait a moment: for the first few
+   milliseconds the capacitor is still charging, and the traces shift
+   until it has.
 3. Record each trace's highest and lowest voltage. Channel 1 should stay
    near **0–4 V**. Channel 2 should swing **above and below 0 V**, about
    2 V each way. Turn the output off.
@@ -160,7 +162,7 @@ the current reverse while the generator's output never goes below 0 V.
   4 V peak-to-peak setting, and keep channel 1 on DC coupling.
 - **Channel 2 stays above 0 V:** Check its DC coupling, its tip in i10,
   and that the capacitor really separates j6 from the resistor's strip.
-  Wait for the initial transient to fade.
+  Wait a moment after turning the output on, while the capacitor charges.
 - **No trace appears:** With output off, check the generator's blue OUT
   lead in j6 and its black GND lead in the bottom − rail. Keep both scope ground clips on
   that same rail, then turn the output on again.

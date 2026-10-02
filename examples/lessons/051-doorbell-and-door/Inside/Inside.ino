@@ -53,8 +53,10 @@ void loop ()
 {
     adk::update ();
 
-    // Each is true once for each new event at the door. When two come
-    // together, a card comes first, then the bell, then a knock.
+    // Each is true once for each new event at the door, for one update.
+    // The screen and chime show one at a time, so when several come in one
+    // message, a card goes before the bell and the bell before a knock; the
+    // rest are let go.
     if (bridge.changed ("cards"))
     {
         checkCard (uint32_t (bridge.payload ("cards")));

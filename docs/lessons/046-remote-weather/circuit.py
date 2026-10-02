@@ -10,7 +10,7 @@ indoors = Bench ("Board A, indoors: the LCD on pins 31 to 36, a clock module on 
 
 indoors.home_modem ()
 
-indoors.screen (text=("Air 21.5°C  45%", "Heard   14:32:05"))
+indoors.screen (text=("Air 21.5°C 45%", "Heard   14:32:05"))
 indoors.home_rtc ()
 
 indoors.home_rgb_led ()

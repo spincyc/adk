@@ -31,8 +31,10 @@ shows the voltage falling.
 
 ## Predict
 
-The capacitor has two legs. Charge gathers on one side while charge leaves
-the other. Its voltage changes as that separation grows or shrinks. Before
+**Charge** is an amount of electricity, and a current is charge on the
+move ([charge and current](../../laws/units.md#charge)). The capacitor
+has two legs. Charge gathers on one side while as much leaves the other.
+Its voltage changes as that separation grows or shrinks. Before
 you power the build, predict the meter reading just after plugging in USB
 and about 10 seconds later. Will it jump straight to 5 V, or rise toward it?
 What will the meter show when the capacitor is connected to nothing, and

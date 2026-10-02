@@ -123,4 +123,4 @@ approximate number when a number matters. A dark LED or missing trace is
 an observation too; check the build before treating it as a result.
 
 Next, try the [schematic-to-breadboard checkpoint](schematics.md#trace-one-divider)
-and the [loaded-divider challenge](challenges.md#loaded-divider).
+and, after E05, the [loaded-divider challenge](challenges.md#loaded-divider).
