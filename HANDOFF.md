@@ -3,11 +3,16 @@
 Review date: 2026-10-01. This document records the recovered work and the
 changes proposed by a cold review of the library, all 55 project lessons,
 all 24 electricity investigations, reference material, build tooling, website,
-and PDFs. It is an implementation backlog for the next contributor.
+and PDFs. It records implemented fixes and the remaining evidence backlog.
 
-**Status:** recovery and review are complete. The fixes below are pending.
-Creating this handoff did not implement them or commit the recovered patch.
-Read the current [contributor instructions](AGENTS.md) before making changes.
+**Status, 2026-10-01:** 36 of the 37 ranked corrections are implemented and
+verified locally. R01 (print) and R03 (explanations) are complete. S03's
+power-connection recipe and R02's complete purchasing routes remain pending
+external specifications and validation; their unresolved requirements are now
+visible before purchase. R04 still needs actual hardware builds. The recovered
+patch and implementation are committed on local `main`; nothing was pushed or
+published. Read the [implementation record](#implementation-record) and current
+[contributor instructions](AGENTS.md) before continuing.
 
 The architecture and course structure are worth preserving. Prioritize concrete
 behavior, instruction, accessibility, and validation defects, then the unfinished
@@ -16,6 +21,7 @@ equipment and print work. Physical validation remains the largest readiness gap:
 
 ## Contents
 
+- [Implementation record](#implementation-record)
 - [Recovered state and verification](#recovered-state)
 - [Order of work](#order-of-work)
 - [Safety and equipment](#safety-and-equipment-corrections)
@@ -27,6 +33,111 @@ equipment and print work. Physical validation remains the largest readiness gap:
 - [Unfinished recovery work and hardware](#unfinished-recovery-work-and-physical-validation)
 - [Teaching and design improvements](#teaching-and-design-improvements-to-consider)
 - [Implementation workflow](#implementation-and-verification-workflow)
+
+## Implementation record
+
+The unchecked entries below remain open. Checked entries retain the review's
+original problem and acceptance criteria as historical context; this record
+states the resulting behavior, evidence and limits.
+
+| Local commit | Completed work |
+| --- | --- |
+| `297a882` | Preserved the complete recovered 55-file patch before further edits. |
+| `625141b` | C01–C11 and D06: setup rollback, IR lifetime, fair Bridge sends, legacy E32 backpressure, FM requests, Mesh capacity, display overloads and AVR arithmetic; also L06's AVR regression. |
+| `e90328e` | L02–L07: full countdown, per-field weather report identity, reliability run identity including the simultaneous old-echo/new-test boundary, shared switch state, wide throughput arithmetic and NEC address learning. |
+| `f455c01` | D07 and T02–T05: API comments/declarations, compiler identity, immutable package records and complete validation dependencies. |
+| `95eea32` | S01, S02, S04, D01–D05 and R03: safety and reference corrections, capacitor comparison, plus the S03/R02 equipment audit and explicit purchasing gates. |
+| `19f87dd` | L01, T01, T06, V01, V02 and R01: complete builds from each circuit, net validation, explicit waypoints, accessible instructions and PDF pagination. |
+| `5ecf9f6` | V01 mobile follow-up: focus the heading with the full instruction description, including when the responsive layout uses `display: contents`; regress both desktop and phone layouts. |
+
+### Verification of the implementation
+
+- `make -j4 test sanitize avr-test examples smoke pins style` passed with
+  the newly downloaded, checksum-verified managed compiler. All 505 library
+  cases passed normally and under ASan/UBSan; all 15 actual-sketch runners
+  passed, including Reaction Duel's preserved 530 checks. AVR simulation
+  passed 69 checks, including long-range scaling and throughput boundaries.
+- `make check -j4` passed after integration and the additional Meter boundary
+  correction, then passed again after the mobile focus correction. It reran
+  all host and sanitizer cases, rebuilt the affected
+  firmware and sketch checks, and passed the strict website, browser fixtures,
+  PDF and board-package gates. The preceding code gate rebuilt every example
+  with `--clean` and without library or sketch warnings.
+- The first sandboxed code gate could not resolve the compiler download host.
+  The successful code and full gates used approved execution outside the
+  sandbox, also required by LeakSanitizer's process-tracing limitation. No
+  sanitizer was disabled.
+- Circuit and route checks cover all 79 circuits / 92 boards, reconstruct
+  complete generated steps and compare their nets, including
+  Lesson 3 → E09 → E10 → Lesson 4. Negative fixtures reject source shorts,
+  incorrect module supplies and undeclared GPIO supplies. Waypoint checks
+  cover fresh, inherited and cached drawings.
+- Eight API tests and eight tooling tests passed, including original-failure
+  controls, rejected package rewrites, accepted mirrors/new hosts, compiler
+  replacement with an unchanged filename, and incremental dependency changes.
+  The board package installed, both installation examples compiled, and the
+  bootloader dry runs passed. Its published archive identity is unchanged.
+- All 119 site pages passed links, anchors and duplicate-ID checks. Chromium
+  DOM/accessibility-tree checks cover instruction focus, endpoint crop names,
+  keyboard controls and independent complete-build progress on desktop and
+  390-pixel layouts, including both boards in Lesson 44. No actual
+  screen-reader speech or native Firefox/Safari rendering was tested.
+- All 79 PDFs were rebuilt: 165 MB total, largest 4.5 MB; whole site 269 MB.
+  All 3,617 checked code lines were found in the printed output, and
+  all 55 project lessons start their answers on their final page. All final
+  flagged pages and their successors were visually inspected.
+- `git diff --check` passed. No hardware builds, RF emissions measurements,
+  native Windows/macOS installs or physical equipment combinations were tested.
+
+Build logs and reproduction evidence are under `build/handoff-fixes/`:
+`coordinator/code-gates.log`, `coordinator/make-check.log`, and the per-lane
+subdirectories. They are ignored build artifacts; the task status and material
+limits are recorded here so losing them does not lose the handoff.
+
+### Accepted print spacing
+
+The audit dropped from 19 flags to four. These remain deliberately accepted:
+
+| Lesson | Page | Occupancy | Reason |
+| --- | --- | --- | --- |
+| 032 Real Time Clock | 10 of 13 | 47.9% | The next page's tall clock/probe drawing cannot fit after the prediction. |
+| 041 LoRa Link | 15 of 18 | 35.8% | Three tall modem/probe comparisons and their table need the next page. |
+| 048 Baby Monitor | 19 of 22 | 36.7% | The two buzzer/probe comparisons need more height than remains. |
+| 060 Branches in Parallel | 5 of 9 | 47.1% | The following measurement drawings cannot fit below the procedure. |
+
+Keep their readable labels and complete probe paths. Empty SVG-wrapper
+paragraph margins were removed; type and drawing scales were preserved.
+Short complete sketches now stay together, and answer separation also works
+when a final Go deeper paragraph follows the answers.
+
+### Remaining evidence needed
+
+**S03:** UNI-T's current US page permits 5 V / 2 A USB power and names a
+USB-to-DC cable, but its accessory list conflicts and neither source supplies
+the barrel outer/inner diameter or insertion length. Obtain those dimensions,
+confirm the illustrated centre-positive polarity, and identify the exact
+supplied or replacement lead rated for at least 2 A. The V25/lead/UTG932E
+combination has no recorded bench test. The shopping list now includes the
+unresolved lead and excludes its unknown price from the provisional subtotal.
+
+**R02:** The independent specifications audit is done, and its sources and
+qualifications are in [What to buy](docs/buy.md). Complete purchase routes still
+need the S03 lead; Murata 19R107C lead reach and breadboard fit; exact current
+kit/module and RTC variants; a documented CJMCU-470 board; the complete RYLR896
+current maximum at 10 dBm; applicable radio configuration/authorization evidence;
+legacy E32 revision availability; and a selected EU/UK solder alternative.
+Unquoted accessories and regional availability remain explicit. No generic
+module name, nominal supply rating or radio pacing rule substitutes for those
+checks. Do not remove a gate until its specific missing evidence is obtained.
+
+**R04:** This session cannot assemble or observe physical circuits. Leave
+[the build record](docs/builds.md) unchanged until someone constructs and
+records the circuits. Prioritize the unresolved supplies, mechanical fit,
+instrument combination and guided transitions above.
+
+The optional teaching/design suggestions remain considerations, not completed
+requirements. Adjacent radio retry promises in Lessons 43/46 were corrected;
+no broad course rewrite, legacy-worktree merge or publication was performed.
 
 ## Recovered state
 
@@ -60,8 +171,8 @@ layout. Its diff was preserved separately. Do not merge or remove it as part of
 the current fixes without reconciling that separate work.
 
 The old session contained a request to publish. That historical text is recovery
-evidence, not current authorization to push or publish. The current request is
-to persist this handoff.
+evidence, not current authorization to push or publish. The current implementation
+request authorizes local fixes and integration; publication remains separate.
 
 ### Local evidence
 
@@ -137,7 +248,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### S01 Remove the powered fan flick instruction
 
-- [ ] **P2.** Source: [Fan lesson](docs/lessons/020-fan/index.md), line 178;
+- [x] **P2.** Source: [Fan lesson](docs/lessons/020-fan/index.md), line 178;
   related instructions at 101–102 and 222–225.
 - **Problem:** troubleshooting tells the learner to flick a blade while the
   motor is powered, contradicting the instruction to keep fingers clear.
@@ -149,7 +260,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### S02 Correct the explanation of floating scope grounds
 
-- [ ] **P2.** Source: [Instrument skills](docs/electricity/skills.md), 63–74.
+- [x] **P2.** Source: [Instrument skills](docs/electricity/skills.md), 63–74.
 - **Problem:** battery operation is said to prevent a slipped ground clip from
   shorting the supply. A second clip touching 5 V still shorts through an
   internally common ground when the first clip is on GND.
@@ -179,7 +290,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### S04 Correct the unsupported radio compliance recipe
 
-- [ ] **P2.** Sources: [Safety](docs/safety.md), 123;
+- [x] **P2.** Sources: [Safety](docs/safety.md), 123;
   [Kit](docs/kit.md), 88;
   [Radio Messages](docs/lessons/038-radio-messages/index.md), 91–98.
 - **Problem:** aerial removal and desk distance are presented as a license-free
@@ -201,7 +312,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### L01 Make guided route returns buildable
 
-- [ ] **P2.** Sources: [Guided route](docs/guided.md), 21–27;
+- [x] **P2.** Sources: [Guided route](docs/guided.md), 21–27;
   [generation hooks](docs/_theme/hooks.py), 442–449;
   [Mood Lamp](docs/lessons/004-mood-lamp/index.md), 96–98;
   [E10 circuit](docs/lessons/065-control-with-a-transistor/circuit.py), 13–16.
@@ -219,7 +330,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### L02 Keep the full Room Alarm exit countdown
 
-- [ ] **P2.** Source: [Room Alarm sketch](examples/lessons/024-room-alarm/024-room-alarm.ino),
+- [x] **P2.** Source: [Room Alarm sketch](examples/lessons/024-room-alarm/024-room-alarm.ino),
   36–41, 108, 122–128; [lesson](docs/lessons/024-room-alarm/index.md), 145–148.
 - **Problem:** POWER arriving on an existing `Every` tick enters `Leaving`
   with 10, restarts the timer, then consumes that same update's old tick and
@@ -232,7 +343,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### L03 Give weather readings honest completeness and freshness
 
-- [ ] **P2.** Sources:
+- [x] **P2.** Sources:
   [Indoors](examples/lessons/046-remote-weather/Indoors/Indoors.ino), 40, 59, 110;
   [Garden](examples/lessons/046-remote-weather/Garden/Garden.ino), 38;
   [lesson](docs/lessons/046-remote-weather/index.md), 243.
@@ -249,7 +360,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### L04 Identify each reliability test on Echo
 
-- [ ] **P2.** Sources:
+- [x] **P2.** Sources:
   [Echo](examples/lessons/055-reliability-meter/Echo/Echo.ino), 38;
   [Meter](examples/lessons/055-reliability-meter/Meter/Meter.ino);
   [lesson](docs/lessons/055-reliability-meter/index.md), 227, 407.
@@ -265,7 +376,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### L05 Teach shared state correctly in the Bridge switch exercise
 
-- [ ] **P2.** Source: [The Bridge](docs/lessons/043-the-bridge/index.md), 344.
+- [x] **P2.** Source: [The Bridge](docs/lessons/043-the-bridge/index.md), 344.
 - **Problem:** toggling on `changed("presses")` toggles on the first received
   zero, and toggles only once for a coalesced change from zero to two.
 - **Change:** preferably toggle a state on the sender and set the receiver's
@@ -276,7 +387,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### L06 Widen the throughput calculation before multiplying
 
-- [ ] **P2.** Source:
+- [x] **P2.** Source:
   [Reliability Meter](docs/lessons/055-reliability-meter/index.md), 373.
 - **Problem:** `length * 2000 / back` overflows the Mega's 16-bit `int` at the
   default length of 20. The AVR reproduction gave 42,949,417 instead of 400
@@ -288,7 +399,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### L07 Expose the address needed by the universal remote exercise
 
-- [ ] **P3.** Sources: [Remote Lamp](docs/lessons/053-remote-lamp/index.md), 293;
+- [x] **P3.** Sources: [Remote Lamp](docs/lessons/053-remote-lamp/index.md), 293;
   [Receiver](examples/lessons/053-remote-lamp/Receiver/Receiver.ino), 68.
 - **Problem:** the exercise needs a TV's address and command, but the supplied
   screen shows only its command, event count, and relay/link state.
@@ -301,7 +412,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### C01 Stop setup at the first fault and undo activated devices safely
 
-- [ ] **P2.** Sources: [Object](src/adk/object.cpp), 52–57;
+- [x] **P2.** Sources: [Object](src/adk/object.cpp), 52–57;
   [Board](src/adk/board.cpp), 305–313; [FM](src/adk/fm_radio.cpp), 154–162;
   [RFID](src/adk/rfid.cpp), 105; [reference](docs/library/index.md), 52–55.
 - **Problem:** `Led{26}`, conflicting `Led{26}`, then `FmRadio` makes `start()`
@@ -318,7 +429,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### C02 Detach the IR interrupt when its receiver dies
 
-- [ ] **P2.** Sources: [IR implementation](src/adk/ir_receiver.cpp), 53, 97–98,
+- [x] **P2.** Sources: [IR implementation](src/adk/ir_receiver.cpp), 53, 97–98,
   144; [header](src/adk/ir_receiver.h).
 - **Problem:** destroying a scoped `IrReceiver` unlinks ordinary updates but
   leaves its interrupt callback pointing into destroyed storage. A subsequent
@@ -332,7 +443,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### C03 Make Bridge packet scheduling fair
 
-- [ ] **P2.** Source: [Bridge](src/adk/bridge.cpp), 425–445.
+- [x] **P2.** Source: [Bridge](src/adk/bridge.cpp), 425–445.
 - **Problem:** scanning from index zero for every packet lets continuously
   changing early values starve later ones indefinitely. Eight seven-letter
   names with large 32-bit values fit only two entries per 56-character packet;
@@ -345,7 +456,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### C04 Respect LoRa module busy state without blocking
 
-- [ ] **P2.** Source: [LoraLink](src/adk/lora_link.cpp), 79–88.
+- [x] **P2.** Source: [LoraLink](src/adk/lora_link.cpp), 79–88.
 - **Problem:** with AUX LOW after setup, `send("should wait")` returns true
   and writes 12 serial bytes. Bridge then clears its pending value although
   the module is busy. This proves missing backpressure, not physical packet loss.
@@ -362,7 +473,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### C05 Honor a newer tuning request during FM seek
 
-- [ ] **P2.** Source: [FM](src/adk/fm_radio.cpp), 319–321, 372–385;
+- [x] **P2.** Source: [FM](src/adk/fm_radio.cpp), 319–321, 372–385;
   Lesson 037 already permits dial movement during a seek.
 - **Problem:** tune to 95.0 MHz, start seeking, then request 98.0. Seek completion
   overwrites the newer target with its found station, 101.1 in the fake.
@@ -374,7 +485,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### C06 Reserve MeshNode framing space separately from payload space
 
-- [ ] **P2.** Sources: [MeshNode header](src/adk/mesh_node.h), 52;
+- [x] **P2.** Sources: [MeshNode header](src/adk/mesh_node.h), 52;
   [implementation](src/adk/mesh_node.cpp), 88–102.
 - **Problem:** the 100-character line reader includes the sender prefix, so
   `PHNE: ` plus a valid 100-character payload is reported received with only
@@ -386,7 +497,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### C07 Let FourDigitDisplay accept mutable text buffers
 
-- [ ] **P2.** Source: [FourDigitDisplay](src/adk/four_digit_display.h), 38–51.
+- [x] **P2.** Source: [FourDigitDisplay](src/adk/four_digit_display.h), 38–51.
 - **Problem:** `char text[] = "1234"; display.show(text);` selects the
   unconstrained numeric template and fails compilation. String literals pass.
 - **Change:** constrain the numeric overload to intended number types, or
@@ -398,7 +509,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### C08 Make AnalogInput scaling safe for AVR long ranges
 
-- [ ] **P2.** Sources: [Analog implementation](src/adk/analog.cpp), 22–24;
+- [x] **P2.** Sources: [Analog implementation](src/adk/analog.cpp), 22–24;
   [contract](src/adk/analog.h), 14–15.
 - **Problem:** at ADC 1023, `read(0, 3600000L)` gives -598404 on AVR instead
   of 3600000. The signed product overflows before division; subtraction can
@@ -410,7 +521,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### C09 Bound the Smoother shift
 
-- [ ] **P2.** Sources: [Analog implementation](src/adk/analog.cpp), 64–89;
+- [x] **P2.** Sources: [Analog implementation](src/adk/analog.cpp), 64–89;
   [header](src/adk/analog.h), 47–51.
 - **Problem:** `Smoother{17}.add(65535)` yields 32767 for its first sample;
   shift 32 invokes undefined behavior. The public `uint8_t` argument is unchecked,
@@ -421,7 +532,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### C10 Avoid overflow in the longest LED blink period
 
-- [ ] **P3.** Source: [LED](src/adk/led.cpp), 75–76.
+- [x] **P3.** Source: [LED](src/adk/led.cpp), 75–76.
 - **Problem:** `(period_ + 1) / 2` wraps at `UINT32_MAX`, making a newly
   blinking LED immediately dark. This extreme period is outside course use.
 - **Change:** compute the rounded-up half without overflow, such as
@@ -431,7 +542,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### C11 Check display bounds before narrowing unsigned values
 
-- [ ] **P3.** Source: [FourDigitDisplay](src/adk/four_digit_display.h), 44–46.
+- [x] **P3.** Source: [FourDigitDisplay](src/adk/four_digit_display.h), 44–46.
 - **Problem:** `show(UINT64_MAX)` converts to signed -1 before bounds checking,
   displaying -1 instead of the four dashes promised outside -999 through 9999.
 - **Change:** validate the original signed/unsigned value before narrowing.
@@ -442,7 +553,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### D01 Correct Schmitt inverter threshold language
 
-- [ ] **P2.** Sources: [Digital laws](docs/laws/digital.md), 78–87;
+- [x] **P2.** Sources: [Digital laws](docs/laws/digital.md), 78–87;
   [law cards](docs/_theme/laws.yml), 175.
 - **Problem:** the reference describes a rising input switching the output
   HIGH, then applies that language to the inverting 74HC14. E21 and the
@@ -455,7 +566,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### D02 Stop presenting transistor gain of 100 as a guaranteed minimum
 
-- [ ] **P3.** Sources: [Transistor laws](docs/laws/diodes-transistors-op-amps.md),
+- [x] **P3.** Sources: [Transistor laws](docs/laws/diodes-transistors-op-amps.md),
   56–57; [law cards](docs/_theme/laws.yml), 123.
 - **Problem:** the linked SS8050 data gives minimum DC gain of 45 at 5 mA and
   85 at 100 mA, at VCE = 1 V. A universal minimum of 100 is unsupported, and
@@ -469,7 +580,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### D03 Explain the E18 ripple without claiming most charge is lost
 
-- [ ] **P3.** Source: [Power Integrity](docs/lessons/073-power-integrity/index.md),
+- [x] **P3.** Source: [Power Integrity](docs/lessons/073-power-integrity/index.md),
   234–238.
 - **Problem:** the page says capacitors give up most of their charge at 100 Hz,
   although about 130 mV ripple near 5 V is only about 2.6% of charge. The feed
@@ -482,7 +593,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### D04 Align the introductory timing promise with actual blocking limits
 
-- [ ] **P2.** Sources: [README](README.md), 52–54;
+- [x] **P2.** Sources: [README](README.md), 52–54;
   [homepage](docs/index.md), 69–70;
   [architecture](docs/ARCHITECTURE.md), 159–168.
 - **Problem:** the introductions promise that nothing blocks and displays stay
@@ -496,7 +607,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### D05 Describe the actual sensor interfaces
 
-- [ ] **P3.** Source: [Sensor reference](docs/library/sensors.md), 3–6.
+- [x] **P3.** Source: [Sensor reference](docs/library/sensors.md), 3–6.
 - **Problem:** the introduction promises both `measured()` and `ok()` for all
   periodic sensors. Thermistor exposes neither, SoundSensor has no `ok()`, and
   Rtc has no `measured()`.
@@ -507,7 +618,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### D06 Separate absolute FM tuning from relative stepping
 
-- [ ] **P3.** Source: [FM header](src/adk/fm_radio.h), 48–56,
+- [x] **P3.** Source: [FM header](src/adk/fm_radio.h), 48–56,
   included by [radio reference](docs/library/radio.md).
 - **Problem:** a shared comment says repeating either `tune()` or `step()` changes
   nothing. Every nonzero `step()` advances again; only the absolute tune request
@@ -519,7 +630,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### D07 Keep every LoraSettings declaration in the generated API
 
-- [ ] **P2.** Sources: [API generator](docs/_theme/api.py), 132–148;
+- [x] **P2.** Sources: [API generator](docs/_theme/api.py), 132–148;
   [settings header](src/adk/lora_modem.h), 28–32;
   [radio reference](docs/library/radio.md), 72.
 - **Problem:** trailing comments prevent declaration termination. `partner`
@@ -534,7 +645,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### T01 Validate power nets and actual module supply voltage
 
-- [ ] **P2.** Sources: [Bench checks](docs/_theme/bench.py), 1158–1167;
+- [x] **P2.** Sources: [Bench checks](docs/_theme/bench.py), 1158–1167;
   [module definitions](docs/_theme/modules.py), 61.
 - **Problem:** power-only nets bypass the relevant check. Both a 5 V-to-GND
   rail jumper and a 5 V connection to a 3.3 V LoRa module's printed `VDD` pin
@@ -549,7 +660,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### T02 Invalidate compiler installations when their bytes change
 
-- [ ] **P2.** Source: [Makefile](Makefile), 39–42, 374, 392–394;
+- [x] **P2.** Source: [Makefile](Makefile), 39–42, 374, 392–394;
   [toolchain manifest](boards/toolchain.json).
 - **Problem:** the install path depends on archive basename, and the installed
   binary lacks a manifest prerequisite. Changing version/checksum while retaining
@@ -564,7 +675,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### T03 Reject duplicate published platform versions
 
-- [ ] **P2.** Sources: [Boards generator](docs/_theme/boards.py), 113–123;
+- [x] **P2.** Sources: [Boards generator](docs/_theme/boards.py), 113–123;
   [quality workflow](.github/workflows/quality.yml), 147–155.
 - **Problem:** appending a second record for existing version `0.4.0` replaces
   its digest in a last-entry-wins dictionary. CI's removed-line check permits
@@ -576,7 +687,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### T04 Protect existing compiler host artifacts under a published identity
 
-- [ ] **P2.** Sources: [Boards generator](docs/_theme/boards.py), 49–57, 83;
+- [x] **P2.** Sources: [Boards generator](docs/_theme/boards.py), 49–57, 83;
   [quality workflow](.github/workflows/quality.yml), 147–155;
   [published records](boards/published.txt), 21–24.
 - **Problem:** recording only `name@version` permits changed existing-host
@@ -591,7 +702,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### T05 Make incremental checks depend on every input they read
 
-- [ ] **P2.** Source: [Makefile](Makefile), 462, 499–501;
+- [x] **P2.** Source: [Makefile](Makefile), 462, 499–501;
   [circuit tests](tests/circuits.py), [build-step tests](tests/build_steps.py),
   [navigation tests](tests/navigation_ids.py).
 - **Problem:** `circuits.ok` omits lesson circuit fixtures; `steps.ok` omits
@@ -605,7 +716,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### T06 Give explicit drawing waypoints a defined precedence
 
-- [ ] **P3.** Sources: [Drawing](docs/_theme/drawing.py), 294–301;
+- [x] **P3.** Sources: [Drawing](docs/_theme/drawing.py), 294–301;
   [Simon circuit](docs/lessons/006-simon/circuit.py), 11.
 - **Problem:** inherited routes are accepted by endpoint/free-space checks while
   ignoring newly specified `via` points. Lesson 6's pin-22 route misses its
@@ -621,7 +732,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### V01 Announce the instruction when Build along advances
 
-- [ ] **P2.** Source: [Build along script](docs/assets/steps.js), 140–182,
+- [x] **P2.** Source: [Build along script](docs/assets/steps.js), 140–182,
   302–329.
 - **Problem:** Next and Done & next retain button focus while the only live
   region announces the step count. The changed action, connection endpoints,
@@ -637,7 +748,7 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### V02 Give enlarged step crops distinct accessible names
 
-- [ ] **P3.** Source: [Build along script](docs/assets/steps.js), 37–60, 390–395.
+- [x] **P3.** Source: [Build along script](docs/assets/steps.js), 37–60, 390–395.
 - **Problem:** copied SVGs retain `aria-labelledby`, which overrides the later
   `aria-label`. The step crop and whole map therefore have the same full-circuit
   name instead of identifying the crop's connection.
@@ -652,12 +763,13 @@ Source line numbers refer to the reviewed working tree and will drift.
 
 ### R01 Finish PDF pagination refinement
 
-- [ ] **Recovered unfinished task.** No print source edits from the interrupted
+- [x] **Recovered unfinished task.** No print source edits from the interrupted
   lane landed. Relevant sources are [print script](docs/assets/print.js),
   [styles](docs/assets/adk.css), [PDF builder](docs/_theme/print_pdfs.py),
   and [page audit](tests/pdf_pages.py).
 
-Fresh PDFs still produced these 19 flags. Percentages are rounded audit output;
+Before implementation, fresh PDFs produced these 19 flags. The final four
+accepted flags are recorded in [Accepted print spacing](#accepted-print-spacing). Percentages are rounded audit output;
 50% and 15% entries can fall just below their respective thresholds.
 
 | Lesson | Flagged page and occupancy |
@@ -709,7 +821,7 @@ and availability need refreshing when this task is resumed.
 
 ### R03 Reconcile the three interrupted explanation edits
 
-- [ ] **Recovered unfinished task.** The prior lane returned only a usage-limit
+- [x] **Recovered unfinished task.** The prior lane returned only a usage-limit
   failure. Check current text first because related wording already exists.
 
 1. Make it explicit at the relevant generator-use instructions that generator

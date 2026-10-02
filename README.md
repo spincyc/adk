@@ -55,7 +55,7 @@ void loop ()
   can make multiplexed displays flicker; see the
   [timing limits](docs/ARCHITECTURE.md#blocking).
 - **Small.** No heap, no exceptions, no Arduino libraries: a part you don't
-  declare costs nothing. Blink is 2.9 KB of flash and 76 bytes of RAM.
+  declare costs nothing. Blink uses 3,036 bytes of flash and 76 bytes of RAM.
 - **Tested.** Every part has host tests against a fake Arduino core, run
   under the address and undefined-behavior sanitizers, and every example
   compiles for the Mega with all warnings on.
