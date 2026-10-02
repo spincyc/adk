@@ -88,7 +88,11 @@ tip on one point and its ground clip on another.
 
 finish () then checks the circuit could work: no Mega pin's wire reaching
 nothing, no pin joined straight to GND, 5V or 3.3V, and no part with two
-legs in one strip. load () runs a lesson's circuit.py, one board's or two,
+legs in one strip. Power sources must not conflict, and a module's supply
+pins must match their connected source. A deliberate GPIO supply names its
+Mega output in the module's gpio_supplies={"+": "A7"}; translated signals
+stay separate from the level shifter's explicitly named HV and LV supplies.
+load () runs a lesson's circuit.py, one board's or two,
 and finishes them, each carrying on the board before it hands it.
 
 From that one description come the pencil drawings, the build steps and the
@@ -1156,13 +1160,16 @@ class Bench:
     # which shorts it; or stand a part with two of its legs in one strip,
     # which joins them.
     def _check (self):
-        for net in self.nets ():
+        nets = self.nets ()
+        self._check_power (nets)
+        supplies = {"GND", "5V", "3.3V"} | set (self._sources ().values ())
+        for net in nets:
             pins = {m[4:] for m in net if m.startswith ("pin ")} - POWER_PINS
             if not pins:
                 continue
             named = " and ".join (f"pin {p}" if numbered (p) else p
                                   for p in sorted (pins, key=pin_order))
-            for source in ("GND", "5V", "3.3V"):
+            for source in sorted (supplies):
                 if self._carries (net, source):
                     raise ValueError (f"{named} would be shorted to {source}")
             if not any (": " in member for member in net):
@@ -1187,6 +1194,42 @@ class Bench:
                     raise ValueError (f"the {names[id (part)]}'s {leg} in {hole} and {other} in "
                                       f"{where} share {strip}, which joins them")
 
+    def _check_power (self, nets):
+        sources = {**self._sources (),
+                   **{f"pin {pin}": pin for pin in ("GND", "5V", "3.3V")}}
+        for net in nets:
+            feeds = {member: sources[member] for member in sorted (net) if member in sources}
+            # Grounds may be shared. Independent positive supplies must not
+            # be paralleled, even when their nominal voltages match.
+            if len (set (feeds.values ())) > 1 or sum (v != "GND" for v in feeds.values ()) > 1:
+                named = " and ".join (f"{member} ({volts})" for member, volts in feeds.items ())
+                raise ValueError (f"incompatible power sources joined: {named}")
+        net_of = {member: net for net in nets for member in net}
+        for kind, title, pins in self._module_pins ():
+            inputs = kind.power_inputs ()
+            for supply, gpio in kind.gpio_supplies.items ():
+                if inputs.get (supply) != "5V" or not numbered (gpio) \
+                        or gpio not in MEGA_PINS:
+                    raise ValueError (f"the {title}'s GPIO supply {supply} must name a Mega "
+                                      f"output for a 5V supply pin")
+            for pin in pins:
+                required = inputs.get (pin.name)
+                if not required:
+                    continue
+                member = f"{title}: {pin.label ()}"
+                net = net_of.get (member, set ())
+                feeds = {sources[m] for m in net if m in sources}
+                gpio = {m[4:] for m in net if m.startswith ("pin ")} - POWER_PINS
+                expected = kind.gpio_supplies.get (pin.name)
+                if expected and gpio != {expected}:
+                    raise ValueError (f"the {title}'s {pin.name} must be supplied by "
+                                      f"pin {expected}")
+                if gpio and not expected:
+                    raise ValueError (f"the {title}'s {pin.name} needs an explicit GPIO supply")
+                if feeds and feeds != {required}:
+                    raise ValueError (f"the {title}'s {pin.name} takes {required}, not "
+                                      f"{' and '.join (sorted (feeds))}")
+
     # How the sketch must claim each Mega pin, where the circuit shows it:
     # as an output when the pin drives an LED, a buzzer or a module's input,
     # as an input when it reads a button, a knob or a sensor. A resistor
@@ -1205,15 +1248,15 @@ class Bench:
             for leg, mode in zip (legs, part.modes ()):
                 if mode:
                     said[leg] = (mode, f"the {names[id (part)]}")
-        for placed in self.modules.values ():
-            for pin in placed.pins ():
-                mode = placed.kind.pin_modes.get (pin.name)
+        for kind, title, pins in self._module_pins ():
+            for pin in pins:
+                mode = "output" if pin.name in kind.gpio_supplies else kind.pin_modes.get (pin.name)
                 if mode:
-                    said[f"{placed.title}: {pin.label ()}"] = (mode,
-                                                               f"the {placed.title}'s {pin.name}")
+                    said[f"{title}: {pin.label ()}"] = (mode, f"the {title}'s {pin.name}")
         pins = [{m[4:] for m in net if m.startswith ("pin ")} - POWER_PINS for net in nets]
+        supplies = {"GND", "5V", "3.3V"} | set (self._sources ().values ())
         stops = {index for index, net in enumerate (nets)
-                 if any (self._carries (net, source) for source in ("GND", "5V", "3.3V"))}
+                 if any (self._carries (net, source) for source in supplies)}
         found = {}
         for start, own in enumerate (pins):
             if len (own) != 1:
@@ -1809,12 +1852,22 @@ class Bench:
             groups.setdefault (find (member), set ()).add (member)
         return list (groups.values ())
 
-    # Module pins that feed power, such as the power module's 5V, listed with
-    # the Mega's pins: {net member: "GND", "5V" or "3.3V"}.
+    # Module terminals in the same naming scheme as nets (), whether the
+    # module lies beside the board or stands in a row on its own header.
+    def _module_pins (self):
+        names = self._names ()
+        for part in self.parts:
+            if isinstance (part, HeaderModule):
+                yield part.kind, names[id (part)], [pin for pin, _ in part.pairs ()]
+        for placed in self.modules.values ():
+            yield placed.kind, placed.title, placed.pins ()
+
+    # Module pins that feed power: {net member: voltage or "GND"}. The
+    # battery's 9V is a source too, even though it has no reserved wire color.
     def _sources (self):
-        return {f"{placed.title}: {pin.label ()}": placed.kind.sources[pin.name]
-                for placed in self.modules.values () for pin in placed.pins ()
-                if pin.name in placed.kind.sources}
+        return {f"{title}: {pin.label ()}": kind.sources[pin.name]
+                for kind, title, pins in self._module_pins () for pin in pins
+                if pin.name in kind.sources}
 
     # The circuit point by point: every junction that joins two or more
     # things, in the order current meets them walking out from each pin.

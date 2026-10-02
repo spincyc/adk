@@ -146,6 +146,12 @@ power wires that stay. A `fresh_start` lesson instead lists every wire and
 part, including the rail feeds; its prose must start from an empty board.
 If the page tells the learner what to keep or move, make it say the same.
 
+Continuing lessons also generate **Starting from an empty board or another
+lesson**, with every item from the same circuit and its own **Build from
+empty** progress. Use this option after a guided detour: disconnect power
+and clear all parts and wires first, including the rail feeds. The printed
+lesson links to this complete option without duplicating its tables.
+
 The steps come in stages, each a part and its wires under a heading that
 names them and the pins they use: "The red LED on pin 26". Each `home_*`
 call is a stage. Anything else is named for its first part other than a
@@ -341,6 +347,10 @@ match, or the site will not build. To add a compiler for another computer,
 run the Toolchain workflow and add the entries it prints to
 `boards/toolchain.json`; `make toolchain` reads it too.
 
+Managed compiler installations are verified against that manifest and keyed
+by tool, version, host and checksum. Changing the identity rebuilds firmware;
+moving identical bytes to another URL reuses the installation.
+
 The compilers for Windows, and for Linux on x86-64, come from Zak Kemble's
 avr-gcc builds, downloaded from [his GitHub releases](https://github.com/ZakKemble/avr-gcc-build/releases);
 the Toolchain workflow builds only the computers his releases leave out.
@@ -359,3 +369,9 @@ the version it builds differs from its record. To change `boards/avr` or the
 compiler, raise the version in `library.properties` and `platform.txt`, run
 `make site`, and add the line it prints. The archive holds only files git
 tracks.
+
+Duplicate version records are errors. CI compares parsed records with the
+base revision and protects each existing compiler host's filename, checksum
+and size. New hosts and URL-only mirrors are allowed; changed bytes require
+a new compiler version. Run `python3 docs/_theme/board_history.py BASE` to
+check these rules locally against a Git revision.

@@ -61,7 +61,7 @@ room.wire ("GND.power", "sound.G")
 room.wire ("A5", "sound.AO")
 
 room.module ("sensor", name="water", at=(2.35, 3.8), pins=("−", "+", "S"),
-             label="water sensor", facing="up")
+             label="water sensor", facing="up", gpio_supplies={"+": "A7"})
 room.wire ("A6", "water.S")
 # Straight down beside A6's wire, leaving room for that wire's name.
 room.wire ("A7", "water.+", via=[(3.1, 3.15)])

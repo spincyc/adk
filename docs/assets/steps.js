@@ -136,14 +136,17 @@
         stagebar.setAttribute ("aria-label", "Build stages");
         const workspace = element ("div", "workbench-workspace");
         const instruction = element ("section", "workbench-instruction");
+        instruction.tabIndex = -1;
         const status = element ("p", "workbench-step-count");
-        status.setAttribute ("role", "status");
-        status.setAttribute ("aria-atomic", "true");
         const stepTitle = element ("h3", "workbench-step-title");
-        stepTitle.tabIndex = -1;
         const action = element ("p", "workbench-action");
         const places = element ("div", "workbench-places");
         const note = element ("p", "workbench-note");
+        stepTitle.id = titleId + "-step";
+        [status, action, places, note].forEach ((node, i) => node.id = titleId + "-detail-" + i);
+        instruction.setAttribute ("aria-labelledby", stepTitle.id);
+        instruction.setAttribute ("aria-describedby",
+            [status, action, places, note].map (node => node.id).join (" "));
         instruction.append (status, stepTitle, action, places, note);
         const focus = element ("section", "workbench-panel workbench-focus");
         const focusTitle = element ("h3", "workbench-panel-title", "This step, up close");
@@ -179,6 +182,7 @@
                 current = current + 1 < rows.length ? current + 1 : Math.max (0, first);
             }
             changed ();
+            if (!instruction.hidden) instruction.focus ({preventScroll: true});
             dialog.scrollTop = 0;
         });
         controls.append (previous, tick, next);
@@ -186,7 +190,7 @@
         completion.tabIndex = -1;
         completion.append (element ("h3", "", "Every step checked"), element ("p", "",
             "Compare your wiring with the whole board, then return to the lesson for what to try."),
-        button ("", "Review the steps", () => { reviewing = true; render (); }),
+        button ("", "Review the steps", () => select (current)),
         button ("workbench-done", "Back to lesson", () => dialog.close ()));
         const side = element ("div", "workbench-side");
         side.append (instruction, controls);
@@ -233,7 +237,7 @@
         contextBody.append (button ("workbench-start", "Start building", () => {
             context.open = false;
             dialog.scrollTop = 0;
-            stepTitle.focus ({preventScroll: true});
+            instruction.focus ({preventScroll: true});
         }));
         context.append (contextBody);
         shell.append (header, context, stagebar, workspace, all, footer);
@@ -261,6 +265,11 @@
             const name = what.textContent.trim ();
             return color ?
                 color[0].toUpperCase () + color.slice (1) + " " + name.toLowerCase () : name;
+        }
+
+        function placeName (place) {
+            return [...place.childNodes].map (node => node.textContent.trim ())
+                .filter (Boolean).join (" ");
         }
 
         function highlight (copy, item, points, labels = []) {
@@ -302,10 +311,11 @@
         function select (index) {
             current = Math.max (0, Math.min (rows.length - 1, index));
             reviewing = true;
-            const fromList = all.contains (document.activeElement);
             all.open = false;
             render ();
-            if (fromList) stepTitle.focus ({preventScroll: true});
+            // One focus announcement includes the instruction and its details.
+            // A second live region would repeat it. Tab reaches the controls next.
+            instruction.focus ({preventScroll: true});
             dialog.scrollTop = 0;
         }
 
@@ -391,8 +401,13 @@
                 const copy = drawingCopy (source);
                 copy.crop (crop);
                 highlight (copy, item, points, labels);
+                const endpoints = [...row.querySelectorAll (".place")].map (placeName);
+                copy.svg.removeAttribute ("aria-labelledby");
+                copy.svg.removeAttribute ("aria-describedby");
                 copy.svg.setAttribute ("aria-label",
-                    split ? "Wire end " + (i + 1) : partName (row));
+                    split ? "Wire end " + (i + 1) + ": " + endpoints[i] :
+                        "Step detail: " + partName (row) +
+                        (endpoints.length ? "; " + endpoints.join ("; ") : ""));
                 figure.append (copy.svg);
                 if (split) {
                     const place = row.querySelectorAll (".place")[i];
@@ -420,7 +435,8 @@
             document.body.classList.remove ("building-along");
             opener?.focus ();
         });
-        const launch = button ("build-launch", "Build along" +
+        const fullBuild = steps.dataset.build === "complete";
+        const launch = button ("build-launch", (fullBuild ? "Build from empty" : "Build along") +
             (steps.dataset.board ? " · " + title : ""), event => {
             opener = event.currentTarget;
             reviewing = false;
@@ -432,6 +448,11 @@
         launch.setAttribute ("aria-haspopup", "dialog");
         const intro = element ("div", "build-launcher");
         intro.append (launch, element ("span", "", "One step at a time, with a closer look."));
+        if (fullBuild) {
+            (steps.previousElementSibling?.classList.contains ("build-context") ?
+                steps.previousElementSibling : steps).before (intro);
+            return () => { reviewing = false; render (); };
+        }
         source.closest ("figure").before (intro);
         const fullDrawing = source.closest ("figure");
         const zoomDrawing = button ("drawing-zoom", "Enlarge drawing", () => {
@@ -450,7 +471,8 @@
         if (!rows.length) return;
         const revision = steps.dataset.revision || rows.map (row => row.dataset.step).join (",");
         // The version separates old ordinal-only ticks from content-stable steps.
-        const key = "adk-build-v2:" + location.pathname + ":" + board;
+        const key = "adk-build-v2:" + location.pathname + ":" + board +
+            (steps.dataset.build ? ":" + steps.dataset.build : "");
         const done = recall (key, revision, rows);
         const figures = [...document.querySelectorAll ("figure.bench-figure[data-board]")]
             .filter (figure => figure.dataset.board === board);

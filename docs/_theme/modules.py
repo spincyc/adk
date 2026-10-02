@@ -59,6 +59,7 @@ class Kind:
     color  = PCB_BLUE
     flexible = False                # takes any row of pins
     supply = "5V"                   # what its +, VCC or VDD pin takes
+    supply_pins = {}                 # exceptions, such as a level shifter's HV and LV
     # How a sketch claims the Mega pin wired to each pin it names: "output"
     # for a pin the Mega drives, "input" for one it reads. A pin left out
     # may be either, as a bus's are.
@@ -77,9 +78,26 @@ class Kind:
         self.names = list (pins) if pins is not None else list (self.pins)
         self.label = label
         self.options = options
+        # A supply deliberately switched by a Mega output names that output,
+        # not just permission to connect any signal pin to power.
+        self.gpio_supplies = dict (options.get ("gpio_supplies", {}))
         if self.flexible:
             self.width = max (self.width, len (self.names) * PITCH + 24)
         self.title = label or self.title
+
+    # Requirements belong to the actual terminals, independent of the alias
+    # a wire used to find them. Sources are outputs, not supply inputs.
+    def power_inputs (self):
+        inputs = {}
+        for pin in self.all_pins ():
+            name = pin.name.upper ()
+            volts = next ((volts for volts, names in VOLTAGE.items () if name in names), None)
+            required = self.supply_pins.get (pin.name,
+                        "GND" if name in GROUND else
+                        self.supply if name in SUPPLY else volts)
+            if required and pin.name not in self.sources:
+                inputs[pin.name] = required
+        return inputs
 
     def header_x (self):
         return self.width / 2
@@ -531,6 +549,9 @@ class I2cLevelShifter (Kind):
     title = "I2C level shifter"
     width, height = 60, 80
     pins = ("LV", "A1", "A2", "A3", "A4", "GND")
+    # These power the separate sides; translating a signal does not join
+    # either supply to the other or to a channel pin.
+    supply_pins = {"LV": "3.3V", "HV": "5V"}
     reach = 0
     blocks = False
 
@@ -964,6 +985,7 @@ class Battery9V (Kind):
     title  = "9 V battery"
     pins   = ("+", "−")
     notes  = {"+": "red lead", "−": "black lead"}
+    sources = {"+": "9V", "−": "GND"}
     width, height = 104, 212
     COLORS = {"+": "red", "−": "black"}
 
@@ -1380,7 +1402,7 @@ KINDS = {
 # pins G, R and Y: GND, +, and the signal. A voltage names a supply pin only
 # of a module that runs on it: 5V finds the servo's +, but no pin of the
 # LoRa modem, whose VDD takes 3.3 V.
-GROUND  = {"−", "-", "GND", "G"}
+GROUND  = {"−", "-", "GND", "G", "VSS"}
 SIGNAL  = {"S", "SIG", "SIGNAL", "OUT", "Y"}
 SUPPLY  = {"+", "VCC", "VDD", "R"}
 VOLTAGE = {"5V": {"5V", "+5V"}, "3.3V": {"3.3V", "3V3", "+3.3V"}}

@@ -13,6 +13,15 @@ up the Arduino IDE before project Lesson 1. E02 and later measured work
 need a DC voltmeter. The electricity syllabus lists extra parts before
 each module.
 
+At every switch between courses, unplug USB and any other power source.
+On the destination page, open **Starting from an empty board or another
+lesson** for the complete steps; **Build from empty** walks through them
+one at a time. Clear the previous build completely, including its power
+wires, then follow every step. They restore the standard rail feeds and
+each part's home connections. If the page already starts from an empty
+board, its ordinary steps are complete. Use the ordinary keep/take-out
+steps only when coming directly from the previous lesson in the same course.
+
 1. **[E01–E03: one DC loop](lessons/056-close-the-loop/index.md).** Open
    the return, measure across each part, and change the resistor. If you
    have no meter yet, do E01 and come back for E02–E03 later.
@@ -22,24 +31,23 @@ each module.
    Test the diode's direction and switch a separate path with the S8050:
    the two parts Lesson 3 put beside its buzzer. Only E10's measured
    comparison needs a meter; without one, still swap its base resistor
-   and watch the LED. Clear Lesson 3's parts first, keeping the Mega's
-   two power wires; E09's steps build the rest.
+   and watch the LED. Use E09's complete build after clearing Lesson 3.
 4. **[Lessons 4–6: color and sound](lessons/004-mood-lamp/index.md).**
+   Use Lesson 4's complete build: E10's button was connected to 5 V and
+   the transistor; Lesson 4 needs it connected to pin 22 and GND.
 5. **[E04–E05: series and parallel](lessons/059-resistors-in-series/index.md).**
    Predict what two parts share and what happens when a second branch
-   joins; E05 adds a 10 Ω resistor. Clear Lesson 6's parts first, keeping
-   the Mega's two power wires; E04's steps build the rest.
+   joins; E05 adds a 10 Ω resistor. Use E04's complete build after Lesson 6.
 6. **[Lessons 7–9: the analog world](lessons/007-dimmer/index.md).**
 7. **[E06: Tap a divider](lessons/061-tap-a-divider/index.md).** Measure
    the knob's middle voltage, then try
    [Load a divider](electricity/challenges.md#loaded-divider) to see it
-   change when another part draws from it. Clear Lesson 9's parts first,
-   keeping the Mega's two power wires; E06's steps build the rest.
+   change when another part draws from it. Use E06's complete build after
+   Lesson 9.
 8. **[Lessons 10–12: digits and time](lessons/010-dice/index.md).**
 9. **[E07–E08: stored charge](lessons/062-charge-a-capacitor/index.md).**
    Time a capacitor's voltage change, then compare that physical delay
-   with the timer in Lesson 12. Clear Lesson 12's parts first, keeping
-   the Mega's two power wires; E07's steps build the rest.
+   with the timer in Lesson 12. Use E07's complete build after Lesson 12.
 10. **[Lessons 13–15: words and weather](lessons/013-hello-lcd/index.md).**
 11. **[E12: Give a coil a safe path](lessons/067-coil-diode/index.md).** It
     has complete steps from an empty board; you may skip scope-based E11.
@@ -47,6 +55,7 @@ each module.
     Along the way, you can try
     [E19–E21: logic and memory](lessons/074-nand-logic/index.md), which
     use two inexpensive logic chips. E19 begins from an empty board.
+    Use the complete build on whichever project lesson you return to.
 13. **[Lessons 37–42: radio links](lessons/037-fm-radio/index.md).**
 14. **[E22–E24: Mega signals](lessons/077-sampling/index.md).** Sample a
     knob voltage, smooth PWM, and send a byte through a wire. E22 and E24
@@ -69,6 +78,8 @@ the [scope and generator primer](electricity/skills.md#scope-and-generator)
 before the first one.
 They are optional to the kit-and-meter route; E13 starts from an empty
 board so you can enter this extension when the instruments are available.
+E17 also offers the complete build when you enter there with only a meter.
+After any extension, use the complete build on the lesson you return to.
 
 When a reading surprises you, use the short
 [measurement routine](electricity/skills.md) and

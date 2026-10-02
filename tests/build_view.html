@@ -12,7 +12,10 @@ svg { width: 100%; height: auto; }
 <!-- Nearby wire ends can have a long route around another part. The
      close-up must show the named connections, not centre on the detour. -->
 <figure class="bench-figure bench-bench" data-board="" style="--drawing-width: 1500">
-  <svg class="pencil-drawing" viewBox="0 -34 1500 500">
+  <svg class="pencil-drawing" viewBox="0 -34 1500 500" role="img"
+       aria-labelledby="board-title" aria-describedby="board-description">
+    <title id="board-title">The complete test circuit</title>
+    <desc id="board-description">The whole board, including every connection.</desc>
     <g data-item="0"><path d="M 100 100 L 800 100 L 800 300 L 140 300 L 140 120"
       fill="none" stroke="black"/></g>
     <g data-item="1"><path d="M 100 100 L 800 100 L 800 400"
@@ -39,7 +42,7 @@ svg { width: 100%; height: auto; }
   <details class="stage" open><summary class="stage-title">Connect it</summary>
     <table><tbody>
       <tr data-step="near" data-item="0" data-points="[[100,100],[140,120]]"
-          data-action="Connect the nearby ends.">
+          data-action="Connect the nearby ends." data-care="Keep USB unplugged.">
         <td><button class="tick" type="button">1</button></td><td class="what">Wire</td>
         <td class="place">First end</td><td class="link"><span class="wire"></span></td>
         <td class="place">Second end</td>
@@ -47,8 +50,8 @@ svg { width: 100%; height: auto; }
       <tr data-step="far" data-item="1" data-points="[[100,100],[800,400]]"
           data-action="Connect the distant ends.">
         <td><button class="tick" type="button">2</button></td><td class="what">Wire</td>
-        <td class="place">First end</td><td class="link"><span class="wire"></span></td>
-        <td class="place">Second end</td>
+        <td class="place">pin 22<small>on the Mega</small></td>
+        <td class="link"><span class="wire"></span></td><td class="place">j6</td>
       </tr>
       <tr data-step="part" data-item="2" data-points="[]" data-action="Place the module.">
         <td><button class="tick" type="button">3</button></td><td class="what">Module</td>
@@ -60,11 +63,23 @@ svg { width: 100%; height: auto; }
       </tr>
       <tr data-step="lcd" data-item="4" data-points="[[1000,220],[1150,220]]"
           data-action="Place the LCD in a47 through a62.">
-        <td><button class="tick" type="button">5</button></td><td class="what">LCD</td>
+        <td><button class="tick" type="button">5</button></td>
+        <td class="what">LCD<small>Screen faces you</small></td>
       </tr>
     </tbody></table>
   </details>
 </div>
+<details class="complete-build">
+  <summary>Starting from an empty board or another lesson</summary>
+  <div class="build-context"><p>Clear the board, including its power feeds.</p></div>
+</details>
+<script>
+// Both paths use the same circuit and stable row identities; ticks must stay separate.
+const completeBuild = document.querySelector (".build-steps").cloneNode (true);
+completeBuild.dataset.build = "complete";
+completeBuild.dataset.start = "empty";
+document.querySelector (".complete-build").append (completeBuild);
+</script>
 <script src="../docs/assets/steps.js"></script>
 <script>
 try {
@@ -95,7 +110,21 @@ try {
     document.querySelector (".build-launch").click ();
     document.querySelector (".workbench-reset").click ();
     const select = index => document.querySelectorAll (".workbench-list button")[index].click ();
+    const dialog = document.querySelector (".build-workbench");
+    const instruction = dialog.querySelector (".workbench-instruction");
+    const description = () => instruction.getAttribute ("aria-describedby").split (" ")
+        .map (id => document.getElementById (id).textContent).join (" ");
+    const announced = (action, details) => {
+        assert (document.activeElement === instruction, action + " focuses the instruction");
+        assert (instruction.tabIndex === -1, "instruction focus keeps ordinary Tab navigation");
+        assert (details.every (text => description ().includes (text)),
+            action + " exposes the action, endpoints and care text");
+        assert (!dialog.querySelector ('[role="status"], [aria-live]'),
+            "focus does not compete with a second live announcement");
+    };
     select (0);
+    announced ("List jump", ["Step 1 of 5", "Connect the nearby ends.", "First end",
+        "Second end", "Keep USB unplugged."]);
     let boxes = crops ();
     assert (boxes.length === 1, "nearby ends share a close-up");
     assert (contains (boxes[0], 100, 100) && contains (boxes[0], 140, 120),
@@ -111,7 +140,28 @@ try {
         "a close-up leaves out a name it would cut, and keeps one it holds whole");
     assert (shown (document.querySelector (".workbench-map svg")) === "active buzzer,pin 22",
         "the whole board keeps every name");
+    const map = dialog.querySelector (".workbench-map svg");
+    const named = svg => svg.getAttribute ("aria-labelledby")?.split (" ")
+        .map (id => document.getElementById (id).textContent).join (" ") ||
+        svg.getAttribute ("aria-label");
+    assert (named (map) === "The complete test circuit", "whole map retains its original name");
+    assert (named (dialog.querySelector (".workbench-crop svg")) ===
+        "Step detail: Wire; First end; Second end", "nearby crop names both endpoints");
+    const controls = dialog.querySelectorAll (".workbench-controls button");
+    controls[2].focus ();
+    controls[2].click ();
+    announced ("Next", ["Step 2 of 5", "Connect the distant ends.", "pin 22", "j6"]);
+    controls[0].focus ();
+    controls[0].click ();
+    announced ("Previous", ["Step 1 of 5", "Keep USB unplugged."]);
     document.querySelector (".workbench-done").click ();
+    announced ("Done & next", ["Step 2 of 5", "1 checked", "pin 22", "j6"]);
+    const endpointCrops = [...dialog.querySelectorAll (".workbench-crop svg")];
+    assert (endpointCrops.map (named).join (" | ") ===
+        "Wire end 1: pin 22 on the Mega | Wire end 2: j6",
+        "split crops have distinct names including their endpoint details");
+    assert (endpointCrops.every (svg => !svg.hasAttribute ("aria-describedby")),
+        "crops do not inherit the complete map description");
     boxes = crops ();
     assert (boxes.length === 2 && contains (boxes[0], 100, 100) &&
         contains (boxes[1], 800, 400), "distant ends each get their own close-up");
@@ -138,10 +188,59 @@ try {
     assert (new Set (labels.map (label => label.getAttribute ("y"))).size === 2,
         "three adjacent transistor holes stagger their labels");
     select (4);
+    announced ("Placement jump", ["Place the LCD in a47 through a62.", "Screen faces you."]);
     boxes = crops ();
     assert (boxes.length === 1 && contains (boxes[0], 969, 212) &&
         contains (boxes[0], 1284, 354) && !contains (boxes[0], 500, 220),
         "the LCD crop contains its rotated body at the far end of the board");
+    dialog.querySelector (".workbench-stages button").click ();
+    announced ("Stage jump", ["Step 2 of 5", "pin 22", "j6"]);
+    const all = dialog.querySelector (".workbench-all");
+    all.open = true;
+    all.querySelector ("button").focus ();
+    all.querySelector ("button").click ();
+    assert (!all.open && !all.contains (document.activeElement),
+        "list jump cannot strand focus in the closed list");
+    announced ("Focused list jump", ["Step 1 of 5", "Keep USB unplugged."]);
+    dialog.querySelector (".workbench-reset").click ();
+    announced ("Reset", ["Step 1 of 5", "0 checked"]);
+    for (let i = 0; i < 5; ++i) controls[1].click ();
+    assert (document.activeElement === dialog.querySelector (".workbench-completion"),
+        "finishing a build announces completion instead of the hidden instruction");
+    dialog.querySelector (".workbench-completion button").click ();
+    announced ("Review", ["5 checked", "Step 1 of 5"]);
+    dialog.querySelector (".workbench-close").click ();
+    const full = document.querySelector (".complete-build");
+    const fullLaunch = full.querySelector (".build-launch");
+    assert (fullLaunch.textContent === "Build from empty", "full-build launcher names its path");
+    assert (fullLaunch.parentElement.nextElementSibling.classList.contains ("build-context"),
+        "full-build launcher stays with its own context");
+    assert (document.querySelectorAll (".drawing-zoom").length === 1,
+        "two paths share one overview zoom control");
+    full.open = true;
+    fullLaunch.click ();
+    const fullDialog = document.querySelectorAll (".build-workbench")[1];
+    assert (fullDialog.querySelector (".workbench-step-count").textContent.includes ("0 checked"),
+        "full-build progress is independent of the completed continuing build");
+    fullDialog.querySelector (".workbench-start").click ();
+    assert (document.activeElement === fullDialog.querySelector (".workbench-instruction"),
+        "Start building focuses the complete instruction");
+    fullDialog.querySelector (".workbench-done").click ();
+    assert (document.querySelector (".build-steps tr").classList.contains ("done") &&
+        full.querySelector (".build-steps tr").classList.contains ("done"),
+        "each path records its own tick");
+    const savedProgress = () => Object.keys (localStorage)
+        .filter (key => key.startsWith ("adk-build-v2:" + window.location.pathname + ":"))
+        .map (key => JSON.parse (localStorage.getItem (key)).done.length).sort ();
+    assert (savedProgress ().join (",") === "1,5",
+        "storage preserves both paths independently for the next visit");
+    fullDialog.querySelector (".workbench-reset").click ();
+    assert (document.querySelector (".build-steps tr").classList.contains ("done") &&
+        !full.querySelector (".build-steps tr").classList.contains ("done"),
+        "resetting a full build preserves continuing-build ticks");
+    assert (savedProgress ().join (",") === "5",
+        "reset removes only the full-build record from storage");
+    fullDialog.querySelector (".workbench-close").click ();
     document.body.dataset.testResult = "pass";
 } catch (error) {
     document.body.dataset.testResult = "fail";

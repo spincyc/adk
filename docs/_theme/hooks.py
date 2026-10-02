@@ -566,8 +566,33 @@ def steps (bench, before=None, number=1, letter="", title=None):
             head.append ("Nothing else to add.")
     context = ('<div class="build-context" markdown>\n\n' + "\n\n".join (head) + "\n\n</div>") \
         if head else ""
-    return context + ("\n\n" + step_stages (bench, out, new, number, letter, title)
-                      if out or new else "")
+    ordinary = context + ("\n\n" + step_stages (bench, out, new, number, letter, title)
+                           if out or new else "")
+    return ordinary + ("\n\n" + complete_build (bench, number, letter, title) if before else "")
+
+
+# A route can return after any investigation, with a different circuit on
+# the board. Its complete option uses the very same items and drawing as
+# the normal continuation; clearing every wire first removes dependence
+# on an assumed predecessor, including a differently fed button or rail.
+def complete_build (bench, number, letter="", title=None):
+    anchor = "complete-build" + (f"-{letter}" if letter else "")
+    slug = LESSONS[number - 1]["slug"]
+    context = ("Unplug USB and disconnect every other power source. Remove every part and wire "
+               "from this board's previous build, including the Mega's power wires and the rail "
+               "links. Start with an empty breadboard and no wires on the Mega. Follow every "
+               "step below; these include the power feeds and put each part back at its home.")
+    counts = wire_count (bench, bench.items)
+    wires = join ([f"{count} {kind} wire{'s' if count != 1 else ''}"
+                   for kind, count in counts.items () if count])
+    context += f" The complete build needs {wires or 'no jumper wires'}."
+    return (f'<p class="complete-build-link">For an empty board or a return after a detour, use '
+            f'<a href="../{slug}/#{anchor}">this lesson’s complete build</a> on the web page.</p>\n'
+            f'<details class="complete-build" id="{anchor}" markdown="1">\n'
+            '<summary>Starting from an empty board or another lesson</summary>\n\n'
+            '<div class="build-context" markdown="1">\n\n' + context + '\n\n</div>\n\n' +
+            step_stages (bench, [], bench.items, number, letter, title, complete=True) +
+            '\n\n</details>')
 
 
 # The steps in stages, each a part and its wires under a heading that names
@@ -576,7 +601,7 @@ def steps (bench, before=None, number=1, letter="", title=None):
 # columns as the others, so the holes and pins line up all the way down. A
 # stage built just this way in an earlier lesson starts folded, pointing
 # back to it; everything taken out comes first.
-def step_stages (bench, out, new, number, letter, title=None):
+def step_stages (bench, out, new, number, letter, title=None, complete=False):
     blocks = []
     if out:
         rows = [step_row (f"t{index}", "−", item, label=f"Take-out step {index} done")
@@ -589,7 +614,7 @@ def step_stages (bench, out, new, number, letter, title=None):
             count += 1
             rows.append (step_row (str (count), str (count), item, bench))
         whole = {identity (bench, kind, thing) for kind, thing, _ in items} == stages (bench)[stage]
-        earlier = built_before (bench, stage, number) if whole and \
+        earlier = built_before (bench, stage, number) if whole and not complete and \
             not LESSONS[number - 1].get ("fresh_start") else None
         where = (f', as in <a href="../{earlier["slug"]}/">{visible_reference (earlier)}</a>'
                  if earlier else "")
@@ -599,7 +624,8 @@ def step_stages (bench, out, new, number, letter, title=None):
     content = "\n".join (blocks)
     revision = hashlib.sha256 (content.encode ()).hexdigest ()[:16]
     title = title or (f"Board {letter} · {bench.sketch}" if letter else bench.title)
-    return (f'<div class="build-steps" data-board="{letter}" data-title={quoteattr (title)} '
+    option = ' data-build="complete" data-start="empty"' if complete else ''
+    return (f'<div class="build-steps" data-board="{letter}"{option} data-title={quoteattr (title)} '
             f'data-revision="{revision}">\n' + content +
             "\n</div>")
 

@@ -182,6 +182,19 @@ def _route_circuit (path):
         pass
 
 
+# Explicit waypoints take precedence over an inherited wire route. Repeated
+# adjacent points are harmless; a later return to a point must occur later
+# along the path, so merely containing the same set of points is not enough.
+def follows (path, points):
+    position = 0
+    for point in points:
+        try:
+            position = path.index (point, position)
+        except ValueError:
+            return False
+    return True
+
+
 class Drawing:
     """A finished bench's drawings, which share one routing of its wires."""
 
@@ -272,8 +285,9 @@ class Drawing:
                 for index, wire in enumerate (self.bench.wires)}
 
     # A wire kept from the lesson before keeps its way there, where that is
-    # still clear and shares no grid with the others', so a build changes
-    # as little on paper as on the bench. Every lesson is routed on its own
+    # still clear, obeys the current waypoints in order and shares no grid
+    # with the others', so a build changes as little on paper as on the
+    # bench. Every lesson is routed on its own
     # first, all at once (route_all), and only then are kept ways put back,
     # in course order; what that gives is kept too.
     def _carry (self, plans, paths):
@@ -297,7 +311,7 @@ class Drawing:
             if way and way[0] != plan["points"][0]:
                 way.reverse ()
             if way and way[0] == plan["points"][0] and way[-1] == plan["points"][-1] and \
-                    router.free (way, plan["allow"]):
+                    follows (way, plan["points"]) and router.free (way, plan["allow"]):
                 ways[index] = way
         # One kept way can stand in another's new one: put them back until
         # none more will go. A way that would reach further out than

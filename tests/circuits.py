@@ -122,6 +122,96 @@ try:
 except ValueError as error:
     expect ("a 3.3 V modem's 5V", str (error), "the LoRa modem's VDD takes 3.3V, not 5V")
 
+# Power-only nets need the same short checks as nets with GPIO pins. A
+# breadboard strip or rail cannot hide a conflict between sources.
+for first, second in (("5V.power", "GND.power"), ("3.3V", "GND.power"),
+                       ("5V.power", "3.3V")):
+    check (f"{first} directly on {second}", lambda b: b.wire (first, second),
+           "incompatible power sources")
+    check (f"{first} and {second} on one strip",
+           lambda b: b.wire (first, "a6").wire (second, "b6"), "incompatible power sources")
+check ("a jumper between power and ground rails", lambda b: b.wire ("T+6", "B-6"),
+       "incompatible power sources")
+check ("a direct short to the power module",
+       lambda b: b.module ("power_module", "power", at=(7.8, 3.5))
+       .wire ("5V.power", "power.GND"), "incompatible power sources")
+check ("independent 5 V regulators joined",
+       lambda b: b.power_module ().wire ("T+6", "B+6"), "incompatible power sources")
+check ("independent supplies with shared ground", lambda b: b.power_module ()
+       .wire ("T+6", "a6").wire ("B+7", "a7"))
+check ("two terminals of the same Mega supply",
+       lambda b: b.wire ("5V.power", "a6").wire ("5V.long", "b6"))
+check ("a battery short", lambda b: b.module ("battery9v", "battery", at=(7.8, 3.5))
+       .wire ("battery.+", "a6").wire ("battery.−", "b6"), "incompatible power sources")
+check ("a battery feeding a GPIO", lambda b: b.module ("battery9v", "battery", at=(7.8, 3.5))
+       .wire ("battery.+", "26"), "shorted to 9V")
+
+
+def lora (bench):
+    return bench.module ("lora_modem", "modem", at=(6.0, 3.45), facing="up")
+
+
+for terminal in ("VDD", "VCC", "3.3V"):
+    check (f"5 V directly on the modem's {terminal}",
+           lambda b: lora (b).wire ("5V.power", f"modem.{terminal}"), "VDD takes 3.3V, not 5V")
+    check (f"5 V through a strip to the modem's {terminal}",
+           lambda b: lora (b).wire ("5V.power", "a6").wire ("b6", f"modem.{terminal}"),
+           "VDD takes 3.3V, not 5V")
+    check (f"3.3 V directly on the modem's {terminal}",
+           lambda b: lora (b).wire ("3.3V", f"modem.{terminal}"))
+    check (f"3.3 V through a strip to the modem's {terminal}",
+           lambda b: lora (b).wire ("3.3V", "a6").wire ("b6", f"modem.{terminal}"))
+check ("5 V on a breadboard modem's printed VDD",
+       lambda b: b.header_module ("lora_modem", first=6).wire ("5V.power", "f6"),
+       "VDD takes 3.3V, not 5V")
+check ("3.3 V on a breadboard modem's printed VDD",
+       lambda b: b.header_module ("lora_modem", first=6).wire ("3.3V", "f6"))
+check ("the external 5 V rail on a modem's VDD",
+       lambda b: b.power_module ().home_modem (power="B+29"), "VDD takes 3.3V, not 5V")
+check ("a modem's ground on 3.3 V", lambda b: lora (b).wire ("3.3V", "modem.GND"),
+       "GND takes GND, not 3.3V")
+check ("5 V on the LCD's printed ground terminal",
+       lambda b: b.module ("lcd", "display", at=(6, 3.6)).wire ("5V.power", "display.VSS"),
+       "VSS takes GND, not 5V")
+check ("5 V on a breadboard LCD's ground column",
+       lambda b: b.header_module ("lcd", first=5).wire ("5V.power", "f20"),
+       "VSS takes GND, not 5V")
+check ("the LCD's ground by its common alias",
+       lambda b: b.module ("lcd", "display", at=(6, 3.6)).wire ("GND.power", "display.GND"))
+
+# A GPIO may supply a small sensor only when the circuit declares exactly
+# which output does it. It remains a switched signal for wire colors and
+# an output for the sketch's pin check, never a constant power source.
+check ("an undeclared GPIO supply", lambda b: b.module ("sensor", "s", at=(6, 3.6))
+       .wire ("A7", "s.+"), "needs an explicit GPIO supply")
+switched = check ("a declared GPIO supply",
+                  lambda b: b.module ("sensor", "s", at=(6, 3.6), gpio_supplies={"+": "A7"})
+                  .wire ("A7", "s.+").wire ("A6", "s.S").wire ("GND.power", "s.−"))
+expect ("a switched supply is an output", switched.pin_modes ()["A7"][0], "output")
+switched_header = check ("a breadboard module's declared GPIO supply",
+                         lambda b: b.header_module ("sensor", first=6, gpio_supplies={"+": "A7"})
+                         .wire ("A7", "f7"))
+expect ("a breadboard module's switched supply is an output",
+        switched_header.pin_modes ()["A7"][0], "output")
+check ("a declared GPIO supply through a strip",
+       lambda b: b.module ("sensor", "s", at=(6, 3.6), gpio_supplies={"+": "A7"})
+       .wire ("A7", "a6").wire ("b6", "s.+"))
+check ("the wrong GPIO supplying a sensor",
+       lambda b: b.module ("sensor", "s", at=(6, 3.6), gpio_supplies={"+": "A7"})
+       .wire ("A6", "s.+"), "must be supplied by pin A7")
+check ("GPIO metadata cannot make a 5 V output safe for 3.3 V",
+       lambda b: b.module ("lora_modem", "modem", at=(6, 3.45), gpio_supplies={"VDD": "A7"})
+       .wire ("A7", "modem.VDD"), "output for a 5V supply pin")
+check ("a declared GPIO supply shorted to a rail",
+       lambda b: b.module ("sensor", "s", at=(6, 3.6), gpio_supplies={"+": "A7"})
+       .wire ("A7", "a6").wire ("b6", "s.+").wire ("c6", "T+6"), "shorted to 5V")
+check ("a level shifter's low side on 5 V",
+       lambda b: b.module ("i2c_level_shifter", "levels", at=(6, 3.6))
+       .wire ("5V.power", "levels.LV"), "LV takes 3.3V, not 5V")
+check ("a level shifter's high side on 3.3 V",
+       lambda b: b.module ("i2c_level_shifter", "levels", at=(6, 3.6))
+       .wire ("3.3V", "levels.HV"), "HV takes 5V, not 3.3V")
+
 # A two-board lesson's circuit.
 TWO = '''
 a = Bench ("Board A", columns=(1, 20), sketch="Blinker")
@@ -365,7 +455,8 @@ check ("a red wire on a signal", lambda b: blink (b).wire ("c6", "c10", color="r
 expect ("the transistor's collector wire is a signal's color",
         color_of (active, "b31", "a33") in ("black", "red", "orange"), False)
 expect ("a module's + on a pin is a signal's color",
-        color_of (finished (Bench ("test", columns=(1, 20)).module ("sensor", "s", at=(6, 3.6))
+        color_of (finished (Bench ("test", columns=(1, 20)).module ("sensor", "s", at=(6, 3.6),
+                                                                  gpio_supplies={"+": "22"})
                             .wire ("22", "s.+").wire ("23", "s.S").wire ("GND.power", "s.−")),
                   "22", "s.+") in ("black", "red", "orange"), False)
 check ("a generator's sawtooth", lambda b: b.module ("generator", "wave", at=(1, 4),

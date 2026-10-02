@@ -249,7 +249,7 @@
     }
 
     .md-typeset :is(.lesson-body, .build) > :is(.bench-figure, .meters, .md-typeset__scrollwrap,
-                                   .build-steps, .highlight:has(> .filename)) {
+                                   .build-steps, .complete-build, .highlight:has(> .filename)) {
         width: var(--adk-wide);
         max-width: none;
         margin-inline: calc((100% - var(--adk-wide)) / 2);
@@ -261,7 +261,7 @@
     }
 
     /* The build steps are as wide as the sketch. */
-    :is(.lesson-body, .build) > .build-steps {
+    :is(.lesson-body, .build) > :is(.build-steps, .complete-build) {
         --adk-wide: min(100cqi, max(100%, 45em));
     }
 
@@ -2140,6 +2140,12 @@ body.building-along {
         break-inside: avoid;
     }
 
+    /* Keep short complete sketches together, too. A line count, assigned
+       before printing, leaves long sketches free to cross pages. */
+    .md-typeset .highlight.print-short-code {
+        break-inside: avoid;
+    }
+
     .md-typeset .highlight > .filename {
         break-after: avoid;
     }
@@ -2245,6 +2251,13 @@ body.building-along {
         margin: 0.3rem;
     }
 
+    /* Markdown leaves empty paragraphs around the inline SVG. Their
+       margins otherwise stop two legible connection-detail rows fitting
+       on one sheet, although neither paragraph contains printed ink. */
+    .md-typeset :is(.bench-figure, .meter) > p:empty {
+        display: none;
+    }
+
     .md-typeset .print-details figcaption {
         margin: 0.3rem 0 0;
         font-size: 8.5pt;
@@ -2307,6 +2320,7 @@ body.building-along {
 
     .lesson-pdf,
     .lesson-sections,
+    .complete-build,
     .md-typeset .headerlink,
     .md-code__nav,
     .md-code__button,
@@ -2323,7 +2337,7 @@ body.building-along {
     /* The answers to Check yourself start the lesson's last page, so the
        pages before it make a worksheet without them, and the questions
        stay together. */
-    .lesson-body > #check-yourself ~ details:last-child {
+    .lesson-body > #check-yourself ~ details {
         break-before: page;
     }
 

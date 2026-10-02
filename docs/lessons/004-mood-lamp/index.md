@@ -75,6 +75,11 @@ time you choose.
     its own 220 Ω resistor: one resistor shared by all three would let the
     red LED take most of the current and starve the others.
 
+If you return from E10 on the [guided route](../../guided.md), its button
+is wired to 5 V and the transistor, so it cannot stay wired that way here.
+Open **Starting from an empty board or another lesson** below and follow
+the complete build. It restores the button's pin-22 and GND connections.
+
 <!-- bench -->
 
 <!-- steps -->
@@ -93,9 +98,9 @@ time you choose.
     hole, then push the LED in. The common leg is long enough to reach
     straight down into the − rail, so it needs no wire of its own.
 
-    The RGB LED takes the red LED's place from Lesson 3, so that LED's
-    resistor, in g6 and e6, can stay where it is: it now feeds the red leg.
-    The button on pin 22 stays too, with its wires.
+    If you come directly from Lesson 3, the RGB LED takes the red LED's
+    place, so that LED's resistor, in g6 and e6, can stay where it is:
+    it now feeds the red leg. The button on pin 22 stays too, with its wires.
 
 When you are done, these are the connections your circuit makes:
 

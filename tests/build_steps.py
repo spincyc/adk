@@ -4,6 +4,7 @@ Run with the site's Python: build/venv/bin/python tests/build_steps.py.
 These checks need no browser, drawings cache, or generated lesson pages.
 """
 
+import copy
 import json
 import re
 import sys
@@ -16,11 +17,11 @@ ROOT = Path (__file__).resolve ().parents[1]
 sys.dont_write_bytecode = True
 sys.path.insert (0, str (ROOT / "docs" / "_theme"))
 
-from bench import Bench  # noqa: E402
+from bench import Bench, identity, load  # noqa: E402
 from hooks import (LESSONS, board_caption, carries, continuity, load_all,  # noqa: E402
                    load_circuit, previous, recolored, step_points, step_row, step_stages, steps,
                    written)
-from drawing import Drawing, shown  # noqa: E402
+from drawing import Drawing, follows, shown  # noqa: E402
 
 
 class Tags (HTMLParser):
@@ -38,6 +39,75 @@ class Tags (HTMLParser):
 
 def row (bench, item, ordinal="1"):
     return Tags (step_row (ordinal, ordinal, item, bench)).first ("tr")
+
+
+# Replay the items identified by generated instructions, then compare their
+# electrical nets. A complete option explicitly clears the actual earlier
+# circuit; it must restore power feeds and every kept part's wires too.
+def rebuilt (target, html, actual=None):
+    tags = Tags (html)
+    block = next (attrs for tag, attrs in tags.tags
+                  if tag == "div" and attrs.get ("class") == "build-steps")
+    assert actual is None or block.get ("data-start") == "empty"
+    if actual is not None:
+        assert "Remove every part and wire" in html
+        assert "including the Mega's power wires and the rail" in html
+    items = []
+    for tag, attrs in tags.tags:
+        if tag != "tr" or "data-step" not in attrs:
+            continue
+        assert "data-item" in attrs, "a complete build must not remove an assumed old item"
+        items.append (target.items[int (attrs["data-item"])])
+    return assembled (target, items)
+
+
+def assembled (target, items):
+    made = copy.copy (target)
+    made.parts, made.wires, made.modules, made.items = [], [], {}, []
+    for item in items:
+        kind, thing, _ = item
+        made.items.append (item)
+        if kind == "part":
+            made.parts.append (thing)
+        elif kind == "wire":
+            made.wires.append (thing)
+        else:
+            made.modules[thing.name] = thing
+    return made
+
+
+def continued (target, actual, html):
+    items = list (actual.items)
+    for tag, attrs in Tags (html).tags:
+        if tag != "tr" or "data-step" not in attrs:
+            continue
+        if "data-item" in attrs:
+            items.append (target.items[int (attrs["data-item"])])
+        else:
+            taken = next (item for item in items if Tags (step_row ("", "", item))
+                          .first ("tr")["data-step"] == attrs["data-step"])
+            items.remove (taken)
+    return assembled (target, items)
+
+
+def same_nets (a, b):
+    return {frozenset (net) for net in a.nets ()} == {frozenset (net) for net in b.nets ()}
+
+
+def empty_steps (lesson, letter, bench):
+    html = steps (bench, previous (lesson["number"], letter), lesson["number"], letter)
+    if previous (lesson["number"], letter):
+        html = html[html.index ('<details class="complete-build"'):]
+        assert 'data-build="complete" data-start="empty"' in html
+    if previous (lesson["number"], letter) or lesson.get ("fresh_start"):
+        assert 'class="stage again"' not in html, lesson["slug"]
+    return html
+
+
+# A route must visit waypoints in order; the same set in reverse is not a
+# match. Adjacent duplicate points can arise at a wire's terminal.
+assert follows ([(0, 0), (1, 0), (2, 0)], [(0, 0), (0, 0), (2, 0)])
+assert not follows ([(0, 0), (1, 0), (2, 0)], [(2, 0), (1, 0)])
 
 
 # A rail's minus and plus holes are ten drawing units apart. The guided
@@ -235,12 +305,18 @@ for page in sorted ((ROOT / "docs" / "lessons").glob ("*/index.md")):
 if __name__ == "__main__":
     load_all ()
     compared = 0
+    complete_boards = 0
     for lesson in filter (written, LESSONS):
         for letter, bench in load_circuit (lesson).items ():
             caption = board_caption (letter, bench.title)
             assert not letter or caption.count (f"Board {letter}") == 1, \
                 f"{lesson['slug']}{letter}: its caption names its board twice: {caption}"
             before = previous (lesson["number"], letter)
+            full = empty_steps (lesson, letter, bench)
+            made = rebuilt (bench, full, before[2] if before else None)
+            assert len (made.items) == len (bench.items), lesson["slug"]
+            assert same_nets (made, bench), f"{lesson['slug']}{letter}: complete build nets"
+            complete_boards += 1
             if before is None:
                 continue
             kept, _, _ = continuity (bench, before[2])
@@ -250,6 +326,69 @@ if __name__ == "__main__":
             assert not changed, f"{lesson['slug']}{letter}: kept wires change color: {changed}"
             compared += sum (kind == "wire" for kind, _ in kept)
     assert compared > 500, f"only {compared} kept wires compared"
+    assert complete_boards == 92, complete_boards
+
+    # The guided route's actual cross-course predecessors, including an
+    # optional logic detour after any of Lessons 16–36, not just each
+    # destination's numbered predecessor. Empty starts above also cover
+    # standalone E12/E13/E19/E22/E24 and the meter-only E17 entry.
+    returns = [(58, 1), (3, 64), (65, 4), (6, 59), (60, 7), (9, 61),
+               (61, 10), (12, 62), (63, 13), (15, 67), (67, 16),
+               (42, 77), (77, 79), (79, 43), (65, 66), (63, 68)]
+    returns += [(number, 74) for number in range (16, 37)]
+    returns += [(76, number) for number in range (17, 38)]
+    for old_number, number in returns:
+        lesson = LESSONS[number - 1]
+        actual = next (iter (load_circuit (LESSONS[old_number - 1]).values ()))
+        for letter, target in load_circuit (lesson).items ():
+            full = empty_steps (lesson, letter, target)
+            made = rebuilt (target, full, actual if previous (number, letter) else None)
+            assert same_nets (made, target), (old_number, number, letter)
+
+    # Explicit failure case: 3 -> E09 -> E10 -> 4. E10 has a button in
+    # the same home as Lesson 4, but fed from 5 V and joined to a base
+    # resistor. Full generated steps must restore both pin 22 and ground.
+    duel = load_circuit (LESSONS[2])[""]
+    diode = load_circuit (LESSONS[63])[""]
+    rebuilt_diode = rebuilt (diode, empty_steps (LESSONS[63], "", diode), duel)
+    assert same_nets (rebuilt_diode, diode)
+    switch = load_circuit (LESSONS[64])[""]
+    ordinary = steps (switch, previous (65), 65).split ('<p class="complete-build-link">')[0]
+    switch = continued (switch, rebuilt_diode, ordinary)
+    assert same_nets (switch, load_circuit (LESSONS[64])[""])
+    assert "pin 22" not in set ().union (*switch.nets ())
+    mood = load_circuit (LESSONS[3])[""]
+    full = empty_steps (LESSONS[3], "", mood)
+    made = rebuilt (mood, full, switch)
+    assert same_nets (made, mood)
+    button_net = next (net for net in made.nets () if "pin 22" in net)
+    assert "pin 5V" not in button_net and any ("button" in node for node in button_net)
+    assert any ("pin GND" in net and any ("button" in node for node in net)
+                for net in made.nets ())
+    pin22 = next (index for index, item in enumerate (mood.items)
+                  if item[0] == "wire" and ("pin", "22") in item[1][:2])
+    missing = re.sub (rf'<tr\b[^>]*data-item="{pin22}".*?</tr>', "", full, flags=re.S)
+    assert not same_nets (rebuilt (mood, missing, switch), mood), "missing wire must change nets"
+
+    # Lesson 6 changes the button routes inherited from Lesson 5. Its
+    # current via points win, for fresh, inherited and cache-recalled
+    # drawings; an unchanged compatible route still carries through.
+    simon = load_circuit (LESSONS[5])[""]
+    fresh = load (ROOT / "docs" / "lessons" / LESSONS[5]["slug"] / "circuit.py")[""]
+    for bench in (fresh, simon):
+        for drawing in (Drawing (bench), Drawing (bench)):
+            drawing._layout ()
+            for index, wire in enumerate (bench.wires):
+                assert follows (drawing._paths[index], drawing._plan (*wire)["points"]), \
+                    f"Simon wire {index} misses current waypoints"
+    drawing = Drawing (simon)
+    drawing._layout ()
+    compatible = next ((index, wire) for index, wire in enumerate (simon.wires)
+                       if identity (simon, "wire", wire) in simon.ways and
+                       follows (list (simon.ways[identity (simon, 'wire', wire)]),
+                                drawing._plan (*wire)["points"]))
+    index, wire = compatible
+    assert drawing._paths[index] == simon.ways[identity (simon, "wire", wire)]
 
     print ("Guided build: coordinates, progress identity, board labels, carry-over and kept "
-           "colors pass")
+           "colors, complete route builds and explicit waypoints pass")

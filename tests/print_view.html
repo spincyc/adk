@@ -26,6 +26,16 @@ body { margin: 0; }
     </tr></tbody>
   </table>
 </div>
+<div id="short-code" class="highlight"><span class="filename">Short.ino</span>
+  <pre><code>void loop ()
+{
+    adk::update ();
+}
+</code></pre>
+</div>
+<div id="long-code" class="highlight"><span class="filename">Long.ino</span>
+  <pre><code></code></pre>
+</div>
 <a id="relative" href="../../start/">Getting started</a>
 <a id="root" href="/adk/library/#faults">Faults</a>
 <a id="fragment" href="#relative">This page</a>
@@ -36,11 +46,18 @@ try {
     const assert = (ok, message) => { if (!ok) throw Error (message); };
     const href = id => document.getElementById (id).getAttribute ("href");
     const table = document.querySelector ("table");
+    const short = document.getElementById ("short-code");
+    const long = document.getElementById ("long-code");
+    long.querySelector ("code").textContent = "// A line of a long sketch.\n".repeat (60);
     assert (table.scrollWidth <= table.clientWidth + 1,
         "descriptive locations and common-leg notes fit a narrow step table");
 
     for (let run = 0; run < 2; ++run) {
         window.dispatchEvent (new Event ("beforeprint"));
+        assert (short.classList.contains ("print-short-code"),
+            "a short complete sketch stays together on paper");
+        assert (!long.classList.contains ("print-short-code"),
+            "a long sketch can continue across printed pages");
         assert (href ("relative") === "https://spincyc.github.io/adk/start/",
             "relative print links use the published course");
         assert (href ("root") === "https://spincyc.github.io/adk/library/#faults",
@@ -48,12 +65,17 @@ try {
         assert (href ("fragment") === "#relative", "PDF fragment links stay internal");
         assert (href ("external") === "https://example.invalid/", "external links stay intact");
         window.dispatchEvent (new Event ("afterprint"));
+        assert (!short.classList.contains ("print-short-code"),
+            "printing restores the browser's code layout");
         assert (href ("relative") === "../../start/" && href ("root") === "/adk/library/#faults",
             "printing restores the browser's local navigation");
     }
     document.querySelector ('link[rel="canonical"]').remove ();
     window.dispatchEvent (new Event ("beforeprint"));
     assert (href ("relative") === "../../start/", "without a canonical URL, keep the original");
+    assert (short.classList.contains ("print-short-code"),
+        "short sketches are grouped even without a canonical URL");
+    window.dispatchEvent (new Event ("afterprint"));
     document.body.dataset.testResult = "pass";
     document.body.append ("Print links and narrow step locations pass.");
 } catch (error) {
