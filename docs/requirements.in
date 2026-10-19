@@ -8,5 +8,5 @@
 # MkDocs stays at 1.6: Material for MkDocs does not support MkDocs 2.
 mkdocs==1.6.1
 mkdocs-material==9.7.7
-pymdown-extensions==12.1
+pymdown-extensions==12.3
 pyyaml==6.0.3
